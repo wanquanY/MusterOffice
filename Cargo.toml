@@ -1,0 +1,50 @@
+[workspace]
+members = [
+  "crates/mo-common",
+  "crates/mo-geometry",
+  "crates/mo-color",
+  "crates/mo-xml",
+  "crates/mo-opc",
+]
+resolver = "3"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.92"
+publish = false
+
+[workspace.dependencies]
+mo-common = { path = "crates/mo-common" }
+rusqlite = { version = "=0.40.2", default-features = false, features = ["bundled"] }
+mo-geometry = { path = "crates/mo-geometry" }
+mo-color = { path = "crates/mo-color" }
+mo-xml = { path = "crates/mo-xml" }
+mo-opc = { path = "crates/mo-opc" }
+rawzip = "=0.5.1"
+quick-xml = "=0.42.0"
+flate2 = { version = "=1.1.9", default-features = false, features = ["rust_backend"] }
+crc32fast = "=1.5.2"
+wasm-bindgen = "=0.2.126"
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = { version = "=1.0.151", features = ["float_roundtrip"] }
+schemars = "=1.2.2"
+sha2 = "=0.10.9"
+thiserror = "=2.0.20"
+proptest = "=1.11.0"
+libm = { version = "=0.2.16", default-features = false, features = ["force-soft-floats"] }
+read-fonts = { version = "=0.43.3", default-features = false, features = ["libm"] }
+unicode-bidi = { version = "=0.3.18", default-features = false }
+num-bigint = { version = "=0.4.8", default-features = false }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+
+[profile.release]
+codegen-units = 1
+lto = "thin"
+strip = "debuginfo"
+overflow-checks = true
