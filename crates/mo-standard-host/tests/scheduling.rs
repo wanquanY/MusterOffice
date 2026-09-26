@@ -1,3 +1,5 @@
+#[path = "scheduling/contention.rs"]
+mod contention;
 #[path = "scheduling/crash.rs"]
 mod crash;
 mod support;
@@ -441,7 +443,7 @@ fn v4_upgrade_preserves_receipts_and_rejects_corruption_atomically() {
         drop(host);
         let sql = db.sql();
         sql.execute_batch(
-            "DROP INDEX jobs_queued; DROP INDEX jobs_expiring; PRAGMA user_version=4;",
+            "DROP INDEX jobs_queued; DROP INDEX jobs_expiring; DROP TABLE job_bindings; PRAGMA user_version=4;",
         )
         .unwrap();
         if corrupt {
@@ -474,7 +476,7 @@ fn v4_upgrade_preserves_receipts_and_rejects_corruption_atomically() {
         assert_eq!(
             sql.query_row("PRAGMA user_version", [], |r| r.get::<_, i64>(0))
                 .unwrap(),
-            if corrupt { 4 } else { 5 }
+            if corrupt { 4 } else { 6 }
         );
         assert_eq!(
             sql.query_row(

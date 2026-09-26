@@ -13,6 +13,7 @@ struct State {
     stopping: bool,
     generation: u64,
     error: Option<Failure>,
+    busy_workers: Vec<bool>,
 }
 struct Shared {
     state: Mutex<State>,
@@ -46,6 +47,24 @@ impl Shared {
         state.error.get_or_insert(error);
         state.stopping = true;
         self.changed.notify_all();
+    }
+    fn storage_busy(&self, worker: usize, busy: bool) {
+        let mut state = self.lock();
+        if state.busy_workers[worker] != busy {
+            state.busy_workers[worker] = busy;
+            state.generation = state.generation.wrapping_add(1);
+            self.changed.notify_all();
+        }
+    }
+    fn retry_wait(&self, timeout: Duration) {
+        // Work notifications cannot turn storage contention into a tight loop.
+        let result = self
+            .changed
+            .wait_timeout_while(self.lock(), timeout, |s| !s.stopping);
+        if result.is_err() {
+            drop(result);
+            self.fail(interrupted("scheduler synchronization failed"));
+        }
     }
     fn wait(&self, generation: u64, timeout: Duration) {
         let result = self
@@ -81,6 +100,7 @@ impl Scheduler {
                 stopping: false,
                 generation: 0,
                 error: None,
+                busy_workers: vec![false; options.workers],
             }),
             changed: Condvar::new(),
         });
@@ -96,7 +116,7 @@ impl Scheduler {
                 .name(format!("mo-executor-{index}"))
                 .spawn(move || {
                     let result = catch_unwind(AssertUnwindSafe(|| {
-                        work(host, &context, options, clock, shared.clone())
+                        work(host, &context, options, clock, shared.clone(), index)
                     }));
                     match result {
                         Ok(Ok(())) => (),
@@ -123,6 +143,12 @@ impl Scheduler {
         }
         if state.stopping {
             return Err(interrupted("native scheduler is stopped"));
+        }
+        if state.busy_workers.iter().all(|busy| *busy) {
+            return Err(Failure::new(
+                FailureCode::StorageBusy,
+                "execution storage is temporarily busy",
+            ));
         }
         Ok(())
     }
@@ -164,7 +190,9 @@ fn work(
     options: RuntimeOptions,
     clock: HostClock,
     shared: Arc<Shared>,
+    worker: usize,
 ) -> Result<(), Failure> {
+    let mut retry_delay = Duration::from_millis(25);
     loop {
         let generation = {
             let state = shared.lock();
@@ -179,10 +207,27 @@ fn work(
             }
             state.generation
         };
-        host.recover_expired(context, clock(), options.recovery_batch)?;
-        match host.run_next(context, clock(), clock.as_ref(), &|| false)? {
-            Some(_) => shared.notify(),
-            None => shared.wait(generation, options.idle_poll),
+        let result = host
+            .recover_expired(context, clock(), options.recovery_batch)
+            .and_then(|_| host.run_next(context, clock(), clock.as_ref(), &|| false));
+        match result {
+            Ok(job) => {
+                shared.storage_busy(worker, false);
+                retry_delay = Duration::from_millis(25);
+                if job.is_some() {
+                    shared.notify();
+                } else {
+                    shared.wait(generation, options.idle_poll);
+                }
+            }
+            Err(error) if error.code == FailureCode::StorageBusy => {
+                // Only probe durable selection again. Already claimed work is
+                // fenced and expires normally; never replay a candidate here.
+                shared.storage_busy(worker, true);
+                shared.retry_wait(retry_delay);
+                retry_delay = (retry_delay * 2).min(Duration::from_secs(1));
+            }
+            Err(error) => return Err(error),
         }
     }
 }

@@ -13,33 +13,32 @@ pub(crate) fn claim_record(
     executor: &Digest,
     lease_ms: i64,
     now: UnixMillis,
-) -> Result<Option<db::StoredJob>, Failure> {
-    let mut job = db::job(tx, context, id)?;
-    context.authorize(&job.request)?;
-    if db::expire(&mut job.info, now)? {
-        db::save(tx, context, &job.info)?;
+) -> Result<Option<JobInfo>, Failure> {
+    let mut job = db::job_info(tx, context, id)?;
+    db::authorize_job(context, &job)?;
+    if db::expire(&mut job, now)? {
+        db::save(tx, context, &job)?;
     }
-    if job.info.state != JobState::Queued {
+    if job.state != JobState::Queued {
         return Ok(None);
     }
-    if &job.info.executor_digest != executor {
+    if &job.executor_digest != executor {
         return Err(Failure::new(
             FailureCode::ExecutorMismatch,
             "queued operation requires its pinned executor",
         ));
     }
-    job.info.state = JobState::Running;
-    job.info.updated_at = now;
-    job.info.fence = job
-        .info
+    job.state = JobState::Running;
+    job.updated_at = now;
+    job.fence = job
         .fence
         .checked_add(1)
         .ok_or_else(|| Failure::new(FailureCode::LimitExceeded, "execution fence exhausted"))?;
-    job.info.lease_until = Some(
+    job.lease_until = Some(
         now.checked_add(lease_ms)
             .ok_or_else(|| Failure::new(FailureCode::LimitExceeded, "execution lease overflow"))?,
     );
-    db::save(tx, context, &job.info)?;
+    db::save(tx, context, &job)?;
     Ok(Some(job))
 }
 
@@ -112,12 +111,11 @@ impl StandardHost {
             .map_err(db::error)?;
         let existing:Option<String>=tx.query_row("SELECT id FROM jobs WHERE scope=?1 AND principal=?2 AND operation=?3 AND request_id=?4",params![context.scope.as_str(),context.principal.as_str(),request.action.name(),request.request_id.as_str()],|r|r.get(0)).optional().map_err(db::error)?;
         if let Some(existing) = existing {
-            let mut job = db::job(
+            let mut job = db::job_info(
                 &tx,
                 context,
                 &JobId::new(existing).map_err(|_| db::corrupt())?,
-            )?
-            .info;
+            )?;
             if job.request_digest != digest {
                 return Err(Failure::new(
                     FailureCode::RequestIdReused,
@@ -161,6 +159,7 @@ impl StandardHost {
             result: None,
         };
         tx.execute("INSERT INTO jobs(scope,principal,id,operation,request_id,request,info) VALUES (?1,?2,?3,?4,?5,?6,?7)",params![context.scope.as_str(),context.principal.as_str(),info.id.as_str(),info.operation,info.request_id.as_str(),encoded,db::encode(&info)?]).map_err(db::error)?;
+        db::insert_binding(&tx, context, &info, &request)?;
         tx.commit().map_err(db::error)?;
         Ok(info)
     }
@@ -171,31 +170,41 @@ impl StandardHost {
         now: UnixMillis,
     ) -> Result<JobInfo, Failure> {
         context.require(Permission::ReadJob)?;
-        let tx = self
-            .connection
-            .transaction_with_behavior(TransactionBehavior::Immediate)
-            .map_err(db::error)?;
-        let mut job = db::job(&tx, context, id)?.info;
-        if db::expire(&mut job, now)? {
-            db::save(&tx, context, &job)?;
-        }
-        tx.commit().map_err(db::error)?;
-        Ok(job)
+        self.read_status(context, id, now, false)
     }
-    /// Return the caller's own operation receipt while waiting for an accepted
-    /// mutation. This uses execution authority, not the separate query grant.
+    /// An accepted operation may be awaited using its execution authority.
     pub(crate) fn operation_status(
         &mut self,
         context: &CallContext,
         id: &JobId,
         now: UnixMillis,
     ) -> Result<JobInfo, Failure> {
+        self.read_status(context, id, now, true)
+    }
+    fn read_status(
+        &mut self,
+        context: &CallContext,
+        id: &JobId,
+        now: UnixMillis,
+        execution_authority: bool,
+    ) -> Result<JobInfo, Failure> {
+        let mut info = db::job_info(&self.connection, context, id)?;
+        if execution_authority {
+            db::authorize_job(context, &info)?;
+        }
+        if !db::expire(&mut info, now)? {
+            return Ok(info);
+        }
+        // Expiry is a state transition. Re-read after acquiring the writer so a
+        // concurrent renewal/publication cannot be overwritten by the old read.
         let tx = self
             .connection
             .transaction_with_behavior(TransactionBehavior::Immediate)
             .map_err(db::error)?;
-        let db::StoredJob { request, mut info } = db::job(&tx, context, id)?;
-        context.authorize(&request)?;
+        let mut info = db::job_info(&tx, context, id)?;
+        if execution_authority {
+            db::authorize_job(context, &info)?;
+        }
         if db::expire(&mut info, now)? {
             db::save(&tx, context, &info)?;
         }
@@ -209,11 +218,15 @@ impl StandardHost {
         now: UnixMillis,
     ) -> Result<JobInfo, Failure> {
         context.require(Permission::CancelJob)?;
+        let info = db::job_info(&self.connection, context, id)?;
+        if info.state.terminal() {
+            return Ok(info);
+        }
         let tx = self
             .connection
             .transaction_with_behavior(TransactionBehavior::Immediate)
             .map_err(db::error)?;
-        let mut job = db::job(&tx, context, id)?.info;
+        let mut job = db::job_info(&tx, context, id)?;
         db::expire(&mut job, now)?;
         if !job.state.terminal() {
             job.cancel_requested = true;
@@ -247,9 +260,9 @@ impl StandardHost {
     pub(crate) fn load_work(
         &self,
         context: &CallContext,
-        job: db::StoredJob,
+        info: JobInfo,
     ) -> Result<WorkItem, Failure> {
-        let db::StoredJob { request, info } = job;
+        let request = db::request(&self.connection, context, &info)?;
         // Immutable revisions can be decoded/validated outside the write lock.
         let snapshot = match &request.action {
             DocumentAction::Create { .. } => None,
@@ -287,9 +300,12 @@ impl StandardHost {
         let tx =
             rusqlite::Transaction::new_unchecked(&self.connection, TransactionBehavior::Immediate)
                 .map_err(db::error)?;
-        let db::StoredJob { request, mut info } = db::job(&tx, context, &lease.id)?;
-        context.authorize(&request)?;
-        if info.fence != lease.fence || info.executor_digest != lease.executor {
+        let mut info = db::job_info(&tx, context, &lease.id)?;
+        db::authorize_job(context, &info)?;
+        if info.fence != lease.fence
+            || info.executor_digest != lease.executor
+            || info.request_digest != lease.request_digest
+        {
             return Err(Failure::new(
                 FailureCode::StaleExecution,
                 "execution fence differs",
@@ -428,7 +444,10 @@ impl StandardHost {
                 });
             }
             Err(error) => {
-                if error.code == FailureCode::StorageFailure {
+                if matches!(
+                    error.code,
+                    FailureCode::StorageFailure | FailureCode::StorageBusy
+                ) {
                     return Err(error);
                 }
                 db::failed(&mut info, now, error);

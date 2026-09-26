@@ -32,25 +32,28 @@ export type UnixMillis = string;
  * via the `definition` "FailureCode".
  */
 export type FailureCode =
-  | "INPUT_INVALID"
-  | "NOT_AUTHORIZED"
-  | "NOT_FOUND"
-  | "REQUEST_ID_REUSED"
-  | "REVISION_CONFLICT"
-  | "REFERENCE_CONFLICT"
-  | "DOCUMENT_EXISTS"
-  | "LIMIT_EXCEEDED"
-  | "CANCELLED"
-  | "EXECUTION_INTERRUPTED"
-  | "EXECUTOR_MISMATCH"
-  | "STALE_EXECUTION"
-  | "STORAGE_FAILURE"
-  | "RESOURCE_CONFLICT"
-  | "RESOURCE_EXPIRED"
-  | "RESOURCE_INCOMPLETE"
-  | "RESOURCE_BUSY"
-  | "MAPPING_NOT_IMPLEMENTED"
-  | "RENDER_FAILURE";
+  | (
+      | "INPUT_INVALID"
+      | "NOT_AUTHORIZED"
+      | "NOT_FOUND"
+      | "REQUEST_ID_REUSED"
+      | "REVISION_CONFLICT"
+      | "REFERENCE_CONFLICT"
+      | "DOCUMENT_EXISTS"
+      | "LIMIT_EXCEEDED"
+      | "CANCELLED"
+      | "EXECUTION_INTERRUPTED"
+      | "EXECUTOR_MISMATCH"
+      | "STALE_EXECUTION"
+      | "STORAGE_FAILURE"
+      | "RESOURCE_CONFLICT"
+      | "RESOURCE_EXPIRED"
+      | "RESOURCE_INCOMPLETE"
+      | "RESOURCE_BUSY"
+      | "MAPPING_NOT_IMPLEMENTED"
+      | "RENDER_FAILURE"
+    )
+  | "STORAGE_BUSY";
 /**
  * This interface was referenced by `UploadInfo`'s JSON-Schema
  * via the `definition` "UploadState".

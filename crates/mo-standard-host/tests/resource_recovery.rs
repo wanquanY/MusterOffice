@@ -210,7 +210,7 @@ PRAGMA application_id=1297041478; PRAGMA user_version=1;").unwrap();
     assert_eq!(
         db.query_row("PRAGMA user_version", [], |r| r.get::<_, i64>(0))
             .unwrap(),
-        5
+        6
     );
     let pair: (String, String) = db
         .query_row("SELECT request,info FROM jobs", [], |r| {
@@ -225,5 +225,5 @@ PRAGMA application_id=1297041478; PRAGMA user_version=1;").unwrap();
             |r| r.get(0),
         )
         .unwrap();
-    assert_eq!(tables, 9);
+    assert_eq!(tables, 10);
 }

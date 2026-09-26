@@ -123,10 +123,10 @@ impl StandardHost {
         let mut count = 0;
         for id in ids {
             let id = JobId::new(id).map_err(|_| db::corrupt())?;
-            let mut stored = db::job(&tx, context, &id)?;
-            context.authorize(&stored.request)?;
-            if db::expire(&mut stored.info, now)? {
-                db::save(&tx, context, &stored.info)?;
+            let mut info = db::job_info(&tx, context, &id)?;
+            db::authorize_job(context, &info)?;
+            if db::expire(&mut info, now)? {
+                db::save(&tx, context, &info)?;
                 count += 1;
             }
         }

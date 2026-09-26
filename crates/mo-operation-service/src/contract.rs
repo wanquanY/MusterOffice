@@ -159,6 +159,8 @@ pub enum FailureCode {
     ExecutionInterrupted,
     ExecutorMismatch,
     StaleExecution,
+    /// Temporary storage contention; the accepted request identity remains reusable.
+    StorageBusy,
     StorageFailure,
     ResourceConflict,
     ResourceExpired,

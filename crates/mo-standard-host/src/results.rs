@@ -120,9 +120,9 @@ impl StandardHost {
         // output writer to share this connection. No callback runs under it.
         let tx = Transaction::new_unchecked(&self.connection, TransactionBehavior::Immediate)
             .map_err(db::error)?;
-        let job = db::job(&tx, context, &lease.id)?;
-        context.authorize(&job.request)?;
-        guard_job(&job.info, lease, now)?;
+        let job = db::job_info(&tx, context, &lease.id)?;
+        db::authorize_job(context, &job)?;
+        guard_job(&job, lease, now)?;
         assets::reap(&tx, &context.scope, now)?;
         storage::reap(&tx, &context.scope, now)?;
         let exists: bool = tx.query_row(
@@ -161,7 +161,7 @@ impl StandardHost {
         };
         tx.execute(
             "INSERT INTO result_spools(scope,principal,job_id,fence,name,request_digest,executor_digest,info,reserved_bytes,expires_at) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10)",
-            params![context.scope.as_str(), context.principal.as_str(), lease.id.as_str(), lease.fence.get(), record.spec.name.as_str(), lease.request_digest.as_str(), lease.executor.as_str(), db::encode(&record)?, record.spec.max_bytes as i64, job.info.lease_until.ok_or_else(db::corrupt)?.get()],
+            params![context.scope.as_str(), context.principal.as_str(), lease.id.as_str(), lease.fence.get(), record.spec.name.as_str(), lease.request_digest.as_str(), lease.executor.as_str(), db::encode(&record)?, record.spec.max_bytes as i64, job.lease_until.ok_or_else(db::corrupt)?.get()],
         ).map_err(db::error)?;
         tx.commit().map_err(db::error)?;
         Ok(SqlResultSink::new(
@@ -190,9 +190,9 @@ impl StandardHost {
         let now = clock();
         let tx = Transaction::new_unchecked(&self.connection, TransactionBehavior::Deferred)
             .map_err(db::error)?;
-        let job = db::job(&tx, context, &lease.id)?;
-        context.authorize(&job.request)?;
-        guard_job(&job.info, lease, now)?;
+        let job = db::job_info(&tx, context, &lease.id)?;
+        db::authorize_job(context, &job)?;
+        guard_job(&job, lease, now)?;
         let owner = Owner {
             host: self,
             context: context.clone(),

@@ -1,10 +1,23 @@
+mod jobs;
+pub(crate) use jobs::{StoredJob, authorize_job, insert_binding, job, job_info, request};
+pub(crate) const SCHEMA_VERSION: i64 = 6;
+
 use mo_common::{Digest, DocumentId};
 use mo_operation_service::*;
 use mo_presentation_edit::{Snapshot, SnapshotRecord};
 use mo_presentation_model::ValidationLimits;
 use rusqlite::{Connection, OptionalExtension, TransactionBehavior, params};
 
-pub(crate) fn error(_: rusqlite::Error) -> Failure {
+pub(crate) fn error(error: rusqlite::Error) -> Failure {
+    if matches!(
+        error.sqlite_error_code(),
+        Some(rusqlite::ErrorCode::DatabaseBusy | rusqlite::ErrorCode::DatabaseLocked)
+    ) {
+        return Failure::new(
+            FailureCode::StorageBusy,
+            "operation storage is temporarily busy",
+        );
+    }
     Failure::new(
         FailureCode::StorageFailure,
         "operation storage is unavailable",
@@ -43,6 +56,18 @@ pub(crate) fn decode<T: serde::de::DeserializeOwned>(value: &str) -> Result<T, F
     mo_common::from_json_str(value).map_err(|_| corrupt())
 }
 pub(crate) fn initialize(c: &mut Connection) -> Result<(), Failure> {
+    // Current-schema connections need no writer reservation. Read both markers
+    // in one snapshot; migration rechecks them under its exclusive writer claim.
+    let markers: (i64, i64) = c
+        .query_row(
+            "SELECT user_version,application_id FROM pragma_user_version,pragma_application_id",
+            [],
+            |r| Ok((r.get(0)?, r.get(1)?)),
+        )
+        .map_err(error)?;
+    if markers == (SCHEMA_VERSION, 1297041478) {
+        return Ok(());
+    }
     let tx = c
         .transaction_with_behavior(TransactionBehavior::Immediate)
         .map_err(error)?;
@@ -74,6 +99,7 @@ PRAGMA application_id=1297041478; PRAGMA user_version=1;").map_err(error)?;
         (3, 1297041478) => (),
         (4, 1297041478) => (),
         (5, 1297041478) => (),
+        (6, 1297041478) => (),
         _ => return Err(corrupt()),
     }
     if version <= 1 {
@@ -92,67 +118,11 @@ PRAGMA application_id=1297041478; PRAGMA user_version=1;").map_err(error)?;
         super::queue::migrate(&tx)?;
         tx.execute_batch("PRAGMA user_version=5;").map_err(error)?;
     }
+    if version <= 5 {
+        jobs::migrate(&tx)?;
+        tx.execute_batch("PRAGMA user_version=6;").map_err(error)?;
+    }
     tx.commit().map_err(error)
-}
-pub(crate) struct StoredJob {
-    pub request: OperationRequest,
-    pub info: JobInfo,
-}
-pub(crate) fn job(c: &Connection, context: &CallContext, id: &JobId) -> Result<StoredJob, Failure> {
-    let row:Option<(String,String,String,String)>=c.query_row("SELECT request,info,operation,request_id FROM jobs WHERE scope=?1 AND principal=?2 AND id=?3",params![context.scope.as_str(),context.principal.as_str(),id.as_str()],|r|Ok((r.get(0)?,r.get(1)?,r.get(2)?,r.get(3)?))).optional().map_err(error)?;
-    let (request, info, operation, request_id) = row.ok_or_else(not_found)?;
-    let request: OperationRequest = decode(&request)?;
-    request.validate_profile().map_err(|_| corrupt())?;
-    let info: JobInfo = decode(&info)?;
-    if info.id != *id
-        || info.request_id != request.request_id
-        || info.request_id.as_str() != request_id
-        || info.operation != operation
-        || request.action.name() != operation
-        || info.document_id != *request.action.document_id()
-        || request.digest().map_err(|_| corrupt())? != info.request_digest
-    {
-        return Err(corrupt());
-    }
-    let state_valid = match (&info.state, &info.result) {
-        (JobState::Queued | JobState::Running, None) => true,
-        (JobState::Succeeded, Some(TerminalResult::Succeeded { receipt })) => {
-            receipt.document_id() == &info.document_id
-                && !info.cancel_requested
-                && match (&request.action, receipt.as_ref()) {
-                    (
-                        DocumentAction::Create { .. } | DocumentAction::Apply { .. },
-                        OperationReceipt::Mutation(_),
-                    ) => true,
-                    (DocumentAction::Export { base_revision, .. }, OperationReceipt::Export(r)) => {
-                        &r.revision == base_revision
-                            && r.bundle.document.document_id == r.document_id
-                            && r.bundle.document.revision == r.revision
-                            && r.bundle.profile_id == mo_presentation_delivery::PROFILE
-                    }
-                    _ => false,
-                }
-        }
-        (JobState::Failed, Some(TerminalResult::Failed { error })) => {
-            error.code != FailureCode::Cancelled
-        }
-        (JobState::Cancelled, Some(TerminalResult::Failed { error })) => {
-            error.code == FailureCode::Cancelled
-        }
-        _ => false,
-    };
-    if !state_valid
-        || info.updated_at < info.created_at
-        || (info.state == JobState::Queued && (info.cancel_requested || info.fence.get() != 0))
-        || (info.state == JobState::Running && info.fence.get() == 0)
-        || (info.state == JobState::Running) != info.lease_until.is_some()
-        || info
-            .lease_until
-            .is_some_and(|until| until <= info.updated_at)
-    {
-        return Err(corrupt());
-    }
-    Ok(StoredJob { request, info })
 }
 pub(crate) fn save(c: &Connection, context: &CallContext, job: &JobInfo) -> Result<(), Failure> {
     let n = c

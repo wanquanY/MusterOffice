@@ -157,27 +157,36 @@
       ]
     },
     "FailureCode": {
-      "type": "string",
-      "enum": [
-        "INPUT_INVALID",
-        "NOT_AUTHORIZED",
-        "NOT_FOUND",
-        "REQUEST_ID_REUSED",
-        "REVISION_CONFLICT",
-        "REFERENCE_CONFLICT",
-        "DOCUMENT_EXISTS",
-        "LIMIT_EXCEEDED",
-        "CANCELLED",
-        "EXECUTION_INTERRUPTED",
-        "EXECUTOR_MISMATCH",
-        "STALE_EXECUTION",
-        "STORAGE_FAILURE",
-        "RESOURCE_CONFLICT",
-        "RESOURCE_EXPIRED",
-        "RESOURCE_INCOMPLETE",
-        "RESOURCE_BUSY",
-        "MAPPING_NOT_IMPLEMENTED",
-        "RENDER_FAILURE"
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "INPUT_INVALID",
+            "NOT_AUTHORIZED",
+            "NOT_FOUND",
+            "REQUEST_ID_REUSED",
+            "REVISION_CONFLICT",
+            "REFERENCE_CONFLICT",
+            "DOCUMENT_EXISTS",
+            "LIMIT_EXCEEDED",
+            "CANCELLED",
+            "EXECUTION_INTERRUPTED",
+            "EXECUTOR_MISMATCH",
+            "STALE_EXECUTION",
+            "STORAGE_FAILURE",
+            "RESOURCE_CONFLICT",
+            "RESOURCE_EXPIRED",
+            "RESOURCE_INCOMPLETE",
+            "RESOURCE_BUSY",
+            "MAPPING_NOT_IMPLEMENTED",
+            "RENDER_FAILURE"
+          ]
+        },
+        {
+          "description": "Temporary storage contention; the accepted request identity remains reusable.",
+          "type": "string",
+          "const": "STORAGE_BUSY"
+        }
       ]
     },
     "RequestId": {

@@ -1,8 +1,8 @@
 //! Shared cooperative execution checks for mutations, exports and private I/O.
 use crate::{StandardHost, WorkLease, db};
 use mo_operation_service::*;
-use rusqlite::params;
 use std::cell::{Cell, RefCell};
+use std::time::{Duration, Instant};
 
 pub(crate) fn guard_job(job: &JobInfo, lease: &WorkLease, now: UnixMillis) -> Result<(), Failure> {
     if job.id != lease.id
@@ -41,13 +41,7 @@ impl StandardHost {
         now: UnixMillis,
     ) -> Result<JobInfo, Failure> {
         self.check_lease_owner(context, lease)?;
-        // The immutable request was validated at claim. A checkpoint must not
-        // repeatedly decode a large document just to inspect its lease.
-        let json: Option<String> = self.connection.query_row(
-            "SELECT CASE WHEN length(info)<=65536 THEN info ELSE NULL END FROM jobs WHERE scope=?1 AND principal=?2 AND id=?3",
-            params![context.scope.as_str(),context.principal.as_str(),lease.id.as_str()], |r| r.get(0),
-        ).map_err(db::error)?;
-        let info = db::decode(&json.ok_or_else(db::corrupt)?)?;
+        let info = db::job_info(&self.connection, context, &lease.id)?;
         guard_job(&info, lease, now)?;
         Ok(info)
     }
@@ -60,6 +54,10 @@ pub(crate) struct ExecutionCheck<'a> {
     clock: &'a dyn Fn() -> UnixMillis,
     external: &'a dyn Fn() -> bool,
     next_renew: Cell<UnixMillis>,
+    next_poll: Cell<UnixMillis>,
+    poll_deadline: Cell<Instant>,
+    poll_interval: Duration,
+    last_now: Cell<UnixMillis>,
     error: RefCell<Option<Failure>>,
 }
 impl<'a> ExecutionCheck<'a> {
@@ -72,7 +70,12 @@ impl<'a> ExecutionCheck<'a> {
     ) -> Result<Self, Failure> {
         let now = clock();
         let info = host.execution_guard(context, lease, now)?;
+        let poll_interval = Duration::from_millis((host.limits.lease_ms / 10).clamp(1, 100) as u64);
         Ok(Self {
+            next_poll: Cell::new(now),
+            poll_deadline: Cell::new(Instant::now()),
+            poll_interval,
+            last_now: Cell::new(now),
             host,
             context,
             lease,
@@ -92,14 +95,36 @@ impl<'a> ExecutionCheck<'a> {
         }
         let now = (self.clock)();
         let result = (|| {
-            if now >= self.next_renew.get() {
-                self.host.renew(self.context, self.lease, now)?;
-                self.next_renew.set(
-                    now.checked_add((self.host.limits.lease_ms / 3).max(1))
-                        .ok_or_else(db::corrupt)?,
-                );
+            if now < self.last_now.replace(now) {
+                return Err(Failure::new(
+                    FailureCode::InputInvalid,
+                    "host clock moved backwards",
+                ));
             }
-            self.host.execution_guard(self.context, self.lease, now)
+            let instant = Instant::now();
+            if now < self.next_poll.get()
+                && now < self.next_renew.get()
+                && instant < self.poll_deadline.get()
+            {
+                return Ok(());
+            }
+            let info = if now >= self.next_renew.get() {
+                self.host.renew(self.context, self.lease, now)?
+            } else {
+                self.host.execution_guard(self.context, self.lease, now)?
+            };
+            guard_job(&info, self.lease, now)?;
+            self.next_renew.set(
+                info.updated_at
+                    .checked_add((self.host.limits.lease_ms / 3).max(1))
+                    .ok_or_else(db::corrupt)?,
+            );
+            self.next_poll.set(
+                now.checked_add(self.poll_interval.as_millis() as i64)
+                    .ok_or_else(db::corrupt)?,
+            );
+            self.poll_deadline.set(instant + self.poll_interval);
+            Ok(())
         })();
         if let Err(error) = result {
             *self.error.borrow_mut() = Some(error);
@@ -115,3 +140,6 @@ impl<'a> ExecutionCheck<'a> {
         }
     }
 }
+
+#[cfg(test)]
+mod tests;

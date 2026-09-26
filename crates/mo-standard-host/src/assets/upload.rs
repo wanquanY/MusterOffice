@@ -344,7 +344,10 @@ impl StandardHost {
             Err(error) => {
                 // Storage faults may be transient; retain the frozen lease for
                 // explicit observation/expiry instead of forging a terminal.
-                if error.code == FailureCode::StorageFailure {
+                if matches!(
+                    error.code,
+                    FailureCode::StorageFailure | FailureCode::StorageBusy
+                ) {
                     return Err(error);
                 }
                 storage::fail(&tx, context, &mut current, now, error)?;

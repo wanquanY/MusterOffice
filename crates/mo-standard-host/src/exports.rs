@@ -223,11 +223,25 @@ impl StandardHost {
                             ))),
                         });
                     }
-                    Err(error) if error.code == FailureCode::StorageFailure => return Err(error),
+                    Err(error)
+                        if matches!(
+                            error.code,
+                            FailureCode::StorageFailure | FailureCode::StorageBusy
+                        ) =>
+                    {
+                        return Err(error);
+                    }
                     Err(error) => db::failed(&mut info, now, error),
                 }
             }
-            Err(error) if error.code == FailureCode::StorageFailure => return Err(error),
+            Err(error)
+                if matches!(
+                    error.code,
+                    FailureCode::StorageFailure | FailureCode::StorageBusy
+                ) =>
+            {
+                return Err(error);
+            }
             Err(error) => db::failed(&mut info, now, error),
         }
         db::save(&tx, context, &info)?;

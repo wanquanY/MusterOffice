@@ -72,9 +72,14 @@ impl StandardHost {
             .map_err(db::error)?;
         connection.execute_batch("PRAGMA foreign_keys=ON; PRAGMA trusted_schema=OFF; PRAGMA synchronous=FULL; PRAGMA fullfsync=ON;").map_err(db::error)?;
         db::initialize(&mut connection)?;
-        connection
-            .execute_batch("PRAGMA journal_mode=WAL;")
+        let journal: String = connection
+            .pragma_query_value(None, "journal_mode", |r| r.get(0))
             .map_err(db::error)?;
+        if journal != "wal" {
+            connection
+                .execute_batch("PRAGMA journal_mode=WAL;")
+                .map_err(db::error)?;
+        }
         Ok(Self {
             connection,
             executor,
@@ -108,9 +113,9 @@ impl StandardHost {
         let Some(work) = self.claim(context, id, now)? else {
             // Operation execution/replay requires its mutation permission;
             // the separate read-job permission controls the query endpoint.
-            let stored = db::job(&self.connection, context, id)?;
-            context.authorize(&stored.request)?;
-            return Ok(stored.info);
+            let info = db::job_info(&self.connection, context, id)?;
+            db::authorize_job(context, &info)?;
+            return Ok(info);
         };
         self.execute_work(context, work, finished_at, check)
     }
