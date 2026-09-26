@@ -1,0 +1,47 @@
+--- a/src/codec/SkPngCodec.cpp
++++ b/src/codec/SkPngCodec.cpp
+@@ -67,8 +67,9 @@
+     longjmp(PNG_JMPBUF(png_ptr), kPngError);
+ }
+ 
+-void sk_warning_fn(png_structp, png_const_charp msg) {
+-    SkCodecPrintf("----- png warning %s\n", msg);
++void sk_warning_fn(png_structp png_ptr, png_const_charp msg) {
++    // MusterOffice: never silently repair or drop color metadata.
++    sk_error_fn(png_ptr, msg);
+ }
+ 
+ #ifdef PNG_READ_UNKNOWN_CHUNKS_SUPPORTED
+@@ -728,6 +729,10 @@
+     png_set_option(png_ptr, PNG_MAXIMUM_INFLATE_WINDOW, PNG_OPTION_ON);
+ #endif
+ 
++    // MusterOffice: bound decompressed ancillary metadata before header parsing.
++    png_set_user_limits(png_ptr, 8192, 8192);
++    png_set_chunk_malloc_max(png_ptr, 1024 * 1024);
++    png_set_chunk_cache_max(png_ptr, 32);
+     AutoCleanPng autoClean(png_ptr, stream, chunkReader, outCodec);
+ 
+     png_infop info_ptr = png_create_info_struct(png_ptr);
+--- a/src/codec/SkJpegDecoderMgr.cpp
++++ b/src/codec/SkJpegDecoderMgr.cpp
+@@ -37,6 +37,11 @@
+  */
+ static void output_message(j_common_ptr info) {
+     print_message(info, "output_message");
++}
++
++// MusterOffice: repaired/incomplete streams must not produce successful pixels.
++static void strict_message(j_common_ptr info, int level) {
++    if (level < 0) skjpeg_err_exit(info);
+ }
+ 
+ static void progress_monitor(j_common_ptr info) {
+@@ -97,6 +102,7 @@
+     // An error manager must be set before any calls to libjpeg, in order to handle failures.
+     fDInfo.err = jpeg_std_error(&fErrorMgr);
+     fErrorMgr.error_exit = skjpeg_err_exit;
++    fErrorMgr.emit_message = strict_message;
+ }
+ 
+ void JpegDecoderMgr::init() {

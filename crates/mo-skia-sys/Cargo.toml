@@ -1,0 +1,24 @@
+[package]
+name = "mo-skia-sys"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+links = "mo_skia"
+[dependencies]
+mo-image.workspace = true
+mo-raster.workspace = true
+[build-dependencies]
+serde_json.workspace = true
+sha2.workspace = true
+[dev-dependencies]
+mo-common.workspace = true
+mo-opc.workspace = true
+mo-pptx.workspace = true
+mo-presentation-compile.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+[lints.rust]
+unsafe_code = "deny"
+[lints.clippy]
+all = { level = "warn", priority = -1 }

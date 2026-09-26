@@ -1,0 +1,39 @@
+#pragma once
+#include <stdint.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+// Device-space path raster component, ABI 4. See gradient-raster.md for the wire
+// grammar and limits. No document layout, font lookup, file or network access.
+// Returned packed RGBA8 premultiplied sRGB pixels belong to this component.
+// 0 success, 1 invalid input, 2 allocation failure, 3 budget, 4 instance invalid.
+// Some upstream allocation failures trap/abort: the host MUST isolate this
+// component and discard the process/module on any trap or allocation failure.
+// Output fields stay zero until the complete frame has been drawn.
+int32_t mo_skia_raster(const uint32_t *request, uint32_t words,
+                       uint8_t **pixels, uint32_t *byte_length);
+// Image extension 2 accepts version-5 whole-image and version-6 source-domain
+// frames plus a borrowed immutable RGBA bundle. No references to the bundle
+// survive this synchronous call. Same ownership/isolation as mo_skia_raster.
+int32_t mo_skia_raster_images(const uint32_t *request, uint32_t words,
+    const uint8_t *images, uint32_t image_bytes, uint8_t **pixels, uint32_t *byte_length);
+uint32_t mo_skia_images_abi(void);
+// Optional shared path clipping extension 1. Both entry points accept V7; the
+// plain entry requires zero image resources. Existing V4/V5/V6 remain accepted.
+uint32_t mo_skia_clips_abi(void);
+// Optional composition extension 1: V8 adds bounded immutable draw-prefix
+// captures and explicit Source/SourceOver blending. Prior formats unchanged.
+uint32_t mo_skia_compositing_abi(void);
+uint32_t mo_skia_gradient_planes_abi(void);
+// V10 retains V9 grammar and adds explicit Office 15/8 channel interpolation.
+uint32_t mo_skia_office_gradients_abi(void);
+// V11 adds rectangular scalar fields while keeping prior geometry and ramps.
+uint32_t mo_skia_rect_gradients_abi(void);
+// V12 adds bounded elliptic fields. Status 3 also covers numerical precision
+// exhaustion. All failures retain zero output ownership; instance stays valid.
+uint32_t mo_skia_elliptic_gradients_abi(void);
+void mo_skia_free(void *pixels);
+uint32_t mo_skia_abi(void);
+#ifdef __cplusplus
+}
+#endif

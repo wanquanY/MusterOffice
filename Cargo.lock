@@ -303,6 +303,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "mo-harfbuzz-sys"
+version = "0.1.0"
+dependencies = [
+ "mo-common",
+ "mo-geometry",
+ "mo-image",
+ "mo-opc",
+ "mo-pptx",
+ "mo-presentation-compile",
+ "mo-raster",
+ "mo-skia-sys",
+ "mo-text",
+ "serde_json",
+ "sha2",
+]
+
+[[package]]
 name = "mo-image"
 version = "0.1.0"
 dependencies = [
@@ -474,6 +491,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "mo-raster-worker"
+version = "0.1.0"
+dependencies = [
+ "mo-harfbuzz-sys",
+ "mo-image",
+ "mo-kernel-api",
+ "mo-raster",
+ "mo-skia-sys",
+]
+
+[[package]]
 name = "mo-render"
 version = "0.1.0"
 dependencies = [
@@ -482,6 +510,21 @@ dependencies = [
  "mo-raster",
  "schemars",
  "serde",
+ "sha2",
+]
+
+[[package]]
+name = "mo-skia-sys"
+version = "0.1.0"
+dependencies = [
+ "mo-common",
+ "mo-image",
+ "mo-opc",
+ "mo-pptx",
+ "mo-presentation-compile",
+ "mo-raster",
+ "serde",
+ "serde_json",
  "sha2",
 ]
 
@@ -498,6 +541,14 @@ dependencies = [
  "serde_json",
  "sha2",
  "thiserror",
+]
+
+[[package]]
+name = "mo-text-worker"
+version = "0.1.0"
+dependencies = [
+ "mo-harfbuzz-sys",
+ "mo-kernel-api",
 ]
 
 [[package]]

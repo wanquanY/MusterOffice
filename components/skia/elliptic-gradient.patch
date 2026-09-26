@@ -1,0 +1,38 @@
+--- a/src/core/SkRasterPipelineOpContexts.h
++++ b/src/core/SkRasterPipelineOpContexts.h
+@@ -156,6 +156,10 @@
+ struct MoGradientPlaneCtx {
+     uint32_t tileX, tileY, kind;
+-    float values[4];
++    float values[6];
++    const void* ellipticUser;
++    void (*elliptic)(const void*, float*, const float*, const float*, uint32_t);
++    void (*coordinates)(const void*, float*, float*, uint32_t);
++    const uint8_t* tail;
+ };
+ 
+ struct MoImageDomainCtx {
+--- a/src/core/SkRasterPipeline.cpp
++++ b/src/core/SkRasterPipeline.cpp
+@@ -151,5 +151,10 @@
+             break;
+         }
++        case Op::mo_gradient_plane: {
++            auto* plane = (SkRasterPipelineContexts::MoGradientPlaneCtx*)ctx;
++            plane->tail = this->tailPointer();
++            break;
++        }
+         case Op::init_lane_masks: {
+             auto* initCtx = (SkRasterPipelineContexts::InitLaneMasksCtx*)ctx;
+             initCtx->tail = this->tailPointer();
+@@ -207,5 +212,10 @@
+                 break;
+             }
++            case Op::mo_gradient_plane: {
++                auto* ctx = (SkRasterPipelineContexts::MoGradientPlaneCtx*)stages[n].ctx;
++                ctx->tail = this->tailPointer();
++                break;
++            }
+             case Op::init_lane_masks: {
+                 auto* ctx = (SkRasterPipelineContexts::InitLaneMasksCtx*)stages[n].ctx;
+                 ctx->tail = this->tailPointer();

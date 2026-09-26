@@ -1,0 +1,39 @@
+--- a/gn/toolchain/wasm.gni
++++ b/gn/toolchain/wasm.gni
+@@ -12,6 +12,10 @@
+   # The location of an activated emsdk. We default to the one brought in by
+   # DEPS and bin/activate-emsdk.
+   skia_emsdk_dir = rebase_path("../../third_party/externals/emsdk")
++  # Embedders may supply a separately pinned, already activated SDK.
++  skia_emsdk_auto_activate = !is_canvaskit
++  # Single-instance workers do not require shared-memory pthread support.
++  skia_wasm_pthreads = !is_canvaskit
+ }
+ 
+ # Defines a WASM library target.
+--- a/gn/toolchain/BUILD.gn
++++ b/gn/toolchain/BUILD.gn
+@@ -470,7 +470,7 @@
+     }
+     link = cxx
+ 
+-    if (!is_canvaskit) {
++    if (skia_emsdk_auto_activate) {
+       deps = [ "//gn/toolchain/emsdk:activate(//gn/toolchain:$host_toolchain)" ]
+     }
+   }
+--- a/gn/skia/BUILD.gn
++++ b/gn/skia/BUILD.gn
+@@ -832,8 +832,10 @@
+     config("wasm") {
+       common = [
+         "--sysroot=$skia_emsdk_dir/upstream/emscripten/cache/sysroot",
+-        "-pthread",
+-      ]
++      ]
++      if (skia_wasm_pthreads) {
++        common += [ "-pthread" ]
++      }
+       cflags = common
+       ldflags = common
+       ldflags += [

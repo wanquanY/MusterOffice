@@ -1,0 +1,46 @@
+--- a/src/opts/SkRasterPipeline_opts.h
++++ b/src/opts/SkRasterPipeline_opts.h
+@@ -119,6 +119,16 @@
+ //   Intel this requires one additional step because its estimate has 12 bit precision.
+ //
+ // * Don't call rcp_approx or rsqrt_approx directly; only use rcp_fast and rsqrt.
++
++// MusterOffice's explicit deterministic CPU profile keeps SIMD lanes, but
++// uses the same non-fused float operations and final conversion on Native/WASM.
++#if defined(MO_SKIA_DETERMINISTIC_RASTER)
++    #define mad mo_platform_mad
++    #define nmad mo_platform_nmad
++    #define round mo_platform_round
++    #define iround mo_platform_iround
++    #define rcp_precise mo_platform_rcp_precise
++#endif
+ 
+ namespace SK_OPTS_NS {
+ #if defined(SKRP_CPU_SCALAR)
+@@ -1560,6 +1570,26 @@
+ // Extremely helpful literals:
+ static constexpr F F0 = F_(0.0f),
+                    F1 = F_(1.0f);
++
++#if defined(MO_SKIA_DETERMINISTIC_RASTER)
++    #undef mad
++    #undef nmad
++    #undef round
++    #undef iround
++    #undef rcp_precise
++    // Requires -ffp-contract=off in the build profile.
++    SI F mad(F f, F m, F a) { return a + f*m; }
++    SI F nmad(F f, F m, F a) { return a - f*m; }
++    SI F rcp_precise(F v) { return F1/v; }
++    #if defined(SKRP_CPU_SCALAR)
++        SI U32 round(F v) { return (U32)(v + 0.5f); }
++        SI I32 iround(F v) { return (I32)(v + 0.5f); }
++    #else
++        SI U32 round(F v) { return __builtin_convertvector(v + 0.5f, U32); }
++        SI I32 iround(F v) { return __builtin_convertvector(v + 0.5f, I32); }
++    #endif
++#endif
++
+ 
+ #if !defined(SKRP_CPU_SCALAR)
+     SI F min(F a, float b) { return min(a, F_(b)); }

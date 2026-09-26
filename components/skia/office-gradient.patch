@@ -1,0 +1,43 @@
+--- a/src/core/SkRasterPipelineOpContexts.h
++++ b/src/core/SkRasterPipelineOpContexts.h
+@@ -149,6 +149,10 @@
+ };
+ 
+ // Explicit MusterOffice source-domain stage for normalized RGBA8 resources.
++struct MoOfficeGradientCtx {
++    float first[4], second[4], midpoint;
++};
++
+ struct MoGradientPlaneCtx {
+     uint32_t tileX, tileY;
+     float nx, ny, offset;
+--- a/src/shaders/SkShaderBase.h
++++ b/src/shaders/SkShaderBase.h
+@@ -169,6 +169,7 @@
+     M(GradientBase)       \
+     M(Image)              \
+     M(MoGradientPlane)    \
++    M(MoOfficeGradient)   \
+     M(MoImageDomain)      \
+     M(LocalMatrix)        \
+     M(PerlinNoise)        \
+--- a/src/core/SkRasterPipelineOpList.h
++++ b/src/core/SkRasterPipelineOpList.h
+@@ -161,6 +161,7 @@
+ // includes all of SkSL.
+ #define SK_RASTER_PIPELINE_OPS_HIGHP_ONLY(M)                                                  \
+     M(mo_gradient_plane)                                             \
++    M(mo_office_gradient)                                            \
+     M(mo_image_domain)                                               \
+     M(callback)                                                                               \
+     M(stack_checkpoint)   M(stack_rewind)                                                     \
+--- a/src/opts/SkRasterPipeline_opts.h
++++ b/src/opts/SkRasterPipeline_opts.h
+@@ -5414,6 +5414,7 @@
+ // A specialized fused image shader for clamp-x, clamp-y, non-sRGB sampling.
+ #include "src/opts/mo_image_domain_stage.h"
+ #include "src/opts/mo_gradient_plane_stage.h"
++#include "src/opts/mo_office_gradient_stage.h"
+ 
+ HIGHP_STAGE(bilerp_clamp_8888, const SkRasterPipelineContexts::GatherCtx* ctx) {
+     bilerp_clamp_large(ctx, &r, &g, &b, &a);
