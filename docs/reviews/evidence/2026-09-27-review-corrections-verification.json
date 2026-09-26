@@ -1,0 +1,484 @@
+{
+  "format": "musteroffice.review-corrections-verification/1",
+  "baselineHead": "150dc2a6d7aac3aec40129df0eccf71f991855d2",
+  "startedAt": "2026-09-26T19:14:37.173838+00:00",
+  "finishedAt": "2026-09-26T19:32:23.973085+00:00",
+  "implementationScope": [
+    "F1",
+    "F3",
+    "F4",
+    "F5",
+    "F6",
+    "F7"
+  ],
+  "openFindings": [
+    "F2"
+  ],
+  "environment": {
+    "system": "Darwin",
+    "machine": "arm64",
+    "release": "25.2.0",
+    "python": "3.13.0",
+    "rust": "rustc 1.92.0 (ded5c06cf 2025-12-08)",
+    "cargo": "cargo 1.92.0 (344c4567c 2025-10-21)",
+    "node": "v23.5.0",
+    "pnpm": "10.2.1",
+    "wasmBindgen": "wasm-bindgen 0.2.126"
+  },
+  "runnerStatus": "failed",
+  "allExecutedStepsPassed": true,
+  "wholeRepositoryGatePassed": false,
+  "sourceConsistency": {
+    "initialRepositorySourceSha256": "b7c0ff7839a5f36a1b82847c023960285e45cf11e18dcd11b773f23157784902",
+    "finalRepositorySourceSha256": "cffb5825524e65866af9996421ea95cb80f3959163f79e21c450e638e01e03fa",
+    "reason": "Other work added or modified verification scripts during this run. The whole-repository source identity changed; the failed aggregate status is retained.",
+    "concurrentFilesObserved": [
+      "tools/verification/evidence_support.py",
+      "tools/verification/product-native-commit-evidence.py",
+      "tools/verification/test_evidence_support.py"
+    ],
+    "reviewedFiles": [
+      {
+        "path": "Cargo.lock",
+        "sha256": "96ca397c1e0ed8e0982889ba110bbb5af1e42b08de11fe0009290f7e56c966de"
+      },
+      {
+        "path": "contracts/generated/host-response.schema.json",
+        "sha256": "addcf665f4e5c1e31d0b195bb324ec95016aadcc6b2bcdb287c1a1d08c007745"
+      },
+      {
+        "path": "contracts/generated/kernel-response.schema.json",
+        "sha256": "292dcdcb13e2fa49bfc85dce68fa18d60f2c3e4e743414205cfe90bbb98590d3"
+      },
+      {
+        "path": "contracts/generated/operation-job.schema.json",
+        "sha256": "819ec262a66094dd32f5820c976e8ecaa12794b7b12e690a43a1418c77cc3c31"
+      },
+      {
+        "path": "contracts/generated/upload-info.schema.json",
+        "sha256": "c1c101a790a4cab0bd965da268d7908df1416b086f3db89ed474b7f4b8aa5c0f"
+      },
+      {
+        "path": "crates/mo-kernel-api/src/lib.rs",
+        "sha256": "9eea867fa0affbf1438b774062c49dc428ca9f4e6c6b032dbe77f2e9a933081a"
+      },
+      {
+        "path": "crates/mo-kernel-api/src/pptx_resource_page.rs",
+        "sha256": "7a8b949a69d223aca4f191ed61e37e91ecc5eec49e0457ba9e33894c6bf7febd"
+      },
+      {
+        "path": "crates/mo-kernel-api/src/pptx_resource_page/prepare.rs",
+        "sha256": "d292d7904cf2d7e0126cf2a33a3a42b5469a8fbf2190f6eae08805893138c5b8"
+      },
+      {
+        "path": "crates/mo-kernel-api/tests/pptx_resource_page.rs",
+        "sha256": "6b0aeecb6eec478b9fb7e32c249e2b8d015bd13245ee85d964d07c9a27cfeed7"
+      },
+      {
+        "path": "crates/mo-native-render/src/lib.rs",
+        "sha256": "855e7fbed4625a588c60e837561948222c5cefadaa49e762e4e4ada3809e3417"
+      },
+      {
+        "path": "crates/mo-native-render/src/tests.rs",
+        "sha256": "f35bc9d7a9bb9944d0183f509abd3456456eb56bb56b47ce8be398aa0e8e4d65"
+      },
+      {
+        "path": "crates/mo-native-render/tests/delivery.rs",
+        "sha256": "0e47a9cf42f900f1c51827991162d079cff3601f7980e78cbe20aa1cbb5e6ee9"
+      },
+      {
+        "path": "crates/mo-native-render/tests/delivery/batch.rs",
+        "sha256": "a3022f86966972660706910e1d450ab53fa7276c5a58a9343831eaec07f214bf"
+      },
+      {
+        "path": "crates/mo-native-worker/src/lib.rs",
+        "sha256": "d18b280f2d12643247a9711d9d2f9a8f0d6b658af70bb1f4fbc028206f3f0fcd"
+      },
+      {
+        "path": "crates/mo-native-worker/tests/transport.rs",
+        "sha256": "f9433cc1158a2c13a40ec976ef49b717008f62407e6e35fb51a4f9c0a2a8223a"
+      },
+      {
+        "path": "crates/mo-operation-service/src/compute.rs",
+        "sha256": "19c61eb229e02d4bc21caac3a06463a5da653c6f8114e20da716385a01e61561"
+      },
+      {
+        "path": "crates/mo-operation-service/src/contract.rs",
+        "sha256": "541deb92a222307d16a8e54f32c5bce9d81dee5626431ab25866e7dcf02bfd2e"
+      },
+      {
+        "path": "crates/mo-presentation-compile/src/source_resource_page/types.rs",
+        "sha256": "685cbde2d215d257fedc343c8c985dc8826ce8619297756311829008343aa8f2"
+      },
+      {
+        "path": "crates/mo-presentation-delivery/src/build.rs",
+        "sha256": "23f13ff26c3786793ba4255f7425cefa1f9d195afb29eacca4eb10e2681fe6e1"
+      },
+      {
+        "path": "crates/mo-presentation-delivery/src/lib.rs",
+        "sha256": "2f3162f8ae15e0762b2a6aa2972ef8d0df9c77e863bcdbd7bb09da4b5503caae"
+      },
+      {
+        "path": "crates/mo-presentation-delivery/src/preview.rs",
+        "sha256": "c6bdf52f75089e8f57fec9c81b46954d8c10f18ba89175e95fda0a9121409f7e"
+      },
+      {
+        "path": "crates/mo-presentation-edit/src/diagnostics.rs",
+        "sha256": "5296e7b03a378b33982f97d492960823c1d115fe42f1e61dc34e0e06bed2e0fb"
+      },
+      {
+        "path": "crates/mo-presentation-edit/src/lib.rs",
+        "sha256": "257cf45d43838cdb21b8a9d05ed73cacca2e9682d665f8ededa0b0d57c4ad3ac"
+      },
+      {
+        "path": "crates/mo-standard-host/Cargo.toml",
+        "sha256": "136120e6f837aa89bf2731f178504e0c256f6f2cadb948dc11a49da1c32df93f"
+      },
+      {
+        "path": "crates/mo-standard-host/src/assets/upload.rs",
+        "sha256": "d55d714e2b1b35feffb94fc49607657994a2f2cbf8db9fd5c4ff5410bed626f8"
+      },
+      {
+        "path": "crates/mo-standard-host/src/db.rs",
+        "sha256": "de1fa8ea0c32c90127527714b7ff8c7b5186ee0897affdb0ceef2e034271e363"
+      },
+      {
+        "path": "crates/mo-standard-host/src/db/jobs.rs",
+        "sha256": "78309886614881dd42e1e5a3a7257f00dc5a8742d5253e7df9930e23588120cd"
+      },
+      {
+        "path": "crates/mo-standard-host/src/execution.rs",
+        "sha256": "2d92e6830ce6b8c73ee08aed8cc8815b600202fdd095ec4f4110c50c32868392"
+      },
+      {
+        "path": "crates/mo-standard-host/src/execution/tests.rs",
+        "sha256": "a74c5e98cad82cd4ebd03db5425da0ba64c6cfa81eede4cdd49f27fd6d4a7fbb"
+      },
+      {
+        "path": "crates/mo-standard-host/src/exports.rs",
+        "sha256": "39340005eb4dced61c5af780f92ca1efd40d1fe873cf393432df3c997349259f"
+      },
+      {
+        "path": "crates/mo-standard-host/src/jobs.rs",
+        "sha256": "110f78eefb442dad82642ce6d9e1c69374326b9b1aaaaa3e1d3b48459dbb32b1"
+      },
+      {
+        "path": "crates/mo-standard-host/src/lib.rs",
+        "sha256": "df53afb2b6c705b82d16596b4b1ad38cab36e9729e5d46ff35e08c6e698d9c97"
+      },
+      {
+        "path": "crates/mo-standard-host/src/queue.rs",
+        "sha256": "eb95aef98658547fc8c41fc0bcfd19e019f3655a33978e4898bdbd0dbae6d55c"
+      },
+      {
+        "path": "crates/mo-standard-host/src/results.rs",
+        "sha256": "0b06e956e6719e6eb3b59cdcf1f88fecfd288a9f726562937fef4693ebfce6c3"
+      },
+      {
+        "path": "crates/mo-standard-host/src/runtime/scheduler.rs",
+        "sha256": "088f99e10b31d83e852557ea6bf4f24739420c9781b3f66ca15620c7a9f8a629"
+      },
+      {
+        "path": "crates/mo-standard-host/tests/exports/runtime.rs",
+        "sha256": "6b10fbad96f49d326517201662ba37b97fc026f6d7649bb332a637af63c54f7c"
+      },
+      {
+        "path": "crates/mo-standard-host/tests/resource_recovery.rs",
+        "sha256": "18234656c95f1bfecc3b5600ae68223d13c1695326474f10c8fc65ee3c8f4f1d"
+      },
+      {
+        "path": "crates/mo-standard-host/tests/scheduling.rs",
+        "sha256": "0f3d40a4c2099393f1d24ca42d85696de7d4d8c72fc5bedde0d1a1870ef5cbe2"
+      },
+      {
+        "path": "crates/mo-standard-host/tests/scheduling/contention.rs",
+        "sha256": "9f73a28770403c03b0bd85ec240ba4645d0058af7cd6628b7f97d738f2e6ceae"
+      },
+      {
+        "path": "packages/contracts/src/generated/host-response.ts",
+        "sha256": "e409dd62ae2be1c874be3420a24cc67ad5aa0620618d56b2deb4e628d54eda7f"
+      },
+      {
+        "path": "packages/contracts/src/generated/kernel-response.ts",
+        "sha256": "c6d131e0a4faeaa9779fdaf83289addbac5bba3544500a4f21133e6763837c06"
+      },
+      {
+        "path": "packages/contracts/src/generated/operation-job.ts",
+        "sha256": "059f34818e2430ed79ee655dbe59718a61b95ae62a1bab403d4f6ebc0e2c0973"
+      },
+      {
+        "path": "packages/contracts/src/generated/upload-info.ts",
+        "sha256": "14c4e3b6561b369118e4d442158532a560dd6533ddfef71222ca2c7bb297ea58"
+      },
+      {
+        "path": "tools/mo-contract-codegen/tests/edit_diagnostics.rs",
+        "sha256": "756344dbda88bc75ac3bb23b02c5fa0008d73b6ed10d2f335651922fc1ece280"
+      },
+      {
+        "path": "tools/mo-export-worker/src/renderer.rs",
+        "sha256": "a0a9acbfe303cf5c8a8054a5734e67941c34136125b773305154559aee041b25"
+      },
+      {
+        "path": "tools/mo-raster-worker/Cargo.toml",
+        "sha256": "9d5988cba0a89c190fed281d1716417cd7c1d220dc5a43e320a4d7696159429e"
+      },
+      {
+        "path": "tools/mo-raster-worker/src/main.rs",
+        "sha256": "a4d35ba311de54919f2523012027dd5bd24b6fea05a4687e717c94cdbe931882"
+      },
+      {
+        "path": "tools/mo-raster-worker/src/preview_batch.rs",
+        "sha256": "509878182d53cb39c73578be36f98850ba71d5d18ce15e5658b5d62241874e45"
+      },
+      {
+        "path": "tools/verification/current.py",
+        "sha256": "a734e87fd62c0b94db60b068f661e7f3d42cf6e4ee9193cb3b494cd95ab25833"
+      },
+      {
+        "path": "tools/verification/test_current.py",
+        "sha256": "717bd075c9b8c510971dd0f1b0ccd084fba89db49046b98656f507e0548f98aa"
+      }
+    ],
+    "reviewedFileMtimesBeforeRun": true,
+    "reviewedFileHashesRecheckedAtEnd": true
+  },
+  "tests": {
+    "rootWorkspace": {
+      "passed": 885,
+      "failed": 0,
+      "ignored": 16
+    },
+    "explicitNativeRender": {
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0
+    },
+    "explicitNativeHostExport": {
+      "passed": 9,
+      "failed": 0,
+      "ignored": 0
+    },
+    "nativeExportWorker": {
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0
+    },
+    "mcpWorkspace": {
+      "passed": 18,
+      "failed": 0,
+      "ignored": 0
+    },
+    "typescriptClient": {
+      "passed": 17,
+      "failed": 0
+    },
+    "verificationDriver": {
+      "passed": 3
+    },
+    "documentNativeWasm": {
+      "passed": 22,
+      "scope": "Document computation only. No rendering, PPTX, Office/WPS, performance or product integration claims."
+    },
+    "mcpRealProcess": {
+      "calls": 172,
+      "protocolEras": [
+        "legacy",
+        "modern"
+      ],
+      "exportedAssetsBySession": [
+        12,
+        12
+      ]
+    },
+    "ignoredExplanation": "Root workspace has 12 real-worker tests explicitly executed in native groups, plus 4 subprocess helper entries invoked by parent tests. Native export tests repeat tests also included in the root workspace; counts must not be summed as unique cases."
+  },
+  "steps": [
+    {
+      "name": "verification-driver-tests",
+      "status": "passed",
+      "exitCode": 0,
+      "log": ".codex-work/review-fixes-20260927/current-3/verification-driver-tests.log",
+      "logSha256": "ce0cea293ff0ef52484628149d915141654ace13c5c426d85f026cdfaec89e84"
+    },
+    {
+      "name": "format",
+      "status": "passed",
+      "exitCode": 0,
+      "log": ".codex-work/review-fixes-20260927/current-3/format.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "clippy",
+      "status": "passed",
+      "exitCode": 0,
+      "log": ".codex-work/review-fixes-20260927/current-3/clippy.log",
+      "logSha256": "ca0157fb37ba044e028037e6e0849458279d6a325bce24d83f8da5cd1b474fec"
+    },
+    {
+      "name": "rust-tests",
+      "status": "passed",
+      "exitCode": 0,
+      "log": ".codex-work/review-fixes-20260927/current-3/rust-tests.log",
+      "logSha256": "2b2b5f401f2d86e439b6fef6946d10cf6305c537c32b62c59c43d8bf132712a9"
+    },
+    {
+      "name": "schemas",
+      "status": "passed",
+      "exitCode": 0,
+      "log": ".codex-work/review-fixes-20260927/current-3/schemas.log",
+      "logSha256": "749ed6422230061733118728b650d9b4b2850419fdfd555d4bde519011dab112"
+    },
+    {
+      "name": "types",
+      "status": "passed",
+      "exitCode": 0,
+      "log": ".codex-work/review-fixes-20260927/current-3/types.log",
+      "logSha256": "d706ac11c49f001921a048653e6194e8adf902e7f0ea38b80277a81420ee00cd"
+    },
+    {
+      "name": "client-tests",
+      "status": "passed",
+      "exitCode": 0,
+      "log": ".codex-work/review-fixes-20260927/current-3/client-tests.log",
+      "logSha256": "349cf1111be6c394dffdac8415dee929853144b2c5e95c7cdc5de273aa0ad96f"
+    },
+    {
+      "name": "native-build",
+      "status": "passed",
+      "exitCode": 0,
+      "log": ".codex-work/review-fixes-20260927/current-3/native-build.log",
+      "logSha256": "0f7fe26af5e43b3a53dfd0923b27e81636ee46d0e164fdb92b937a98fd26c77e"
+    },
+    {
+      "name": "native-render-tests",
+      "status": "passed",
+      "exitCode": 0,
+      "log": ".codex-work/review-fixes-20260927/current-3/native-render-tests.log",
+      "logSha256": "ee4da50678ee96be757096d362203f4f6ff7852da7059e6c182e296239657f39"
+    },
+    {
+      "name": "native-host-export-tests",
+      "status": "passed",
+      "exitCode": 0,
+      "log": ".codex-work/review-fixes-20260927/current-3/native-host-export-tests.log",
+      "logSha256": "49fcb6be6ab7cee301b3ad1426a8fbf63136afd107fecf85c66edeec8190f9d3"
+    },
+    {
+      "name": "native-export-tests",
+      "status": "passed",
+      "exitCode": 0,
+      "log": ".codex-work/review-fixes-20260927/current-3/native-export-tests.log",
+      "logSha256": "4fc01a4113d7908a8c6b86c5d2bb460c4894bb1fb65124cf6171627ba86d503e"
+    },
+    {
+      "name": "mcp-format",
+      "status": "passed",
+      "exitCode": 0,
+      "log": ".codex-work/review-fixes-20260927/current-3/mcp-format.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "mcp-clippy",
+      "status": "passed",
+      "exitCode": 0,
+      "log": ".codex-work/review-fixes-20260927/current-3/mcp-clippy.log",
+      "logSha256": "e7ca04dd8b981ceb517f960802dfc100f3cfefc1afd523c3998b6d79b3842460"
+    },
+    {
+      "name": "mcp-tests",
+      "status": "passed",
+      "exitCode": 0,
+      "log": ".codex-work/review-fixes-20260927/current-3/mcp-tests.log",
+      "logSha256": "9d78d1fd5433a5d42843380edf3fe1032191f7a3ede331fa0c2e5362d4191295"
+    },
+    {
+      "name": "mcp-build",
+      "status": "passed",
+      "exitCode": 0,
+      "log": ".codex-work/review-fixes-20260927/current-3/mcp-build.log",
+      "logSha256": "67e4bf5acebc4f9926821a410c85b8aef7643d22f00dced7812bf539b95ab1f4"
+    },
+    {
+      "name": "pure-operation-wasm",
+      "status": "passed",
+      "exitCode": 0,
+      "log": ".codex-work/review-fixes-20260927/current-3/pure-operation-wasm.log",
+      "logSha256": "dfc3b2914804181f5e7095452b6046581cce4959e2d49530211d777f3cfb6cc6"
+    },
+    {
+      "name": "wasm-build",
+      "status": "passed",
+      "exitCode": 0,
+      "log": ".codex-work/review-fixes-20260927/current-3/wasm-build.log",
+      "logSha256": "73f601898ed4176bb503e07a9b2cc515b421cc5e8b61703ad377f5a878d318d7"
+    },
+    {
+      "name": "wasm-bindgen",
+      "status": "passed",
+      "exitCode": 0,
+      "log": ".codex-work/review-fixes-20260927/current-3/wasm-bindgen.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "document-native-wasm-parity",
+      "status": "passed",
+      "exitCode": 0,
+      "log": ".codex-work/review-fixes-20260927/current-3/document-native-wasm-parity.log",
+      "logSha256": "326bd863712775c94ed79dd61b22bf76f93282efba7b5613997cad8a0e66ee3f"
+    },
+    {
+      "name": "mcp-protocol",
+      "status": "passed",
+      "exitCode": 0,
+      "log": ".codex-work/review-fixes-20260927/current-3/mcp-protocol.log",
+      "logSha256": "a8bce66898ef897304747ff3984063281d9a9ffb255402e4f832d94629a4f1eb"
+    },
+    {
+      "name": "mcp-transport",
+      "status": "passed",
+      "exitCode": 0,
+      "log": ".codex-work/review-fixes-20260927/current-3/mcp-transport.log",
+      "logSha256": "57c2ac93cb96d0e159615a5c8ab9e9b5f941f5182a74c2e54e63856955ef233c"
+    },
+    {
+      "name": "mcp-lifecycle",
+      "status": "passed",
+      "exitCode": 0,
+      "log": ".codex-work/review-fixes-20260927/current-3/mcp-lifecycle.log",
+      "logSha256": "52df1314c85e568e7f9d10c61cb0777c74b9e605f46317343eeed6d1d16c9fab"
+    },
+    {
+      "name": "mcp-cancellation",
+      "status": "passed",
+      "exitCode": 0,
+      "log": ".codex-work/review-fixes-20260927/current-3/mcp-cancellation.log",
+      "logSha256": "06395ae8a44509f90a30bde28922de5891c74d1fdb4b3604d031e9c7ab9391c6"
+    }
+  ],
+  "rawReport": {
+    "path": ".codex-work/review-fixes-20260927/current-3/report.json",
+    "sha256": "61b4cfc0f0c917a24a909aa4e049ad7b91ab52c019436bf509a35e6db5f89fc5"
+  },
+  "priorAttempts": [
+    {
+      "path": ".codex-work/review-fixes-20260927/current-1",
+      "status": "failed",
+      "reason": "Strict Clippy found an unnecessary cast and a deprecated test trace API; both fixed."
+    },
+    {
+      "path": ".codex-work/review-fixes-20260927/current-2",
+      "status": "interrupted",
+      "exitCode": 143,
+      "reason": "External process termination before completion; not counted as passed."
+    }
+  ],
+  "notClaimed": [
+    "Unified author/source document semantics (F2)",
+    "Incremental compilation",
+    "Full renderer Native/WASM parity",
+    "Full PresentationML XSD",
+    "Office/WPS editing interoperability",
+    "Musterwork replacement acceptance",
+    "Release performance"
+  ]
+}

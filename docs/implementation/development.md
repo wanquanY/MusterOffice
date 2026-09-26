@@ -1,5 +1,9 @@
 # 开发与验证
 
+日常代码改动使用[当前代码门禁](current-verification.md)：`tools/verification/current.py` 统一执行 Rust、独立 MCP、合同、TS、真实 worker 和文档 Native/WASM 检查，参数与先决条件显式传入，每次使用新输出目录。宿主数据库当前为 schema 6，升级／回滚边界和未关闭架构问题见[评审整改](review-corrections.md)。
+
+下方按阶段保存历史验证方法与当时版本，供重放旧证据使用；其中冻结脚本的复制／改写方法不作为新增测试的组织方式。当前门禁不代替各专项的视觉、Office/WPS、产品链路和发行性能验收。
+
 原生 MCP 服务在独立 `tools/mo-mcp` workspace 构建，配置、真实协议及二进制命令见[适配器说明](../../tools/mo-mcp/README.md)。本阶段使用 `.codex-work/mcp-server/`，依次运行包内 `check.py`、`check_transport.py` 和 `check_files.py`，每次失败后的重跑使用新目录。`tools/verification/mcp-stdio-evidence.py` 封存当前范围，`--check` 复核；不要覆盖历史阶段。该服务未达到完整 MCP/HTTP/SDK/Skill/Plugin 或 Musterwork 产品验收。
 
 Rust 工具链由根目录 `rust-toolchain.toml` 固定为 1.92.0，依赖由 `Cargo.lock` 固定。所有本地包 `publish=false`。计算核心禁止 unsafe，无文件/网络/系统字体访问；原生组件的私有 FFI 集中在 `mo-harfbuzz-sys` / `mo-skia-sys`。完整 workspace 验证前先按[塑形说明](harfbuzz-component.md)和[绘制说明](skia-component.md)准备无注入 Native 静态库，构建时校对其摘要；Rust WASM 主模块不链接该静态库。
