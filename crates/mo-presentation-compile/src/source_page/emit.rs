@@ -1,0 +1,240 @@
+//! One paint-order engine for plain, text, and image-resource source pages.
+use super::*;
+use super::{paint::FillPaint, prepared::filled};
+use crate::path_scene::ScenePaint;
+use crate::source_image_paint::NativeImagePaint;
+use mo_raster::StrokeStyle;
+use std::collections::BTreeMap;
+pub(crate) type ImagePaints = BTreeMap<FillOwner, NativeImagePaint>;
+struct Emitter<'a> {
+    builder: SceneBuilder<SourcePagePaintSource>,
+    images: &'a ImagePaints,
+    clips: BTreeMap<FillOwner, u32>,
+    clip_error: Fixed,
+    viewport: &'a mo_raster::RasterViewport,
+    background_prefix: u32,
+    opaque_background: Option<[u8; 4]>,
+}
+struct PaintPath<'a> {
+    commands: &'a [C],
+    affine: Affine,
+    origin: Option<mo_pptx::source::geometry::evaluate::GeometryOrigin>,
+}
+impl<'a> PaintPath<'a> {
+    fn native(path: &'a CompiledNativePath, affine: Affine) -> Self {
+        Self {
+            commands: &path.commands,
+            affine,
+            origin: Some(path.origin),
+        }
+    }
+}
+impl Emitter<'_> {
+    fn fill(
+        &mut self,
+        path: PaintPath<'_>,
+        binding: u32,
+        b: &SourcePagePaintBinding,
+        paint: &FillPaint,
+        picture: bool,
+    ) -> Result<(), SourcePageError> {
+        let target = if picture {
+            b.picture_fill
+                .as_ref()
+                .expect("picture fill")
+                .target
+                .clone()
+        } else {
+            b.fill.target.clone()
+        };
+        let mut clip = None;
+        let mut blend = mo_raster::BlendMode::SourceOver;
+        let brush = match paint {
+            FillPaint::Solid(rgba) => Brush::Solid { rgba: *rgba },
+            FillPaint::Gradient(gradient) => Brush::Gradient {
+                gradient: gradient.as_ref().clone(),
+            },
+            FillPaint::Background => match self.opaque_background {
+                Some(rgba) => Brush::Solid { rgba },
+                None => {
+                    blend = mo_raster::BlendMode::Source;
+                    Brush::Snapshot {
+                        after_draws: self.background_prefix,
+                    }
+                }
+            },
+            FillPaint::Image => {
+                let owner = FillOwner {
+                    part: b.location.part.clone(),
+                    target: target.clone(),
+                };
+                let image = self
+                    .images
+                    .get(&owner)
+                    .ok_or(SourcePageError::Invalid("unbound page image"))?;
+                if let Some(c) = &image.fill_clip {
+                    let error = c.upstream_error.x.max(c.upstream_error.y).ratio_up(
+                        self.viewport.scale.numerator,
+                        self.viewport.scale.denominator,
+                    )?;
+                    self.clip_error = self.clip_error.max(error);
+                    clip = Some(if let Some(id) = self.clips.get(&owner) {
+                        *id
+                    } else {
+                        let id = self.builder.clip(&c.path, c.affine)?;
+                        self.clips.insert(owner, id);
+                        id
+                    });
+                }
+                Brush::Image {
+                    image: image.brush.clone(),
+                }
+            }
+        };
+        self.builder.paint(
+            path.commands,
+            path.affine,
+            ScenePaint {
+                brush,
+                stroke: None,
+                clip,
+                blend,
+            },
+            |instance| SourcePagePaintSource {
+                instance,
+                binding,
+                path: path.origin,
+                paint: crate::PagePaintKind::Fill,
+                fill_target: picture.then_some(target),
+            },
+        )?;
+        Ok(())
+    }
+    fn stroke(
+        &mut self,
+        path: &CompiledNativePath,
+        affine: Affine,
+        binding: u32,
+        line: Option<([u8; 4], StrokeStyle)>,
+    ) -> Result<(), SourcePageError> {
+        if let Some((rgba, stroke)) = line.filter(|_| path.stroke != Some(false)) {
+            self.builder.add(
+                &path.commands,
+                affine,
+                Brush::Solid { rgba },
+                Some(stroke),
+                |instance| SourcePagePaintSource {
+                    instance,
+                    binding,
+                    path: Some(path.origin),
+                    paint: crate::PagePaintKind::Stroke,
+                    fill_target: None,
+                },
+            )?;
+        }
+        Ok(())
+    }
+}
+pub(crate) fn build(
+    mut page: PreparedPage,
+    mut text: Option<&mut dyn crate::source_text_page::Painter>,
+    images: &ImagePaints,
+    check: &dyn Fn() -> bool,
+) -> Result<BuiltPage, SourcePageError> {
+    let mut emit = Emitter {
+        builder: SceneBuilder::new(),
+        images,
+        clips: BTreeMap::new(),
+        clip_error: Fixed::ZERO,
+        viewport: &page.viewport,
+        background_prefix: 0,
+        // Exact opaque constants need no capture. Every other background is
+        // replayed from its actual pixels, with one source replacement and one
+        // shape mask, including alpha and the background's image-fill clip.
+        opaque_background: match &page.background_paint {
+            Some(FillPaint::Solid(rgba)) if rgba[3] == 255 => Some(*rgba),
+            None if page.viewport.background[3] == 255 => Some(page.viewport.background),
+            _ => None,
+        },
+    };
+    if let Some(paint) = &page.background_paint {
+        emit.fill(
+            PaintPath {
+                commands: &page.background_path,
+                affine: Affine::IDENTITY,
+                origin: None,
+            },
+            0,
+            &page.background,
+            paint,
+            false,
+        )?;
+    }
+    emit.background_prefix = emit.builder.scene.instances.len() as u32;
+    let mut bindings = vec![page.background];
+    for object in page.objects {
+        cancel(check)?;
+        let b = object.binding;
+        let affine = b.placement.as_ref().expect("object placement").affine;
+        let binding = bindings.len() as u32;
+        // ECMA-376-1 19.3.1.4 shows the spPr fill through transparent pixels of
+        // p:blipFill. Preserve both; do not replace either declaration. Picture
+        // fill is above the shape fill and below its outline.
+        if b.picture_fill.is_some() {
+            for (paint, picture) in [(&object.fill, false), (&object.picture_fill, true)] {
+                if let Some(paint) = paint {
+                    for path in object.paths.iter().filter(|p| filled(p)) {
+                        cancel(check)?;
+                        emit.fill(PaintPath::native(path, affine), binding, &b, paint, picture)?;
+                    }
+                }
+            }
+            for path in &object.paths {
+                emit.stroke(path, affine, binding, object.line)?;
+            }
+        } else {
+            // Retain native path-local fill/outline order for ordinary shapes.
+            for path in &object.paths {
+                cancel(check)?;
+                if let Some(paint) = object.fill.as_ref().filter(|_| filled(path)) {
+                    emit.fill(PaintPath::native(path, affine), binding, &b, paint, false)?;
+                }
+                emit.stroke(path, affine, binding, object.line)?;
+            }
+        }
+        if let Some(text) = text.as_deref_mut() {
+            let (position, geometry) = text
+                .append(binding, &b, &mut emit.builder, &page.viewport, check)
+                .map_err(|e| e.at(&b.location))?;
+            page.info.placement_coordinate_error_bound =
+                page.info.placement_coordinate_error_bound.max(position);
+            page.info.path_coordinate_error_bound =
+                page.info.path_coordinate_error_bound.max(geometry);
+        }
+        bindings.push(b);
+    }
+    let remaining = page
+        .viewport
+        .coordinate_tolerance
+        .raw()
+        .checked_sub(page.info.placement_coordinate_error_bound.raw())
+        .and_then(|n| n.checked_sub(page.info.path_coordinate_error_bound.raw()))
+        .and_then(|n| n.checked_sub(emit.clip_error.raw()))
+        .filter(|n| *n >= 256)
+        .ok_or(RasterError::Precision)?;
+    page.info.image_clip_coordinate_error_bound = emit.clip_error;
+    page.info.generated_commands = emit.builder.generated_commands;
+    let mut viewport = page.viewport.clone();
+    viewport.coordinate_tolerance = Fixed::from_raw(remaining);
+    cancel(check)?;
+    Ok(BuiltPage {
+        info: page.info,
+        raster: SceneRasterRequest {
+            viewport,
+            scene: emit.builder.scene,
+        },
+        bindings,
+        paint_sources: emit.builder.sources,
+        requested_tolerance: page.viewport.coordinate_tolerance,
+    })
+}

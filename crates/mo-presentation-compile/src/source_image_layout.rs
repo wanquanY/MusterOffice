@@ -1,0 +1,220 @@
+//! DrawingML image fill layout, before shape/group placement and hard clipping.
+//! Exact source decimals enter outward Q96 arithmetic; only final plan values
+//! are quantized to Q32. No resource loading, pixel copies or host DPI defaults.
+mod number;
+mod source;
+mod types;
+use crate::interval::Interval as I;
+use mo_geometry::{Fixed, Point};
+use mo_image::{DecodedImageInfo, PhysicalPixelSize, PixelExtent};
+use mo_pptx::source::fill::{
+    NativeFillAlignment as Alignment, NativeTileFlip,
+    resolve::{EffectiveFillRect, EffectiveImageFill, EffectiveImageMode},
+};
+use mo_presentation_model::Size;
+use mo_raster::ImageTile;
+use number::{positive, q32};
+pub use source::{ImageSourceLayoutError, ImageSourceLayoutPlan, layout_source};
+pub use types::*;
+
+pub const PROFILE: &str = "drawingml-normalized-image-layout-q96-v1-draft";
+fn cancel(check: &dyn Fn() -> bool) -> Result<(), ImageLayoutError> {
+    if check() {
+        Err(ImageLayoutError::Cancelled)
+    } else {
+        Ok(())
+    }
+}
+fn rectangle(
+    r: &EffectiveFillRect,
+    w: i64,
+    h: i64,
+    check: &dyn Fn() -> bool,
+) -> Result<[I; 4], ImageLayoutError> {
+    let mut values = Vec::with_capacity(4);
+    for (i, v) in [&r.left, &r.top, &r.right, &r.bottom].iter().enumerate() {
+        cancel(check)?;
+        let value = number::percentage(&v.value)?;
+        let value = if i < 2 {
+            value
+        } else {
+            I::integer(1).sub(&value)
+        };
+        values.push(value.mul(&I::integer(if i % 2 == 0 { w } else { h })));
+    }
+    let values: [I; 4] = values.try_into().expect("four rectangle edges");
+    positive(&values[2].sub(&values[0]))?;
+    positive(&values[3].sub(&values[1]))?;
+    Ok(values)
+}
+fn density(
+    fill: &EffectiveImageFill,
+    image: &DecodedImageInfo,
+) -> Result<([I; 2], ImageLayoutDensity), ImageLayoutError> {
+    if fill.dpi.value != 0 {
+        let v = I::ratio(914400, i64::from(fill.dpi.value));
+        return Ok((
+            [v.clone(), v],
+            ImageLayoutDensity::Drawingml {
+                dpi: fill.dpi.value,
+            },
+        ));
+    }
+    let PhysicalPixelSize::Known { x, y } = image.resolution.physical_pixel_size else {
+        return Err(ImageLayoutError::PhysicalSize(
+            image.resolution.physical_pixel_size,
+        ));
+    };
+    let value = |v: PixelExtent| {
+        if v.numerator.get() <= 0 || v.denominator == 0 {
+            return Err(ImageLayoutError::Invalid("physical pixel extent"));
+        }
+        Ok(I::ratio(v.numerator.get(), i64::from(v.denominator)))
+    };
+    Ok((
+        [value(x)?, value(y)?],
+        ImageLayoutDensity::EncodedMetadata { x, y },
+    ))
+}
+fn alignment(v: Alignment) -> [i64; 2] {
+    use Alignment::*;
+    match v {
+        TopLeft => [0, 0],
+        Top => [1, 0],
+        TopRight => [2, 0],
+        Left => [0, 1],
+        Center => [1, 1],
+        Right => [2, 1],
+        BottomLeft => [0, 2],
+        Bottom => [1, 2],
+        BottomRight => [2, 2],
+    }
+}
+/// Compute only image-local layout. The page compiler must bind the decoded
+/// identity, apply the requested paint orientation, intersect shape/fill clips,
+/// and propagate every returned uncertainty before producing a render command.
+pub fn layout(
+    fill: &EffectiveImageFill,
+    image: &DecodedImageInfo,
+    size: Size,
+    check: &dyn Fn() -> bool,
+) -> Result<NativeImageLayout, ImageLayoutError> {
+    cancel(check)?;
+    if image.width == 0 || image.height == 0 || image.width > 8192 || image.height > 8192 {
+        return Err(ImageLayoutError::Invalid("normalized image dimensions"));
+    }
+    let (w, h) = (size.width.get(), size.height.get());
+    if w <= 0 || h <= 0 {
+        return Err(ImageLayoutError::Invalid("shape dimensions"));
+    }
+    let source = rectangle(
+        &fill.source_rect,
+        image.width.into(),
+        image.height.into(),
+        check,
+    )?;
+    let extent = [source[2].sub(&source[0]), source[3].sub(&source[1])];
+    let (target, step, tiles, clip, selected_density) = match &fill.mode {
+        EffectiveImageMode::Stretch { fill_rect, .. } => {
+            let r = rectangle(fill_rect, w, h, check)?;
+            let step = [
+                r[2].sub(&r[0]).div_positive(&extent[0]),
+                r[3].sub(&r[1]).div_positive(&extent[1]),
+            ];
+            let [x, y] = step;
+            (
+                r,
+                [
+                    x.map_err(|_| ImageLayoutError::Precision)?,
+                    y.map_err(|_| ImageLayoutError::Precision)?,
+                ],
+                [ImageTile::Clamp; 2],
+                true,
+                ImageLayoutDensity::NotRequired,
+            )
+        }
+        EffectiveImageMode::Tile { tile, .. } => {
+            let (pixel, selected) = density(fill, image)?;
+            let scales = [&tile.scale_x.value, &tile.scale_y.value];
+            let offsets = [&tile.translate_x.value, &tile.translate_y.value];
+            let align = alignment(tile.alignment.value);
+            let mut steps = vec![];
+            let mut edges = vec![];
+            for i in 0..2 {
+                cancel(check)?;
+                let scale = number::percentage(scales[i])?;
+                positive(&scale)?;
+                let step = pixel[i].mul(&scale);
+                let tile_extent = extent[i].mul(&step);
+                let offset = number::coordinate(offsets[i])?;
+                let lo = I::integer(if i == 0 { w } else { h })
+                    .sub(&tile_extent)
+                    .mul(&I::ratio(align[i], 2))
+                    .add(&offset);
+                edges.push((lo.clone(), lo.add(&tile_extent)));
+                steps.push(step);
+            }
+            let flip = tile.flip.value;
+            let x = if matches!(flip, NativeTileFlip::X | NativeTileFlip::Xy) {
+                ImageTile::Mirror
+            } else {
+                ImageTile::Repeat
+            };
+            let y = if matches!(flip, NativeTileFlip::Y | NativeTileFlip::Xy) {
+                ImageTile::Mirror
+            } else {
+                ImageTile::Repeat
+            };
+            (
+                [
+                    edges[0].0.clone(),
+                    edges[1].0.clone(),
+                    edges[0].1.clone(),
+                    edges[1].1.clone(),
+                ],
+                [steps.remove(0), steps.remove(0)],
+                [x, y],
+                false,
+                selected,
+            )
+        }
+    };
+    cancel(check)?;
+    let origin_x = q32(&target[0].sub(&source[0].mul(&step[0])))?;
+    let origin_y = q32(&target[1].sub(&source[1].mul(&step[1])))?;
+    let (sx, ex) = q32(&step[0])?;
+    let (sy, ey) = q32(&step[1])?;
+    if sx.raw() <= 0 || sy.raw() <= 0 {
+        return Err(ImageLayoutError::Precision);
+    }
+    let (source_rectangle, source_error) = number::rectangle(&source)?;
+    let (fill_rectangle, target_error) = number::rectangle(&target)?;
+    cancel(check)?;
+    Ok(NativeImageLayout {
+        profile: PROFILE.into(),
+        source_rectangle,
+        fill_rectangle,
+        origin: Point {
+            x: origin_x.0,
+            y: origin_y.0,
+        },
+        pixel_step: Point { x: sx, y: sy },
+        tile_x: tiles[0],
+        tile_y: tiles[1],
+        clip_to_fill_rectangle: clip,
+        rotate_with_shape: fill.rotate_with_shape.value,
+        density: selected_density,
+        uncertainty: ImageLayoutUncertainty {
+            source_rectangle: source_error,
+            fill_rectangle: target_error,
+            origin: Point {
+                x: origin_x.1,
+                y: origin_y.1,
+            },
+            pixel_step: Point { x: ex, y: ey },
+        },
+    })
+}
+
+#[cfg(test)]
+mod tests;
