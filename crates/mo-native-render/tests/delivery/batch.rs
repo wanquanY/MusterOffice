@@ -61,7 +61,9 @@ fn legacy(
                     info: *info,
                     pixels,
                 }),
-                PptxResourcePageRasterResponse::Error { .. } => Err("legacy page failed".into()),
+                PptxResourcePageRasterResponse::Error { error } => {
+                    Err(format!("legacy page failed: {error}"))
+                }
             }
         },
     )
@@ -229,4 +231,197 @@ fn direct_author_batch_transfers_resources_once_and_matches_native_source_render
     .unwrap();
     assert_eq!(candidate.bundle().previews.len(), 2);
     assert_eq!((renderer.batches, renderer.pages), (1, 2));
+}
+
+struct Original(Vec<u8>);
+impl mo_pptx::Resources for Original {
+    fn open(&self, id: &ResourceId) -> Result<mo_pptx::ResourceData<'_>, mo_pptx::PptxError> {
+        if id.as_str() != "original" {
+            return Err(mo_pptx::PptxError::ResourceRequired(id.clone()));
+        }
+        Ok(mo_pptx::ResourceData {
+            reader: &self.0,
+            byte_length: self.0.len() as u64,
+        })
+    }
+}
+struct RetainedCompared {
+    inner: NativePreviewRenderer,
+    batches: usize,
+}
+impl PreviewRenderer for RetainedCompared {
+    fn identity(&self) -> RendererIdentity {
+        self.inner.identity()
+    }
+    fn render_pages(
+        &mut self,
+        requests: &[PreviewRequest],
+        input: PreviewInput<'_>,
+        fonts: PreviewFonts<'_>,
+        check: &dyn Fn() -> bool,
+        emit: &mut dyn FnMut(usize, SourceResourcePageImage) -> Result<(), DeliveryError>,
+    ) -> Result<(), DeliveryError> {
+        self.batches += 1;
+        let PreviewInput::Retained { plan, source } = input else {
+            panic!("retained semantics required")
+        };
+        let package =
+            mo_opc::Package::open(source.reader, source.byte_length, Default::default(), check)
+                .unwrap();
+        let output = plan.write(&package, check).unwrap();
+        let written = mo_opc::Package::open(
+            output.as_slice(),
+            output.len() as u64,
+            Default::default(),
+            check,
+        )
+        .unwrap();
+        let expected: Vec<_> = requests
+            .iter()
+            .map(|r| {
+                let mut request = r.clone();
+                request.page.expected_source_sha256 = written.sha256().clone();
+                let mut image = legacy(
+                    &request,
+                    &Content {
+                        reader: &output,
+                        byte_length: output.len() as u64,
+                    },
+                    &fonts,
+                );
+                image.info.page.page.source_sha256 = r.page.expected_source_sha256.clone();
+                image
+            })
+            .collect();
+        let counted = Counted {
+            reader: source.reader,
+            bytes: Cell::new(0),
+        };
+        self.inner.render_pages(
+            requests,
+            PreviewInput::Retained {
+                plan,
+                source: Content {
+                    reader: &counted,
+                    byte_length: source.byte_length,
+                },
+            },
+            fonts,
+            check,
+            &mut |ordinal, image| {
+                assert_eq!(image.pixels, expected[ordinal].pixels);
+                assert_eq!(
+                    serde_json::to_value(&image.info).unwrap(),
+                    serde_json::to_value(&expected[ordinal].info).unwrap()
+                );
+                emit(ordinal, image)
+            },
+        )?;
+        assert_eq!(counted.bytes.get(), source.byte_length);
+        Ok(())
+    }
+}
+#[test]
+#[ignore = "requires pinned MO_DELIVERY_WORKER and SHA256"]
+fn retained_revision_renders_directly_and_delivery_evidence_binds_original_and_output() {
+    let (snapshot, settings) = input();
+    let original = Original(
+        mo_pptx::export(
+            &snapshot.document,
+            &settings.defaults,
+            &Images,
+            Default::default(),
+            &|| false,
+        )
+        .unwrap(),
+    );
+    let package = mo_opc::Package::open(
+        original.0.as_slice(),
+        original.0.len() as u64,
+        Default::default(),
+        &|| false,
+    )
+    .unwrap();
+    let d = mo_pptx::source::document::import_document(
+        &package,
+        mo_common::DocumentId::new("retained").unwrap(),
+        ResourceId::new("original").unwrap(),
+        Default::default(),
+        &|| false,
+    )
+    .unwrap();
+    let s = Snapshot::new(d, Default::default()).unwrap();
+    let object = s.document().objects.values().find(|o| matches!(&o.content, mo_presentation_model::ObjectContent::RetainedSource { paragraphs, .. } if !paragraphs.is_empty() && !paragraphs[0].runs.is_empty())).unwrap();
+    let mo_presentation_model::ObjectContent::RetainedSource { paragraphs, .. } = &object.content
+    else {
+        unreachable!()
+    };
+    let tx = mo_presentation_edit::Transaction {
+        document_id: s.document().id.clone(),
+        base_revision: s.revision().clone(),
+        request_id: mo_common::RequestId::new("edit").unwrap(),
+        operations: vec![mo_presentation_edit::OperationEntry {
+            operation_id: mo_common::OperationId::new("splice").unwrap(),
+            operation: mo_presentation_edit::Operation::SpliceText {
+                object: object.id.clone(),
+                paragraph: paragraphs[0].id.clone(),
+                run: paragraphs[0].runs[0].id.clone(),
+                start: 0,
+                delete: 0,
+                insert: "A ".into(),
+            },
+        }],
+    };
+    let snapshot = mo_presentation_edit::prepare(&s, &tx, Default::default())
+        .unwrap()
+        .snapshot
+        .into_record();
+    let mut renderer = RetainedCompared {
+        inner: renderer(),
+        batches: 0,
+    };
+    let fonts: &[u8] = include_bytes!("../../../../fixtures/fonts/owned.ttf");
+    let candidate = build(
+        DeliveryInputs {
+            snapshot: snapshot.clone(),
+            settings: &settings,
+            resources: &original,
+            fonts: Content {
+                reader: &fonts,
+                byte_length: fonts.len() as u64,
+            },
+        },
+        &mut Store::default(),
+        &mut renderer,
+        DeliveryLimits::default(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(renderer.batches, 1);
+    struct Assets<'a>(&'a [ProducedArtifact<Vec<u8>>]);
+    impl DeliverySource for Assets<'_> {
+        fn open(&self, id: &mo_common::RequestId) -> Result<Content<'_>, DeliveryError> {
+            let a = self.0.iter().find(|a| &a.asset().id == id).unwrap();
+            Ok(Content {
+                reader: a.reader(),
+                byte_length: a.asset().byte_length.get(),
+            })
+        }
+    }
+    let pins = DeliveryExpectation {
+        document_id: snapshot.document.id.clone(),
+        revision: snapshot.revision.clone(),
+        semantic_digest: snapshot.semantic_digest.clone(),
+        settings_digest: candidate.settings_digest().clone(),
+        renderer: renderer.identity(),
+    };
+    let received = inspect(
+        candidate.bundle(),
+        &pins,
+        &Assets(candidate.artifacts()),
+        Default::default(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(received.snapshot(), &snapshot);
 }

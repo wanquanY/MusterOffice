@@ -21,7 +21,7 @@ fn changes_separate_metadata_from_static_page_dependencies() {
     assert!(title.receipt.changes.metadata_changed);
     assert!(!title.receipt.changes.invalidate_all_layout);
     assert!(title.receipt.changes.invalidated_slides.is_empty());
-    let mut transform = original.document().objects[&id()].transform;
+    let mut transform = original.document().objects[&id()].transform.unwrap();
     transform.origin.x = Emu::new(100);
     let moved = prepare(
         &original,
@@ -290,7 +290,7 @@ fn ownership_cycle_cannot_be_committed() {
             object: group_id.clone(),
             parent: ContainerId::Group(group_id),
             index: 0,
-            transform: snapshot.document().objects[&id()].transform,
+            transform: snapshot.document().objects[&id()].transform.unwrap(),
         }],
     );
     let Err(EditError::InvalidDocument(report)) =

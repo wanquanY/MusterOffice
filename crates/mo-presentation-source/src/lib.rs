@@ -1,7 +1,9 @@
 //! Native presentation declarations and source bindings, with pure format
-//! reading/resolution. This crate has no writer, renderer, host or publication
-//! dependency; both author lowering and source admission target its semantics.
+//! reading/resolution and bounded native-field preservation. This crate does not
+//! depend on the authored PPTX generator, renderer, host or publication owner;
+//! both author lowering and source admission target its declarations.
 pub mod author;
+pub mod plan;
 pub mod source;
 pub mod timing;
 use mo_common::ResourceId;

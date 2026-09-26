@@ -64,6 +64,11 @@ export type Digest = string;
 export type RequestId = string;
 export type DocumentAction =
   | {
+      documentId: DocumentId;
+      kind: "import";
+      source: AssetBinding;
+    }
+  | {
       document: Document;
       kind: "create";
     }
@@ -79,10 +84,10 @@ export type DocumentAction =
       kind: "export";
       settings: ExportSettings;
     };
-export type FontId = string;
-export type ResourceId = string;
-export type ModelVersion = "musteroffice.presentation/0.1-draft";
 export type DocumentId = string;
+export type ResourceId = string;
+export type FontId = string;
+export type ModelVersion = "musteroffice.presentation/0.1-draft";
 export type Inherited =
   | {
       kind: "inherit";
@@ -164,6 +169,12 @@ export type LineJoin =
     };
 export type ObjectContent =
   | {
+      children: ObjectId[];
+      kind: "retainedSource";
+      native_kind: RetainedObjectKind;
+      paragraphs: RetainedParagraph[];
+    }
+  | {
       geometry: Geometry;
       kind: "shape";
       text?: TextBody | null;
@@ -183,6 +194,10 @@ export type ObjectContent =
       kind: "connector";
       start: ConnectorEndpoint;
     };
+export type RetainedObjectKind = "shape" | "picture" | "group" | "connector" | "graphicFrame";
+export type ParagraphId = string;
+export type RunId = string;
+export type RetainedRunKind = "text" | "break" | "field";
 export type Geometry =
   | {
       kind: "rectangle";
@@ -223,7 +238,6 @@ export type PathCommand =
       kind: "close";
     };
 export type OverflowPolicy = "report" | "clip" | "growShape";
-export type ParagraphId = string;
 export type InlineContent =
   | {
       kind: "text";
@@ -235,7 +249,6 @@ export type InlineContent =
   | {
       kind: "tab";
     };
-export type RunId = string;
 export type Alignment = "start" | "center" | "end" | "justify";
 export type TextDirection = "leftToRight" | "rightToLeft" | "verticalRightToLeft" | "verticalLeftToRight";
 export type ConnectorEndpoint =
@@ -267,6 +280,15 @@ export type ContainerId =
     };
 export type SlideId = string;
 export type ResourceKind = "font" | "picture" | "audio" | "video" | "sourcePackage" | "embeddedWorkbook" | "model3d";
+export type NativeEditConstraint =
+  | "missingDirectTransform"
+  | "retainedTransform"
+  | "compatibilityBranch"
+  | "structuredLeaf"
+  | "dynamicField"
+  | "timingReferences"
+  | "retainedReferences";
+export type SourceBindingProfile = "presentationml-retained-fields-v1-draft";
 export type TimelineVersion = "musteroffice.timeline/0.1-draft" | "musteroffice.timeline/0.2-draft";
 /**
  * Signed int64 ticks. Range requires semantic validation.
@@ -447,8 +469,13 @@ export interface OperationRequest {
   profileId: OperationProfile;
   requestId: RequestId;
 }
+export interface AssetBinding {
+  assetId: RequestId;
+  resourceId: ResourceId;
+}
 /**
- * Author data only. Revision, compilation caches, clocks and decoder state live elsewhere.
+ * Document declarations and immutable source provenance. Revisions, compilation
+ * caches, clocks and decoder state live outside this model.
  */
 export interface Document {
   fonts: {
@@ -473,6 +500,11 @@ export interface Document {
   slides: {
     [k: string]: Slide | undefined;
   };
+  /**
+   * Immutable native addresses/constraints. Known fields are edited in
+   * objects; this provenance never becomes a separate mutable document.
+   */
+  sourceBindings?: SourceBindings | null;
   themes: {
     [k: string]: Theme | undefined;
   };
@@ -593,7 +625,11 @@ export interface Object {
   content: ObjectContent;
   id: ObjectId;
   parent: ContainerId;
-  transform: Transform;
+  /**
+   * Missing only for retained native coordinates that cannot be represented
+   * as a complete direct declaration. Never substitute a resolved identity.
+   */
+  transform?: Transform | null;
 }
 export interface Accessibility {
   decorative: boolean;
@@ -617,6 +653,15 @@ export interface Appearance {
         kind: "value";
         value: Stroke;
       };
+}
+export interface RetainedParagraph {
+  id: ParagraphId;
+  runs: RetainedTextRun[];
+}
+export interface RetainedTextRun {
+  id: RunId;
+  kind: RetainedRunKind;
+  text: string;
 }
 export interface Point {
   x: Emu;
@@ -723,6 +768,65 @@ export interface Slide {
   layout?: LayoutId | null;
   name: string;
   objects: ObjectId[];
+}
+export interface SourceBindings {
+  layouts: {
+    /**
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+     */
+    [k: string]: string | undefined;
+  };
+  masters: {
+    /**
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+     */
+    [k: string]: string | undefined;
+  };
+  objects: {
+    [k: string]: NativeObjectBinding | undefined;
+  };
+  profile: SourceBindingProfile;
+  resource: ResourceId;
+  slides: {
+    /**
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+     */
+    [k: string]: string | undefined;
+  };
+  themes: {
+    /**
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+     */
+    [k: string]: string | undefined;
+  };
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema definition
+ * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+ */
+export interface NativeObjectBinding {
+  nativeId: number;
+  part: string;
+  runs: {
+    [k: string]: NativeRunBinding | undefined;
+  };
+  /**
+   * None means the complete direct transform can be changed in place.
+   */
+  transformConstraint?: NativeEditConstraint | null;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema definition
+ * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+ */
+export interface NativeRunBinding {
+  constraint?: NativeEditConstraint | null;
+  paragraph: number;
+  run: number;
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema definition
@@ -1086,8 +1190,4 @@ export interface ShapeVariation {
 export interface RendererIdentity {
   implementationSha256: Digest;
   profile: string;
-}
-export interface AssetBinding {
-  assetId: RequestId;
-  resourceId: ResourceId;
 }

@@ -76,7 +76,7 @@ fn append(
     Ok(())
 }
 
-pub(super) fn attributes(
+pub(crate) fn attributes(
     bytes: &[u8],
     edits: &BTreeMap<u32, &SourceTransformEdit>,
     limits: SourceLimits,

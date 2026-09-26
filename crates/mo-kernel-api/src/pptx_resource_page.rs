@@ -5,6 +5,8 @@ mod batch;
 pub use batch::{
     ResourceDocumentInputs, render_resource_document_images, render_resource_document_plan,
 };
+mod retained;
+pub use retained::render_retained_resource_document;
 mod diagnostic;
 mod prepare;
 use crate::{pptx_page, pptx_source::inline_limits, *};
@@ -30,7 +32,7 @@ pub use prepare::{
 
 pub use source_resource_page::protocol::{
     AuthorResourceDocumentRequest, PptxResourceDocumentRequest, PptxResourcePageProfile,
-    PptxResourcePageRequest,
+    PptxResourcePageRequest, RetainedResourceDocumentRequest,
 };
 pub type PptxResourcePageRasterResponse =
     source_resource_page::protocol::ResourcePageRasterResponse<PptxResourcePageFailure>;

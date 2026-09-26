@@ -364,7 +364,7 @@
       "pattern": "^[0-9a-f]{64}$"
     },
     "Document": {
-      "description": "Author data only. Revision, compilation caches, clocks and decoder state live elsewhere.",
+      "description": "Document declarations and immutable source provenance. Revisions, compilation\ncaches, clocks and decoder state live outside this model.",
       "type": "object",
       "properties": {
         "fonts": {
@@ -435,6 +435,17 @@
               "$ref": "#/$defs/Slide"
             }
           }
+        },
+        "sourceBindings": {
+          "description": "Immutable native addresses/constraints. Known fields are edited in\nobjects; this provenance never becomes a separate mutable document.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceBindings"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "themes": {
           "type": "object",
@@ -1226,6 +1237,87 @@
         "musteroffice.presentation/0.1-draft"
       ]
     },
+    "NativeEditConstraint": {
+      "type": "string",
+      "enum": [
+        "missingDirectTransform",
+        "retainedTransform",
+        "compatibilityBranch",
+        "structuredLeaf",
+        "dynamicField",
+        "timingReferences",
+        "retainedReferences"
+      ]
+    },
+    "NativeObjectBinding": {
+      "type": "object",
+      "properties": {
+        "nativeId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "part": {
+          "type": "string"
+        },
+        "runs": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "$ref": "#/$defs/NativeRunBinding"
+            }
+          }
+        },
+        "transformConstraint": {
+          "description": "None means the complete direct transform can be changed in place.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeEditConstraint"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "nativeId",
+        "runs"
+      ]
+    },
+    "NativeRunBinding": {
+      "type": "object",
+      "properties": {
+        "constraint": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeEditConstraint"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "paragraph": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "run": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "paragraph",
+        "run"
+      ]
+    },
     "NodeEvent": {
       "type": "string",
       "enum": [
@@ -1252,14 +1344,21 @@
           "$ref": "#/$defs/ContainerId"
         },
         "transform": {
-          "$ref": "#/$defs/Transform"
+          "description": "Missing only for retained native coordinates that cannot be represented\nas a complete direct declaration. Never substitute a resolved identity.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Transform"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "additionalProperties": false,
       "required": [
         "id",
         "parent",
-        "transform",
         "appearance",
         "accessibility",
         "content"
@@ -1267,6 +1366,38 @@
     },
     "ObjectContent": {
       "oneOf": [
+        {
+          "description": "Original geometry, styles, relationships and unknown extension semantics\nremain in the bound source. This is not a generic path/text promotion.",
+          "type": "object",
+          "properties": {
+            "children": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ObjectId"
+              }
+            },
+            "kind": {
+              "type": "string",
+              "const": "retainedSource"
+            },
+            "native_kind": {
+              "$ref": "#/$defs/RetainedObjectKind"
+            },
+            "paragraphs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/RetainedParagraph"
+              }
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "native_kind",
+            "children",
+            "paragraphs"
+          ]
+        },
         {
           "type": "object",
           "properties": {
@@ -1802,6 +1933,63 @@
         "model3d"
       ]
     },
+    "RetainedObjectKind": {
+      "type": "string",
+      "enum": [
+        "shape",
+        "picture",
+        "group",
+        "connector",
+        "graphicFrame"
+      ]
+    },
+    "RetainedParagraph": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ParagraphId"
+        },
+        "runs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RetainedTextRun"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "runs"
+      ]
+    },
+    "RetainedRunKind": {
+      "type": "string",
+      "enum": [
+        "text",
+        "break",
+        "field"
+      ]
+    },
+    "RetainedTextRun": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/RunId"
+        },
+        "kind": {
+          "$ref": "#/$defs/RetainedRunKind"
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "text"
+      ]
+    },
     "Rgba": {
       "type": "object",
       "properties": {
@@ -1910,6 +2098,78 @@
         "pattern": "[^A-Za-z0-9_.:-]"
       },
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "SourceBindingProfile": {
+      "type": "string",
+      "enum": [
+        "presentationml-retained-fields-v1-draft"
+      ]
+    },
+    "SourceBindings": {
+      "type": "object",
+      "properties": {
+        "layouts": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "type": "string"
+            }
+          }
+        },
+        "masters": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "type": "string"
+            }
+          }
+        },
+        "objects": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "$ref": "#/$defs/NativeObjectBinding"
+            }
+          }
+        },
+        "profile": {
+          "$ref": "#/$defs/SourceBindingProfile"
+        },
+        "resource": {
+          "$ref": "#/$defs/ResourceId"
+        },
+        "slides": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "type": "string"
+            }
+          }
+        },
+        "themes": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "resource",
+        "slides",
+        "masters",
+        "layouts",
+        "themes",
+        "objects"
+      ]
     },
     "Stroke": {
       "oneOf": [

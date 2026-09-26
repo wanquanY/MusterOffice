@@ -4,7 +4,7 @@
 
 ## 已实施的依赖边界
 
-来源声明、原生继承求值、来源绑定与时间读取由 [`mo-presentation-source`](../../crates/mo-presentation-source/src/lib.rs) 持有。该模块依赖模型、OPC/XML 和纯计算基础库，不依赖 PPTX writer、编译器、渲染器或宿主。原始包仍通过已验证的只读 `PackageRead` 提供，未知内容保留规则和摘要校验不变。
+来源声明、原生继承求值、来源绑定与时间读取由 [`mo-presentation-source`](../../crates/mo-presentation-source/src/lib.rs) 持有。该模块依赖模型、OPC/XML 和纯计算基础库，不依赖作者 PPTX 生成器、编译器、渲染器或宿主；原生字段保留式重写与其私有来源绑定放在同一适配层。原始包仍通过已验证的只读 `PackageRead` 提供，未知内容保留规则和摘要校验不变。
 
 `mo-presentation-compile` 的生产依赖改为该来源模块；`mo-pptx` 只作为编译器测试的文件生成工具。`mo-pptx` 持有格式写出，并转导既有 `source`、`timing` 读取入口及错误类型，现有调用方无须为文件移动改变行为。这样后续 writer 消费编译计划时不会产生 compiler → writer → compiler 的包级循环。
 
@@ -28,9 +28,8 @@
 
 真实 worker 回归覆盖两页文字、图片、主题/继承、隐藏页和完整交付：直接作者路径与实际 PPTX 来源路径的像素、绘图元数据一致（只重绑定预期不同的输入摘要）；两种批次的输入字节均按 ReaderAt 计数，图片/来源及字体各传输一次。覆盖跨文档身份、错误资源范围、取消、消费者拒绝以及计划/文件摘要混淆的原子失败。这是正确性回归，不是发行性能或 Office/WPS 视觉验收。
 
-## 仍须完成的 F2 闭环
+## 来源文档闭环
 
-1. 导入保留原始包和未知扩展，来源绑定进入统一文档版本；可编辑字段通过同一事务入口修改。
-2. 用文字、图片、主题继承、未知内容保留、版本冲突、取消以及直接渲染/文件回读对照验证上述闭环。
+版本化导入、保留来源的模型、共享事务及直接来源计划已经接通，详见[统一来源文档](source-backed-document.md)。`PresentationPlan` 为 writer 与 renderer 提供各自需要的投影，PPTX 回读只作文件验证。当前交付输出升级为 `preview-evidence/3-draft`，使用通用 `planSha256` 区分逻辑输入与 `pptxSha256`；v1/v2 的已有验证规则继续保留。
 
-当前静态页面依赖和缓存能力见[增量编译](incremental-layout.md)。它不能代替上述来源语义合流或资源页面的完整闭环。
+来源字段和结构编辑的明确边界、原始字节保留及数据回滚兼容性见上述实现文档。静态页面依赖和缓存范围见[增量编译](incremental-layout.md)。最终验收结果见[整改记录](review-corrections.md)。

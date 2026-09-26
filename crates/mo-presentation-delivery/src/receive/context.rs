@@ -11,7 +11,7 @@ pub(super) struct Context {
     settings_digest: Digest,
     preview_renderer: RendererIdentity,
     model_asset_id: RequestId,
-    resource_assets: BTreeMap<ResourceId, RequestId>,
+    pub resource_assets: BTreeMap<ResourceId, RequestId>,
     font_profile_asset_id: RequestId,
     font_bundle_asset_id: Option<RequestId>,
     registry_asset_id: RequestId,

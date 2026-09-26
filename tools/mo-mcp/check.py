@@ -16,6 +16,7 @@ import sys
 import time
 import zipfile
 import io
+import xml.etree.ElementTree as ET
 import jsonschema
 
 root = Path(sys.argv[1]); root.mkdir(parents=True, exist_ok=False)
@@ -146,6 +147,58 @@ def upload(session, name, data, mime):
     assert checked == sealed
     return sealed['result']['upload']['asset']
 
+def check_import(session, asset, font):
+    request = operation(dict(kind='import', documentId='document:source-import',
+        source=dict(resourceId='source:original', assetId=asset['id'])), 'source-import')
+    imported = session.wait(session.tool('mo_presentations_import', request)[0])
+    assert session.tool('mo_presentations_import', request)[0] == imported
+    receipt = imported['result']['job']['result']['receipt']
+    original, _ = session.tool('mo_presentations_read', dict(documentId=receipt['documentId']))
+    snapshot = original['result']['snapshot']
+    assert snapshot['document']['sourceBindings']['resource'] == 'source:original'
+    objects = snapshot['document']['objects'].values()
+    target = next(o for o in objects if o['parent']['kind'] == 'slide' and o.get('transform')
+                  and o['content']['paragraphs'] and o['content']['paragraphs'][0]['runs'])
+    paragraph = target['content']['paragraphs'][0]; run = paragraph['runs'][0]
+    transform = json.loads(json.dumps(target['transform'])); transform['origin']['x'] = '101'
+    edit = operation(dict(kind='apply', documentId=receipt['documentId'], baseRevision=receipt['revision'], operations=[
+        dict(operationId='splice', operation=dict(kind='spliceText', object=target['id'],
+            paragraph=paragraph['id'], run=run['id'], start=0, delete=0, insert='A')),
+        dict(operationId='move', operation=dict(kind='setTransform', object=target['id'], transform=transform))]), 'source-edit')
+    edited = session.wait(session.tool('mo_presentations_apply', edit)[0])
+    assert session.tool('mo_presentations_apply', edit)[0] == edited
+    revision = edited['result']['job']['result']['receipt']['revision']
+    assert revision != receipt['revision']
+    current, _ = session.tool('mo_presentations_read', dict(documentId=receipt['documentId']))
+    changed = current['result']['snapshot']['document']['objects'][target['id']]
+    assert changed['content']['paragraphs'][0]['runs'][0]['text'] == 'A' + run['text']
+    assert changed['transform'] == transform
+    assert current['result']['snapshot']['document']['sourceBindings'] == snapshot['document']['sourceBindings']
+    assert session.tool('mo_presentations_read', dict(documentId=receipt['documentId'], revision=receipt['revision']))[0] == original
+    export = operation(dict(kind='export', documentId=receipt['documentId'], baseRevision=revision,
+        settings=dict(delivery=fixture['settings'], resources=[dict(resourceId='source:original', assetId=asset['id'])],
+            fontAssetId=font['id'], renderer=dict(implementationSha256=sha(worker.read_bytes()),
+                profile='drawingml-resource-page-q32-v1-draft'))), 'source-export', True)
+    completed = session.wait(session.tool('mo_presentations_export', export)[0])
+    bundle = completed['result']['job']['result']['receipt']['bundle']
+    assert bundle['document']['revision'] == revision
+    # Re-read every actual published byte over the binary channel.
+    for item in bundle['assets']:
+        raw = channel(session.cfg, ['read-asset', item['id'], '0', item['byteLength']], binary_result=True)
+        assert sha(raw) == item['sha256']
+        if item['role'] == 'pptx':
+            with zipfile.ZipFile(io.BytesIO(raw)) as package:
+                assert package.testzip() is None
+                native = snapshot['document']['sourceBindings']['objects'][target['id']]
+                xml = ET.fromstring(package.read(native['part'].removeprefix('/')))
+                ns = {'p': 'http://schemas.openxmlformats.org/presentationml/2006/main',
+                      'a': 'http://schemas.openxmlformats.org/drawingml/2006/main'}
+                shape = next(sp for sp in xml.findall('.//p:sp', ns)
+                             if sp.find('p:nvSpPr/p:cNvPr', ns).get('id') == str(native['nativeId']))
+                assert shape.find('.//a:t', ns).text == 'A' + run['text']
+                assert shape.find('p:spPr/a:xfrm/a:off', ns).get('x') == '101'
+    return current
+
 sessions = []
 for era in ['legacy', 'modern']:
     # SEP-2164: current resources use Invalid Params; SDK projects the legacy
@@ -153,7 +206,8 @@ for era in ['legacy', 'modern']:
     missing_resource = -32002 if era == 'legacy' else -32602
     cfg = config(era)
     with Session(era, cfg, era) as session:
-        assert len(session.tools) == 13
+        assert len(session.tools) == 14
+        assert 'mo_presentations_import' in session.tools
         resources = session.call('resources/list')['result']['resources']; assert len(resources) == 11
         assert len(session.call('resources/templates/list')['result']['resourceTemplates']) == 1
         limits = json.loads(session.resource('musteroffice://adapter/limits')['text'])
@@ -201,11 +255,13 @@ for era in ['legacy', 'modern']:
             assert channel(cfg, ['read-asset', asset['id'], '0', asset['byteLength']], binary_result=True) == raw
             (destination/f'{index:03}.bin').write_bytes(raw)
             if asset['role'] == 'pptx':
+                source_asset = asset
                 with zipfile.ZipFile(io.BytesIO(raw)) as archive:
                     assert archive.testzip() is None
                     assert 'ppt/slides/slide2.xml' in archive.namelist()
                     assert b'<p:sp' in archive.read('ppt/slides/slide1.xml')
         (destination/'bundle.json').write_text(json.dumps(bundle, indent=2)+'\n')
+        retained = check_import(session, source_asset, font)
         # A large asset yields a descriptor, never a silently truncated blob.
         large = b'large-asset'*(110*1024)
         info = upload(session, 'large', large, 'application/octet-stream')
@@ -223,13 +279,14 @@ for era in ['legacy', 'modern']:
     # Reconnect to the same owner and read exactly the same committed receipt.
     with Session(era, cfg, f'{era}-reconnect') as session:
         assert session.tool('mo_jobs_get', dict(jobId=job['id']))[0] == completed
+        assert session.tool('mo_presentations_read', dict(documentId='document:source-import'))[0] == retained
         assert base64.b64decode(session.resource(next(iter(links.values())))['blob'])
         resumed = session.wait(session.tool('mo_jobs_get', dict(jobId=detached['job']['id']))[0])
         assert resumed['result']['job']['result']['receipt']['documentId'] == detached_document['id']
     with closing(sqlite3.connect(json.loads(cfg.read_text())['database'])) as database:
         assert database.execute('PRAGMA integrity_check').fetchone()[0] == 'ok'
         assert not database.execute('PRAGMA foreign_key_check').fetchall()
-        assert database.execute('SELECT count(*) FROM revisions').fetchone()[0] == 3
+        assert database.execute('SELECT count(*) FROM revisions').fetchone()[0] == 5
     denied = config(f'{era}-denied', database=json.loads(cfg.read_text())['database'], permissions=[])
     with Session(era, denied, f'{era}-denied') as session:
         assert list(session.tools) == ['mo_capabilities', 'mo_schemas_get']
@@ -240,7 +297,7 @@ for era in ['legacy', 'modern']:
     with Session(era, other, f'{era}-other-scope') as session:
         assert session.call('resources/read', dict(uri=next(iter(links.values()))))['error']['code'] == missing_resource
         assert session.tool('mo_assets_read', dict(assetId=bundle['assets'][0]['id']))[0]['outcome'] == 'failed'
-    sessions.append(dict(era=era, tools=13, schemas=10, exportedAssets=12, jobId=job['id'], candidate=str(destination)))
+    sessions.append(dict(era=era, tools=14, schemas=10, exportedAssets=12, retainedImportEditExport=True, jobId=job['id'], candidate=str(destination)))
 
 report = dict(binary=artifact(binary), worker=artifact(worker), sessions=sessions, calls=records,
     limitations=['Development build and self-owned synthetic font fixture; no Office/WPS visual/edit/playback acceptance.',

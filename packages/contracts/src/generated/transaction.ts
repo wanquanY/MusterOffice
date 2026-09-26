@@ -348,6 +348,12 @@ export type LineJoin =
  */
 export type ObjectContent =
   | {
+      children: ObjectId[];
+      kind: "retainedSource";
+      native_kind: RetainedObjectKind;
+      paragraphs: RetainedParagraph[];
+    }
+  | {
       geometry: Geometry;
       kind: "shape";
       text?: TextBody | null;
@@ -367,6 +373,26 @@ export type ObjectContent =
       kind: "connector";
       start: ConnectorEndpoint;
     };
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "RetainedObjectKind".
+ */
+export type RetainedObjectKind = "shape" | "picture" | "group" | "connector" | "graphicFrame";
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "ParagraphId".
+ */
+export type ParagraphId = string;
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "RunId".
+ */
+export type RunId = string;
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "RetainedRunKind".
+ */
+export type RetainedRunKind = "text" | "break" | "field";
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
  * via the `definition` "Geometry".
@@ -421,11 +447,6 @@ export type PathCommand =
 export type OverflowPolicy = "report" | "clip" | "growShape";
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "ParagraphId".
- */
-export type ParagraphId = string;
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
  * via the `definition` "InlineContent".
  */
 export type InlineContent =
@@ -439,11 +460,6 @@ export type InlineContent =
   | {
       kind: "tab";
     };
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "RunId".
- */
-export type RunId = string;
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
  * via the `definition` "Alignment".
@@ -880,7 +896,11 @@ export interface Object {
   content: ObjectContent;
   id: ObjectId;
   parent: ContainerId;
-  transform: Transform;
+  /**
+   * Missing only for retained native coordinates that cannot be represented
+   * as a complete direct declaration. Never substitute a resolved identity.
+   */
+  transform?: Transform | null;
 }
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
@@ -912,6 +932,23 @@ export interface Appearance {
         kind: "value";
         value: Stroke;
       };
+}
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "RetainedParagraph".
+ */
+export interface RetainedParagraph {
+  id: ParagraphId;
+  runs: RetainedTextRun[];
+}
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "RetainedTextRun".
+ */
+export interface RetainedTextRun {
+  id: RunId;
+  kind: RetainedRunKind;
+  text: string;
 }
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema

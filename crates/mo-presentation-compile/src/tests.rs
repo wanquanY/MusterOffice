@@ -54,6 +54,8 @@ fn reflected_parent_reverses_child_rotation_without_swapping_flip_axes() {
         .get_mut(&mo_common::ObjectId::new("group:1").unwrap())
         .unwrap()
         .transform
+        .as_mut()
+        .unwrap()
         .flip_horizontal = true;
     let r = page_placements(&q, &|| false).unwrap();
     assert_eq!(
@@ -103,7 +105,14 @@ fn equivalent_signed_and_multi_turn_angles_have_identical_placement() {
         let id = mo_common::ObjectId::new("shape:1").unwrap();
         let mut expected = None;
         for turns in [-90, -1, 0, 1, 90] {
-            q.document.objects.get_mut(&id).unwrap().transform.rotation = base + turns * 21_600_000;
+            q.document
+                .objects
+                .get_mut(&id)
+                .unwrap()
+                .transform
+                .as_mut()
+                .unwrap()
+                .rotation = base + turns * 21_600_000;
             let r = page_placements(&q, &|| false).unwrap();
             let p = &r.surfaces[0].objects[1];
             let placement = serde_json::to_value(p).unwrap();
@@ -120,9 +129,9 @@ fn cardinal_flips_negative_rotation_and_half_emu_centers_are_exact() {
     let mut q = request();
     let id = mo_common::ObjectId::new("shape:1").unwrap();
     let o = q.document.objects.get_mut(&id).unwrap();
-    o.transform.rotation = -5400000;
-    o.transform.flip_horizontal = true;
-    o.transform.size.width = mo_common::Emu::new(21);
+    o.transform.as_mut().unwrap().rotation = -5400000;
+    o.transform.as_mut().unwrap().flip_horizontal = true;
+    o.transform.as_mut().unwrap().size.width = mo_common::Emu::new(21);
     let r = page_placements(&q, &|| false).unwrap();
     let p = &r.surfaces[0].objects[0];
     assert_eq!(p.affine.linear.map(Fixed::raw), [0, U, U, 0]);
@@ -165,6 +174,8 @@ fn all_selected_placement_cancellation_points_return_no_partial_result() {
         .get_mut(&mo_common::ObjectId::new("shape:1").unwrap())
         .unwrap()
         .transform
+        .as_mut()
+        .unwrap()
         .rotation = 1234567;
     let calls = Cell::new(0);
     page_placements(&q, &|| {

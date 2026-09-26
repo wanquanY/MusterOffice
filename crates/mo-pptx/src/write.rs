@@ -7,8 +7,8 @@ use mo_opc::{
 };
 use mo_presentation_model::*;
 
-/// Generates an authored PPTX into bounded memory, then reopens actual OPC bytes.
-/// This is not yet an imported-document preservation exporter or layout proof.
+/// Generates a PPTX into bounded memory and verifies actual stored OPC bytes.
+/// This covers authored plans and supported retained-field edits, not layout proof.
 pub fn export(
     document: &Document,
     defaults: &ExportDefaults,
@@ -19,7 +19,7 @@ pub fn export(
     Ok(export_to(document, defaults, resources, Vec::new(), limits, check)?.into_reader())
 }
 
-/// Streams the same authored package into an injected host sink, seals it, and
+/// Streams the authored or retained package into an injected host sink, seals it, and
 /// verifies the actual stored OPC bytes. No output-sized Vec is required here.
 /// XML plans remain bounded in memory. The returned proof is package integrity,
 /// not full presentation quality or authorization to publish a product artifact.
@@ -31,8 +31,32 @@ pub fn export_to<S: ResultSink>(
     limits: PptxLimits,
     check: &dyn Fn() -> bool,
 ) -> Result<VerifiedPackage<S::Reader>, PptxError> {
-    let plan = AuthorPlan::new(document, defaults, limits.document, check)?;
-    export_plan_to(&plan, resources, sink, limits.package, check)
+    let plan = crate::PresentationPlan::new(
+        document,
+        defaults,
+        resources,
+        limits.document,
+        limits.package,
+        check,
+    )?;
+    export_presentation_plan_to(&plan, resources, sink, limits.package, check)
+}
+
+/// Serialize the same input plan used for compilation. Retained documents
+/// rewrite only supported fields and independently verify the stored result.
+pub fn export_presentation_plan_to<S: ResultSink>(
+    plan: &crate::PresentationPlan<'_>,
+    resources: &(impl Resources + ?Sized),
+    sink: S,
+    limits: mo_opc::PackageLimits,
+    check: &dyn Fn() -> bool,
+) -> Result<VerifiedPackage<S::Reader>, PptxError> {
+    match plan {
+        crate::PresentationPlan::Author(plan) => {
+            export_plan_to(plan, resources, sink, limits, check)
+        }
+        crate::PresentationPlan::Retained { plan, source } => plan.write_to(source, sink, check),
+    }
 }
 
 /// Writes the immutable semantic plan also consumed by page compilation.

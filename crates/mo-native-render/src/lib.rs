@@ -3,7 +3,7 @@
 use mo_common::Digest;
 use mo_presentation_compile::source_resource_page::protocol::{
     self, AuthorResourceDocumentRequest, AuthorResourceRange, PptxResourceDocumentRequest,
-    PptxResourcePageProfile, ResourcePageRasterResponse,
+    PptxResourcePageProfile, ResourcePageRasterResponse, RetainedResourceDocumentRequest,
 };
 type PptxResourcePageRasterResponse = ResourcePageRasterResponse<serde_json::Value>;
 use mo_presentation_compile::source_resource_page::SourceResourcePageImage;
@@ -68,6 +68,19 @@ impl PreviewRenderer for NativePreviewRenderer {
             return Err(DeliveryError::Limit("preview font bytes"));
         }
         let (mode, json, inputs) = match input {
+            PreviewInput::Retained { plan, source } => {
+                let batch = RetainedResourceDocumentRequest {
+                    profile: PptxResourcePageProfile::NativeResourcesDraftV1,
+                    document: plan.document(),
+                    pages: requests.to_vec(),
+                    fonts: fonts.manifest.cloned(),
+                };
+                (
+                    "--preview-retained-document",
+                    request_json(&batch)?,
+                    vec![source],
+                )
+            }
             PreviewInput::Source(source) => {
                 let batch = PptxResourceDocumentRequest {
                     profile: PptxResourcePageProfile::NativeResourcesDraftV1,

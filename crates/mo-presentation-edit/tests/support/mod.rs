@@ -39,7 +39,7 @@ pub fn document() -> Document {
         Object {
             id: id(),
             parent: ContainerId::Slide(slide_id()),
-            transform: Transform {
+            transform: Some(Transform {
                 origin: Point {
                     x: Emu::ZERO,
                     y: Emu::ZERO,
@@ -48,7 +48,7 @@ pub fn document() -> Document {
                 rotation: 0,
                 flip_horizontal: false,
                 flip_vertical: false,
-            },
+            }),
             appearance: Appearance::default(),
             accessibility: Accessibility::default(),
             content: ObjectContent::Shape {

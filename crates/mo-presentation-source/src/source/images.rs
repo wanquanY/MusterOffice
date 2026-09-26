@@ -4,7 +4,7 @@ mod input;
 mod types;
 use super::{SourceIndex, fill::resolve::*};
 use crate::{PptxError, R, cancelled};
-pub use input::{AuthorImages, ImageInput, ImagePart, PackageImages};
+pub use input::{AuthorImages, ImageInput, ImagePart, PackageImages, SourceImages};
 use mo_common::{ByteLength, Digest};
 use mo_opc::{PackageRead, PartName, Relationship, RelationshipSource, RelationshipTarget};
 use sha2::{Digest as _, Sha256};

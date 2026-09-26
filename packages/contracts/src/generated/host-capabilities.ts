@@ -27,6 +27,7 @@ export type OperationChannel = "controlJson" | "binaryUpload" | "binaryRead";
  * via the `definition` "ServiceOperation".
  */
 export type ServiceOperation =
+  | "presentations.import"
   | "capabilities"
   | "schemas.get"
   | "presentations.create"

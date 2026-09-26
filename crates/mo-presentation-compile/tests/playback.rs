@@ -37,6 +37,8 @@ fn integer_samples_share_static_geometry_without_mutating_the_plan() {
                 .get_mut(id)
                 .unwrap()
                 .transform
+                .as_mut()
+                .unwrap()
                 .rotation = r.numerator.parse().unwrap();
         }
         let expected = compile_page(&static_q, &|| false).unwrap();
@@ -71,6 +73,8 @@ fn fractional_rotation_survives_sampling_and_is_not_rounded_to_native_angle_unit
             .get_mut(id)
             .unwrap()
             .transform
+            .as_mut()
+            .unwrap()
             .rotation = value as i32;
     }
     let different = page_placements(&rounded.page, &|| false).unwrap();

@@ -162,3 +162,46 @@ impl ImageInput for AuthorImages<'_> {
         Ok(out)
     }
 }
+
+/// Only a verified SourcePlan may bind logical declarations to physical parts.
+/// Package identity is checked once; resource reads retain OPC integrity checks.
+pub struct SourceImages<'a> {
+    identity: &'a Digest,
+    package: PackageImages<'a>,
+}
+impl<'a> SourceImages<'a> {
+    pub fn new(
+        plan: &'a crate::source::document::SourcePlan<'_>,
+        source: &'a dyn PackageRead,
+    ) -> Result<Self, PptxError> {
+        if plan.source_identity() != source.sha256() {
+            return Err(PptxError::SourceConflict(
+                "source plan image identity".into(),
+            ));
+        }
+        Ok(Self {
+            identity: plan.identity(),
+            package: PackageImages(source),
+        })
+    }
+}
+impl sealed::Sealed for SourceImages<'_> {}
+impl ImageInput for SourceImages<'_> {
+    fn identity(&self) -> &Digest {
+        self.identity
+    }
+    fn relationships(&self, owner: &PartName) -> Option<&[Relationship]> {
+        self.package.relationships(owner)
+    }
+    fn part(&self, part: &PartName) -> Option<ImagePart<'_>> {
+        self.package.part(part)
+    }
+    fn read(
+        &self,
+        part: &PartName,
+        max: u64,
+        check: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, PptxError> {
+        self.package.read(part, max, check)
+    }
+}

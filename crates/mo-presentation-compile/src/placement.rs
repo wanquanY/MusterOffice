@@ -38,6 +38,11 @@ pub(crate) fn place_validated(
 ) -> Result<PagePlacements, CompileError> {
     cancel(check)?;
     let d = &request.document;
+    if d.source_bindings.is_some() {
+        return Err(CompileError::Invalid(
+            "retained document requires source plan placement",
+        ));
+    }
     let slide = d
         .slides
         .get(&request.slide)
@@ -63,7 +68,10 @@ pub(crate) fn place_validated(
         while let Some((id, parent, depth)) = pending.pop() {
             cancel(check)?;
             let o = &d.objects[id];
-            let t = &o.transform;
+            let t = o
+                .transform
+                .as_ref()
+                .ok_or(CompileError::Invalid("missing author transform"))?;
             let source_size = match &o.content {
                 ObjectContent::Group { viewport, .. }
                 | ObjectContent::Shape {

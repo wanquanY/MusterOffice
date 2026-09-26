@@ -8,6 +8,7 @@ pub(crate) fn apply(
     operation: &Operation,
     anchors: &mut Vec<AnchorMap>,
 ) -> Result<(), EditError> {
+    source_operation(document, operation)?;
     match operation {
         Operation::SetTimeline { slide, timeline } => {
             if !document.slides.contains_key(slide) {
@@ -107,10 +108,10 @@ pub(crate) fn apply(
             insert(container_mut(document, parent)?, *index, object.clone())?;
             let object = object_mut(document, object)?;
             object.parent = parent.clone();
-            object.transform = *transform;
+            object.transform = Some(*transform);
         }
         Operation::SetTransform { object, transform } => {
-            object_mut(document, object)?.transform = *transform
+            object_mut(document, object)?.transform = Some(*transform)
         }
         Operation::SetAppearance { object, appearance } => {
             object_mut(document, object)?.appearance = appearance.clone()
@@ -131,30 +132,46 @@ pub(crate) fn apply(
             delete,
             insert,
         } => {
-            let body = match &mut object_mut(document, object)?.content {
+            let content = &mut object_mut(document, object)?.content;
+            let (text, prefix) = match content {
                 ObjectContent::Shape {
-                    text: Some(text), ..
-                } => text,
+                    text: Some(body), ..
+                } => {
+                    let p = body
+                        .paragraphs
+                        .iter_mut()
+                        .find(|p| &p.id == paragraph)
+                        .ok_or_else(|| EditError::input("paragraph does not exist in object"))?;
+                    let index = p
+                        .runs
+                        .iter()
+                        .position(|r| &r.id == run)
+                        .ok_or_else(|| EditError::input("run does not exist in paragraph"))?;
+                    let prefix =
+                        scalar_prefix(p.runs[..index].iter().map(|r| r.content.scalar_len()))?;
+                    let InlineContent::Text { text } = &mut p.runs[index].content else {
+                        return Err(EditError::input("splice requires a text run"));
+                    };
+                    (text, prefix)
+                }
+                ObjectContent::RetainedSource { paragraphs, .. } => {
+                    let p = paragraphs
+                        .iter_mut()
+                        .find(|p| &p.id == paragraph)
+                        .ok_or_else(|| EditError::input("paragraph does not exist in object"))?;
+                    let index = p
+                        .runs
+                        .iter()
+                        .position(|r| &r.id == run)
+                        .ok_or_else(|| EditError::input("run does not exist in paragraph"))?;
+                    let prefix =
+                        scalar_prefix(p.runs[..index].iter().map(RetainedTextRun::scalar_len))?;
+                    if p.runs[index].kind != RetainedRunKind::Text {
+                        return Err(EditError::input("splice requires a text run"));
+                    }
+                    (&mut p.runs[index].text, prefix)
+                }
                 _ => return Err(EditError::input("object has no text body")),
-            };
-            let paragraph = body
-                .paragraphs
-                .iter_mut()
-                .find(|p| &p.id == paragraph)
-                .ok_or_else(|| EditError::input("paragraph does not exist in object"))?;
-            let index = paragraph
-                .runs
-                .iter()
-                .position(|r| &r.id == run)
-                .ok_or_else(|| EditError::input("run does not exist in paragraph"))?;
-            let prefix = paragraph.runs[..index].iter().try_fold(0_u32, |n, r| {
-                let length = u32::try_from(r.content.scalar_len())
-                    .map_err(|_| EditError::input("run is too long"))?;
-                n.checked_add(length)
-                    .ok_or_else(|| EditError::input("paragraph is too long"))
-            })?;
-            let InlineContent::Text { text } = &mut paragraph.runs[index].content else {
-                return Err(EditError::input("splice requires a text run"));
             };
             let end = start
                 .checked_add(*delete)
@@ -172,7 +189,7 @@ pub(crate) fn apply(
                 .ok_or_else(|| EditError::input("anchor range overflow"))?;
             text.replace_range(from..to, insert);
             anchors.push(AnchorMap {
-                paragraph: paragraph.id.clone(),
+                paragraph: paragraph.clone(),
                 start,
                 deleted: *delete,
                 inserted,
@@ -282,6 +299,49 @@ fn delete_objects(
         if let ObjectContent::Group { children, .. } = &mut object.content {
             children.retain(|id| !remove.contains(id));
         }
+    }
+    Ok(())
+}
+
+fn scalar_prefix(mut lengths: impl Iterator<Item = usize>) -> Result<u32, EditError> {
+    lengths.try_fold(0_u32, |n, length| {
+        n.checked_add(u32::try_from(length).map_err(|_| EditError::input("run is too long"))?)
+            .ok_or_else(|| EditError::input("paragraph is too long"))
+    })
+}
+
+// Source-backed documents share the transaction engine. Unsupported changes
+// cannot cross the immutable provenance boundary and silently discard content.
+fn source_operation(d: &Document, operation: &Operation) -> Result<(), EditError> {
+    let Some(bindings) = &d.source_bindings else {
+        return Ok(());
+    };
+    let constraint = match operation {
+        Operation::SetTransform { object, .. } => {
+            bindings
+                .objects
+                .get(object)
+                .ok_or_else(|| EditError::input("source object binding missing"))?
+                .transform_constraint
+        }
+        Operation::SpliceText { object, run, .. } => {
+            bindings
+                .objects
+                .get(object)
+                .and_then(|o| o.runs.get(run))
+                .ok_or_else(|| EditError::input("source run binding missing"))?
+                .constraint
+        }
+        _ => {
+            return Err(EditError::input(
+                "operation requires coordinated native preservation; source bindings are immutable",
+            ));
+        }
+    };
+    if let Some(c) = constraint {
+        return Err(EditError::input(format!(
+            "native edit requires coordinated preservation: {c:?}"
+        )));
     }
     Ok(())
 }

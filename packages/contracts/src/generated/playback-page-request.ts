@@ -194,6 +194,12 @@ export type LineJoin =
  */
 export type ObjectContent =
   | {
+      children: ObjectId[];
+      kind: "retainedSource";
+      native_kind: RetainedObjectKind;
+      paragraphs: RetainedParagraph[];
+    }
+  | {
       geometry: Geometry;
       kind: "shape";
       text?: TextBody | null;
@@ -213,6 +219,26 @@ export type ObjectContent =
       kind: "connector";
       start: ConnectorEndpoint;
     };
+/**
+ * This interface was referenced by `PlaybackPageRequest`'s JSON-Schema
+ * via the `definition` "RetainedObjectKind".
+ */
+export type RetainedObjectKind = "shape" | "picture" | "group" | "connector" | "graphicFrame";
+/**
+ * This interface was referenced by `PlaybackPageRequest`'s JSON-Schema
+ * via the `definition` "ParagraphId".
+ */
+export type ParagraphId = string;
+/**
+ * This interface was referenced by `PlaybackPageRequest`'s JSON-Schema
+ * via the `definition` "RunId".
+ */
+export type RunId = string;
+/**
+ * This interface was referenced by `PlaybackPageRequest`'s JSON-Schema
+ * via the `definition` "RetainedRunKind".
+ */
+export type RetainedRunKind = "text" | "break" | "field";
 /**
  * This interface was referenced by `PlaybackPageRequest`'s JSON-Schema
  * via the `definition` "Geometry".
@@ -267,11 +293,6 @@ export type PathCommand =
 export type OverflowPolicy = "report" | "clip" | "growShape";
 /**
  * This interface was referenced by `PlaybackPageRequest`'s JSON-Schema
- * via the `definition` "ParagraphId".
- */
-export type ParagraphId = string;
-/**
- * This interface was referenced by `PlaybackPageRequest`'s JSON-Schema
  * via the `definition` "InlineContent".
  */
 export type InlineContent =
@@ -285,11 +306,6 @@ export type InlineContent =
   | {
       kind: "tab";
     };
-/**
- * This interface was referenced by `PlaybackPageRequest`'s JSON-Schema
- * via the `definition` "RunId".
- */
-export type RunId = string;
 /**
  * This interface was referenced by `PlaybackPageRequest`'s JSON-Schema
  * via the `definition` "Alignment".
@@ -340,6 +356,23 @@ export type ContainerId =
  * via the `definition` "ResourceKind".
  */
 export type ResourceKind = "font" | "picture" | "audio" | "video" | "sourcePackage" | "embeddedWorkbook" | "model3d";
+/**
+ * This interface was referenced by `PlaybackPageRequest`'s JSON-Schema
+ * via the `definition` "NativeEditConstraint".
+ */
+export type NativeEditConstraint =
+  | "missingDirectTransform"
+  | "retainedTransform"
+  | "compatibilityBranch"
+  | "structuredLeaf"
+  | "dynamicField"
+  | "timingReferences"
+  | "retainedReferences";
+/**
+ * This interface was referenced by `PlaybackPageRequest`'s JSON-Schema
+ * via the `definition` "SourceBindingProfile".
+ */
+export type SourceBindingProfile = "presentationml-retained-fields-v1-draft";
 /**
  * This interface was referenced by `PlaybackPageRequest`'s JSON-Schema
  * via the `definition` "TimelineVersion".
@@ -627,7 +660,8 @@ export interface SnapshotRecord {
   semanticDigest: Digest;
 }
 /**
- * Author data only. Revision, compilation caches, clocks and decoder state live elsewhere.
+ * Document declarations and immutable source provenance. Revisions, compilation
+ * caches, clocks and decoder state live outside this model.
  *
  * This interface was referenced by `PlaybackPageRequest`'s JSON-Schema
  * via the `definition` "Document".
@@ -655,6 +689,11 @@ export interface Document {
   slides: {
     [k: string]: Slide | undefined;
   };
+  /**
+   * Immutable native addresses/constraints. Known fields are edited in
+   * objects; this provenance never becomes a separate mutable document.
+   */
+  sourceBindings?: SourceBindings | null;
   themes: {
     [k: string]: Theme | undefined;
   };
@@ -785,7 +824,11 @@ export interface Object {
   content: ObjectContent;
   id: ObjectId;
   parent: ContainerId;
-  transform: Transform;
+  /**
+   * Missing only for retained native coordinates that cannot be represented
+   * as a complete direct declaration. Never substitute a resolved identity.
+   */
+  transform?: Transform | null;
 }
 /**
  * This interface was referenced by `PlaybackPageRequest`'s JSON-Schema
@@ -817,6 +860,23 @@ export interface Appearance {
         kind: "value";
         value: Stroke;
       };
+}
+/**
+ * This interface was referenced by `PlaybackPageRequest`'s JSON-Schema
+ * via the `definition` "RetainedParagraph".
+ */
+export interface RetainedParagraph {
+  id: ParagraphId;
+  runs: RetainedTextRun[];
+}
+/**
+ * This interface was referenced by `PlaybackPageRequest`'s JSON-Schema
+ * via the `definition` "RetainedTextRun".
+ */
+export interface RetainedTextRun {
+  id: RunId;
+  kind: RetainedRunKind;
+  text: string;
 }
 /**
  * This interface was referenced by `PlaybackPageRequest`'s JSON-Schema
@@ -965,6 +1025,75 @@ export interface Slide {
   layout?: LayoutId | null;
   name: string;
   objects: ObjectId[];
+}
+/**
+ * This interface was referenced by `PlaybackPageRequest`'s JSON-Schema
+ * via the `definition` "SourceBindings".
+ */
+export interface SourceBindings {
+  layouts: {
+    /**
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+     */
+    [k: string]: string | undefined;
+  };
+  masters: {
+    /**
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+     */
+    [k: string]: string | undefined;
+  };
+  objects: {
+    [k: string]: NativeObjectBinding | undefined;
+  };
+  profile: SourceBindingProfile;
+  resource: ResourceId;
+  slides: {
+    /**
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+     */
+    [k: string]: string | undefined;
+  };
+  themes: {
+    /**
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+     */
+    [k: string]: string | undefined;
+  };
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema definition
+ * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+ *
+ * This interface was referenced by `PlaybackPageRequest`'s JSON-Schema
+ * via the `definition` "NativeObjectBinding".
+ */
+export interface NativeObjectBinding {
+  nativeId: number;
+  part: string;
+  runs: {
+    [k: string]: NativeRunBinding | undefined;
+  };
+  /**
+   * None means the complete direct transform can be changed in place.
+   */
+  transformConstraint?: NativeEditConstraint | null;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema definition
+ * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+ *
+ * This interface was referenced by `PlaybackPageRequest`'s JSON-Schema
+ * via the `definition` "NativeRunBinding".
+ */
+export interface NativeRunBinding {
+  constraint?: NativeEditConstraint | null;
+  paragraph: number;
+  run: number;
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema definition

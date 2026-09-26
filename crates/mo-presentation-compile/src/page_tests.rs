@@ -30,6 +30,8 @@ fn incremental_plans_equal_full_compilation_across_visual_and_metadata_edits() {
                 .next()
                 .unwrap()
                 .transform
+                .as_mut()
+                .unwrap()
                 .origin
                 .x = mo_common::Emu::new(35)
         },
@@ -75,6 +77,8 @@ fn incremental_cache_budgets_and_page_scope_are_enforced() {
         .next()
         .unwrap()
         .transform
+        .as_mut()
+        .unwrap()
         .origin
         .x = mo_common::Emu::new(50);
     let cached = cache.compile(&q, &|| false).unwrap();

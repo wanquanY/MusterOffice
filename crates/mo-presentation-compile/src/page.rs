@@ -156,6 +156,12 @@ fn build_page(
             objects += 1;
             let o = &d.objects[&p.object];
             let geometry = match &o.content {
+                ObjectContent::RetainedSource { .. } => {
+                    return Err(crate::CompileError::Invalid(
+                        "retained content requires source plan compiler",
+                    )
+                    .into());
+                }
                 ObjectContent::Group { .. } => {
                     if matches!(o.appearance.stroke, Inherited::Value(Stroke::Solid { .. })) {
                         return Err(unsupported(Some(&o.id), PageFeature::GroupStroke));

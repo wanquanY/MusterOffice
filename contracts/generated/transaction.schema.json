@@ -1137,14 +1137,21 @@
           "$ref": "#/$defs/ContainerId"
         },
         "transform": {
-          "$ref": "#/$defs/Transform"
+          "description": "Missing only for retained native coordinates that cannot be represented\nas a complete direct declaration. Never substitute a resolved identity.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Transform"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "additionalProperties": false,
       "required": [
         "id",
         "parent",
-        "transform",
         "appearance",
         "accessibility",
         "content"
@@ -1152,6 +1159,38 @@
     },
     "ObjectContent": {
       "oneOf": [
+        {
+          "description": "Original geometry, styles, relationships and unknown extension semantics\nremain in the bound source. This is not a generic path/text promotion.",
+          "type": "object",
+          "properties": {
+            "children": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ObjectId"
+              }
+            },
+            "kind": {
+              "type": "string",
+              "const": "retainedSource"
+            },
+            "native_kind": {
+              "$ref": "#/$defs/RetainedObjectKind"
+            },
+            "paragraphs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/RetainedParagraph"
+              }
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "native_kind",
+            "children",
+            "paragraphs"
+          ]
+        },
         {
           "type": "object",
           "properties": {
@@ -2008,6 +2047,63 @@
         "sourcePackage",
         "embeddedWorkbook",
         "model3d"
+      ]
+    },
+    "RetainedObjectKind": {
+      "type": "string",
+      "enum": [
+        "shape",
+        "picture",
+        "group",
+        "connector",
+        "graphicFrame"
+      ]
+    },
+    "RetainedParagraph": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ParagraphId"
+        },
+        "runs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RetainedTextRun"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "runs"
+      ]
+    },
+    "RetainedRunKind": {
+      "type": "string",
+      "enum": [
+        "text",
+        "break",
+        "field"
+      ]
+    },
+    "RetainedTextRun": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/RunId"
+        },
+        "kind": {
+          "$ref": "#/$defs/RetainedRunKind"
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "text"
       ]
     },
     "Rgba": {

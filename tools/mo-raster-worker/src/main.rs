@@ -14,11 +14,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     if args.len() == 1 && args[0] == "--pptx-playback-session" {
         return source_playback::run();
     }
-    if args.len() == 1 && args[0] == "--preview-document" {
-        return preview_batch::run(false);
-    }
-    if args.len() == 1 && args[0] == "--preview-author-document" {
-        return preview_batch::run(true);
+    if args.len() == 1
+        && let Some(mode) = args[0].to_str()
+        && [
+            "--preview-document",
+            "--preview-author-document",
+            "--preview-retained-document",
+        ]
+        .contains(&mode)
+    {
+        return preview_batch::run(mode);
     }
     let execute: Option<Execute> = match args.as_slice() {
         [] => Some(mo_kernel_api::render_paths_json),

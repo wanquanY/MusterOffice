@@ -10,9 +10,9 @@ mod xml;
 use mo_opc::PackageLimits;
 use mo_presentation_model::ValidationLimits;
 
-pub use write::{export, export_plan_to, export_to};
+pub use write::{export, export_plan_to, export_presentation_plan_to, export_to};
 
-pub use mo_presentation_source::PptxError;
+pub use mo_presentation_source::{PptxError, plan::PresentationPlan};
 
 pub use mo_presentation_source::author::{AuthorPlan, ExportDefaults, FontDelivery};
 

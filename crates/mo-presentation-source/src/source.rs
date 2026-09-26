@@ -3,6 +3,7 @@
 pub mod color;
 mod color_mapping;
 mod compatibility;
+pub mod document;
 pub mod drawingml;
 mod edit;
 pub mod effects;
@@ -14,6 +15,7 @@ pub mod line;
 mod links;
 mod paint;
 mod presentation;
+mod preserve;
 mod surface;
 pub mod text;
 pub mod theme;
@@ -262,6 +264,7 @@ pub struct SourceTextTarget {
 
 pub(crate) struct BoundIndex {
     index: SourceIndex,
+    object_positions: BTreeMap<String, BTreeMap<u32, usize>>,
     bindings: BTreeMap<SourceTextTarget, usize>,
     transforms: BTreeMap<String, BTreeMap<u32, transform_edit::Binding>>,
 }

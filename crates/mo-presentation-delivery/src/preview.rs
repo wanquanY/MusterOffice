@@ -15,6 +15,10 @@ pub struct PreviewFonts<'a> {
     pub content: Content<'a>,
 }
 pub enum PreviewInput<'a> {
+    Retained {
+        plan: &'a mo_pptx::source::document::SourcePlan<'a>,
+        source: Content<'a>,
+    },
     /// An inspected source route; the worker revalidates the immutable bytes.
     Source(Content<'a>),
     /// Direct author semantics; the worker reconstructs the same typed plan.

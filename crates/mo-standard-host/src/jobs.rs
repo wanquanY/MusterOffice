@@ -265,7 +265,7 @@ impl StandardHost {
         let request = db::request(&self.connection, context, &info)?;
         // Immutable revisions can be decoded/validated outside the write lock.
         let snapshot = match &request.action {
-            DocumentAction::Create { .. } => None,
+            DocumentAction::Import { .. } | DocumentAction::Create { .. } => None,
             DocumentAction::Apply {
                 document_id,
                 base_revision,

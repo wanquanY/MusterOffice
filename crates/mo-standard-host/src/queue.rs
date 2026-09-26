@@ -6,12 +6,12 @@ use rusqlite::{Connection, OptionalExtension, TransactionBehavior, params};
 
 const NEXT_JOB: &str = "SELECT id FROM jobs WHERE scope=?1 AND principal=?2
     AND json_extract(info,'$.state')='queued' AND json_extract(info,'$.executorDigest')=?3
-    AND ((operation='presentations.create' AND ?4) OR (operation='presentations.apply' AND ?5) OR (operation='presentations.export' AND ?6))
+    AND ((operation='presentations.create' AND ?4) OR (operation='presentations.apply' AND ?5) OR (operation='presentations.export' AND ?6) OR (operation='presentations.import' AND ?7))
     ORDER BY CAST(json_extract(info,'$.createdAt') AS INTEGER),id LIMIT 1";
 const EXPIRED_JOBS: &str = "SELECT id FROM jobs WHERE scope=?1 AND principal=?2
     AND json_extract(info,'$.state')='running' AND CAST(json_extract(info,'$.leaseUntil') AS INTEGER)<=?3
-    AND ((operation='presentations.create' AND ?4) OR (operation='presentations.apply' AND ?5) OR (operation='presentations.export' AND ?6))
-    ORDER BY CAST(json_extract(info,'$.leaseUntil') AS INTEGER),id LIMIT ?7";
+    AND ((operation='presentations.create' AND ?4) OR (operation='presentations.apply' AND ?5) OR (operation='presentations.export' AND ?6) OR (operation='presentations.import' AND ?7))
+    ORDER BY CAST(json_extract(info,'$.leaseUntil') AS INTEGER),id LIMIT ?8";
 
 pub(crate) fn migrate(connection: &Connection) -> Result<(), Failure> {
     connection.execute_batch(
@@ -20,11 +20,12 @@ pub(crate) fn migrate(connection: &Connection) -> Result<(), Failure> {
     ).map_err(db::error)
 }
 
-fn allowed(context: &CallContext) -> [bool; 3] {
+fn allowed(context: &CallContext) -> [bool; 4] {
     [
         ServiceOperation::Create,
         ServiceOperation::Apply,
         ServiceOperation::Export,
+        ServiceOperation::Import,
     ]
     .map(|operation| operation.authorize(context).is_ok())
 }
@@ -38,7 +39,7 @@ impl StandardHost {
         context: &CallContext,
         now: UnixMillis,
     ) -> Result<Option<WorkItem>, Failure> {
-        let [create, apply, export] = allowed(context);
+        let [create, apply, export, import] = allowed(context);
         let tx = self
             .connection
             .transaction_with_behavior(TransactionBehavior::Immediate)
@@ -52,7 +53,8 @@ impl StandardHost {
                     self.executor.as_str(),
                     create,
                     apply,
-                    export
+                    export,
+                    import
                 ],
                 |row| row.get(0),
             )
@@ -96,7 +98,7 @@ impl StandardHost {
                 "recovery batch must be 1..=256",
             ));
         }
-        let [create, apply, export] = allowed(context);
+        let [create, apply, export, import] = allowed(context);
         let tx = self
             .connection
             .transaction_with_behavior(TransactionBehavior::Immediate)
@@ -112,6 +114,7 @@ impl StandardHost {
                         create,
                         apply,
                         export,
+                        import,
                         limit
                     ],
                     |r| r.get::<_, String>(0),

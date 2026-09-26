@@ -1,0 +1,50 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:pptx-import-request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PptxImportRequest",
+  "type": "object",
+  "properties": {
+    "documentId": {
+      "$ref": "#/$defs/DocumentId"
+    },
+    "expectedSourceSha256": {
+      "$ref": "#/$defs/Digest"
+    },
+    "resourceId": {
+      "$ref": "#/$defs/ResourceId"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "documentId",
+    "resourceId",
+    "expectedSourceSha256"
+  ],
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "DocumentId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ResourceId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    }
+  }
+}

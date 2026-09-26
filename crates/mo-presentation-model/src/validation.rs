@@ -275,27 +275,21 @@ impl Validator<'_> {
                     "object key differs from identity",
                 );
             }
-            self.size(
-                object.transform.size,
-                false,
-                &format!("{path}/transform/size"),
-            );
-            self.value(
-                object
-                    .transform
-                    .origin
-                    .x
-                    .checked_add(object.transform.size.width)
-                    .is_ok()
-                    && object
-                        .transform
-                        .origin
-                        .y
-                        .checked_add(object.transform.size.height)
-                        .is_ok(),
-                &format!("{path}/transform"),
-                "bounds exceed coordinate range",
-            );
+            if let Some(t) = object.transform {
+                self.size(t.size, false, &format!("{path}/transform/size"));
+                self.value(
+                    t.origin.x.checked_add(t.size.width).is_ok()
+                        && t.origin.y.checked_add(t.size.height).is_ok(),
+                    &format!("{path}/transform"),
+                    "bounds exceed coordinate range",
+                );
+            } else {
+                self.value(
+                    matches!(object.content, ObjectContent::RetainedSource { .. }),
+                    &format!("{path}/transform"),
+                    "authored object requires a direct transform",
+                );
+            }
             if let Inherited::Value(Stroke::Solid { width, .. }) = object.appearance.stroke {
                 self.value(
                     width.get() >= 0,
@@ -304,6 +298,48 @@ impl Validator<'_> {
                 );
             }
             match &object.content {
+                ObjectContent::RetainedSource {
+                    native_kind,
+                    children,
+                    paragraphs,
+                } => {
+                    self.value(
+                        d.source_bindings
+                            .as_ref()
+                            .is_some_and(|b| b.objects.contains_key(key)),
+                        &path,
+                        "retained object requires immutable source binding",
+                    );
+                    self.value(
+                        *native_kind == RetainedObjectKind::Group || children.is_empty(),
+                        &path,
+                        "only a native group can own children",
+                    );
+                    self.list(
+                        children,
+                        &ContainerId::Group(key.clone()),
+                        &format!("{path}/content/children"),
+                    );
+                    for p in paragraphs {
+                        if !self.paragraphs.insert(p.id.clone()) {
+                            self.issue(
+                                ValidationCode::DuplicateIdentity,
+                                &path,
+                                "duplicate retained paragraph ID",
+                            );
+                        }
+                        for r in &p.runs {
+                            if !self.runs.insert(r.id.clone()) {
+                                self.issue(
+                                    ValidationCode::DuplicateIdentity,
+                                    &path,
+                                    "duplicate retained run ID",
+                                );
+                            }
+                            self.text_scalars = self.text_scalars.saturating_add(r.scalar_len());
+                        }
+                    }
+                }
                 ObjectContent::Shape { geometry, text } => {
                     self.geometry(geometry, &format!("{path}/content/geometry"));
                     if let Some(text) = text {
@@ -353,6 +389,11 @@ impl Validator<'_> {
                 "/objects",
                 "text exceeds admission scalar limit",
             );
+        }
+        let source_report = crate::source_validation::validate(d, self.limits.max_issues);
+        self.report.truncated |= source_report.truncated;
+        for issue in source_report.issues {
+            self.issue(issue.code, issue.path, issue.message);
         }
         self.report
     }
@@ -404,7 +445,7 @@ impl Validator<'_> {
                         self.document
                             .objects
                             .get(parent)
-                            .is_some_and(|p| matches!(p.content, ObjectContent::Group { .. })),
+                            .is_some_and(|p| p.content.children().is_some()),
                         &format!("{path}/parent"),
                     );
                     current = parent;

@@ -8,6 +8,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 pub enum ServiceOperation {
+    #[serde(rename = "presentations.import")]
+    Import,
     #[serde(rename = "capabilities")]
     Capabilities,
     #[serde(rename = "schemas.get")]
@@ -40,9 +42,10 @@ pub enum ServiceOperation {
     CancelJob,
 }
 impl ServiceOperation {
-    pub const ALL: [Self; 15] = [
+    pub const ALL: [Self; 16] = [
         Self::Capabilities,
         Self::Schema,
+        Self::Import,
         Self::Create,
         Self::Apply,
         Self::Export,
@@ -61,6 +64,7 @@ impl ServiceOperation {
         use Permission as P;
         match self {
             Self::Capabilities | Self::Schema => &[],
+            Self::Import => &[P::Create, P::ReadAssets],
             Self::Create => &[P::Create],
             Self::Apply => &[P::Edit],
             Self::Export => &[P::Export, P::ReadDocument, P::ReadAssets],
@@ -83,7 +87,7 @@ impl ServiceOperation {
     }
     pub fn profile(self) -> Option<OperationProfile> {
         match self {
-            Self::Create | Self::Apply => Some(OperationProfile::AuthorModel),
+            Self::Import | Self::Create | Self::Apply => Some(OperationProfile::AuthorModel),
             Self::Export => Some(OperationProfile::ResourceDelivery),
             _ => None,
         }
@@ -198,7 +202,9 @@ impl HostCapabilities {
                     available: unavailable_reason.is_none(),
                     unavailable_reason,
                     revision_policy: match op {
-                        ServiceOperation::Create => Some(RevisionPolicy::NewDocument),
+                        ServiceOperation::Import | ServiceOperation::Create => {
+                            Some(RevisionPolicy::NewDocument)
+                        }
                         ServiceOperation::Apply => Some(RevisionPolicy::CompareCurrentHead),
                         ServiceOperation::Export => Some(RevisionPolicy::ImmutableHistorical),
                         ServiceOperation::ReadDocument => Some(RevisionPolicy::ReadSelectedOrHead),

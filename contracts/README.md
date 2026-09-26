@@ -52,7 +52,7 @@ Schema 检查形状；Rust 语义验证器另查引用、所有权、循环、�
 
 当前规范摘要固定 UTF-8、UTF-8 键排序、无多余空白、无 Unicode 归一化，数值只接受安全整数；EMU/ticks 用十进制字符串。它是 `MusterOffice canonical JSON v1`，不宣称 RFC 8785 JCS。摘要有用途域分隔，不是权限凭据。
 
-`pptx-source-response.schema.json` 描述原生来源的部分索引或类型化错误，未解析内容由 notices/barriers 明示。`pptx-text-edits.schema.json` 要求源包摘要、部件作用域对象/段落/run、旧文本和替换文本；内核重新建立绑定，不信任调用方传入的 XML 位置。生产全局身份、完整 SourceBinding、跨 run 操作及 MCP 信封尚待实现，见[来源编辑实现](../docs/implementation/pptx-source.md)。
+`pptx-source-response.schema.json` 描述原生来源的部分索引或类型化错误，未解析内容由 notices/barriers 明示。`pptx-text-edits.schema.json` 要求源包摘要、部件作用域对象/段落/run、旧文本和替换文本；内核重新建立绑定，不信任调用方传入的 XML 位置。这些是格式工具合同。版本化入口 `presentations.import` 和 `pptx-import-request/response.schema.json` 从真实来源建立稳定领域 ID 与不可变 SourceBindings，返回普通 SnapshotRecord，后续复用现有事务；当前支持安全单 run 文本和完整直接坐标修改，不宣称完整 SourceBinding 覆盖或跨 run 编辑。权限、保留规则及 MCP 入口见[统一来源文档](../docs/implementation/source-backed-document.md)。
 
 来源合同中的 `themes` 保存共享主题声明，`themeSelection` 分别绑定颜色/字体/格式方案；`colorMapping` 保留作者映射，`resolvedColorMapping` 引用有效显式表。物理元素序号仅在对应不可变来源版本内有效，不是外部可提交的写入偏移。声明与来源绑定不等于已经完成颜色求值、字体塑形或渲染，见[主题声明](../docs/implementation/source-themes.md)和[颜色映射](../docs/implementation/source-color-mapping.md)。
 

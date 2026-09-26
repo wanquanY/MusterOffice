@@ -115,6 +115,13 @@ fn references(value: &Value, names: &mut BTreeSet<String>) {
 
 pub const BINDINGS: &[Binding] = &[
     Binding {
+        name: "mo_presentations_import",
+        operation: ServiceOperation::Import,
+        host_tag: "submit",
+        action: Some("import"),
+        description: "Import an authorized PPTX asset into the same revisioned document and edit transactions. Native content is retained; protected or unsupported mutations fail atomically.",
+    },
+    Binding {
         name: "mo_capabilities",
         operation: ServiceOperation::Capabilities,
         host_tag: "capabilities",

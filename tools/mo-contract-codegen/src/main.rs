@@ -256,6 +256,14 @@ fn main() -> Result<(), Box<dyn Error>> {
         ("validation-report", schema::<ValidationReport>()),
         ("package-inspection", schema::<PackageInspectionResponse>()),
         ("pptx-export-request", schema::<PptxExportRequest>()),
+        (
+            "pptx-import-request",
+            schema::<mo_kernel_api::PptxImportRequest>(),
+        ),
+        (
+            "pptx-import-response",
+            schema::<mo_kernel_api::PptxImportResponse>(),
+        ),
         ("pptx-source-response", schema::<PptxSourceResponse>()),
         ("pptx-text-edits", schema::<SourceTextEdits>()),
         ("pptx-transform-edits", schema::<SourceTransformEdits>()),

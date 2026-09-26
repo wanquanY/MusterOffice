@@ -33,6 +33,8 @@ struct PreviewEvidence {
     pptx_sha256: Digest,
     #[serde(default)]
     author_plan_sha256: Option<Digest>,
+    #[serde(default)]
+    plan_sha256: Option<Digest>,
     preview_asset: DeliveryAsset,
     render: SourceResourcePageRasterInfo,
 }
@@ -89,12 +91,22 @@ pub(super) fn validate(
         snapshot.document.page_size,
         context.value.settings.preview_width,
     )?;
-    let plan = mo_pptx::AuthorPlan::new(
-        &snapshot.document,
-        &context.value.settings.defaults,
-        Default::default(),
-        input.check,
-    )?;
+    let plan_identity = {
+        let resources = ReceivedResources {
+            input,
+            context: &context.value,
+        };
+        mo_pptx::PresentationPlan::new(
+            &snapshot.document,
+            &context.value.settings.defaults,
+            &resources,
+            Default::default(),
+            Default::default(),
+            input.check,
+        )?
+        .identity()
+        .clone()
+    };
     let mut evidence_ids = BTreeSet::new();
     for ((preview, evidence_id), slide) in bundle
         .previews
@@ -115,11 +127,20 @@ pub(super) fn validate(
         // profile binds semantic rendering to the independently rebuilt plan.
         let identity_matches = match evidence.format.as_str() {
             "musteroffice.preview-evidence/1-draft" => {
-                evidence.author_plan_sha256.is_none() && page.source_sha256 == *pptx_sha
+                evidence.plan_sha256.is_none()
+                    && evidence.author_plan_sha256.is_none()
+                    && page.source_sha256 == *pptx_sha
             }
             "musteroffice.preview-evidence/2-draft" => {
-                evidence.author_plan_sha256.as_ref() == Some(plan.identity())
-                    && &page.source_sha256 == plan.identity()
+                snapshot.document.source_bindings.is_none()
+                    && evidence.plan_sha256.is_none()
+                    && evidence.author_plan_sha256.as_ref() == Some(&plan_identity)
+                    && page.source_sha256 == plan_identity
+            }
+            "musteroffice.preview-evidence/3-draft" => {
+                evidence.author_plan_sha256.is_none()
+                    && evidence.plan_sha256.as_ref() == Some(&plan_identity)
+                    && page.source_sha256 == plan_identity
             }
             _ => false,
         };
@@ -152,4 +173,26 @@ pub(super) fn validate(
         )?;
     }
     Ok(())
+}
+
+struct ReceivedResources<'a, 'b> {
+    input: &'a Inputs<'b>,
+    context: &'a context::Context,
+}
+impl mo_pptx::Resources for ReceivedResources<'_, '_> {
+    fn open(
+        &self,
+        id: &mo_common::ResourceId,
+    ) -> Result<mo_pptx::ResourceData<'_>, mo_pptx::PptxError> {
+        let asset = self
+            .context
+            .resource_assets
+            .get(id)
+            .and_then(|id| self.input.assets.get(id))
+            .ok_or_else(|| mo_pptx::PptxError::ResourceRequired(id.clone()))?;
+        Ok(mo_pptx::ResourceData {
+            reader: asset.1.reader,
+            byte_length: asset.1.byte_length,
+        })
+    }
 }

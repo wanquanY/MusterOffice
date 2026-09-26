@@ -201,14 +201,21 @@ pub fn build<S: OutputStore>(
         PPTX_MIME,
         pptx_limits.package.max_package_bytes,
     )?;
-    let plan = mo_pptx::AuthorPlan::new(
+    let plan = mo_pptx::PresentationPlan::new(
         document,
         &inputs.settings.defaults,
+        inputs.resources,
         pptx_limits.document,
+        pptx_limits.package,
         check,
     )?;
-    let package =
-        mo_pptx::export_plan_to(&plan, inputs.resources, sink, pptx_limits.package, check)?;
+    let package = mo_pptx::export_presentation_plan_to(
+        &plan,
+        inputs.resources,
+        sink,
+        pptx_limits.package,
+        check,
+    )?;
     let index = inspect_source(package.package(), Default::default(), check)?;
     if index.slides.len() != document.slide_order.len()
         || index.page_size != Some(document.page_size)
@@ -300,7 +307,13 @@ pub fn build<S: OutputStore>(
     }
     renderer.render_pages(
         &requests,
-        PreviewInput::Author { plan: &plan, resources: inputs.resources },
+        match &plan {
+            mo_pptx::PresentationPlan::Author(plan) => PreviewInput::Author { plan, resources: inputs.resources },
+            mo_pptx::PresentationPlan::Retained { plan, .. } => {
+                let original = inputs.resources.open(&document.source_bindings.as_ref().expect("source plan bindings").resource)?;
+                PreviewInput::Retained { plan, source: Content { reader: original.reader, byte_length: original.byte_length } }
+            }
+        },
         // ReaderAt is an immutable resource. The copied font artifact was
         // verified against font_digest; face identities are checked at prepare.
         PreviewFonts { manifest: inputs.settings.fonts.as_ref(), content: Content { reader: inputs.fonts.reader, byte_length: inputs.fonts.byte_length } },
@@ -338,7 +351,7 @@ pub fn build<S: OutputStore>(
         )?;
         let asset = outputs.add(asset)?;
         let evidence=outputs.json(&format!("preview-evidence:{ordinal}"),"application/json",AssetRole::QualityReport,
-            &serde_json::json!({"format":"musteroffice.preview-evidence/2-draft","authorPlanSha256":plan.identity(),"pageId":page_id,"pptxSha256":pptx_asset.sha256,"previewAsset":asset,"render":image.info}))?;
+            &serde_json::json!({"format":"musteroffice.preview-evidence/3-draft","planSha256":plan.identity(),"pageId":page_id,"pptxSha256":pptx_asset.sha256,"previewAsset":asset,"render":image.info}))?;
         preview_evidence.push(evidence.id);
         previews.push(Preview {
             page_id: page_id.clone(),

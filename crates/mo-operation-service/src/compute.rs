@@ -73,7 +73,19 @@ pub fn compute_mutation(
         .map_err(|_| Failure::new(FailureCode::InputInvalid, "canonical operation request"))?;
     let limits = ValidationLimits::default();
     let (snapshot, transaction, base_revision, base_semantic_digest) = match &request.action {
+        DocumentAction::Import { .. } => {
+            return Err(Failure::new(
+                FailureCode::ResourceIncomplete,
+                "import requires authorized source bytes",
+            ));
+        }
         DocumentAction::Create { document } => {
+            if document.source_bindings.is_some() {
+                return Err(Failure::new(
+                    FailureCode::InputInvalid,
+                    "source-backed documents require import admission",
+                ));
+            }
             if base.is_some() {
                 return Err(Failure::new(
                     FailureCode::DocumentExists,
@@ -122,6 +134,24 @@ pub fn compute_mutation(
         }
     };
     cancelled(check)?;
+    candidate(
+        request_digest,
+        snapshot,
+        transaction,
+        base_revision,
+        base_semantic_digest,
+        check,
+    )
+}
+
+fn candidate(
+    request_digest: Digest,
+    snapshot: SnapshotRecord,
+    transaction: Option<Box<mo_presentation_edit::TransactionReceipt>>,
+    base_revision: Option<Digest>,
+    base_semantic_digest: Option<Digest>,
+    check: &dyn Fn() -> bool,
+) -> Result<MutationCandidate, Failure> {
     let receipt = MutationReceipt {
         document_id: snapshot.document.id.clone(),
         revision: snapshot.revision.clone(),
@@ -142,4 +172,72 @@ pub fn compute_mutation(
         snapshot_json,
         receipt,
     })
+}
+
+/// Import resolves authorized immutable bytes once, then publishes through the
+/// same candidate, revision, receipt and host CAS owner as authored documents.
+pub fn compute_import(
+    request: &OperationRequest,
+    base: Option<SnapshotRecord>,
+    asset: ExportAsset<'_>,
+    check: &dyn Fn() -> bool,
+) -> Result<MutationCandidate, Failure> {
+    cancelled(check)?;
+    request.validate_profile()?;
+    let DocumentAction::Import {
+        document_id,
+        source,
+    } = &request.action
+    else {
+        return Err(Failure::new(
+            FailureCode::InputInvalid,
+            "source import action required",
+        ));
+    };
+    if base.is_some() {
+        return Err(Failure::new(
+            FailureCode::DocumentExists,
+            "document already exists",
+        ));
+    }
+    if asset.info.id != source.asset_id {
+        return Err(Failure::new(
+            FailureCode::ResourceConflict,
+            "source asset identity differs",
+        ));
+    }
+    let package = mo_opc::Package::open(
+        asset.reader,
+        asset.info.descriptor.byte_length.get(),
+        Default::default(),
+        check,
+    )
+    .map_err(|e| delivery_failure(mo_presentation_delivery::DeliveryError::Pptx(e.into())))?;
+    if package.sha256() != &asset.info.descriptor.sha256 {
+        return Err(Failure::new(
+            FailureCode::ResourceConflict,
+            "source asset digest differs",
+        ));
+    }
+    let document = mo_pptx::source::document::import_document(
+        &package,
+        document_id.clone(),
+        source.resource_id.clone(),
+        Default::default(),
+        check,
+    )
+    .map_err(|e| delivery_failure(mo_presentation_delivery::DeliveryError::Pptx(e)))?;
+    if document.resources[&source.resource_id].media_type != asset.info.descriptor.media_type {
+        return Err(Failure::new(
+            FailureCode::ResourceConflict,
+            "source media type differs",
+        ));
+    }
+    let snapshot = Snapshot::new(document, ValidationLimits::default())
+        .map_err(edit_error)?
+        .into_record();
+    let digest = request
+        .digest()
+        .map_err(|_| Failure::new(FailureCode::InputInvalid, "canonical operation request"))?;
+    candidate(digest, snapshot, None, None, None, check)
 }

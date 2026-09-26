@@ -1,7 +1,7 @@
 use super::*;
 use crate::{A, PptxError, cancelled};
-use mo_opc::{PartName, RewritePlan};
-use mo_xml::{ExpandedName, TextReplacement, TextRewriteLimits};
+use mo_opc::PartName;
+use mo_xml::{ExpandedName, TextReplacement};
 use std::collections::BTreeSet;
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
@@ -27,26 +27,28 @@ pub fn edit_source_text<R: ReaderAt>(
     limits: SourceLimits,
     check: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, PptxError> {
-    cancelled(check)?;
-    if source.sha256() != &request.expected_source_sha256 {
-        return Err(conflict("source package digest changed"));
-    }
-    if request.edits.len() > limits.max_edits {
-        return Err(PptxError::Limit("source text edits"));
-    }
-    let mut bound = presentation::read(source, limits, check)?;
+    let plan = super::preserve::prepare(
+        source,
+        request,
+        &SourceTransformEdits {
+            expected_source_sha256: request.expected_source_sha256.clone(),
+            edits: vec![],
+        },
+        limits,
+        check,
+    )?;
+    plan.write(source, limits, check)
+}
+
+pub(super) fn prepare(
+    bound: &mut BoundIndex,
+    request: &SourceTextEdits,
+    check: &dyn Fn() -> bool,
+) -> Result<BTreeMap<PartName, Vec<TextReplacement>>, PptxError> {
     let mut selected = BTreeSet::new();
     let mut replacements: BTreeMap<PartName, Vec<TextReplacement>> = BTreeMap::new();
-    let mut edit_bytes = 0_usize;
     for edit in &request.edits {
         cancelled(check)?;
-        edit_bytes = edit_bytes
-            .checked_add(edit.expected_text.len())
-            .and_then(|n| n.checked_add(edit.replacement.len()))
-            .ok_or(PptxError::Limit("source edit bytes"))?;
-        if edit_bytes > limits.max_text_bytes {
-            return Err(PptxError::Limit("source edit bytes"));
-        }
         if !selected.insert(&edit.target) {
             return Err(conflict("duplicate source text target"));
         }
@@ -59,10 +61,15 @@ pub fn edit_source_text<R: ReaderAt>(
             .surfaces
             .get_mut(&edit.target.part)
             .ok_or_else(|| conflict("source surface missing"))?;
+        let position = bound
+            .object_positions
+            .get(&edit.target.part)
+            .and_then(|p| p.get(&edit.target.object_id))
+            .copied()
+            .ok_or_else(|| conflict("source object missing"))?;
         let object = surface
             .objects
-            .iter_mut()
-            .find(|o| o.native_id == edit.target.object_id)
+            .get_mut(position)
             .ok_or_else(|| conflict("source object missing"))?;
         let run = object
             .paragraphs
@@ -100,36 +107,18 @@ pub fn edit_source_text<R: ReaderAt>(
                 replacement: edit.replacement.clone(),
             });
     }
-    let mut plan = RewritePlan::new();
-    for (part, edits) in replacements {
-        let original = source.read_part(&part, limits.package.xml.max_bytes as u64, check)?;
-        let changed = mo_xml::rewrite_text(
-            &original,
-            &edits,
-            TextRewriteLimits {
-                xml: limits.package.xml,
-                max_replacements: limits.max_edits,
-                ..Default::default()
-            },
-            check,
-        )?;
-        plan.replace_part(part, changed)?;
-    }
-    let bytes = plan.to_bytes(source, check)?;
-    verify_candidate(bound.index, &bytes, limits, check)?;
-    Ok(bytes)
+    Ok(replacements)
 }
 
 /// The intended projection is computed before reading the result. The observed
 /// candidate may supply only new byte metadata, never expected semantic values.
 pub(super) fn verify_candidate(
     mut expected: SourceIndex,
-    bytes: &[u8],
+    actual: &dyn PackageRead,
     limits: SourceLimits,
     check: &dyn Fn() -> bool,
 ) -> Result<(), PptxError> {
-    let actual = Package::open(bytes, bytes.len() as u64, limits.package, check)?;
-    let observed = inspect_source(&actual, limits, check)?;
+    let observed = inspect_source(actual, limits, check)?;
     expected.source_sha256 = observed.source_sha256.clone();
     expected.byte_length = observed.byte_length;
     for (part, surface) in &mut expected.surfaces {

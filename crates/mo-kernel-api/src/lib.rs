@@ -1,3 +1,5 @@
+mod pptx_import;
+pub use pptx_import::*;
 mod delivery;
 mod image_decode;
 pub use delivery::*;

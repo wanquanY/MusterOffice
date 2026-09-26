@@ -301,7 +301,22 @@ pub(super) fn read(
         "partial native projection; styles, layout, advanced objects and playback unresolved"
             .into(),
     );
+    let object_positions = surfaces
+        .iter()
+        .map(|(part, surface)| {
+            (
+                part.clone(),
+                surface
+                    .objects
+                    .iter()
+                    .enumerate()
+                    .map(|(i, o)| (o.native_id, i))
+                    .collect(),
+            )
+        })
+        .collect();
     Ok(BoundIndex {
+        object_positions,
         index: SourceIndex {
             text: text_catalog,
             compatibility_profile: compatibility::PROFILE_ID.into(),

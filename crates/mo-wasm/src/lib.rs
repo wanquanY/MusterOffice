@@ -172,3 +172,8 @@ pub fn inspect_pptx_timing(request: &str, source: &[u8]) -> String {
 pub fn compile_playback_page(request: &str) -> String {
     mo_kernel_api::compile_playback_page_json(request, &|| false)
 }
+
+#[wasm_bindgen]
+pub fn import_pptx_document(request: &str, source: &[u8]) -> String {
+    mo_kernel_api::import_pptx_document_json(request, source)
+}

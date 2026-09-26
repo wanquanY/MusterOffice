@@ -14,7 +14,8 @@ pub enum ContractVersion {
 }
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 pub enum OperationProfile {
-    /// Existing typed author model and transactions; no full-slide quality claim.
+    /// Revisioned authored/retained documents. The historical wire profile name
+    /// is retained; it makes no full-slide quality claim.
     #[serde(rename = "presentations-author-model-v01-draft")]
     AuthorModel,
     #[serde(rename = "presentations-pptx-resource-delivery-v1-draft")]
@@ -35,6 +36,10 @@ pub enum OutputMode {
     deny_unknown_fields
 )]
 pub enum DocumentAction {
+    Import {
+        document_id: DocumentId,
+        source: AssetBinding,
+    },
     Create {
         document: Box<Document>,
     },
@@ -53,6 +58,7 @@ pub enum DocumentAction {
 impl DocumentAction {
     pub fn service_operation(&self) -> ServiceOperation {
         match self {
+            Self::Import { .. } => ServiceOperation::Import,
             Self::Create { .. } => ServiceOperation::Create,
             Self::Apply { .. } => ServiceOperation::Apply,
             Self::Export { .. } => ServiceOperation::Export,
@@ -60,6 +66,7 @@ impl DocumentAction {
     }
     pub fn name(&self) -> &'static str {
         match self {
+            Self::Import { .. } => "presentations.import",
             Self::Create { .. } => "presentations.create",
             Self::Apply { .. } => "presentations.apply",
             Self::Export { .. } => "presentations.export",
@@ -68,7 +75,9 @@ impl DocumentAction {
     pub fn document_id(&self) -> &DocumentId {
         match self {
             Self::Create { document } => &document.id,
-            Self::Apply { document_id, .. } | Self::Export { document_id, .. } => document_id,
+            Self::Import { document_id, .. }
+            | Self::Apply { document_id, .. }
+            | Self::Export { document_id, .. } => document_id,
         }
     }
 }

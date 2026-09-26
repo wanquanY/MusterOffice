@@ -86,6 +86,11 @@ impl<'a> Drawing<'a> {
         let o = &self.document.objects[id];
         let native = self.objects[&self.object_ids[id]];
         match &o.content {
+            ObjectContent::RetainedSource { .. } => {
+                return Err(PptxError::Unsupported(
+                    "retained content requires source plan writer".into(),
+                ));
+            }
             ObjectContent::Shape { .. } => {
                 x.raw("<p:sp><p:nvSpPr>")?;
                 self.nonvisual(x, o)?;

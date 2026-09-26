@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { readFileSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -9,7 +11,8 @@ const [cliPath, wasmModulePath] = process.argv.slice(2);
 if (!cliPath || !wasmModulePath) throw new Error('usage: node native-wasm-parity.mjs <cli> <wasm-node-js>');
 const cli = resolve(cliPath);
 const modulePath = resolve(wasmModulePath);
-const { dispatch_json } = createRequire(import.meta.url)(modulePath);
+const wasm = createRequire(import.meta.url)(modulePath);
+const { dispatch_json } = wasm;
 const document = JSON.parse(readFileSync(new URL('../../fixtures/presentations/basic-shape.json', import.meta.url), 'utf8'));
 const cases = [];
 
@@ -31,7 +34,7 @@ assert.equal(compare('validate', { operation: 'validate', document }, 'validated
 const initial = compare('initialize', { operation: 'initialize', document }, 'initialized').snapshot;
 function transaction(operations, snapshot = initial) {
   return { operation: 'prepare', snapshot, transaction: {
-    documentId: document.id, requestId: `request:${cases.length}`, baseRevision: snapshot.revision,
+    documentId: snapshot.document.id, requestId: `request:${cases.length}`, baseRevision: snapshot.revision,
     operations: operations.map((operation, index) => ({ operationId: `operation:${index}`, operation })),
   }};
 }
@@ -65,10 +68,42 @@ for (const text of ['é', 'e\u0301', 'مرحبا بالعالم', '中文「段�
 }
 assert.notEqual(cases.find(c => c.name === 'unicode-é').response.snapshot.semanticDigest, cases.find(c => c.name === 'unicode-e\u0301').response.snapshot.semanticDigest);
 
+// Admit real native bytes into the same domain model, then run the exact
+// transaction endpoint above. This additionally covers import binding and
+// revision computation; it does not assert rendering or Office interoperability.
+const temporary = mkdtempSync(join(tmpdir(), 'mo-import-parity-'));
+try {
+  const exportRequest = readFileSync(new URL('../../fixtures/presentations/native-export/request.json', import.meta.url), 'utf8');
+  const resources = readFileSync(new URL('../../fixtures/presentations/native-export/resources.bin', import.meta.url));
+  const bytes = wasm.export_pptx(exportRequest, resources);
+  const request = { documentId: 'imported-parity', resourceId: 'original', expectedSourceSha256: createHash('sha256').update(bytes).digest('hex') };
+  const input = JSON.stringify(request);
+  writeFileSync(join(temporary, 'input.json'), input);
+  writeFileSync(join(temporary, 'source.pptx'), bytes);
+  const native = spawnSync(cli, ['pptx-import', join(temporary, 'input.json'), join(temporary, 'source.pptx')], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+  assert.equal(native.status, 0, native.stderr);
+  const imported = wasm.import_pptx_document(input, bytes);
+  assert.equal(imported, native.stdout.trimEnd(), 'import native/WASM bytes differ');
+  const response = JSON.parse(imported);
+  assert.equal(response.status, 'imported');
+  cases.push({ name: 'real-source-import', input, response });
+  const snapshot = response.snapshot;
+  const object = Object.values(snapshot.document.objects).find(o => o.parent.kind === 'slide' && o.content.paragraphs.length && o.content.paragraphs[0].runs.length && o.transform);
+  const p = object.content.paragraphs[0];
+  const splice = { kind: 'spliceText', object: object.id, paragraph: p.id, run: p.runs[0].id, start: 0, delete: 0, insert: '中文🚀' };
+  const transform = structuredClone(object.transform); transform.origin.x = '101';
+  const inputEdit = transaction([splice, { kind: 'setTransform', object: object.id, transform }], snapshot);
+  const edited = compare('retained-mixed-edit', inputEdit, 'prepared');
+  assert.deepEqual(compare('retained-deterministic-replay', inputEdit, 'prepared'), edited);
+  const stale = structuredClone(inputEdit); stale.snapshot = edited.snapshot;
+  compare('retained-stale-revision', stale, 'error', 'REVISION_CONFLICT');
+  compare('retained-protected-structural-edit', transaction([splice, { kind: 'setTitle', title: 'blocked' }], snapshot), 'error', 'INPUT_INVALID');
+} finally { rmSync(temporary, { recursive: true, force: true }); }
+
 function sha256(path) { return createHash('sha256').update(readFileSync(path)).digest('hex'); }
 console.log(JSON.stringify({
   format: 'musteroffice.foundation-parity/1',
-  scope: 'Document computation only. No rendering, PPTX, Office/WPS, performance or product integration claims.',
+  scope: 'Author/retained Document computation and PPTX import binding. No rendering, Office/WPS, performance or product integration claims.',
   platform: process.platform, architecture: process.arch, node: process.version,
   nativeSha256: sha256(cli), wasmSha256: sha256(modulePath.replace(/\.js$/, '_bg.wasm')),
   passed: cases.length, cases,

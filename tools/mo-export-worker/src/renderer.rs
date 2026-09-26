@@ -29,7 +29,9 @@ impl PreviewRenderer for Renderer {
             return Err(DeliveryError::Invalid("font bytes without a manifest"));
         }
         if match &input {
-            PreviewInput::Source(s) => s.byte_length > limits.max_asset_bytes,
+            PreviewInput::Source(s) | PreviewInput::Retained { source: s, .. } => {
+                s.byte_length > limits.max_asset_bytes
+            }
             _ => false,
         } {
             return Err(DeliveryError::Limit("source preview input"));
@@ -55,7 +57,7 @@ impl PreviewRenderer for Renderer {
                     error: error.into(),
                 })
             })?;
-        use mo_pptx::source::images::{AuthorImages, ImageInput, PackageImages};
+        use mo_pptx::source::images::{AuthorImages, ImageInput, PackageImages, SourceImages};
         let mut render = |images: &dyn ImageInput, index: &mo_pptx::source::SourceIndex| {
             let mut ordinal = 0;
             mo_kernel_api::render_resource_document_images(
@@ -83,6 +85,16 @@ impl PreviewRenderer for Renderer {
                 &AuthorImages::new(plan, resources, check)?,
                 plan.declarations(),
             ),
+            PreviewInput::Retained { plan, source } => {
+                let package = mo_opc::Package::open(
+                    source.reader,
+                    source.byte_length,
+                    Default::default(),
+                    check,
+                )
+                .map_err(mo_pptx::PptxError::from)?;
+                render(&SourceImages::new(plan, &package)?, plan.declarations())
+            }
             PreviewInput::Source(source) => {
                 let package = mo_opc::Package::open(
                     source.reader,

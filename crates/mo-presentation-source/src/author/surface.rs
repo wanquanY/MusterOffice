@@ -207,6 +207,10 @@ fn objects(
     while let Some((id, parent_group)) = pending.pop() {
         cancelled(ord.check)?;
         let model = &document.objects[id];
+        let direct = model
+            .transform
+            .as_ref()
+            .ok_or_else(|| value_error("transform", "missing authored transform"))?;
         if model.accessibility.decorative {
             return Err(PptxError::Unsupported(
                 "decorative accessibility extension".into(),
@@ -222,7 +226,7 @@ fn objects(
             kind: SourceObjectKind::Shape,
             parent_group,
             placeholder: None,
-            transform: Some(transform(&model.transform, None)?),
+            transform: Some(transform(direct, None)?),
             line: None,
             line_reference: None,
             geometry: None,
@@ -242,12 +246,13 @@ fn objects(
             object.line = Some(paint::line(line, ord)?);
         }
         match &model.content {
+            ObjectContent::RetainedSource { .. } => {
+                return Err(PptxError::Unsupported(
+                    "retained content requires a source plan".into(),
+                ));
+            }
             ObjectContent::Shape { geometry, text } => {
-                object.geometry = Some(super::geometry::geometry(
-                    geometry,
-                    model.transform.size,
-                    ord,
-                )?);
+                object.geometry = Some(super::geometry::geometry(geometry, direct.size, ord)?);
                 if let Some(body) = text {
                     let mut text = text::TextBuilder::new(ord);
                     let (root, paragraphs) = text.body(native_id, body, document)?;
@@ -261,7 +266,7 @@ fn objects(
                 object.kind = SourceObjectKind::Picture;
                 object.geometry = Some(super::geometry::geometry(
                     &Geometry::Rectangle,
-                    model.transform.size,
+                    direct.size,
                     ord,
                 )?);
                 let reference = format!("rId{next_image}");
@@ -274,7 +279,7 @@ fn objects(
                     return Err(PptxError::Unsupported("group stroke semantics".into()));
                 }
                 object.kind = SourceObjectKind::Group;
-                object.transform = Some(transform(&model.transform, Some(*viewport))?);
+                object.transform = Some(transform(direct, Some(*viewport))?);
                 pending.extend(children.iter().rev().map(|id| (id, Some(native_id))));
             }
             ObjectContent::Connector { start, end } => {
@@ -345,7 +350,10 @@ fn connector(
             }
         }
         ConnectorEndpoint::Free { position } => {
-            let t = &model.transform;
+            let t = model
+                .transform
+                .as_ref()
+                .ok_or_else(|| value_error("transform", "missing authored transform"))?;
             let expected = if end {
                 Point {
                     x: t.origin

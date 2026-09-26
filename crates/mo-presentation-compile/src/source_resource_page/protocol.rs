@@ -33,6 +33,16 @@ pub struct AuthorResourceDocumentRequest<D = mo_presentation_model::Document> {
     pub fonts: Option<FontManifest>,
 }
 
+/// Revisioned field overlay plus the original immutable source package.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct RetainedResourceDocumentRequest<D = mo_presentation_model::Document> {
+    pub profile: PptxResourcePageProfile,
+    pub document: D,
+    pub pages: Vec<ResourcePageRequest>,
+    pub fonts: Option<FontManifest>,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct AuthorResourceRange {

@@ -10,7 +10,8 @@ pub enum ModelVersion {
     V01,
 }
 
-/// Author data only. Revision, compilation caches, clocks and decoder state live elsewhere.
+/// Document declarations and immutable source provenance. Revisions, compilation
+/// caches, clocks and decoder state live outside this model.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct Document {
@@ -26,6 +27,10 @@ pub struct Document {
     pub layouts: BTreeMap<LayoutId, Layout>,
     pub fonts: BTreeMap<FontId, FontFace>,
     pub resources: BTreeMap<ResourceId, Resource>,
+    /// Immutable native addresses/constraints. Known fields are edited in
+    /// objects; this provenance never becomes a separate mutable document.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_bindings: Option<SourceBindings>,
     /// Slide-owned animation graphs; empty storage preserves older author digests.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub timelines: BTreeMap<SlideId, mo_timeline::Timeline>,
@@ -46,6 +51,7 @@ impl Document {
             layouts: BTreeMap::new(),
             fonts: BTreeMap::new(),
             resources: BTreeMap::new(),
+            source_bindings: None,
             timelines: BTreeMap::new(),
         }
     }
@@ -114,7 +120,9 @@ pub enum ContainerId {
 pub struct Object {
     pub id: ObjectId,
     pub parent: ContainerId,
-    pub transform: Transform,
+    /// Missing only for retained native coordinates that cannot be represented
+    /// as a complete direct declaration. Never substitute a resolved identity.
+    pub transform: Option<Transform>,
     pub appearance: Appearance,
     pub accessibility: Accessibility,
     pub content: ObjectContent,
@@ -131,6 +139,13 @@ pub struct Accessibility {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "kind", rename_all = "camelCase", deny_unknown_fields)]
 pub enum ObjectContent {
+    /// Original geometry, styles, relationships and unknown extension semantics
+    /// remain in the bound source. This is not a generic path/text promotion.
+    RetainedSource {
+        native_kind: RetainedObjectKind,
+        children: Vec<ObjectId>,
+        paragraphs: Vec<RetainedParagraph>,
+    },
     Shape {
         geometry: Geometry,
         text: Option<TextBody>,

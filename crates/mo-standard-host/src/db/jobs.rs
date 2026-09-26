@@ -12,7 +12,7 @@ pub(crate) struct StoredJob {
 
 fn base_revision(request: &OperationRequest) -> Option<&Digest> {
     match &request.action {
-        DocumentAction::Create { .. } => None,
+        DocumentAction::Import { .. } | DocumentAction::Create { .. } => None,
         DocumentAction::Apply { base_revision, .. }
         | DocumentAction::Export { base_revision, .. } => Some(base_revision),
     }
@@ -24,6 +24,7 @@ pub(crate) fn authorize_job(context: &CallContext, info: &JobInfo) -> Result<(),
 
 fn operation(name: &str) -> Result<ServiceOperation, Failure> {
     match name {
+        "presentations.import" => Ok(ServiceOperation::Import),
         "presentations.create" => Ok(ServiceOperation::Create),
         "presentations.apply" => Ok(ServiceOperation::Apply),
         "presentations.export" => Ok(ServiceOperation::Export),
@@ -33,7 +34,11 @@ fn operation(name: &str) -> Result<ServiceOperation, Failure> {
 
 fn validate_info(info: &JobInfo, base: Option<&Digest>) -> Result<(), Failure> {
     let operation = operation(&info.operation)?;
-    if (operation == ServiceOperation::Create) != base.is_none() {
+    if matches!(
+        operation,
+        ServiceOperation::Create | ServiceOperation::Import
+    ) != base.is_none()
+    {
         return Err(corrupt());
     }
     let valid = match (&info.state, &info.result) {
@@ -43,7 +48,9 @@ fn validate_info(info: &JobInfo, base: Option<&Digest>) -> Result<(), Failure> {
                 && !info.cancel_requested
                 && match (operation, receipt.as_ref()) {
                     (
-                        ServiceOperation::Create | ServiceOperation::Apply,
+                        ServiceOperation::Import
+                        | ServiceOperation::Create
+                        | ServiceOperation::Apply,
                         OperationReceipt::Mutation(_),
                     ) => true,
                     (ServiceOperation::Export, OperationReceipt::Export(r)) => {

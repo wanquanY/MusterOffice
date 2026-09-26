@@ -1,10 +1,10 @@
 //! Typed edits to direct native transform declarations. XML positions stay private.
-mod binding;
+pub(super) mod binding;
 mod types;
 use super::*;
 use crate::{PptxError, cancelled};
-use mo_opc::{PartName, RewritePlan};
-use mo_xml::AttributeRewriteLimits;
+use mo_opc::PartName;
+use mo_presentation_model::{PRESENTATIONML_COORDINATE_MAX, PRESENTATIONML_COORDINATE_MIN};
 use std::collections::BTreeSet;
 pub use types::{SourceTransformEdit, SourceTransformEdits, SourceTransformValues};
 
@@ -22,17 +22,16 @@ fn unsupported(message: &str) -> PptxError {
 fn validate(value: &SourceTransformValues) -> Result<(), PptxError> {
     // ECMA-376 dml-main ST_CoordinateUnqualified / ST_PositiveCoordinate.
     for p in [value.origin, value.child_origin].into_iter().flatten() {
-        if [p.x, p.y]
-            .iter()
-            .any(|v| !(-27_273_042_329_600..=27_273_042_316_900).contains(&v.get()))
-        {
+        if [p.x, p.y].iter().any(|v| {
+            !(PRESENTATIONML_COORDINATE_MIN..=PRESENTATIONML_COORDINATE_MAX).contains(&v.get())
+        }) {
             return Err(conflict("transform coordinate outside native range"));
         }
     }
     for s in [value.size, value.child_size].into_iter().flatten() {
         if [s.width, s.height]
             .iter()
-            .any(|v| !(0..=27_273_042_316_900).contains(&v.get()))
+            .any(|v| !(0..=PRESENTATIONML_COORDINATE_MAX).contains(&v.get()))
         {
             return Err(conflict("transform extent outside native range"));
         }
@@ -51,24 +50,24 @@ pub fn edit_source_transforms<R: ReaderAt>(
     limits: SourceLimits,
     check: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, PptxError> {
-    cancelled(check)?;
-    if source.sha256() != &request.expected_source_sha256 {
-        return Err(conflict("source package digest changed"));
-    }
-    if request.edits.len() > limits.max_edits {
-        return Err(PptxError::Limit("source transform edits"));
-    }
-    let mut target_bytes = 0usize;
-    for edit in &request.edits {
-        cancelled(check)?;
-        target_bytes = target_bytes
-            .checked_add(edit.target.part.len())
-            .ok_or(PptxError::Limit("source transform target bytes"))?;
-        if target_bytes > limits.max_text_bytes {
-            return Err(PptxError::Limit("source transform target bytes"));
-        }
-    }
-    let mut bound = presentation::read(source, limits, check)?;
+    let plan = super::preserve::prepare(
+        source,
+        &SourceTextEdits {
+            expected_source_sha256: request.expected_source_sha256.clone(),
+            edits: vec![],
+        },
+        request,
+        limits,
+        check,
+    )?;
+    plan.write(source, limits, check)
+}
+
+pub(super) fn prepare<'a>(
+    bound: &mut BoundIndex,
+    request: &'a SourceTransformEdits,
+    check: &dyn Fn() -> bool,
+) -> Result<BTreeMap<PartName, BTreeMap<u32, &'a SourceTransformEdit>>, PptxError> {
     let mut selected = BTreeSet::new();
     let mut parts: BTreeMap<PartName, BTreeMap<u32, &SourceTransformEdit>> = BTreeMap::new();
     for edit in &request.edits {
@@ -85,10 +84,15 @@ pub fn edit_source_transforms<R: ReaderAt>(
         let transform = if surface.root_object_id == edit.target.native_id {
             surface.root_group_transform.as_mut()
         } else {
+            let position = bound
+                .object_positions
+                .get(&edit.target.part)
+                .and_then(|p| p.get(&edit.target.native_id))
+                .copied()
+                .ok_or_else(|| conflict("source object missing"))?;
             surface
                 .objects
-                .iter_mut()
-                .find(|o| o.native_id == edit.target.native_id)
+                .get_mut(position)
                 .ok_or_else(|| conflict("source object missing"))?
                 .transform
                 .as_mut()
@@ -146,29 +150,5 @@ pub fn edit_source_transforms<R: ReaderAt>(
             .or_default()
             .insert(binding.ordinal, edit);
     }
-    // Propagate changed layout/master declarations before comparing the candidate.
-    inheritance::resolve(&mut bound.index.surfaces, check)?;
-    let mut plan = RewritePlan::new();
-    for (part, edits) in parts {
-        cancelled(check)?;
-        let original = source.read_part(&part, limits.package.xml.max_bytes as u64, check)?;
-        let attributes = binding::attributes(&original, &edits, limits, check)?;
-        let changed = mo_xml::rewrite_attributes(
-            &original,
-            &attributes,
-            AttributeRewriteLimits {
-                xml: limits.package.xml,
-                max_edits: limits
-                    .max_edits
-                    .checked_mul(11)
-                    .ok_or(PptxError::Limit("transform attributes"))?,
-                max_edit_bytes: limits.max_text_bytes,
-            },
-            check,
-        )?;
-        plan.replace_part(part, changed)?;
-    }
-    let bytes = plan.to_bytes(source, check)?;
-    edit::verify_candidate(bound.index, &bytes, limits, check)?;
-    Ok(bytes)
+    Ok(parts)
 }

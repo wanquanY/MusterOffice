@@ -132,7 +132,21 @@ impl StandardHost {
         let candidate = (|| {
             let monitor =
                 execution::ExecutionCheck::new(self, context, &work.lease, finished_at, check)?;
-            let candidate = compute_mutation(&work.request, work.snapshot, &|| monitor.cancelled());
+            let candidate = match &work.request.action {
+                DocumentAction::Import { source, .. } => {
+                    let source = self.open_asset(context, &source.asset_id)?;
+                    compute_import(
+                        &work.request,
+                        work.snapshot,
+                        ExportAsset {
+                            info: source.info(),
+                            reader: &source,
+                        },
+                        &|| monitor.cancelled(),
+                    )
+                }
+                _ => compute_mutation(&work.request, work.snapshot, &|| monitor.cancelled()),
+            };
             monitor.finish(candidate)
         })();
         self.finish(context, &work.lease, candidate, finished_at())

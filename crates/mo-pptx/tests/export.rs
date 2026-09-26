@@ -25,7 +25,7 @@ fn static_rotation_is_canonical_in_new_packages_without_mutating_author_intent()
             if !matches!(object.content, ObjectContent::Connector { .. })
                 || angle.rem_euclid(21_600_000) == 0
             {
-                object.transform.rotation = angle;
+                object.transform.as_mut().unwrap().rotation = angle;
             }
         }
         let before = serde_json::to_vec(&document).unwrap();
@@ -40,7 +40,8 @@ fn static_rotation_is_canonical_in_new_packages_without_mutating_author_intent()
         assert_eq!(serde_json::to_vec(&document).unwrap(), before);
         let mut equivalent = document.clone();
         for object in equivalent.objects.values_mut() {
-            object.transform.rotation = object.transform.normalized_rotation();
+            object.transform.as_mut().unwrap().rotation =
+                object.transform.as_ref().unwrap().normalized_rotation();
         }
         assert_eq!(
             bytes,
@@ -65,7 +66,14 @@ fn static_rotation_is_canonical_in_new_packages_without_mutating_author_intent()
             let original = &document.objects[&mo_common::ObjectId::new(&object.name).unwrap()];
             assert_eq!(
                 object.transform.as_ref().unwrap().rotation,
-                Some(original.transform.rotation.rem_euclid(21_600_000))
+                Some(
+                    original
+                        .transform
+                        .as_ref()
+                        .unwrap()
+                        .rotation
+                        .rem_euclid(21_600_000)
+                )
             );
         }
     }

@@ -8,8 +8,9 @@ use std::collections::{BTreeMap, BTreeSet};
 
 #[derive(PartialEq, Eq, Serialize)]
 struct VisualObject<'a> {
+    binding: Option<&'a NativeObjectBinding>,
     parent: &'a ContainerId,
-    transform: &'a Transform,
+    transform: &'a Option<Transform>,
     appearance: &'a Appearance,
     content: &'a ObjectContent,
 }
@@ -19,6 +20,7 @@ struct VisualObject<'a> {
 /// model validation at the admission boundary, including before cache hits.
 #[derive(PartialEq, Eq, Serialize)]
 pub struct PageDependencies<'a> {
+    source_binding: Option<PageSourceBinding<'a>>,
     page_size: Size,
     slide: &'a SlideId,
     hidden: bool,
@@ -48,6 +50,17 @@ impl<'a> PageDependencies<'a> {
             None => None,
         };
         let mut dependencies = Self {
+            source_binding: document
+                .source_bindings
+                .as_ref()
+                .map(|b| PageSourceBinding {
+                    profile: &b.profile,
+                    resource: &b.resource,
+                    slide: b.slides.get(slide),
+                    layout: layout.and_then(|l| b.layouts.get(&l.id)),
+                    master: master.and_then(|m| b.masters.get(&m.id)),
+                    theme: theme.and_then(|t| b.themes.get(&t.id)),
+                }),
             page_size: document.page_size,
             slide,
             hidden: s.hidden,
@@ -99,6 +112,10 @@ impl<'a> PageDependencies<'a> {
             dependencies.objects.insert(
                 id,
                 VisualObject {
+                    binding: document
+                        .source_bindings
+                        .as_ref()
+                        .and_then(|b| b.objects.get(id)),
                     parent: &object.parent,
                     transform: &object.transform,
                     appearance: &object.appearance,
@@ -106,7 +123,8 @@ impl<'a> PageDependencies<'a> {
                 },
             );
             match &object.content {
-                ObjectContent::Group { children, .. } => pending.extend(children),
+                ObjectContent::Group { children, .. }
+                | ObjectContent::RetainedSource { children, .. } => pending.extend(children),
                 ObjectContent::Picture { resource, .. } => {
                     dependencies
                         .resources
@@ -174,4 +192,14 @@ struct ThemeDependencies<'a> {
     id: &'a mo_common::ThemeId,
     colors: &'a BTreeMap<ThemeColor, Rgba>,
     text: &'a CharacterStyle,
+}
+
+#[derive(PartialEq, Eq, Serialize)]
+struct PageSourceBinding<'a> {
+    profile: &'a SourceBindingProfile,
+    resource: &'a ResourceId,
+    slide: Option<&'a String>,
+    layout: Option<&'a String>,
+    master: Option<&'a String>,
+    theme: Option<&'a String>,
 }
