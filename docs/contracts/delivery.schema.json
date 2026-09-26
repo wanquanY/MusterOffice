@@ -1,0 +1,188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:musteroffice:design:0.4:delivery",
+  "type": "object",
+  "properties": {
+    "version": {
+      "const": "musteroffice.bundle/1-draft"
+    },
+    "document": {
+      "type": "object",
+      "properties": {
+        "documentId": {
+          "$ref": "urn:musteroffice:design:0.4:common#/$defs/Id"
+        },
+        "revision": {
+          "$ref": "urn:musteroffice:design:0.4:common#/$defs/Id"
+        },
+        "modelAssetId": {
+          "$ref": "urn:musteroffice:design:0.4:common#/$defs/Id"
+        }
+      },
+      "required": [
+        "documentId",
+        "revision",
+        "modelAssetId"
+      ],
+      "additionalProperties": false
+    },
+    "profileId": {
+      "$ref": "urn:musteroffice:design:0.4:common#/$defs/Id"
+    },
+    "versions": {
+      "$ref": "urn:musteroffice:design:0.4:common#/$defs/Versions"
+    },
+    "pptxAssetId": {
+      "$ref": "urn:musteroffice:design:0.4:common#/$defs/Id"
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "$ref": "urn:musteroffice:design:0.4:common#/$defs/Asset"
+      },
+      "minItems": 1,
+      "maxItems": 10000
+    },
+    "previews": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "pageId": {
+            "$ref": "urn:musteroffice:design:0.4:common#/$defs/Id"
+          },
+          "imageAssetId": {
+            "$ref": "urn:musteroffice:design:0.4:common#/$defs/Id"
+          },
+          "width": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8192
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8192
+          },
+          "sample": {
+            "$ref": "urn:musteroffice:design:0.4:common#/$defs/Sample"
+          }
+        },
+        "required": [
+          "pageId",
+          "imageAssetId",
+          "width",
+          "height",
+          "sample"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 100000
+    },
+    "playbackAssetId": {
+      "$ref": "urn:musteroffice:design:0.4:common#/$defs/Id"
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "$ref": "urn:musteroffice:design:0.4:common#/$defs/Claim"
+      },
+      "minItems": 5,
+      "maxItems": 1024
+    }
+  },
+  "required": [
+    "version",
+    "document",
+    "profileId",
+    "versions",
+    "pptxAssetId",
+    "assets",
+    "previews",
+    "claims"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "properties": {
+        "claims": {
+          "contains": {
+            "properties": {
+              "kind": {
+                "const": "structure"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "claims": {
+          "contains": {
+            "properties": {
+              "kind": {
+                "const": "layout"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "claims": {
+          "contains": {
+            "properties": {
+              "kind": {
+                "const": "native-editability"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "claims": {
+          "contains": {
+            "properties": {
+              "kind": {
+                "const": "playback"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "claims": {
+          "contains": {
+            "properties": {
+              "kind": {
+                "const": "target-application"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

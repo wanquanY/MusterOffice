@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:musteroffice:design:0.4:export-request",
+  "type": "object",
+  "properties": {
+    "contractVersion": {
+      "const": "musteroffice.operations/1-draft"
+    },
+    "requestId": {
+      "$ref": "urn:musteroffice:design:0.4:common#/$defs/Id"
+    },
+    "documentId": {
+      "$ref": "urn:musteroffice:design:0.4:common#/$defs/Id"
+    },
+    "baseRevision": {
+      "$ref": "urn:musteroffice:design:0.4:common#/$defs/Id"
+    },
+    "profileId": {
+      "$ref": "urn:musteroffice:design:0.4:common#/$defs/Id"
+    },
+    "outputMode": {
+      "enum": [
+        "auto",
+        "sync",
+        "job"
+      ]
+    },
+    "arguments": {
+      "type": "object",
+      "properties": {
+        "format": {
+          "enum": [
+            "pptx",
+            "potx",
+            "ppsx",
+            "pptm",
+            "potm",
+            "ppsm"
+          ]
+        },
+        "targetProfileIds": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:musteroffice:design:0.4:common#/$defs/Id"
+          },
+          "minItems": 1,
+          "maxItems": 16
+        },
+        "requiredCapabilityIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^F(0[1-9]|1[0-6])\\.[0-9]{2}$"
+          },
+          "minItems": 0,
+          "maxItems": 1024
+        }
+      },
+      "required": [
+        "format"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "contractVersion",
+    "requestId",
+    "documentId",
+    "baseRevision",
+    "profileId",
+    "outputMode",
+    "arguments"
+  ],
+  "additionalProperties": false
+}

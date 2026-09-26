@@ -1,0 +1,360 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:musteroffice:design:0.4:capabilities",
+  "type": "object",
+  "properties": {
+    "version": {
+      "const": "musteroffice.capability-plan/1-draft"
+    },
+    "status": {
+      "const": "design_only"
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^F(0[1-9]|1[0-6])\\.[0-9]{2}$"
+          },
+          "family": {
+            "type": "string",
+            "pattern": "^F(0[1-9]|1[0-6])$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "phase": {
+            "const": "phase-one"
+          },
+          "dimensions": {
+            "type": "object",
+            "properties": {
+              "read": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "enum": [
+                          "not_started",
+                          "implemented",
+                          "partial",
+                          "verified"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "status"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "const": "not_applicable"
+                      },
+                      "reason": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1024
+                      }
+                    },
+                    "required": [
+                      "status",
+                      "reason"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              },
+              "create": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "enum": [
+                          "not_started",
+                          "implemented",
+                          "partial",
+                          "verified"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "status"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "const": "not_applicable"
+                      },
+                      "reason": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1024
+                      }
+                    },
+                    "required": [
+                      "status",
+                      "reason"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              },
+              "edit": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "enum": [
+                          "not_started",
+                          "implemented",
+                          "partial",
+                          "verified"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "status"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "const": "not_applicable"
+                      },
+                      "reason": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1024
+                      }
+                    },
+                    "required": [
+                      "status",
+                      "reason"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              },
+              "render": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "enum": [
+                          "not_started",
+                          "implemented",
+                          "partial",
+                          "verified"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "status"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "const": "not_applicable"
+                      },
+                      "reason": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1024
+                      }
+                    },
+                    "required": [
+                      "status",
+                      "reason"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              },
+              "play": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "enum": [
+                          "not_started",
+                          "implemented",
+                          "partial",
+                          "verified"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "status"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "const": "not_applicable"
+                      },
+                      "reason": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1024
+                      }
+                    },
+                    "required": [
+                      "status",
+                      "reason"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              },
+              "write": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "enum": [
+                          "not_started",
+                          "implemented",
+                          "partial",
+                          "verified"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "status"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "const": "not_applicable"
+                      },
+                      "reason": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1024
+                      }
+                    },
+                    "required": [
+                      "status",
+                      "reason"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              },
+              "preserve": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "enum": [
+                          "not_started",
+                          "implemented",
+                          "partial",
+                          "verified"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "status"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "const": "not_applicable"
+                      },
+                      "reason": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1024
+                      }
+                    },
+                    "required": [
+                      "status",
+                      "reason"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            },
+            "required": [
+              "read",
+              "create",
+              "edit",
+              "render",
+              "play",
+              "write",
+              "preserve"
+            ],
+            "additionalProperties": false
+          },
+          "requiredTests": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^(T|A|B|I|MW)[0-9]{2}$"
+            },
+            "minItems": 1,
+            "maxItems": 128
+          },
+          "workflowStatus": {
+            "enum": [
+              "not_started",
+              "implemented",
+              "partial",
+              "verified"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "family",
+          "name",
+          "phase",
+          "dimensions",
+          "requiredTests",
+          "workflowStatus"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 1024
+    }
+  },
+  "required": [
+    "version",
+    "status",
+    "features"
+  ],
+  "additionalProperties": false
+}

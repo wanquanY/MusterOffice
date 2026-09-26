@@ -1,0 +1,340 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:musteroffice:design:0.4:common",
+  "$defs": {
+    "Id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "Hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "ByteLength": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]{0,19})$"
+    },
+    "Mime": {
+      "type": "string",
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9!#$&^_.+-]*/[A-Za-z0-9][A-Za-z0-9!#$&^_.+-]*$"
+    },
+    "Role": {
+      "enum": [
+        "editable-document",
+        "pptx",
+        "preview",
+        "playback-manifest",
+        "quality-report",
+        "image",
+        "font",
+        "audio",
+        "video",
+        "model3d",
+        "embedded",
+        "source",
+        "other"
+      ]
+    },
+    "Sample": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "enum": [
+            "editor",
+            "initial",
+            "event-frame"
+          ]
+        },
+        "eventLogAssetId": {
+          "$ref": "urn:musteroffice:design:0.4:common#/$defs/Id"
+        },
+        "ticks": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$"
+        },
+        "timescale": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000000
+        }
+      },
+      "required": [
+        "mode"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "event-frame"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "eventLogAssetId",
+              "ticks",
+              "timescale"
+            ]
+          },
+          "else": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "eventLogAssetId"
+                  ]
+                },
+                {
+                  "required": [
+                    "ticks"
+                  ]
+                },
+                {
+                  "required": [
+                    "timescale"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "Diagnostic": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96
+        },
+        "severity": {
+          "enum": [
+            "info",
+            "warning",
+            "error"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "evidenceAssetIds": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:musteroffice:design:0.4:common#/$defs/Id"
+          },
+          "minItems": 0,
+          "maxItems": 256
+        },
+        "retryable": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "code",
+        "severity",
+        "message",
+        "retryable"
+      ],
+      "additionalProperties": false
+    },
+    "Versions": {
+      "type": "object",
+      "properties": {
+        "engine": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "documentSchema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "operationSchema": {
+          "const": "musteroffice.operations/1-draft"
+        },
+        "rules": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "featureRegistrySha256": {
+          "$ref": "urn:musteroffice:design:0.4:common#/$defs/Hash"
+        },
+        "fontProfileSha256": {
+          "$ref": "urn:musteroffice:design:0.4:common#/$defs/Hash"
+        }
+      },
+      "required": [
+        "engine",
+        "documentSchema",
+        "operationSchema",
+        "rules",
+        "featureRegistrySha256",
+        "fontProfileSha256"
+      ],
+      "additionalProperties": false
+    },
+    "Asset": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "urn:musteroffice:design:0.4:common#/$defs/Id"
+        },
+        "sha256": {
+          "$ref": "urn:musteroffice:design:0.4:common#/$defs/Hash"
+        },
+        "byteLength": {
+          "$ref": "urn:musteroffice:design:0.4:common#/$defs/ByteLength"
+        },
+        "mediaType": {
+          "$ref": "urn:musteroffice:design:0.4:common#/$defs/Mime"
+        },
+        "role": {
+          "$ref": "urn:musteroffice:design:0.4:common#/$defs/Role"
+        }
+      },
+      "required": [
+        "id",
+        "sha256",
+        "byteLength",
+        "mediaType",
+        "role"
+      ],
+      "additionalProperties": false
+    },
+    "Claim": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "structure",
+            "layout",
+            "native-editability",
+            "playback",
+            "target-application"
+          ]
+        },
+        "status": {
+          "enum": [
+            "passed",
+            "failed",
+            "not_proven",
+            "not_applicable"
+          ]
+        },
+        "subjectSha256": {
+          "$ref": "urn:musteroffice:design:0.4:common#/$defs/Hash"
+        },
+        "basis": {
+          "enum": [
+            "none",
+            "static-inspection",
+            "roundtrip",
+            "application-test"
+          ]
+        },
+        "profileId": {
+          "$ref": "urn:musteroffice:design:0.4:common#/$defs/Id"
+        },
+        "evidenceAssetIds": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:musteroffice:design:0.4:common#/$defs/Id"
+          },
+          "minItems": 0,
+          "maxItems": 256
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        }
+      },
+      "required": [
+        "kind",
+        "status",
+        "subjectSha256",
+        "basis",
+        "profileId",
+        "evidenceAssetIds"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "passed",
+                  "failed"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "basis": {
+                "enum": [
+                  "static-inspection",
+                  "roundtrip",
+                  "application-test"
+                ]
+              },
+              "evidenceAssetIds": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "target-application"
+              },
+              "status": {
+                "const": "passed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "basis": {
+                "const": "application-test"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "not_proven",
+                  "not_applicable"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "reason"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

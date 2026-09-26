@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:musteroffice:design:0.4:export-result",
+  "type": "object",
+  "properties": {
+    "contractVersion": {
+      "const": "musteroffice.operations/1-draft"
+    },
+    "requestId": {
+      "$ref": "urn:musteroffice:design:0.4:common#/$defs/Id"
+    },
+    "outcome": {
+      "enum": [
+        "accepted",
+        "succeeded",
+        "failed"
+      ]
+    },
+    "documentId": {
+      "$ref": "urn:musteroffice:design:0.4:common#/$defs/Id"
+    },
+    "revision": {
+      "$ref": "urn:musteroffice:design:0.4:common#/$defs/Id"
+    },
+    "job": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "urn:musteroffice:design:0.4:common#/$defs/Id"
+        },
+        "state": {
+          "enum": [
+            "queued",
+            "running",
+            "waiting_resource",
+            "succeeded",
+            "failed",
+            "cancelled"
+          ]
+        },
+        "pollAfterMs": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 60000
+        }
+      },
+      "required": [
+        "id",
+        "state"
+      ],
+      "additionalProperties": false
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "$ref": "urn:musteroffice:design:0.4:common#/$defs/Asset"
+      },
+      "minItems": 0,
+      "maxItems": 10000
+    },
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "$ref": "urn:musteroffice:design:0.4:common#/$defs/Diagnostic"
+      },
+      "minItems": 0,
+      "maxItems": 10000
+    },
+    "bundle": {
+      "$ref": "urn:musteroffice:design:0.4:delivery"
+    }
+  },
+  "required": [
+    "contractVersion",
+    "requestId",
+    "outcome",
+    "documentId",
+    "revision",
+    "artifacts",
+    "diagnostics"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "accepted"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "job"
+        ],
+        "properties": {
+          "job": {
+            "properties": {
+              "state": {
+                "enum": [
+                  "queued",
+                  "running",
+                  "waiting_resource"
+                ]
+              }
+            },
+            "required": [
+              "pollAfterMs"
+            ]
+          },
+          "artifacts": {
+            "maxItems": 0
+          }
+        },
+        "not": {
+          "required": [
+            "bundle"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "succeeded"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "bundle"
+        ],
+        "properties": {
+          "job": {
+            "properties": {
+              "state": {
+                "const": "succeeded"
+              }
+            }
+          },
+          "artifacts": {
+            "minItems": 1,
+            "contains": {
+              "properties": {
+                "role": {
+                  "const": "pptx"
+                }
+              },
+              "required": [
+                "role"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "failed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "job": {
+            "properties": {
+              "state": {
+                "enum": [
+                  "failed",
+                  "cancelled"
+                ]
+              }
+            }
+          },
+          "artifacts": {
+            "maxItems": 0
+          },
+          "diagnostics": {
+            "minItems": 1,
+            "contains": {
+              "properties": {
+                "severity": {
+                  "const": "error"
+                }
+              },
+              "required": [
+                "severity"
+              ]
+            }
+          }
+        },
+        "not": {
+          "required": [
+            "bundle"
+          ]
+        }
+      }
+    }
+  ]
+}

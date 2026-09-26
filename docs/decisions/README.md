@@ -7,31 +7,38 @@
 - 产品名称：**MusterOffice**。
 - 建立独立本地项目，主分支 `main`，不创建额外 worktree。
 - 面向 Agent，强调高性能、轻量化、多端跨平台。
-- 演示文稿为当前设计方向，产品可扩展文档、电子表格及其他办公场景。
+- 第一期为完整演示文稿内核，包含动画/转场、音视频、SmartArt、公式的创建、编辑和播放/呈现，并完成 Musterwork PPT 能力替换；产品可扩展其他办公场景。
 - 计划开源，不采购 Apryse；核心质量和可编辑性要求保留。
-- 先明确设计，当前初始化不自动批准语言选型或内核实现。
+- Rust 主体、原生/WASM 目标、TS 薄接入，允许经过验证的 C/C++ 底层组件，不设纯 Rust 限制。
+- 为 Musterwork 和其他 AI 产品提供标准化、便捷且独立的 Agent 接入方式；本轮已定义 MCP/Skill/Plugin/SDK 合同。
+- 用户已明确授权完整一期实现、必要依赖与选型实验，持续推进至可以启动 Musterwork PPT 替换验收；见 [ADR 0006](0006-implementation-authorization.md)。组件采用仍需记录版本、许可和验证证据，授权不代表验收通过。
 
-接受记录见 [ADR 0001](0001-project-identity.md)。
+接受记录见 [ADR 0001](0001-project-identity.md)、[ADR 0002](0002-phase-one-complete-presentations.md) 和 [ADR 0003](0003-language-and-component-strategy.md)。[ADR 0004](0004-agent-integration-surfaces.md)记录已确认接入目标与本轮具体架构提案。接受方向不代表实现与兼容验收已经完成。
 
 ## 仍待确定
 
 | 事项                       | 当前建议                                  | 决策状态 |
 | -------------------------- | ----------------------------------------- | -------- |
-| 开发语言与组件             | Rust＋WASM / 原生核心，TS SDK；需对照试验 | Pending  |
-| 首版演示文稿能力与导入范围 | 按 V0/V1/产品替换三个层级定义             | Pending  |
+| 具体基础组件与跨语言边界   | Rust/TS 已确认；v0.4 明确模块/窄 ABI、字体及绘制候选；组件版本依 E0 证据锁定 | Proposed  |
+| 接入协议与发行档案         | MCP 两代兼容、Skill/Plugin、SDK、标准宿主与 I01–I16 已形成合同；具体版本/客户端/包名需冻结 | Proposed |
+| 一期能力明细与兼容矩阵     | v0.4 已展开104项能力、裁定高级扩展与格式边界；标准枚举实现、目标构建和外部证据待落实 | Proposed  |
 | 未来领域的具体范围         | 分别制定文档/表格设计，不提前实现         | Pending  |
 | 原有代码迁移               | 复用语义与测试，先审查来源和依赖          | Pending  |
-| 原生平台和浏览器版本       | 见演示文稿设计的建议矩阵                  | Pending  |
+| 原生平台和浏览器版本       | v0.4 固定目标族及锁文件字段；实际 build/设备待登记 | Proposed |
 | 默认字体与离线分发         | 开放许可、可编辑嵌入、按家族分发          | Pending  |
 | 公开许可证与贡献声明       | Apache-2.0 是候选                         | Pending  |
 | 远程托管、组织、公开时点   | 尚未指定                                  | Pending  |
 | 包名、命令名、版本策略     | 在接口和语言决定后冻结                    | Pending  |
-| 性能预算及验收设备         | 设计文档提供拟议指标                      | Pending  |
+| 性能预算及验收设备         | v0.4 固定工作负载与计量口径；完整动态包预算和实测待 E0 | Proposed |
 
-演示文稿专项决定保留在[详细设计第 22 节](../design/presentations.md#s22)，这里维护产品级状态。
+演示文稿技术待决项见[现行设计 D01–D09](../design/presentations.md#s22)；[v0.2 历史建议](../archive/presentations-v0.2.md#s22)仅用于追踪，不再维护。这里维护产品级状态。
 
 ## 下一阶段
 
-评审语言与技术路线、首个纵向验证的范围和验收条件，再批准 E0 选型实验。尚未开始实验或内核代码开发。
+用户已授权将来源设计迁入本仓库并继续完善方案。已形成 v0.3 及七份演示文稿专项规格，保留 v0.2 和六份来源快照；详见[迁移清单](../references/musterwork/README.md)。随后用户确认语言/组件策略，并要求明确开放接入，本轮已增加[接入总设计](../architecture/agent-integration.md)和[接口规格](../design/agent-interfaces.md)。
+
+设计阶段先明确子能力、目标应用、接入档案和预算，并形成[高风险验证计划](../design/presentations/verification-and-roadmap.md)。这些历史记录不代表当前仍处于等待开发授权状态。
+
+随后形成 [v0.4 实施基线](../design/implementation/README.md)与 [ADR 0005](0005-presentation-implementation-baseline.md)，把子能力、数据/操作、算法、验收和实际 Musterwork 合同落到实施规格。用户的新指示已授权源码开发，当前执行[实施计划](../design/implementation/delivery-plan.md)；状态和实际证据见[实现进度](../implementation/progress.md)。合同校验不等于内核/互操作验证。
 
 新的明确用户决定更新本页及对应 ADR；不得因文档里写有“推荐”就将状态改为 Accepted。

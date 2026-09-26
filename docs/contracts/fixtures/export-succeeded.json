@@ -1,0 +1,130 @@
+{
+  "contractVersion": "musteroffice.operations/1-draft",
+  "requestId": "export-007",
+  "outcome": "succeeded",
+  "documentId": "deck-42",
+  "revision": "revision-8",
+  "job": {
+    "id": "job-19",
+    "state": "succeeded"
+  },
+  "artifacts": [
+    {
+      "id": "pptx-1",
+      "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "byteLength": "123456",
+      "mediaType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      "role": "pptx"
+    }
+  ],
+  "diagnostics": [],
+  "bundle": {
+    "version": "musteroffice.bundle/1-draft",
+    "document": {
+      "documentId": "deck-42",
+      "revision": "revision-8",
+      "modelAssetId": "model-1"
+    },
+    "profileId": "presentations-full-proposed",
+    "versions": {
+      "engine": "design-example-0.4",
+      "documentSchema": "musteroffice.presentation/1-draft",
+      "operationSchema": "musteroffice.operations/1-draft",
+      "rules": "design-example-0.4",
+      "featureRegistrySha256": "5555555555555555555555555555555555555555555555555555555555555555",
+      "fontProfileSha256": "6666666666666666666666666666666666666666666666666666666666666666"
+    },
+    "pptxAssetId": "pptx-1",
+    "assets": [
+      {
+        "id": "model-1",
+        "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "byteLength": "4200",
+        "mediaType": "application/vnd.musteroffice.presentation+json",
+        "role": "editable-document"
+      },
+      {
+        "id": "pptx-1",
+        "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "byteLength": "123456",
+        "mediaType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "role": "pptx"
+      },
+      {
+        "id": "preview-1",
+        "sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+        "byteLength": "60000",
+        "mediaType": "image/png",
+        "role": "preview"
+      },
+      {
+        "id": "quality-1",
+        "sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+        "byteLength": "8192",
+        "mediaType": "application/vnd.musteroffice.quality+json",
+        "role": "quality-report"
+      }
+    ],
+    "previews": [
+      {
+        "pageId": "cover",
+        "imageAssetId": "preview-1",
+        "width": 1600,
+        "height": 900,
+        "sample": {
+          "mode": "editor"
+        }
+      }
+    ],
+    "claims": [
+      {
+        "kind": "structure",
+        "status": "passed",
+        "subjectSha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "basis": "roundtrip",
+        "profileId": "presentations-full-proposed",
+        "evidenceAssetIds": [
+          "quality-1"
+        ]
+      },
+      {
+        "kind": "layout",
+        "status": "passed",
+        "subjectSha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "basis": "roundtrip",
+        "profileId": "presentations-full-proposed",
+        "evidenceAssetIds": [
+          "quality-1"
+        ]
+      },
+      {
+        "kind": "native-editability",
+        "status": "passed",
+        "subjectSha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "basis": "roundtrip",
+        "profileId": "presentations-full-proposed",
+        "evidenceAssetIds": [
+          "quality-1"
+        ]
+      },
+      {
+        "kind": "playback",
+        "status": "not_applicable",
+        "subjectSha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "basis": "none",
+        "profileId": "presentations-full-proposed",
+        "evidenceAssetIds": [],
+        "reason": "本合成示例仅有静态页面，无时间/媒体内容；真实运行须由能力分析证明。"
+      },
+      {
+        "kind": "target-application",
+        "status": "not_proven",
+        "subjectSha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "basis": "none",
+        "profileId": "design-example-target",
+        "evidenceAssetIds": [],
+        "reason": "仅为设计样例，未在目标应用运行。"
+      }
+    ]
+  }
+}

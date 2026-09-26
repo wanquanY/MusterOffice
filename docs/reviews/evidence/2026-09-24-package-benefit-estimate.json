@@ -1,0 +1,248 @@
+{
+  "schema": "musteroffice.package-estimate-evidence/1",
+  "measured_on": "2026-09-24",
+  "baseline": {
+    "artifact": "Musterwork-0.2.4-arm64.dmg",
+    "source_commit_reported": "a059ffc4c7ff16617abe0fb05050fd1f4d11fd44",
+    "variant": "standard",
+    "platform": "macOS arm64",
+    "dmg_bytes": 770986644,
+    "dmg_sha256": "ba8948f2961b6b2e79f1696a3080963c1e62fc796477a7733394e83a3d65ac83"
+  },
+  "method": {
+    "logical_size": "sum of regular file st_size under app Contents; symlinks not followed",
+    "compression_proxy": "sum of independent per-file gzip level 6; no archive metadata; not a DMG rebuild",
+    "scope": "package inspection only; no application or presentation execution"
+  },
+  "groups": {
+    "ppt_chromium": {
+      "files": 18,
+      "logical_bytes": 204527859,
+      "gzip6_filewise_bytes": 91733145
+    },
+    "ppt_fonts": {
+      "files": 21,
+      "logical_bytes": 121019744,
+      "gzip6_filewise_bytes": 98877623
+    },
+    "ppt_libreoffice": {
+      "files": 15804,
+      "logical_bytes": 759536249,
+      "gzip6_filewise_bytes": 287732853
+    },
+    "ppt_node": {
+      "files": 2,
+      "logical_bytes": 110002606,
+      "gzip6_filewise_bytes": 35157534
+    },
+    "ppt_other": {
+      "files": 235,
+      "logical_bytes": 53718218,
+      "gzip6_filewise_bytes": 10557884
+    },
+    "ppt_poppler": {
+      "files": 279,
+      "logical_bytes": 20829927,
+      "gzip6_filewise_bytes": 7579049
+    },
+    "ppt_sources": {
+      "files": 60,
+      "logical_bytes": 66518732,
+      "gzip6_filewise_bytes": 64369796
+    },
+    "retained_application": {
+      "files": 365,
+      "logical_bytes": 412151322,
+      "gzip6_filewise_bytes": 179616314
+    }
+  },
+  "totals": {
+    "files": 16784,
+    "logical_bytes": 1748304657,
+    "gzip6_filewise_bytes": 775624198
+  },
+  "inspection_seconds": 41.376,
+  "derived": {
+    "ppt_total_bytes": 1336153335,
+    "replaceable_ppt_nonfont_bytes": 1215133591,
+    "retained_app_plus_current_fonts_bytes": 533171066,
+    "retained_app_plus_current_fonts_compression_proxy_bytes": 278493937,
+    "whole_package_proxy_error_percent": 0.6015089931959983
+  },
+  "forecast": {
+    "status": "conditional engineering estimate, not measured MusterOffice build",
+    "recommended_standard": {
+      "assumptions": [
+        "retain measured non-PPT application unchanged",
+        "retain all current managed font bytes",
+        "replace old PPT execution closure completely, including its dedicated office/browser/node/pdf tools",
+        "new full presentation runtime and integration, codecs and small additional resources fit assumed range",
+        "same macOS arm64 standard variant, with other product optional components unchanged"
+      ],
+      "new_presentation_nonbaselinefont_installed_mib": [
+        60,
+        140
+      ],
+      "new_presentation_compressed_mib": [
+        20,
+        70
+      ],
+      "installer_overhead_and_model_margin_mib": [
+        5,
+        15
+      ],
+      "installed_arithmetic_mib": [
+        568.4715518951416,
+        648.4715518951416
+      ],
+      "dmg_arithmetic_mib": [
+        290.59251499176025,
+        350.59251499176025
+      ],
+      "rounded_planning_installed_mib": [
+        570,
+        650
+      ],
+      "rounded_planning_dmg_mib": [
+        300,
+        360
+      ]
+    },
+    "conservative": {
+      "new_presentation_nonbaselinefont_installed_mib": [
+        150,
+        220
+      ],
+      "new_presentation_compressed_mib": [
+        70,
+        120
+      ],
+      "installer_overhead_and_model_margin_mib": [
+        10,
+        25
+      ],
+      "rounded_planning_installed_mib": [
+        660,
+        730
+      ],
+      "rounded_planning_dmg_mib": [
+        350,
+        420
+      ]
+    },
+    "small_initial_download": {
+      "description": "only current default CJK sans and Latin fonts initially; other fonts/components downloaded before relevant use",
+      "rounded_planning_dmg_mib": [
+        220,
+        280
+      ],
+      "full_offline_cost_reduced": false
+    }
+  },
+  "historical_performance": {
+    "status": "read existing measurement files; not rerun in this assessment",
+    "browser": [
+      {
+        "pages": 10,
+        "browser": "151.0.7922.34",
+        "source_sha256": "324dde57bb66eb9f0dfd25647c7b1c39b4c4e67983cda9be60d4636cbd048a48",
+        "passes": [
+          {
+            "elapsedMs": 7713.835000038147,
+            "longestTaskMs": 65,
+            "maximumTimerGapMs": 66.76499998569489,
+            "timerGapP95Ms": 17.05999994277954,
+            "temperature": "cold-component-cache"
+          },
+          {
+            "elapsedMs": 6709.360000014305,
+            "longestTaskMs": 107,
+            "maximumTimerGapMs": 133.30999994277954,
+            "timerGapP95Ms": 17.134999990463257,
+            "temperature": "warm-component-cache"
+          }
+        ],
+        "output_pptx_bytes": [
+          27840164,
+          27840164
+        ],
+        "scope": "local repeated-content fixture, compile/export and test result checks, excludes actual cloud upload and model generation; local HTTP/OS cache can be warm"
+      },
+      {
+        "pages": 40,
+        "browser": "151.0.7922.34",
+        "source_sha256": "9a2ffa1da97ddac09e17c02032ed5163d3195887d5b7dcf0521cc4691d55f377",
+        "passes": [
+          {
+            "elapsedMs": 8817.540000081062,
+            "longestTaskMs": 102,
+            "maximumTimerGapMs": 112.25,
+            "timerGapP95Ms": 17.054999947547913,
+            "temperature": "cold-component-cache"
+          },
+          {
+            "elapsedMs": 8241.215000033379,
+            "longestTaskMs": 0,
+            "maximumTimerGapMs": 53.519999980926514,
+            "timerGapP95Ms": 17.055000066757202,
+            "temperature": "warm-component-cache"
+          }
+        ],
+        "output_pptx_bytes": [
+          28026963,
+          28026963
+        ],
+        "scope": "local repeated-content fixture, compile/export and test result checks, excludes actual cloud upload and model generation; local HTTP/OS cache can be warm"
+      }
+    ],
+    "native": {
+      "measured_at": "2026-09-13T18:09:32+0800",
+      "hardware": {
+        "platform": "macOS-26.2-arm64-arm-64bit",
+        "machine": "arm64",
+        "cpu": "Apple M4 Max",
+        "logical_cpus": 14
+      },
+      "sampling_note": "Five sequential single-page edit samples per workload. p95 is descriptive, not a production statistical claim. First consumable final preview is the atomic Tool result. Memory sums own process-tree RSS; shared pages may be double counted. No model review is included.",
+      "summary": {
+        "short": {
+          "single_page_edit_p50_s": 5.067,
+          "single_page_edit_p95_s": 6.078,
+          "peak_tree_rss_bytes": 2042298368,
+          "unchanged_pages_reused": true,
+          "native_full_equivalence": true
+        },
+        "long_limit": {
+          "single_page_edit_p50_s": 7.922,
+          "single_page_edit_p95_s": 9.996,
+          "peak_tree_rss_bytes": 2041266176,
+          "unchanged_pages_reused": true,
+          "native_full_equivalence": true
+        },
+        "image_dense": {
+          "single_page_edit_p50_s": 10.035,
+          "single_page_edit_p95_s": 11.456,
+          "peak_tree_rss_bytes": 2420047872,
+          "unchanged_pages_reused": true,
+          "native_full_equivalence": true
+        },
+        "chinese_long": {
+          "single_page_edit_p50_s": 5.442,
+          "single_page_edit_p95_s": 5.53,
+          "peak_tree_rss_bytes": 2427109376,
+          "unchanged_pages_reused": true,
+          "native_full_equivalence": true
+        },
+        "chart_dense": {
+          "single_page_edit_p50_s": 6.839,
+          "single_page_edit_p95_s": 7.115,
+          "peak_tree_rss_bytes": 2318467072,
+          "unchanged_pages_reused": true,
+          "native_full_equivalence": true
+        }
+      },
+      "source_sha256": "8a66781663a3d8adedbd35c5ba46e4ae680438294b1e4aff7e914c877420de70"
+    },
+    "target_status": "MusterOffice latency/memory numbers are design targets only; no measured speedup"
+  }
+}
