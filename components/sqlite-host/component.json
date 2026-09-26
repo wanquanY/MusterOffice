@@ -1,0 +1,178 @@
+{
+  "format": "musteroffice.sqlite-host-component/1-draft",
+  "status": "implementation experiment under ADR 0006; not a release approval",
+  "integration": {
+    "owner": "mo-standard-host only",
+    "pureService": "mo-operation-service has no SQLite dependency",
+    "rusqliteDefaultFeatures": false,
+    "rusqliteFeatures": [
+      "bundled"
+    ],
+    "sqliteSourceUnmodified": true,
+    "sqlcipher": false,
+    "publicSqlOrExtensionLoading": false
+  },
+  "sqlite": {
+    "version": "3.53.2",
+    "license": "public domain declaration in the amalgamation",
+    "copyrightReference": "https://www.sqlite.org/copyright.html",
+    "source": {
+      "pathInCrate": "sqlite3/sqlite3.c",
+      "byteLength": 9507037,
+      "sha256": "0a409f1633283fa31a9126b11fbfd64a1991c5d30defad07e5745d4667f5e23d"
+    },
+    "header": {
+      "pathInCrate": "sqlite3/sqlite3.h",
+      "byteLength": 690725,
+      "sha256": "9e69a1353a4288450b0d5239ede11fc7f1f4c8e5eb07491fc8317eacb5b7de7e"
+    }
+  },
+  "additionalLockedPackages": [
+    {
+      "name": "rusqlite",
+      "version": "0.40.2",
+      "archiveUrl": "https://static.crates.io/crates/rusqlite/rusqlite-0.40.2.crate",
+      "byteLength": 177215,
+      "sha256": "23f2a97da3e3873c73cb2a2e71b35c40ff95e0b1eefa8d72d8499a6928c3b5b3",
+      "declaredLicense": "MIT",
+      "selectedLicense": "MIT",
+      "notice": {
+        "path": "components/sqlite-host/licenses/rusqlite-0.40.2.txt",
+        "byteLength": 1067,
+        "sha256": "c10c1f27337546471e5f7e4e97fdd398b35b9d4e126115dcd22de8d8e65abf6f"
+      }
+    },
+    {
+      "name": "libsqlite3-sys",
+      "version": "0.38.2",
+      "archiveUrl": "https://static.crates.io/crates/libsqlite3-sys/libsqlite3-sys-0.38.2.crate",
+      "byteLength": 5361739,
+      "sha256": "f1d20bef17f513b9b3004532233187769cd072d790971f4e4da0e346eb6401e8",
+      "declaredLicense": "MIT",
+      "selectedLicense": "MIT",
+      "notice": {
+        "path": "components/sqlite-host/licenses/libsqlite3-sys-0.38.2.txt",
+        "byteLength": 1067,
+        "sha256": "c10c1f27337546471e5f7e4e97fdd398b35b9d4e126115dcd22de8d8e65abf6f"
+      }
+    },
+    {
+      "name": "cc",
+      "version": "1.5.1",
+      "archiveUrl": "https://static.crates.io/crates/cc/cc-1.5.1.crate",
+      "byteLength": 108103,
+      "sha256": "f360145194ee8e21db5ee7f3fcd4fe52210864c75c985dae33218202c8bbe040",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "selectedLicense": "MIT",
+      "notice": {
+        "path": "components/sqlite-host/licenses/cc-1.5.1.txt",
+        "byteLength": 1057,
+        "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+      }
+    },
+    {
+      "name": "fallible-iterator",
+      "version": "0.3.0",
+      "archiveUrl": "https://static.crates.io/crates/fallible-iterator/fallible-iterator-0.3.0.crate",
+      "byteLength": 19639,
+      "sha256": "2acce4a10f12dc2fb14a218589d4f1f62ef011b2d0cc4b3cb1bba8e94da14649",
+      "declaredLicense": "MIT/Apache-2.0",
+      "selectedLicense": "MIT",
+      "notice": {
+        "path": "components/sqlite-host/licenses/fallible-iterator-0.3.0.txt",
+        "byteLength": 1078,
+        "sha256": "0816e154b159ba255c563f7c8c7df5bbb8cc5fc96f5ab8cf9f4743b4f41fe7eb"
+      }
+    },
+    {
+      "name": "fallible-streaming-iterator",
+      "version": "0.1.9",
+      "archiveUrl": "https://static.crates.io/crates/fallible-streaming-iterator/fallible-streaming-iterator-0.1.9.crate",
+      "byteLength": 9249,
+      "sha256": "7360491ce676a36bf9bb3c56c1aa791658183a54d2744120f27285738d90465a",
+      "declaredLicense": "MIT/Apache-2.0",
+      "selectedLicense": "MIT",
+      "notice": {
+        "path": "components/sqlite-host/licenses/fallible-streaming-iterator-0.1.9.txt",
+        "byteLength": 1086,
+        "sha256": "8dcec5569a9be5b0e086c80faed6f1aefa670af0ec29cecc2f714303096887e0"
+      }
+    },
+    {
+      "name": "find-msvc-tools",
+      "version": "0.1.14",
+      "archiveUrl": "https://static.crates.io/crates/find-msvc-tools/find-msvc-tools-0.1.14.crate",
+      "byteLength": 31390,
+      "sha256": "aedcfb3409746eddb02b9e19ebda1c3394f759a152e48ee875a0844d1b955484",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "selectedLicense": "MIT",
+      "notice": {
+        "path": "components/sqlite-host/licenses/find-msvc-tools-0.1.14.txt",
+        "byteLength": 1057,
+        "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+      }
+    },
+    {
+      "name": "pkg-config",
+      "version": "0.3.34",
+      "archiveUrl": "https://static.crates.io/crates/pkg-config/pkg-config-0.3.34.crate",
+      "byteLength": 21370,
+      "sha256": "f6b464fbc74e149a392436b17d523f769e057cb6877f6a5c4618bc6f11800548",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "selectedLicense": "MIT",
+      "notice": {
+        "path": "components/sqlite-host/licenses/pkg-config-0.3.34.txt",
+        "byteLength": 1057,
+        "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+      }
+    },
+    {
+      "name": "shlex",
+      "version": "2.0.1",
+      "archiveUrl": "https://static.crates.io/crates/shlex/shlex-2.0.1.crate",
+      "byteLength": 19332,
+      "sha256": "f8fadd59c855ef2080decdef8ff161eb6661b86933c9d82e5ba29dc602a55aba",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "selectedLicense": "MIT",
+      "notice": {
+        "path": "components/sqlite-host/licenses/shlex-2.0.1.txt",
+        "byteLength": 1092,
+        "sha256": "4455bf75a91154108304cb283e0fea9948c14f13e20d60887cf2552449dea3b1"
+      }
+    },
+    {
+      "name": "smallvec",
+      "version": "1.16.2",
+      "archiveUrl": "https://static.crates.io/crates/smallvec/smallvec-1.16.2.crate",
+      "byteLength": 34874,
+      "sha256": "f9395f0f0eee849a9b707b2f06bb92a6a422090e2123bb2ef8e87a0e61892a8e",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "selectedLicense": "MIT",
+      "notice": {
+        "path": "components/sqlite-host/licenses/smallvec-1.16.2.txt",
+        "byteLength": 1072,
+        "sha256": "0b28172679e0009b655da42797c03fd163a3379d5cfa67ba1f1655e974a2a1a9"
+      }
+    },
+    {
+      "name": "vcpkg",
+      "version": "0.2.15",
+      "archiveUrl": "https://static.crates.io/crates/vcpkg/vcpkg-0.2.15.crate",
+      "byteLength": 228735,
+      "sha256": "accd4ea62f7bb7a82fe23066fb0957d48ef677f6eeb8215f372f52e48bb32426",
+      "declaredLicense": "MIT/Apache-2.0",
+      "selectedLicense": "MIT",
+      "notice": {
+        "path": "components/sqlite-host/licenses/vcpkg-0.2.15.txt",
+        "byteLength": 1082,
+        "sha256": "016d20f335060a70e79d9fcf8dfaa6201114d65d592211f4bdfb8ae9ca2bc1dc"
+      }
+    }
+  ],
+  "limitations": [
+    "The complete build enables upstream bundled SQLite features; no minimal-size configuration claim.",
+    "Not a complete release SBOM. Existing dependencies remain in Cargo.lock and their component records.",
+    "No SQLite or rusqlite added to the production WASM kernel dependency graph.",
+    "Only current native test environment validated; cross-platform package closure is not yet accepted."
+  ]
+}
