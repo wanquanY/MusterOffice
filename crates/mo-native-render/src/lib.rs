@@ -2,12 +2,14 @@
 //! configures the worker executable; no path enters core or public arguments.
 use mo_common::Digest;
 use mo_presentation_compile::source_resource_page::protocol::{
-    self, PptxResourceDocumentRequest, PptxResourcePageProfile, ResourcePageRasterResponse,
+    self, AuthorResourceDocumentRequest, AuthorResourceRange, PptxResourceDocumentRequest,
+    PptxResourcePageProfile, ResourcePageRasterResponse,
 };
 type PptxResourcePageRasterResponse = ResourcePageRasterResponse<serde_json::Value>;
 use mo_presentation_compile::source_resource_page::SourceResourcePageImage;
 use mo_presentation_delivery::{
-    Content, DeliveryError, PreviewFonts, PreviewRenderer, PreviewRequest, RendererIdentity,
+    Content, DeliveryError, PreviewFonts, PreviewInput, PreviewRenderer, PreviewRequest,
+    RendererIdentity,
 };
 use sha2::{Digest as _, Sha256};
 use std::{io::Read, path::PathBuf, process::Command, time::Duration};
@@ -48,7 +50,7 @@ impl PreviewRenderer for NativePreviewRenderer {
     fn render_pages(
         &mut self,
         requests: &[PreviewRequest],
-        source: Content<'_>,
+        input: PreviewInput<'_>,
         fonts: PreviewFonts<'_>,
         check: &dyn Fn() -> bool,
         emit: &mut dyn FnMut(usize, SourceResourcePageImage) -> Result<(), DeliveryError>,
@@ -62,22 +64,63 @@ impl PreviewRenderer for NativePreviewRenderer {
         if executable_digest(&self.executable)? != self.identity.implementation_sha256 {
             return Err(DeliveryError::Invalid("preview worker executable changed"));
         }
-        if source.byte_length > protocol::MAX_SOURCE_BYTES as u64
-            || fonts.content.byte_length > protocol::MAX_FONT_BYTES as u64
-        {
-            return Err(DeliveryError::Limit("preview worker input bytes"));
+        if fonts.content.byte_length > protocol::MAX_FONT_BYTES as u64 {
+            return Err(DeliveryError::Limit("preview font bytes"));
         }
-        let batch = PptxResourceDocumentRequest {
-            profile: PptxResourcePageProfile::NativeResourcesDraftV1,
-            pages: requests.to_vec(),
-            fonts: fonts.manifest.cloned(),
+        let (mode, json, inputs) = match input {
+            PreviewInput::Source(source) => {
+                let batch = PptxResourceDocumentRequest {
+                    profile: PptxResourcePageProfile::NativeResourcesDraftV1,
+                    pages: requests.to_vec(),
+                    fonts: fonts.manifest.cloned(),
+                };
+                ("--preview-document", request_json(&batch)?, vec![source])
+            }
+            PreviewInput::Author { plan, resources } => {
+                let mut ranges = Vec::new();
+                let mut parts = Vec::new();
+                let mut offset = 0u64;
+                for id in plan.bindings().images.keys() {
+                    if check() {
+                        return Err(DeliveryError::Cancelled);
+                    }
+                    let data = resources.open(id)?;
+                    let end = offset
+                        .checked_add(data.byte_length)
+                        .filter(|n| *n <= protocol::MAX_SOURCE_BYTES as u64)
+                        .ok_or(DeliveryError::Limit("preview image bundle bytes"))?;
+                    ranges.push(AuthorResourceRange {
+                        id: id.clone(),
+                        offset: mo_common::ByteLength::new(offset),
+                        byte_length: mo_common::ByteLength::new(data.byte_length),
+                    });
+                    parts.push(Content {
+                        reader: data.reader,
+                        byte_length: data.byte_length,
+                    });
+                    offset = end;
+                }
+                let batch = AuthorResourceDocumentRequest {
+                    profile: PptxResourcePageProfile::NativeResourcesDraftV1,
+                    document: plan.document(),
+                    defaults: plan.defaults().clone(),
+                    resources: ranges,
+                    pages: requests.to_vec(),
+                    fonts: fonts.manifest.cloned(),
+                };
+                ("--preview-author-document", request_json(&batch)?, parts)
+            }
         };
-        let json = request_json(&batch)?;
+        let source_length = inputs
+            .iter()
+            .try_fold(0u64, |sum, p| sum.checked_add(p.byte_length))
+            .filter(|n| *n <= protocol::MAX_SOURCE_BYTES as u64)
+            .ok_or(DeliveryError::Limit("preview worker input bytes"))?;
         let mut header = Vec::new();
         header.extend_from_slice(&(json.len() as u32).to_le_bytes());
-        header.extend_from_slice(&(source.byte_length as u32).to_le_bytes());
+        header.extend_from_slice(&(source_length as u32).to_le_bytes());
         header.extend_from_slice(&(fonts.content.byte_length as u32).to_le_bytes());
-        let parts = [
+        let mut parts = vec![
             Content {
                 reader: &header,
                 byte_length: header.len() as u64,
@@ -86,13 +129,13 @@ impl PreviewRenderer for NativePreviewRenderer {
                 reader: &json,
                 byte_length: json.len() as u64,
             },
-            source,
-            fonts.content,
         ];
+        parts.extend(inputs);
+        parts.push(fonts.content);
         let mut part = 0;
         let mut offset = 0;
         let mut command = Command::new(&self.executable);
-        command.arg("--preview-document");
+        command.arg(mode);
         let count = requests.len();
         let mut consumer_error = None;
         let result = mo_native_worker::exchange_events(
@@ -162,7 +205,7 @@ impl PreviewRenderer for NativePreviewRenderer {
     }
 }
 
-fn request_json(request: &PptxResourceDocumentRequest) -> Result<Vec<u8>, DeliveryError> {
+fn request_json(request: &impl serde::Serialize) -> Result<Vec<u8>, DeliveryError> {
     struct Bounded(Vec<u8>);
     impl std::io::Write for Bounded {
         fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {

@@ -201,14 +201,14 @@ pub fn build<S: OutputStore>(
         PPTX_MIME,
         pptx_limits.package.max_package_bytes,
     )?;
-    let package = mo_pptx::export_to(
+    let plan = mo_pptx::AuthorPlan::new(
         document,
         &inputs.settings.defaults,
-        inputs.resources,
-        sink,
-        pptx_limits,
+        pptx_limits.document,
         check,
     )?;
+    let package =
+        mo_pptx::export_plan_to(&plan, inputs.resources, sink, pptx_limits.package, check)?;
     let index = inspect_source(package.package(), Default::default(), check)?;
     if index.slides.len() != document.slide_order.len()
         || index.page_size != Some(document.page_size)
@@ -222,7 +222,7 @@ pub fn build<S: OutputStore>(
         package.receipt().sha256.clone(),
         package.receipt().byte_length,
     )?;
-    // Count the package now, while retaining it separately for range rendering.
+    // Count the verified file independently of the direct semantic render input.
     if pptx_asset.byte_length.get() > outputs.budget()? {
         return Err(DeliveryError::Limit("PPTX bytes"));
     }
@@ -289,17 +289,18 @@ pub fn build<S: OutputStore>(
 
     let mut previews = Vec::new();
     let mut preview_evidence = Vec::new();
-    let requests: Vec<_> = index
+    let requests: Vec<_> = plan
+        .declarations()
         .slides
         .iter()
-        .map(|slide| preview::request(inputs.settings, &viewport, &pptx_asset.sha256, &slide.part))
+        .map(|slide| preview::request(inputs.settings, &viewport, plan.identity(), &slide.part))
         .collect();
     if renderer.identity() != renderer_identity {
         return Err(DeliveryError::Invalid("preview renderer identity changed"));
     }
     renderer.render_pages(
         &requests,
-        Content { reader: package.reader(), byte_length: pptx_asset.byte_length.get() },
+        PreviewInput::Author { plan: &plan, resources: inputs.resources },
         // ReaderAt is an immutable resource. The copied font artifact was
         // verified against font_digest; face identities are checked at prepare.
         PreviewFonts { manifest: inputs.settings.fonts.as_ref(), content: Content { reader: inputs.fonts.reader, byte_length: inputs.fonts.byte_length } },
@@ -337,7 +338,7 @@ pub fn build<S: OutputStore>(
         )?;
         let asset = outputs.add(asset)?;
         let evidence=outputs.json(&format!("preview-evidence:{ordinal}"),"application/json",AssetRole::QualityReport,
-            &serde_json::json!({"format":"musteroffice.preview-evidence/1-draft","pageId":page_id,"pptxSha256":pptx_asset.sha256,"previewAsset":asset,"render":image.info}))?;
+            &serde_json::json!({"format":"musteroffice.preview-evidence/2-draft","authorPlanSha256":plan.identity(),"pageId":page_id,"pptxSha256":pptx_asset.sha256,"previewAsset":asset,"render":image.info}))?;
         preview_evidence.push(evidence.id);
         previews.push(Preview {
             page_id: page_id.clone(),

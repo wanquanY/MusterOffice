@@ -110,6 +110,55 @@ fn owned_native_delivery_is_received_with_original_claims() {
     );
     assert_eq!(received.snapshot().document.title, "SDK real integration");
 }
+
+#[test]
+fn direct_preview_evidence_binds_semantic_plan_separately_from_file_bytes() {
+    let mut f = Fixture::new();
+    let snapshot: SnapshotRecord =
+        serde_json::from_slice(&f.source.bytes[&f.bundle.document.model_asset_id]).unwrap();
+    let context_id = f.id(CONTEXT_MIME);
+    let context: Value = serde_json::from_slice(&f.source.bytes[&context_id]).unwrap();
+    let settings: DeliverySettings = serde_json::from_value(context["settings"].clone()).unwrap();
+    let plan = mo_pptx::AuthorPlan::new(
+        &snapshot.document,
+        &settings.defaults,
+        Default::default(),
+        &|| false,
+    )
+    .unwrap();
+    let evidence: Vec<_> = f
+        .bundle
+        .assets
+        .iter()
+        .filter(|a| a.role == AssetRole::QualityReport && a.media_type == "application/json")
+        .map(|a| a.id.clone())
+        .collect();
+    assert!(!evidence.is_empty());
+    for id in &evidence {
+        f.json(id, |v| {
+            v["format"] = json!("musteroffice.preview-evidence/2-draft");
+            v["authorPlanSha256"] = json!(plan.identity());
+            v["render"]["page"]["page"]["sourceSha256"] = json!(plan.identity());
+        });
+    }
+    f.run().unwrap();
+    let pptx_sha = f
+        .bundle
+        .assets
+        .iter()
+        .find(|a| a.id == f.bundle.pptx_asset_id)
+        .unwrap()
+        .sha256
+        .clone();
+    assert_ne!(&pptx_sha, plan.identity());
+    f.json(&evidence[0], |v| v["authorPlanSha256"] = json!(pptx_sha));
+    f.rejects("preview evidence binding");
+    f.json(&evidence[0], |v| {
+        v["authorPlanSha256"] = json!(plan.identity());
+        v["render"]["page"]["page"]["sourceSha256"] = json!(pptx_sha);
+    });
+    f.rejects("preview evidence binding");
+}
 #[test]
 fn declared_budget_and_accepted_pins_fail_before_opening_assets() {
     let mut f = Fixture::new();

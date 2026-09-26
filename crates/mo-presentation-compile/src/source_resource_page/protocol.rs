@@ -20,6 +20,27 @@ pub struct PptxResourceDocumentRequest {
     pub fonts: Option<FontManifest>,
 }
 
+/// Logical document input. Images travel once as a separately bounded bundle;
+/// these ranges are not paths or host resource authority.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AuthorResourceDocumentRequest<D = mo_presentation_model::Document> {
+    pub profile: PptxResourcePageProfile,
+    pub document: D,
+    pub defaults: mo_presentation_source::author::ExportDefaults,
+    pub resources: Vec<AuthorResourceRange>,
+    pub pages: Vec<ResourcePageRequest>,
+    pub fonts: Option<FontManifest>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AuthorResourceRange {
+    pub id: mo_common::ResourceId,
+    pub offset: mo_common::ByteLength,
+    pub byte_length: mo_common::ByteLength,
+}
+
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema)]
 pub enum PptxResourcePageProfile {
     #[serde(rename = "drawingml-resource-page-q32-v1-draft")]

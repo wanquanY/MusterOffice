@@ -209,7 +209,7 @@ impl PreviewRenderer for FaultRenderer {
     fn render_pages(
         &mut self,
         requests: &[PreviewRequest],
-        source: Content<'_>,
+        source: mo_presentation_delivery::PreviewInput<'_>,
         fonts: PreviewFonts<'_>,
         check: &dyn Fn() -> bool,
         emit: &mut dyn FnMut(usize, SourceResourcePageImage) -> Result<(), DeliveryError>,

@@ -11,7 +11,7 @@ pub use artifact::{OutputStore, ProducedArtifact};
 pub use build::{DeliveryCandidate, DeliveryInputs, build};
 pub use contract::*;
 use mo_opc::ReaderAt;
-pub use preview::{PreviewFonts, PreviewRenderer, PreviewRequest};
+pub use preview::{PreviewFonts, PreviewInput, PreviewRenderer, PreviewRequest};
 pub use receive::{
     DeliveryExpectation, DeliverySource, ReceiptInspection, ReceivedDelivery, inspect,
 };

@@ -1,9 +1,7 @@
 //! Coordinate the real renderer to exercise a busy executor deterministically.
 use super::*;
 use mo_presentation_compile::source_resource_page::SourceResourcePageImage;
-use mo_presentation_delivery::{
-    Content, DeliveryError, PreviewFonts, PreviewRequest, RendererIdentity,
-};
+use mo_presentation_delivery::{DeliveryError, PreviewFonts, PreviewRequest, RendererIdentity};
 use mo_standard_host::{NativeRuntime, NativeSession, RuntimeOptions, StandardHostConfig};
 use std::sync::{
     Arc, Condvar, Mutex,
@@ -35,7 +33,7 @@ impl PreviewRenderer for GatedRenderer {
     fn render_pages(
         &mut self,
         requests: &[PreviewRequest],
-        source: Content<'_>,
+        source: mo_presentation_delivery::PreviewInput<'_>,
         fonts: PreviewFonts<'_>,
         check: &dyn Fn() -> bool,
         emit: &mut dyn FnMut(usize, SourceResourcePageImage) -> Result<(), DeliveryError>,

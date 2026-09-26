@@ -31,6 +31,8 @@ struct PreviewEvidence {
     format: String,
     page_id: SlideId,
     pptx_sha256: Digest,
+    #[serde(default)]
+    author_plan_sha256: Option<Digest>,
     preview_asset: DeliveryAsset,
     render: SourceResourcePageRasterInfo,
 }
@@ -87,6 +89,12 @@ pub(super) fn validate(
         snapshot.document.page_size,
         context.value.settings.preview_width,
     )?;
+    let plan = mo_pptx::AuthorPlan::new(
+        &snapshot.document,
+        &context.value.settings.defaults,
+        Default::default(),
+        input.check,
+    )?;
     let mut evidence_ids = BTreeSet::new();
     for ((preview, evidence_id), slide) in bundle
         .previews
@@ -103,13 +111,24 @@ pub(super) fn validate(
         let image = input.role(&preview.image_asset_id, AssetRole::Preview, "image/png")?;
         let page = &evidence.render.page.page;
         let raster = &evidence.render.page.scene.raster;
-        if evidence.format != "musteroffice.preview-evidence/1-draft"
+        // Legacy evidence binds source rendering to file bytes; the direct
+        // profile binds semantic rendering to the independently rebuilt plan.
+        let identity_matches = match evidence.format.as_str() {
+            "musteroffice.preview-evidence/1-draft" => {
+                evidence.author_plan_sha256.is_none() && page.source_sha256 == *pptx_sha
+            }
+            "musteroffice.preview-evidence/2-draft" => {
+                evidence.author_plan_sha256.as_ref() == Some(plan.identity())
+                    && &page.source_sha256 == plan.identity()
+            }
+            _ => false,
+        };
+        if !identity_matches
             || evidence.page_id != preview.page_id
             || evidence.pptx_sha256 != *pptx_sha
             || serde_json::to_value(&evidence.preview_asset)
                 .map_err(|_| DeliveryError::Serialization)?
                 != serde_json::to_value(image).map_err(|_| DeliveryError::Serialization)?
-            || page.source_sha256 != *pptx_sha
             || page.slide != slide.part
             || page.hidden_slide != snapshot.document.slides[&preview.page_id].hidden
             || evidence.render.profile != mo_presentation_compile::source_resource_page::PROFILE

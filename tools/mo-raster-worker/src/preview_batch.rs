@@ -3,7 +3,7 @@
 use mo_kernel_api::*;
 use std::io::{self, Read, Write};
 
-pub fn run() -> Result<(), Box<dyn std::error::Error>> {
+pub fn run(author: bool) -> Result<(), Box<dyn std::error::Error>> {
     let mut input = io::stdin().lock();
     let mut output = io::stdout().lock();
     let mut header = [0; 12];
@@ -27,6 +27,22 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
     let mut extra = [0; 1];
     if input.read(&mut extra)? != 0 {
         return Err("trailing document preview input".into());
+    }
+    if author {
+        let request: AuthorResourceDocumentRequest =
+            mo_common::from_json_str(std::str::from_utf8(&json)?)?;
+        return render_author_resource_document(
+            &request,
+            &source,
+            &fonts,
+            PptxResourcePageBackends {
+                decoder: &mut mo_skia_sys::NativeRaster,
+                text: Some(&mut mo_harfbuzz_sys::NativeShaper::default()),
+                raster: &mut mo_skia_sys::NativeRaster,
+            },
+            &|| false,
+            &mut |response, pixels| write_frame(&mut output, response, pixels),
+        );
     }
     let request: PptxResourceDocumentRequest =
         mo_common::from_json_str(std::str::from_utf8(&json)?)?;

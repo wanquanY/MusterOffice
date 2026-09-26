@@ -1,8 +1,14 @@
 //! Source bytes, explicit font resources, and independent component capabilities
 //! enter once. The host owns worker lifecycle, cancellation and publication.
+mod author;
+mod batch;
+pub use batch::{
+    ResourceDocumentInputs, render_resource_document_images, render_resource_document_plan,
+};
 mod diagnostic;
 mod prepare;
 use crate::{pptx_page, pptx_source::inline_limits, *};
+pub use author::render_author_resource_document;
 pub(crate) use diagnostic::page_failure;
 pub use diagnostic::*;
 use mo_opc::Package;
@@ -23,7 +29,8 @@ pub use prepare::{
 };
 
 pub use source_resource_page::protocol::{
-    PptxResourceDocumentRequest, PptxResourcePageProfile, PptxResourcePageRequest,
+    AuthorResourceDocumentRequest, PptxResourceDocumentRequest, PptxResourcePageProfile,
+    PptxResourcePageRequest,
 };
 pub type PptxResourcePageRasterResponse =
     source_resource_page::protocol::ResourcePageRasterResponse<PptxResourcePageFailure>;

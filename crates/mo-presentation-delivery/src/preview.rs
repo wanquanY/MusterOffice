@@ -14,6 +14,15 @@ pub struct PreviewFonts<'a> {
     pub manifest: Option<&'a FontManifest>,
     pub content: Content<'a>,
 }
+pub enum PreviewInput<'a> {
+    /// An inspected source route; the worker revalidates the immutable bytes.
+    Source(Content<'a>),
+    /// Direct author semantics; the worker reconstructs the same typed plan.
+    Author {
+        plan: &'a mo_pptx::AuthorPlan<'a>,
+        resources: &'a dyn mo_pptx::Resources,
+    },
+}
 /// An injected computation capability. Native hosts isolate unsafe components;
 /// WASM hosts supply their own bridge. Errors carry actual renderer diagnostics.
 pub trait PreviewRenderer {
@@ -23,7 +32,7 @@ pub trait PreviewRenderer {
     fn render_pages(
         &mut self,
         requests: &[PreviewRequest],
-        source: Content<'_>,
+        input: PreviewInput<'_>,
         fonts: PreviewFonts<'_>,
         check: &dyn Fn() -> bool,
         emit: &mut dyn FnMut(usize, SourceResourcePageImage) -> Result<(), DeliveryError>,
@@ -38,7 +47,7 @@ pub trait PreviewRenderer {
         let mut result = None;
         self.render_pages(
             std::slice::from_ref(request),
-            source,
+            PreviewInput::Source(source),
             fonts,
             check,
             &mut |ordinal, image| {
