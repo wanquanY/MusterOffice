@@ -9,6 +9,15 @@ use mo_pptx::source::images::{ImageSourceSelection, SourceImageBinding};
 use mo_raster::ImageSampling;
 use serde::Serialize;
 
+/// Per-page input; immutable document and font resources belong to the session.
+#[derive(Debug, Clone, Serialize, serde::Deserialize, schemars::JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ResourcePageRequest {
+    pub page: SourcePageRequest,
+    pub image_source: ImageSourceSelection,
+    pub sampling: ImageSampling,
+}
+
 #[derive(Debug, Clone, Copy)]
 pub struct ResourcePageOptions {
     pub selection: ImageSourceSelection,

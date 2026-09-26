@@ -289,37 +289,27 @@ pub fn build<S: OutputStore>(
 
     let mut previews = Vec::new();
     let mut preview_evidence = Vec::new();
-    for (ordinal, (page_id, slide)) in document.slide_order.iter().zip(&index.slides).enumerate() {
+    let requests: Vec<_> = index
+        .slides
+        .iter()
+        .map(|slide| preview::request(inputs.settings, &viewport, &pptx_asset.sha256, &slide.part))
+        .collect();
+    if renderer.identity() != renderer_identity {
+        return Err(DeliveryError::Invalid("preview renderer identity changed"));
+    }
+    renderer.render_pages(
+        &requests,
+        Content { reader: package.reader(), byte_length: pptx_asset.byte_length.get() },
+        // ReaderAt is an immutable resource. The copied font artifact was
+        // verified against font_digest; face identities are checked at prepare.
+        PreviewFonts { manifest: inputs.settings.fonts.as_ref(), content: Content { reader: inputs.fonts.reader, byte_length: inputs.fonts.byte_length } },
+        check,
+        &mut |ordinal, image| {
         cancel(check)?;
-        if renderer.identity() != renderer_identity {
-            return Err(DeliveryError::Invalid("preview renderer identity changed"));
-        }
-        let request = preview::request(inputs.settings, &viewport, &pptx_asset.sha256, &slide.part);
-        let empty: Vec<u8> = Vec::new();
-        let font_reader: &dyn mo_opc::ReaderAt = match &font_bundle {
-            Some(id) => {
-                &outputs
-                    .outputs
-                    .iter()
-                    .find(|a| a.asset.id == *id)
-                    .ok_or(DeliveryError::Invalid("font bundle unavailable"))?
-                    .reader
-            }
-            None => &empty,
-        };
-        let image = renderer.render(
-            &request,
-            Content {
-                reader: package.reader(),
-                byte_length: pptx_asset.byte_length.get(),
-            },
-            Content {
-                reader: font_reader,
-                byte_length: inputs.fonts.byte_length,
-            },
-            check,
-        )?;
-        preview::validate(&request, &image, check)?;
+        if ordinal != previews.len() { return Err(DeliveryError::Invalid("preview page sequence")); }
+        let request = requests.get(ordinal).ok_or(DeliveryError::Invalid("unexpected preview page"))?;
+        let page_id = &document.slide_order[ordinal];
+        preview::validate(request, &image, check)?;
         if image.info.page.page.hidden_slide != document.slides[page_id].hidden {
             return Err(DeliveryError::Invalid("preview visibility binding"));
         }
@@ -356,6 +346,13 @@ pub fn build<S: OutputStore>(
             height: viewport.height,
             sample: PreviewSample::Editor {},
         });
+        Ok(())
+    })?;
+    if previews.len() != requests.len() {
+        return Err(DeliveryError::Invalid("missing preview pages"));
+    }
+    if renderer.identity() != renderer_identity {
+        return Err(DeliveryError::Invalid("preview renderer identity changed"));
     }
     let quality=outputs.json("quality","application/vnd.musteroffice.quality+json",AssetRole::QualityReport,
         &serde_json::json!({"format":"musteroffice.delivery-evidence/1-draft","subjectSha256":pptx_asset.sha256,"modelSemanticDigest":snapshot.semantic_digest,"contextAssetId":context.id,"structure":{"profile":"opc-zip-xml-graph-digest-v1-draft","actualStoredBytesVerified":true,"fullPresentationXsd":false},"pageCoverage":document.slide_order,"previews":preview_evidence,"layoutQualityProven":false,"nativeEditabilityProven":false,"playbackProven":false,"targetApplicationProven":false}))?;

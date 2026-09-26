@@ -17,6 +17,20 @@ use mo_presentation_compile::{
 };
 use mo_text::manifest::{FontManifest, ManifestLimits, PreparedManifest};
 pub(crate) use prepare::prepare_input;
+pub use prepare::{
+    PreparedPptxResourceDocument, prepare_pptx_resource_document,
+    prepare_pptx_resource_document_inputs,
+};
+
+/// Internal document-worker protocol: the font manifest appears once, not once
+/// per page. Public single-page request envelopes remain unchanged.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct PptxResourceDocumentRequest {
+    pub profile: PptxResourcePageProfile,
+    pub pages: Vec<source_resource_page::ResourcePageRequest>,
+    pub fonts: Option<FontManifest>,
+}
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema)]
 pub enum PptxResourcePageProfile {
     #[serde(rename = "drawingml-resource-page-q32-v1-draft")]
@@ -63,13 +77,55 @@ pub fn render_pptx_resource_page(
     backends: PptxResourcePageBackends<'_>,
     check: &dyn Fn() -> bool,
 ) -> (PptxResourcePageRasterResponse, Vec<u8>) {
+    let result = prepare_input(request, source, fonts, check);
+    match result {
+        Ok(prepared) => render_prepared_pptx_resource_page(&prepared, request, backends, check),
+        Err(error) => (
+            PptxResourcePageRasterResponse::Error {
+                error: Box::new(error),
+            },
+            vec![],
+        ),
+    }
+}
+pub fn render_prepared_pptx_resource_page<R: mo_opc::ReaderAt>(
+    prepared: &PreparedPptxResourceDocument<'_, R>,
+    request: &PptxResourcePageRequest,
+    backends: PptxResourcePageBackends<'_>,
+    check: &dyn Fn() -> bool,
+) -> (PptxResourcePageRasterResponse, Vec<u8>) {
+    if let Err(error) = prepared.check_request(request) {
+        return (
+            PptxResourcePageRasterResponse::Error {
+                error: Box::new(error),
+            },
+            vec![],
+        );
+    }
+    render_pptx_resource_document_page(
+        prepared,
+        &request.page,
+        request.image_source,
+        request.sampling,
+        backends,
+        check,
+    )
+}
+
+/// Renders using the document's already bound font manifest. Per-page source
+/// identity and options are still validated by the shared page compiler.
+pub fn render_pptx_resource_document_page<R: mo_opc::ReaderAt>(
+    prepared: &PreparedPptxResourceDocument<'_, R>,
+    page: &SourcePageRequest,
+    image_source: ImageSourceSelection,
+    sampling: mo_raster::ImageSampling,
+    backends: PptxResourcePageBackends<'_>,
+    check: &dyn Fn() -> bool,
+) -> (PptxResourcePageRasterResponse, Vec<u8>) {
     let result = (|| {
-        let prepared = prepare_input(request, source, fonts, check)?;
-        let prepare::PreparedInput {
-            package,
-            index,
-            manifest,
-        } = prepared;
+        let package = &prepared.package;
+        let index = &prepared.index;
+        let manifest = &prepared.manifest;
         let text = match manifest.as_ref() {
             Some(manifest) => Some(TextPageContext {
                 manifest,
@@ -83,14 +139,14 @@ pub fn render_pptx_resource_page(
             None => None,
         };
         source_resource_page::prepare(
-            &package,
-            &index,
-            &request.page,
+            package,
+            index,
+            page,
             backends.decoder,
             text,
             ResourcePageOptions {
-                selection: request.image_source,
-                sampling: request.sampling,
+                selection: image_source,
+                sampling,
                 text_limits: Default::default(),
             },
             check,

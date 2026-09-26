@@ -115,3 +115,69 @@ fn trailing_output_bad_exit_and_provider_failure_are_not_success() {
         .contains("source failed")
     );
 }
+
+#[test]
+fn bounded_events_reach_the_owner_in_order_including_the_last_event() {
+    let output = Rc::new(std::cell::RefCell::new(Vec::new()));
+    let received = output.clone();
+    mo_native_worker::exchange_events(
+        command("printf abc"),
+        Duration::from_secs(3),
+        &|| false,
+        || Ok(None),
+        |stdout, emit| {
+            for _ in 0..3 {
+                let mut byte = [0; 1];
+                stdout.read_exact(&mut byte).map_err(|e| e.to_string())?;
+                emit(byte[0])?;
+            }
+            Ok(())
+        },
+        move |byte| {
+            received.borrow_mut().push(byte);
+            Ok(())
+        },
+    )
+    .unwrap();
+    assert_eq!(output.borrow().as_slice(), b"abc");
+}
+
+#[test]
+fn consumer_failure_reaps_a_child_blocked_on_output_or_further_input() {
+    let start = Instant::now();
+    let result = mo_native_worker::exchange_events(
+        command("printf ab; exec sleep 30"),
+        Duration::from_secs(5),
+        &|| false,
+        || Ok(None),
+        |stdout, emit| loop {
+            let mut byte = [0; 1];
+            stdout.read_exact(&mut byte).map_err(|e| e.to_string())?;
+            emit(byte[0])?;
+        },
+        |_| Err("output store failed".into()),
+    );
+    assert_eq!(result.unwrap_err(), "output store failed");
+    assert!(start.elapsed() < Duration::from_secs(3));
+}
+
+#[test]
+fn an_event_does_not_turn_a_bad_exit_into_success() {
+    let received = Cell::new(false);
+    let result = mo_native_worker::exchange_events(
+        command("printf a; exit 3"),
+        Duration::from_secs(3),
+        &|| false,
+        || Ok(None),
+        |stdout, emit| {
+            let mut byte = [0; 1];
+            stdout.read_exact(&mut byte).map_err(|e| e.to_string())?;
+            emit(byte[0])
+        },
+        |_| {
+            received.set(true);
+            Ok(())
+        },
+    );
+    assert!(result.is_err());
+}

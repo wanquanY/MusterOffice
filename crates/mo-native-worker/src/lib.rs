@@ -10,13 +10,23 @@ use std::{
 };
 pub const CHUNK_BYTES: usize = 64 * 1024;
 
-pub fn exchange_stream<T: Send + 'static>(
+/// One isolated document computation with bounded input and output queues.
+/// Events are consumed on the caller thread, allowing non-Send storage owners.
+/// A failed consumer, timeout or cancellation always kills and reaps the child.
+/// Events are private candidates until this function confirms successful exit.
+pub fn exchange_events<E: Send + 'static>(
     mut command: Command,
     timeout: Duration,
     check: &dyn Fn() -> bool,
     mut next: impl FnMut() -> Result<Option<Vec<u8>>, String>,
-    read: impl FnOnce(&mut std::process::ChildStdout) -> Result<T, String> + Send + 'static,
-) -> Result<T, String> {
+    read: impl FnOnce(
+        &mut std::process::ChildStdout,
+        &mut dyn FnMut(E) -> Result<(), String>,
+    ) -> Result<(), String>
+    + Send
+    + 'static,
+    mut consume: impl FnMut(E) -> Result<(), String>,
+) -> Result<(), String> {
     if timeout.is_zero() {
         return Err("worker deadline is zero".into());
     }
@@ -35,6 +45,7 @@ pub fn exchange_stream<T: Send + 'static>(
     let mut output = child.stdout.take().expect("piped stdout");
     let (sender, receiver) = mpsc::sync_channel::<Option<Vec<u8>>>(1);
     let (result_send, result_receive) = mpsc::sync_channel(1);
+    let (event_send, event_receive) = mpsc::sync_channel(1);
     let (wake_send, wake_receive) = mpsc::sync_channel(1);
     let transport = thread::spawn(move || {
         let result = (|| {
@@ -43,12 +54,18 @@ pub fn exchange_stream<T: Send + 'static>(
                 input.write_all(&bytes).map_err(|e| e.to_string())?;
             }
             drop(input);
-            let result = read(&mut output)?;
+            read(&mut output, &mut |event| {
+                event_send
+                    .send(event)
+                    .map_err(|_| "worker consumer abandoned")?;
+                let _ = wake_send.try_send(());
+                Ok(())
+            })?;
             let mut extra = [0; 1];
             if output.read(&mut extra).map_err(|e| e.to_string())? != 0 {
                 return Err("trailing worker response bytes".into());
             }
-            Ok(result)
+            Ok(())
         })();
         let _ = result_send.send(result);
         let _ = wake_send.try_send(());
@@ -56,6 +73,7 @@ pub fn exchange_stream<T: Send + 'static>(
     let mut result = None;
     let mut pending = None;
     let mut finished_input = false;
+    let mut events_finished = false;
     let completion = loop {
         if before.elapsed() >= timeout {
             break Err("worker timed out".into());
@@ -83,6 +101,15 @@ pub fn exchange_stream<T: Send + 'static>(
                 }
             }
         }
+        match event_receive.try_recv() {
+            Ok(event) => {
+                if let Err(error) = consume(event) {
+                    break Err(error);
+                }
+            }
+            Err(mpsc::TryRecvError::Empty) => (),
+            Err(mpsc::TryRecvError::Disconnected) => events_finished = true,
+        }
         if result.is_none() {
             match result_receive.try_recv() {
                 Ok(value) => result = Some(value),
@@ -92,14 +119,14 @@ pub fn exchange_stream<T: Send + 'static>(
                 }
             }
         }
-        if result.as_ref().is_some_and(Result::is_err) {
+        if events_finished && result.as_ref().is_some_and(Result::is_err) {
             break result.take().unwrap();
         }
         match child.try_wait() {
             Ok(Some(status)) if !status.success() => {
                 break Err("worker exited unsuccessfully".into());
             }
-            Ok(Some(_)) if result.is_some() => break result.take().unwrap(),
+            Ok(Some(_)) if result.is_some() && events_finished => break result.take().unwrap(),
             Ok(_) => (),
             Err(error) => break Err(error.to_string()),
         }
@@ -115,12 +142,36 @@ pub fn exchange_stream<T: Send + 'static>(
         let _ = child.kill();
     }
     drop(sender);
+    drop(event_receive);
     let status = child.wait().map_err(|e| e.to_string());
     if transport.join().is_err() {
         return Err("worker transport thread failed".into());
     }
     status?;
     completion
+}
+
+/// Single-response adapter over the same bounded transport.
+pub fn exchange_stream<T: Send + 'static>(
+    command: Command,
+    timeout: Duration,
+    check: &dyn Fn() -> bool,
+    next: impl FnMut() -> Result<Option<Vec<u8>>, String>,
+    read: impl FnOnce(&mut std::process::ChildStdout) -> Result<T, String> + Send + 'static,
+) -> Result<T, String> {
+    let mut output = None;
+    exchange_events(
+        command,
+        timeout,
+        check,
+        next,
+        move |stdout, emit| emit(read(stdout)?),
+        |value| {
+            output = Some(value);
+            Ok(())
+        },
+    )?;
+    output.ok_or_else(|| "worker returned no response".into())
 }
 
 /// Existing bounded-memory callers may pass owned parts. New resource clients

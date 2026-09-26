@@ -1,7 +1,9 @@
 //! Coordinate the real renderer to exercise a busy executor deterministically.
 use super::*;
 use mo_presentation_compile::source_resource_page::SourceResourcePageImage;
-use mo_presentation_delivery::{Content, DeliveryError, PreviewRequest, RendererIdentity};
+use mo_presentation_delivery::{
+    Content, DeliveryError, PreviewFonts, PreviewRequest, RendererIdentity,
+};
 use mo_standard_host::{NativeRuntime, NativeSession, RuntimeOptions, StandardHostConfig};
 use std::sync::{
     Arc, Condvar, Mutex,
@@ -30,34 +32,37 @@ impl PreviewRenderer for GatedRenderer {
     fn identity(&self) -> RendererIdentity {
         self.inner.identity()
     }
-    fn render(
+    fn render_pages(
         &mut self,
-        request: &PreviewRequest,
+        requests: &[PreviewRequest],
         source: Content<'_>,
-        fonts: Content<'_>,
+        fonts: PreviewFonts<'_>,
         check: &dyn Fn() -> bool,
-    ) -> Result<SourceResourcePageImage, DeliveryError> {
-        // Actual pinned worker must produce this page before the test proceeds.
-        let image = self.inner.render(request, source, fonts, check)?;
-        if !self.gate.entered.swap(true, Ordering::SeqCst) {
-            self.gate.ready.send(()).unwrap();
-            let (released, _) = self
-                .gate
-                .changed
-                .wait_timeout_while(
-                    self.gate.released.lock().unwrap(),
-                    Duration::from_secs(15),
-                    |r| !*r,
-                )
-                .unwrap();
-            if !*released {
-                return Err(DeliveryError::Limit("test coordination timeout"));
-            }
-        }
-        if check() {
-            return Err(DeliveryError::Cancelled);
-        }
-        Ok(image)
+        emit: &mut dyn FnMut(usize, SourceResourcePageImage) -> Result<(), DeliveryError>,
+    ) -> Result<(), DeliveryError> {
+        let gate = &self.gate;
+        self.inner
+            .render_pages(requests, source, fonts, check, &mut |ordinal, image| {
+                if !gate.entered.swap(true, Ordering::SeqCst) {
+                    gate.ready.send(()).unwrap();
+                    let (released, _) = self
+                        .gate
+                        .changed
+                        .wait_timeout_while(
+                            gate.released.lock().unwrap(),
+                            Duration::from_secs(15),
+                            |r| !*r,
+                        )
+                        .unwrap();
+                    if !*released {
+                        return Err(DeliveryError::Limit("test coordination timeout"));
+                    }
+                }
+                if check() {
+                    return Err(DeliveryError::Cancelled);
+                }
+                emit(ordinal, image)
+            })
     }
 }
 fn job(response: HostResponse) -> JobInfo {

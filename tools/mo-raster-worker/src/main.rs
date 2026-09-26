@@ -2,6 +2,7 @@
 use mo_harfbuzz_sys::NativeShaper;
 use mo_skia_sys::NativeRaster;
 mod playback;
+mod preview_batch;
 mod source_playback;
 use std::io::{self, Read, Write};
 type Execute = fn(&str, &mut dyn mo_raster::RasterBackend, &dyn Fn() -> bool) -> (String, Vec<u8>);
@@ -12,6 +13,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     if args.len() == 1 && args[0] == "--pptx-playback-session" {
         return source_playback::run();
+    }
+    if args.len() == 1 && args[0] == "--preview-document" {
+        return preview_batch::run();
     }
     let execute: Option<Execute> = match args.as_slice() {
         [] => Some(mo_kernel_api::render_paths_json),

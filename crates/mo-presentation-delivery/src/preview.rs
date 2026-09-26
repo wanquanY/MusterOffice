@@ -9,23 +9,48 @@ use mo_raster::{PixelScale, RasterViewport};
 use mo_text::manifest::FontManifest;
 use sha2::{Digest as _, Sha256};
 
-pub struct PreviewRequest {
-    pub page: SourcePageRequest,
-    pub fonts: Option<FontManifest>,
-    pub image_source: mo_pptx::source::images::ImageSourceSelection,
-    pub sampling: mo_raster::ImageSampling,
+pub use mo_presentation_compile::source_resource_page::ResourcePageRequest as PreviewRequest;
+pub struct PreviewFonts<'a> {
+    pub manifest: Option<&'a FontManifest>,
+    pub content: Content<'a>,
 }
 /// An injected computation capability. Native hosts isolate unsafe components;
 /// WASM hosts supply their own bridge. Errors carry actual renderer diagnostics.
 pub trait PreviewRenderer {
     fn identity(&self) -> RendererIdentity;
+    /// A document-scoped batch: prepare immutable inputs once, then emit each
+    /// page in order. The callback owns output storage and may cancel the batch.
+    fn render_pages(
+        &mut self,
+        requests: &[PreviewRequest],
+        source: Content<'_>,
+        fonts: PreviewFonts<'_>,
+        check: &dyn Fn() -> bool,
+        emit: &mut dyn FnMut(usize, SourceResourcePageImage) -> Result<(), DeliveryError>,
+    ) -> Result<(), DeliveryError>;
     fn render(
         &mut self,
         request: &PreviewRequest,
         source: Content<'_>,
-        fonts: Content<'_>,
+        fonts: PreviewFonts<'_>,
         check: &dyn Fn() -> bool,
-    ) -> Result<SourceResourcePageImage, DeliveryError>;
+    ) -> Result<SourceResourcePageImage, DeliveryError> {
+        let mut result = None;
+        self.render_pages(
+            std::slice::from_ref(request),
+            source,
+            fonts,
+            check,
+            &mut |ordinal, image| {
+                if ordinal != 0 || result.is_some() {
+                    return Err(DeliveryError::Invalid("preview page sequence"));
+                }
+                result = Some(image);
+                Ok(())
+            },
+        )?;
+        result.ok_or(DeliveryError::Invalid("missing preview page"))
+    }
 }
 pub(crate) fn viewport(
     size: mo_presentation_model::Size,
@@ -79,7 +104,6 @@ pub(crate) fn request(
             viewport: viewport.clone(),
             color_context: settings.color_context.clone(),
         },
-        fonts: settings.fonts.clone(),
         image_source: settings.image_source,
         sampling: settings.sampling,
     }

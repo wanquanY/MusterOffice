@@ -175,3 +175,53 @@ fn resource_page_preserves_image_prerequisite_and_component_failure_ownership() 
     assert_eq!(e["error"]["code"], "HOST_FAILURE");
     assert_eq!(e["error"]["location"]["object"], 42);
 }
+
+#[test]
+fn prepared_document_rejects_switched_source_or_fonts_before_using_backends() {
+    let source = image_fixture(&picture(
+        42,
+        "",
+        &blip("owned-image", "", STRETCH),
+        "<a:noFill/>",
+    ));
+    let original = query(&source);
+    let prepared = prepare_pptx_resource_document(
+        &original,
+        source.as_slice(),
+        source.len() as u64,
+        &[],
+        &|| false,
+    )
+    .unwrap();
+    for switch_source in [true, false] {
+        let mut request = original.clone();
+        if switch_source {
+            request.page.expected_source_sha256 = mo_common::Digest::from_sha256([9; 32]);
+        } else {
+            request.fonts = Some(author().manifest);
+        }
+        let (mut decoder, mut text, mut raster) =
+            (Decoder::default(), Text::default(), Raster::default());
+        let (response, pixels) = render_prepared_pptx_resource_page(
+            &prepared,
+            &request,
+            PptxResourcePageBackends {
+                decoder: &mut decoder,
+                text: Some(&mut text),
+                raster: &mut raster,
+            },
+            &|| false,
+        );
+        assert!(pixels.is_empty());
+        assert_eq!((decoder.calls, text.calls, raster.calls), (0, 0, 0));
+        let error = &serde_json::to_value(response).unwrap()["error"];
+        assert_eq!(
+            error["error"]["code"],
+            if switch_source {
+                "SOURCE_CONFLICT"
+            } else {
+                "INPUT_INVALID"
+            }
+        );
+    }
+}

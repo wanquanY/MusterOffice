@@ -13,6 +13,9 @@ use std::{
     time::Duration,
 };
 
+#[path = "delivery/batch.rs"]
+mod batch;
+
 fn input() -> (SnapshotRecord, DeliverySettings) {
     let v: serde_json::Value = serde_json::from_str(include_str!(
         "../../../fixtures/presentations/delivery/input.json"
@@ -203,24 +206,29 @@ impl PreviewRenderer for FaultRenderer {
     fn identity(&self) -> RendererIdentity {
         self.inner.identity()
     }
-    fn render(
+    fn render_pages(
         &mut self,
-        q: &PreviewRequest,
+        requests: &[PreviewRequest],
         source: Content<'_>,
-        fonts: Content<'_>,
+        fonts: PreviewFonts<'_>,
         check: &dyn Fn() -> bool,
-    ) -> Result<SourceResourcePageImage, DeliveryError> {
-        let mut image = self.inner.render(q, source, fonts, check)?;
-        match self.fault {
-            0 => image.info.page.page.source_sha256 = Digest::from_sha256([0; 32]),
-            1 => image.pixels[0] ^= 1,
-            2 => image.info.page.scene.profile = "wrong".into(),
-            3 => image.info.page.page.hidden_slide = !image.info.page.page.hidden_slide,
-            _ => unreachable!(),
-        }
-        Ok(image)
+        emit: &mut dyn FnMut(usize, SourceResourcePageImage) -> Result<(), DeliveryError>,
+    ) -> Result<(), DeliveryError> {
+        let fault = self.fault;
+        self.inner
+            .render_pages(requests, source, fonts, check, &mut |ordinal, mut image| {
+                match fault {
+                    0 => image.info.page.page.source_sha256 = Digest::from_sha256([0; 32]),
+                    1 => image.pixels[0] ^= 1,
+                    2 => image.info.page.scene.profile = "wrong".into(),
+                    3 => image.info.page.page.hidden_slide = !image.info.page.page.hidden_slide,
+                    _ => unreachable!(),
+                }
+                emit(ordinal, image)
+            })
     }
 }
+
 #[test]
 #[ignore = "requires MO_DELIVERY_WORKER and its explicitly verified SHA256"]
 fn failed_or_mismatched_components_never_return_a_complete_candidate() {
