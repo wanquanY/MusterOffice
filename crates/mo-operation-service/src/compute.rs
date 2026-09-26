@@ -44,24 +44,22 @@ fn cancelled(check: &dyn Fn() -> bool) -> Result<(), Failure> {
     }
 }
 fn edit_error(error: EditError) -> Failure {
-    let mut leaf = &error;
-    while let EditError::Operation { source, .. } = leaf {
-        leaf = source;
+    use mo_presentation_edit::EditDiagnosticCode as Code;
+    let diagnostic = error.diagnostic();
+    let code = match diagnostic.code {
+        Code::Cancelled => FailureCode::Cancelled,
+        Code::RevisionConflict => FailureCode::RevisionConflict,
+        Code::ReferenceConflict => FailureCode::ReferenceConflict,
+        Code::RequestIdReused => FailureCode::RequestIdReused,
+        Code::InputInvalid => FailureCode::InputInvalid,
+    };
+    Failure {
+        code,
+        message: diagnostic.message.clone(),
+        detail: Some(Box::new(
+            serde_json::to_value(diagnostic).expect("typed edit diagnostic"),
+        )),
     }
-    let code = match leaf {
-        EditError::Cancelled => FailureCode::Cancelled,
-        EditError::RevisionConflict { .. } => FailureCode::RevisionConflict,
-        EditError::ReferenceConflict(_) => FailureCode::ReferenceConflict,
-        EditError::RequestIdReused => FailureCode::RequestIdReused,
-        _ => FailureCode::InputInvalid,
-    };
-    // Invalid-document reports are data, not a full document debug dump.
-    let message = if matches!(leaf, EditError::InvalidDocument(_)) {
-        "document failed semantic validation".into()
-    } else {
-        error.to_string()
-    };
-    Failure::new(code, message)
 }
 pub fn compute_mutation(
     request: &OperationRequest,

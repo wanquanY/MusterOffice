@@ -255,12 +255,14 @@ export type ContainerDuration =
 export type ContainerKind = "parallel" | "sequence";
 export type RequestId = string;
 export type ErrorCode =
+  | "CANCELLED"
   | "INPUT_INVALID"
   | "REVISION_CONFLICT"
   | "REFERENCE_CONFLICT"
   | "REQUEST_ID_REUSED"
   | "LIMIT_EXCEEDED"
   | "INTERNAL_FAILURE";
+export type OperationId = string;
 
 export interface ValidationReport {
   issues: ValidationIssue[];
@@ -689,5 +691,6 @@ export interface KernelError {
   code: ErrorCode;
   currentRevision?: Digest | null;
   message: string;
+  operationIds?: OperationId[];
   report?: ValidationReport | null;
 }

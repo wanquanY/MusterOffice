@@ -133,6 +133,7 @@ pub enum KernelResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum ErrorCode {
+    Cancelled,
     InputInvalid,
     RevisionConflict,
     ReferenceConflict,
@@ -144,6 +145,8 @@ pub enum ErrorCode {
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct KernelError {
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub operation_ids: Vec<mo_common::OperationId>,
     pub code: ErrorCode,
     pub message: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -155,6 +158,7 @@ pub struct KernelError {
 fn error(code: ErrorCode, message: String) -> KernelResponse {
     KernelResponse::Error {
         error: KernelError {
+            operation_ids: Vec::new(),
             code,
             message,
             current_revision: None,
@@ -164,26 +168,22 @@ fn error(code: ErrorCode, message: String) -> KernelResponse {
 }
 
 fn edit_error(error: EditError) -> KernelResponse {
-    let message = error.to_string();
-    let mut leaf = &error;
-    while let EditError::Operation { source, .. } = leaf {
-        leaf = source;
-    }
-    let (code, current_revision, report) = match leaf {
-        EditError::RevisionConflict { current } => {
-            (ErrorCode::RevisionConflict, Some(current.clone()), None)
-        }
-        EditError::ReferenceConflict(_) => (ErrorCode::ReferenceConflict, None, None),
-        EditError::RequestIdReused => (ErrorCode::RequestIdReused, None, None),
-        EditError::InvalidDocument(report) => (ErrorCode::InputInvalid, None, Some(report.clone())),
-        _ => (ErrorCode::InputInvalid, None, None),
+    use mo_presentation_edit::EditDiagnosticCode as Code;
+    let diagnostic = error.diagnostic();
+    let code = match diagnostic.code {
+        Code::Cancelled => ErrorCode::Cancelled,
+        Code::InputInvalid => ErrorCode::InputInvalid,
+        Code::RevisionConflict => ErrorCode::RevisionConflict,
+        Code::ReferenceConflict => ErrorCode::ReferenceConflict,
+        Code::RequestIdReused => ErrorCode::RequestIdReused,
     };
     KernelResponse::Error {
         error: KernelError {
             code,
-            message,
-            current_revision,
-            report,
+            message: diagnostic.message,
+            operation_ids: diagnostic.operation_ids,
+            current_revision: diagnostic.current_revision,
+            report: diagnostic.report,
         },
     }
 }

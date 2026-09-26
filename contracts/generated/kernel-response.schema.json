@@ -724,6 +724,7 @@
     "ErrorCode": {
       "type": "string",
       "enum": [
+        "CANCELLED",
         "INPUT_INVALID",
         "REVISION_CONFLICT",
         "REFERENCE_CONFLICT",
@@ -1294,6 +1295,12 @@
         "message": {
           "type": "string"
         },
+        "operationIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/OperationId"
+          }
+        },
         "report": {
           "anyOf": [
             {
@@ -1596,6 +1603,14 @@
       ]
     },
     "ObjectId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "OperationId": {
       "type": "string",
       "maxLength": 128,
       "not": {
