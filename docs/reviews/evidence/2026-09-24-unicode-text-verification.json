@@ -1,0 +1,1803 @@
+{
+  "format": "musteroffice.unicode-text-verification/1",
+  "scope": "Fixed Unicode 18.0.0 property lookup and UAX #29 revision 49 extended grapheme segmentation with scalar/UTF-8/UTF-16 coordinates. Not font selection, script itemization, bidi, line breaking, layout, rendering or Musterwork replacement.",
+  "environment": {
+    "platform": "Darwin 25.2.0",
+    "architecture": "arm64",
+    "rust": "1.92.0",
+    "node": "23.5.0",
+    "python": "3.13.0"
+  },
+  "previousEvidence": {
+    "path": "docs/reviews/evidence/2026-09-24-text-shaping-verification.json",
+    "sha256": "c49909f0b1ec037048b8e421185036ba02eb3865f0874cee22ead41f6df7ffd9",
+    "byteLength": 441349
+  },
+  "artifacts": {
+    "nativeCli": {
+      "path": "target/release/mo-cli",
+      "sha256": "160a3bd23eefcb7ef8e9dacf0315536f4065bdfe159c5dc5f1a14368810d7176",
+      "byteLength": 3610736
+    },
+    "nativeWorker": {
+      "path": "target/release/mo-text-worker",
+      "sha256": "c2d626b7ac7f6f1f2283d32ebb2993cb7f697c03dcd45a2cfc2f053624c4b4a2",
+      "byteLength": 1696800
+    },
+    "rustWasm": {
+      "path": ".codex-work/wasm-node/mo_wasm_bg.wasm",
+      "sha256": "c02fb3905447632788d9d27fffd50991c1266c85bfa888aa8886b671043c2307",
+      "byteLength": 2865081
+    },
+    "rustWasmGlue": {
+      "path": ".codex-work/wasm-node/mo_wasm.js",
+      "sha256": "0af7a6b7c136167f3ac4f07ba217c30bdead20f5a845021bf4cc38344bd9f96d",
+      "byteLength": 11715
+    },
+    "cppWasm": {
+      "path": ".codex-work/harfbuzz/release/mo-hb.wasm",
+      "sha256": "bfda3a3398fc89a69da07840bb821ac4503ea657c68bc3b30e6f638696e4507e",
+      "byteLength": 828917
+    },
+    "cppWasmGlue": {
+      "path": ".codex-work/harfbuzz/release/mo-hb.mjs",
+      "sha256": "99f0aca9c3ea65659aca0128b0fd5f12604a7ecf948e975205669785ddbfe7a8",
+      "byteLength": 9257
+    },
+    "typescriptAdapter": {
+      "path": ".codex-work/text-component/index.js",
+      "sha256": "bbbb75f1249fb9167894ff3536c22b901e66dea517d230701a0ac87f3622163a",
+      "byteLength": 6065
+    }
+  },
+  "artifactSizeScope": "Incomplete development CLI/worker and Rust/C++ WASM artifacts. No complete kernel or installer estimate; fonts/graphics/media/full host distribution excluded.",
+  "data": {
+    "manifest": {
+      "unicodeVersion": "18.0.0",
+      "uax29Revision": 49,
+      "license": "Unicode-3.0",
+      "inputs": [
+        {
+          "name": "GraphemeBreakProperty-18.0.0.txt",
+          "url": "https://www.unicode.org/Public/18.0.0/ucd/auxiliary/GraphemeBreakProperty.txt",
+          "byteLength": 100009,
+          "sha256": "0839dcb79e4ac639ecd538b1abf7c9d22e3f9dd265b7e182d33627aa4d75b45a"
+        },
+        {
+          "name": "GraphemeBreakTest-18.0.0.txt",
+          "url": "https://www.unicode.org/Public/18.0.0/ucd/auxiliary/GraphemeBreakTest.txt",
+          "byteLength": 137090,
+          "sha256": "b0cf047ee94485bbdc846de2b902f5f8a815f6b674f9d04223cddadd91c9df31"
+        },
+        {
+          "name": "DerivedCoreProperties-18.0.0.txt",
+          "url": "https://www.unicode.org/Public/18.0.0/ucd/DerivedCoreProperties.txt",
+          "byteLength": 1159889,
+          "sha256": "09c928886a178fcafd93c29e4bd59073a058e5a100b716d425cb563ab50f68c9"
+        },
+        {
+          "name": "emoji-data-18.0.0.txt",
+          "url": "https://www.unicode.org/Public/18.0.0/ucd/emoji/emoji-data.txt",
+          "byteLength": 108719,
+          "sha256": "80d00f8e616a0ef27fd6b8de3b758c06383b5d917e2977709578e68baf733bf1"
+        },
+        {
+          "name": "PropList-18.0.0.txt",
+          "url": "https://www.unicode.org/Public/18.0.0/ucd/PropList.txt",
+          "byteLength": 149040,
+          "sha256": "f438f532e8737bb8a2702126cdf9c4af5e357c58c7acf9d9eb2fc7c1a1d955d6"
+        },
+        {
+          "name": "LICENSE.txt",
+          "url": "https://www.unicode.org/license.txt",
+          "byteLength": 1995,
+          "sha256": "e7a93b009565cfce55919a381437ac4db883e9da2126fa28b91d12732bc53d96"
+        }
+      ]
+    },
+    "generatedTable": {
+      "path": "crates/mo-unicode/data/properties.bin",
+      "sha256": "4eddcd2c58f6cc92a6b7d9072faca49776b56b8618d004c7ddd325481a87aae5",
+      "byteLength": 16502
+    },
+    "licenseNotice": {
+      "path": "crates/mo-unicode/data/LICENSE-UNICODE",
+      "sha256": "e7a93b009565cfce55919a381437ac4db883e9da2126fa28b91d12732bc53d96",
+      "byteLength": 1995
+    },
+    "generatedRanges": 1649,
+    "generatedByteLength": 16502,
+    "regenerationByteIdentical": true,
+    "denseCodepointsCompared": 1114112,
+    "nativeWasmPropertyProbes": 4838,
+    "runtimeNetworkOrHostUnicodeTables": false
+  },
+  "checks": {
+    "rustTests": 121,
+    "newRustTests": 6,
+    "nativeWasmCases": 467,
+    "newUnicodeBatches": 21,
+    "officialGraphemeCases": 853,
+    "officialCasesSkipped": 0,
+    "runtimeSchemas": 18,
+    "rustfmt": true,
+    "strictClippy": true,
+    "typescript": true,
+    "oldKernelSemanticCasesUnchanged": true,
+    "selectorRangeAllValidScalarsEquivalent": true
+  },
+  "unicodeReport": {
+    "format": "musteroffice.unicode-verification/1",
+    "nativeSha256": "160a3bd23eefcb7ef8e9dacf0315536f4065bdfe159c5dc5f1a14368810d7176",
+    "wasmSha256": "c02fb3905447632788d9d27fffd50991c1266c85bfa888aa8886b671043c2307",
+    "fixturesSha256": "905c93417d65ab7004e65f847f3c60f59174f84aa56d5a79f18b2824af517176",
+    "officialGraphemeCases": 853,
+    "officialCasesSkipped": 0,
+    "propertyProbes": 4838,
+    "denseCodepointsCompared": 1114112,
+    "denseLittleEndianSha256": "8cd1d1bc943720d6bda6616549d86ce6dfee23a520f024180a9bfbe54021bb05",
+    "cases": [
+      {
+        "name": "uax29-0",
+        "requestPath": ".codex-work/unicode/verification/uax29-0.request.json",
+        "responsePath": ".codex-work/unicode/verification/uax29-0.response.json",
+        "requestSha256": "36467ec4ce533e7ed95fd07a201f239a93803fbb1729a8a8bdec4ba295f4ba75",
+        "responseSha256": "d807ded8c1414539a74def3c90c3b890e5222581b2ea73686faffe87afcfa57a",
+        "validRequest": true,
+        "status": "analyzed"
+      },
+      {
+        "name": "uax29-128",
+        "requestPath": ".codex-work/unicode/verification/uax29-128.request.json",
+        "responsePath": ".codex-work/unicode/verification/uax29-128.response.json",
+        "requestSha256": "550b461817a0d068929800466af36a47197b13a2961cf41d777ef6c09a0dc3a6",
+        "responseSha256": "2aebdd0e0bcd3a97c42921d33f6ac353fec4967eee14e1dcbedf24a5cd7835db",
+        "validRequest": true,
+        "status": "analyzed"
+      },
+      {
+        "name": "uax29-256",
+        "requestPath": ".codex-work/unicode/verification/uax29-256.request.json",
+        "responsePath": ".codex-work/unicode/verification/uax29-256.response.json",
+        "requestSha256": "0a2c08050d634c46be571ea1700f05c39a0a461010f193605a64e3c2c32dff2c",
+        "responseSha256": "b94b6cbca481bbcf37c0efc5986bc21a4ab010425177a4fa3d0c7f8f10b818d4",
+        "validRequest": true,
+        "status": "analyzed"
+      },
+      {
+        "name": "uax29-384",
+        "requestPath": ".codex-work/unicode/verification/uax29-384.request.json",
+        "responsePath": ".codex-work/unicode/verification/uax29-384.response.json",
+        "requestSha256": "8bb9f04a278c0c89e3d005455428873b6c1823f5913959ad472ff11187ec092a",
+        "responseSha256": "da381ef648793d73336aa7ae0f35e9f4e93645efccd0b0a58aea7a3d07e6ba2a",
+        "validRequest": true,
+        "status": "analyzed"
+      },
+      {
+        "name": "uax29-512",
+        "requestPath": ".codex-work/unicode/verification/uax29-512.request.json",
+        "responsePath": ".codex-work/unicode/verification/uax29-512.response.json",
+        "requestSha256": "1ceb55a5630bb959f3b0a743c369bf6d79542780a5b88390032a71de709bbadc",
+        "responseSha256": "3208d5503230d8ecda4206caebbead7b69c2f773d7b95dd3704d0290cdf1e31b",
+        "validRequest": true,
+        "status": "analyzed"
+      },
+      {
+        "name": "uax29-640",
+        "requestPath": ".codex-work/unicode/verification/uax29-640.request.json",
+        "responsePath": ".codex-work/unicode/verification/uax29-640.response.json",
+        "requestSha256": "cb5b59f5d6dc5548732110a00b548a38265e8473c38d1dbcd9cc989d27fc2788",
+        "responseSha256": "90cd499b8e8e7efd8e2e441c63a87c1ef2f3b480496e443ce05d3c8d6abaac2f",
+        "validRequest": true,
+        "status": "analyzed"
+      },
+      {
+        "name": "uax29-768",
+        "requestPath": ".codex-work/unicode/verification/uax29-768.request.json",
+        "responsePath": ".codex-work/unicode/verification/uax29-768.response.json",
+        "requestSha256": "32cab6afcfe7d1ed6f282fe468ce879c47137ce8f715c4ace2aa02571e868177",
+        "responseSha256": "0ce21ef3eb1d251eb19ec72116660915027fb25afd153a93f3214ea424cb7202",
+        "validRequest": true,
+        "status": "analyzed"
+      },
+      {
+        "name": "property-probes",
+        "requestPath": ".codex-work/unicode/verification/property-probes.request.json",
+        "responsePath": ".codex-work/unicode/verification/property-probes.response.json",
+        "requestSha256": "ab8da1eaa84610260c1389ac190e9fed8ea217b65b6f1142d5588f885332ed7e",
+        "responseSha256": "ab6a5f0083214fd1eb2ae66efc28834c637bef1d3e5edb710768d4bf0add1b9b",
+        "validRequest": true,
+        "status": "analyzed"
+      },
+      {
+        "name": "coordinate-and-empty",
+        "requestPath": ".codex-work/unicode/verification/coordinate-and-empty.request.json",
+        "responsePath": ".codex-work/unicode/verification/coordinate-and-empty.response.json",
+        "requestSha256": "e9dcf0b21efdb8e319e7355a20cc9c04d9d17ea7e394c659de5370a03e8b5354",
+        "responseSha256": "57e254b40a6b7ebdf299db5f0cae8aad32e3e0ae3d6755d3003537764acb0573",
+        "validRequest": true,
+        "status": "analyzed"
+      },
+      {
+        "name": "long-contexts",
+        "requestPath": ".codex-work/unicode/verification/long-contexts.request.json",
+        "responsePath": ".codex-work/unicode/verification/long-contexts.response.json",
+        "requestSha256": "d5f3fdfa41e771f6978ff28eb39efd99bd7200a58519d1f460d1070d7d3a274d",
+        "responseSha256": "e1c0f8fb405a374700b7c2af8c4905876dabcfa2ce2d5c581ea4fbff336be9ba",
+        "validRequest": true,
+        "status": "analyzed"
+      },
+      {
+        "name": "surrogate-property",
+        "requestPath": ".codex-work/unicode/verification/surrogate-property.request.json",
+        "responsePath": ".codex-work/unicode/verification/surrogate-property.response.json",
+        "requestSha256": "bad57f1570a209de5cfbe8f782e81f6388c4d9358f8f4e97b8e7ab511aaebf6c",
+        "responseSha256": "6c620f59763bd7121fb92a412bd0a3cc576b2b703290d4f3378e5aaf955a59aa",
+        "validRequest": true,
+        "status": "error"
+      },
+      {
+        "name": "overflow-property",
+        "requestPath": ".codex-work/unicode/verification/overflow-property.request.json",
+        "responsePath": ".codex-work/unicode/verification/overflow-property.response.json",
+        "requestSha256": "bc2a3545378a0bebbfb3c567690c42de052e853284671196d706adc837f49216",
+        "responseSha256": "6c620f59763bd7121fb92a412bd0a3cc576b2b703290d4f3378e5aaf955a59aa",
+        "validRequest": true,
+        "status": "error"
+      },
+      {
+        "name": "negative-property",
+        "requestPath": ".codex-work/unicode/verification/negative-property.request.json",
+        "responsePath": ".codex-work/unicode/verification/negative-property.response.json",
+        "requestSha256": "1d810c2acf64a517bda302d902391e1da7cc8a4aacafdd1a30f616639df00d83",
+        "responseSha256": "ccb5a626fb34a075e218c083afcf447188da4a638607d480005d4f5a08f359e2",
+        "validRequest": false,
+        "status": "error"
+      },
+      {
+        "name": "scalar-budget",
+        "requestPath": ".codex-work/unicode/verification/scalar-budget.request.json",
+        "responsePath": ".codex-work/unicode/verification/scalar-budget.response.json",
+        "requestSha256": "f51e68deae5b8d22ed694486eb9da2fb63a3f172e60fba5c0774bae0eaf632aa",
+        "responseSha256": "e743a008ee5b8a9e26fe53493e8a69af9e781c0c0751e8210f0b31eb3480ebcf",
+        "validRequest": true,
+        "status": "error"
+      },
+      {
+        "name": "byte-budget",
+        "requestPath": ".codex-work/unicode/verification/byte-budget.request.json",
+        "responsePath": ".codex-work/unicode/verification/byte-budget.response.json",
+        "requestSha256": "5fea390ff0c0e2a37f7c00756ebc169bc18e58ce9747a78e54b3d5eb00d01531",
+        "responseSha256": "f73c7ef1afface8074a116b750b88dbcf510430b094d334f811945e45e594314",
+        "validRequest": true,
+        "status": "error"
+      },
+      {
+        "name": "aggregate-budget",
+        "requestPath": ".codex-work/unicode/verification/aggregate-budget.request.json",
+        "responsePath": ".codex-work/unicode/verification/aggregate-budget.response.json",
+        "requestSha256": "d7712c3c1cbff0f06352719dba13bccb87e1da3fa3dc84f6b98f46ae62a22b26",
+        "responseSha256": "0571e2d0c65500b99330d31d0f7e968875e73bbd0238c62b1df5736416f987ab",
+        "validRequest": true,
+        "status": "error"
+      },
+      {
+        "name": "texts-budget",
+        "requestPath": ".codex-work/unicode/verification/texts-budget.request.json",
+        "responsePath": ".codex-work/unicode/verification/texts-budget.response.json",
+        "requestSha256": "5e70f0032e5bebee3c6490bf73924ddcc4f2d644bbc6b309568574d5d24ebf6e",
+        "responseSha256": "1d3d791aa28fe7e651dfdac3db636962ad3349c481d44402807cad6fb589edff",
+        "validRequest": true,
+        "status": "error"
+      },
+      {
+        "name": "queries-budget",
+        "requestPath": ".codex-work/unicode/verification/queries-budget.request.json",
+        "responsePath": ".codex-work/unicode/verification/queries-budget.response.json",
+        "requestSha256": "42687b078b9b216c1a58a2ced065464f74a1f5ba8f4671d0f1989b77d56971ac",
+        "responseSha256": "1d3d791aa28fe7e651dfdac3db636962ad3349c481d44402807cad6fb589edff",
+        "validRequest": true,
+        "status": "error"
+      },
+      {
+        "name": "invalid-json-surrogate",
+        "requestPath": ".codex-work/unicode/verification/invalid-json-surrogate.request.json",
+        "responsePath": ".codex-work/unicode/verification/invalid-json-surrogate.response.json",
+        "requestSha256": "668e1ed42c415a7b2abf89534f24ba69c7f10991078c76e3e4b71f56bd843cee",
+        "responseSha256": "3a5093d5dfdf0be1606a707b64621878faa937532759782af7174562e77e96bf",
+        "validRequest": false,
+        "status": "error"
+      },
+      {
+        "name": "duplicate-key",
+        "requestPath": ".codex-work/unicode/verification/duplicate-key.request.json",
+        "responsePath": ".codex-work/unicode/verification/duplicate-key.response.json",
+        "requestSha256": "dbe01564a38acea4bdf3eb4616308c8900b8e6794680e8a2af5425eee4209027",
+        "responseSha256": "a6c7789fc9a592394b561c92c85cbb5b15c3de54252ec047351bea22dd54d668",
+        "validRequest": false,
+        "status": "error"
+      },
+      {
+        "name": "unknown-field",
+        "requestPath": ".codex-work/unicode/verification/unknown-field.request.json",
+        "responsePath": ".codex-work/unicode/verification/unknown-field.response.json",
+        "requestSha256": "88257fd4efbdc3b633e7ba842c229acbe3b59e32d45ff0077a8747a5e6617bf4",
+        "responseSha256": "e7de9e92e4972aafc3f5ef6ef7c98067477e99387fabcd66081661c53c7bedda",
+        "validRequest": false,
+        "status": "error"
+      }
+    ]
+  },
+  "contractReport": {
+    "unicodeResponses": 21,
+    "textResponses": 57,
+    "fontRequests": 35,
+    "fontResponses": 39,
+    "schemas": 18,
+    "positiveInputs": 11,
+    "negativeMutations": 9,
+    "responses": 22,
+    "opcResponses": 21,
+    "sourceResponses": 73,
+    "sourceRequests": 95,
+    "colorRequests": 118,
+    "colorResponses": 122
+  },
+  "regressionReports": {
+    "document": {
+      "sha256": "a3d9098652b84ecf6196230f8b51eb95b5eadba7891ed97322b2915817002f36",
+      "cases": 22,
+      "artifactHashesVerified": true
+    },
+    "opc": {
+      "sha256": "62b794e8270dab674fd0da622eeeb70ee7c72852566a6dfed0ae69238ea35f8f",
+      "cases": 21,
+      "artifactHashesVerified": true
+    },
+    "export": {
+      "sha256": "d995a8107e18aea2df642f0056519286a94ea402a238e9f92047d1baa9c22324",
+      "cases": 17,
+      "artifactHashesVerified": true
+    },
+    "source": {
+      "sha256": "98f88ea28dffc5c530935a99bad20dff65ab1ecc7a19f0e8c8b1271a1cefc971",
+      "cases": 168,
+      "artifactHashesVerified": true
+    },
+    "color": {
+      "sha256": "0e8843b9ed6a9f5101dd399c262645bcc86a8740e51ff7866491a94c5ddc0480",
+      "cases": 122,
+      "artifactHashesVerified": true
+    },
+    "font": {
+      "sha256": "e896d2a91fd7958bd957438e4c52181abe709ab9b4222367fba40af804123bfc",
+      "cases": 39,
+      "artifactHashesVerified": true
+    },
+    "shaping": {
+      "sha256": "8c63e3a924b6ca0a562f68ee1d02f3383ef4a039fedd374f6604a31634429e8e",
+      "cases": 57,
+      "artifactHashesVerified": true,
+      "casesIdenticalToPreviousEvidence": true
+    }
+  },
+  "candidateComparison": {
+    "name": "unicode-segmentation",
+    "version": "1.13.3",
+    "license": {
+      "path": ".codex-work/unicode/unicode-segmentation-1.13.3/LICENSE-MIT",
+      "sha256": "7b63ecd5f1902af1b63729947373683c32745c16a10e8e6292e2e2dcd7e90ae0",
+      "byteLength": 1071
+    },
+    "unicodeVersionFromSource": "17.0.0",
+    "archive": {
+      "path": ".codex-work/unicode/unicode-segmentation-1.13.3.crate",
+      "sha256": "c6f5d3c3b1bf09027a88a6bc961fc00497d651009560b5463668dc81b0fa87a8",
+      "byteLength": 112325
+    },
+    "archiveUrl": "https://static.crates.io/crates/unicode-segmentation/unicode-segmentation-1.13.3.crate",
+    "cargoIndexChecksumVerified": true,
+    "testResult": {
+      "version": "1.13.3",
+      "unicodeVersion": "17.0.0",
+      "tested": 853,
+      "differingLines": [
+        179,
+        180,
+        659,
+        660,
+        859,
+        860,
+        871,
+        875,
+        876,
+        879
+      ]
+    },
+    "sourceTable": {
+      "path": ".codex-work/unicode/unicode-segmentation-1.13.3/src/tables.rs",
+      "sha256": "089c221918a60e8672ed8eda73d27f195dcc404f91b9e71b57c0b5e348e7aeef",
+      "byteLength": 293206
+    },
+    "kernelDependency": false,
+    "upstreamImplementationCopied": false,
+    "interpretation": "Expected version differences, not a claim that the library violates its declared Unicode 17 contract."
+  },
+  "dependencyChanges": {
+    "newInternalCrates": [
+      "mo-unicode"
+    ],
+    "newExternalVersions": []
+  },
+  "rustTestNames": [
+    "text::tests::timeout_kills_and_reaps_worker_with_blocked_input",
+    "tests::hue_wrap_achromatic_and_transparent_colors_are_well_defined",
+    "tests::invalid_numbers_fail_and_extended_gamut_is_reported_at_sampling",
+    "tests::transform_order_and_linear_rgb_space_are_observable",
+    "tests::srgb_transfer_and_sampling_do_not_round_working_channels",
+    "byte_lengths_reject_numeric_loss_overflow_and_noncanonical_spellings",
+    "non_finite_numbers_cannot_silently_become_null_in_a_digest",
+    "duplicate_keys_are_rejected_at_every_depth",
+    "time_is_exact_at_extremes_and_ntsc_rate",
+    "identifiers_are_constrained_on_deserialization",
+    "coordinates_reject_lossy_or_noncanonical_inputs",
+    "canonical_bytes_have_stable_keys_and_preserve_text",
+    "rational_normalization_preserves_time",
+    "every_i64_coordinate_round_trips",
+    "every_u64_byte_length_round_trips",
+    "cmap::validation::tests::format10_valid_array_and_invalid_glyph_are_distinct",
+    "tests::directory_checksums_and_table_overlap_are_rejected",
+    "tests::collection_face_and_other_directory_ranges_are_checked",
+    "tests::name_format_one_preserves_language_tag_identity",
+    "tests::legacy_charmaps_are_not_implicit_unicode_fallbacks",
+    "tests::cancellation_interrupts_multiple_stages",
+    "tests::variation_mapping_never_silently_falls_back",
+    "tests::untrusted_maximum_offsets_do_not_overflow_platform_width",
+    "tests::resource_identity_and_request_scalars_checked",
+    "tests::actual_ttf_cff_and_collection_metadata",
+    "tests::malformed_cmap_cannot_masquerade_as_missing_glyph",
+    "tests::malformed_consumed_metadata_is_not_replaced",
+    "tests::every_configurable_limit_is_enforced",
+    "tests::all_prefix_truncations_are_errors_without_panics",
+    "tests::creating_a_new_wrapper_cannot_clear_instance_invalidation",
+    "inspection_preserves_budget_and_cancellation_error_categories",
+    "source_bridge_preserves_nested_limit_and_cancel_categories",
+    "color_bridge_preserves_cancel_limit_and_source_conflict_categories",
+    "zip_structure::tests::descriptors_accept_both_widths_and_signature_modes_including_crc_collision",
+    "part_names_and_relationship_resolution_follow_uri_scope",
+    "writer_validates_xml_bytes_and_resources_before_exposing_output",
+    "overlapping_local_entries_are_rejected_even_with_matching_names_and_crc",
+    "equivalent_names_traversal_and_header_disagreement_are_rejected",
+    "crc_truncation_extra_bytes_and_entry_count_mismatches_are_rejected",
+    "malformed_xml_in_a_regular_part_is_not_hidden_by_a_valid_zip",
+    "streamed_open_resolves_graph_and_retains_opaque_bytes",
+    "missing_targets_duplicate_relationship_ids_and_orphan_overrides_fail",
+    "cancellation_and_declared_budgets_fail_before_unbounded_work",
+    "duplicate_rewrite_does_not_replace_the_already_prepared_value",
+    "no_op_rewrite_is_byte_identical_and_mutation_preserves_unedited_parts",
+    "signed_packages_may_be_copied_but_not_silently_modified",
+    "deterministic_builder_uses_real_reopened_output_and_external_links_do_not_fetch",
+    "stream_resources_are_digest_bound_and_reads_stay_bounded",
+    "missing_resources_cancellation_and_output_budgets_are_enforced",
+    "invalid_or_unimplemented_mapping_never_silently_flattens_content",
+    "authored_deck_exports_deterministically_with_native_parts_and_relationships",
+    "real_pptx_projection_resolves_pages_surfaces_native_identity_and_groups",
+    "reader_and_editor_enforce_cancellation_and_projection_budgets",
+    "omitted_color_map_is_not_an_explicit_marker_or_an_invented_default",
+    "source_theme_colors_keep_all_models_exact_percentages_and_transform_order",
+    "native_themes_are_shared_and_selected_without_mutating_author_declarations",
+    "placeholder_dimensions_resolve_per_property_without_flattening_author_data",
+    "compatibility_wrappers_do_not_hide_pages_or_discard_source_leaf_structure",
+    "ambiguous_placeholders_are_reported_without_first_match_geometry",
+    "source_bindings_use_physical_ordinals_after_mce_projection_and_preserve_branches",
+    "theme_mce_and_retained_declarations_cannot_inject_active_scheme_state",
+    "text_edit_reopens_candidate_and_preserves_unknown_xml_and_other_parts",
+    "color_map_inheritance_keeps_author_markers_and_candidate_provenance",
+    "malformed_identity_and_relationships_never_produce_a_partial_success",
+    "noop_copy_and_multi_part_edits_are_atomic_with_source_preconditions",
+    "theme_validation_and_aggregate_budgets_prevent_partial_success",
+    "unsupported_parent_placeholder_context_does_not_leak_geometry_into_descendants",
+    "timing_references_in_active_and_inactive_branches_block_text_mutation",
+    "malformed_color_maps_cannot_produce_partial_success",
+    "explicit_zero_dimensions_and_missing_or_detached_matches_do_not_invent_geometry",
+    "invalid_placeholder_attributes_are_rejected",
+    "unresolved_context_is_not_black_and_host_system_color_has_provenance",
+    "numeric_range_and_resource_budget_are_distinct_from_valid_extended_gamut",
+    "color_budget_digest_and_cancellation_fail_atomically",
+    "normative_color_examples_use_distinct_channel_and_tint_spaces",
+    "ownership_cycle_cannot_be_committed",
+    "final_reference_validation_rolls_back_entire_transaction",
+    "out_of_range_splices_fail_without_mutating_content",
+    "failure_does_not_publish_earlier_operations",
+    "deletion_rejects_dependencies_unless_explicitly_cascaded",
+    "scalar_splice_preserves_emoji_combining_marks_and_run_identity",
+    "revision_conflicts_do_not_rebase_and_retries_use_original_receipt",
+    "unknown_fields_and_variants_are_rejected_at_wire_boundary",
+    "limit_errors_cannot_be_hidden_by_zero_diagnostic_budget",
+    "duplicate_and_orphaned_ownership_are_rejected",
+    "unbounded_host_depth_setting_still_rejects_cycles_without_overflow",
+    "mismatched_resource_kind_and_missing_fonts_are_rejected",
+    "connectors_cannot_target_another_slide",
+    "tests::internal_frame_cannot_smuggle_lengths_or_trailing_words",
+    "tests::identity_limits_and_cancellation_precede_backend",
+    "tests::explicit_scalar_coordinates_and_signed_positions",
+    "tests::missing_glyphs_remain_explicit",
+    "tests::invalid_request_does_not_invoke_component",
+    "tests::failed_batch_has_no_partial_result_and_memory_failure_invalidates",
+    "tests::output_headers_and_glyph_references_are_checked",
+    "tests::every_truncated_reply_and_trailing_word_invalidates",
+    "tests::emoji_flags_and_combining_marks_keep_scalar_and_utf16_coordinates_distinct",
+    "tests::controls_override_prepend_and_extenders",
+    "tests::limits_and_midstream_cancellation_fail_without_partial_output",
+    "tests::unicode18_linker_rule_does_not_require_a_leading_consonant",
+    "properties::tests::generated_table_is_sorted_nonoverlapping_and_has_valid_values",
+    "properties::tests::selectors_match_the_explicit_font_contract",
+    "underlying_xml_limits_and_cancellation_apply_to_ignored_content",
+    "chooses_first_understood_branch_with_original_ordinals_and_logical_depths",
+    "fallback_nested_selection_and_no_matching_branch_preserve_sibling_positions",
+    "extension_content_suspends_mce_and_source_observer_sees_inactive_data",
+    "ignorable_and_process_content_resolve_namespace_scopes_not_prefix_spellings",
+    "must_understand_only_applies_to_content_that_is_processed",
+    "malformed_mce_control_and_rule_declarations_are_not_silently_discarded",
+    "prefixes_are_resolved_and_default_namespaces_do_not_apply_to_attributes",
+    "character_data_and_attributes_follow_xml_normalization_without_unicode_folding",
+    "namespaces_restore_after_nested_shadowing",
+    "limits_bound_depth_elements_attributes_and_text",
+    "xml_declarations_are_checked_and_cancellation_is_observable",
+    "dtd_external_entities_and_malformed_documents_are_rejected",
+    "utf16_and_bom_utf8_are_supported_without_lossy_replacement",
+    "rewriting_honors_span_output_and_cancellation_budgets",
+    "preconditions_and_nested_elements_prevent_wrong_or_destructive_edits",
+    "empty_elements_expand_without_dropping_attributes_and_textless_comments_survive",
+    "text_rewrite_retains_unknown_attributes_siblings_comments_and_pi_bytes",
+    "utf8_and_utf16_encodings_boms_and_original_lexical_forms_are_preserved"
+  ],
+  "sourceFiles": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "155ce005ed777e464da515d8008b7ad25c4b4b184fa072da93997483c8e0d7f9",
+      "byteLength": 3516
+    },
+    {
+      "path": "Cargo.lock",
+      "sha256": "3f09865d827ed413245a7bbd5b79ff230ad7b504df8a875bf5809c459ebfe235",
+      "byteLength": 21156
+    },
+    {
+      "path": "Cargo.toml",
+      "sha256": "d55befea73090cce8cb4de9e7e1b6e037bc9698da5e23a5c8b06279659cbeed6",
+      "byteLength": 1781
+    },
+    {
+      "path": "README.md",
+      "sha256": "5f228955f85bb530bbcfb131c774b1c0d77cf323bb67162b800764db8ccea669",
+      "byteLength": 5364
+    },
+    {
+      "path": "components/harfbuzz/README.md",
+      "sha256": "3c07a9f2fbff4ab787555b70d0bf346fe02977dc8daa47d3a6cd8d61756f7129",
+      "byteLength": 4497
+    },
+    {
+      "path": "components/harfbuzz/lock.json",
+      "sha256": "09f7d48e187b4e03265cd8d9e9a89fdcc8dcfc373555ea66992d125d750fa363",
+      "byteLength": 485
+    },
+    {
+      "path": "components/harfbuzz/mo_hb.cpp",
+      "sha256": "90f9862fa7774ec0956aa7ee9464bef5c3e933763d37613f0043093300b4aaff",
+      "byteLength": 7221
+    },
+    {
+      "path": "components/harfbuzz/mo_hb.h",
+      "sha256": "b4a9c7d7e754d5e9a05bf839ecbd7d49ca17994e2bb0f78499582b48a67e5a8c",
+      "byteLength": 832
+    },
+    {
+      "path": "components/harfbuzz/mo_hb_allocator.cpp",
+      "sha256": "f041e0a5ee7a33097b11c24f7d0467a6a71ad59ca9a0f1283209bbe5a7891997",
+      "byteLength": 3640
+    },
+    {
+      "path": "components/harfbuzz/mo_hb_allocator.h",
+      "sha256": "3177db2198adea0f6d97fa4e90e45d56f7b8564f1eeb7c6394e6945dd668c58a",
+      "byteLength": 508
+    },
+    {
+      "path": "contracts/README.md",
+      "sha256": "affecf8a224f30c293cb4153c5a192dc98204723fbaf43bf06876f41428c1f23",
+      "byteLength": 4701
+    },
+    {
+      "path": "contracts/generated/document.schema.json",
+      "sha256": "8e487d3f97750f84b000d5a15137002cf6941d9ea0aa1bb8ae67446b5cbaef71",
+      "byteLength": 36989
+    },
+    {
+      "path": "contracts/generated/font-request.schema.json",
+      "sha256": "104a42aa97c778fe1aea98e88c0f9aaef1f6d39ce935bbf8770d4861fbf53766",
+      "byteLength": 1229
+    },
+    {
+      "path": "contracts/generated/font-response.schema.json",
+      "sha256": "3425f7707b284575e519717379fa8e2973340cef05dd372bbc7d8e1da1972f49",
+      "byteLength": 14831
+    },
+    {
+      "path": "contracts/generated/kernel-request.schema.json",
+      "sha256": "964d8503079175b3c9a479a57cbf0f0778410c9eb26e997aea45382c0d344e72",
+      "byteLength": 50494
+    },
+    {
+      "path": "contracts/generated/kernel-response.schema.json",
+      "sha256": "3a34026903bf39c630ee76f0173158c6e51b283baffb2c3f95e49f86f43ccd5b",
+      "byteLength": 45531
+    },
+    {
+      "path": "contracts/generated/package-inspection.schema.json",
+      "sha256": "9b2484a0439ff591c8b5f5f34d46f08399baa0ece75fe5df597ff37226df1063",
+      "byteLength": 6031
+    },
+    {
+      "path": "contracts/generated/pptx-color-query.schema.json",
+      "sha256": "1c103246b220921eb901bf87bb8bd7386ae17517b5a8b12167e806bf03f596d7",
+      "byteLength": 11319
+    },
+    {
+      "path": "contracts/generated/pptx-color-response.schema.json",
+      "sha256": "0bec5d1eb4aa3f84324842382722cdb06f7416722d0ffe69d8850f0c6c71a7d4",
+      "byteLength": 11775
+    },
+    {
+      "path": "contracts/generated/pptx-export-request.schema.json",
+      "sha256": "5ba52973e870eaa06142d76609676537f0f8b44c4ded4952428054996067bdda",
+      "byteLength": 40856
+    },
+    {
+      "path": "contracts/generated/pptx-source-response.schema.json",
+      "sha256": "9c2d57b301edcd9846e1fbe3d0c0fede20d8409d83153e1058848dbbe7b56156",
+      "byteLength": 52654
+    },
+    {
+      "path": "contracts/generated/pptx-text-edits.schema.json",
+      "sha256": "ef2542ed9e24f8986d3a3f980efddb0a4c8c15ff02f6e2e5a185de37ed4e7734",
+      "byteLength": 1708
+    },
+    {
+      "path": "contracts/generated/shape-request.schema.json",
+      "sha256": "adcd4f02ce7134cb5248f8bcfa510550dec4379827cd55ece52cf3177b35da59",
+      "byteLength": 4600
+    },
+    {
+      "path": "contracts/generated/shape-response.schema.json",
+      "sha256": "e5daf007a1a6b546110e1f7c9792e565b8ef0ef170815492ee25c117af57b7fc",
+      "byteLength": 5599
+    },
+    {
+      "path": "contracts/generated/text-analysis-request.schema.json",
+      "sha256": "cfb44331895f7ba3e22d8cb11a11faa9622a40172506c54cc80518924e7c2a65",
+      "byteLength": 539
+    },
+    {
+      "path": "contracts/generated/text-analysis-response.schema.json",
+      "sha256": "e6745e95da384e3aa116ca3a6975d84b05b99167d8abb5ed7de7ce2f4c90df76",
+      "byteLength": 4419
+    },
+    {
+      "path": "contracts/generated/transaction-receipt.schema.json",
+      "sha256": "58e19899b71399b1bef09f2c9fe905705a526d327663a47e7a3fe7a1a78d40d6",
+      "byteLength": 6045
+    },
+    {
+      "path": "contracts/generated/transaction.schema.json",
+      "sha256": "bd85a94f89b916ea42c9ca40455e58bb89853c3bda97b04cc0c2250de20415d8",
+      "byteLength": 45948
+    },
+    {
+      "path": "contracts/generated/validation-report.schema.json",
+      "sha256": "8e49dd078ea8259cf8181cf8ebe4238299e525b683c99739355ed3efdade2dbf",
+      "byteLength": 1128
+    },
+    {
+      "path": "crates/mo-color/Cargo.toml",
+      "sha256": "996030b77079cd11bbe61bff0c4f0efa55962c2c0488dd2aa080c29037f36209",
+      "byteLength": 224
+    },
+    {
+      "path": "crates/mo-color/src/lib.rs",
+      "sha256": "3f2a979ec551b368a8983a5ea70c975e9526dffe8a3ff61d56d236308b773b95",
+      "byteLength": 10685
+    },
+    {
+      "path": "crates/mo-color/src/space.rs",
+      "sha256": "39e4a14b24422adb95fdafc3facb5ca787606fcab8b6f2ea4189d295253edda1",
+      "byteLength": 1517
+    },
+    {
+      "path": "crates/mo-common/Cargo.toml",
+      "sha256": "7b447f65fd8567e7ca49008ab3b611135697c68ac06941cdcf2a1e898036b48b",
+      "byteLength": 348
+    },
+    {
+      "path": "crates/mo-common/src/byte_length.rs",
+      "sha256": "8da492fba15038570411f1084930f8a85d0ad276cb33141cf014baebc2bf2a89",
+      "byteLength": 1546
+    },
+    {
+      "path": "crates/mo-common/src/canonical.rs",
+      "sha256": "315f823665b0e46c6c3858ea53d4e3a17897df191953c26c56ca995c0d862366",
+      "byteLength": 2788
+    },
+    {
+      "path": "crates/mo-common/src/ids.rs",
+      "sha256": "293c64d14b7f720dda1654fe0a31d9e79853e16b98c6da265f964ad111109587",
+      "byteLength": 3810
+    },
+    {
+      "path": "crates/mo-common/src/integer_json.rs",
+      "sha256": "8d93f32e52fae9bd30d49cf7e65e70416d4a94fa45b66bdda4ee84ca6c6a7906",
+      "byteLength": 5783
+    },
+    {
+      "path": "crates/mo-common/src/lib.rs",
+      "sha256": "9bb5974cc2d7a05ff1e5657686756740e0bf452c7bde4cd9a499c89992ac2258",
+      "byteLength": 348
+    },
+    {
+      "path": "crates/mo-common/src/strict_json.rs",
+      "sha256": "943af803cddda071370f13f3cfcd2d244ecc655f04f27988e79634104b299198",
+      "byteLength": 3165
+    },
+    {
+      "path": "crates/mo-common/src/units.rs",
+      "sha256": "095e757c6572c99c9a65997fd41bbc495b4e2fdb6ed18912204b3745d2253f92",
+      "byteLength": 4704
+    },
+    {
+      "path": "crates/mo-common/tests/wire.rs",
+      "sha256": "29be69916d05c23a9918b5bf6c22f9ceea2500682629d58f862d56602869e922",
+      "byteLength": 4304
+    },
+    {
+      "path": "crates/mo-font/Cargo.toml",
+      "sha256": "e5af7d13ddf2b09b5bbe65e91d3606bac2ac0404a14f5af9def353f667e94262",
+      "byteLength": 355
+    },
+    {
+      "path": "crates/mo-font/src/cmap.rs",
+      "sha256": "651f9edf04a603c7a859985258857194d16683ee512023a77096ce73e16058f1",
+      "byteLength": 5256
+    },
+    {
+      "path": "crates/mo-font/src/cmap/validation.rs",
+      "sha256": "b39f44d9f389cbc5aa5e64ed98aa600f2efdca21e7fdf39c5634844a6d42c992",
+      "byteLength": 5354
+    },
+    {
+      "path": "crates/mo-font/src/cmap/variation.rs",
+      "sha256": "8c50bfc5d723ccd4fa7672770e9345ab58692b3887b788f4824db84246e67793",
+      "byteLength": 2896
+    },
+    {
+      "path": "crates/mo-font/src/container.rs",
+      "sha256": "d808fd7534b41e82c469cf2c7f2e9aa7be586b5f60c64057a9aa254562d9f4c6",
+      "byteLength": 7819
+    },
+    {
+      "path": "crates/mo-font/src/lib.rs",
+      "sha256": "0f89a6e7d667b9fea2b667e31874970aeeb5a8f70b10854faabaccfc58737ec2",
+      "byteLength": 4929
+    },
+    {
+      "path": "crates/mo-font/src/metadata.rs",
+      "sha256": "9236326ad473894aad0bfcc9d9fc09141f50ff16821c2d10b924e24997e66eb9",
+      "byteLength": 7035
+    },
+    {
+      "path": "crates/mo-font/src/tests.rs",
+      "sha256": "46756b565a25ad769670b8529e5b95320a0bc52174d5c521d9ad5710cfc4fff8",
+      "byteLength": 11260
+    },
+    {
+      "path": "crates/mo-font/src/types.rs",
+      "sha256": "2f5a4689fe3d90213782e9a2cf141be4e15849d2a2d31d4ba9e0ae14d49261c4",
+      "byteLength": 5092
+    },
+    {
+      "path": "crates/mo-harfbuzz-sys/Cargo.toml",
+      "sha256": "6a6ac6c3144d3a073a3e2ff7d60311fab8c6be5446f7e2052a34f62250a966db",
+      "byteLength": 366
+    },
+    {
+      "path": "crates/mo-harfbuzz-sys/build.rs",
+      "sha256": "884ee6b371aef08cd506fb4d63cdcf695b27ca7b93d4cb5094e43592c13b5994",
+      "byteLength": 2623
+    },
+    {
+      "path": "crates/mo-harfbuzz-sys/src/ffi.rs",
+      "sha256": "2dba5948f0094d4f992027b9ebd1b45ac73185f9b54bca55496637b45fc85d0a",
+      "byteLength": 3242
+    },
+    {
+      "path": "crates/mo-harfbuzz-sys/src/lib.rs",
+      "sha256": "1744f33846288e07eb81b67cc8b4d3dd1a583774d7115e5f8f380e3f49382116",
+      "byteLength": 2387
+    },
+    {
+      "path": "crates/mo-kernel-api/Cargo.toml",
+      "sha256": "d7b0a076169f06cda745ab990139e083de276352c076130a698524b1d7a3a38c",
+      "byteLength": 512
+    },
+    {
+      "path": "crates/mo-kernel-api/src/font.rs",
+      "sha256": "8799724a37b840b755807eea53404eac6cecad71a3b307aba3f9c7b744b9a9ef",
+      "byteLength": 2571
+    },
+    {
+      "path": "crates/mo-kernel-api/src/lib.rs",
+      "sha256": "64855fc9ecf1dee234be6ba934b8f4c9e885d55b4671f8e5de9ea65e18fe4457",
+      "byteLength": 4968
+    },
+    {
+      "path": "crates/mo-kernel-api/src/package.rs",
+      "sha256": "30e91e0da739a254422a52f05e1b78126d42b9bc5d5c5191a5e810f4d5b2992e",
+      "byteLength": 7007
+    },
+    {
+      "path": "crates/mo-kernel-api/src/pptx.rs",
+      "sha256": "6a76c54660c37b5b86afe41e08c418c05e8f1b40655402913b195939b559fcf5",
+      "byteLength": 2784
+    },
+    {
+      "path": "crates/mo-kernel-api/src/pptx_color.rs",
+      "sha256": "4fffa2c44287ccd811d8b95b7cb529976ede787f95d01cbde1249ba1532b1725",
+      "byteLength": 2414
+    },
+    {
+      "path": "crates/mo-kernel-api/src/pptx_source.rs",
+      "sha256": "94cd9c87781a8a5c715957c8472bd1c8b2f95227c5aab76fb5ed299dab55de07",
+      "byteLength": 4562
+    },
+    {
+      "path": "crates/mo-kernel-api/src/text.rs",
+      "sha256": "42baa2b099fa14fefef71cd753deaf68a94ab4291c6a84ac0afc31b3c7affeea",
+      "byteLength": 2974
+    },
+    {
+      "path": "crates/mo-kernel-api/src/unicode.rs",
+      "sha256": "85113da5188220ec1836f6b358bae5dcd4c2e26fa11b931a24e5a8b2ebd55241",
+      "byteLength": 3743
+    },
+    {
+      "path": "crates/mo-kernel-api/tests/package.rs",
+      "sha256": "3f6ad4a8febafc624f522320175f0fd2fd2309c275a8db8ae567ddba0bb6d039",
+      "byteLength": 746
+    },
+    {
+      "path": "crates/mo-kernel-api/tests/pptx_source.rs",
+      "sha256": "773e5fb7eb6a243386547e51b530a3b4a90ef4e5af4ab53cfb7058c10ae4d9d5",
+      "byteLength": 2752
+    },
+    {
+      "path": "crates/mo-opc/Cargo.toml",
+      "sha256": "fec7946008a6705d94add1465091e4df31e3ee376b20b6a7f4e0bc469483a48d",
+      "byteLength": 321
+    },
+    {
+      "path": "crates/mo-opc/examples/package_fixture.rs",
+      "sha256": "1b7a54acc6203be8ad05257c6d607a24be863e0a6a1a6d7d0ff22eff30abce9a",
+      "byteLength": 2794
+    },
+    {
+      "path": "crates/mo-opc/src/lib.rs",
+      "sha256": "5996c601d5278bd1d9dccfdd68ec8e47caf766509c1e8d55846cfc9471fe4f72",
+      "byteLength": 2176
+    },
+    {
+      "path": "crates/mo-opc/src/metadata.rs",
+      "sha256": "98c3e747355b8c2e27ecc61befb1d930b994f834dbc0fee5885eee0dec60475c",
+      "byteLength": 11949
+    },
+    {
+      "path": "crates/mo-opc/src/names.rs",
+      "sha256": "6a4709a39b73b1f9621e11660914f827791cdd5874a08cb1ab9256eacc12297a",
+      "byteLength": 6466
+    },
+    {
+      "path": "crates/mo-opc/src/package.rs",
+      "sha256": "63005aa7d1940ca24fa9a5c2959ce6f2615804c4aaf4f5c05b4068b26cdf1c52",
+      "byteLength": 18747
+    },
+    {
+      "path": "crates/mo-opc/src/writer.rs",
+      "sha256": "6f7d4a21eb226b43eec146868e3fe5ad1589521576dfdc3ae71964af47122152",
+      "byteLength": 16450
+    },
+    {
+      "path": "crates/mo-opc/src/zip_structure.rs",
+      "sha256": "c5368a18c8821a676cb3822ef16f0e2fbe4a2ccc044bec5774a6367895608d8f",
+      "byteLength": 4081
+    },
+    {
+      "path": "crates/mo-opc/tests/packages.rs",
+      "sha256": "8534c213404aa685f2a8779cd383314f34be93661375bdc3c268f95511dc2f6e",
+      "byteLength": 15506
+    },
+    {
+      "path": "crates/mo-pptx/Cargo.toml",
+      "sha256": "b978aee92e8ab55e47562e2b39b701c6ba590404f31e1432ebe0f5ff4ef11472",
+      "byteLength": 438
+    },
+    {
+      "path": "crates/mo-pptx/src/definitions.rs",
+      "sha256": "8fd8e07dc870019eb94daf3145ec3d07c18e784962a429cbab9fa139b89a278e",
+      "byteLength": 6511
+    },
+    {
+      "path": "crates/mo-pptx/src/drawing.rs",
+      "sha256": "53980541eb584ea4704b125a4adacb7e7ce6bdcfca750eb63c3b6aae98b31b31",
+      "byteLength": 14176
+    },
+    {
+      "path": "crates/mo-pptx/src/lib.rs",
+      "sha256": "31c1cab03abf506b4f606606ef2ab0f47547e0adfb46663c715a2beca61f18e0",
+      "byteLength": 3555
+    },
+    {
+      "path": "crates/mo-pptx/src/source.rs",
+      "sha256": "7777e60b128c902e9d93c24dec24f63de8340acd9e2cca4621c751f8e0a17904",
+      "byteLength": 7193
+    },
+    {
+      "path": "crates/mo-pptx/src/source/color.rs",
+      "sha256": "507836da860a10b717e94ecb43888cbbb6831dc9664b6ca5be05f51265a8a375",
+      "byteLength": 10438
+    },
+    {
+      "path": "crates/mo-pptx/src/source/color/preset.rs",
+      "sha256": "438ad1dc7761be960b8769820365a36c529ff07ce0a88cb1b777aace60d351d2",
+      "byteLength": 9832
+    },
+    {
+      "path": "crates/mo-pptx/src/source/color/transforms.rs",
+      "sha256": "abe68baa8d541e0937fb12e1558b16cd5286bcb1442d32da84d0ac1bd2adbded",
+      "byteLength": 2406
+    },
+    {
+      "path": "crates/mo-pptx/src/source/color/types.rs",
+      "sha256": "2399a46afc850c3219294aedbc96324dc67c60f1e463973b8f75b698e66d1459",
+      "byteLength": 4013
+    },
+    {
+      "path": "crates/mo-pptx/src/source/color_mapping.rs",
+      "sha256": "b05fa5381811dda4d223f37847b7f472873f7c342dae3567e9e29e1f9600556b",
+      "byteLength": 5374
+    },
+    {
+      "path": "crates/mo-pptx/src/source/compatibility.rs",
+      "sha256": "8de4ed4972e3b3fdf625e00cb6377027617fc46da0e427e7ec97542fc55f2521",
+      "byteLength": 2812
+    },
+    {
+      "path": "crates/mo-pptx/src/source/edit.rs",
+      "sha256": "6c58f8ce0504ef597b431a9aada84a298963682c48aafd8860daf971723bddae",
+      "byteLength": 5385
+    },
+    {
+      "path": "crates/mo-pptx/src/source/inheritance.rs",
+      "sha256": "7bb21216ae63415898058bc0006ffec856493defacc1e376985f6ae2dea2c230",
+      "byteLength": 12749
+    },
+    {
+      "path": "crates/mo-pptx/src/source/links.rs",
+      "sha256": "665ec5ec1669050719fa3799762a256a4b18f820c7f8975b8239848b9a9970d4",
+      "byteLength": 3568
+    },
+    {
+      "path": "crates/mo-pptx/src/source/presentation.rs",
+      "sha256": "38f7c42d782a6c45e2499af09b85179a6cd872afcf53f8edfc6e6925e11da501",
+      "byteLength": 10326
+    },
+    {
+      "path": "crates/mo-pptx/src/source/surface.rs",
+      "sha256": "cb01e7e42870afe7ac12894bdee9fe2c7f07cb9e565ff975978c28bca052b070",
+      "byteLength": 23332
+    },
+    {
+      "path": "crates/mo-pptx/src/source/theme.rs",
+      "sha256": "a9a4b01455daaab52ddcb759267452a17068496a015d1be17a625cc80bc0eece",
+      "byteLength": 6492
+    },
+    {
+      "path": "crates/mo-pptx/src/source/theme/names.rs",
+      "sha256": "12481d865b6300017a64846f38b06b064fe3e60b750dcd4014fbbafb135b128d",
+      "byteLength": 13147
+    },
+    {
+      "path": "crates/mo-pptx/src/source/theme/read.rs",
+      "sha256": "32cb9a504fd1d94268e6fac4ad146b791070ecf4bb039e5f1c495ece0da1767b",
+      "byteLength": 17708
+    },
+    {
+      "path": "crates/mo-pptx/src/source/theme/values.rs",
+      "sha256": "e26abca4638278226a5b1fa53181cedf59105e8f9f0d78e3975cdcb48676a4ba",
+      "byteLength": 9655
+    },
+    {
+      "path": "crates/mo-pptx/src/text.rs",
+      "sha256": "e8f2d56b8a95c4117dea74b15227e4b49f30fe13b66595e8104a920f25dc0870",
+      "byteLength": 6817
+    },
+    {
+      "path": "crates/mo-pptx/src/write.rs",
+      "sha256": "376898cf1388b7f0dba7db73025bd81e051b14fa418b9f25967f3de33c97e112",
+      "byteLength": 11976
+    },
+    {
+      "path": "crates/mo-pptx/src/xml.rs",
+      "sha256": "ccb472b5a7a4f6192bbac1291e98339c69c437b5320993878fdfce36041ead0e",
+      "byteLength": 2020
+    },
+    {
+      "path": "crates/mo-pptx/tests/export.rs",
+      "sha256": "6b64207332cf3f04dc092fdf4003bab9bf2b6f57dedd08c3f4c5abecc12353e9",
+      "byteLength": 4087
+    },
+    {
+      "path": "crates/mo-pptx/tests/source.rs",
+      "sha256": "796c98bf1d39baa16c03c77a3ae68ea2a9e486ebe6f3caaaaddfc7e4c06ebad1",
+      "byteLength": 30985
+    },
+    {
+      "path": "crates/mo-pptx/tests/source_colors.rs",
+      "sha256": "f66da3920a7a38d846da0066f2a7e047e8ef0a1b02e9a68ccde9183b97d73ea2",
+      "byteLength": 6848
+    },
+    {
+      "path": "crates/mo-pptx/tests/support/mod.rs",
+      "sha256": "646501d7163b93c2e67de75f9d4ebc028e05672071a43d084c0d1436a1533cac",
+      "byteLength": 964
+    },
+    {
+      "path": "crates/mo-presentation-edit/Cargo.toml",
+      "sha256": "5da36bbe80bf21f605381fbd691088163f52a72f043e05d24406a61a1265e8a5",
+      "byteLength": 357
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/apply.rs",
+      "sha256": "893df4face1215d0aa9b0f77ea8d593474b2e71394049f37842ec9a6dde2eff5",
+      "byteLength": 10833
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/lib.rs",
+      "sha256": "cfddd7f6cbe29c52f4667b5236e9a6a36b496092c8646f31d47d828fe08a059c",
+      "byteLength": 184
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/operations.rs",
+      "sha256": "535a5abf1f01b2a2d4d0507ef7cbb428c9c80c8945b9d4cbfe04ecafc4aefbaa",
+      "byteLength": 2577
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/transaction.rs",
+      "sha256": "93131b514e51edf6bdff9912befd243e01be24a8555e0b020ade8a1120b65e9d",
+      "byteLength": 11192
+    },
+    {
+      "path": "crates/mo-presentation-edit/tests/support/mod.rs",
+      "sha256": "9f1ba64634cecf1ab2316c2d6d0f0a9510ccbcfb2767b90067e85decd3c90d9b",
+      "byteLength": 3314
+    },
+    {
+      "path": "crates/mo-presentation-edit/tests/transactions.rs",
+      "sha256": "73199270211b81a361c39a7983f2d8784db76b89cdcd521de512e8c34dee6859",
+      "byteLength": 8585
+    },
+    {
+      "path": "crates/mo-presentation-edit/tests/validation.rs",
+      "sha256": "ce57b22e3dadf7f00fa056055cf2e054ef0c7d9fc3c2d06a8aea2991605a70dd",
+      "byteLength": 3808
+    },
+    {
+      "path": "crates/mo-presentation-model/Cargo.toml",
+      "sha256": "686ad4d89c724137533c16c8417b58f830c494d18dbd140225141adc2b295632",
+      "byteLength": 338
+    },
+    {
+      "path": "crates/mo-presentation-model/src/document.rs",
+      "sha256": "1a564f30eb48e3d58e589a7edeb24b36aa2dd79c1e09cd7f4af1498a96f99663",
+      "byteLength": 5407
+    },
+    {
+      "path": "crates/mo-presentation-model/src/geometry.rs",
+      "sha256": "c357689b0fd629252acf2da581879aa967e1ba1ae24f141ae5f0377fd79db69c",
+      "byteLength": 1824
+    },
+    {
+      "path": "crates/mo-presentation-model/src/lib.rs",
+      "sha256": "f9862c8e44fdf3a30484a2e4b7b7ed9fc77bf90c93bab8ba7822f2d189789fda",
+      "byteLength": 249
+    },
+    {
+      "path": "crates/mo-presentation-model/src/styles.rs",
+      "sha256": "71df96a08e62e38eb06459de6297e580811bd917769da5a8317b068ed79f636a",
+      "byteLength": 3267
+    },
+    {
+      "path": "crates/mo-presentation-model/src/text.rs",
+      "sha256": "82805f8b393baefeaa6ae3b3d07c4e07f340d438f807f173869b9b9db787d76f",
+      "byteLength": 2220
+    },
+    {
+      "path": "crates/mo-presentation-model/src/validation.rs",
+      "sha256": "88f73437576a26004180b834dd8bb8b3715070f2e3e4bb49086db43e24d394c9",
+      "byteLength": 20501
+    },
+    {
+      "path": "crates/mo-text/Cargo.toml",
+      "sha256": "c896fa1e4c1b1b7b10d3a38adcd9321d2ba6ec3490acf2400745221b5d9d82c1",
+      "byteLength": 372
+    },
+    {
+      "path": "crates/mo-text/src/backend.rs",
+      "sha256": "29d52f6ac3bd85ed41107e72e0617aa41d13afc36e986d24def9eb7b6f10332a",
+      "byteLength": 2562
+    },
+    {
+      "path": "crates/mo-text/src/lib.rs",
+      "sha256": "5d31c812e2b7b3df9abc1ad37cf0fff7bb2547ab98ea42c22918e82844fa5a47",
+      "byteLength": 2282
+    },
+    {
+      "path": "crates/mo-text/src/prepare.rs",
+      "sha256": "2b32d328916d02e45dedad3de3f005151259f7eff3c3ff2b1ef2031655947b79",
+      "byteLength": 4806
+    },
+    {
+      "path": "crates/mo-text/src/result.rs",
+      "sha256": "40e4890112e1e012c1d04051f73aa5d06d503fb39aeaf96b56b45117ff95d68b",
+      "byteLength": 4341
+    },
+    {
+      "path": "crates/mo-text/src/tests.rs",
+      "sha256": "a50c0bb6148d1b280da9be2fde35533c0676b2954c0020bef91973dbe9297ee7",
+      "byteLength": 6423
+    },
+    {
+      "path": "crates/mo-text/src/types.rs",
+      "sha256": "0292ac009583384bafd4311b6b4054e981ac548316ddbe31d28829983c286e31",
+      "byteLength": 5337
+    },
+    {
+      "path": "crates/mo-unicode/Cargo.toml",
+      "sha256": "2cc691f0fa0469ebb39e61e5d5c32cfc624bcbaaa52bad3e4b3d4b367b2360b6",
+      "byteLength": 253
+    },
+    {
+      "path": "crates/mo-unicode/data/LICENSE-UNICODE",
+      "sha256": "e7a93b009565cfce55919a381437ac4db883e9da2126fa28b91d12732bc53d96",
+      "byteLength": 1995
+    },
+    {
+      "path": "crates/mo-unicode/data/manifest.json",
+      "sha256": "bab7e1712392250584b5609bc6126471fba5bbefeaf415c51d2a5e92ed43d31b",
+      "byteLength": 1566
+    },
+    {
+      "path": "crates/mo-unicode/data/properties.bin",
+      "sha256": "4eddcd2c58f6cc92a6b7d9072faca49776b56b8618d004c7ddd325481a87aae5",
+      "byteLength": 16502
+    },
+    {
+      "path": "crates/mo-unicode/src/lib.rs",
+      "sha256": "12e018959e5471f300510742a3958d5996db2f53d93b7d1a788ee3ca27557fe4",
+      "byteLength": 7095
+    },
+    {
+      "path": "crates/mo-unicode/src/properties.rs",
+      "sha256": "e735aac4bb7c4f67c4f07c786982740f968a32c3d7f0074d1f9e8906458171f0",
+      "byteLength": 3732
+    },
+    {
+      "path": "crates/mo-wasm/Cargo.toml",
+      "sha256": "c14339263e39f843610896489179310b827527c2ea0923fe706bf4a545e48777",
+      "byteLength": 299
+    },
+    {
+      "path": "crates/mo-wasm/src/lib.rs",
+      "sha256": "20e354fb2a0e85b88eeb029fc44e40253b2abf398f36a133b4756ac250ff8586",
+      "byteLength": 1339
+    },
+    {
+      "path": "crates/mo-wasm/src/text.rs",
+      "sha256": "9f942914dbee8c0aeb943209d1bee91974e5bc788e6813204d67051a2222fd05",
+      "byteLength": 1406
+    },
+    {
+      "path": "crates/mo-xml/Cargo.toml",
+      "sha256": "853e966df02894265a57e178174f37bc3d47c391bdfc6f2f51073d7dfa1c9194",
+      "byteLength": 227
+    },
+    {
+      "path": "crates/mo-xml/src/encoding.rs",
+      "sha256": "9e8d6ae2954cca572a9d11c1b62412307e4092f440a997cbeb032f372a629900",
+      "byteLength": 2703
+    },
+    {
+      "path": "crates/mo-xml/src/lib.rs",
+      "sha256": "09fe3e54791b663aa9db13339d6dfa38bacf46c902ee024b68c1cf1ad7e8d6e5",
+      "byteLength": 3007
+    },
+    {
+      "path": "crates/mo-xml/src/mce.rs",
+      "sha256": "52c3ba303e4af2a922a5d718c286ab1accf292b0ced9cca8be6520f4a74d9618",
+      "byteLength": 2062
+    },
+    {
+      "path": "crates/mo-xml/src/mce/rules.rs",
+      "sha256": "f913b6ed681688510ce9f824c4e144597c00fb610054b761c78425fa37ebaeba",
+      "byteLength": 5300
+    },
+    {
+      "path": "crates/mo-xml/src/mce/stream.rs",
+      "sha256": "2dce269a1f4f3712081af296be91f47dc1af3fc8e48b37a21ed8aab4d4ca7ef7",
+      "byteLength": 12915
+    },
+    {
+      "path": "crates/mo-xml/src/names.rs",
+      "sha256": "19e8f209182717b29edd54d32f82bd191606d2f3894f28a2b04d0d10b4b9ccaf",
+      "byteLength": 2413
+    },
+    {
+      "path": "crates/mo-xml/src/scan.rs",
+      "sha256": "5a8efe98f82cc495f9f7dc87356757017f548d9b891a824e717d320bbe05e578",
+      "byteLength": 12996
+    },
+    {
+      "path": "crates/mo-xml/src/text_edit.rs",
+      "sha256": "cce569187b97de226580986929ba131c68f487711efc2528a79cd705d147b3ed",
+      "byteLength": 10128
+    },
+    {
+      "path": "crates/mo-xml/tests/mce.rs",
+      "sha256": "9c63d77affacda92dee7814b3dafac8f9c1c56f135a512af5ff0f6fef153e518",
+      "byteLength": 8965
+    },
+    {
+      "path": "crates/mo-xml/tests/scanner.rs",
+      "sha256": "358087316fb66a77471722eb71acec10a1e0cf401a93cff68f9ba23e6c002c4d",
+      "byteLength": 6035
+    },
+    {
+      "path": "crates/mo-xml/tests/text_edit.rs",
+      "sha256": "064f5ce630d3dc1d2d9b48f0f6b222adffe7db06bc878899f8e25db88ddc69ed",
+      "byteLength": 5302
+    },
+    {
+      "path": "docs/implementation/dependencies.md",
+      "sha256": "06107cbc7c70c99e051000f5c828a05396d38a8f5d79d7b412e6b47b47c16af9",
+      "byteLength": 8657
+    },
+    {
+      "path": "docs/implementation/development.md",
+      "sha256": "c346fc6e61d0c3b4e74e7a3c33c205ff711d0ed25e8a929f6774860f7dd97f2b",
+      "byteLength": 10179
+    },
+    {
+      "path": "docs/implementation/font-resources.md",
+      "sha256": "162c34df6a81ee367688b6ef46e9b45d2dcfd16267f5ac3c7918298bfd4985a2",
+      "byteLength": 7882
+    },
+    {
+      "path": "docs/implementation/harfbuzz-component.md",
+      "sha256": "62fe9e2bc498adda0bb914c89c5cc5b955fcacb7c34fae40e7a6342252477039",
+      "byteLength": 8623
+    },
+    {
+      "path": "docs/implementation/mce.md",
+      "sha256": "c57bc24d5962afcd9932958d3aee5eebd3c8965f16156dca4dd2dc22867948f7",
+      "byteLength": 5472
+    },
+    {
+      "path": "docs/implementation/package-io.md",
+      "sha256": "89ecabc6323252cc54341c52d779e97dec7fdb949ad30fcb6eeee0a4e2d1230d",
+      "byteLength": 4530
+    },
+    {
+      "path": "docs/implementation/pptx-export.md",
+      "sha256": "c5d3312f2f6d31d715c24e2ed3cad7850007134b7124bf1544a1f7fe84e3ea0c",
+      "byteLength": 5523
+    },
+    {
+      "path": "docs/implementation/pptx-source.md",
+      "sha256": "3f56f10357ce7da26713c76550b4c2b7e0f44fa67b690032dd9a9ddacabe3063",
+      "byteLength": 8522
+    },
+    {
+      "path": "docs/implementation/progress.md",
+      "sha256": "380c1c8125a335badc70d2ab32c5b168f33f378f70c2ae05b379d38ffddab407",
+      "byteLength": 13922
+    },
+    {
+      "path": "docs/implementation/source-color-mapping.md",
+      "sha256": "a2355cccf0a542493bfc0f93f46b55da9e44aac6eef8256eba62ea54bb81df06",
+      "byteLength": 5194
+    },
+    {
+      "path": "docs/implementation/source-colors.md",
+      "sha256": "d8784ce88592e3e4b733c065ac3438da6d907361ce223b570b7b04a4bd96e9da",
+      "byteLength": 7149
+    },
+    {
+      "path": "docs/implementation/source-inheritance.md",
+      "sha256": "de1b1809ad4600197109be6d82e512ecf4073ee327c713ffd52d3cc2376db2be",
+      "byteLength": 5732
+    },
+    {
+      "path": "docs/implementation/source-themes.md",
+      "sha256": "2c50356b97c5115fb2ea9f8c01a2dff9a7f6e74266a58985a872f20cbb1cc20a",
+      "byteLength": 5897
+    },
+    {
+      "path": "docs/implementation/text-shaping.md",
+      "sha256": "f5c46dca367f766a2906d1bf97285b977b6ca6fcaeeb2e8dfcb55c74ce610647",
+      "byteLength": 6995
+    },
+    {
+      "path": "docs/implementation/unicode-text.md",
+      "sha256": "85aa8127f48e9b479ff7792bc834af73a5e060db8787c88ea60baf9e0933edd7",
+      "byteLength": 4850
+    },
+    {
+      "path": "fixtures/fonts/README.md",
+      "sha256": "2a14a31606dfbfe3ce3ac64b3a2a075999d7fabce5172b589d362cbe88064de4",
+      "byteLength": 1152
+    },
+    {
+      "path": "fixtures/fonts/owned.json",
+      "sha256": "b6d5a541cbb91a33c727965d53b68bf6f99b5d2c77988aae0b4e15484a9120c0",
+      "byteLength": 502
+    },
+    {
+      "path": "fixtures/fonts/owned.otf",
+      "sha256": "867c8e6bbb688380a8cbe08325e927485ef9f1a58dbc23c1aacefdb5ce7c0380",
+      "byteLength": 1632
+    },
+    {
+      "path": "fixtures/fonts/owned.ttc",
+      "sha256": "24c5ce1534147f4873ac550b915c720ac747ba69072b49154c422c83afe15c57",
+      "byteLength": 3372
+    },
+    {
+      "path": "fixtures/fonts/owned.ttf",
+      "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+      "byteLength": 1920
+    },
+    {
+      "path": "fixtures/fonts/upstream.json",
+      "sha256": "b794d33eff5af15346d936c74bc8011f53f0ee66fc8bf66b58541046fd306ab1",
+      "byteLength": 4367
+    },
+    {
+      "path": "fixtures/presentations/basic-shape.json",
+      "sha256": "3e4fe191a804814ff0f8061d5876c4b58285a255351460e0edf38040e16b9640",
+      "byteLength": 1499
+    },
+    {
+      "path": "fixtures/presentations/native-export/README.md",
+      "sha256": "399658ce0db8a74c746f0b70a8ebec3d50bd1954b5ddf0ae093e06f7fc8c3a02",
+      "byteLength": 575
+    },
+    {
+      "path": "fixtures/presentations/native-export/request.json",
+      "sha256": "f20f7ac49f8958e3cf6b3185f407832f75b6c9d7e35d7695958af34948c85b1d",
+      "byteLength": 34818
+    },
+    {
+      "path": "fixtures/presentations/native-export/resources.bin",
+      "sha256": "3f76a9a5cae823017a1ddda66fe4cadf422e496bb0e6364ea5050dcac13afd82",
+      "byteLength": 147
+    },
+    {
+      "path": "package.json",
+      "sha256": "0b551014ce67001c43aa1afaf4fa1008fa37e053516818883634e91ae6582e5d",
+      "byteLength": 622
+    },
+    {
+      "path": "packages/contracts/src/generated/document.ts",
+      "sha256": "f4ee579d71af46ef028dfb24ce2464542dd882d120ed50d4423f7cf3a104d693",
+      "byteLength": 15601
+    },
+    {
+      "path": "packages/contracts/src/generated/font-request.ts",
+      "sha256": "52131b9043ad89a21e7bca1f1e8139eca20be5d2ec5ec9e84d20e88d4af1301a",
+      "byteLength": 559
+    },
+    {
+      "path": "packages/contracts/src/generated/font-response.ts",
+      "sha256": "673efa9ffaf59df5ced570c50254a5b6cb3c7c239f2801dac6fd2632da43f017",
+      "byteLength": 3128
+    },
+    {
+      "path": "packages/contracts/src/generated/kernel-request.ts",
+      "sha256": "af7ff37be0f4547f1aed3d943eb8c470bde381205868002ed259690ccdf1897d",
+      "byteLength": 11263
+    },
+    {
+      "path": "packages/contracts/src/generated/kernel-response.ts",
+      "sha256": "312fca898a886903f24a2ee2ed16e5a07d50374f82c86d44b542281e82e10337",
+      "byteLength": 10929
+    },
+    {
+      "path": "packages/contracts/src/generated/package-inspection.ts",
+      "sha256": "a24e02f0dd751526794216e3e4bffdab048e7efbdffebb08e1cb616ecdb8ee3e",
+      "byteLength": 1653
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-color-query.ts",
+      "sha256": "67151379429f01eb89bf6cae7c2899a56c4137a62da2b313d17681a153262805",
+      "byteLength": 4301
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-color-response.ts",
+      "sha256": "22f8e4422c3cb46e1a055e53342eb64f9d49625e4bb08ce25e6103901017f39a",
+      "byteLength": 3587
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-export-request.ts",
+      "sha256": "7e589d649106926f4c631b86e643c0241a0c2fbc455e66e5c6a944e6dbaef04e",
+      "byteLength": 17799
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-source-response.ts",
+      "sha256": "d3395fd6b4ac936982c81de352ca154db6da7fb5d4ee993e0af8424b3ebb7755",
+      "byteLength": 15504
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-text-edits.ts",
+      "sha256": "0226877cda0170ffd2ecba5a8cc302c12b8b34115ea72a0beeae7a5425771246",
+      "byteLength": 801
+    },
+    {
+      "path": "packages/contracts/src/generated/shape-request.ts",
+      "sha256": "9d897013e28abd6e96a52584b9f9feab9a6250fe7156a151577ba908246db0df",
+      "byteLength": 2323
+    },
+    {
+      "path": "packages/contracts/src/generated/shape-response.ts",
+      "sha256": "0e878a569febd52db55e6a648d97761151705d1662e7bb75cbca4909b4f52c7d",
+      "byteLength": 1545
+    },
+    {
+      "path": "packages/contracts/src/generated/text-analysis-request.ts",
+      "sha256": "278876c46d7c530945a34a561f2b11e19165532c633b46bfaed3352eb95d2c16",
+      "byteLength": 190
+    },
+    {
+      "path": "packages/contracts/src/generated/text-analysis-response.ts",
+      "sha256": "d716e958d9e81cbd3aa8db0a56e588c795139d8eaf452a62b02715135ff37158",
+      "byteLength": 1344
+    },
+    {
+      "path": "packages/contracts/src/generated/transaction-receipt.ts",
+      "sha256": "5c881ad297af3679dc5e359434d7c77f3fd38ef52d71db2af2d014000b03a242",
+      "byteLength": 2837
+    },
+    {
+      "path": "packages/contracts/src/generated/transaction.ts",
+      "sha256": "6ddd740a544fc13429a7a8126f789ea5c486be417b9dd9230249a5dbc834601b",
+      "byteLength": 16526
+    },
+    {
+      "path": "packages/contracts/src/generated/validation-report.ts",
+      "sha256": "eca1b9f9a2b84352469ab0841cf4e6842928f09beccc7222e32c6e3ed63cfb04",
+      "byteLength": 722
+    },
+    {
+      "path": "packages/contracts/tests/wire.ts",
+      "sha256": "0f0092bfe458322bc26e2ec8b55781d444207f21b395a7a57c92acfb42c0c249",
+      "byteLength": 1455
+    },
+    {
+      "path": "packages/contracts/tsconfig.json",
+      "sha256": "4fcb6f03c7e852ccc08b854a1a26a8e7fc7312e561db7bcb7e20309d413deae2",
+      "byteLength": 308
+    },
+    {
+      "path": "packages/text-component/src/index.ts",
+      "sha256": "63cf449fbb8e6a180ae9ef94a3f32071e1d00e28af732ed3cfa6c396951335bd",
+      "byteLength": 5876
+    },
+    {
+      "path": "packages/text-component/tsconfig.json",
+      "sha256": "0344a0004c0c2836438a6eb840fb538283fc3565ecfd6f0afe7db40d146db3fb",
+      "byteLength": 316
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "b98030e955ae688a6490e8a6ef21007c18468596b851255439c37893b51f29c0",
+      "byteLength": 11026
+    },
+    {
+      "path": "rust-toolchain.toml",
+      "sha256": "060751f06f70853677293dd84de1c855fa72295c5dbc17ce811a3a57b75861c0",
+      "byteLength": 123
+    },
+    {
+      "path": "tools/components/build-harfbuzz.py",
+      "sha256": "ba8156d27c28f56149cd7d1ef6f77f9dae4810a32c094b01adfaf514d5e38def",
+      "byteLength": 5094
+    },
+    {
+      "path": "tools/contracts/build-wasm-node.mjs",
+      "sha256": "958156b80bf75ebf4649e43ff5f1dca1d7fb483fb42d64810cfe74a9c1481660",
+      "byteLength": 1004
+    },
+    {
+      "path": "tools/contracts/generate-types.mjs",
+      "sha256": "3eadbd43ee77696b2590d8bd8346e92038ccb2ae9f352e8520aea38c1bb44c59",
+      "byteLength": 1500
+    },
+    {
+      "path": "tools/mo-cli/Cargo.toml",
+      "sha256": "b9e3761bb92f60910ef0b9e5bf937108d9d8c9f08b2fe419727d2cfe83fa80c2",
+      "byteLength": 252
+    },
+    {
+      "path": "tools/mo-cli/src/main.rs",
+      "sha256": "91d4d9b435a2d362f21d7f115cccfaa5f3444c3b0d642cce1a374d6827d7d6df",
+      "byteLength": 3734
+    },
+    {
+      "path": "tools/mo-cli/src/pptx.rs",
+      "sha256": "400765e1d0918cdd4cf4d3a865b5d11a4bd65304454fc2120f6b1d8b0c182245",
+      "byteLength": 3490
+    },
+    {
+      "path": "tools/mo-cli/src/text.rs",
+      "sha256": "ee67245e6569fc83bfd575da61cd6a8c9cd8ad3ac1f873c4900835e44ea1be11",
+      "byteLength": 3171
+    },
+    {
+      "path": "tools/mo-contract-codegen/Cargo.toml",
+      "sha256": "cee1ac85df3e34b5f58f810c3d98735da788f46bc22de2abd4cffb4ee420078d",
+      "byteLength": 348
+    },
+    {
+      "path": "tools/mo-contract-codegen/src/main.rs",
+      "sha256": "210705f7d4e6fed205159b5649b1cc61442ca91d256ac035156a5ffead186bf4",
+      "byteLength": 2814
+    },
+    {
+      "path": "tools/mo-text-worker/Cargo.toml",
+      "sha256": "53582e6055b4454aebdd2e987be7022a392f5f60d507cadafa07b54ad1ea8b9d",
+      "byteLength": 245
+    },
+    {
+      "path": "tools/mo-text-worker/src/main.rs",
+      "sha256": "25a24ce7ecd98645aebb1dd77644fc233d2a96471599120afb577411c883fe4c",
+      "byteLength": 1509
+    },
+    {
+      "path": "tools/unicode/compare-segmentation.rs",
+      "sha256": "437823847d6a2d2e20aa9509012c59edca5f99d8f480322008d857d7ac26a089",
+      "byteLength": 1041
+    },
+    {
+      "path": "tools/unicode/fetch.py",
+      "sha256": "549b4c7e5712fb36014934fb78b12a6209280bb7011ecaffe980dc719599182e",
+      "byteLength": 1036
+    },
+    {
+      "path": "tools/unicode/fixtures.py",
+      "sha256": "147d5ce21b1342bae9841be2c21f8c78d97fca009bd169eb2d7460a76c6856c5",
+      "byteLength": 3522
+    },
+    {
+      "path": "tools/unicode/generate.py",
+      "sha256": "4f6342e7cf73123fd9555fd8996a981f22243d5cb39489a53d9ecb8f9e00e2bd",
+      "byteLength": 2565
+    },
+    {
+      "path": "tools/verification/color-preset-facts.py",
+      "sha256": "aecf20c19bbad93b19f3eb91d08b18c3d4d11b48e73311c7e8cca57630f5c9bd",
+      "byteLength": 1808
+    },
+    {
+      "path": "tools/verification/contracts.py",
+      "sha256": "92d867a1a9186d4829976a4fa5a45079409d3aa6057dc2b4ae6998cf317e8296",
+      "byteLength": 5879
+    },
+    {
+      "path": "tools/verification/fetch-ecma-schemas.py",
+      "sha256": "77b7487f7ad2fa052e4e1f3987c60cc594a1491c09aa518cdf8a9f1f5cdb5d27",
+      "byteLength": 2417
+    },
+    {
+      "path": "tools/verification/fetch-font-corpus.py",
+      "sha256": "9f564c5fe08406f5da77e76f646462935ded1beb53c9603f9675ef725bd255cc",
+      "byteLength": 1596
+    },
+    {
+      "path": "tools/verification/font-fixtures.py",
+      "sha256": "b4b311d2f0b50dd395070f1ff478ac2d533955469111ef0f8ad4d88922b6580a",
+      "byteLength": 5422
+    },
+    {
+      "path": "tools/verification/font-independent.py",
+      "sha256": "821924fc189402f330921ebf8cad082d742d79df8f740f4c7ba9e1d14dfbdde4",
+      "byteLength": 5409
+    },
+    {
+      "path": "tools/verification/font-parity.mjs",
+      "sha256": "d3512ad755ec03cd22edd25ae64cda9bba4055d0aa9340cdef66b8e391bc1680",
+      "byteLength": 3098
+    },
+    {
+      "path": "tools/verification/harfbuzz-cases.py",
+      "sha256": "51cc2fc587dc85e3bc3196c31976ba539ecc8b6916b1ccd2893aee6c50d46975",
+      "byteLength": 5661
+    },
+    {
+      "path": "tools/verification/harfbuzz-fault-observer.cpp",
+      "sha256": "7f9c083597642e0e0d097dc7ae3f4052e058196d9bece45a90e167ba36f82a39",
+      "byteLength": 2368
+    },
+    {
+      "path": "tools/verification/harfbuzz-parity.mjs",
+      "sha256": "9e392fe83476631b955d165f8d90ff8cbf61000d69e6ab9829ab9e522657688a",
+      "byteLength": 6914
+    },
+    {
+      "path": "tools/verification/harfbuzz-probe.cpp",
+      "sha256": "3ae238a8f85832c5b73cd8b188c6077751954f1f6ed1d138c6306bc33e6fe72a",
+      "byteLength": 2097
+    },
+    {
+      "path": "tools/verification/harfbuzz-safety.py",
+      "sha256": "708b3fbf2d7d019978143f71778b4ff694dd53ce2b9a373aeb3172645707466a",
+      "byteLength": 2686
+    },
+    {
+      "path": "tools/verification/mce_reference.py",
+      "sha256": "36349c605934ee95633b2c3bc4b181bd1906c4c35ddb13cdf8574ca5451e524b",
+      "byteLength": 8539
+    },
+    {
+      "path": "tools/verification/native-wasm-parity.mjs",
+      "sha256": "16ff25ff788d11e07dc0bcd5007e75b155f61c9348f50ea8328abad2ee049b26",
+      "byteLength": 5096
+    },
+    {
+      "path": "tools/verification/opc-fixtures.py",
+      "sha256": "6444c4fd8d5074d0c59a111b0ac2fc589cd9b12c31f264d56a1f4423b90b34a7",
+      "byteLength": 7125
+    },
+    {
+      "path": "tools/verification/opc-parity.mjs",
+      "sha256": "cdddcf4b160a507b73da23a9e5af33f99e806aec4685a4060e4a4cf02ec83d12",
+      "byteLength": 2389
+    },
+    {
+      "path": "tools/verification/owned-font-fixtures.py",
+      "sha256": "ca1d53b56380c310c2dc377d6928bc96176f8a7c5adc79827905980cab70d9a7",
+      "byteLength": 3490
+    },
+    {
+      "path": "tools/verification/pptx-color-external.py",
+      "sha256": "3639f595247bd334d6adb7fbc70104b342d80b994b2493ea15f264c796182aa7",
+      "byteLength": 1805
+    },
+    {
+      "path": "tools/verification/pptx-color-fixtures.py",
+      "sha256": "b21b4208f34f784871b9c248793a46db2b47c84c5ce4366fc3a25140ba737e99",
+      "byteLength": 9052
+    },
+    {
+      "path": "tools/verification/pptx-color-independent.py",
+      "sha256": "dead1da94181045aa75785c5bce4fd0a9ccb0aa81e247b6d429a72942646c141",
+      "byteLength": 11855
+    },
+    {
+      "path": "tools/verification/pptx-color-map-external.py",
+      "sha256": "e3479e741e4ca41fd8b3648da59f4a6d94eb9aa051e15b088c355a241f70f424",
+      "byteLength": 1338
+    },
+    {
+      "path": "tools/verification/pptx-color-map-fixtures.py",
+      "sha256": "f283e4d30cbadfdcb73027ca576e8914ee8459bf9c4ac87196b0d8826c4aa3fe",
+      "byteLength": 6401
+    },
+    {
+      "path": "tools/verification/pptx-color-map-independent.py",
+      "sha256": "642feaabb0dd4e44c2406bb80bdfdcd73ba68e38f7ba9f3c29bba462a7986671",
+      "byteLength": 4356
+    },
+    {
+      "path": "tools/verification/pptx-color-parity.mjs",
+      "sha256": "439215427344c697d98316d87065f277d0e8cfd92f3f99f97451ff81f512ecad",
+      "byteLength": 3849
+    },
+    {
+      "path": "tools/verification/pptx-fixture.py",
+      "sha256": "f098faf7dee35d53004bc311c513e5bcef27e2480777b98ddd0f70afb53dc0d7",
+      "byteLength": 7988
+    },
+    {
+      "path": "tools/verification/pptx-independent.py",
+      "sha256": "319f2879c923153fd2c3790df11b2546fad186f1b770146c702943d53168da7a",
+      "byteLength": 12055
+    },
+    {
+      "path": "tools/verification/pptx-inheritance-fixtures.py",
+      "sha256": "a0a58cae8e1a22e5013af55d3b60f08746a59bf36717a27571b630b2a7d60c72",
+      "byteLength": 8223
+    },
+    {
+      "path": "tools/verification/pptx-inheritance-independent.py",
+      "sha256": "64b582e9dea3c49e5685079b3888184868aaa4a3132ea16a303aadd464c7d8bb",
+      "byteLength": 7200
+    },
+    {
+      "path": "tools/verification/pptx-parity.mjs",
+      "sha256": "e4f81bdf6d2926d07b386d1843cd90b1b167aff5746b9408c68c4ab04b3f08c9",
+      "byteLength": 6173
+    },
+    {
+      "path": "tools/verification/pptx-source-fixtures.py",
+      "sha256": "05f4d695bee7f30051616df473f899ac181c0a5984e08bef0a7869046f491b66",
+      "byteLength": 9544
+    },
+    {
+      "path": "tools/verification/pptx-source-independent.py",
+      "sha256": "e761dd6508e5499628a462becfb92c474f17f289d3d79c06d487ae9c89fb0bed",
+      "byteLength": 4683
+    },
+    {
+      "path": "tools/verification/pptx-source-parity.mjs",
+      "sha256": "b9f2001182467707a967fafed6e01cd4259ffcc8545b2da3d001490eda97d44e",
+      "byteLength": 9808
+    },
+    {
+      "path": "tools/verification/pptx-theme-fixtures.py",
+      "sha256": "c2e52631d9d2bc5bfd7dcdc30e69cac7d3f41eeccd8442e06adffe5a5e20408a",
+      "byteLength": 7807
+    },
+    {
+      "path": "tools/verification/pptx-theme-independent.py",
+      "sha256": "9d3bc1fc68710cb6b76b353e05b2a993954fd8e33c1f9c5b0a948e02a0ae4561",
+      "byteLength": 9261
+    },
+    {
+      "path": "tools/verification/pptx_color_observer.py",
+      "sha256": "4c2feeab7eb7f25bdf91f10b200220eb17e8a76392f883428743b16e0603fdba",
+      "byteLength": 3170
+    },
+    {
+      "path": "tools/verification/text-parity.mjs",
+      "sha256": "8f2becf15dad306a37fc7cbe53030f6b7f0bb069b10cf0632b7abb37e7e5af07",
+      "byteLength": 10365
+    },
+    {
+      "path": "tools/verification/unicode-parity.mjs",
+      "sha256": "286b6a106d3ac53b6874339ab58d42749b1a8670d69c03670cc0284cf71f7e5d",
+      "byteLength": 4436
+    }
+  ],
+  "references": [
+    "https://www.unicode.org/reports/tr29/tr29-49.html",
+    "https://www.unicode.org/Public/18.0.0/ucd/auxiliary/GraphemeBreakTest.txt",
+    "https://www.unicode.org/Public/18.0.0/ucd/DerivedCoreProperties.txt",
+    "https://www.unicode.org/Public/18.0.0/ucd/emoji/emoji-data.txt",
+    "https://www.unicode.org/license.txt"
+  ],
+  "limitations": [
+    "The generated table covers only the documented properties, not all Unicode data. No claim of complete Unicode algorithm support is made.",
+    "Passing the complete official grapheme test file and long-context probes is strong bounded evidence, not exhaustive testing of every possible string.",
+    "Grapheme boundaries cannot by themselves authorize font switches or line breaks; shaping clusters, unsafe flags, scripts, bidi and context must still be integrated.",
+    "Default_Ignorable_Code_Point does not authorize deleting author text or ignoring unsupported variation/emoji sequences.",
+    "The runtime uses well-formed Rust Unicode scalar text; malformed JSON surrogate escapes are rejected. This is not a permissive ill-formed UTF-16 editor model.",
+    "Synchronous WASM still requires an external Worker for hard cancellation. Production host isolation, full resource budgets and caches remain incomplete.",
+    "No end-to-end typography benchmark, Office/WPS validation, rendering/playback, advanced objects, Agent distribution or Musterwork replacement gate is closed."
+  ]
+}

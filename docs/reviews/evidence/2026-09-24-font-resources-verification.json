@@ -1,0 +1,2268 @@
+{
+  "format": "musteroffice.font-resources-verification/1",
+  "scope": "Explicit immutable SFNT/TTC face inspection and Unicode/variation cmap query. Not font selection, shaping, layout, outline validation, rendering, embedding authorization, Office/WPS acceptance or Musterwork replacement.",
+  "environment": {
+    "platform": "Darwin",
+    "architecture": "arm64",
+    "python": "3.13.0",
+    "node": "v23.5.0",
+    "rust": "rustc 1.92.0 (ded5c06cf 2025-12-08)"
+  },
+  "artifacts": {
+    "native": {
+      "path": "target/release/mo-cli",
+      "sha256": "0ac3457b56515c108e9062cd81708b4a61932f620dc6977013c5aef49694b2ce",
+      "byteLength": 3484288
+    },
+    "wasm": {
+      "path": ".codex-work/wasm-node/mo_wasm_bg.wasm",
+      "sha256": "993e75bafee998950b65a844464e698667eeeee6a546b0f927eb6d47e539100a",
+      "byteLength": 2771028
+    }
+  },
+  "artifactSizeScope": "Incomplete development artifacts only. Test fonts and FontTools are excluded. These measurements do not estimate the full kernel, font distribution or desktop installer.",
+  "previousEvidence": {
+    "path": "docs/reviews/evidence/2026-09-24-pptx-colors-verification.json",
+    "sha256": "4e72b650a65b204ab4de090bd8568f7deb216fb561eba6b64fdf6dba0e2710af",
+    "byteLength": 258193
+  },
+  "newDependencies": [
+    {
+      "name": "bytemuck",
+      "version": "1.25.2",
+      "license": "Zlib OR Apache-2.0 OR MIT",
+      "repository": "https://github.com/Lokathor/bytemuck",
+      "rust_version": null,
+      "features": [
+        "bytemuck_derive",
+        "derive",
+        "min_const_generics"
+      ]
+    },
+    {
+      "name": "bytemuck_derive",
+      "version": "1.12.1",
+      "license": "Zlib OR Apache-2.0 OR MIT",
+      "repository": "https://github.com/Lokathor/bytemuck",
+      "rust_version": "1.71",
+      "features": []
+    },
+    {
+      "name": "core_maths",
+      "version": "0.1.1",
+      "license": "MIT",
+      "repository": "https://github.com/robertbastian/core_maths",
+      "rust_version": null,
+      "features": []
+    },
+    {
+      "name": "font-types",
+      "version": "0.12.5",
+      "license": "MIT OR Apache-2.0",
+      "repository": "https://github.com/googlefonts/fontations",
+      "rust_version": "1.85",
+      "features": [
+        "bytemuck"
+      ]
+    },
+    {
+      "name": "mo-font",
+      "version": "0.1.0",
+      "license": null,
+      "repository": null,
+      "rust_version": "1.92",
+      "features": []
+    },
+    {
+      "name": "read-fonts",
+      "version": "0.43.3",
+      "license": "MIT OR Apache-2.0",
+      "repository": "https://github.com/googlefonts/fontations",
+      "rust_version": "1.85",
+      "features": [
+        "libm"
+      ]
+    }
+  ],
+  "existingDependencyVersionsChanged": false,
+  "independentTool": {
+    "name": "fonttools",
+    "version": "4.61.1",
+    "license": "MIT",
+    "wheel": "fonttools-4.61.1-cp313-cp313-macosx_10_13_universal2.whl",
+    "sha256": "8c56c488ab471628ff3bfa80964372fc13504ece601e0d97a78ee74126b2045c",
+    "officialReleaseUrl": "https://pypi.org/pypi/fonttools/4.61.1/json",
+    "officialHashVerified": true,
+    "runtimeDependency": false
+  },
+  "testFonts": {
+    "upstream": [
+      {
+        "family": "notosans",
+        "commit": "b5efa9c32e8f9b63005f5cdb1ad5527a77d2cd04",
+        "name": "NotoSans[wdth,wght].ttf",
+        "url": "https://raw.githubusercontent.com/google/fonts/b5efa9c32e8f9b63005f5cdb1ad5527a77d2cd04/ofl/notosans/NotoSans%5Bwdth%2Cwght%5D.ttf",
+        "byteLength": 2049096,
+        "sha256": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d",
+        "gitBlobSha1": "75575046c015ff623a848096a15779867ba71453"
+      },
+      {
+        "family": "notosans",
+        "commit": "b5efa9c32e8f9b63005f5cdb1ad5527a77d2cd04",
+        "name": "OFL.txt",
+        "url": "https://raw.githubusercontent.com/google/fonts/b5efa9c32e8f9b63005f5cdb1ad5527a77d2cd04/ofl/notosans/OFL.txt",
+        "byteLength": 4396,
+        "sha256": "cee9892f9f0cc8fe882c9e9537ee6a89621d86ee7ceaf70b02e2b2b1c25c061a",
+        "gitBlobSha1": "6843f31878c9945e1e71e1baa275546b4eefead8"
+      },
+      {
+        "family": "notosansarabic",
+        "commit": "b5efa9c32e8f9b63005f5cdb1ad5527a77d2cd04",
+        "name": "NotoSansArabic[wdth,wght].ttf",
+        "url": "https://raw.githubusercontent.com/google/fonts/b5efa9c32e8f9b63005f5cdb1ad5527a77d2cd04/ofl/notosansarabic/NotoSansArabic%5Bwdth%2Cwght%5D.ttf",
+        "byteLength": 844676,
+        "sha256": "63111b5b2e074dd48cc67692e0a2726d86ee94c1c37fe8598257b7b4e87e869e",
+        "gitBlobSha1": "f1d01edce4ebaedcbe9a06fc75fec07b304ec3df"
+      },
+      {
+        "family": "notosansarabic",
+        "commit": "b5efa9c32e8f9b63005f5cdb1ad5527a77d2cd04",
+        "name": "OFL.txt",
+        "url": "https://raw.githubusercontent.com/google/fonts/b5efa9c32e8f9b63005f5cdb1ad5527a77d2cd04/ofl/notosansarabic/OFL.txt",
+        "byteLength": 4382,
+        "sha256": "07fc70bfeb985cc1a87a8587d0a0c80bab11c86c9dc3fd95b6f0cb332f983e96",
+        "gitBlobSha1": "14c589f6384505ede3f8e52627d397513af3662d"
+      },
+      {
+        "family": "notosansdevanagari",
+        "commit": "b5efa9c32e8f9b63005f5cdb1ad5527a77d2cd04",
+        "name": "NotoSansDevanagari[wdth,wght].ttf",
+        "url": "https://raw.githubusercontent.com/google/fonts/b5efa9c32e8f9b63005f5cdb1ad5527a77d2cd04/ofl/notosansdevanagari/NotoSansDevanagari%5Bwdth%2Cwght%5D.ttf",
+        "byteLength": 641944,
+        "sha256": "14ec4af41f27482216d1c2229f417ff9b1425e1babb014e57d1d40d03229853e",
+        "gitBlobSha1": "163f04bddc5a96fc523e4080466cac5c588f6594"
+      },
+      {
+        "family": "notosansdevanagari",
+        "commit": "b5efa9c32e8f9b63005f5cdb1ad5527a77d2cd04",
+        "name": "OFL.txt",
+        "url": "https://raw.githubusercontent.com/google/fonts/b5efa9c32e8f9b63005f5cdb1ad5527a77d2cd04/ofl/notosansdevanagari/OFL.txt",
+        "byteLength": 4386,
+        "sha256": "a216f6f8d85c7228093e0ee5e258d9d377e6671f68acb4db1930b29583d0f331",
+        "gitBlobSha1": "cd2cc5c94b4151933eba6ee508e3975274d6fa07"
+      },
+      {
+        "family": "notosanssc",
+        "commit": "b5efa9c32e8f9b63005f5cdb1ad5527a77d2cd04",
+        "name": "NotoSansSC[wght].ttf",
+        "url": "https://raw.githubusercontent.com/google/fonts/b5efa9c32e8f9b63005f5cdb1ad5527a77d2cd04/ofl/notosanssc/NotoSansSC%5Bwght%5D.ttf",
+        "byteLength": 17772300,
+        "sha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da",
+        "gitBlobSha1": "fb0637bafbcd804fe32152370a1225990745b4bc"
+      },
+      {
+        "family": "notosanssc",
+        "commit": "b5efa9c32e8f9b63005f5cdb1ad5527a77d2cd04",
+        "name": "OFL.txt",
+        "url": "https://raw.githubusercontent.com/google/fonts/b5efa9c32e8f9b63005f5cdb1ad5527a77d2cd04/ofl/notosanssc/OFL.txt",
+        "byteLength": 4388,
+        "sha256": "1c05c68c34f9708415aada51f17e1b0092d2cea709bf4a94cd38114f9e73d7d9",
+        "gitBlobSha1": "1c9f43281b8f216c5461fe9ac729afbade7724e4"
+      },
+      {
+        "family": "notoemoji",
+        "commit": "b5efa9c32e8f9b63005f5cdb1ad5527a77d2cd04",
+        "name": "NotoEmoji[wght].ttf",
+        "url": "https://raw.githubusercontent.com/google/fonts/b5efa9c32e8f9b63005f5cdb1ad5527a77d2cd04/ofl/notoemoji/NotoEmoji%5Bwght%5D.ttf",
+        "byteLength": 1982596,
+        "sha256": "de6c18832938afc99caf132b39d6a30a19bac7f2e812e28db2535b4608d27551",
+        "gitBlobSha1": "c2c26ab612a88a8610ff9cfbb89299bf2aea6c7a"
+      },
+      {
+        "family": "notoemoji",
+        "commit": "b5efa9c32e8f9b63005f5cdb1ad5527a77d2cd04",
+        "name": "OFL.txt",
+        "url": "https://raw.githubusercontent.com/google/fonts/b5efa9c32e8f9b63005f5cdb1ad5527a77d2cd04/ofl/notoemoji/OFL.txt",
+        "byteLength": 4330,
+        "sha256": "500bb1ccf43df7bbb522112f9133a52b16e1c35e809632f5d8609b179152de5b",
+        "gitBlobSha1": "d09d3d0e09169f6747754e6b25faf5ba5ef6402d"
+      }
+    ],
+    "owned": {
+      "generator": "fonttools 4.61.1",
+      "files": [
+        {
+          "name": "owned.ttf",
+          "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+          "byteLength": 1920
+        },
+        {
+          "name": "owned.otf",
+          "sha256": "867c8e6bbb688380a8cbe08325e927485ef9f1a58dbc23c1aacefdb5ce7c0380",
+          "byteLength": 1632
+        },
+        {
+          "name": "owned.ttc",
+          "sha256": "24c5ce1534147f4873ac550b915c720ac747ba69072b49154c422c83afe15c57",
+          "byteLength": 3372
+        }
+      ]
+    },
+    "upstreamFontBytes": 23290612,
+    "licenseCoreBodiesCompared": 5,
+    "runtimeBundled": false,
+    "colorEmojiCoverage": false
+  },
+  "checks": {
+    "rustTests": 105,
+    "newRustTests": 14,
+    "allOwnedTtfPrefixTruncations": 1920,
+    "nativeWasmCases": {
+      "document": 22,
+      "opc": 21,
+      "pptxExport": 17,
+      "pptxSource": 168,
+      "color": 122,
+      "font": 39,
+      "total": 389
+    },
+    "runtimeContracts": {
+      "fontRequests": 35,
+      "fontResponses": 39,
+      "schemas": 14,
+      "positiveInputs": 11,
+      "negativeMutations": 9,
+      "responses": 22,
+      "opcResponses": 21,
+      "sourceResponses": 73,
+      "sourceRequests": 95,
+      "colorRequests": 118,
+      "colorResponses": 122
+    },
+    "independentFontInputs": 14,
+    "independentCharacterQueries": 37805,
+    "cmapFormats": [
+      0,
+      4,
+      6,
+      10,
+      12,
+      13
+    ],
+    "variationCmapFormat": 14,
+    "nativeWasmInvalidLengthDiagnosticRegression": "passed",
+    "fontSourceBytesUnchanged": true,
+    "oldColorCasesIdentical": 122,
+    "oldPptxExportCasesIdentical": 17,
+    "oldPptxSourceSemanticCasesIdentical": 168,
+    "rustfmt": "passed",
+    "strictClippy": "passed",
+    "typescript": "passed"
+  },
+  "independentFonts": {
+    "format": "musteroffice.font-independent/1",
+    "fonttoolsVersion": "4.61.1",
+    "passed": 14,
+    "queries": 37805,
+    "cases": [
+      {
+        "name": "notosans",
+        "sha256": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d",
+        "tables": 21,
+        "names": 64,
+        "axes": 2,
+        "instances": 9,
+        "cmapFormat": 12,
+        "queries": 3103,
+        "outcomes": {
+          "mapped": 3094,
+          "missing": 4,
+          "unsupportedVariation": 5
+        }
+      },
+      {
+        "name": "notosansarabic",
+        "sha256": "63111b5b2e074dd48cc67692e0a2726d86ee94c1c37fe8598257b7b4e87e869e",
+        "tables": 21,
+        "names": 44,
+        "axes": 2,
+        "instances": 9,
+        "cmapFormat": 12,
+        "queries": 1571,
+        "outcomes": {
+          "mapped": 1561,
+          "missing": 5,
+          "unsupportedVariation": 5
+        }
+      },
+      {
+        "name": "notosansdevanagari",
+        "sha256": "14ec4af41f27482216d1c2229f417ff9b1425e1babb014e57d1d40d03229853e",
+        "tables": 20,
+        "names": 41,
+        "axes": 2,
+        "instances": 9,
+        "cmapFormat": 12,
+        "queries": 562,
+        "outcomes": {
+          "missing": 6,
+          "mapped": 551,
+          "unsupportedVariation": 5
+        }
+      },
+      {
+        "name": "notosanssc",
+        "sha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da",
+        "tables": 23,
+        "names": 37,
+        "axes": 1,
+        "instances": 9,
+        "cmapFormat": 12,
+        "queries": 30925,
+        "outcomes": {
+          "missing": 5,
+          "mapped": 30915,
+          "unsupportedVariation": 5
+        }
+      },
+      {
+        "name": "notoemoji",
+        "sha256": "de6c18832938afc99caf132b39d6a30a19bac7f2e812e28db2535b4608d27551",
+        "tables": 19,
+        "names": 23,
+        "axes": 1,
+        "instances": 3,
+        "cmapFormat": 12,
+        "queries": 1501,
+        "outcomes": {
+          "mapped": 1489,
+          "missing": 7,
+          "unsupportedVariation": 5
+        }
+      },
+      {
+        "name": "owned-ttf-0",
+        "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+        "tables": 13,
+        "names": 21,
+        "axes": 2,
+        "instances": 2,
+        "cmapFormat": 12,
+        "queries": 18,
+        "outcomes": {
+          "missing": 5,
+          "mapped": 10,
+          "unsupportedVariation": 3
+        }
+      },
+      {
+        "name": "owned-otf-0",
+        "sha256": "867c8e6bbb688380a8cbe08325e927485ef9f1a58dbc23c1aacefdb5ce7c0380",
+        "tables": 11,
+        "names": 15,
+        "axes": 0,
+        "instances": 0,
+        "cmapFormat": 12,
+        "queries": 15,
+        "outcomes": {
+          "missing": 5,
+          "mapped": 5,
+          "unsupportedVariation": 5
+        }
+      },
+      {
+        "name": "owned-ttc-0",
+        "sha256": "24c5ce1534147f4873ac550b915c720ac747ba69072b49154c422c83afe15c57",
+        "tables": 13,
+        "names": 21,
+        "axes": 2,
+        "instances": 2,
+        "cmapFormat": 12,
+        "queries": 18,
+        "outcomes": {
+          "missing": 5,
+          "mapped": 10,
+          "unsupportedVariation": 3
+        }
+      },
+      {
+        "name": "owned-ttc-1",
+        "sha256": "24c5ce1534147f4873ac550b915c720ac747ba69072b49154c422c83afe15c57",
+        "tables": 11,
+        "names": 15,
+        "axes": 0,
+        "instances": 0,
+        "cmapFormat": 12,
+        "queries": 15,
+        "outcomes": {
+          "missing": 5,
+          "mapped": 5,
+          "unsupportedVariation": 5
+        }
+      },
+      {
+        "name": "format-0",
+        "sha256": "8032d8ae4f55ecb9c7accfa0a16700bc0f2865bd94535581b6ba6ba98c50dcc0",
+        "tables": 13,
+        "names": 21,
+        "axes": 2,
+        "instances": 2,
+        "cmapFormat": 0,
+        "queries": 15,
+        "outcomes": {
+          "missing": 8,
+          "mapped": 2,
+          "unsupportedVariation": 5
+        }
+      },
+      {
+        "name": "format-4",
+        "sha256": "03eb30c471930e0e056a19437f0f7c9a11b7edbef52f08b3e80e898b4910541a",
+        "tables": 13,
+        "names": 21,
+        "axes": 2,
+        "instances": 2,
+        "cmapFormat": 4,
+        "queries": 15,
+        "outcomes": {
+          "missing": 8,
+          "mapped": 2,
+          "unsupportedVariation": 5
+        }
+      },
+      {
+        "name": "format-6",
+        "sha256": "a0e3b9e1f688e91c31f7efa6d84b8d18dd78d619599bbd393780d1f99c0a5800",
+        "tables": 13,
+        "names": 21,
+        "axes": 2,
+        "instances": 2,
+        "cmapFormat": 6,
+        "queries": 15,
+        "outcomes": {
+          "missing": 8,
+          "mapped": 2,
+          "unsupportedVariation": 5
+        }
+      },
+      {
+        "name": "format-13",
+        "sha256": "9b0d44f4bec94b5e7eb34bae08cb9b9d554b24a9dcc2b3e521ff9a8634a8b6e6",
+        "tables": 13,
+        "names": 21,
+        "axes": 2,
+        "instances": 2,
+        "cmapFormat": 13,
+        "queries": 15,
+        "outcomes": {
+          "missing": 8,
+          "mapped": 2,
+          "unsupportedVariation": 5
+        }
+      },
+      {
+        "name": "format-10",
+        "sha256": "90563dfeb71d9f2c89ef76d29a2e3282a347c0791fae39d97543f66b8212c038",
+        "tables": 13,
+        "names": 21,
+        "axes": 2,
+        "instances": 2,
+        "cmapFormat": 10,
+        "queries": 17,
+        "outcomes": {
+          "missing": 10,
+          "mapped": 2,
+          "unsupportedVariation": 5
+        }
+      }
+    ]
+  },
+  "fontCases": [
+    {
+      "name": "notosans",
+      "sourceSha256": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d",
+      "requestSha256": "2e55c065783be07e77e53d2dfe67471e2ace06c6331d9261bc32afcdfb56cf1f",
+      "responseSha256": "da289671a7b6a745c0acf2e89faa4bf8cfaf720e58d10989d136cd95d560ad60",
+      "summary": {
+        "status": "inspected",
+        "faceIndex": 0,
+        "faceCount": 1,
+        "tables": 21,
+        "names": 64,
+        "axes": 2,
+        "instances": 9,
+        "cmap": {
+          "recordIndex": 3,
+          "platformId": 3,
+          "encodingId": 10,
+          "format": 12,
+          "variationRecordIndex": null
+        },
+        "queries": 3103
+      }
+    },
+    {
+      "name": "notosansarabic",
+      "sourceSha256": "63111b5b2e074dd48cc67692e0a2726d86ee94c1c37fe8598257b7b4e87e869e",
+      "requestSha256": "39d59743a3108703dbf1f104afc3c0a82d737d21599f235b05553d1d7ad05b0e",
+      "responseSha256": "0fbcd38f73197a4d45ef98153690510bbf147499fc8e47db7b00c0d12f81d456",
+      "summary": {
+        "status": "inspected",
+        "faceIndex": 0,
+        "faceCount": 1,
+        "tables": 21,
+        "names": 44,
+        "axes": 2,
+        "instances": 9,
+        "cmap": {
+          "recordIndex": 3,
+          "platformId": 3,
+          "encodingId": 10,
+          "format": 12,
+          "variationRecordIndex": null
+        },
+        "queries": 1571
+      }
+    },
+    {
+      "name": "notosansdevanagari",
+      "sourceSha256": "14ec4af41f27482216d1c2229f417ff9b1425e1babb014e57d1d40d03229853e",
+      "requestSha256": "39cbcd03440eb2ee5e10a16574bbc618e948a8434d96a8a3cfda1a8520f9505d",
+      "responseSha256": "bc0ff03f7a61bed2198895eba16d667cd332698184f4bfecadf51e0ff16027fa",
+      "summary": {
+        "status": "inspected",
+        "faceIndex": 0,
+        "faceCount": 1,
+        "tables": 20,
+        "names": 41,
+        "axes": 2,
+        "instances": 9,
+        "cmap": {
+          "recordIndex": 3,
+          "platformId": 3,
+          "encodingId": 10,
+          "format": 12,
+          "variationRecordIndex": null
+        },
+        "queries": 562
+      }
+    },
+    {
+      "name": "notosanssc",
+      "sourceSha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da",
+      "requestSha256": "f8416abeeaed906fc288fb8f10bd787cf1d66e01030e16373843cabb6c6aed17",
+      "responseSha256": "9d33b73d9f3ee041cc5f0ee36975f1680cb574aa8d567e83f355907727806775",
+      "summary": {
+        "status": "inspected",
+        "faceIndex": 0,
+        "faceCount": 1,
+        "tables": 23,
+        "names": 37,
+        "axes": 1,
+        "instances": 9,
+        "cmap": {
+          "recordIndex": 5,
+          "platformId": 3,
+          "encodingId": 10,
+          "format": 12,
+          "variationRecordIndex": 2
+        },
+        "queries": 30925
+      }
+    },
+    {
+      "name": "notoemoji",
+      "sourceSha256": "de6c18832938afc99caf132b39d6a30a19bac7f2e812e28db2535b4608d27551",
+      "requestSha256": "3afcf17350faa2db5da5d326d78a2f9dbc60194f4ed6e4b82b2b9bbab6563b5d",
+      "responseSha256": "867fc3fe66ef09035eabefa468868a5e2d3d5a649220989b9821613cbadac305",
+      "summary": {
+        "status": "inspected",
+        "faceIndex": 0,
+        "faceCount": 1,
+        "tables": 19,
+        "names": 23,
+        "axes": 1,
+        "instances": 3,
+        "cmap": {
+          "recordIndex": 3,
+          "platformId": 3,
+          "encodingId": 10,
+          "format": 12,
+          "variationRecordIndex": null
+        },
+        "queries": 1501
+      }
+    },
+    {
+      "name": "owned-ttf-0",
+      "sourceSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+      "requestSha256": "7d79e81014c0b4c136271c5eb0f7c50a6937e64c23f8f9e19924f4a5470c7386",
+      "responseSha256": "4ce78f96e6422884e93aca2bdfc2e86321555735d1e99970a20ffeba9fbc94be",
+      "summary": {
+        "status": "inspected",
+        "faceIndex": 0,
+        "faceCount": 1,
+        "tables": 13,
+        "names": 21,
+        "axes": 2,
+        "instances": 2,
+        "cmap": {
+          "recordIndex": 3,
+          "platformId": 3,
+          "encodingId": 10,
+          "format": 12,
+          "variationRecordIndex": 1
+        },
+        "queries": 18
+      }
+    },
+    {
+      "name": "owned-otf-0",
+      "sourceSha256": "867c8e6bbb688380a8cbe08325e927485ef9f1a58dbc23c1aacefdb5ce7c0380",
+      "requestSha256": "821da0ab31ad482b65580ac04d4bbaac75c84edfa1485446b174250c5c8d8429",
+      "responseSha256": "dc79e81d4fc0ec6c7fac26c0647495a16acabf9ce04427edc452b5bd44d2a4e8",
+      "summary": {
+        "status": "inspected",
+        "faceIndex": 0,
+        "faceCount": 1,
+        "tables": 11,
+        "names": 15,
+        "axes": 0,
+        "instances": 0,
+        "cmap": {
+          "recordIndex": 2,
+          "platformId": 3,
+          "encodingId": 10,
+          "format": 12,
+          "variationRecordIndex": null
+        },
+        "queries": 15
+      }
+    },
+    {
+      "name": "owned-ttc-0",
+      "sourceSha256": "24c5ce1534147f4873ac550b915c720ac747ba69072b49154c422c83afe15c57",
+      "requestSha256": "46116722a32db593e7537a5cabacf00e2aea5bfd124e64ccf20cfe73c1a40451",
+      "responseSha256": "e5afb33ae06229405fecb5f64e103c46109d30c960ec624d59529b034aa56f92",
+      "summary": {
+        "status": "inspected",
+        "faceIndex": 0,
+        "faceCount": 2,
+        "tables": 13,
+        "names": 21,
+        "axes": 2,
+        "instances": 2,
+        "cmap": {
+          "recordIndex": 3,
+          "platformId": 3,
+          "encodingId": 10,
+          "format": 12,
+          "variationRecordIndex": 1
+        },
+        "queries": 18
+      }
+    },
+    {
+      "name": "owned-ttc-1",
+      "sourceSha256": "24c5ce1534147f4873ac550b915c720ac747ba69072b49154c422c83afe15c57",
+      "requestSha256": "f5ed8149c6c7aef3a73a813ec4546bebd18f5cbe2158e9df445deef9eb524dc0",
+      "responseSha256": "b3bc4cb377e1f5dc306948e5ed357a76990dae835b5e623db18d39bc16378411",
+      "summary": {
+        "status": "inspected",
+        "faceIndex": 1,
+        "faceCount": 2,
+        "tables": 11,
+        "names": 15,
+        "axes": 0,
+        "instances": 0,
+        "cmap": {
+          "recordIndex": 2,
+          "platformId": 3,
+          "encodingId": 10,
+          "format": 12,
+          "variationRecordIndex": null
+        },
+        "queries": 15
+      }
+    },
+    {
+      "name": "format-0",
+      "sourceSha256": "8032d8ae4f55ecb9c7accfa0a16700bc0f2865bd94535581b6ba6ba98c50dcc0",
+      "requestSha256": "41b54c9ff8230e319adf1dc6bfb43b792df6d91e1ed41cc7f62b62489090c8a0",
+      "responseSha256": "29dba06ed473b43ff2120c455a165d2f1ffe2687f1fa232f2f3856524bc58a9e",
+      "summary": {
+        "status": "inspected",
+        "faceIndex": 0,
+        "faceCount": 1,
+        "tables": 13,
+        "names": 21,
+        "axes": 2,
+        "instances": 2,
+        "cmap": {
+          "recordIndex": 0,
+          "platformId": 0,
+          "encodingId": 0,
+          "format": 0,
+          "variationRecordIndex": null
+        },
+        "queries": 15
+      }
+    },
+    {
+      "name": "format-4",
+      "sourceSha256": "03eb30c471930e0e056a19437f0f7c9a11b7edbef52f08b3e80e898b4910541a",
+      "requestSha256": "0f6babae4e68efb4c10cf6c5a0efd91dd5cb5b8ffecddb5a564227cece5e4d3c",
+      "responseSha256": "33a8de6392d51f70da7e759932b0b0a614b0ddfbefb6a5f0845e192baa8d99bc",
+      "summary": {
+        "status": "inspected",
+        "faceIndex": 0,
+        "faceCount": 1,
+        "tables": 13,
+        "names": 21,
+        "axes": 2,
+        "instances": 2,
+        "cmap": {
+          "recordIndex": 0,
+          "platformId": 3,
+          "encodingId": 1,
+          "format": 4,
+          "variationRecordIndex": null
+        },
+        "queries": 15
+      }
+    },
+    {
+      "name": "format-6",
+      "sourceSha256": "a0e3b9e1f688e91c31f7efa6d84b8d18dd78d619599bbd393780d1f99c0a5800",
+      "requestSha256": "6675dc4d0251b94a618656672c01bfbc1861c653631479a59f88d1d615fe6d72",
+      "responseSha256": "74830ccaeef95dd161ca22cd234825163d5324cedb7f53521a141f40dce14528",
+      "summary": {
+        "status": "inspected",
+        "faceIndex": 0,
+        "faceCount": 1,
+        "tables": 13,
+        "names": 21,
+        "axes": 2,
+        "instances": 2,
+        "cmap": {
+          "recordIndex": 0,
+          "platformId": 0,
+          "encodingId": 3,
+          "format": 6,
+          "variationRecordIndex": null
+        },
+        "queries": 15
+      }
+    },
+    {
+      "name": "format-13",
+      "sourceSha256": "9b0d44f4bec94b5e7eb34bae08cb9b9d554b24a9dcc2b3e521ff9a8634a8b6e6",
+      "requestSha256": "0ad1d75bfd445156c6fe7dc969d3855e328edfc53ef8cbe44b9b14d23617ee6f",
+      "responseSha256": "2285a47fd483b1ae7a45c67d5ed50f4357d42a48c921e26acc52be9740ed4072",
+      "summary": {
+        "status": "inspected",
+        "faceIndex": 0,
+        "faceCount": 1,
+        "tables": 13,
+        "names": 21,
+        "axes": 2,
+        "instances": 2,
+        "cmap": {
+          "recordIndex": 0,
+          "platformId": 0,
+          "encodingId": 6,
+          "format": 13,
+          "variationRecordIndex": null
+        },
+        "queries": 15
+      }
+    },
+    {
+      "name": "format-10",
+      "sourceSha256": "90563dfeb71d9f2c89ef76d29a2e3282a347c0791fae39d97543f66b8212c038",
+      "requestSha256": "3beb9d3e33ba02dad37ac9913ca6fd83718420ccbdece65bbbfb0dfabc5dd8fa",
+      "responseSha256": "2d475a3f6b2e6cb1156418630f0f10d8c1e7033db779f50641c54b2c20202bcc",
+      "summary": {
+        "status": "inspected",
+        "faceIndex": 0,
+        "faceCount": 1,
+        "tables": 13,
+        "names": 21,
+        "axes": 2,
+        "instances": 2,
+        "cmap": {
+          "recordIndex": 0,
+          "platformId": 0,
+          "encodingId": 4,
+          "format": 10,
+          "variationRecordIndex": null
+        },
+        "queries": 17
+      }
+    },
+    {
+      "name": "bad-directory-length",
+      "sourceSha256": "2aac01ece048ee60179784a54127b99ff6967e935b0db6a7e69d850cc17a745b",
+      "requestSha256": "13f84b26ac751dd036116ccd32e054e0a959606aa4aeda33968e757f7c9f203e",
+      "responseSha256": "21be8f3c93aa8fc8d4a0adca181f290b336a1b76adc36b3c11e62972742441b4",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "FONT_INVALID",
+          "message": "invalid font or request: table outside data or overlaps directory"
+        }
+      }
+    },
+    {
+      "name": "bad-cmap-offset",
+      "sourceSha256": "6cdb5d1d65d076b87d443e9dfd1fa435565b2204376053ca3bffb146c83d3f48",
+      "requestSha256": "0648c2d53d6eb0f13321b5cba196dc88c43090eaf3df552c43deaa00d195a9a2",
+      "responseSha256": "3df90366988817c9def48ff917e329945b847e01543a85f6817167695981609e",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "FONT_INVALID",
+          "message": "invalid font or request: truncated font header"
+        }
+      }
+    },
+    {
+      "name": "bad-cmap-glyph",
+      "sourceSha256": "72a521a1b57d2d5e053237b134232ba423c4d38ee1cf67618a9f31dd9890daf0",
+      "requestSha256": "1eb060284f60213c0f4d0dfa46f9c96fe8173b29e5f5373fdce5d7355867bf60",
+      "responseSha256": "c9adeba5e2d673f5d5ae9b1af7c2b27e18eb4df68a2c58d72993d66deec6da5b",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "FONT_INVALID",
+          "message": "invalid font or request: cmap glyph outside glyph set"
+        }
+      }
+    },
+    {
+      "name": "bad-cmap-scalar",
+      "sourceSha256": "4efcd6d01fca2d8faa88c7b6e91997974fe1681109378602ff29d5146fb11e27",
+      "requestSha256": "19b0e64ebc0a2a26d65bfe6fd6c963e6831874f80e5316ba57b86b6fa95614a9",
+      "responseSha256": "1525c3ab2614725993889e6ea95429c6ec1ea6b8d3e1f21a8d96cb9383c64c97",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "FONT_INVALID",
+          "message": "invalid font or request: cmap group order or scalar range"
+        }
+      }
+    },
+    {
+      "name": "bad-cmap-uvs",
+      "sourceSha256": "d67feb9ec8dfde1f6632c42c36bdc1efadc496353204ad084b6816495309c4c8",
+      "requestSha256": "704f8f730bc42a61fd7d723ea2e2a9ef04c07a0bf3381e3d4f7df2494570202e",
+      "responseSha256": "dcb716bcb6c614f1d1d231dbfd1b502424945f2d0958cb239b39714a0f145482",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "FONT_INVALID",
+          "message": "invalid font or request: cmap variation data overlaps records"
+        }
+      }
+    },
+    {
+      "name": "bad-cmap-length",
+      "sourceSha256": "66d335ebdcedffa933ca6f843248d523354f680e5b245fa0cc5ba1fbd36b69ac",
+      "requestSha256": "10809545fdeb763169a84c3efa275d8f1b31fb1dd7b1dd81bc80ca1e24deb71d",
+      "responseSha256": "93c34da90613fc2e5094510c0c8691569285ca31ccb70ba9643f3b49b3ed3d3e",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "FONT_INVALID",
+          "message": "invalid font or request: cmap length"
+        }
+      }
+    },
+    {
+      "name": "bad-axis-range",
+      "sourceSha256": "c6054f2ad87e46b4fade795ee054d47175387168ef2ed9e9e751342775a3973a",
+      "requestSha256": "f8753bd4dcdb096bc8fc80344e6044f90b5a260458310084233bda1011bb4968",
+      "responseSha256": "4e61711e8b6d514c2e2f9cf3d9654339345c1f89aed24a5ff720a4bc94e365c0",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "FONT_INVALID",
+          "message": "invalid font or request: variation axis tag or range"
+        }
+      }
+    },
+    {
+      "name": "bad-head-em",
+      "sourceSha256": "85285a38aef4999b8e9d7230b0d917e203ea2742c9e2d6a1057772e613ceb949",
+      "requestSha256": "259bbb034f64b266e8158520dbe5efdd0a70298699d4931487dbb47e2c873379",
+      "responseSha256": "b53cd07b84ed1ed4942a8a60cfd6b7833ab6742bf9d3c50f00c31974858adafe",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "FONT_INVALID",
+          "message": "invalid font or request: head magic or units per em"
+        }
+      }
+    },
+    {
+      "name": "bad-name-storage",
+      "sourceSha256": "cd8daf606aa10a71d9f24f695510c16af1b643e7e930fdbbfce86bdac09280c0",
+      "requestSha256": "7de7e2067a8713b60f4993789d906e71e946de0dde2a5abecba80b10ae8c1572",
+      "responseSha256": "501103d3314965a40bb614b124f54c9e162c91f690219cf60383379fab6bf4b5",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "FONT_INVALID",
+          "message": "invalid font or request: name storage range"
+        }
+      }
+    },
+    {
+      "name": "bad-name-language",
+      "sourceSha256": "de210d0e454661ed58b7c125532278954369a699192d1fbe6e3a180e54c92f08",
+      "requestSha256": "3e3151260de61760a056d09f96d735841da26d6099375e60cd692f2d73dae34e",
+      "responseSha256": "5007d9e98cd7c5e34ac98d3f6286c734aa50d722b05d464dd68d94feddd75281",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "FONT_INVALID",
+          "message": "invalid font or request: font name language tag reference"
+        }
+      }
+    },
+    {
+      "name": "bad-instance-size",
+      "sourceSha256": "39aeed9cf59b89df957894d7e9c11e29acaf04851e92e7bdcd529c205dc679c1",
+      "requestSha256": "70ea0e7741334c03532325cae4592c03626c12463fb06387233e96c0e66c765b",
+      "responseSha256": "cc7719b3ef9f61a327c116ba97448af2e6f9449016f1d8d485b5c493a2a0bddf",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "FONT_INVALID",
+          "message": "invalid font or request: fvar record size or offset"
+        }
+      }
+    },
+    {
+      "name": "bad-table-checksum",
+      "sourceSha256": "81c4311966ca0d7607ae75c3ca4fa06821d9ea298ec3350991bb29030c5a3f4d",
+      "requestSha256": "2b3d4067226d19417da150d3afbb7d93ee16577bed9453f6c260f46a4e69e5e3",
+      "responseSha256": "f9c1821e4971f5b5da0959505499c9179e4f0d0c87b4d3edc93c6e55c03b6dde",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "FONT_INVALID",
+          "message": "invalid font or request: font table checksum mismatch"
+        }
+      }
+    },
+    {
+      "name": "bad-file-checksum",
+      "sourceSha256": "4c816fcce0f55858d28ac0f0af2c3271265af1483c8d33659b5af924fdb0e42d",
+      "requestSha256": "9f93d12f0be77b6edbfd6b8aa3ce66596423cc761a3103cae3cf464c5ea55625",
+      "responseSha256": "b1675cb771dcb1a5cd74556f4781faf224135ec91ce6322e30a2353087140362",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "FONT_INVALID",
+          "message": "invalid font or request: font checksum adjustment mismatch"
+        }
+      }
+    },
+    {
+      "name": "unsupported-cmap",
+      "sourceSha256": "87781be58e311801dd1ebda9da152fc9343abd4bf828e8ee671ef43813a1549c",
+      "requestSha256": "b363c615151e93f001abcb0da54421d376be611f12e76f53e92276780a4ab56a",
+      "responseSha256": "2c9ce3bc33404172d2c4ee723750a35036047ef870a19bb2a8f37ef656c09786",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "UNSUPPORTED",
+          "message": "unsupported font feature: selected Unicode cmap format"
+        }
+      }
+    },
+    {
+      "name": "truncated",
+      "sourceSha256": "98bde20bb5ce34f5687d0e6797996ec4037629e1e5d026dd85fed9641d9005c7",
+      "requestSha256": "15a4378309ba2f4bb9100bcdbea60f77dd47c33e47f9ae27ca04a7ad25e440bb",
+      "responseSha256": "5e60aef59eb5c0fcf3c5fe59128b5b119ffc6eeb5d1c70c0a01b50e8c55ee5ca",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "FONT_INVALID",
+          "message": "invalid font or request: truncated SFNT directory"
+        }
+      }
+    },
+    {
+      "name": "woff",
+      "sourceSha256": "6fda3ae4818873fafd52f0c9d063aa4a7a7b8c71e2f85b1ae8d6e9f99445163f",
+      "requestSha256": "216f7f8178cb68b842da647d66ab2d5496f646f53d06d668b579aa400172ba9a",
+      "responseSha256": "3ef250a2e431a1a68a65ada15e75ead6f5b18ccd9671b7ff26ae909e66c8f665",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "UNSUPPORTED",
+          "message": "unsupported font feature: font container or SFNT version"
+        }
+      }
+    },
+    {
+      "name": "digest-conflict",
+      "sourceSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+      "requestSha256": "1c55df31a9764e0035e69a46ce1a864339b49540c8a0b46397e006e2d8ba8d57",
+      "responseSha256": "11e77007244924f63db016625888c077bf360c600d499261634fe04d4b0a1aa7",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "RESOURCE_CONFLICT",
+          "message": "font resource SHA-256 does not match request"
+        }
+      }
+    },
+    {
+      "name": "unknown-face",
+      "sourceSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+      "requestSha256": "7d3ed97cab176492fe891065389849585650e6359787721e0a2325ec2454c2c6",
+      "responseSha256": "c8d68531a911712753c4678092c90ed310b7e70450923ae9d017887b3f8680e1",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "FONT_INVALID",
+          "message": "invalid font or request: face index outside single font"
+        }
+      }
+    },
+    {
+      "name": "invalid-scalar",
+      "sourceSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+      "requestSha256": "8cc72883b3912eace76ed42696de24ca721bda850af3cd76843429e4f2d156ef",
+      "responseSha256": "6baf70403aa2d1c1a4ba051f7049ef9fcf771ef92a1121a2249e85d2227be1d0",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "INPUT_INVALID",
+          "message": "invalid font request: Unicode scalar or variation selector"
+        }
+      }
+    },
+    {
+      "name": "invalid-selector",
+      "sourceSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+      "requestSha256": "c0bd45da44ab3375a3f01ec81bddf9959cb738fdf94b318bffd5eb61f292532c",
+      "responseSha256": "6baf70403aa2d1c1a4ba051f7049ef9fcf771ef92a1121a2249e85d2227be1d0",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "INPUT_INVALID",
+          "message": "invalid font request: Unicode scalar or variation selector"
+        }
+      }
+    },
+    {
+      "name": "query-budget",
+      "sourceSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+      "requestSha256": "8b6e5f15a63063fa4a0c95a6d084b24b5dfc0b840de134a000e89f4fa42593af",
+      "responseSha256": "f6772998d6413c92d7122671f317dfb9e723fb3858593fb536b287afab0de84a",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "LIMIT_EXCEEDED",
+          "message": "font resource limit exceeded: character queries"
+        }
+      }
+    },
+    {
+      "name": "unknown-field",
+      "sourceSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+      "requestSha256": "b3511e0d811580af428e3e4dd9d67578ba9bb372206c64eca9fe03d9c37c2b43",
+      "responseSha256": "883b511a6b2ae5e2fd390359b70d9c33e13376cd189b57ffd1f37886c4e913bc",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "INPUT_INVALID",
+          "message": "unknown field `path`, expected one of `expectedSha256`, `faceIndex`, `characters`"
+        }
+      }
+    },
+    {
+      "name": "unknown-character-field",
+      "sourceSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+      "requestSha256": "9de7129078ac7944dfd8fb5abccbde0a289abfc2acf01211d88e5a72f7e67a30",
+      "responseSha256": "7a56a26d2e039c5d4327ed3193f720c43ca11f3ba2332cfe14e57a6b5a4c37af",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "INPUT_INVALID",
+          "message": "unknown field `fontFamily`, expected `codepoint` or `variationSelector`"
+        }
+      }
+    },
+    {
+      "name": "negative-scalar",
+      "sourceSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+      "requestSha256": "b531840c1a0b3b21add6730efd196de6dcc963750e9904a6288a43ed81b9af51",
+      "responseSha256": "7fed1034e1b27a165d22b77fb1ea135b8b6e5dea73f36fe5b950884c98762c1d",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "INPUT_INVALID",
+          "message": "invalid value: integer `-1`, expected u32"
+        }
+      }
+    },
+    {
+      "name": "duplicate-field",
+      "sourceSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+      "requestSha256": "71158f154184b6c29ea4794669b55b7f20dd278e3548c2b315109dc2d69547d1",
+      "responseSha256": "65485f6c40bc187aed065cd223207ad440be108a4195e03d7929f9de138cb0da",
+      "summary": {
+        "status": "error",
+        "error": {
+          "code": "INPUT_INVALID",
+          "message": "duplicate JSON object key: faceIndex at line 1 column 110"
+        }
+      }
+    }
+  ],
+  "regressionReports": {
+    "document": {
+      "sha256": "6811b523df8b586507a6c79f5a80dbf07116dc33d582cf03188e7465a6fedd30",
+      "cases": 22
+    },
+    "opc": {
+      "sha256": "0f1f93a6695d1b250b865a3eab33ef3e4e5def2eac831935d379c7491ae0356f",
+      "cases": 21
+    },
+    "pptxExport": {
+      "sha256": "3781cda316d61a78e735e990dfac1373379eec12496eb3c4e4a960944245b320",
+      "cases": 17
+    },
+    "pptxSource": {
+      "sha256": "605b2ca46fe7d72999e7101c28393f2025ae38be6c4ae658bb8f8d131b8e174e",
+      "cases": 168
+    },
+    "color": {
+      "sha256": "f780288187b8949e5e8dec7c9b3ee2d01f74915c6b951f048e1d720d1fb0acb4",
+      "cases": 122
+    }
+  },
+  "shaperCandidateReview": {
+    "name": "harfrust",
+    "version": "0.13.3",
+    "license": "MIT",
+    "crateSha256": "948d0741125ba89cd3e1c23e5642415b6ade7e1d29d67ba25fb925b533e989d6",
+    "sourceFiles": [
+      {
+        "path": "src/hb/face.rs",
+        "sha256": "875cd1d241e4f120e55fb71295f0e243cf5582e2e63cb3b3002b45e329245d1a"
+      },
+      {
+        "path": "src/hb/buffer.rs",
+        "sha256": "46de4a207d6eb01d8833cf7d8c41971e75cb19b822cc3152896fa11055536e65"
+      },
+      {
+        "path": "Cargo.toml",
+        "sha256": "9da1836b1dcc2042bdf831bac45c38016e8f4633dd7147988af8a826df5f7e97"
+      }
+    ],
+    "finding": "Public Shaper::shape returns GlyphBuffer. The buffer wrapper exposes no status accessor for internal hb_buffer_t.successful. Production complete-success observability is not established.",
+    "locations": [
+      "src/hb/face.rs:560",
+      "src/hb/buffer.rs:485",
+      "src/hb/buffer.rs:2110"
+    ],
+    "evidenceType": "Pinned release source/API review, not reproduction of a particular shaping failure.",
+    "adopted": false,
+    "next": "Evaluate observable failure through a proper backend API, including HarfBuzz Native/WASM or an upstream API correction. Do not equate returned glyphs with complete shaping."
+  },
+  "references": [
+    "https://learn.microsoft.com/en-us/typography/opentype/spec/otff",
+    "https://learn.microsoft.com/en-us/typography/opentype/spec/name",
+    "https://learn.microsoft.com/en-us/typography/opentype/spec/cmap",
+    "https://learn.microsoft.com/en-us/typography/opentype/spec/fvar",
+    "https://learn.microsoft.com/en-us/typography/opentype/spec/os2",
+    "https://www.unicode.org/Public/17.0.0/ucd/PropList.txt",
+    "https://github.com/harfbuzz/harfrust"
+  ],
+  "rustTestNames": [
+    "tests::invalid_numbers_fail_and_extended_gamut_is_reported_at_sampling",
+    "tests::hue_wrap_achromatic_and_transparent_colors_are_well_defined",
+    "tests::transform_order_and_linear_rgb_space_are_observable",
+    "tests::srgb_transfer_and_sampling_do_not_round_working_channels",
+    "time_is_exact_at_extremes_and_ntsc_rate",
+    "non_finite_numbers_cannot_silently_become_null_in_a_digest",
+    "coordinates_reject_lossy_or_noncanonical_inputs",
+    "duplicate_keys_are_rejected_at_every_depth",
+    "identifiers_are_constrained_on_deserialization",
+    "byte_lengths_reject_numeric_loss_overflow_and_noncanonical_spellings",
+    "canonical_bytes_have_stable_keys_and_preserve_text",
+    "rational_normalization_preserves_time",
+    "every_i64_coordinate_round_trips",
+    "every_u64_byte_length_round_trips",
+    "cmap::validation::tests::format10_valid_array_and_invalid_glyph_are_distinct",
+    "tests::directory_checksums_and_table_overlap_are_rejected",
+    "tests::cancellation_interrupts_multiple_stages",
+    "tests::collection_face_and_other_directory_ranges_are_checked",
+    "tests::name_format_one_preserves_language_tag_identity",
+    "tests::legacy_charmaps_are_not_implicit_unicode_fallbacks",
+    "tests::malformed_cmap_cannot_masquerade_as_missing_glyph",
+    "tests::variation_mapping_never_silently_falls_back",
+    "tests::untrusted_maximum_offsets_do_not_overflow_platform_width",
+    "tests::every_configurable_limit_is_enforced",
+    "tests::resource_identity_and_request_scalars_checked",
+    "tests::malformed_consumed_metadata_is_not_replaced",
+    "tests::actual_ttf_cff_and_collection_metadata",
+    "tests::all_prefix_truncations_are_errors_without_panics",
+    "inspection_preserves_budget_and_cancellation_error_categories",
+    "source_bridge_preserves_nested_limit_and_cancel_categories",
+    "color_bridge_preserves_cancel_limit_and_source_conflict_categories",
+    "zip_structure::tests::descriptors_accept_both_widths_and_signature_modes_including_crc_collision",
+    "part_names_and_relationship_resolution_follow_uri_scope",
+    "overlapping_local_entries_are_rejected_even_with_matching_names_and_crc",
+    "writer_validates_xml_bytes_and_resources_before_exposing_output",
+    "equivalent_names_traversal_and_header_disagreement_are_rejected",
+    "crc_truncation_extra_bytes_and_entry_count_mismatches_are_rejected",
+    "malformed_xml_in_a_regular_part_is_not_hidden_by_a_valid_zip",
+    "streamed_open_resolves_graph_and_retains_opaque_bytes",
+    "cancellation_and_declared_budgets_fail_before_unbounded_work",
+    "missing_targets_duplicate_relationship_ids_and_orphan_overrides_fail",
+    "duplicate_rewrite_does_not_replace_the_already_prepared_value",
+    "no_op_rewrite_is_byte_identical_and_mutation_preserves_unedited_parts",
+    "signed_packages_may_be_copied_but_not_silently_modified",
+    "deterministic_builder_uses_real_reopened_output_and_external_links_do_not_fetch",
+    "stream_resources_are_digest_bound_and_reads_stay_bounded",
+    "missing_resources_cancellation_and_output_budgets_are_enforced",
+    "invalid_or_unimplemented_mapping_never_silently_flattens_content",
+    "authored_deck_exports_deterministically_with_native_parts_and_relationships",
+    "real_pptx_projection_resolves_pages_surfaces_native_identity_and_groups",
+    "reader_and_editor_enforce_cancellation_and_projection_budgets",
+    "native_themes_are_shared_and_selected_without_mutating_author_declarations",
+    "ambiguous_placeholders_are_reported_without_first_match_geometry",
+    "source_theme_colors_keep_all_models_exact_percentages_and_transform_order",
+    "compatibility_wrappers_do_not_hide_pages_or_discard_source_leaf_structure",
+    "omitted_color_map_is_not_an_explicit_marker_or_an_invented_default",
+    "noop_copy_and_multi_part_edits_are_atomic_with_source_preconditions",
+    "placeholder_dimensions_resolve_per_property_without_flattening_author_data",
+    "theme_mce_and_retained_declarations_cannot_inject_active_scheme_state",
+    "malformed_identity_and_relationships_never_produce_a_partial_success",
+    "color_map_inheritance_keeps_author_markers_and_candidate_provenance",
+    "source_bindings_use_physical_ordinals_after_mce_projection_and_preserve_branches",
+    "text_edit_reopens_candidate_and_preserves_unknown_xml_and_other_parts",
+    "theme_validation_and_aggregate_budgets_prevent_partial_success",
+    "unsupported_parent_placeholder_context_does_not_leak_geometry_into_descendants",
+    "timing_references_in_active_and_inactive_branches_block_text_mutation",
+    "malformed_color_maps_cannot_produce_partial_success",
+    "explicit_zero_dimensions_and_missing_or_detached_matches_do_not_invent_geometry",
+    "invalid_placeholder_attributes_are_rejected",
+    "unresolved_context_is_not_black_and_host_system_color_has_provenance",
+    "color_budget_digest_and_cancellation_fail_atomically",
+    "numeric_range_and_resource_budget_are_distinct_from_valid_extended_gamut",
+    "normative_color_examples_use_distinct_channel_and_tint_spaces",
+    "final_reference_validation_rolls_back_entire_transaction",
+    "ownership_cycle_cannot_be_committed",
+    "out_of_range_splices_fail_without_mutating_content",
+    "failure_does_not_publish_earlier_operations",
+    "deletion_rejects_dependencies_unless_explicitly_cascaded",
+    "scalar_splice_preserves_emoji_combining_marks_and_run_identity",
+    "revision_conflicts_do_not_rebase_and_retries_use_original_receipt",
+    "unknown_fields_and_variants_are_rejected_at_wire_boundary",
+    "duplicate_and_orphaned_ownership_are_rejected",
+    "limit_errors_cannot_be_hidden_by_zero_diagnostic_budget",
+    "mismatched_resource_kind_and_missing_fonts_are_rejected",
+    "unbounded_host_depth_setting_still_rejects_cycles_without_overflow",
+    "connectors_cannot_target_another_slide",
+    "chooses_first_understood_branch_with_original_ordinals_and_logical_depths",
+    "underlying_xml_limits_and_cancellation_apply_to_ignored_content",
+    "fallback_nested_selection_and_no_matching_branch_preserve_sibling_positions",
+    "extension_content_suspends_mce_and_source_observer_sees_inactive_data",
+    "ignorable_and_process_content_resolve_namespace_scopes_not_prefix_spellings",
+    "must_understand_only_applies_to_content_that_is_processed",
+    "malformed_mce_control_and_rule_declarations_are_not_silently_discarded",
+    "namespaces_restore_after_nested_shadowing",
+    "limits_bound_depth_elements_attributes_and_text",
+    "prefixes_are_resolved_and_default_namespaces_do_not_apply_to_attributes",
+    "xml_declarations_are_checked_and_cancellation_is_observable",
+    "character_data_and_attributes_follow_xml_normalization_without_unicode_folding",
+    "dtd_external_entities_and_malformed_documents_are_rejected",
+    "utf16_and_bom_utf8_are_supported_without_lossy_replacement",
+    "rewriting_honors_span_output_and_cancellation_budgets",
+    "empty_elements_expand_without_dropping_attributes_and_textless_comments_survive",
+    "preconditions_and_nested_elements_prevent_wrong_or_destructive_edits",
+    "text_rewrite_retains_unknown_attributes_siblings_comments_and_pi_bytes",
+    "utf8_and_utf16_encodings_boms_and_original_lexical_forms_are_preserved"
+  ],
+  "sourceFiles": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "155ce005ed777e464da515d8008b7ad25c4b4b184fa072da93997483c8e0d7f9",
+      "byteLength": 3516
+    },
+    {
+      "path": "Cargo.lock",
+      "sha256": "b19ff5c965d559b5bcb719fad34e6cd4e41b43c3f59b8e5c8d221ad3b71cd6a9",
+      "byteLength": 20618
+    },
+    {
+      "path": "Cargo.toml",
+      "sha256": "9445083b2c9d700784e444811c167a8b9d0e5eb074f4972fefb3aa4c18c8b1f6",
+      "byteLength": 1548
+    },
+    {
+      "path": "README.md",
+      "sha256": "5f228955f85bb530bbcfb131c774b1c0d77cf323bb67162b800764db8ccea669",
+      "byteLength": 5364
+    },
+    {
+      "path": "contracts/README.md",
+      "sha256": "d141214cb88449c3e7528a21a41b0c449e16240149e3ac2e01a4d89b57e59f5b",
+      "byteLength": 3929
+    },
+    {
+      "path": "contracts/generated/document.schema.json",
+      "sha256": "8e487d3f97750f84b000d5a15137002cf6941d9ea0aa1bb8ae67446b5cbaef71",
+      "byteLength": 36989
+    },
+    {
+      "path": "contracts/generated/font-request.schema.json",
+      "sha256": "104a42aa97c778fe1aea98e88c0f9aaef1f6d39ce935bbf8770d4861fbf53766",
+      "byteLength": 1229
+    },
+    {
+      "path": "contracts/generated/font-response.schema.json",
+      "sha256": "3425f7707b284575e519717379fa8e2973340cef05dd372bbc7d8e1da1972f49",
+      "byteLength": 14831
+    },
+    {
+      "path": "contracts/generated/kernel-request.schema.json",
+      "sha256": "964d8503079175b3c9a479a57cbf0f0778410c9eb26e997aea45382c0d344e72",
+      "byteLength": 50494
+    },
+    {
+      "path": "contracts/generated/kernel-response.schema.json",
+      "sha256": "3a34026903bf39c630ee76f0173158c6e51b283baffb2c3f95e49f86f43ccd5b",
+      "byteLength": 45531
+    },
+    {
+      "path": "contracts/generated/package-inspection.schema.json",
+      "sha256": "9b2484a0439ff591c8b5f5f34d46f08399baa0ece75fe5df597ff37226df1063",
+      "byteLength": 6031
+    },
+    {
+      "path": "contracts/generated/pptx-color-query.schema.json",
+      "sha256": "1c103246b220921eb901bf87bb8bd7386ae17517b5a8b12167e806bf03f596d7",
+      "byteLength": 11319
+    },
+    {
+      "path": "contracts/generated/pptx-color-response.schema.json",
+      "sha256": "0bec5d1eb4aa3f84324842382722cdb06f7416722d0ffe69d8850f0c6c71a7d4",
+      "byteLength": 11775
+    },
+    {
+      "path": "contracts/generated/pptx-export-request.schema.json",
+      "sha256": "5ba52973e870eaa06142d76609676537f0f8b44c4ded4952428054996067bdda",
+      "byteLength": 40856
+    },
+    {
+      "path": "contracts/generated/pptx-source-response.schema.json",
+      "sha256": "9c2d57b301edcd9846e1fbe3d0c0fede20d8409d83153e1058848dbbe7b56156",
+      "byteLength": 52654
+    },
+    {
+      "path": "contracts/generated/pptx-text-edits.schema.json",
+      "sha256": "ef2542ed9e24f8986d3a3f980efddb0a4c8c15ff02f6e2e5a185de37ed4e7734",
+      "byteLength": 1708
+    },
+    {
+      "path": "contracts/generated/transaction-receipt.schema.json",
+      "sha256": "58e19899b71399b1bef09f2c9fe905705a526d327663a47e7a3fe7a1a78d40d6",
+      "byteLength": 6045
+    },
+    {
+      "path": "contracts/generated/transaction.schema.json",
+      "sha256": "bd85a94f89b916ea42c9ca40455e58bb89853c3bda97b04cc0c2250de20415d8",
+      "byteLength": 45948
+    },
+    {
+      "path": "contracts/generated/validation-report.schema.json",
+      "sha256": "8e49dd078ea8259cf8181cf8ebe4238299e525b683c99739355ed3efdade2dbf",
+      "byteLength": 1128
+    },
+    {
+      "path": "crates/mo-color/Cargo.toml",
+      "sha256": "996030b77079cd11bbe61bff0c4f0efa55962c2c0488dd2aa080c29037f36209",
+      "byteLength": 224
+    },
+    {
+      "path": "crates/mo-color/src/lib.rs",
+      "sha256": "3f2a979ec551b368a8983a5ea70c975e9526dffe8a3ff61d56d236308b773b95",
+      "byteLength": 10685
+    },
+    {
+      "path": "crates/mo-color/src/space.rs",
+      "sha256": "39e4a14b24422adb95fdafc3facb5ca787606fcab8b6f2ea4189d295253edda1",
+      "byteLength": 1517
+    },
+    {
+      "path": "crates/mo-common/Cargo.toml",
+      "sha256": "7b447f65fd8567e7ca49008ab3b611135697c68ac06941cdcf2a1e898036b48b",
+      "byteLength": 348
+    },
+    {
+      "path": "crates/mo-common/src/byte_length.rs",
+      "sha256": "8da492fba15038570411f1084930f8a85d0ad276cb33141cf014baebc2bf2a89",
+      "byteLength": 1546
+    },
+    {
+      "path": "crates/mo-common/src/canonical.rs",
+      "sha256": "315f823665b0e46c6c3858ea53d4e3a17897df191953c26c56ca995c0d862366",
+      "byteLength": 2788
+    },
+    {
+      "path": "crates/mo-common/src/ids.rs",
+      "sha256": "293c64d14b7f720dda1654fe0a31d9e79853e16b98c6da265f964ad111109587",
+      "byteLength": 3810
+    },
+    {
+      "path": "crates/mo-common/src/integer_json.rs",
+      "sha256": "8d93f32e52fae9bd30d49cf7e65e70416d4a94fa45b66bdda4ee84ca6c6a7906",
+      "byteLength": 5783
+    },
+    {
+      "path": "crates/mo-common/src/lib.rs",
+      "sha256": "9bb5974cc2d7a05ff1e5657686756740e0bf452c7bde4cd9a499c89992ac2258",
+      "byteLength": 348
+    },
+    {
+      "path": "crates/mo-common/src/strict_json.rs",
+      "sha256": "943af803cddda071370f13f3cfcd2d244ecc655f04f27988e79634104b299198",
+      "byteLength": 3165
+    },
+    {
+      "path": "crates/mo-common/src/units.rs",
+      "sha256": "095e757c6572c99c9a65997fd41bbc495b4e2fdb6ed18912204b3745d2253f92",
+      "byteLength": 4704
+    },
+    {
+      "path": "crates/mo-common/tests/wire.rs",
+      "sha256": "29be69916d05c23a9918b5bf6c22f9ceea2500682629d58f862d56602869e922",
+      "byteLength": 4304
+    },
+    {
+      "path": "crates/mo-font/Cargo.toml",
+      "sha256": "5452e67cc1a7dcffbf640f3f9715ca6d83e0028812ba20942676e2c642d5b252",
+      "byteLength": 327
+    },
+    {
+      "path": "crates/mo-font/src/cmap.rs",
+      "sha256": "651f9edf04a603c7a859985258857194d16683ee512023a77096ce73e16058f1",
+      "byteLength": 5256
+    },
+    {
+      "path": "crates/mo-font/src/cmap/validation.rs",
+      "sha256": "b39f44d9f389cbc5aa5e64ed98aa600f2efdca21e7fdf39c5634844a6d42c992",
+      "byteLength": 5354
+    },
+    {
+      "path": "crates/mo-font/src/cmap/variation.rs",
+      "sha256": "8c50bfc5d723ccd4fa7672770e9345ab58692b3887b788f4824db84246e67793",
+      "byteLength": 2896
+    },
+    {
+      "path": "crates/mo-font/src/container.rs",
+      "sha256": "d808fd7534b41e82c469cf2c7f2e9aa7be586b5f60c64057a9aa254562d9f4c6",
+      "byteLength": 7819
+    },
+    {
+      "path": "crates/mo-font/src/lib.rs",
+      "sha256": "7a0a51ba9a4c1f6ed547474455ebc3eb72367dbe34a26ad86c8a8e17fb0a3862",
+      "byteLength": 4925
+    },
+    {
+      "path": "crates/mo-font/src/metadata.rs",
+      "sha256": "9236326ad473894aad0bfcc9d9fc09141f50ff16821c2d10b924e24997e66eb9",
+      "byteLength": 7035
+    },
+    {
+      "path": "crates/mo-font/src/tests.rs",
+      "sha256": "46756b565a25ad769670b8529e5b95320a0bc52174d5c521d9ad5710cfc4fff8",
+      "byteLength": 11260
+    },
+    {
+      "path": "crates/mo-font/src/types.rs",
+      "sha256": "2f5a4689fe3d90213782e9a2cf141be4e15849d2a2d31d4ba9e0ae14d49261c4",
+      "byteLength": 5092
+    },
+    {
+      "path": "crates/mo-kernel-api/Cargo.toml",
+      "sha256": "a5b11d079596c6570bd191b4ec9fbcf4427ee7cc736c5772517c31565481c544",
+      "byteLength": 459
+    },
+    {
+      "path": "crates/mo-kernel-api/src/font.rs",
+      "sha256": "8799724a37b840b755807eea53404eac6cecad71a3b307aba3f9c7b744b9a9ef",
+      "byteLength": 2571
+    },
+    {
+      "path": "crates/mo-kernel-api/src/lib.rs",
+      "sha256": "2340b7219b5bfa4adaddfb8fa2d78d2b00730cebcbe9dff14390d86fc427be1c",
+      "byteLength": 4908
+    },
+    {
+      "path": "crates/mo-kernel-api/src/package.rs",
+      "sha256": "30e91e0da739a254422a52f05e1b78126d42b9bc5d5c5191a5e810f4d5b2992e",
+      "byteLength": 7007
+    },
+    {
+      "path": "crates/mo-kernel-api/src/pptx.rs",
+      "sha256": "6a76c54660c37b5b86afe41e08c418c05e8f1b40655402913b195939b559fcf5",
+      "byteLength": 2784
+    },
+    {
+      "path": "crates/mo-kernel-api/src/pptx_color.rs",
+      "sha256": "4fffa2c44287ccd811d8b95b7cb529976ede787f95d01cbde1249ba1532b1725",
+      "byteLength": 2414
+    },
+    {
+      "path": "crates/mo-kernel-api/src/pptx_source.rs",
+      "sha256": "94cd9c87781a8a5c715957c8472bd1c8b2f95227c5aab76fb5ed299dab55de07",
+      "byteLength": 4562
+    },
+    {
+      "path": "crates/mo-kernel-api/tests/package.rs",
+      "sha256": "3f6ad4a8febafc624f522320175f0fd2fd2309c275a8db8ae567ddba0bb6d039",
+      "byteLength": 746
+    },
+    {
+      "path": "crates/mo-kernel-api/tests/pptx_source.rs",
+      "sha256": "773e5fb7eb6a243386547e51b530a3b4a90ef4e5af4ab53cfb7058c10ae4d9d5",
+      "byteLength": 2752
+    },
+    {
+      "path": "crates/mo-opc/Cargo.toml",
+      "sha256": "fec7946008a6705d94add1465091e4df31e3ee376b20b6a7f4e0bc469483a48d",
+      "byteLength": 321
+    },
+    {
+      "path": "crates/mo-opc/examples/package_fixture.rs",
+      "sha256": "1b7a54acc6203be8ad05257c6d607a24be863e0a6a1a6d7d0ff22eff30abce9a",
+      "byteLength": 2794
+    },
+    {
+      "path": "crates/mo-opc/src/lib.rs",
+      "sha256": "5996c601d5278bd1d9dccfdd68ec8e47caf766509c1e8d55846cfc9471fe4f72",
+      "byteLength": 2176
+    },
+    {
+      "path": "crates/mo-opc/src/metadata.rs",
+      "sha256": "98c3e747355b8c2e27ecc61befb1d930b994f834dbc0fee5885eee0dec60475c",
+      "byteLength": 11949
+    },
+    {
+      "path": "crates/mo-opc/src/names.rs",
+      "sha256": "6a4709a39b73b1f9621e11660914f827791cdd5874a08cb1ab9256eacc12297a",
+      "byteLength": 6466
+    },
+    {
+      "path": "crates/mo-opc/src/package.rs",
+      "sha256": "63005aa7d1940ca24fa9a5c2959ce6f2615804c4aaf4f5c05b4068b26cdf1c52",
+      "byteLength": 18747
+    },
+    {
+      "path": "crates/mo-opc/src/writer.rs",
+      "sha256": "6f7d4a21eb226b43eec146868e3fe5ad1589521576dfdc3ae71964af47122152",
+      "byteLength": 16450
+    },
+    {
+      "path": "crates/mo-opc/src/zip_structure.rs",
+      "sha256": "c5368a18c8821a676cb3822ef16f0e2fbe4a2ccc044bec5774a6367895608d8f",
+      "byteLength": 4081
+    },
+    {
+      "path": "crates/mo-opc/tests/packages.rs",
+      "sha256": "8534c213404aa685f2a8779cd383314f34be93661375bdc3c268f95511dc2f6e",
+      "byteLength": 15506
+    },
+    {
+      "path": "crates/mo-pptx/Cargo.toml",
+      "sha256": "b978aee92e8ab55e47562e2b39b701c6ba590404f31e1432ebe0f5ff4ef11472",
+      "byteLength": 438
+    },
+    {
+      "path": "crates/mo-pptx/src/definitions.rs",
+      "sha256": "8fd8e07dc870019eb94daf3145ec3d07c18e784962a429cbab9fa139b89a278e",
+      "byteLength": 6511
+    },
+    {
+      "path": "crates/mo-pptx/src/drawing.rs",
+      "sha256": "53980541eb584ea4704b125a4adacb7e7ce6bdcfca750eb63c3b6aae98b31b31",
+      "byteLength": 14176
+    },
+    {
+      "path": "crates/mo-pptx/src/lib.rs",
+      "sha256": "31c1cab03abf506b4f606606ef2ab0f47547e0adfb46663c715a2beca61f18e0",
+      "byteLength": 3555
+    },
+    {
+      "path": "crates/mo-pptx/src/source.rs",
+      "sha256": "7777e60b128c902e9d93c24dec24f63de8340acd9e2cca4621c751f8e0a17904",
+      "byteLength": 7193
+    },
+    {
+      "path": "crates/mo-pptx/src/source/color.rs",
+      "sha256": "507836da860a10b717e94ecb43888cbbb6831dc9664b6ca5be05f51265a8a375",
+      "byteLength": 10438
+    },
+    {
+      "path": "crates/mo-pptx/src/source/color/preset.rs",
+      "sha256": "438ad1dc7761be960b8769820365a36c529ff07ce0a88cb1b777aace60d351d2",
+      "byteLength": 9832
+    },
+    {
+      "path": "crates/mo-pptx/src/source/color/transforms.rs",
+      "sha256": "abe68baa8d541e0937fb12e1558b16cd5286bcb1442d32da84d0ac1bd2adbded",
+      "byteLength": 2406
+    },
+    {
+      "path": "crates/mo-pptx/src/source/color/types.rs",
+      "sha256": "2399a46afc850c3219294aedbc96324dc67c60f1e463973b8f75b698e66d1459",
+      "byteLength": 4013
+    },
+    {
+      "path": "crates/mo-pptx/src/source/color_mapping.rs",
+      "sha256": "b05fa5381811dda4d223f37847b7f472873f7c342dae3567e9e29e1f9600556b",
+      "byteLength": 5374
+    },
+    {
+      "path": "crates/mo-pptx/src/source/compatibility.rs",
+      "sha256": "8de4ed4972e3b3fdf625e00cb6377027617fc46da0e427e7ec97542fc55f2521",
+      "byteLength": 2812
+    },
+    {
+      "path": "crates/mo-pptx/src/source/edit.rs",
+      "sha256": "6c58f8ce0504ef597b431a9aada84a298963682c48aafd8860daf971723bddae",
+      "byteLength": 5385
+    },
+    {
+      "path": "crates/mo-pptx/src/source/inheritance.rs",
+      "sha256": "7bb21216ae63415898058bc0006ffec856493defacc1e376985f6ae2dea2c230",
+      "byteLength": 12749
+    },
+    {
+      "path": "crates/mo-pptx/src/source/links.rs",
+      "sha256": "665ec5ec1669050719fa3799762a256a4b18f820c7f8975b8239848b9a9970d4",
+      "byteLength": 3568
+    },
+    {
+      "path": "crates/mo-pptx/src/source/presentation.rs",
+      "sha256": "38f7c42d782a6c45e2499af09b85179a6cd872afcf53f8edfc6e6925e11da501",
+      "byteLength": 10326
+    },
+    {
+      "path": "crates/mo-pptx/src/source/surface.rs",
+      "sha256": "cb01e7e42870afe7ac12894bdee9fe2c7f07cb9e565ff975978c28bca052b070",
+      "byteLength": 23332
+    },
+    {
+      "path": "crates/mo-pptx/src/source/theme.rs",
+      "sha256": "a9a4b01455daaab52ddcb759267452a17068496a015d1be17a625cc80bc0eece",
+      "byteLength": 6492
+    },
+    {
+      "path": "crates/mo-pptx/src/source/theme/names.rs",
+      "sha256": "12481d865b6300017a64846f38b06b064fe3e60b750dcd4014fbbafb135b128d",
+      "byteLength": 13147
+    },
+    {
+      "path": "crates/mo-pptx/src/source/theme/read.rs",
+      "sha256": "32cb9a504fd1d94268e6fac4ad146b791070ecf4bb039e5f1c495ece0da1767b",
+      "byteLength": 17708
+    },
+    {
+      "path": "crates/mo-pptx/src/source/theme/values.rs",
+      "sha256": "e26abca4638278226a5b1fa53181cedf59105e8f9f0d78e3975cdcb48676a4ba",
+      "byteLength": 9655
+    },
+    {
+      "path": "crates/mo-pptx/src/text.rs",
+      "sha256": "e8f2d56b8a95c4117dea74b15227e4b49f30fe13b66595e8104a920f25dc0870",
+      "byteLength": 6817
+    },
+    {
+      "path": "crates/mo-pptx/src/write.rs",
+      "sha256": "376898cf1388b7f0dba7db73025bd81e051b14fa418b9f25967f3de33c97e112",
+      "byteLength": 11976
+    },
+    {
+      "path": "crates/mo-pptx/src/xml.rs",
+      "sha256": "ccb472b5a7a4f6192bbac1291e98339c69c437b5320993878fdfce36041ead0e",
+      "byteLength": 2020
+    },
+    {
+      "path": "crates/mo-pptx/tests/export.rs",
+      "sha256": "6b64207332cf3f04dc092fdf4003bab9bf2b6f57dedd08c3f4c5abecc12353e9",
+      "byteLength": 4087
+    },
+    {
+      "path": "crates/mo-pptx/tests/source.rs",
+      "sha256": "796c98bf1d39baa16c03c77a3ae68ea2a9e486ebe6f3caaaaddfc7e4c06ebad1",
+      "byteLength": 30985
+    },
+    {
+      "path": "crates/mo-pptx/tests/source_colors.rs",
+      "sha256": "f66da3920a7a38d846da0066f2a7e047e8ef0a1b02e9a68ccde9183b97d73ea2",
+      "byteLength": 6848
+    },
+    {
+      "path": "crates/mo-pptx/tests/support/mod.rs",
+      "sha256": "646501d7163b93c2e67de75f9d4ebc028e05672071a43d084c0d1436a1533cac",
+      "byteLength": 964
+    },
+    {
+      "path": "crates/mo-presentation-edit/Cargo.toml",
+      "sha256": "5da36bbe80bf21f605381fbd691088163f52a72f043e05d24406a61a1265e8a5",
+      "byteLength": 357
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/apply.rs",
+      "sha256": "893df4face1215d0aa9b0f77ea8d593474b2e71394049f37842ec9a6dde2eff5",
+      "byteLength": 10833
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/lib.rs",
+      "sha256": "cfddd7f6cbe29c52f4667b5236e9a6a36b496092c8646f31d47d828fe08a059c",
+      "byteLength": 184
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/operations.rs",
+      "sha256": "535a5abf1f01b2a2d4d0507ef7cbb428c9c80c8945b9d4cbfe04ecafc4aefbaa",
+      "byteLength": 2577
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/transaction.rs",
+      "sha256": "93131b514e51edf6bdff9912befd243e01be24a8555e0b020ade8a1120b65e9d",
+      "byteLength": 11192
+    },
+    {
+      "path": "crates/mo-presentation-edit/tests/support/mod.rs",
+      "sha256": "9f1ba64634cecf1ab2316c2d6d0f0a9510ccbcfb2767b90067e85decd3c90d9b",
+      "byteLength": 3314
+    },
+    {
+      "path": "crates/mo-presentation-edit/tests/transactions.rs",
+      "sha256": "73199270211b81a361c39a7983f2d8784db76b89cdcd521de512e8c34dee6859",
+      "byteLength": 8585
+    },
+    {
+      "path": "crates/mo-presentation-edit/tests/validation.rs",
+      "sha256": "ce57b22e3dadf7f00fa056055cf2e054ef0c7d9fc3c2d06a8aea2991605a70dd",
+      "byteLength": 3808
+    },
+    {
+      "path": "crates/mo-presentation-model/Cargo.toml",
+      "sha256": "686ad4d89c724137533c16c8417b58f830c494d18dbd140225141adc2b295632",
+      "byteLength": 338
+    },
+    {
+      "path": "crates/mo-presentation-model/src/document.rs",
+      "sha256": "1a564f30eb48e3d58e589a7edeb24b36aa2dd79c1e09cd7f4af1498a96f99663",
+      "byteLength": 5407
+    },
+    {
+      "path": "crates/mo-presentation-model/src/geometry.rs",
+      "sha256": "c357689b0fd629252acf2da581879aa967e1ba1ae24f141ae5f0377fd79db69c",
+      "byteLength": 1824
+    },
+    {
+      "path": "crates/mo-presentation-model/src/lib.rs",
+      "sha256": "f9862c8e44fdf3a30484a2e4b7b7ed9fc77bf90c93bab8ba7822f2d189789fda",
+      "byteLength": 249
+    },
+    {
+      "path": "crates/mo-presentation-model/src/styles.rs",
+      "sha256": "71df96a08e62e38eb06459de6297e580811bd917769da5a8317b068ed79f636a",
+      "byteLength": 3267
+    },
+    {
+      "path": "crates/mo-presentation-model/src/text.rs",
+      "sha256": "82805f8b393baefeaa6ae3b3d07c4e07f340d438f807f173869b9b9db787d76f",
+      "byteLength": 2220
+    },
+    {
+      "path": "crates/mo-presentation-model/src/validation.rs",
+      "sha256": "88f73437576a26004180b834dd8bb8b3715070f2e3e4bb49086db43e24d394c9",
+      "byteLength": 20501
+    },
+    {
+      "path": "crates/mo-wasm/Cargo.toml",
+      "sha256": "00821a6aa808354f00ef21bde9c25c8a133cfbd0c1f2e81b65e174b47bfb5baa",
+      "byteLength": 274
+    },
+    {
+      "path": "crates/mo-wasm/src/lib.rs",
+      "sha256": "e10bba3c069668ef3c2cb9fa923b061f965cb663a09754b6391051e8b5beb48f",
+      "byteLength": 1217
+    },
+    {
+      "path": "crates/mo-xml/Cargo.toml",
+      "sha256": "853e966df02894265a57e178174f37bc3d47c391bdfc6f2f51073d7dfa1c9194",
+      "byteLength": 227
+    },
+    {
+      "path": "crates/mo-xml/src/encoding.rs",
+      "sha256": "9e8d6ae2954cca572a9d11c1b62412307e4092f440a997cbeb032f372a629900",
+      "byteLength": 2703
+    },
+    {
+      "path": "crates/mo-xml/src/lib.rs",
+      "sha256": "09fe3e54791b663aa9db13339d6dfa38bacf46c902ee024b68c1cf1ad7e8d6e5",
+      "byteLength": 3007
+    },
+    {
+      "path": "crates/mo-xml/src/mce.rs",
+      "sha256": "52c3ba303e4af2a922a5d718c286ab1accf292b0ced9cca8be6520f4a74d9618",
+      "byteLength": 2062
+    },
+    {
+      "path": "crates/mo-xml/src/mce/rules.rs",
+      "sha256": "f913b6ed681688510ce9f824c4e144597c00fb610054b761c78425fa37ebaeba",
+      "byteLength": 5300
+    },
+    {
+      "path": "crates/mo-xml/src/mce/stream.rs",
+      "sha256": "2dce269a1f4f3712081af296be91f47dc1af3fc8e48b37a21ed8aab4d4ca7ef7",
+      "byteLength": 12915
+    },
+    {
+      "path": "crates/mo-xml/src/names.rs",
+      "sha256": "19e8f209182717b29edd54d32f82bd191606d2f3894f28a2b04d0d10b4b9ccaf",
+      "byteLength": 2413
+    },
+    {
+      "path": "crates/mo-xml/src/scan.rs",
+      "sha256": "5a8efe98f82cc495f9f7dc87356757017f548d9b891a824e717d320bbe05e578",
+      "byteLength": 12996
+    },
+    {
+      "path": "crates/mo-xml/src/text_edit.rs",
+      "sha256": "cce569187b97de226580986929ba131c68f487711efc2528a79cd705d147b3ed",
+      "byteLength": 10128
+    },
+    {
+      "path": "crates/mo-xml/tests/mce.rs",
+      "sha256": "9c63d77affacda92dee7814b3dafac8f9c1c56f135a512af5ff0f6fef153e518",
+      "byteLength": 8965
+    },
+    {
+      "path": "crates/mo-xml/tests/scanner.rs",
+      "sha256": "358087316fb66a77471722eb71acec10a1e0cf401a93cff68f9ba23e6c002c4d",
+      "byteLength": 6035
+    },
+    {
+      "path": "crates/mo-xml/tests/text_edit.rs",
+      "sha256": "064f5ce630d3dc1d2d9b48f0f6b222adffe7db06bc878899f8e25db88ddc69ed",
+      "byteLength": 5302
+    },
+    {
+      "path": "docs/implementation/dependencies.md",
+      "sha256": "e4dc67e0ac91d732c5efc56badc5fa05483797f2fe9b09f1cb512160d7b9e425",
+      "byteLength": 5972
+    },
+    {
+      "path": "docs/implementation/development.md",
+      "sha256": "b368eb5e4d7cf3dbf2e37158df3993a24c9534cd93d404d6b1f66d46773e12af",
+      "byteLength": 8541
+    },
+    {
+      "path": "docs/implementation/font-resources.md",
+      "sha256": "92b56afb0ae9c024fff788c5d58a47e4d296aa2a549aa1e30d7c8255c7d65345",
+      "byteLength": 7758
+    },
+    {
+      "path": "docs/implementation/mce.md",
+      "sha256": "c57bc24d5962afcd9932958d3aee5eebd3c8965f16156dca4dd2dc22867948f7",
+      "byteLength": 5472
+    },
+    {
+      "path": "docs/implementation/package-io.md",
+      "sha256": "89ecabc6323252cc54341c52d779e97dec7fdb949ad30fcb6eeee0a4e2d1230d",
+      "byteLength": 4530
+    },
+    {
+      "path": "docs/implementation/pptx-export.md",
+      "sha256": "c5d3312f2f6d31d715c24e2ed3cad7850007134b7124bf1544a1f7fe84e3ea0c",
+      "byteLength": 5523
+    },
+    {
+      "path": "docs/implementation/pptx-source.md",
+      "sha256": "3f56f10357ce7da26713c76550b4c2b7e0f44fa67b690032dd9a9ddacabe3063",
+      "byteLength": 8522
+    },
+    {
+      "path": "docs/implementation/progress.md",
+      "sha256": "4d66258a7d0818cc80eedba0f9ed15cd06ccee829196e49b4c659e301f27131f",
+      "byteLength": 11515
+    },
+    {
+      "path": "docs/implementation/source-color-mapping.md",
+      "sha256": "a2355cccf0a542493bfc0f93f46b55da9e44aac6eef8256eba62ea54bb81df06",
+      "byteLength": 5194
+    },
+    {
+      "path": "docs/implementation/source-colors.md",
+      "sha256": "d8784ce88592e3e4b733c065ac3438da6d907361ce223b570b7b04a4bd96e9da",
+      "byteLength": 7149
+    },
+    {
+      "path": "docs/implementation/source-inheritance.md",
+      "sha256": "de1b1809ad4600197109be6d82e512ecf4073ee327c713ffd52d3cc2376db2be",
+      "byteLength": 5732
+    },
+    {
+      "path": "docs/implementation/source-themes.md",
+      "sha256": "2c50356b97c5115fb2ea9f8c01a2dff9a7f6e74266a58985a872f20cbb1cc20a",
+      "byteLength": 5897
+    },
+    {
+      "path": "fixtures/fonts/README.md",
+      "sha256": "2a14a31606dfbfe3ce3ac64b3a2a075999d7fabce5172b589d362cbe88064de4",
+      "byteLength": 1152
+    },
+    {
+      "path": "fixtures/fonts/owned.json",
+      "sha256": "b6d5a541cbb91a33c727965d53b68bf6f99b5d2c77988aae0b4e15484a9120c0",
+      "byteLength": 502
+    },
+    {
+      "path": "fixtures/fonts/owned.otf",
+      "sha256": "867c8e6bbb688380a8cbe08325e927485ef9f1a58dbc23c1aacefdb5ce7c0380",
+      "byteLength": 1632
+    },
+    {
+      "path": "fixtures/fonts/owned.ttc",
+      "sha256": "24c5ce1534147f4873ac550b915c720ac747ba69072b49154c422c83afe15c57",
+      "byteLength": 3372
+    },
+    {
+      "path": "fixtures/fonts/owned.ttf",
+      "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+      "byteLength": 1920
+    },
+    {
+      "path": "fixtures/fonts/upstream.json",
+      "sha256": "b794d33eff5af15346d936c74bc8011f53f0ee66fc8bf66b58541046fd306ab1",
+      "byteLength": 4367
+    },
+    {
+      "path": "fixtures/presentations/basic-shape.json",
+      "sha256": "3e4fe191a804814ff0f8061d5876c4b58285a255351460e0edf38040e16b9640",
+      "byteLength": 1499
+    },
+    {
+      "path": "fixtures/presentations/native-export/README.md",
+      "sha256": "399658ce0db8a74c746f0b70a8ebec3d50bd1954b5ddf0ae093e06f7fc8c3a02",
+      "byteLength": 575
+    },
+    {
+      "path": "fixtures/presentations/native-export/request.json",
+      "sha256": "f20f7ac49f8958e3cf6b3185f407832f75b6c9d7e35d7695958af34948c85b1d",
+      "byteLength": 34818
+    },
+    {
+      "path": "fixtures/presentations/native-export/resources.bin",
+      "sha256": "3f76a9a5cae823017a1ddda66fe4cadf422e496bb0e6364ea5050dcac13afd82",
+      "byteLength": 147
+    },
+    {
+      "path": "package.json",
+      "sha256": "43e4d64f2b50e58628471fd2f6be9b4eff8ff1720b6c2e0bbe3e2340290fd758",
+      "byteLength": 475
+    },
+    {
+      "path": "packages/contracts/src/generated/document.ts",
+      "sha256": "f4ee579d71af46ef028dfb24ce2464542dd882d120ed50d4423f7cf3a104d693",
+      "byteLength": 15601
+    },
+    {
+      "path": "packages/contracts/src/generated/font-request.ts",
+      "sha256": "52131b9043ad89a21e7bca1f1e8139eca20be5d2ec5ec9e84d20e88d4af1301a",
+      "byteLength": 559
+    },
+    {
+      "path": "packages/contracts/src/generated/font-response.ts",
+      "sha256": "673efa9ffaf59df5ced570c50254a5b6cb3c7c239f2801dac6fd2632da43f017",
+      "byteLength": 3128
+    },
+    {
+      "path": "packages/contracts/src/generated/kernel-request.ts",
+      "sha256": "af7ff37be0f4547f1aed3d943eb8c470bde381205868002ed259690ccdf1897d",
+      "byteLength": 11263
+    },
+    {
+      "path": "packages/contracts/src/generated/kernel-response.ts",
+      "sha256": "312fca898a886903f24a2ee2ed16e5a07d50374f82c86d44b542281e82e10337",
+      "byteLength": 10929
+    },
+    {
+      "path": "packages/contracts/src/generated/package-inspection.ts",
+      "sha256": "a24e02f0dd751526794216e3e4bffdab048e7efbdffebb08e1cb616ecdb8ee3e",
+      "byteLength": 1653
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-color-query.ts",
+      "sha256": "67151379429f01eb89bf6cae7c2899a56c4137a62da2b313d17681a153262805",
+      "byteLength": 4301
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-color-response.ts",
+      "sha256": "22f8e4422c3cb46e1a055e53342eb64f9d49625e4bb08ce25e6103901017f39a",
+      "byteLength": 3587
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-export-request.ts",
+      "sha256": "7e589d649106926f4c631b86e643c0241a0c2fbc455e66e5c6a944e6dbaef04e",
+      "byteLength": 17799
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-source-response.ts",
+      "sha256": "d3395fd6b4ac936982c81de352ca154db6da7fb5d4ee993e0af8424b3ebb7755",
+      "byteLength": 15504
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-text-edits.ts",
+      "sha256": "0226877cda0170ffd2ecba5a8cc302c12b8b34115ea72a0beeae7a5425771246",
+      "byteLength": 801
+    },
+    {
+      "path": "packages/contracts/src/generated/transaction-receipt.ts",
+      "sha256": "5c881ad297af3679dc5e359434d7c77f3fd38ef52d71db2af2d014000b03a242",
+      "byteLength": 2837
+    },
+    {
+      "path": "packages/contracts/src/generated/transaction.ts",
+      "sha256": "6ddd740a544fc13429a7a8126f789ea5c486be417b9dd9230249a5dbc834601b",
+      "byteLength": 16526
+    },
+    {
+      "path": "packages/contracts/src/generated/validation-report.ts",
+      "sha256": "eca1b9f9a2b84352469ab0841cf4e6842928f09beccc7222e32c6e3ed63cfb04",
+      "byteLength": 722
+    },
+    {
+      "path": "packages/contracts/tests/wire.ts",
+      "sha256": "0f0092bfe458322bc26e2ec8b55781d444207f21b395a7a57c92acfb42c0c249",
+      "byteLength": 1455
+    },
+    {
+      "path": "packages/contracts/tsconfig.json",
+      "sha256": "4fcb6f03c7e852ccc08b854a1a26a8e7fc7312e561db7bcb7e20309d413deae2",
+      "byteLength": 308
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "b98030e955ae688a6490e8a6ef21007c18468596b851255439c37893b51f29c0",
+      "byteLength": 11026
+    },
+    {
+      "path": "rust-toolchain.toml",
+      "sha256": "060751f06f70853677293dd84de1c855fa72295c5dbc17ce811a3a57b75861c0",
+      "byteLength": 123
+    },
+    {
+      "path": "tools/contracts/build-wasm-node.mjs",
+      "sha256": "958156b80bf75ebf4649e43ff5f1dca1d7fb483fb42d64810cfe74a9c1481660",
+      "byteLength": 1004
+    },
+    {
+      "path": "tools/contracts/generate-types.mjs",
+      "sha256": "3eadbd43ee77696b2590d8bd8346e92038ccb2ae9f352e8520aea38c1bb44c59",
+      "byteLength": 1500
+    },
+    {
+      "path": "tools/mo-cli/Cargo.toml",
+      "sha256": "b9e3761bb92f60910ef0b9e5bf937108d9d8c9f08b2fe419727d2cfe83fa80c2",
+      "byteLength": 252
+    },
+    {
+      "path": "tools/mo-cli/src/main.rs",
+      "sha256": "f6031c7318a4e205e7da73b145cea3eeae14187a556e558076e892335d26df88",
+      "byteLength": 3069
+    },
+    {
+      "path": "tools/mo-cli/src/pptx.rs",
+      "sha256": "400765e1d0918cdd4cf4d3a865b5d11a4bd65304454fc2120f6b1d8b0c182245",
+      "byteLength": 3490
+    },
+    {
+      "path": "tools/mo-contract-codegen/Cargo.toml",
+      "sha256": "cee1ac85df3e34b5f58f810c3d98735da788f46bc22de2abd4cffb4ee420078d",
+      "byteLength": 348
+    },
+    {
+      "path": "tools/mo-contract-codegen/src/main.rs",
+      "sha256": "e5aabb9234ca1927567ba277784c35a7494c87b169ba0dee6052dda98fd2cf1d",
+      "byteLength": 2471
+    },
+    {
+      "path": "tools/verification/color-preset-facts.py",
+      "sha256": "aecf20c19bbad93b19f3eb91d08b18c3d4d11b48e73311c7e8cca57630f5c9bd",
+      "byteLength": 1808
+    },
+    {
+      "path": "tools/verification/contracts.py",
+      "sha256": "f3ced318e1a0c527939e938271421c8231624c07389ad66453f30cc06926dfa3",
+      "byteLength": 4637
+    },
+    {
+      "path": "tools/verification/fetch-ecma-schemas.py",
+      "sha256": "77b7487f7ad2fa052e4e1f3987c60cc594a1491c09aa518cdf8a9f1f5cdb5d27",
+      "byteLength": 2417
+    },
+    {
+      "path": "tools/verification/fetch-font-corpus.py",
+      "sha256": "9f564c5fe08406f5da77e76f646462935ded1beb53c9603f9675ef725bd255cc",
+      "byteLength": 1596
+    },
+    {
+      "path": "tools/verification/font-fixtures.py",
+      "sha256": "b4b311d2f0b50dd395070f1ff478ac2d533955469111ef0f8ad4d88922b6580a",
+      "byteLength": 5422
+    },
+    {
+      "path": "tools/verification/font-independent.py",
+      "sha256": "821924fc189402f330921ebf8cad082d742d79df8f740f4c7ba9e1d14dfbdde4",
+      "byteLength": 5409
+    },
+    {
+      "path": "tools/verification/font-parity.mjs",
+      "sha256": "d3512ad755ec03cd22edd25ae64cda9bba4055d0aa9340cdef66b8e391bc1680",
+      "byteLength": 3098
+    },
+    {
+      "path": "tools/verification/mce_reference.py",
+      "sha256": "36349c605934ee95633b2c3bc4b181bd1906c4c35ddb13cdf8574ca5451e524b",
+      "byteLength": 8539
+    },
+    {
+      "path": "tools/verification/native-wasm-parity.mjs",
+      "sha256": "16ff25ff788d11e07dc0bcd5007e75b155f61c9348f50ea8328abad2ee049b26",
+      "byteLength": 5096
+    },
+    {
+      "path": "tools/verification/opc-fixtures.py",
+      "sha256": "6444c4fd8d5074d0c59a111b0ac2fc589cd9b12c31f264d56a1f4423b90b34a7",
+      "byteLength": 7125
+    },
+    {
+      "path": "tools/verification/opc-parity.mjs",
+      "sha256": "cdddcf4b160a507b73da23a9e5af33f99e806aec4685a4060e4a4cf02ec83d12",
+      "byteLength": 2389
+    },
+    {
+      "path": "tools/verification/owned-font-fixtures.py",
+      "sha256": "ca1d53b56380c310c2dc377d6928bc96176f8a7c5adc79827905980cab70d9a7",
+      "byteLength": 3490
+    },
+    {
+      "path": "tools/verification/pptx-color-external.py",
+      "sha256": "3639f595247bd334d6adb7fbc70104b342d80b994b2493ea15f264c796182aa7",
+      "byteLength": 1805
+    },
+    {
+      "path": "tools/verification/pptx-color-fixtures.py",
+      "sha256": "b21b4208f34f784871b9c248793a46db2b47c84c5ce4366fc3a25140ba737e99",
+      "byteLength": 9052
+    },
+    {
+      "path": "tools/verification/pptx-color-independent.py",
+      "sha256": "dead1da94181045aa75785c5bce4fd0a9ccb0aa81e247b6d429a72942646c141",
+      "byteLength": 11855
+    },
+    {
+      "path": "tools/verification/pptx-color-map-external.py",
+      "sha256": "e3479e741e4ca41fd8b3648da59f4a6d94eb9aa051e15b088c355a241f70f424",
+      "byteLength": 1338
+    },
+    {
+      "path": "tools/verification/pptx-color-map-fixtures.py",
+      "sha256": "f283e4d30cbadfdcb73027ca576e8914ee8459bf9c4ac87196b0d8826c4aa3fe",
+      "byteLength": 6401
+    },
+    {
+      "path": "tools/verification/pptx-color-map-independent.py",
+      "sha256": "642feaabb0dd4e44c2406bb80bdfdcd73ba68e38f7ba9f3c29bba462a7986671",
+      "byteLength": 4356
+    },
+    {
+      "path": "tools/verification/pptx-color-parity.mjs",
+      "sha256": "439215427344c697d98316d87065f277d0e8cfd92f3f99f97451ff81f512ecad",
+      "byteLength": 3849
+    },
+    {
+      "path": "tools/verification/pptx-fixture.py",
+      "sha256": "f098faf7dee35d53004bc311c513e5bcef27e2480777b98ddd0f70afb53dc0d7",
+      "byteLength": 7988
+    },
+    {
+      "path": "tools/verification/pptx-independent.py",
+      "sha256": "319f2879c923153fd2c3790df11b2546fad186f1b770146c702943d53168da7a",
+      "byteLength": 12055
+    },
+    {
+      "path": "tools/verification/pptx-inheritance-fixtures.py",
+      "sha256": "a0a58cae8e1a22e5013af55d3b60f08746a59bf36717a27571b630b2a7d60c72",
+      "byteLength": 8223
+    },
+    {
+      "path": "tools/verification/pptx-inheritance-independent.py",
+      "sha256": "64b582e9dea3c49e5685079b3888184868aaa4a3132ea16a303aadd464c7d8bb",
+      "byteLength": 7200
+    },
+    {
+      "path": "tools/verification/pptx-parity.mjs",
+      "sha256": "e4f81bdf6d2926d07b386d1843cd90b1b167aff5746b9408c68c4ab04b3f08c9",
+      "byteLength": 6173
+    },
+    {
+      "path": "tools/verification/pptx-source-fixtures.py",
+      "sha256": "05f4d695bee7f30051616df473f899ac181c0a5984e08bef0a7869046f491b66",
+      "byteLength": 9544
+    },
+    {
+      "path": "tools/verification/pptx-source-independent.py",
+      "sha256": "e761dd6508e5499628a462becfb92c474f17f289d3d79c06d487ae9c89fb0bed",
+      "byteLength": 4683
+    },
+    {
+      "path": "tools/verification/pptx-source-parity.mjs",
+      "sha256": "b9f2001182467707a967fafed6e01cd4259ffcc8545b2da3d001490eda97d44e",
+      "byteLength": 9808
+    },
+    {
+      "path": "tools/verification/pptx-theme-fixtures.py",
+      "sha256": "c2e52631d9d2bc5bfd7dcdc30e69cac7d3f41eeccd8442e06adffe5a5e20408a",
+      "byteLength": 7807
+    },
+    {
+      "path": "tools/verification/pptx-theme-independent.py",
+      "sha256": "9d3bc1fc68710cb6b76b353e05b2a993954fd8e33c1f9c5b0a948e02a0ae4561",
+      "byteLength": 9261
+    },
+    {
+      "path": "tools/verification/pptx_color_observer.py",
+      "sha256": "4c2feeab7eb7f25bdf91f10b200220eb17e8a76392f883428743b16e0603fdba",
+      "byteLength": 3170
+    }
+  ],
+  "limitations": [
+    "Consumed selected-face metadata/cmap and directory/checksum validation is not a complete font sanitizer or guarantee of renderability. Other faces and unselected cmaps are not fully validated.",
+    "Formats 2 and 8, WOFF/WOFF2, embedded-font deobfuscation, font writing/subsetting/embedding, avar/gvar/HVAR/MVAR evaluation and complete resource profiles remain incomplete.",
+    "cmap coverage is not cluster shaping. Ligatures, bidi, script/language selection, line breaking, variable metrics, outlines, color glyphs and rendering are not implemented by this component.",
+    "FontTools does not implement cmap 10 in the pinned version; that probe uses a separate Python binary observer. Format 1 name language tags have a Rust synthetic test, not target application validation.",
+    "The five Noto fonts are fixed test assets, not a default product font pack. Noto Emoji here is monochrome. OFL and OS/2 declarations do not by themselves close product font distribution review.",
+    "Native cancellation is cooperative. Synchronous WASM development calls require future host Worker/hard-cancel integration for cancellation during execution.",
+    "Earlier 12/18 LibreOffice color differences and geometry roundtrip differences remain open; no new Office or WPS application test was performed.",
+    "Full SourceBinding import, object style computation, advanced objects, playback, Agent surfaces and Musterwork integration remain incomplete. E0-E3 and the persistent goal remain open."
+  ]
+}

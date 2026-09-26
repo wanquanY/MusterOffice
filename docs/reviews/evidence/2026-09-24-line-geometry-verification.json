@@ -1,0 +1,2731 @@
+{
+  "format": "musteroffice.line-geometry-verification/1",
+  "scope": "Explicit-line horizontal glyph origins and line boxes using explicit font size, baseline shift, strut and HB metric spacing policy. Checked i128 Q32 EMU computation; whole fragment visual ordering without reversing HB glyph arrays. No automatic width fitting, painter, ink bounds or Office/WPS acceptance.",
+  "previousEvidence": {
+    "path": "docs/reviews/evidence/2026-09-24-line-shaping-verification.json",
+    "byteLength": 112705,
+    "sha256": "60e73b99f47e0f29b8c48f63033ca97f8b6f6ac700a9df96b47d348a34157de9"
+  },
+  "environment": {
+    "platform": "Darwin 25.2.0",
+    "architecture": "arm64",
+    "rust": "1.92.0",
+    "node": "23.5.0",
+    "python": "3.13.0"
+  },
+  "artifacts": {
+    "nativeCli": {
+      "path": "target/release/mo-cli",
+      "byteLength": 3811632,
+      "sha256": "be61b5c02639fa04c14762616831cd3507486a8061f506178c9f2f2024420154"
+    },
+    "nativeWorker": {
+      "path": "target/release/mo-text-worker",
+      "byteLength": 2173200,
+      "sha256": "76b81d9f9a3b0dbca1a2cb2dc898f1b3e9e966378d66ed12c565d1126a52bb8d"
+    },
+    "rustWasm": {
+      "path": ".codex-work/wasm-node/mo_wasm_bg.wasm",
+      "byteLength": 3335943,
+      "sha256": "8b670b28e6fe721da1256162fa41a76a7b7cbf30fd07b6474fcc45d084422ef6"
+    },
+    "rustWasmGlue": {
+      "path": ".codex-work/wasm-node/mo_wasm.js",
+      "byteLength": 17869,
+      "sha256": "2cf6ac552d18f9798c159c7f1de43af32ed987abcc9b3eff4cf31faa78d069ad"
+    },
+    "cppWasm": {
+      "path": ".codex-work/harfbuzz/release/mo-hb.wasm",
+      "byteLength": 838096,
+      "sha256": "7718676dd02747f6a37da5cc187fdb55214d8fc2cb426eb9a88f0b492e94f044"
+    },
+    "cppWasmGlue": {
+      "path": ".codex-work/harfbuzz/release/mo-hb.mjs",
+      "byteLength": 9361,
+      "sha256": "5209e436222ba880c8cee05a6cacf53971ff76865c6bb1548ab58ea6732fdd52"
+    },
+    "typescriptAdapter": {
+      "path": ".codex-work/text-component/index.js",
+      "byteLength": 6579,
+      "sha256": "2455f7d620810ab799b977730898fc5a3315fb1d0f45eb10eb0449d8ac4e8cb6"
+    }
+  },
+  "artifactByteDeltas": {
+    "nativeCli": 0,
+    "nativeWorker": 99120,
+    "rustWasm": 85058,
+    "rustWasmGlue": 781,
+    "cppWasm": 0,
+    "cppWasmGlue": 0,
+    "typescriptAdapter": 0
+  },
+  "artifactSizeScope": "Incomplete development CLI/worker and separate Rust/C++ WASM artifacts only; no full kernel distribution or Musterwork desktop installer estimate. No new timing or memory benchmark.",
+  "checks": {
+    "rustTests": 180,
+    "newRustTests": 9,
+    "nativeWasmBatches": 1762,
+    "newLineGeometryBatches": 35,
+    "oldSemanticBatchesUnchanged": 1727,
+    "runtimeSchemas": 34,
+    "existing32SchemasUnchanged": true,
+    "upstreamReferenceFragments": 62,
+    "upstreamReferenceGlyphs": 405,
+    "upstreamReferenceMetrics": 108,
+    "actualMetricAllocationFailureAfterShaping": true,
+    "originalComponentAndAdapterArtifactsUnchanged": true,
+    "rustfmt": true,
+    "strictClippy": true,
+    "typescript": true
+  },
+  "lineGeometryReport": {
+    "format": "musteroffice.line-geometry-parity/1",
+    "nativeCliSha256": "be61b5c02639fa04c14762616831cd3507486a8061f506178c9f2f2024420154",
+    "nativeWorkerSha256": "76b81d9f9a3b0dbca1a2cb2dc898f1b3e9e966378d66ed12c565d1126a52bb8d",
+    "rustWasmSha256": "8b670b28e6fe721da1256162fa41a76a7b7cbf30fd07b6474fcc45d084422ef6",
+    "componentSha256": "7718676dd02747f6a37da5cc187fdb55214d8fc2cb426eb9a88f0b492e94f044",
+    "shapeReferenceSha256": "e9fba1b6c47758d36dca4e53d6216cf43f46faadac7606920029da549dfa711a",
+    "metricsReferenceSha256": "2f01d9931facef64760adf3768a025ec31cad06d776257ae4bc7e2af7596d996",
+    "referenceFragments": 62,
+    "referenceGlyphs": 405,
+    "referenceMetrics": 108,
+    "cliVerified": true,
+    "actualMetricFailureAfterShaping": {
+      "componentSha256": "d1e7151c04db83f76a67d3d16cba216124b0db1b53550141c6c61e83fa59f13b",
+      "failure": {
+        "status": "error",
+        "error": {
+          "code": "COMPONENT_FAILURE",
+          "message": "shaping component failed with status 2 at run 0"
+        }
+      },
+      "reuse": {
+        "status": "error",
+        "error": {
+          "code": "HOST_FAILURE",
+          "message": "shaping host failed: WASM component call failed"
+        }
+      },
+      "replacementVerified": true
+    },
+    "cases": [
+      {
+        "name": "latin",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/latin.request.json",
+        "responsePath": ".codex-work/line-geometry/latin.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d.bin",
+        "requestSha256": "113224edfa877b3b01dee3bf9b53cbd34bd44de286a7fe1379a96f5130c21f3c",
+        "responseSha256": "33900babc825fcf74516f5027760b6962c4c935575e08eecd227631fdcee54a4",
+        "bundleSha256": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d"
+      },
+      {
+        "name": "arabic",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/arabic.request.json",
+        "responsePath": ".codex-work/line-geometry/arabic.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/50390b6d44569c2fadb55c54e07e64beed68d513195e2f951f36999131df00d3.bin",
+        "requestSha256": "56dc4e1bc0a74cc4b476516a1b54613663977d48b34bf2876760ba7a21f45a94",
+        "responseSha256": "5a723f3cd450cd7ddfdd28167784abf01865eb3cee10116477985319c56c25e8",
+        "bundleSha256": "50390b6d44569c2fadb55c54e07e64beed68d513195e2f951f36999131df00d3"
+      },
+      {
+        "name": "bidi-isolates",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/bidi-isolates.request.json",
+        "responsePath": ".codex-work/line-geometry/bidi-isolates.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/9dc6fba53d57ff3d640a4641064c507817e53163f2c7f8425f70fba8164db859.bin",
+        "requestSha256": "a07c90f3f3fdd7e05166c45a074549a824d357dc3ed91ee32635e78df47ebb1f",
+        "responseSha256": "8a5fabf1bfca49ef2481d17a6b9fd9c1c72816c2927dd9a5fc4bc680d30d2533",
+        "bundleSha256": "9dc6fba53d57ff3d640a4641064c507817e53163f2c7f8425f70fba8164db859"
+      },
+      {
+        "name": "bidi-embeddings",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/bidi-embeddings.request.json",
+        "responsePath": ".codex-work/line-geometry/bidi-embeddings.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/9dc6fba53d57ff3d640a4641064c507817e53163f2c7f8425f70fba8164db859.bin",
+        "requestSha256": "689f5c9bf0d0cfcc05472d6587fc82d2982f8f6989d41905ac5e0b708f6dcb7e",
+        "responseSha256": "173a665e49da585dbe5f97ba4a1c4823d3f45af98af6fe3127d91ae93ed96547",
+        "bundleSha256": "9dc6fba53d57ff3d640a4641064c507817e53163f2c7f8425f70fba8164db859"
+      },
+      {
+        "name": "line-l1-reset",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/line-l1-reset.request.json",
+        "responsePath": ".codex-work/line-geometry/line-l1-reset.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/9dc6fba53d57ff3d640a4641064c507817e53163f2c7f8425f70fba8164db859.bin",
+        "requestSha256": "46eafe8d0bcbc2829d1c6850d22e15eab85fe24f7bb2ad4449ae89ed128ea84f",
+        "responseSha256": "042ccfdb2c0fa8313e69e98c7903b3fc26aadd3d234844d4ca8081af71e97e37",
+        "bundleSha256": "9dc6fba53d57ff3d640a4641064c507817e53163f2c7f8425f70fba8164db859"
+      },
+      {
+        "name": "marks",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/marks.request.json",
+        "responsePath": ".codex-work/line-geometry/marks.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "2cb975c63b46bf162e6112266940948c4cb62e1dc50906f1305a9d3f2b8c7d5b",
+        "responseSha256": "04760fb2393db59a2b0561465aa41d3ecbf558445efed34ec32c79f7e5a329fd",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "devanagari",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/devanagari.request.json",
+        "responsePath": ".codex-work/line-geometry/devanagari.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/14ec4af41f27482216d1c2229f417ff9b1425e1babb014e57d1d40d03229853e.bin",
+        "requestSha256": "349d17f94485a51cc0d5982d3b5dd8e6bfd55a4762aafc1c7194ca7a8c799fda",
+        "responseSha256": "5e4de416e1f0b35a174797b0de9c03e62982f841163184b83fa660c647985897",
+        "bundleSha256": "14ec4af41f27482216d1c2229f417ff9b1425e1babb014e57d1d40d03229853e"
+      },
+      {
+        "name": "cjk",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/cjk.request.json",
+        "responsePath": ".codex-work/line-geometry/cjk.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da.bin",
+        "requestSha256": "b00189495f27485fab5451da2627eca2641148b2c65f0f1e91e2adf534683be5",
+        "responseSha256": "45ca85b781da587cfc7c7e184c216ba3ffa3c354b06d25becf559159f2e3e1b5",
+        "bundleSha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da"
+      },
+      {
+        "name": "mixed-upem",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/mixed-upem.request.json",
+        "responsePath": ".codex-work/line-geometry/mixed-upem.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/f20e54c7787a88ba7cd498ecfa165c53b1ad7a3d96ee01e2614e56dc7e4af1fa.bin",
+        "requestSha256": "cd9300e4eb681859dbf0171e6e81c8c314af8eb65444b81568ae694b8b6b77e9",
+        "responseSha256": "db3808d93cb88e56651832504b971fec0ef76da5dc4114aeee73b3235a22f72e",
+        "bundleSha256": "f20e54c7787a88ba7cd498ecfa165c53b1ad7a3d96ee01e2614e56dc7e4af1fa"
+      },
+      {
+        "name": "emoji-zwj",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/emoji-zwj.request.json",
+        "responsePath": ".codex-work/line-geometry/emoji-zwj.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/f20e54c7787a88ba7cd498ecfa165c53b1ad7a3d96ee01e2614e56dc7e4af1fa.bin",
+        "requestSha256": "355110d7c5f8c465ae7463d7fef785ffc3fb62ce8f18eea8276f687f70f641a0",
+        "responseSha256": "52b3c0568b6ca04ad0a14866e5de19e19371d2673a78165538477b7b527a3b72",
+        "bundleSha256": "f20e54c7787a88ba7cd498ecfa165c53b1ad7a3d96ee01e2614e56dc7e4af1fa"
+      },
+      {
+        "name": "empty",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/empty.request.json",
+        "responsePath": ".codex-work/line-geometry/empty.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "d828b4659c98500a35ac3d432e676daf356a97fcca438d6b7ea290cf48658b32",
+        "responseSha256": "6a5a58ceb754a1fc2edde210d4f45bbef39f19aef94da943fe6b8dd85c1e9d76",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "terminator",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/terminator.request.json",
+        "responsePath": ".codex-work/line-geometry/terminator.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "aaff34d4ee539e214f99bf5c79f39252754e757dbcd2e38788857985092c97b0",
+        "responseSha256": "a3bfd538dd2337f32deb2ab7695600c027c8ae49bb0411843f313a46f7fc2f02",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "controls",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/controls.request.json",
+        "responsePath": ".codex-work/line-geometry/controls.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "c81914742199ea15927cb87dc262694fc58ccc8905e05469b4df51c6195b35a7",
+        "responseSha256": "9572693ce9c7f90d2474e9f640c5ce6acccbec6a29ee2703948a92d314e17162",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "unresolved-font",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/unresolved-font.request.json",
+        "responsePath": ".codex-work/line-geometry/unresolved-font.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "f8dc48293a3412d2a6a174e62b4818467703c146771eb017ef470ba475ca0d75",
+        "responseSha256": "127245e3dd62b467c38d1e83ebda463a921ead5b9f418ef615535675ff47a675",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "tabs",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/tabs.request.json",
+        "responsePath": ".codex-work/line-geometry/tabs.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "2795a406f54df5e49ed11c925afaab3dc231211878314428a4f7b38c9c10921e",
+        "responseSha256": "558a9775ee7f0c15d79ba3abe02f7d8fa33272358eb3ee834953b64c80b1750f",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "exact-tight",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/exact-tight.request.json",
+        "responsePath": ".codex-work/line-geometry/exact-tight.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "ae57daf9b394ab22f9030f491bdba0dd59ffab75854e9e12280a30768e53f2d7",
+        "responseSha256": "1177aa1d1ecb7cbb24d54240210702207317755140ba73320b945d1524961c3a",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "at-least",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/at-least.request.json",
+        "responsePath": ".codex-work/line-geometry/at-least.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "cd5b4b05a2b90abf42cb1fb1b8f35fbedf321e4b4a7acd4068082801323718ef",
+        "responseSha256": "2f3ccb34a87af40b544c84799084e6142379547d84465282299356fb98899cc2",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "at-least-small",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/at-least-small.request.json",
+        "responsePath": ".codex-work/line-geometry/at-least-small.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "b67ab2ce4a5d97deda447c40fcba9326df4e7386b2007e08de42ff29c2b2acd8",
+        "responseSha256": "7f9269db71403f312531c75923c7cd2ecded447d8176cec6e776c9cd02c2156f",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "sizes-and-baselines",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/sizes-and-baselines.request.json",
+        "responsePath": ".codex-work/line-geometry/sizes-and-baselines.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/9dc6fba53d57ff3d640a4641064c507817e53163f2c7f8425f70fba8164db859.bin",
+        "requestSha256": "8afc32af80d4581f1bde95223a4598d550e71e892e421d9969aa022105cd3ba7",
+        "responseSha256": "54e7f0b136e5589d30dd76d3b7fd403beb6e6ecac243d10e4b66493d0ac0875a",
+        "bundleSha256": "9dc6fba53d57ff3d640a4641064c507817e53163f2c7f8425f70fba8164db859"
+      },
+      {
+        "name": "mvar-hhea",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/mvar-hhea.request.json",
+        "responsePath": ".codex-work/line-geometry/mvar-hhea.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/31408efd7b2c038bc0ca214d7c04649aeffd54293e20bf805fde50087f3e3da0.bin",
+        "requestSha256": "cf7ee7e829b2558c2ed4dd7e69548d6d939adc358373ccf9ad5ac7440f7f8eda",
+        "responseSha256": "e3dd4d0d9eed94ea01d29e6085d0fd1811badda520401c412888b3253fad344a",
+        "bundleSha256": "31408efd7b2c038bc0ca214d7c04649aeffd54293e20bf805fde50087f3e3da0"
+      },
+      {
+        "name": "mvar-typo",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/mvar-typo.request.json",
+        "responsePath": ".codex-work/line-geometry/mvar-typo.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/7984ed666ce6ab79d7d46b707a162ac1e0035d9d5d4e98f150d314e3daf482a0.bin",
+        "requestSha256": "f9a80e186734310ba4e87b3884a8952f6774d73116ace870863f9018f267495d",
+        "responseSha256": "f1d38ce1e299debedce839fb1088dbea6bf48beadf3ee1736bddcd9a94299689",
+        "bundleSha256": "7984ed666ce6ab79d7d46b707a162ac1e0035d9d5d4e98f150d314e3daf482a0"
+      },
+      {
+        "name": "tiny-prefix-precision",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/tiny-prefix-precision.request.json",
+        "responsePath": ".codex-work/line-geometry/tiny-prefix-precision.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "d60fb1e61dea5a25fbe8a4fe7305c961211b0ab32151f0f6de81ba897ba92fda",
+        "responseSha256": "fa1295e185cf76889cc9cc67e51b5c19d4f088228a099dd5f3a3a379934aa70a",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "beyond-js-integer",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/beyond-js-integer.request.json",
+        "responsePath": ".codex-work/line-geometry/beyond-js-integer.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "989df1d2fbcb249ddf76242e50a232e3176a8f7a6e6b8f839ea9e7f79d4ad24f",
+        "responseSha256": "031be7ca8093f6ad9b030140c5096a5a806bc349606716bca371a32bb6b01d1d",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "maximum-empty-lines",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/maximum-empty-lines.request.json",
+        "responsePath": ".codex-work/line-geometry/maximum-empty-lines.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "827995e45ab82c4afe75737bafd2cf0f4486e15be3a9bb1ff01fa9bc22252286",
+        "responseSha256": "70014935ded96e196d36caa18bc2e4cb554268ddf6f000c1402a6ba5311906b2",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "zero-size",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/zero-size.request.json",
+        "responsePath": ".codex-work/line-geometry/zero-size.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "23061fd2fdb401a0fd03c33afba9928f0b3e1b02e8a699ca32de57b51b663341",
+        "responseSha256": "dd634204a0290391a3d00bc8ab7a60dcd02d2c7476de2016587c915767a9e8e4",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "negative-size",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/negative-size.request.json",
+        "responsePath": ".codex-work/line-geometry/negative-size.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "4c45ef0251fb3885da673dcb2b4d24487143ac9fecc7c61ab8cc6a703842a9d7",
+        "responseSha256": "dd634204a0290391a3d00bc8ab7a60dcd02d2c7476de2016587c915767a9e8e4",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "numeric-size",
+        "kind": "line-geometry",
+        "validRequest": false,
+        "requestPath": ".codex-work/line-geometry/numeric-size.request.json",
+        "responsePath": ".codex-work/line-geometry/numeric-size.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "1c279542898dd5b66e83b3402d1cf210c3038d3e67360e8cd4bf8ce5bf0dd8d7",
+        "responseSha256": "bc9fc0a2ffc15db5a1873163530d30b52335e242a5e02c5245a5207c8d658af8",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "noncanonical-size",
+        "kind": "line-geometry",
+        "validRequest": false,
+        "requestPath": ".codex-work/line-geometry/noncanonical-size.request.json",
+        "responsePath": ".codex-work/line-geometry/noncanonical-size.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "d2d12a0f490dee3593abed060eeb2725740991d2d1ddf949b1525998b60b1979",
+        "responseSha256": "92b8b7a2a6e828cad11c5686a65c2d21afacb72067eba16268864db0473311d6",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "size-range",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/size-range.request.json",
+        "responsePath": ".codex-work/line-geometry/size-range.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "a3ded722bf6d01e7ac9fbea9cbd1fed4848cef5e48eb0b499df8b3f5d44e14bf",
+        "responseSha256": "92b8b7a2a6e828cad11c5686a65c2d21afacb72067eba16268864db0473311d6",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "overflow",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/overflow.request.json",
+        "responsePath": ".codex-work/line-geometry/overflow.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "a03a084b3f2ec91a0e0d6e9da2eba1e0a6e1e391e76255055c6b6f45ebec5a58",
+        "responseSha256": "f8eeae45cfb47ece9547a7945f1c5fcea1d23baa637259950b78fc94321e4e03",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "missing-style",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/missing-style.request.json",
+        "responsePath": ".codex-work/line-geometry/missing-style.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "cf5fa01fdc7a5c99308e82d4713de7dca57d3221ac5437c40319c592063c8511",
+        "responseSha256": "a4edf0cd20227dae93e68476ffd045e7889c0996d7d1a794b5a31a2075d07948",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "strut-outside",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/strut-outside.request.json",
+        "responsePath": ".codex-work/line-geometry/strut-outside.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "39c100ae31699868a4747465e9172fe2bd9df1627e7c01a94cdefdee47b5043d",
+        "responseSha256": "a4edf0cd20227dae93e68476ffd045e7889c0996d7d1a794b5a31a2075d07948",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "zero-spacing",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/zero-spacing.request.json",
+        "responsePath": ".codex-work/line-geometry/zero-spacing.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "ef71b38e8bd2b3581a4cf57737bb524cd26c4815253737355ae0ef9a4d7a02eb",
+        "responseSha256": "b047f3ebaeaf0054af445d731f426f52081a77b8cdce37aa8490ee442588e17f",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "unknown-field",
+        "kind": "line-geometry",
+        "validRequest": false,
+        "requestPath": ".codex-work/line-geometry/unknown-field.request.json",
+        "responsePath": ".codex-work/line-geometry/unknown-field.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "2063da7288e07124b91e91be58bf957700b076ca88047fe3e600659ff0915ba1",
+        "responseSha256": "baaaa24f4e4e5a3c03069118f78040e20be046c7e2bc03cffe3e7b5fd360623c",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "split-grapheme",
+        "kind": "line-geometry",
+        "validRequest": true,
+        "requestPath": ".codex-work/line-geometry/split-grapheme.request.json",
+        "responsePath": ".codex-work/line-geometry/split-grapheme.response.json",
+        "bundlePath": ".codex-work/line-geometry/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "efc4e9e042e6b4d81ae547b369a9b2a3754e0a9f494d9b1847b762b9578c25d9",
+        "responseSha256": "0914f6b25b7d6e649c258f87415155648aff664472014486fca2d8fab06c6e44",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      }
+    ]
+  },
+  "independentGeometryReport": {
+    "format": "musteroffice.line-geometry-reference/1",
+    "layouts": 22,
+    "lines": 4134,
+    "glyphs": 401,
+    "coordinates": 33896,
+    "maximumWireErrorEmu": "1/2",
+    "q32ProfileExact": true,
+    "unquantizedRationalErrorBoundVerified": true,
+    "scope": "Independent Python Fraction geometry and scalar L2 reconstruction, using upstream-checked shaping/metrics; no independent font rasterization or Office/WPS layout comparison."
+  },
+  "contractReport": {
+    "lineGeometryResponses": 35,
+    "lineShapeResponses": 34,
+    "fontMetricsResponses": 29,
+    "lineBreakResponses": 41,
+    "itemizationResponses": 197,
+    "paragraphResponses": 51,
+    "bidiResponses": 22,
+    "cascadeResponses": 43,
+    "unicodeResponses": 21,
+    "textResponses": 57,
+    "fontRequests": 35,
+    "fontResponses": 39,
+    "schemas": 34,
+    "positiveInputs": 11,
+    "negativeMutations": 9,
+    "responses": 22,
+    "opcResponses": 21,
+    "sourceResponses": 73,
+    "sourceRequests": 95,
+    "colorRequests": 118,
+    "colorResponses": 122
+  },
+  "regressionReports": {
+    "document": {
+      "report": {
+        "path": ".codex-work/line-geometry/document-regression.json",
+        "byteLength": 113671,
+        "sha256": "1eaed59326428da8e2f4ba2c11b0fd0a08ac126883cc4909e39aa81ef585585a"
+      },
+      "batches": 22,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "opc": {
+      "report": {
+        "path": ".codex-work/line-geometry/opc-regression.json",
+        "byteLength": 24248,
+        "sha256": "4b3df5a9c77a255caf022150c4c41b19b45b330cdbaf0311461c28278b011171"
+      },
+      "batches": 21,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "export": {
+      "report": {
+        "path": ".codex-work/line-geometry/export-regression.json",
+        "byteLength": 3289,
+        "sha256": "4b79ed46561884b772967285c143fdb63d09141c445e6c5f6b4acdceddd0c645"
+      },
+      "batches": 17,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "source": {
+      "report": {
+        "path": ".codex-work/line-geometry/source-regression.json",
+        "byteLength": 2590039,
+        "sha256": "d90f83c8edb2fb448a546ab88317dd93db6a9f10c5d7a94b711091d5086e1f5f"
+      },
+      "batches": 168,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "color": {
+      "report": {
+        "path": ".codex-work/line-geometry/color-regression.json",
+        "byteLength": 812732,
+        "sha256": "ebe6b5508ba3b256e6fd70317cc23fb80ba192928a1c36614ca85e2e07208aaf"
+      },
+      "batches": 122,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "font": {
+      "report": {
+        "path": ".codex-work/line-geometry/font-regression.json",
+        "byteLength": 16531668,
+        "sha256": "d41a15923743e7bbc52717843251656311132cacaecdfab3f2a053d068916870"
+      },
+      "batches": 39,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "shaping": {
+      "report": {
+        "path": ".codex-work/text-shaping/parity.json",
+        "byteLength": 364600,
+        "sha256": "79019c93c028b024486be8353f6ea46f6a77e83cbf2b52e27a0e7cef82e28531"
+      },
+      "batches": 57,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "unicode": {
+      "report": {
+        "path": ".codex-work/unicode/verification/parity.json",
+        "byteLength": 10020,
+        "sha256": "7e4850f8b8f22b90cd2946041f5d20b44e6cf307404f34a42120f3c681377aec"
+      },
+      "batches": 21,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "cascade": {
+      "report": {
+        "path": ".codex-work/font-cascade/parity.json",
+        "byteLength": 259616,
+        "sha256": "cbac73a1463dea04a5c47c8e8251ae82265c9da3e7c73770769999d5d0b739e4"
+      },
+      "batches": 43,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "bidi": {
+      "report": {
+        "path": ".codex-work/bidi/parity.json",
+        "byteLength": 9089,
+        "sha256": "c1affae7e0141c716f553ac5ca29964cb99fc85efa4a00264808bb193647c5fe"
+      },
+      "batches": 22,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "bidiConformance": {
+      "report": {
+        "path": ".codex-work/bidi/conformance.json",
+        "byteLength": 262069,
+        "sha256": "2a97995d1ccdb2f75893c269f9744718a9a98c9cd07d2534f562891185249cbc"
+      },
+      "batches": 843,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "itemizationAndParagraph": {
+      "report": {
+        "path": ".codex-work/itemization/parity.json",
+        "byteLength": 107362,
+        "sha256": "2293b1f03b7fd980e264f3e2d6f540466783dd11aaea6a5607dbeef39975dbb4"
+      },
+      "batches": 231,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "mixedFont": {
+      "report": {
+        "path": ".codex-work/font-fallback/parity.json",
+        "byteLength": 12741,
+        "sha256": "e3bf9d58bde7252c2f1228ffed7e811396bae0906eb9534d15a9d09f2a454233"
+      },
+      "batches": 17,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "lineBreaking": {
+      "report": {
+        "path": ".codex-work/line-break/parity.json",
+        "byteLength": 20072,
+        "sha256": "bf784ba9ddab08d1a493b44815a71500ceca1d9fef34d2f34b4a99a65e9e7a44"
+      },
+      "batches": 41,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "fontMetrics": {
+      "report": {
+        "path": ".codex-work/font-metrics/parity.json",
+        "byteLength": 16615,
+        "sha256": "780d15055333900e2505cc698f370fe926d59154f649882fcbf4ab7153ea34b8"
+      },
+      "batches": 29,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "lineShaping": {
+      "report": {
+        "path": ".codex-work/line-shaping/parity.json",
+        "byteLength": 25630,
+        "sha256": "af4dbabc0c84f987a9409c7d323f54fca69d3a9de46800324a5d01bb683485f3"
+      },
+      "batches": 34,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    }
+  },
+  "rustTestNames": [
+    "text::tests::timeout_kills_and_reaps_worker_with_blocked_input",
+    "tests::hue_wrap_achromatic_and_transparent_colors_are_well_defined",
+    "tests::invalid_numbers_fail_and_extended_gamut_is_reported_at_sampling",
+    "tests::transform_order_and_linear_rgb_space_are_observable",
+    "tests::srgb_transfer_and_sampling_do_not_round_working_channels",
+    "non_finite_numbers_cannot_silently_become_null_in_a_digest",
+    "identifiers_are_constrained_on_deserialization",
+    "duplicate_keys_are_rejected_at_every_depth",
+    "byte_lengths_reject_numeric_loss_overflow_and_noncanonical_spellings",
+    "time_is_exact_at_extremes_and_ntsc_rate",
+    "coordinates_reject_lossy_or_noncanonical_inputs",
+    "canonical_bytes_have_stable_keys_and_preserve_text",
+    "rational_normalization_preserves_time",
+    "every_u64_byte_length_round_trips",
+    "every_i64_coordinate_round_trips",
+    "cmap::validation::tests::format10_valid_array_and_invalid_glyph_are_distinct",
+    "tests::legacy_charmaps_are_not_implicit_unicode_fallbacks",
+    "tests::name_format_one_preserves_language_tag_identity",
+    "tests::directory_checksums_and_table_overlap_are_rejected",
+    "tests::collection_face_and_other_directory_ranges_are_checked",
+    "tests::untrusted_maximum_offsets_do_not_overflow_platform_width",
+    "tests::variation_mapping_never_silently_falls_back",
+    "tests::resource_identity_and_request_scalars_checked",
+    "tests::malformed_consumed_metadata_is_not_replaced",
+    "tests::verified_face_queries_reuse_immutable_bytes_and_keep_per_call_limits",
+    "tests::malformed_cmap_cannot_masquerade_as_missing_glyph",
+    "tests::cancellation_interrupts_multiple_stages",
+    "tests::actual_ttf_cff_and_collection_metadata",
+    "tests::every_configurable_limit_is_enforced",
+    "tests::all_prefix_truncations_are_errors_without_panics",
+    "tests::creating_a_new_wrapper_cannot_clear_instance_invalidation",
+    "line_break::tests::strict_json_and_cancellation_do_not_publish_partial_batches",
+    "line_break::tests::invalid_later_input_and_batch_limits_have_no_partial_results",
+    "inspection_preserves_budget_and_cancellation_error_categories",
+    "source_bridge_preserves_nested_limit_and_cancel_categories",
+    "color_bridge_preserves_cancel_limit_and_source_conflict_categories",
+    "zip_structure::tests::descriptors_accept_both_widths_and_signature_modes_including_crc_collision",
+    "writer_validates_xml_bytes_and_resources_before_exposing_output",
+    "overlapping_local_entries_are_rejected_even_with_matching_names_and_crc",
+    "part_names_and_relationship_resolution_follow_uri_scope",
+    "malformed_xml_in_a_regular_part_is_not_hidden_by_a_valid_zip",
+    "streamed_open_resolves_graph_and_retains_opaque_bytes",
+    "crc_truncation_extra_bytes_and_entry_count_mismatches_are_rejected",
+    "missing_targets_duplicate_relationship_ids_and_orphan_overrides_fail",
+    "equivalent_names_traversal_and_header_disagreement_are_rejected",
+    "cancellation_and_declared_budgets_fail_before_unbounded_work",
+    "duplicate_rewrite_does_not_replace_the_already_prepared_value",
+    "no_op_rewrite_is_byte_identical_and_mutation_preserves_unedited_parts",
+    "signed_packages_may_be_copied_but_not_silently_modified",
+    "deterministic_builder_uses_real_reopened_output_and_external_links_do_not_fetch",
+    "stream_resources_are_digest_bound_and_reads_stay_bounded",
+    "missing_resources_cancellation_and_output_budgets_are_enforced",
+    "invalid_or_unimplemented_mapping_never_silently_flattens_content",
+    "authored_deck_exports_deterministically_with_native_parts_and_relationships",
+    "real_pptx_projection_resolves_pages_surfaces_native_identity_and_groups",
+    "reader_and_editor_enforce_cancellation_and_projection_budgets",
+    "omitted_color_map_is_not_an_explicit_marker_or_an_invented_default",
+    "ambiguous_placeholders_are_reported_without_first_match_geometry",
+    "source_theme_colors_keep_all_models_exact_percentages_and_transform_order",
+    "compatibility_wrappers_do_not_hide_pages_or_discard_source_leaf_structure",
+    "native_themes_are_shared_and_selected_without_mutating_author_declarations",
+    "placeholder_dimensions_resolve_per_property_without_flattening_author_data",
+    "theme_mce_and_retained_declarations_cannot_inject_active_scheme_state",
+    "malformed_identity_and_relationships_never_produce_a_partial_success",
+    "source_bindings_use_physical_ordinals_after_mce_projection_and_preserve_branches",
+    "noop_copy_and_multi_part_edits_are_atomic_with_source_preconditions",
+    "color_map_inheritance_keeps_author_markers_and_candidate_provenance",
+    "text_edit_reopens_candidate_and_preserves_unknown_xml_and_other_parts",
+    "theme_validation_and_aggregate_budgets_prevent_partial_success",
+    "timing_references_in_active_and_inactive_branches_block_text_mutation",
+    "unsupported_parent_placeholder_context_does_not_leak_geometry_into_descendants",
+    "malformed_color_maps_cannot_produce_partial_success",
+    "explicit_zero_dimensions_and_missing_or_detached_matches_do_not_invent_geometry",
+    "invalid_placeholder_attributes_are_rejected",
+    "unresolved_context_is_not_black_and_host_system_color_has_provenance",
+    "color_budget_digest_and_cancellation_fail_atomically",
+    "numeric_range_and_resource_budget_are_distinct_from_valid_extended_gamut",
+    "normative_color_examples_use_distinct_channel_and_tint_spaces",
+    "ownership_cycle_cannot_be_committed",
+    "final_reference_validation_rolls_back_entire_transaction",
+    "out_of_range_splices_fail_without_mutating_content",
+    "failure_does_not_publish_earlier_operations",
+    "deletion_rejects_dependencies_unless_explicitly_cascaded",
+    "scalar_splice_preserves_emoji_combining_marks_and_run_identity",
+    "revision_conflicts_do_not_rebase_and_retries_use_original_receipt",
+    "unknown_fields_and_variants_are_rejected_at_wire_boundary",
+    "unbounded_host_depth_setting_still_rejects_cycles_without_overflow",
+    "limit_errors_cannot_be_hidden_by_zero_diagnostic_budget",
+    "duplicate_and_orphaned_ownership_are_rejected",
+    "connectors_cannot_target_another_slide",
+    "mismatched_resource_kind_and_missing_fonts_are_rejected",
+    "geometry::number::tests::design_prefix_quantization_is_not_per_glyph_wire_rounding",
+    "geometry::number::tests::signed_ties_large_values_and_range_are_explicit",
+    "cascade::tests::component_failure_is_fatal_and_never_a_font_fallback",
+    "cascade::tests::ordered_fallback_reuses_a_verified_face_and_preserves_failed_evidence",
+    "fallback::tests::unsafe_break_dependencies_in_later_candidate_can_require_one_font",
+    "fallback::tests::mixed_fonts_reshape_in_batches_instead_of_splicing_unsafe_concat_glyphs",
+    "fallback::tests::rtl_clusters_keep_logical_fragment_ranges_and_visual_glyph_order",
+    "fallback::tests::final_reshape_failure_advances_candidates_without_leaking_old_glyphs",
+    "cascade::tests::unused_candidates_and_resources_are_not_exempt_from_validation",
+    "fallback::tests::unresolved_ranges_remain_explicit_and_cover_the_input",
+    "itemize::tests::controls_and_style_changes_keep_exhaustive_logical_coordinates",
+    "fallback::tests::observed_ligatures_and_extended_graphemes_are_indivisible",
+    "geometry::tests::empty_line_uses_verified_strut_metrics_and_explicit_spacing",
+    "geometry::tests::scalar_l2_orders_whole_fragments_and_keeps_rtl_glyph_sequence",
+    "geometry::tests::geometry_style_changes_prevent_incorrect_shape_merging_and_reuse_metrics",
+    "geometry::tests::signed_pen_and_offsets_cross_fragments_without_becoming_advances",
+    "geometry::tests::zero_metrics_are_present_but_need_positive_explicit_line_height",
+    "cascade::tests::selectors_cannot_disappear_behind_a_successful_glyph_array",
+    "itemize::tests::script_data_preserves_unknown_and_full_extensions_without_locale_guessing",
+    "itemize::tests::isolates_do_not_leak_script_context_or_bracket_pairs",
+    "itemize::tests::marks_and_emoji_are_never_split_and_foreign_marks_are_diagnosed",
+    "itemize::tests::script_extensions_constrain_common_symbols_and_shared_explicit_digits",
+    "itemize::tests::paired_punctuation_uses_outer_script_across_script_and_direction_changes",
+    "cascade::tests::all_cascade_budgets_and_cancellation_fail_without_partial_results",
+    "fallback::tests::failures_and_limits_do_not_publish_partial_fragments",
+    "metrics::tests::empty_measurement_verifies_font_without_component_work",
+    "lines::tests::bidi_resolution_stays_in_paragraph_while_line_trailing_levels_reset",
+    "geometry::tests::numeric_validation_precedes_component_and_unresolved_layout_is_explicit",
+    "lines::tests::empty_and_control_only_lines_preserve_source_without_shaping",
+    "lines::tests::line_context_clips_features_and_rebases_all_public_coordinates",
+    "metrics::tests::all_instance_parameters_are_checked_before_component_call",
+    "lines::tests::every_line_and_style_is_validated_before_shaping",
+    "metrics::tests::missing_values_and_real_zero_are_distinct_and_many_instances_batch_once",
+    "itemize::tests::invalid_spans_paragraphs_budgets_and_every_cancel_checkpoint_fail_atomically",
+    "tests::failed_batch_has_no_partial_result_and_memory_failure_invalidates",
+    "tests::explicit_scalar_coordinates_and_signed_positions",
+    "tests::internal_frame_cannot_smuggle_lengths_or_trailing_words",
+    "paragraph::tests::unused_and_control_only_styles_are_validated_before_any_shaping",
+    "tests::identity_limits_and_cancellation_precede_backend",
+    "tests::missing_glyphs_remain_explicit",
+    "tests::verified_shaping_requires_matching_identity_and_face_without_reloading",
+    "tests::invalid_request_does_not_invoke_component",
+    "metrics::tests::malformed_reply_or_failure_never_publishes_partial_metrics",
+    "tests::every_truncated_reply_and_trailing_word_invalidates",
+    "tests::output_headers_and_glyph_references_are_checked",
+    "metrics::tests::cancelling_empty_measurement_does_not_invalidate_an_unused_component",
+    "metrics::tests::every_cancellation_checkpoint_discards_the_batch_and_postcall_invalidates",
+    "paragraph::tests::paragraph_size_identity_and_cancellation_fail_before_component",
+    "geometry::tests::failure_after_shaping_and_cancellation_do_not_return_partial_positions",
+    "fallback::tests::cancellation_at_every_own_checkpoint_returns_no_result",
+    "lines::tests::later_component_failure_and_any_cancellation_publish_no_partial_lines",
+    "itemize::tests::deep_and_unmatched_brackets_preserve_all_text_without_depth_truncation",
+    "line_break::tests::hard_breaks_and_empty_text_have_explicit_semantics",
+    "line_break::tests::punctuation_numbers_and_emoji_are_not_arbitrarily_split",
+    "bidi::tests::invalid_paragraphs_and_line_boundaries_are_rejected",
+    "line_break::tests::combining_context_and_dictionary_responsibility_are_preserved",
+    "line_break::tests::scalar_utf8_and_utf16_positions_do_not_alias",
+    "bidi::tests::scalar_coordinates_preserve_supplementary_text_and_original_order",
+    "bidi::tests::line_resets_are_separate_from_paragraph_resolution",
+    "bidi::tests::formatting_removal_is_an_index_mapping_not_content_deletion",
+    "bidi::tests::unicode18_brackets_and_cross_utf16_mirroring_are_explicit",
+    "line_break::tests::unicode18_hyphens_and_nonbreaking_spaces_follow_revision57",
+    "properties::tests::generated_table_is_sorted_nonoverlapping_and_has_valid_values",
+    "tests::controls_override_prepend_and_extenders",
+    "tests::emoji_flags_and_combining_marks_keep_scalar_and_utf16_coordinates_distinct",
+    "tests::limits_and_midstream_cancellation_fail_without_partial_output",
+    "tests::unicode18_linker_rule_does_not_require_a_leading_consonant",
+    "bidi::tests::budgets_and_all_cancellation_checkpoints_are_effective",
+    "line_break::tests::resource_limits_and_each_cancellation_checkpoint_are_atomic",
+    "properties::tests::selectors_match_the_explicit_font_contract",
+    "chooses_first_understood_branch_with_original_ordinals_and_logical_depths",
+    "fallback_nested_selection_and_no_matching_branch_preserve_sibling_positions",
+    "must_understand_only_applies_to_content_that_is_processed",
+    "ignorable_and_process_content_resolve_namespace_scopes_not_prefix_spellings",
+    "underlying_xml_limits_and_cancellation_apply_to_ignored_content",
+    "extension_content_suspends_mce_and_source_observer_sees_inactive_data",
+    "malformed_mce_control_and_rule_declarations_are_not_silently_discarded",
+    "xml_declarations_are_checked_and_cancellation_is_observable",
+    "character_data_and_attributes_follow_xml_normalization_without_unicode_folding",
+    "prefixes_are_resolved_and_default_namespaces_do_not_apply_to_attributes",
+    "utf16_and_bom_utf8_are_supported_without_lossy_replacement",
+    "dtd_external_entities_and_malformed_documents_are_rejected",
+    "limits_bound_depth_elements_attributes_and_text",
+    "namespaces_restore_after_nested_shadowing",
+    "empty_elements_expand_without_dropping_attributes_and_textless_comments_survive",
+    "preconditions_and_nested_elements_prevent_wrong_or_destructive_edits",
+    "rewriting_honors_span_output_and_cancellation_budgets",
+    "text_rewrite_retains_unknown_attributes_siblings_comments_and_pi_bytes",
+    "utf8_and_utf16_encodings_boms_and_original_lexical_forms_are_preserved"
+  ],
+  "dependencyChanges": {
+    "newInternalCrates": [],
+    "newExternalVersions": [],
+    "featureChanges": [],
+    "newUnicodeData": []
+  },
+  "sourceFiles": [
+    {
+      "path": "AGENTS.md",
+      "byteLength": 3516,
+      "sha256": "155ce005ed777e464da515d8008b7ad25c4b4b184fa072da93997483c8e0d7f9"
+    },
+    {
+      "path": "Cargo.lock",
+      "byteLength": 21385,
+      "sha256": "281fff796c2ca685a67fd2471af18c64c3afb5254c72c297296f084ad885162e"
+    },
+    {
+      "path": "Cargo.toml",
+      "byteLength": 1846,
+      "sha256": "d5f5cc0d1cdf5419286290e1851592f41cf24e342391c50af492c72640a42d83"
+    },
+    {
+      "path": "README.md",
+      "byteLength": 5364,
+      "sha256": "5f228955f85bb530bbcfb131c774b1c0d77cf323bb67162b800764db8ccea669"
+    },
+    {
+      "path": "components/harfbuzz/README.md",
+      "byteLength": 5874,
+      "sha256": "b4a8af7c82e8b919a56abb989c63c8fcb6e4d53ee4837f4c21b9d10a415f3517"
+    },
+    {
+      "path": "components/harfbuzz/lock.json",
+      "byteLength": 485,
+      "sha256": "09f7d48e187b4e03265cd8d9e9a89fdcc8dcfc373555ea66992d125d750fa363"
+    },
+    {
+      "path": "components/harfbuzz/mo_hb.cpp",
+      "byteLength": 5591,
+      "sha256": "57a5a53cf18d153cfd4c46d62f56c24f5568ffcfaf3a2b2510fad88b19ff57fa"
+    },
+    {
+      "path": "components/harfbuzz/mo_hb.h",
+      "byteLength": 1124,
+      "sha256": "6fd464d8797cf1d7fdaf5646987a606a907ebc553572d421b65195c2600e9202"
+    },
+    {
+      "path": "components/harfbuzz/mo_hb_allocator.cpp",
+      "byteLength": 3640,
+      "sha256": "f041e0a5ee7a33097b11c24f7d0467a6a71ad59ca9a0f1283209bbe5a7891997"
+    },
+    {
+      "path": "components/harfbuzz/mo_hb_allocator.h",
+      "byteLength": 508,
+      "sha256": "3177db2198adea0f6d97fa4e90e45d56f7b8564f1eeb7c6394e6945dd668c58a"
+    },
+    {
+      "path": "components/harfbuzz/mo_hb_font.h",
+      "byteLength": 2426,
+      "sha256": "68282e43430157a05ab343b691e0066c0ca595dbb1bf355045b0591754d3587c"
+    },
+    {
+      "path": "components/harfbuzz/mo_hb_metrics.cpp",
+      "byteLength": 3185,
+      "sha256": "9364612ee95367cdef499145c0cc608620c89ef904c33a6675ce37704266194e"
+    },
+    {
+      "path": "components/unicode-bidi/AUTHORS",
+      "byteLength": 121,
+      "sha256": "1ff3a7c8519b29544bb28ba9b1e7502df0cb764051fb9a1172e60006aa2b8dcc"
+    },
+    {
+      "path": "components/unicode-bidi/COPYRIGHT",
+      "byteLength": 412,
+      "sha256": "edb20b474f6cbd4f4db066b54a9e0f687d0009d309412a63431189b59b8e2a07"
+    },
+    {
+      "path": "components/unicode-bidi/LICENSE-MIT",
+      "byteLength": 1071,
+      "sha256": "7b63ecd5f1902af1b63729947373683c32745c16a10e8e6292e2e2dcd7e90ae0"
+    },
+    {
+      "path": "components/unicode-bidi/component.json",
+      "byteLength": 675,
+      "sha256": "85f237648bd743ff937631121a7471cfd28ee1f78b4a2a3c7fac5e820f836de9"
+    },
+    {
+      "path": "contracts/README.md",
+      "byteLength": 7750,
+      "sha256": "0ea91cc27f1438cc240767da06da1a152b6a9ae430bed9f2f13175ae7ea9662e"
+    },
+    {
+      "path": "contracts/generated/bidi-analysis-request.schema.json",
+      "byteLength": 1443,
+      "sha256": "6a78ed9088562383a063afbd7fff8c012265ff444cad76b8ab8301c6da7525ef"
+    },
+    {
+      "path": "contracts/generated/bidi-analysis-response.schema.json",
+      "byteLength": 6088,
+      "sha256": "66aa5f64509116ea8f3c48ea4c6a50ea927f2120ce17d269112470a3e69e81cb"
+    },
+    {
+      "path": "contracts/generated/cascade-request.schema.json",
+      "byteLength": 5023,
+      "sha256": "076a03bf5b87cf40fa61475a4627dfab2b80b265088199c18df2b2e7e868cbc7"
+    },
+    {
+      "path": "contracts/generated/cascade-response.schema.json",
+      "byteLength": 11223,
+      "sha256": "ae7d3fe9741e24c68bccf2e9e1df8ec840a4e56549a35e41d2e3fd2944212a93"
+    },
+    {
+      "path": "contracts/generated/document.schema.json",
+      "byteLength": 36989,
+      "sha256": "8e487d3f97750f84b000d5a15137002cf6941d9ea0aa1bb8ae67446b5cbaef71"
+    },
+    {
+      "path": "contracts/generated/font-metrics-request.schema.json",
+      "byteLength": 2541,
+      "sha256": "d353b95d789254b078cb22234506d0c8fb46b9e3881a9681beeab51a822ee1d9"
+    },
+    {
+      "path": "contracts/generated/font-metrics-response.schema.json",
+      "byteLength": 5035,
+      "sha256": "077d012d3635037e982e5b34d35d90fa32f34fb14d9078a03e889cf6ce323c44"
+    },
+    {
+      "path": "contracts/generated/font-request.schema.json",
+      "byteLength": 1229,
+      "sha256": "104a42aa97c778fe1aea98e88c0f9aaef1f6d39ce935bbf8770d4861fbf53766"
+    },
+    {
+      "path": "contracts/generated/font-response.schema.json",
+      "byteLength": 14831,
+      "sha256": "3425f7707b284575e519717379fa8e2973340cef05dd372bbc7d8e1da1972f49"
+    },
+    {
+      "path": "contracts/generated/itemization-request.schema.json",
+      "byteLength": 1259,
+      "sha256": "ee9efed903a60130b62a8fdd3ec60321a96c8d8963efa3f73aa779d1ebc6df0e"
+    },
+    {
+      "path": "contracts/generated/itemization-response.schema.json",
+      "byteLength": 9338,
+      "sha256": "76562ba4ab1d649c0dd8942914ec87c251d2f3fec7c4e2f77e568d7c5be01b6a"
+    },
+    {
+      "path": "contracts/generated/kernel-request.schema.json",
+      "byteLength": 50494,
+      "sha256": "964d8503079175b3c9a479a57cbf0f0778410c9eb26e997aea45382c0d344e72"
+    },
+    {
+      "path": "contracts/generated/kernel-response.schema.json",
+      "byteLength": 45531,
+      "sha256": "3a34026903bf39c630ee76f0173158c6e51b283baffb2c3f95e49f86f43ccd5b"
+    },
+    {
+      "path": "contracts/generated/line-break-request.schema.json",
+      "byteLength": 533,
+      "sha256": "60aea3a77c443279f97abcc844491e9296e37384fcf12ac9db80a4525185140d"
+    },
+    {
+      "path": "contracts/generated/line-break-response.schema.json",
+      "byteLength": 5449,
+      "sha256": "895cf441d96afa60460536ad93aabcbe9e24a8d28ad820821896bacf69a239e7"
+    },
+    {
+      "path": "contracts/generated/line-geometry-request.schema.json",
+      "byteLength": 8205,
+      "sha256": "056c3271b292bda9ea1bf6125f8f474371963528242de603cc821720f7496810"
+    },
+    {
+      "path": "contracts/generated/line-geometry-response.schema.json",
+      "byteLength": 32846,
+      "sha256": "7f1bfaa54927e342daf6f4b4c1be6abb8d11e8ee89bab00ae40fc79955179952"
+    },
+    {
+      "path": "contracts/generated/line-shape-request.schema.json",
+      "byteLength": 5552,
+      "sha256": "a219dc1cbe23692a0efcbbb2942204856253060edf2bfc33a6bd2670472fdbf9"
+    },
+    {
+      "path": "contracts/generated/line-shape-response.schema.json",
+      "byteLength": 23094,
+      "sha256": "d63f9502c95dcc69c071c082bf64e99dda7be5298b6c10ac8833dc4175b5ede2"
+    },
+    {
+      "path": "contracts/generated/package-inspection.schema.json",
+      "byteLength": 6031,
+      "sha256": "9b2484a0439ff591c8b5f5f34d46f08399baa0ece75fe5df597ff37226df1063"
+    },
+    {
+      "path": "contracts/generated/paragraph-shape-request.schema.json",
+      "byteLength": 4868,
+      "sha256": "1f26f5a43b0b5353ef928c5dfc37ad7cdb0c557ac9c1218f4965e395f84df113"
+    },
+    {
+      "path": "contracts/generated/paragraph-shape-response.schema.json",
+      "byteLength": 22327,
+      "sha256": "74a79a061d704c640e575ad82fd16da298144f00b92745cfe1f26ccf91f8cdaf"
+    },
+    {
+      "path": "contracts/generated/pptx-color-query.schema.json",
+      "byteLength": 11319,
+      "sha256": "1c103246b220921eb901bf87bb8bd7386ae17517b5a8b12167e806bf03f596d7"
+    },
+    {
+      "path": "contracts/generated/pptx-color-response.schema.json",
+      "byteLength": 11775,
+      "sha256": "0bec5d1eb4aa3f84324842382722cdb06f7416722d0ffe69d8850f0c6c71a7d4"
+    },
+    {
+      "path": "contracts/generated/pptx-export-request.schema.json",
+      "byteLength": 40856,
+      "sha256": "5ba52973e870eaa06142d76609676537f0f8b44c4ded4952428054996067bdda"
+    },
+    {
+      "path": "contracts/generated/pptx-source-response.schema.json",
+      "byteLength": 52654,
+      "sha256": "9c2d57b301edcd9846e1fbe3d0c0fede20d8409d83153e1058848dbbe7b56156"
+    },
+    {
+      "path": "contracts/generated/pptx-text-edits.schema.json",
+      "byteLength": 1708,
+      "sha256": "ef2542ed9e24f8986d3a3f980efddb0a4c8c15ff02f6e2e5a185de37ed4e7734"
+    },
+    {
+      "path": "contracts/generated/shape-request.schema.json",
+      "byteLength": 4600,
+      "sha256": "adcd4f02ce7134cb5248f8bcfa510550dec4379827cd55ece52cf3177b35da59"
+    },
+    {
+      "path": "contracts/generated/shape-response.schema.json",
+      "byteLength": 5599,
+      "sha256": "e5daf007a1a6b546110e1f7c9792e565b8ef0ef170815492ee25c117af57b7fc"
+    },
+    {
+      "path": "contracts/generated/text-analysis-request.schema.json",
+      "byteLength": 539,
+      "sha256": "cfb44331895f7ba3e22d8cb11a11faa9622a40172506c54cc80518924e7c2a65"
+    },
+    {
+      "path": "contracts/generated/text-analysis-response.schema.json",
+      "byteLength": 4419,
+      "sha256": "e6745e95da384e3aa116ca3a6975d84b05b99167d8abb5ed7de7ce2f4c90df76"
+    },
+    {
+      "path": "contracts/generated/transaction-receipt.schema.json",
+      "byteLength": 6045,
+      "sha256": "58e19899b71399b1bef09f2c9fe905705a526d327663a47e7a3fe7a1a78d40d6"
+    },
+    {
+      "path": "contracts/generated/transaction.schema.json",
+      "byteLength": 45948,
+      "sha256": "bd85a94f89b916ea42c9ca40455e58bb89853c3bda97b04cc0c2250de20415d8"
+    },
+    {
+      "path": "contracts/generated/validation-report.schema.json",
+      "byteLength": 1128,
+      "sha256": "8e49dd078ea8259cf8181cf8ebe4238299e525b683c99739355ed3efdade2dbf"
+    },
+    {
+      "path": "crates/mo-color/Cargo.toml",
+      "byteLength": 224,
+      "sha256": "996030b77079cd11bbe61bff0c4f0efa55962c2c0488dd2aa080c29037f36209"
+    },
+    {
+      "path": "crates/mo-color/src/lib.rs",
+      "byteLength": 10685,
+      "sha256": "3f2a979ec551b368a8983a5ea70c975e9526dffe8a3ff61d56d236308b773b95"
+    },
+    {
+      "path": "crates/mo-color/src/space.rs",
+      "byteLength": 1517,
+      "sha256": "39e4a14b24422adb95fdafc3facb5ca787606fcab8b6f2ea4189d295253edda1"
+    },
+    {
+      "path": "crates/mo-common/Cargo.toml",
+      "byteLength": 348,
+      "sha256": "7b447f65fd8567e7ca49008ab3b611135697c68ac06941cdcf2a1e898036b48b"
+    },
+    {
+      "path": "crates/mo-common/src/byte_length.rs",
+      "byteLength": 1546,
+      "sha256": "8da492fba15038570411f1084930f8a85d0ad276cb33141cf014baebc2bf2a89"
+    },
+    {
+      "path": "crates/mo-common/src/canonical.rs",
+      "byteLength": 2788,
+      "sha256": "315f823665b0e46c6c3858ea53d4e3a17897df191953c26c56ca995c0d862366"
+    },
+    {
+      "path": "crates/mo-common/src/ids.rs",
+      "byteLength": 3810,
+      "sha256": "293c64d14b7f720dda1654fe0a31d9e79853e16b98c6da265f964ad111109587"
+    },
+    {
+      "path": "crates/mo-common/src/integer_json.rs",
+      "byteLength": 5783,
+      "sha256": "8d93f32e52fae9bd30d49cf7e65e70416d4a94fa45b66bdda4ee84ca6c6a7906"
+    },
+    {
+      "path": "crates/mo-common/src/lib.rs",
+      "byteLength": 348,
+      "sha256": "9bb5974cc2d7a05ff1e5657686756740e0bf452c7bde4cd9a499c89992ac2258"
+    },
+    {
+      "path": "crates/mo-common/src/strict_json.rs",
+      "byteLength": 3165,
+      "sha256": "943af803cddda071370f13f3cfcd2d244ecc655f04f27988e79634104b299198"
+    },
+    {
+      "path": "crates/mo-common/src/units.rs",
+      "byteLength": 4704,
+      "sha256": "095e757c6572c99c9a65997fd41bbc495b4e2fdb6ed18912204b3745d2253f92"
+    },
+    {
+      "path": "crates/mo-common/tests/wire.rs",
+      "byteLength": 4304,
+      "sha256": "29be69916d05c23a9918b5bf6c22f9ceea2500682629d58f862d56602869e922"
+    },
+    {
+      "path": "crates/mo-font/Cargo.toml",
+      "byteLength": 355,
+      "sha256": "e5af7d13ddf2b09b5bbe65e91d3606bac2ac0404a14f5af9def353f667e94262"
+    },
+    {
+      "path": "crates/mo-font/src/cmap.rs",
+      "byteLength": 5298,
+      "sha256": "7a15dbb8e3f94c5d237120756072800cc7a2305e711ca2fadd88437377018512"
+    },
+    {
+      "path": "crates/mo-font/src/cmap/validation.rs",
+      "byteLength": 5354,
+      "sha256": "b39f44d9f389cbc5aa5e64ed98aa600f2efdca21e7fdf39c5634844a6d42c992"
+    },
+    {
+      "path": "crates/mo-font/src/cmap/variation.rs",
+      "byteLength": 2896,
+      "sha256": "8c50bfc5d723ccd4fa7672770e9345ab58692b3887b788f4824db84246e67793"
+    },
+    {
+      "path": "crates/mo-font/src/container.rs",
+      "byteLength": 7819,
+      "sha256": "d808fd7534b41e82c469cf2c7f2e9aa7be586b5f60c64057a9aa254562d9f4c6"
+    },
+    {
+      "path": "crates/mo-font/src/lib.rs",
+      "byteLength": 7543,
+      "sha256": "0bed399f07b2b7c7e7519bfd2ea7aa7e81328e62c8323f36d452cf87575d9789"
+    },
+    {
+      "path": "crates/mo-font/src/metadata.rs",
+      "byteLength": 7035,
+      "sha256": "9236326ad473894aad0bfcc9d9fc09141f50ff16821c2d10b924e24997e66eb9"
+    },
+    {
+      "path": "crates/mo-font/src/tests.rs",
+      "byteLength": 12543,
+      "sha256": "34dbee4db38b1151985b4b0730ce7e3efba22908028abf45372e287e768c6091"
+    },
+    {
+      "path": "crates/mo-font/src/types.rs",
+      "byteLength": 5092,
+      "sha256": "2f5a4689fe3d90213782e9a2cf141be4e15849d2a2d31d4ba9e0ae14d49261c4"
+    },
+    {
+      "path": "crates/mo-harfbuzz-sys/Cargo.toml",
+      "byteLength": 366,
+      "sha256": "6a6ac6c3144d3a073a3e2ff7d60311fab8c6be5446f7e2052a34f62250a966db"
+    },
+    {
+      "path": "crates/mo-harfbuzz-sys/build.rs",
+      "byteLength": 2623,
+      "sha256": "884ee6b371aef08cd506fb4d63cdcf695b27ca7b93d4cb5094e43592c13b5994"
+    },
+    {
+      "path": "crates/mo-harfbuzz-sys/src/ffi.rs",
+      "byteLength": 4008,
+      "sha256": "6417a991c72cc8e4c52cc8b62fe9910fbe61c2ccfd7c1b6ab3d60f198bfb9022"
+    },
+    {
+      "path": "crates/mo-harfbuzz-sys/src/lib.rs",
+      "byteLength": 3252,
+      "sha256": "dd3b3074fdb3133f7995a639f7ce59d218e51719f55a74a0d7d16285908d5914"
+    },
+    {
+      "path": "crates/mo-kernel-api/Cargo.toml",
+      "byteLength": 512,
+      "sha256": "d7b0a076169f06cda745ab990139e083de276352c076130a698524b1d7a3a38c"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/bidi.rs",
+      "byteLength": 4307,
+      "sha256": "5d60f4375bbf0cd62f3a95fb39e7a8cd0114a04913456b5c9df8a647320480e0"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/cascade.rs",
+      "byteLength": 1694,
+      "sha256": "6306b69c49acb236aa1e7a1e6329073f6404fb8ce9670fde331af686aaa3d5dd"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/font.rs",
+      "byteLength": 2571,
+      "sha256": "8799724a37b840b755807eea53404eac6cecad71a3b307aba3f9c7b744b9a9ef"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/geometry.rs",
+      "byteLength": 1089,
+      "sha256": "28cbd8998a61fd4e3ba548c0ad9cf2ec717f564712a15d200f8ebb5b95fbe9ae"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/lib.rs",
+      "byteLength": 5172,
+      "sha256": "01c4852a634c220a20f5c184b9bdf305149461d10c422051eb1ca4591528f001"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/line_break.rs",
+      "byteLength": 6625,
+      "sha256": "7a15e7b0039c0add8432c333f22a07c1086a1279a5ff7cc321234096619753be"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/metrics.rs",
+      "byteLength": 1572,
+      "sha256": "094d1ac92ce24c334c1a2c795b023da41458b3a3e48abfcb2d5308129b8459e5"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/package.rs",
+      "byteLength": 7007,
+      "sha256": "30e91e0da739a254422a52f05e1b78126d42b9bc5d5c5191a5e810f4d5b2992e"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/paragraph.rs",
+      "byteLength": 3252,
+      "sha256": "58d5500090fa8e218b23b93ef39e9069663af8c1a25bfaec861c858080d61ddb"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/pptx.rs",
+      "byteLength": 2784,
+      "sha256": "6a76c54660c37b5b86afe41e08c418c05e8f1b40655402913b195939b559fcf5"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/pptx_color.rs",
+      "byteLength": 2414,
+      "sha256": "4fffa2c44287ccd811d8b95b7cb529976ede787f95d01cbde1249ba1532b1725"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/pptx_source.rs",
+      "byteLength": 4562,
+      "sha256": "94cd9c87781a8a5c715957c8472bd1c8b2f95227c5aab76fb5ed299dab55de07"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/text.rs",
+      "byteLength": 3047,
+      "sha256": "70d6d6c26a4ea03a8c1f9ed3ef777c7e7850c5ac51661c0b4c99a00e7f1c98ac"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/unicode.rs",
+      "byteLength": 3743,
+      "sha256": "85113da5188220ec1836f6b358bae5dcd4c2e26fa11b931a24e5a8b2ebd55241"
+    },
+    {
+      "path": "crates/mo-kernel-api/tests/package.rs",
+      "byteLength": 746,
+      "sha256": "3f6ad4a8febafc624f522320175f0fd2fd2309c275a8db8ae567ddba0bb6d039"
+    },
+    {
+      "path": "crates/mo-kernel-api/tests/pptx_source.rs",
+      "byteLength": 2752,
+      "sha256": "773e5fb7eb6a243386547e51b530a3b4a90ef4e5af4ab53cfb7058c10ae4d9d5"
+    },
+    {
+      "path": "crates/mo-opc/Cargo.toml",
+      "byteLength": 321,
+      "sha256": "fec7946008a6705d94add1465091e4df31e3ee376b20b6a7f4e0bc469483a48d"
+    },
+    {
+      "path": "crates/mo-opc/examples/package_fixture.rs",
+      "byteLength": 2794,
+      "sha256": "1b7a54acc6203be8ad05257c6d607a24be863e0a6a1a6d7d0ff22eff30abce9a"
+    },
+    {
+      "path": "crates/mo-opc/src/lib.rs",
+      "byteLength": 2176,
+      "sha256": "5996c601d5278bd1d9dccfdd68ec8e47caf766509c1e8d55846cfc9471fe4f72"
+    },
+    {
+      "path": "crates/mo-opc/src/metadata.rs",
+      "byteLength": 11949,
+      "sha256": "98c3e747355b8c2e27ecc61befb1d930b994f834dbc0fee5885eee0dec60475c"
+    },
+    {
+      "path": "crates/mo-opc/src/names.rs",
+      "byteLength": 6466,
+      "sha256": "6a4709a39b73b1f9621e11660914f827791cdd5874a08cb1ab9256eacc12297a"
+    },
+    {
+      "path": "crates/mo-opc/src/package.rs",
+      "byteLength": 18747,
+      "sha256": "63005aa7d1940ca24fa9a5c2959ce6f2615804c4aaf4f5c05b4068b26cdf1c52"
+    },
+    {
+      "path": "crates/mo-opc/src/writer.rs",
+      "byteLength": 16450,
+      "sha256": "6f7d4a21eb226b43eec146868e3fe5ad1589521576dfdc3ae71964af47122152"
+    },
+    {
+      "path": "crates/mo-opc/src/zip_structure.rs",
+      "byteLength": 4081,
+      "sha256": "c5368a18c8821a676cb3822ef16f0e2fbe4a2ccc044bec5774a6367895608d8f"
+    },
+    {
+      "path": "crates/mo-opc/tests/packages.rs",
+      "byteLength": 15506,
+      "sha256": "8534c213404aa685f2a8779cd383314f34be93661375bdc3c268f95511dc2f6e"
+    },
+    {
+      "path": "crates/mo-pptx/Cargo.toml",
+      "byteLength": 438,
+      "sha256": "b978aee92e8ab55e47562e2b39b701c6ba590404f31e1432ebe0f5ff4ef11472"
+    },
+    {
+      "path": "crates/mo-pptx/src/definitions.rs",
+      "byteLength": 6511,
+      "sha256": "8fd8e07dc870019eb94daf3145ec3d07c18e784962a429cbab9fa139b89a278e"
+    },
+    {
+      "path": "crates/mo-pptx/src/drawing.rs",
+      "byteLength": 14176,
+      "sha256": "53980541eb584ea4704b125a4adacb7e7ce6bdcfca750eb63c3b6aae98b31b31"
+    },
+    {
+      "path": "crates/mo-pptx/src/lib.rs",
+      "byteLength": 3555,
+      "sha256": "31c1cab03abf506b4f606606ef2ab0f47547e0adfb46663c715a2beca61f18e0"
+    },
+    {
+      "path": "crates/mo-pptx/src/source.rs",
+      "byteLength": 7193,
+      "sha256": "7777e60b128c902e9d93c24dec24f63de8340acd9e2cca4621c751f8e0a17904"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/color.rs",
+      "byteLength": 10438,
+      "sha256": "507836da860a10b717e94ecb43888cbbb6831dc9664b6ca5be05f51265a8a375"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/color/preset.rs",
+      "byteLength": 9832,
+      "sha256": "438ad1dc7761be960b8769820365a36c529ff07ce0a88cb1b777aace60d351d2"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/color/transforms.rs",
+      "byteLength": 2406,
+      "sha256": "abe68baa8d541e0937fb12e1558b16cd5286bcb1442d32da84d0ac1bd2adbded"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/color/types.rs",
+      "byteLength": 4013,
+      "sha256": "2399a46afc850c3219294aedbc96324dc67c60f1e463973b8f75b698e66d1459"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/color_mapping.rs",
+      "byteLength": 5374,
+      "sha256": "b05fa5381811dda4d223f37847b7f472873f7c342dae3567e9e29e1f9600556b"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/compatibility.rs",
+      "byteLength": 2812,
+      "sha256": "8de4ed4972e3b3fdf625e00cb6377027617fc46da0e427e7ec97542fc55f2521"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/edit.rs",
+      "byteLength": 5385,
+      "sha256": "6c58f8ce0504ef597b431a9aada84a298963682c48aafd8860daf971723bddae"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/inheritance.rs",
+      "byteLength": 12749,
+      "sha256": "7bb21216ae63415898058bc0006ffec856493defacc1e376985f6ae2dea2c230"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/links.rs",
+      "byteLength": 3568,
+      "sha256": "665ec5ec1669050719fa3799762a256a4b18f820c7f8975b8239848b9a9970d4"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/presentation.rs",
+      "byteLength": 10326,
+      "sha256": "38f7c42d782a6c45e2499af09b85179a6cd872afcf53f8edfc6e6925e11da501"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/surface.rs",
+      "byteLength": 23332,
+      "sha256": "cb01e7e42870afe7ac12894bdee9fe2c7f07cb9e565ff975978c28bca052b070"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/theme.rs",
+      "byteLength": 6492,
+      "sha256": "a9a4b01455daaab52ddcb759267452a17068496a015d1be17a625cc80bc0eece"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/theme/names.rs",
+      "byteLength": 13147,
+      "sha256": "12481d865b6300017a64846f38b06b064fe3e60b750dcd4014fbbafb135b128d"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/theme/read.rs",
+      "byteLength": 17708,
+      "sha256": "32cb9a504fd1d94268e6fac4ad146b791070ecf4bb039e5f1c495ece0da1767b"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/theme/values.rs",
+      "byteLength": 9655,
+      "sha256": "e26abca4638278226a5b1fa53181cedf59105e8f9f0d78e3975cdcb48676a4ba"
+    },
+    {
+      "path": "crates/mo-pptx/src/text.rs",
+      "byteLength": 6817,
+      "sha256": "e8f2d56b8a95c4117dea74b15227e4b49f30fe13b66595e8104a920f25dc0870"
+    },
+    {
+      "path": "crates/mo-pptx/src/write.rs",
+      "byteLength": 11976,
+      "sha256": "376898cf1388b7f0dba7db73025bd81e051b14fa418b9f25967f3de33c97e112"
+    },
+    {
+      "path": "crates/mo-pptx/src/xml.rs",
+      "byteLength": 2020,
+      "sha256": "ccb472b5a7a4f6192bbac1291e98339c69c437b5320993878fdfce36041ead0e"
+    },
+    {
+      "path": "crates/mo-pptx/tests/export.rs",
+      "byteLength": 4087,
+      "sha256": "6b64207332cf3f04dc092fdf4003bab9bf2b6f57dedd08c3f4c5abecc12353e9"
+    },
+    {
+      "path": "crates/mo-pptx/tests/source.rs",
+      "byteLength": 30985,
+      "sha256": "796c98bf1d39baa16c03c77a3ae68ea2a9e486ebe6f3caaaaddfc7e4c06ebad1"
+    },
+    {
+      "path": "crates/mo-pptx/tests/source_colors.rs",
+      "byteLength": 6848,
+      "sha256": "f66da3920a7a38d846da0066f2a7e047e8ef0a1b02e9a68ccde9183b97d73ea2"
+    },
+    {
+      "path": "crates/mo-pptx/tests/support/mod.rs",
+      "byteLength": 964,
+      "sha256": "646501d7163b93c2e67de75f9d4ebc028e05672071a43d084c0d1436a1533cac"
+    },
+    {
+      "path": "crates/mo-presentation-edit/Cargo.toml",
+      "byteLength": 357,
+      "sha256": "5da36bbe80bf21f605381fbd691088163f52a72f043e05d24406a61a1265e8a5"
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/apply.rs",
+      "byteLength": 10833,
+      "sha256": "893df4face1215d0aa9b0f77ea8d593474b2e71394049f37842ec9a6dde2eff5"
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/lib.rs",
+      "byteLength": 184,
+      "sha256": "cfddd7f6cbe29c52f4667b5236e9a6a36b496092c8646f31d47d828fe08a059c"
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/operations.rs",
+      "byteLength": 2577,
+      "sha256": "535a5abf1f01b2a2d4d0507ef7cbb428c9c80c8945b9d4cbfe04ecafc4aefbaa"
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/transaction.rs",
+      "byteLength": 11192,
+      "sha256": "93131b514e51edf6bdff9912befd243e01be24a8555e0b020ade8a1120b65e9d"
+    },
+    {
+      "path": "crates/mo-presentation-edit/tests/support/mod.rs",
+      "byteLength": 3314,
+      "sha256": "9f1ba64634cecf1ab2316c2d6d0f0a9510ccbcfb2767b90067e85decd3c90d9b"
+    },
+    {
+      "path": "crates/mo-presentation-edit/tests/transactions.rs",
+      "byteLength": 8585,
+      "sha256": "73199270211b81a361c39a7983f2d8784db76b89cdcd521de512e8c34dee6859"
+    },
+    {
+      "path": "crates/mo-presentation-edit/tests/validation.rs",
+      "byteLength": 3808,
+      "sha256": "ce57b22e3dadf7f00fa056055cf2e054ef0c7d9fc3c2d06a8aea2991605a70dd"
+    },
+    {
+      "path": "crates/mo-presentation-model/Cargo.toml",
+      "byteLength": 338,
+      "sha256": "686ad4d89c724137533c16c8417b58f830c494d18dbd140225141adc2b295632"
+    },
+    {
+      "path": "crates/mo-presentation-model/src/document.rs",
+      "byteLength": 5407,
+      "sha256": "1a564f30eb48e3d58e589a7edeb24b36aa2dd79c1e09cd7f4af1498a96f99663"
+    },
+    {
+      "path": "crates/mo-presentation-model/src/geometry.rs",
+      "byteLength": 1824,
+      "sha256": "c357689b0fd629252acf2da581879aa967e1ba1ae24f141ae5f0377fd79db69c"
+    },
+    {
+      "path": "crates/mo-presentation-model/src/lib.rs",
+      "byteLength": 249,
+      "sha256": "f9862c8e44fdf3a30484a2e4b7b7ed9fc77bf90c93bab8ba7822f2d189789fda"
+    },
+    {
+      "path": "crates/mo-presentation-model/src/styles.rs",
+      "byteLength": 3267,
+      "sha256": "71df96a08e62e38eb06459de6297e580811bd917769da5a8317b068ed79f636a"
+    },
+    {
+      "path": "crates/mo-presentation-model/src/text.rs",
+      "byteLength": 2220,
+      "sha256": "82805f8b393baefeaa6ae3b3d07c4e07f340d438f807f173869b9b9db787d76f"
+    },
+    {
+      "path": "crates/mo-presentation-model/src/validation.rs",
+      "byteLength": 20501,
+      "sha256": "88f73437576a26004180b834dd8bb8b3715070f2e3e4bb49086db43e24d394c9"
+    },
+    {
+      "path": "crates/mo-text/Cargo.toml",
+      "byteLength": 400,
+      "sha256": "c62e484a6ff33163b5f1f365af24215e0ef36230903e57f1783e818d1f61d568"
+    },
+    {
+      "path": "crates/mo-text/src/backend.rs",
+      "byteLength": 4023,
+      "sha256": "07b3298ffa9665b94ad796f0f4423ecc92de8fe22ca9452803854406abdd88f7"
+    },
+    {
+      "path": "crates/mo-text/src/cascade/context.rs",
+      "byteLength": 9144,
+      "sha256": "16ff1a625148d96fd771a4b634b6554545cd28bb98d70b10b0c57fec783b1e63"
+    },
+    {
+      "path": "crates/mo-text/src/cascade/mod.rs",
+      "byteLength": 4672,
+      "sha256": "3f0b4011ae4db5360624811b24c760f6650fdb05887c7b31d2668478de6751fd"
+    },
+    {
+      "path": "crates/mo-text/src/cascade/tests.rs",
+      "byteLength": 6862,
+      "sha256": "7a4760471a5afad0fb6f4aeec693e0a6695340197f0cfb8811ecfb8680ef37da"
+    },
+    {
+      "path": "crates/mo-text/src/cascade/types.rs",
+      "byteLength": 4549,
+      "sha256": "f2c56b02de25b7ecfb507c11848b8e81bec79ff5f9d76983687c79ea9072bb33"
+    },
+    {
+      "path": "crates/mo-text/src/fallback/mod.rs",
+      "byteLength": 10597,
+      "sha256": "4857d7acdbff91093233af9aa41fd95c54cfdce00dfdd2c622ace0b3226a8e61"
+    },
+    {
+      "path": "crates/mo-text/src/fallback/partition.rs",
+      "byteLength": 3083,
+      "sha256": "337953de39dbce107f023371a0230cd37b24ad4a5229ea7b051641f163067533"
+    },
+    {
+      "path": "crates/mo-text/src/fallback/tests.rs",
+      "byteLength": 11085,
+      "sha256": "fedd6558481bdf7fd8ed788e44b5835c7e6a22fdb4e432abd1c79da57b0daec2"
+    },
+    {
+      "path": "crates/mo-text/src/fallback/types.rs",
+      "byteLength": 2093,
+      "sha256": "40cc5247bb7c4909e4bb2c53c00e9cf4ed9c5e307351aad416170bb8e7eeb28e"
+    },
+    {
+      "path": "crates/mo-text/src/geometry/metrics.rs",
+      "byteLength": 4294,
+      "sha256": "3863f83eec181fa9feeb0ae16deadb8962cc7697a08254124877ed5caf9fbacc"
+    },
+    {
+      "path": "crates/mo-text/src/geometry/mod.rs",
+      "byteLength": 8627,
+      "sha256": "abd660984f127da44e30cdfc8eebc9190f3b9ae3040529df9d48897b385fde67"
+    },
+    {
+      "path": "crates/mo-text/src/geometry/number.rs",
+      "byteLength": 3343,
+      "sha256": "48ee27ac51fa770e2be797e60bcb2646b3b8e6412ddaa5da5cd48bfed9857e21"
+    },
+    {
+      "path": "crates/mo-text/src/geometry/tests.rs",
+      "byteLength": 10217,
+      "sha256": "cf4bd557279bc19157a7cebd7bc15a245a881cf0763cd177264ac1e4316302a5"
+    },
+    {
+      "path": "crates/mo-text/src/geometry/types.rs",
+      "byteLength": 3373,
+      "sha256": "5faa58c39745085df218445dddcf79d195124322787d7ac727739b1ee9e48bd0"
+    },
+    {
+      "path": "crates/mo-text/src/itemize/mod.rs",
+      "byteLength": 7226,
+      "sha256": "6283adab1fd4c97a8b21483dc857ff675c9adfea704596f2fbfadc3bc8b9807b"
+    },
+    {
+      "path": "crates/mo-text/src/itemize/scripts.rs",
+      "byteLength": 3763,
+      "sha256": "b113474857a4a39044e3ccb0ce2e81222ad12eccc06addec938a777ea1f30854"
+    },
+    {
+      "path": "crates/mo-text/src/itemize/tests.rs",
+      "byteLength": 7641,
+      "sha256": "a727ebf13911bbcbae2db93c5bfaa7b34d775347159c9fd1f70fbc83f2264a81"
+    },
+    {
+      "path": "crates/mo-text/src/itemize/types.rs",
+      "byteLength": 2384,
+      "sha256": "4079ed1998e9dc2b58e3d646d9a37403e7d9ccaa986898afafb61ea07c0b09d0"
+    },
+    {
+      "path": "crates/mo-text/src/lib.rs",
+      "byteLength": 3084,
+      "sha256": "b123331bbfd6003143cc30fa1680aec6c85b6114c766329785d084779b33c775"
+    },
+    {
+      "path": "crates/mo-text/src/lines.rs",
+      "byteLength": 8723,
+      "sha256": "a59e21f613a7ea15b49cbc709adde0240e74c8cbc34d4fd1df54d4bc4f43a802"
+    },
+    {
+      "path": "crates/mo-text/src/lines_tests.rs",
+      "byteLength": 6995,
+      "sha256": "0c10ee93ca4a9c1aca7a2eec08306cd0ba2b63bf72f0e81a4a7147d761147104"
+    },
+    {
+      "path": "crates/mo-text/src/metrics/mod.rs",
+      "byteLength": 6309,
+      "sha256": "3becc88306619d53a06bb5a17509ea5c8a04f1c985f65823e7eba3c0492b9f4a"
+    },
+    {
+      "path": "crates/mo-text/src/metrics/tests.rs",
+      "byteLength": 6986,
+      "sha256": "65c09b7a8ac05b1d299dcd397b27c32a261484d68d547c72bf8d071baf3d6fd2"
+    },
+    {
+      "path": "crates/mo-text/src/metrics/types.rs",
+      "byteLength": 3638,
+      "sha256": "b19fa50418125c7aede6c7483558ab9d1025c8a231a406daff926665723002a2"
+    },
+    {
+      "path": "crates/mo-text/src/paragraph.rs",
+      "byteLength": 8141,
+      "sha256": "e4370ba4ed2187f547b0026068384c20fee05909620b24be774c5dba69c3c618"
+    },
+    {
+      "path": "crates/mo-text/src/paragraph_tests.rs",
+      "byteLength": 3743,
+      "sha256": "69a85a3c5e45e2c8350c238598884171261aa6013bad718f777c72ad4e407376"
+    },
+    {
+      "path": "crates/mo-text/src/prepare.rs",
+      "byteLength": 5585,
+      "sha256": "f8bbd6b8fe5567737c8197c78f809eb807b34b391c077c787fc7141ea48a6733"
+    },
+    {
+      "path": "crates/mo-text/src/result.rs",
+      "byteLength": 4341,
+      "sha256": "40e4890112e1e012c1d04051f73aa5d06d503fb39aeaf96b56b45117ff95d68b"
+    },
+    {
+      "path": "crates/mo-text/src/tests.rs",
+      "byteLength": 7723,
+      "sha256": "665195731090cb209a8d8cb81de050b28a50fd1278639202d17936efb7af5272"
+    },
+    {
+      "path": "crates/mo-text/src/types.rs",
+      "byteLength": 5367,
+      "sha256": "828ff818cb806c28827c7b2cbaf0d4e9ad986009dd3f1bade466855adf5bb324"
+    },
+    {
+      "path": "crates/mo-unicode/Cargo.toml",
+      "byteLength": 283,
+      "sha256": "1a815475ceb4e7c6e8e5111c0ab96a14095b58282f16d7075f9ca2f810660a02"
+    },
+    {
+      "path": "crates/mo-unicode/data/LICENSE-UNICODE",
+      "byteLength": 1995,
+      "sha256": "e7a93b009565cfce55919a381437ac4db883e9da2126fa28b91d12732bc53d96"
+    },
+    {
+      "path": "crates/mo-unicode/data/bidi-manifest.json",
+      "byteLength": 1561,
+      "sha256": "c2c896949521e03fd3775ed4d705483c2a21a3573845b874b27d1ded7ce385ac"
+    },
+    {
+      "path": "crates/mo-unicode/data/bidi.bin",
+      "byteLength": 14007,
+      "sha256": "d31866bbf23a9d7dca0124834efd271e727d6f21b4171586f5fef31d88627305"
+    },
+    {
+      "path": "crates/mo-unicode/data/line-break-manifest.json",
+      "byteLength": 1175,
+      "sha256": "c59b94befc02629fcd8827e367a0fe9516087713d8921933c2a318a28785e10f"
+    },
+    {
+      "path": "crates/mo-unicode/data/line-break.bin",
+      "byteLength": 31752,
+      "sha256": "fd3e6f15b8bfbf03e5142e74c04bf8cf828f966e8974fee1975048fde71eb014"
+    },
+    {
+      "path": "crates/mo-unicode/data/manifest.json",
+      "byteLength": 1566,
+      "sha256": "bab7e1712392250584b5609bc6126471fba5bbefeaf415c51d2a5e92ed43d31b"
+    },
+    {
+      "path": "crates/mo-unicode/data/properties.bin",
+      "byteLength": 16502,
+      "sha256": "4eddcd2c58f6cc92a6b7d9072faca49776b56b8618d004c7ddd325481a87aae5"
+    },
+    {
+      "path": "crates/mo-unicode/data/script-manifest.json",
+      "byteLength": 834,
+      "sha256": "d9e87053786ab7f841bad07604e16c817e81e9b1d29dc92eee4d1d100aa282f1"
+    },
+    {
+      "path": "crates/mo-unicode/data/scripts.bin",
+      "byteLength": 16670,
+      "sha256": "acdc3326559b49d793d26b58cb45424f4773ecebd3e95a0443a8d0cdf2745639"
+    },
+    {
+      "path": "crates/mo-unicode/examples/line_break_conformance.rs",
+      "byteLength": 1792,
+      "sha256": "ef26319f19a58a7fb0cf6423601d7304c9b53820849b861722b94eab30700bdc"
+    },
+    {
+      "path": "crates/mo-unicode/examples/line_break_properties.rs",
+      "byteLength": 1330,
+      "sha256": "768e47813f1a0f481c862fb6cda97466ae91d07c179bd55f12243949aaf5cb1a"
+    },
+    {
+      "path": "crates/mo-unicode/examples/script_properties.rs",
+      "byteLength": 1305,
+      "sha256": "e687f11434e9c413319cc4b922014368fae7ccd00c5765939fc2e528bc5f78bb"
+    },
+    {
+      "path": "crates/mo-unicode/src/bidi/mod.rs",
+      "byteLength": 5936,
+      "sha256": "8dbd53b15e1d4687c6bbb2ceb8623fd77100eb225bef8e2305b6759e52ea577e"
+    },
+    {
+      "path": "crates/mo-unicode/src/bidi/properties.rs",
+      "byteLength": 5043,
+      "sha256": "459709b9d64b7e613d21bd2928c652fa1b1fc57c6ea72162571b7fd805028268"
+    },
+    {
+      "path": "crates/mo-unicode/src/bidi/tests.rs",
+      "byteLength": 4808,
+      "sha256": "72151f122eb32e5202336f58a030fb27c5a2e51e5dee04acc2facb599f2b8f5f"
+    },
+    {
+      "path": "crates/mo-unicode/src/bidi/types.rs",
+      "byteLength": 2113,
+      "sha256": "2108524971bdd4f7106123cf12393a20097350fe12a8cb14008b64d34876367c"
+    },
+    {
+      "path": "crates/mo-unicode/src/lib.rs",
+      "byteLength": 7145,
+      "sha256": "9384ecc5756e214f6bc56e9316c0eab6fb4165584509925686ce436688840e5f"
+    },
+    {
+      "path": "crates/mo-unicode/src/line_break/mod.rs",
+      "byteLength": 6465,
+      "sha256": "a8966ee857409a33805769d10c26cf13e9e4d6ba3e3a91c0a99ebb44c3b3fb27"
+    },
+    {
+      "path": "crates/mo-unicode/src/line_break/properties.rs",
+      "byteLength": 2334,
+      "sha256": "ee5418a44ed6474ff9e2f13f95be9c085dbfa50c844c0650b8b372d5eb43c8dc"
+    },
+    {
+      "path": "crates/mo-unicode/src/line_break/rules.rs",
+      "byteLength": 4999,
+      "sha256": "bb5638972a2e3bd410b9187f171dd5b074c46664e735bde8a367ee18b5fd5184"
+    },
+    {
+      "path": "crates/mo-unicode/src/line_break/tests.rs",
+      "byteLength": 3997,
+      "sha256": "812d76092039c3e95ae1190546c73f2a7dbe635a0c7354c16c1cd3ea1c7eb029"
+    },
+    {
+      "path": "crates/mo-unicode/src/properties.rs",
+      "byteLength": 3732,
+      "sha256": "e735aac4bb7c4f67c4f07c786982740f968a32c3d7f0074d1f9e8906458171f0"
+    },
+    {
+      "path": "crates/mo-unicode/src/script.rs",
+      "byteLength": 4502,
+      "sha256": "4fe254165b387fe63a2182bb7ca584c073ae5f0207a0c57b04f552e6295b9af5"
+    },
+    {
+      "path": "crates/mo-wasm/Cargo.toml",
+      "byteLength": 299,
+      "sha256": "c14339263e39f843610896489179310b827527c2ea0923fe706bf4a545e48777"
+    },
+    {
+      "path": "crates/mo-wasm/src/lib.rs",
+      "byteLength": 1576,
+      "sha256": "c9cb5fb3b5602b3ee5c3061ec057f0f6bfde7a9fc5d82efaa3d8083a967e7a82"
+    },
+    {
+      "path": "crates/mo-wasm/src/text.rs",
+      "byteLength": 3020,
+      "sha256": "60251256e4ad6b2d7275b4aa8f945c6c2a4afe6ccdfcae20bbf05b836c05e600"
+    },
+    {
+      "path": "crates/mo-xml/Cargo.toml",
+      "byteLength": 227,
+      "sha256": "853e966df02894265a57e178174f37bc3d47c391bdfc6f2f51073d7dfa1c9194"
+    },
+    {
+      "path": "crates/mo-xml/src/encoding.rs",
+      "byteLength": 2703,
+      "sha256": "9e8d6ae2954cca572a9d11c1b62412307e4092f440a997cbeb032f372a629900"
+    },
+    {
+      "path": "crates/mo-xml/src/lib.rs",
+      "byteLength": 3007,
+      "sha256": "09fe3e54791b663aa9db13339d6dfa38bacf46c902ee024b68c1cf1ad7e8d6e5"
+    },
+    {
+      "path": "crates/mo-xml/src/mce.rs",
+      "byteLength": 2062,
+      "sha256": "52c3ba303e4af2a922a5d718c286ab1accf292b0ced9cca8be6520f4a74d9618"
+    },
+    {
+      "path": "crates/mo-xml/src/mce/rules.rs",
+      "byteLength": 5300,
+      "sha256": "f913b6ed681688510ce9f824c4e144597c00fb610054b761c78425fa37ebaeba"
+    },
+    {
+      "path": "crates/mo-xml/src/mce/stream.rs",
+      "byteLength": 12915,
+      "sha256": "2dce269a1f4f3712081af296be91f47dc1af3fc8e48b37a21ed8aab4d4ca7ef7"
+    },
+    {
+      "path": "crates/mo-xml/src/names.rs",
+      "byteLength": 2413,
+      "sha256": "19e8f209182717b29edd54d32f82bd191606d2f3894f28a2b04d0d10b4b9ccaf"
+    },
+    {
+      "path": "crates/mo-xml/src/scan.rs",
+      "byteLength": 12996,
+      "sha256": "5a8efe98f82cc495f9f7dc87356757017f548d9b891a824e717d320bbe05e578"
+    },
+    {
+      "path": "crates/mo-xml/src/text_edit.rs",
+      "byteLength": 10128,
+      "sha256": "cce569187b97de226580986929ba131c68f487711efc2528a79cd705d147b3ed"
+    },
+    {
+      "path": "crates/mo-xml/tests/mce.rs",
+      "byteLength": 8965,
+      "sha256": "9c63d77affacda92dee7814b3dafac8f9c1c56f135a512af5ff0f6fef153e518"
+    },
+    {
+      "path": "crates/mo-xml/tests/scanner.rs",
+      "byteLength": 6035,
+      "sha256": "358087316fb66a77471722eb71acec10a1e0cf401a93cff68f9ba23e6c002c4d"
+    },
+    {
+      "path": "crates/mo-xml/tests/text_edit.rs",
+      "byteLength": 5302,
+      "sha256": "064f5ce630d3dc1d2d9b48f0f6b222adffe7db06bc878899f8e25db88ddc69ed"
+    },
+    {
+      "path": "docs/implementation/bidi.md",
+      "byteLength": 7225,
+      "sha256": "d822ab45b9f8b96bb3f062c0b293fcace11a47fda17dca0b6fd8f8dc8d4a81ca"
+    },
+    {
+      "path": "docs/implementation/dependencies.md",
+      "byteLength": 11888,
+      "sha256": "01f42bfb1041309989fb3a8cfe522c343ee4ad4fd234152665d1671e4ee40eff"
+    },
+    {
+      "path": "docs/implementation/development.md",
+      "byteLength": 12492,
+      "sha256": "524741379f86582ec8088dcfbe074d804ca9770a388d6f7470eb3accd1203518"
+    },
+    {
+      "path": "docs/implementation/font-cascade.md",
+      "byteLength": 7297,
+      "sha256": "c643108d148486cdca9da0ca471cf91d4a43768ad6d57fe32fb51480934a71ee"
+    },
+    {
+      "path": "docs/implementation/font-fallback.md",
+      "byteLength": 7701,
+      "sha256": "0c4964e424180a439d4da585ad47000c44c90c67eeb8aa8c7710dcc5569971b1"
+    },
+    {
+      "path": "docs/implementation/font-instance-metrics.md",
+      "byteLength": 7354,
+      "sha256": "5d1fc90fb7ac6ed9c0c1e81787f2162375ffb7a34386b25c6ca0a6015a24ed65"
+    },
+    {
+      "path": "docs/implementation/font-resources.md",
+      "byteLength": 7882,
+      "sha256": "162c34df6a81ee367688b6ef46e9b45d2dcfd16267f5ac3c7918298bfd4985a2"
+    },
+    {
+      "path": "docs/implementation/harfbuzz-component.md",
+      "byteLength": 8623,
+      "sha256": "62fe9e2bc498adda0bb914c89c5cc5b955fcacb7c34fae40e7a6342252477039"
+    },
+    {
+      "path": "docs/implementation/line-breaking.md",
+      "byteLength": 6280,
+      "sha256": "87936855c8d17ee96e7f9707129b5d5e560747cf24f53b94a64c212213190d0a"
+    },
+    {
+      "path": "docs/implementation/line-geometry.md",
+      "byteLength": 7683,
+      "sha256": "5cdb9444065767b5be0669a0190918136dba60d251b1f8e46e384b6a705798f6"
+    },
+    {
+      "path": "docs/implementation/line-shaping.md",
+      "byteLength": 6077,
+      "sha256": "83f899f0137ca9d0db9c60a0fc1b4d74044f34971378e372faca03f03e85d537"
+    },
+    {
+      "path": "docs/implementation/mce.md",
+      "byteLength": 5472,
+      "sha256": "c57bc24d5962afcd9932958d3aee5eebd3c8965f16156dca4dd2dc22867948f7"
+    },
+    {
+      "path": "docs/implementation/package-io.md",
+      "byteLength": 4530,
+      "sha256": "89ecabc6323252cc54341c52d779e97dec7fdb949ad30fcb6eeee0a4e2d1230d"
+    },
+    {
+      "path": "docs/implementation/pptx-export.md",
+      "byteLength": 5523,
+      "sha256": "c5d3312f2f6d31d715c24e2ed3cad7850007134b7124bf1544a1f7fe84e3ea0c"
+    },
+    {
+      "path": "docs/implementation/pptx-source.md",
+      "byteLength": 8522,
+      "sha256": "3f56f10357ce7da26713c76550b4c2b7e0f44fa67b690032dd9a9ddacabe3063"
+    },
+    {
+      "path": "docs/implementation/progress.md",
+      "byteLength": 20934,
+      "sha256": "146b4299c82d5a0732ba73a5a6ec4a7ba2c1d59b0e8b7562e5ef389621b21b60"
+    },
+    {
+      "path": "docs/implementation/source-color-mapping.md",
+      "byteLength": 5194,
+      "sha256": "a2355cccf0a542493bfc0f93f46b55da9e44aac6eef8256eba62ea54bb81df06"
+    },
+    {
+      "path": "docs/implementation/source-colors.md",
+      "byteLength": 7149,
+      "sha256": "d8784ce88592e3e4b733c065ac3438da6d907361ce223b570b7b04a4bd96e9da"
+    },
+    {
+      "path": "docs/implementation/source-inheritance.md",
+      "byteLength": 5732,
+      "sha256": "de1b1809ad4600197109be6d82e512ecf4073ee327c713ffd52d3cc2376db2be"
+    },
+    {
+      "path": "docs/implementation/source-themes.md",
+      "byteLength": 5897,
+      "sha256": "2c50356b97c5115fb2ea9f8c01a2dff9a7f6e74266a58985a872f20cbb1cc20a"
+    },
+    {
+      "path": "docs/implementation/text-itemization.md",
+      "byteLength": 7301,
+      "sha256": "72d5a78f18a38bfa66f524c4c8339fd247c88b54c4c4b066ff8d27c05c5ddfc0"
+    },
+    {
+      "path": "docs/implementation/text-shaping.md",
+      "byteLength": 6995,
+      "sha256": "f5c46dca367f766a2906d1bf97285b977b6ca6fcaeeb2e8dfcb55c74ce610647"
+    },
+    {
+      "path": "docs/implementation/unicode-text.md",
+      "byteLength": 4850,
+      "sha256": "85aa8127f48e9b479ff7792bc834af73a5e060db8787c88ea60baf9e0933edd7"
+    },
+    {
+      "path": "fixtures/fonts/README.md",
+      "byteLength": 1556,
+      "sha256": "016427c45a20cf4148c0a7234cf209a14ed182a8cd2f21d568cf003401b7dfc1"
+    },
+    {
+      "path": "fixtures/fonts/owned-metrics-hhea.ttf",
+      "byteLength": 2380,
+      "sha256": "c58d61596e441c7e48f25320293c886dca9df487e1a12687f38a9584f7c44cb0"
+    },
+    {
+      "path": "fixtures/fonts/owned-metrics-typo.ttf",
+      "byteLength": 2380,
+      "sha256": "11c5fa36a93a7ec0d504b12bcff99819adab67c082f6683f42b724ad1f08cc04"
+    },
+    {
+      "path": "fixtures/fonts/owned-metrics.json",
+      "byteLength": 379,
+      "sha256": "214674b886e64d6795648bf25cbeb56553fc78adb440578a486082eb252c0641"
+    },
+    {
+      "path": "fixtures/fonts/owned.json",
+      "byteLength": 502,
+      "sha256": "b6d5a541cbb91a33c727965d53b68bf6f99b5d2c77988aae0b4e15484a9120c0"
+    },
+    {
+      "path": "fixtures/fonts/owned.otf",
+      "byteLength": 1632,
+      "sha256": "867c8e6bbb688380a8cbe08325e927485ef9f1a58dbc23c1aacefdb5ce7c0380"
+    },
+    {
+      "path": "fixtures/fonts/owned.ttc",
+      "byteLength": 3372,
+      "sha256": "24c5ce1534147f4873ac550b915c720ac747ba69072b49154c422c83afe15c57"
+    },
+    {
+      "path": "fixtures/fonts/owned.ttf",
+      "byteLength": 1920,
+      "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+    },
+    {
+      "path": "fixtures/fonts/upstream.json",
+      "byteLength": 4367,
+      "sha256": "b794d33eff5af15346d936c74bc8011f53f0ee66fc8bf66b58541046fd306ab1"
+    },
+    {
+      "path": "fixtures/presentations/basic-shape.json",
+      "byteLength": 1499,
+      "sha256": "3e4fe191a804814ff0f8061d5876c4b58285a255351460e0edf38040e16b9640"
+    },
+    {
+      "path": "fixtures/presentations/native-export/README.md",
+      "byteLength": 575,
+      "sha256": "399658ce0db8a74c746f0b70a8ebec3d50bd1954b5ddf0ae093e06f7fc8c3a02"
+    },
+    {
+      "path": "fixtures/presentations/native-export/request.json",
+      "byteLength": 34818,
+      "sha256": "f20f7ac49f8958e3cf6b3185f407832f75b6c9d7e35d7695958af34948c85b1d"
+    },
+    {
+      "path": "fixtures/presentations/native-export/resources.bin",
+      "byteLength": 147,
+      "sha256": "3f76a9a5cae823017a1ddda66fe4cadf422e496bb0e6364ea5050dcac13afd82"
+    },
+    {
+      "path": "package.json",
+      "byteLength": 622,
+      "sha256": "0b551014ce67001c43aa1afaf4fa1008fa37e053516818883634e91ae6582e5d"
+    },
+    {
+      "path": "packages/contracts/src/generated/bidi-analysis-request.ts",
+      "byteLength": 824,
+      "sha256": "1966e3c4115685b5cefcaf466a0d2b863d55c9fe3ae4b34a7cccbffaba2ac3f0"
+    },
+    {
+      "path": "packages/contracts/src/generated/bidi-analysis-response.ts",
+      "byteLength": 1849,
+      "sha256": "e87ac55dd796a151a8046de059504f3f3930cd8760971dcd17870d18d0de3cff"
+    },
+    {
+      "path": "packages/contracts/src/generated/cascade-request.ts",
+      "byteLength": 2401,
+      "sha256": "6f69e06560bb1d7252228a99d5f384498efe9d818febb52ff63b4b713611fdab"
+    },
+    {
+      "path": "packages/contracts/src/generated/cascade-response.ts",
+      "byteLength": 2668,
+      "sha256": "fe9477e727e3a1c0434354f2a1d6cecab19d4a44641e66cadce0131b6f2dc950"
+    },
+    {
+      "path": "packages/contracts/src/generated/document.ts",
+      "byteLength": 15601,
+      "sha256": "f4ee579d71af46ef028dfb24ce2464542dd882d120ed50d4423f7cf3a104d693"
+    },
+    {
+      "path": "packages/contracts/src/generated/font-metrics-request.ts",
+      "byteLength": 1656,
+      "sha256": "1b67beec8ac4bdce546a07b739fde674d44f4ae5768a7db31ed35fa9ac68f684"
+    },
+    {
+      "path": "packages/contracts/src/generated/font-metrics-response.ts",
+      "byteLength": 1952,
+      "sha256": "de3eb0d2ba23ffcfd01b40ba8629f996de2f7ab2044142c1ffe1b7639dfee7c3"
+    },
+    {
+      "path": "packages/contracts/src/generated/font-request.ts",
+      "byteLength": 559,
+      "sha256": "52131b9043ad89a21e7bca1f1e8139eca20be5d2ec5ec9e84d20e88d4af1301a"
+    },
+    {
+      "path": "packages/contracts/src/generated/font-response.ts",
+      "byteLength": 3128,
+      "sha256": "673efa9ffaf59df5ced570c50254a5b6cb3c7c239f2801dac6fd2632da43f017"
+    },
+    {
+      "path": "packages/contracts/src/generated/itemization-request.ts",
+      "byteLength": 772,
+      "sha256": "94dd32c880561fd7eebcb9d51340e0542e1d8c87719eb6bf501398058bae8f90"
+    },
+    {
+      "path": "packages/contracts/src/generated/itemization-response.ts",
+      "byteLength": 3947,
+      "sha256": "4ebff1c4e74e38ef9af35f1c17392f76b6c057a42fdc0274ef73c28635ab9ee0"
+    },
+    {
+      "path": "packages/contracts/src/generated/kernel-request.ts",
+      "byteLength": 11263,
+      "sha256": "af7ff37be0f4547f1aed3d943eb8c470bde381205868002ed259690ccdf1897d"
+    },
+    {
+      "path": "packages/contracts/src/generated/kernel-response.ts",
+      "byteLength": 10929,
+      "sha256": "312fca898a886903f24a2ee2ed16e5a07d50374f82c86d44b542281e82e10337"
+    },
+    {
+      "path": "packages/contracts/src/generated/line-break-request.ts",
+      "byteLength": 187,
+      "sha256": "dac767d62267af2d1cc5b65e78bae4417bc09f9d0641fcc077e9cf5c5a10a410"
+    },
+    {
+      "path": "packages/contracts/src/generated/line-break-response.ts",
+      "byteLength": 2025,
+      "sha256": "4d62d2756b1ec1fd910cf621f1dd03f907ff052954e85a0bfc16b233ecaa8c87"
+    },
+    {
+      "path": "packages/contracts/src/generated/line-geometry-request.ts",
+      "byteLength": 4037,
+      "sha256": "c321ca35646a2444949f683b3e90430bd297181543298fdfb334696cc2e3f1bd"
+    },
+    {
+      "path": "packages/contracts/src/generated/line-geometry-response.ts",
+      "byteLength": 9796,
+      "sha256": "4a7919c4afe86a8d71fb4ff4e1c12d0f87f04918d8013351cbdfc09079d00e74"
+    },
+    {
+      "path": "packages/contracts/src/generated/line-shape-request.ts",
+      "byteLength": 2785,
+      "sha256": "16e1ebbcfa037152e0e15c7ab7725fab476509b4aed9bd1d1992a65297578cb4"
+    },
+    {
+      "path": "packages/contracts/src/generated/line-shape-response.ts",
+      "byteLength": 7127,
+      "sha256": "399711d290399cb23bf9b66e3e147b3320f6bd1bdd0e48f06bf229380d62d53f"
+    },
+    {
+      "path": "packages/contracts/src/generated/package-inspection.ts",
+      "byteLength": 1653,
+      "sha256": "a24e02f0dd751526794216e3e4bffdab048e7efbdffebb08e1cb616ecdb8ee3e"
+    },
+    {
+      "path": "packages/contracts/src/generated/paragraph-shape-request.ts",
+      "byteLength": 2443,
+      "sha256": "fcdc7c67243c2bbb36207317823a80348fc4ceec65badbee1cc4bcc2c4655298"
+    },
+    {
+      "path": "packages/contracts/src/generated/paragraph-shape-response.ts",
+      "byteLength": 6972,
+      "sha256": "5f564b281dd0b427924688bb35887fcbc2ebe14d2bb34d1d2903d9ed0c204a25"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-color-query.ts",
+      "byteLength": 4301,
+      "sha256": "67151379429f01eb89bf6cae7c2899a56c4137a62da2b313d17681a153262805"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-color-response.ts",
+      "byteLength": 3587,
+      "sha256": "22f8e4422c3cb46e1a055e53342eb64f9d49625e4bb08ce25e6103901017f39a"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-export-request.ts",
+      "byteLength": 17799,
+      "sha256": "7e589d649106926f4c631b86e643c0241a0c2fbc455e66e5c6a944e6dbaef04e"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-source-response.ts",
+      "byteLength": 15504,
+      "sha256": "d3395fd6b4ac936982c81de352ca154db6da7fb5d4ee993e0af8424b3ebb7755"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-text-edits.ts",
+      "byteLength": 801,
+      "sha256": "0226877cda0170ffd2ecba5a8cc302c12b8b34115ea72a0beeae7a5425771246"
+    },
+    {
+      "path": "packages/contracts/src/generated/shape-request.ts",
+      "byteLength": 2323,
+      "sha256": "9d897013e28abd6e96a52584b9f9feab9a6250fe7156a151577ba908246db0df"
+    },
+    {
+      "path": "packages/contracts/src/generated/shape-response.ts",
+      "byteLength": 1545,
+      "sha256": "0e878a569febd52db55e6a648d97761151705d1662e7bb75cbca4909b4f52c7d"
+    },
+    {
+      "path": "packages/contracts/src/generated/text-analysis-request.ts",
+      "byteLength": 190,
+      "sha256": "278876c46d7c530945a34a561f2b11e19165532c633b46bfaed3352eb95d2c16"
+    },
+    {
+      "path": "packages/contracts/src/generated/text-analysis-response.ts",
+      "byteLength": 1344,
+      "sha256": "d716e958d9e81cbd3aa8db0a56e588c795139d8eaf452a62b02715135ff37158"
+    },
+    {
+      "path": "packages/contracts/src/generated/transaction-receipt.ts",
+      "byteLength": 2837,
+      "sha256": "5c881ad297af3679dc5e359434d7c77f3fd38ef52d71db2af2d014000b03a242"
+    },
+    {
+      "path": "packages/contracts/src/generated/transaction.ts",
+      "byteLength": 16526,
+      "sha256": "6ddd740a544fc13429a7a8126f789ea5c486be417b9dd9230249a5dbc834601b"
+    },
+    {
+      "path": "packages/contracts/src/generated/validation-report.ts",
+      "byteLength": 722,
+      "sha256": "eca1b9f9a2b84352469ab0841cf4e6842928f09beccc7222e32c6e3ed63cfb04"
+    },
+    {
+      "path": "packages/contracts/tests/wire.ts",
+      "byteLength": 1455,
+      "sha256": "0f0092bfe458322bc26e2ec8b55781d444207f21b395a7a57c92acfb42c0c249"
+    },
+    {
+      "path": "packages/contracts/tsconfig.json",
+      "byteLength": 308,
+      "sha256": "4fcb6f03c7e852ccc08b854a1a26a8e7fc7312e561db7bcb7e20309d413deae2"
+    },
+    {
+      "path": "packages/text-component/src/index.ts",
+      "byteLength": 6525,
+      "sha256": "ed0319229f6bb5881821e403c2ec65f8011d05010192c618c253decfa6cdd1ee"
+    },
+    {
+      "path": "packages/text-component/tsconfig.json",
+      "byteLength": 316,
+      "sha256": "0344a0004c0c2836438a6eb840fb538283fc3565ecfd6f0afe7db40d146db3fb"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "byteLength": 11026,
+      "sha256": "b98030e955ae688a6490e8a6ef21007c18468596b851255439c37893b51f29c0"
+    },
+    {
+      "path": "rust-toolchain.toml",
+      "byteLength": 123,
+      "sha256": "060751f06f70853677293dd84de1c855fa72295c5dbc17ce811a3a57b75861c0"
+    },
+    {
+      "path": "tools/components/build-harfbuzz.py",
+      "byteLength": 5181,
+      "sha256": "a075fe15ba86df5cfdf63906020b6dd8bd382413f9e433c8590715dce7a64b90"
+    },
+    {
+      "path": "tools/contracts/build-wasm-node.mjs",
+      "byteLength": 1004,
+      "sha256": "958156b80bf75ebf4649e43ff5f1dca1d7fb483fb42d64810cfe74a9c1481660"
+    },
+    {
+      "path": "tools/contracts/generate-types.mjs",
+      "byteLength": 1500,
+      "sha256": "3eadbd43ee77696b2590d8bd8346e92038ccb2ae9f352e8520aea38c1bb44c59"
+    },
+    {
+      "path": "tools/mo-cli/Cargo.toml",
+      "byteLength": 252,
+      "sha256": "b9e3761bb92f60910ef0b9e5bf937108d9d8c9f08b2fe419727d2cfe83fa80c2"
+    },
+    {
+      "path": "tools/mo-cli/src/main.rs",
+      "byteLength": 4899,
+      "sha256": "e7c5b0e91900c49c0a16f1a76e9d01f1479e87a3c442c93a39f51b5df7c94961"
+    },
+    {
+      "path": "tools/mo-cli/src/pptx.rs",
+      "byteLength": 3490,
+      "sha256": "400765e1d0918cdd4cf4d3a865b5d11a4bd65304454fc2120f6b1d8b0c182245"
+    },
+    {
+      "path": "tools/mo-cli/src/text.rs",
+      "byteLength": 3712,
+      "sha256": "4ea8d8e36101b541698f8fdb35aba49ca7480fb66157a841f451666e1daaa13f"
+    },
+    {
+      "path": "tools/mo-contract-codegen/Cargo.toml",
+      "byteLength": 348,
+      "sha256": "cee1ac85df3e34b5f58f810c3d98735da788f46bc22de2abd4cffb4ee420078d"
+    },
+    {
+      "path": "tools/mo-contract-codegen/src/main.rs",
+      "byteLength": 4343,
+      "sha256": "e73c1cfe8a12151df10e8fe27fbccdcfc69bb50bdf18308b9b09e467e4bba0ea"
+    },
+    {
+      "path": "tools/mo-text-worker/Cargo.toml",
+      "byteLength": 245,
+      "sha256": "53582e6055b4454aebdd2e987be7022a392f5f60d507cadafa07b54ad1ea8b9d"
+    },
+    {
+      "path": "tools/mo-text-worker/src/main.rs",
+      "byteLength": 2149,
+      "sha256": "62ebf134bf8f6ff52c64b382b4a1aebfa11277dd6f5cf412064a6e6f1306c56e"
+    },
+    {
+      "path": "tools/unicode/compare-segmentation.rs",
+      "byteLength": 1041,
+      "sha256": "437823847d6a2d2e20aa9509012c59edca5f99d8f480322008d857d7ac26a089"
+    },
+    {
+      "path": "tools/unicode/fetch.py",
+      "byteLength": 1094,
+      "sha256": "e38ffa8e7f1a32fc0ca256df7b29223f55191a8bd16487708d646a632773b292"
+    },
+    {
+      "path": "tools/unicode/fixtures.py",
+      "byteLength": 3522,
+      "sha256": "147d5ce21b1342bae9841be2c21f8c78d97fca009bd169eb2d7460a76c6856c5"
+    },
+    {
+      "path": "tools/unicode/generate-bidi.py",
+      "byteLength": 3693,
+      "sha256": "ade4ea8a5080b04ad61937da2a6007fef0cd939111d5c58b4dc65033f86458c6"
+    },
+    {
+      "path": "tools/unicode/generate-line-break.py",
+      "byteLength": 2338,
+      "sha256": "f4c5695f96a963cfbd5d295919f962b4357cb5c0da185fb235733909e7e46649"
+    },
+    {
+      "path": "tools/unicode/generate-scripts.py",
+      "byteLength": 2722,
+      "sha256": "883c526c3bca4e14c47b2b3e224dba96eceade646e6d745ef7cfe31039c56b4c"
+    },
+    {
+      "path": "tools/unicode/generate.py",
+      "byteLength": 2565,
+      "sha256": "4f6342e7cf73123fd9555fd8996a981f22243d5cb39489a53d9ecb8f9e00e2bd"
+    },
+    {
+      "path": "tools/verification/bidi-conformance.mjs",
+      "byteLength": 5698,
+      "sha256": "872c3744a98fd0393b61e8657b0afefb0c2371f5658603bc1692238a3c9dcbef"
+    },
+    {
+      "path": "tools/verification/bidi-parity.mjs",
+      "byteLength": 5555,
+      "sha256": "5d856fb1debdd27c651f179b38f670ad6b8aed0975607d03e6b682c96c513a46"
+    },
+    {
+      "path": "tools/verification/bidi-properties.py",
+      "byteLength": 4512,
+      "sha256": "ec39cdec45614a6e6fb59274c8148df40e70b00a6dda940f8efa527a85ed52a6"
+    },
+    {
+      "path": "tools/verification/cascade-benchmark.mjs",
+      "byteLength": 4673,
+      "sha256": "52c8a6482ebf8293027f2c22868cd662c0aa4c3391f8bc0c4da92e6c138ea84a"
+    },
+    {
+      "path": "tools/verification/cascade-parity.mjs",
+      "byteLength": 15180,
+      "sha256": "180703a2acddde2c02dbd193c095e19e3a34ff6d9d769c35949a5818b467d404"
+    },
+    {
+      "path": "tools/verification/color-preset-facts.py",
+      "byteLength": 1808,
+      "sha256": "aecf20c19bbad93b19f3eb91d08b18c3d4d11b48e73311c7e8cca57630f5c9bd"
+    },
+    {
+      "path": "tools/verification/contracts.py",
+      "byteLength": 11505,
+      "sha256": "dff10ccd18381a9a6b86e9bd8c36cf692d236ab552e999f7ed2e156455867823"
+    },
+    {
+      "path": "tools/verification/fetch-ecma-schemas.py",
+      "byteLength": 2417,
+      "sha256": "77b7487f7ad2fa052e4e1f3987c60cc594a1491c09aa518cdf8a9f1f5cdb5d27"
+    },
+    {
+      "path": "tools/verification/fetch-font-corpus.py",
+      "byteLength": 1596,
+      "sha256": "9f564c5fe08406f5da77e76f646462935ded1beb53c9603f9675ef725bd255cc"
+    },
+    {
+      "path": "tools/verification/font-fallback-benchmark.mjs",
+      "byteLength": 4804,
+      "sha256": "e473837255fd22fbe797b0bfbfcc78cfd4fb466fbda69ea7e61424972e3fc981"
+    },
+    {
+      "path": "tools/verification/font-fallback-parity.mjs",
+      "byteLength": 6696,
+      "sha256": "ad984a8d334381a4ce8edbdc63726f4c13f3f6771ab6106b1b4fd0b2bb8627dd"
+    },
+    {
+      "path": "tools/verification/font-fixtures.py",
+      "byteLength": 5422,
+      "sha256": "b4b311d2f0b50dd395070f1ff478ac2d533955469111ef0f8ad4d88922b6580a"
+    },
+    {
+      "path": "tools/verification/font-independent.py",
+      "byteLength": 5409,
+      "sha256": "821924fc189402f330921ebf8cad082d742d79df8f740f4c7ba9e1d14dfbdde4"
+    },
+    {
+      "path": "tools/verification/font-metrics-parity.mjs",
+      "byteLength": 8304,
+      "sha256": "83bf73d33e5f34a25fd6cc4899e1c48b9c0769267d6aab1b533a4370d1957e19"
+    },
+    {
+      "path": "tools/verification/font-metrics-reference.py",
+      "byteLength": 4855,
+      "sha256": "152ad70ac553a1d40485c3befbe604fbd0186624bed3026eb017e7fe931230d9"
+    },
+    {
+      "path": "tools/verification/font-metrics-safety.mjs",
+      "byteLength": 7451,
+      "sha256": "447cf92cd659be4fad87c775dd2761d6fba30d99fcd6abae9b26eaf7d68f9d6c"
+    },
+    {
+      "path": "tools/verification/font-parity.mjs",
+      "byteLength": 3098,
+      "sha256": "d3512ad755ec03cd22edd25ae64cda9bba4055d0aa9340cdef66b8e391bc1680"
+    },
+    {
+      "path": "tools/verification/harfbuzz-cases.py",
+      "byteLength": 5661,
+      "sha256": "51cc2fc587dc85e3bc3196c31976ba539ecc8b6916b1ccd2893aee6c50d46975"
+    },
+    {
+      "path": "tools/verification/harfbuzz-fault-observer.cpp",
+      "byteLength": 2368,
+      "sha256": "7f9c083597642e0e0d097dc7ae3f4052e058196d9bece45a90e167ba36f82a39"
+    },
+    {
+      "path": "tools/verification/harfbuzz-metrics-reference.cpp",
+      "byteLength": 1303,
+      "sha256": "407fcb252fda2002ee536850df601daf4712baa4bd63b955264ed09a2f73ddae"
+    },
+    {
+      "path": "tools/verification/harfbuzz-parity.mjs",
+      "byteLength": 6914,
+      "sha256": "9e392fe83476631b955d165f8d90ff8cbf61000d69e6ab9829ab9e522657688a"
+    },
+    {
+      "path": "tools/verification/harfbuzz-probe.cpp",
+      "byteLength": 2156,
+      "sha256": "9377e6d05144bba55d8053563f3efb1f8069c628bd34336e6541ce3f92b5782a"
+    },
+    {
+      "path": "tools/verification/harfbuzz-safety.py",
+      "byteLength": 2686,
+      "sha256": "708b3fbf2d7d019978143f71778b4ff694dd53ce2b9a373aeb3172645707466a"
+    },
+    {
+      "path": "tools/verification/itemization-parity.mjs",
+      "byteLength": 6975,
+      "sha256": "d78b35e97639ee5973a7bd5d1926c298e94be684e89ab41a5c6d2faadd999017"
+    },
+    {
+      "path": "tools/verification/line-break-parity.mjs",
+      "byteLength": 7037,
+      "sha256": "e91e2609320a58ccce9278c04aa4cdade403fee4689a3a8f4140d01ade82d5e2"
+    },
+    {
+      "path": "tools/verification/line-break-properties.py",
+      "byteLength": 3110,
+      "sha256": "3468bfd750454058ed604a9e71359571b8450eea0b21d51b9b4ab60f84de2d1d"
+    },
+    {
+      "path": "tools/verification/line-geometry-parity.mjs",
+      "byteLength": 8948,
+      "sha256": "1a59db80657a00f995595a138df787f4f89820d5e302657caaaa00cbb4b897f1"
+    },
+    {
+      "path": "tools/verification/line-geometry-reference.py",
+      "byteLength": 7848,
+      "sha256": "11ea3b03409b7e7be556dc3ed26103aea7b14dad60543517e794094df1d67c5e"
+    },
+    {
+      "path": "tools/verification/line-reference.mjs",
+      "byteLength": 2351,
+      "sha256": "29b19b8943c2081afb03ce548aaf8a0e5afcebd350e08e3d001c05ca557cbfcd"
+    },
+    {
+      "path": "tools/verification/line-shape-parity.mjs",
+      "byteLength": 9770,
+      "sha256": "77af42fc11cf98b130a8ca962a946bffbf9b70f4ca5cf3dad77cd306f849e3f8"
+    },
+    {
+      "path": "tools/verification/mce_reference.py",
+      "byteLength": 8539,
+      "sha256": "36349c605934ee95633b2c3bc4b181bd1906c4c35ddb13cdf8574ca5451e524b"
+    },
+    {
+      "path": "tools/verification/metric-font-fixtures.py",
+      "byteLength": 2301,
+      "sha256": "161cff19001b0b53982469629257566dcd3f3b90d2cad5bff956812673c455c6"
+    },
+    {
+      "path": "tools/verification/native-wasm-parity.mjs",
+      "byteLength": 5096,
+      "sha256": "16ff25ff788d11e07dc0bcd5007e75b155f61c9348f50ea8328abad2ee049b26"
+    },
+    {
+      "path": "tools/verification/opc-fixtures.py",
+      "byteLength": 7125,
+      "sha256": "6444c4fd8d5074d0c59a111b0ac2fc589cd9b12c31f264d56a1f4423b90b34a7"
+    },
+    {
+      "path": "tools/verification/opc-parity.mjs",
+      "byteLength": 2389,
+      "sha256": "cdddcf4b160a507b73da23a9e5af33f99e806aec4685a4060e4a4cf02ec83d12"
+    },
+    {
+      "path": "tools/verification/owned-font-fixtures.py",
+      "byteLength": 3490,
+      "sha256": "ca1d53b56380c310c2dc377d6928bc96176f8a7c5adc79827905980cab70d9a7"
+    },
+    {
+      "path": "tools/verification/paragraph-harness.mjs",
+      "byteLength": 8261,
+      "sha256": "90a91a27ce60f9f936e63422fee106f65b291ebe699c37e7c2a63d446465f957"
+    },
+    {
+      "path": "tools/verification/pptx-color-external.py",
+      "byteLength": 1805,
+      "sha256": "3639f595247bd334d6adb7fbc70104b342d80b994b2493ea15f264c796182aa7"
+    },
+    {
+      "path": "tools/verification/pptx-color-fixtures.py",
+      "byteLength": 9052,
+      "sha256": "b21b4208f34f784871b9c248793a46db2b47c84c5ce4366fc3a25140ba737e99"
+    },
+    {
+      "path": "tools/verification/pptx-color-independent.py",
+      "byteLength": 11855,
+      "sha256": "dead1da94181045aa75785c5bce4fd0a9ccb0aa81e247b6d429a72942646c141"
+    },
+    {
+      "path": "tools/verification/pptx-color-map-external.py",
+      "byteLength": 1338,
+      "sha256": "e3479e741e4ca41fd8b3648da59f4a6d94eb9aa051e15b088c355a241f70f424"
+    },
+    {
+      "path": "tools/verification/pptx-color-map-fixtures.py",
+      "byteLength": 6401,
+      "sha256": "f283e4d30cbadfdcb73027ca576e8914ee8459bf9c4ac87196b0d8826c4aa3fe"
+    },
+    {
+      "path": "tools/verification/pptx-color-map-independent.py",
+      "byteLength": 4356,
+      "sha256": "642feaabb0dd4e44c2406bb80bdfdcd73ba68e38f7ba9f3c29bba462a7986671"
+    },
+    {
+      "path": "tools/verification/pptx-color-parity.mjs",
+      "byteLength": 3849,
+      "sha256": "439215427344c697d98316d87065f277d0e8cfd92f3f99f97451ff81f512ecad"
+    },
+    {
+      "path": "tools/verification/pptx-fixture.py",
+      "byteLength": 7988,
+      "sha256": "f098faf7dee35d53004bc311c513e5bcef27e2480777b98ddd0f70afb53dc0d7"
+    },
+    {
+      "path": "tools/verification/pptx-independent.py",
+      "byteLength": 12055,
+      "sha256": "319f2879c923153fd2c3790df11b2546fad186f1b770146c702943d53168da7a"
+    },
+    {
+      "path": "tools/verification/pptx-inheritance-fixtures.py",
+      "byteLength": 8223,
+      "sha256": "a0a58cae8e1a22e5013af55d3b60f08746a59bf36717a27571b630b2a7d60c72"
+    },
+    {
+      "path": "tools/verification/pptx-inheritance-independent.py",
+      "byteLength": 7200,
+      "sha256": "64b582e9dea3c49e5685079b3888184868aaa4a3132ea16a303aadd464c7d8bb"
+    },
+    {
+      "path": "tools/verification/pptx-parity.mjs",
+      "byteLength": 6173,
+      "sha256": "e4f81bdf6d2926d07b386d1843cd90b1b167aff5746b9408c68c4ab04b3f08c9"
+    },
+    {
+      "path": "tools/verification/pptx-source-fixtures.py",
+      "byteLength": 9544,
+      "sha256": "05f4d695bee7f30051616df473f899ac181c0a5984e08bef0a7869046f491b66"
+    },
+    {
+      "path": "tools/verification/pptx-source-independent.py",
+      "byteLength": 4683,
+      "sha256": "e761dd6508e5499628a462becfb92c474f17f289d3d79c06d487ae9c89fb0bed"
+    },
+    {
+      "path": "tools/verification/pptx-source-parity.mjs",
+      "byteLength": 9808,
+      "sha256": "b9f2001182467707a967fafed6e01cd4259ffcc8545b2da3d001490eda97d44e"
+    },
+    {
+      "path": "tools/verification/pptx-theme-fixtures.py",
+      "byteLength": 7807,
+      "sha256": "c2e52631d9d2bc5bfd7dcdc30e69cac7d3f41eeccd8442e06adffe5a5e20408a"
+    },
+    {
+      "path": "tools/verification/pptx-theme-independent.py",
+      "byteLength": 9261,
+      "sha256": "9d3bc1fc68710cb6b76b353e05b2a993954fd8e33c1f9c5b0a948e02a0ae4561"
+    },
+    {
+      "path": "tools/verification/pptx_color_observer.py",
+      "byteLength": 3170,
+      "sha256": "4c2feeab7eb7f25bdf91f10b200220eb17e8a76392f883428743b16e0603fdba"
+    },
+    {
+      "path": "tools/verification/script-properties.py",
+      "byteLength": 3695,
+      "sha256": "54788a6708c9b8612ea9ba18d2673bceee577f3bffe227166d62771ad69623e1"
+    },
+    {
+      "path": "tools/verification/text-parity.mjs",
+      "byteLength": 10365,
+      "sha256": "8f2becf15dad306a37fc7cbe53030f6b7f0bb069b10cf0632b7abb37e7e5af07"
+    },
+    {
+      "path": "tools/verification/unicode-parity.mjs",
+      "byteLength": 4436,
+      "sha256": "286b6a106d3ac53b6874339ab58d42749b1a8670d69c03670cc0284cf71f7e5d"
+    }
+  ],
+  "limitations": [
+    "This low-level entry consumes an explicit line plan. It does not choose line widths, validate UAX14/Office/CJK break legality, enforce mandatory author breaks or synthesize discretionary hyphens.",
+    "Metrics use the already verified HarfBuzz 14.5.0 no-synthesis table/variation policy. Strut and natural/exact/atLeast spacing are an explicit draft geometry profile, not an Office/WPS line-height claim.",
+    "Internal precision is i128 with 32 fractional EMU bits and ties-away quantization, not arbitrary precision rationals. The independent verifier checks this profile exactly and a cumulative rational error bound; observed 0.5 EMU maximum is corpus-specific, not a universal wire-error guarantee.",
+    "Positions and pen ranges are not visual ink bounds. There is no glyph outline extraction, rasterizer, paint, hit testing, alignment, justification, overflow policy or vertical layout here.",
+    "Logical bidi controls are retained. Entire X9-only selected fragments have no positions. Mixed-level graphemes, tabs, unresolved fonts and missing metrics explicitly prevent publishing any layout; their final product behavior remains to be implemented.",
+    "Whole-font fragment order uses scalar L2 rank while retaining HB glyph sequence. Python reconstructs L2 from returned levels; the upstream shaping and metric references share HarfBuzz. These are not independent target-application layout engines.",
+    "Shaping and measurements share verified font resources, but every component batch still uploads bytes and constructs font objects. Persistent font caches, host workers/pools and full cancellation latency budgets remain future work.",
+    "Existing scalar, item, line, shaping, fragment and glyph budgets still apply. The 4096-line limit does not imply all documents at that line count fit all budgets.",
+    "The new actual fault probe is WASM allocation failure at the first metric call after successful shaping, with no result and permanent module quarantine. It is not exhaustive fault injection or browser/Windows/Linux hosting validation.",
+    "Editable advanced presentation objects, playback, Office/WPS acceptance, production hosting and Musterwork replacement gates E0-E3 remain incomplete."
+  ]
+}

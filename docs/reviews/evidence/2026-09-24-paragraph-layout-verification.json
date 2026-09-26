@@ -1,0 +1,4438 @@
+{
+  "format": "musteroffice.paragraph-layout-verification/1",
+  "scope": "Width-driven horizontal paragraph layout using default Unicode 18 break opportunities tailored to EGC boundaries, actual candidate line reshaping, furthest-fit search without a monotonic-width assumption, explicit overflow/emergency policies and terminal empty lines. Preserves all space advances. Not Office/WPS layout, painting or production performance acceptance.",
+  "previousEvidence": {
+    "path": "docs/reviews/evidence/2026-09-24-line-geometry-verification.json",
+    "byteLength": 115273,
+    "sha256": "4b5f0bdadf654b4c9a49a813580c0d0fbc31ebcec9f0d2067c7a5d6e8d62ee22"
+  },
+  "environment": {
+    "platform": "Darwin 25.2.0",
+    "architecture": "arm64",
+    "rust": "1.92.0",
+    "node": "23.5.0",
+    "python": "3.13.0"
+  },
+  "artifacts": {
+    "nativeCli": {
+      "path": "target/release/mo-cli",
+      "byteLength": 3811520,
+      "sha256": "790f5cf816e2f97815906f30d56244b649b201d0819128c2a4207154a8505f61"
+    },
+    "nativeWorker": {
+      "path": "target/release/mo-text-worker",
+      "byteLength": 2260576,
+      "sha256": "799eadd1da95a51b7a7329e229ce1a5695a2efd5c1225712bdb20d81d00fcc24"
+    },
+    "rustWasm": {
+      "path": ".codex-work/wasm-node/mo_wasm_bg.wasm",
+      "byteLength": 3374515,
+      "sha256": "acdb35624103a828858601a33bba9be13cfa2c8fdaf86341e1a5df90efa38ded"
+    },
+    "rustWasmGlue": {
+      "path": ".codex-work/wasm-node/mo_wasm.js",
+      "byteLength": 18666,
+      "sha256": "660edb3dd7d58b2dd58ee5feda959d1b44b452a05408118fb1d9ddd12fcbfd9a"
+    },
+    "cppWasm": {
+      "path": ".codex-work/harfbuzz/release/mo-hb.wasm",
+      "byteLength": 838096,
+      "sha256": "7718676dd02747f6a37da5cc187fdb55214d8fc2cb426eb9a88f0b492e94f044"
+    },
+    "cppWasmGlue": {
+      "path": ".codex-work/harfbuzz/release/mo-hb.mjs",
+      "byteLength": 9361,
+      "sha256": "5209e436222ba880c8cee05a6cacf53971ff76865c6bb1548ab58ea6732fdd52"
+    },
+    "typescriptAdapter": {
+      "path": ".codex-work/text-component/index.js",
+      "byteLength": 6579,
+      "sha256": "2455f7d620810ab799b977730898fc5a3315fb1d0f45eb10eb0449d8ac4e8cb6"
+    }
+  },
+  "artifactByteDeltas": {
+    "nativeCli": -112,
+    "nativeWorker": 87376,
+    "rustWasm": 38572,
+    "rustWasmGlue": 797,
+    "cppWasm": 0,
+    "cppWasmGlue": 0,
+    "typescriptAdapter": 0
+  },
+  "artifactSizeScope": "Incomplete development CLI/worker and separate Rust/C++ WASM artifacts only; no full kernel distribution or Musterwork desktop installer estimate. No new timing or memory benchmark.",
+  "checks": {
+    "rustTests": 189,
+    "newRustTests": 9,
+    "nativeWasmBatches": 1799,
+    "newParagraphLayoutBatches": 37,
+    "oldSemanticBatchesUnchanged": 1762,
+    "runtimeSchemas": 36,
+    "existing34SchemasUnchanged": true,
+    "upstreamReferenceFragments": 72,
+    "upstreamReferenceGlyphs": 138,
+    "upstreamReferenceMetrics": 84,
+    "actualSecondCandidateAllocationFailure": true,
+    "originalComponentAndAdapterArtifactsUnchanged": true,
+    "rustfmt": true,
+    "strictClippy": true,
+    "typescript": true
+  },
+  "paragraphLayoutReport": {
+    "format": "musteroffice.paragraph-layout-parity/1",
+    "nativeCliSha256": "790f5cf816e2f97815906f30d56244b649b201d0819128c2a4207154a8505f61",
+    "nativeWorkerSha256": "799eadd1da95a51b7a7329e229ce1a5695a2efd5c1225712bdb20d81d00fcc24",
+    "rustWasmSha256": "acdb35624103a828858601a33bba9be13cfa2c8fdaf86341e1a5df90efa38ded",
+    "componentSha256": "7718676dd02747f6a37da5cc187fdb55214d8fc2cb426eb9a88f0b492e94f044",
+    "referenceSha256": "e9fba1b6c47758d36dca4e53d6216cf43f46faadac7606920029da549dfa711a",
+    "metricsReferenceSha256": "2f01d9931facef64760adf3768a025ec31cad06d776257ae4bc7e2af7596d996",
+    "referenceFragments": 72,
+    "referenceGlyphs": 138,
+    "referenceMetrics": 84,
+    "cliVerified": true,
+    "actualSecondCandidateFailure": {
+      "componentSha256": "d1e7151c04db83f76a67d3d16cba216124b0db1b53550141c6c61e83fa59f13b",
+      "failure": {
+        "status": "error",
+        "error": {
+          "code": "COMPONENT_FAILURE",
+          "message": "shaping component failed with status 2 at run 0"
+        }
+      },
+      "reuse": {
+        "status": "error",
+        "error": {
+          "code": "HOST_FAILURE",
+          "message": "shaping host failed: WASM component call failed"
+        }
+      },
+      "replacementVerified": true
+    },
+    "cases": [
+      {
+        "name": "latin",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/latin.request.json",
+        "responsePath": ".codex-work/paragraph-layout/latin.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d.bin",
+        "requestSha256": "71ae6cbb50e8158fab2976c8ee252fefa163a23f9d54b732b9ac1d29c057cfaa",
+        "responseSha256": "093447c94f064bfd502c7e220d2c4c3cc6af5c52f7537e728e5db17775b3ac6a",
+        "bundleSha256": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d"
+      },
+      {
+        "name": "latin-wider",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/latin-wider.request.json",
+        "responsePath": ".codex-work/paragraph-layout/latin-wider.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d.bin",
+        "requestSha256": "23c151575ef597bd2c6bb7d9e4f1e258c268c4e456c287fd59f04f306d75416d",
+        "responseSha256": "74ade030d66d7a942dd984e8248d8c4094bf5c1bd9e14ce14d22ab845463e7d4",
+        "bundleSha256": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d"
+      },
+      {
+        "name": "arabic",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/arabic.request.json",
+        "responsePath": ".codex-work/paragraph-layout/arabic.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/50390b6d44569c2fadb55c54e07e64beed68d513195e2f951f36999131df00d3.bin",
+        "requestSha256": "a1bdf713b392185559fe4cbe28aab0789aef64b5cf08902d13cc53d41e46addc",
+        "responseSha256": "7416fcd1db8990d3401976c1f5b94905a2ba7560b898c92327ce3c2dc46c9a89",
+        "bundleSha256": "50390b6d44569c2fadb55c54e07e64beed68d513195e2f951f36999131df00d3"
+      },
+      {
+        "name": "arabic-emergency",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/arabic-emergency.request.json",
+        "responsePath": ".codex-work/paragraph-layout/arabic-emergency.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/63111b5b2e074dd48cc67692e0a2726d86ee94c1c37fe8598257b7b4e87e869e.bin",
+        "requestSha256": "10e8ec98c3f5af4120c77d7e6e6cd840e6a3a5cb469a50634ad053d997a50be9",
+        "responseSha256": "26421750e63a34ab427189c6fe31a3acbba336945af4c351f86958b9fd8ef907",
+        "bundleSha256": "63111b5b2e074dd48cc67692e0a2726d86ee94c1c37fe8598257b7b4e87e869e"
+      },
+      {
+        "name": "bidi-isolate",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/bidi-isolate.request.json",
+        "responsePath": ".codex-work/paragraph-layout/bidi-isolate.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/9dc6fba53d57ff3d640a4641064c507817e53163f2c7f8425f70fba8164db859.bin",
+        "requestSha256": "f94fbc3211334cbc1082cd23e2a76d5ed8d1eb18688753cfb53504fb506d983c",
+        "responseSha256": "8b3d452ca185051ffb5a7b6ca0ef9b7b5e50c65cf614f14ddd49aa5c347b9fb7",
+        "bundleSha256": "9dc6fba53d57ff3d640a4641064c507817e53163f2c7f8425f70fba8164db859"
+      },
+      {
+        "name": "bidi-brackets",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/bidi-brackets.request.json",
+        "responsePath": ".codex-work/paragraph-layout/bidi-brackets.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/9dc6fba53d57ff3d640a4641064c507817e53163f2c7f8425f70fba8164db859.bin",
+        "requestSha256": "bd390a381a87ae167485c9df1dc6b5b9cf3024821f54c024041eb82deca7d8b9",
+        "responseSha256": "68ecab34c66336d204031a33217685d4fccaf569233d52a4caa70eb2a1550aa1",
+        "bundleSha256": "9dc6fba53d57ff3d640a4641064c507817e53163f2c7f8425f70fba8164db859"
+      },
+      {
+        "name": "devanagari",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/devanagari.request.json",
+        "responsePath": ".codex-work/paragraph-layout/devanagari.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/14ec4af41f27482216d1c2229f417ff9b1425e1babb014e57d1d40d03229853e.bin",
+        "requestSha256": "0c63c9a087ff67fe9a066c0da53727aa86e3188409c3f766c81c6dd629a0041b",
+        "responseSha256": "b89052b4de70cc63ce048beb6f4b8f8fec89b6462de329abdd9b7cac1f924f39",
+        "bundleSha256": "14ec4af41f27482216d1c2229f417ff9b1425e1babb014e57d1d40d03229853e"
+      },
+      {
+        "name": "cjk",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/cjk.request.json",
+        "responsePath": ".codex-work/paragraph-layout/cjk.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da.bin",
+        "requestSha256": "d4f32625f43a982ff501f3b0e19fb17c2e9f2f2146a934531eea7ec8532f838c",
+        "responseSha256": "f72c2453d399d93d35befa5448659b995ffc8ed9790b5e6ff0206b25179264e5",
+        "bundleSha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da"
+      },
+      {
+        "name": "cjk-punctuation",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/cjk-punctuation.request.json",
+        "responsePath": ".codex-work/paragraph-layout/cjk-punctuation.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da.bin",
+        "requestSha256": "9c470539e337a53475d11bd74725cb863003dbad0a46cb863e60cec653ad11ff",
+        "responseSha256": "4bc90e92ca59717a371ed744323e555f69aa52a95a90944dc522a6c3acd73bc3",
+        "bundleSha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da"
+      },
+      {
+        "name": "emoji",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/emoji.request.json",
+        "responsePath": ".codex-work/paragraph-layout/emoji.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/f20e54c7787a88ba7cd498ecfa165c53b1ad7a3d96ee01e2614e56dc7e4af1fa.bin",
+        "requestSha256": "d092fee0c5a667c3f742b7d4ceee115990015f15a0a54898a2cfbfde5154eb21",
+        "responseSha256": "1b0b1297c4a7e405959b7de2a2925d3d0ad97e2ebe51b6ce74a4965dadb578f7",
+        "bundleSha256": "f20e54c7787a88ba7cd498ecfa165c53b1ad7a3d96ee01e2614e56dc7e4af1fa"
+      },
+      {
+        "name": "combining",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/combining.request.json",
+        "responsePath": ".codex-work/paragraph-layout/combining.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "eb68f04c90976704c070c26c58e7fd4796d9bea4c2dd30940e61b7f17d150230",
+        "responseSha256": "d27722b0c8824f5ae32bcaa15fcca4f24042be0521bac130b5ac6a69a28e9803",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "word-overflow",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/word-overflow.request.json",
+        "responsePath": ".codex-work/paragraph-layout/word-overflow.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "354a2b0f7142a91659d2654fb1591518817f786c236f678c04bebd32a4a0dfc1",
+        "responseSha256": "2727b91eccfe71718283c32c4ba3595432e6928d86fb7914f18dfdb6957ea1ef",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "word-emergency",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/word-emergency.request.json",
+        "responsePath": ".codex-work/paragraph-layout/word-emergency.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "5290cb71918faa8fba9204dbe5ed98121bfd6cb49719eaa853751c3d9f7187c0",
+        "responseSha256": "1952cbe2f7419154e29b5f6e12a931353c9e05d8a4091560323349adf70d630c",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "egc-overflow",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/egc-overflow.request.json",
+        "responsePath": ".codex-work/paragraph-layout/egc-overflow.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "8a33da341fdd5221216fa3ab6b1f87df7b81222435a5ed7a1ea556790fc2c519",
+        "responseSha256": "b18d311063ceb321ff5b8de5c11e44524db7c42a28c18a678bd3d9b6bdb5a692",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "space-mark-tailoring",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/space-mark-tailoring.request.json",
+        "responsePath": ".codex-work/paragraph-layout/space-mark-tailoring.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "25328dfdb8bbb98488827fafe7a00c5a761815c018503b0f0c00688df2635a10",
+        "responseSha256": "39bce4def30f74259ddb981dd3df2c1e21eed70e8079d3532808040c8239e5f1",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "mandatory",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/mandatory.request.json",
+        "responsePath": ".codex-work/paragraph-layout/mandatory.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "f54b363cae05fd85acb0e4cf486ead75f8c026ba09df91f502a9f5f926c305cc",
+        "responseSha256": "7e7f37b96c13254f4f622492996281a77ee9bd289c902068df2a4e2348cc8355",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "terminal-explicit",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/terminal-explicit.request.json",
+        "responsePath": ".codex-work/paragraph-layout/terminal-explicit.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "eb4e84b6ac330772a8b9c7b2bbe552ca088bb6062eca26564439c16b874d61e6",
+        "responseSha256": "eaf92fa930b747dfc47ae9155a982b79969d000b2d0035a6614da4919d0e1343",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "form-feed",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/form-feed.request.json",
+        "responsePath": ".codex-work/paragraph-layout/form-feed.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "64258e529ec2eba3e36b0683bf70ea80335bc43959f0b06ca2877e46a261a032",
+        "responseSha256": "313a0494afe0ffc67b653b10ef61d1e0d3b01032e2099d9ee184900eef854f42",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "terminal-paragraph",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/terminal-paragraph.request.json",
+        "responsePath": ".codex-work/paragraph-layout/terminal-paragraph.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "6a77c2c900b3b0b2d58b3e1e9159c132550b2545168bbea527e79b99c943d5cb",
+        "responseSha256": "590067f4dc15e59d54aac862d4d994e00b0ec8f9a0042cbccce9b610936a80b7",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "empty",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/empty.request.json",
+        "responsePath": ".codex-work/paragraph-layout/empty.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "fa05833b2821aafb9c0b1204caeaad45d20850a043880e886ae5acf6058dd6c6",
+        "responseSha256": "230a210bd50c32364bf6717ba6350c58a1f03fe0e89f29ce237f37e3023a5db1",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "missing-font",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/missing-font.request.json",
+        "responsePath": ".codex-work/paragraph-layout/missing-font.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "3df0846a59bcaa0b0a43de69742e7023b23ace39ccb517d0d0b708658957b9a7",
+        "responseSha256": "84232d1c1607e006d98daccdfc7ece5b9591a84d6e18bc1f2bf74b0d97a5d1b0",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "tab",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/tab.request.json",
+        "responsePath": ".codex-work/paragraph-layout/tab.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "3a00a46e240240faae83d69575a079c3e7e38de9916395e72c81d7b3ad5081e3",
+        "responseSha256": "c7c8be6eab6f7df3207987930a3a8de9073491b84fc1ed8139e2c8edd500d983",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "soft-hyphen",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/soft-hyphen.request.json",
+        "responsePath": ".codex-work/paragraph-layout/soft-hyphen.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "c6fc9764a906df343e7cfa3138451e68caa1b06e76719431d052367fcee1d914",
+        "responseSha256": "1b2ea388c2d0478c9124c7a9ba930f0096eebf5d1b7b5ffc10f028794d8ff559",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "contingent-object",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/contingent-object.request.json",
+        "responsePath": ".codex-work/paragraph-layout/contingent-object.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "829b913cad0c08518e7faa72bd21482c6b6d188e517ec0ed51b8925a3695cc69",
+        "responseSha256": "a4dadeaba0391ce668c98348d38b67ef285135bf33e96ad1130e5470081fcf7c",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "sub-emu-fitting",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/sub-emu-fitting.request.json",
+        "responsePath": ".codex-work/paragraph-layout/sub-emu-fitting.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "5ed80fb8f0e248855f4677b388fb9fac8047d8a8ffe18e293e70b4bbc3be9995",
+        "responseSha256": "a2c084355dba0f371e44fe849132583e6b3839e516f2dd3b6bc377aa8fb8a8b8",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "mixed-styles",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/mixed-styles.request.json",
+        "responsePath": ".codex-work/paragraph-layout/mixed-styles.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/9dc6fba53d57ff3d640a4641064c507817e53163f2c7f8425f70fba8164db859.bin",
+        "requestSha256": "a37412c10e45afe2c99397d22611eb8e495fced5a39650bf48135a126a877995",
+        "responseSha256": "04674e9e0fbbb78aa36dbaad806dd4c42c1e1352caa8321711cc03a1190b779c",
+        "bundleSha256": "9dc6fba53d57ff3d640a4641064c507817e53163f2c7f8425f70fba8164db859"
+      },
+      {
+        "name": "axes-and-global-features",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/axes-and-global-features.request.json",
+        "responsePath": ".codex-work/paragraph-layout/axes-and-global-features.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d.bin",
+        "requestSha256": "d7ee2ae9d3aec8cce74938425cb503329c0d9445ce024f977c6d2947cb1840de",
+        "responseSha256": "28a09a4e5e11fb8ac9745abdbf8e35820394785c054d9607f8e6d4a116124d99",
+        "bundleSha256": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d"
+      },
+      {
+        "name": "zero-width",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/zero-width.request.json",
+        "responsePath": ".codex-work/paragraph-layout/zero-width.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "5469de2d40ea0d69c4814ee5c194b3687bb66630f5594eafc898485382013a5e",
+        "responseSha256": "b3e4a737dabc272330d6795a391284ef45ba9d5cb02c8193584ebe23e314d731",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "negative-width",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/negative-width.request.json",
+        "responsePath": ".codex-work/paragraph-layout/negative-width.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "cd692bf309fd7eb0ccfca70682c8521fb4680b17e1a6fdb9a319b2e82c35a49e",
+        "responseSha256": "b3e4a737dabc272330d6795a391284ef45ba9d5cb02c8193584ebe23e314d731",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "numeric-width",
+        "kind": "paragraph-layout",
+        "validRequest": false,
+        "requestPath": ".codex-work/paragraph-layout/numeric-width.request.json",
+        "responsePath": ".codex-work/paragraph-layout/numeric-width.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "97d74bc31c31b989f8e1ddb7256d05e5112f753f5e969cc05da7a9986621fa30",
+        "responseSha256": "8a1990350da93480d1c014f554bc267489ed01ecf4b7fe524bdda3c2c54f1b04",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "unknown-overflow",
+        "kind": "paragraph-layout",
+        "validRequest": false,
+        "requestPath": ".codex-work/paragraph-layout/unknown-overflow.request.json",
+        "responsePath": ".codex-work/paragraph-layout/unknown-overflow.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "95fc84f9e83c754d7610d95c0d94c2b038fb31e42b42ff2303bc670d255cc801",
+        "responseSha256": "07f5fa4de4c082688de79ec8dd60c0f0aa5ac49f71f8ca486d487b4740ed7f29",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "bad-style",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/bad-style.request.json",
+        "responsePath": ".codex-work/paragraph-layout/bad-style.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "1b66ec3a2ea5c1f3bd3c2af3b434168097c58e8a91270a63143ec7164b8b7ac3",
+        "responseSha256": "a4edf0cd20227dae93e68476ffd045e7889c0996d7d1a794b5a31a2075d07948",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "unused-bad-style",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/unused-bad-style.request.json",
+        "responsePath": ".codex-work/paragraph-layout/unused-bad-style.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "3d237dec31b9d9017e00be4ae9aa67146c470a636430ec0ccf228471d0a2dbf8",
+        "responseSha256": "f296150fcbc4300949396b745a5c230d84df9397963533fc6c9ade8e60651d6f",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "multiple-paragraphs",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/multiple-paragraphs.request.json",
+        "responsePath": ".codex-work/paragraph-layout/multiple-paragraphs.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "fad5cd5442ed6009c34427d5edc470e063ba254a23dfda62e8f0accb6490c5bf",
+        "responseSha256": "37f5f60c9caea7ae24958069bbf79286cb9c388615ad09289d8bc9c339270711",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "cumulative-work-limit",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/cumulative-work-limit.request.json",
+        "responsePath": ".codex-work/paragraph-layout/cumulative-work-limit.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "9a77813414c2308ba953255db476936a5838cafa004e7e7eca64d221ec93244f",
+        "responseSha256": "914b9dd92831d417b9e61922bd3a803336859e6ca21bf6829ee7c5e4ae437da2",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "maximum-empty-lines",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/maximum-empty-lines.request.json",
+        "responsePath": ".codex-work/paragraph-layout/maximum-empty-lines.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "b384bd26bf8d09a29f2917c4eb964aa80a462a7342417bfb2af0986b1b10199b",
+        "responseSha256": "6b9c710f16df6eb2a2bc966259c8a08833cb0599f831aac66bcb0f7e41b75131",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "name": "trailing-line-limit",
+        "kind": "paragraph-layout",
+        "validRequest": true,
+        "requestPath": ".codex-work/paragraph-layout/trailing-line-limit.request.json",
+        "responsePath": ".codex-work/paragraph-layout/trailing-line-limit.response.json",
+        "bundlePath": ".codex-work/paragraph-layout/bundles/5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9.bin",
+        "requestSha256": "7f5da02f1bdb348c5ea14f0d8783f3eef3899c41dbbb9b7737bfb6a10b374e46",
+        "responseSha256": "43ed2f30e9a3e04a8285302159a65c657458e46691e1e465f6d7a1ff5b97b5a5",
+        "bundleSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      }
+    ]
+  },
+  "independentGeometryReport": {
+    "format": "musteroffice.line-geometry-reference/1",
+    "layouts": 24,
+    "lines": 4161,
+    "glyphs": 138,
+    "coordinates": 33588,
+    "maximumWireErrorEmu": "1/2",
+    "q32ProfileExact": true,
+    "unquantizedRationalErrorBoundVerified": true,
+    "scope": "Independent Python Fraction geometry and scalar L2 reconstruction, using upstream-checked shaping/metrics; no independent font rasterization or Office/WPS layout comparison."
+  },
+  "selectionReferenceReport": {
+    "format": "musteroffice.paragraph-selection-reference/1",
+    "rustWasmSha256": "acdb35624103a828858601a33bba9be13cfa2c8fdaf86341e1a5df90efa38ded",
+    "componentSha256": "7718676dd02747f6a37da5cc187fdb55214d8fc2cb426eb9a88f0b492e94f044",
+    "layouts": 23,
+    "candidateCalls": 157,
+    "scope": "Exhaustive ascending enumeration and BigInt Q32 pen arithmetic using separate explicit-line geometry entry; shared shaping/bidi. Long resource-limit corpora excluded from enumeration.",
+    "proofs": [
+      {
+        "name": "latin",
+        "decisions": [
+          {
+            "end": 7,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 10,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 16,
+            "emergency": false,
+            "overflows": false
+          }
+        ],
+        "candidates": [
+          {
+            "start": 0,
+            "end": 7,
+            "min": "0",
+            "max": "3114581434040320",
+            "fits": true
+          },
+          {
+            "start": 0,
+            "end": 10,
+            "min": "0",
+            "max": "4706236184395776",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 16,
+            "min": "0",
+            "max": "7537177978208256",
+            "fits": false
+          },
+          {
+            "start": 7,
+            "end": 10,
+            "min": "0",
+            "max": "1591654750355456",
+            "fits": true
+          },
+          {
+            "start": 7,
+            "end": 16,
+            "min": "0",
+            "max": "4422596544167936",
+            "fits": false
+          },
+          {
+            "start": 10,
+            "end": 16,
+            "min": "0",
+            "max": "2830941793812480",
+            "fits": true
+          }
+        ]
+      },
+      {
+        "name": "latin-wider",
+        "decisions": [
+          {
+            "end": 10,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 16,
+            "emergency": false,
+            "overflows": false
+          }
+        ],
+        "candidates": [
+          {
+            "start": 0,
+            "end": 7,
+            "min": "0",
+            "max": "3114581434040320",
+            "fits": true
+          },
+          {
+            "start": 0,
+            "end": 10,
+            "min": "0",
+            "max": "4706236184395776",
+            "fits": true
+          },
+          {
+            "start": 0,
+            "end": 16,
+            "min": "0",
+            "max": "7537177978208256",
+            "fits": false
+          },
+          {
+            "start": 10,
+            "end": 16,
+            "min": "0",
+            "max": "2830941793812480",
+            "fits": true
+          }
+        ]
+      },
+      {
+        "name": "arabic",
+        "decisions": [
+          {
+            "end": 3,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 6,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 8,
+            "emergency": false,
+            "overflows": false
+          }
+        ],
+        "candidates": [
+          {
+            "start": 0,
+            "end": 3,
+            "min": "0",
+            "max": "1769474986344448",
+            "fits": true
+          },
+          {
+            "start": 0,
+            "end": 6,
+            "min": "0",
+            "max": "3301129043574784",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 8,
+            "min": "0",
+            "max": "4786964389691392",
+            "fits": false
+          },
+          {
+            "start": 3,
+            "end": 6,
+            "min": "0",
+            "max": "1531654057230336",
+            "fits": true
+          },
+          {
+            "start": 3,
+            "end": 8,
+            "min": "0",
+            "max": "3017489403346944",
+            "fits": false
+          },
+          {
+            "start": 6,
+            "end": 8,
+            "min": "0",
+            "max": "1485835346116608",
+            "fits": true
+          }
+        ]
+      },
+      {
+        "name": "arabic-emergency",
+        "decisions": [
+          {
+            "end": 1,
+            "emergency": true,
+            "overflows": true
+          },
+          {
+            "end": 2,
+            "emergency": true,
+            "overflows": true
+          },
+          {
+            "end": 3,
+            "emergency": true,
+            "overflows": true
+          },
+          {
+            "end": 4,
+            "emergency": false,
+            "overflows": true
+          }
+        ],
+        "candidates": [
+          {
+            "start": 0,
+            "end": 4,
+            "min": "0",
+            "max": "2234207627640832",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 1,
+            "min": "0",
+            "max": "1083285241331712",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 2,
+            "min": "0",
+            "max": "1485835346116608",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 3,
+            "min": "0",
+            "max": "1860021486878720",
+            "fits": false
+          },
+          {
+            "start": 1,
+            "end": 4,
+            "min": "0",
+            "max": "1860021486878720",
+            "fits": false
+          },
+          {
+            "start": 1,
+            "end": 2,
+            "min": "0",
+            "max": "1083285241331712",
+            "fits": false
+          },
+          {
+            "start": 1,
+            "end": 3,
+            "min": "0",
+            "max": "1485835346116608",
+            "fits": false
+          },
+          {
+            "start": 2,
+            "end": 4,
+            "min": "0",
+            "max": "1485835346116608",
+            "fits": false
+          },
+          {
+            "start": 2,
+            "end": 3,
+            "min": "0",
+            "max": "1083285241331712",
+            "fits": false
+          },
+          {
+            "start": 3,
+            "end": 4,
+            "min": "0",
+            "max": "1083285241331712",
+            "fits": false
+          }
+        ]
+      },
+      {
+        "name": "bidi-isolate",
+        "decisions": [
+          {
+            "end": 4,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 8,
+            "emergency": false,
+            "overflows": false
+          }
+        ],
+        "candidates": [
+          {
+            "start": 0,
+            "end": 4,
+            "min": "0",
+            "max": "2064023843504128",
+            "fits": true
+          },
+          {
+            "start": 0,
+            "end": 8,
+            "min": "0",
+            "max": "4009137222451200",
+            "fits": false
+          },
+          {
+            "start": 4,
+            "end": 8,
+            "min": "0",
+            "max": "1945113378947072",
+            "fits": true
+          }
+        ]
+      },
+      {
+        "name": "bidi-brackets",
+        "decisions": [
+          {
+            "end": 2,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 5,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 9,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 10,
+            "emergency": false,
+            "overflows": false
+          }
+        ],
+        "candidates": [
+          {
+            "start": 0,
+            "end": 2,
+            "min": "0",
+            "max": "980738602172416",
+            "fits": true
+          },
+          {
+            "start": 0,
+            "end": 5,
+            "min": "0",
+            "max": "2674939991687168",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 9,
+            "min": "0",
+            "max": "4533870556872704",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 10,
+            "min": "0",
+            "max": "5230969518817280",
+            "fits": false
+          },
+          {
+            "start": 2,
+            "end": 5,
+            "min": "0",
+            "max": "1694201389514752",
+            "fits": true
+          },
+          {
+            "start": 2,
+            "end": 9,
+            "min": "0",
+            "max": "3553131954700288",
+            "fits": false
+          },
+          {
+            "start": 2,
+            "end": 10,
+            "min": "0",
+            "max": "4250230916644864",
+            "fits": false
+          },
+          {
+            "start": 5,
+            "end": 9,
+            "min": "0",
+            "max": "1858930565185536",
+            "fits": true
+          },
+          {
+            "start": 5,
+            "end": 10,
+            "min": "0",
+            "max": "2556029527130112",
+            "fits": false
+          },
+          {
+            "start": 9,
+            "end": 10,
+            "min": "0",
+            "max": "697098961944576",
+            "fits": true
+          }
+        ]
+      },
+      {
+        "name": "devanagari",
+        "decisions": [
+          {
+            "end": 2,
+            "emergency": true,
+            "overflows": true
+          },
+          {
+            "end": 3,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 5,
+            "emergency": false,
+            "overflows": true
+          }
+        ],
+        "candidates": [
+          {
+            "start": 0,
+            "end": 3,
+            "min": "0",
+            "max": "1404016219127808",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 5,
+            "min": "0",
+            "max": "2524392798027776",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 2,
+            "min": "0",
+            "max": "1120376578899968",
+            "fits": false
+          },
+          {
+            "start": 2,
+            "end": 3,
+            "min": "0",
+            "max": "283639640227840",
+            "fits": true
+          },
+          {
+            "start": 2,
+            "end": 5,
+            "min": "0",
+            "max": "1404016219127808",
+            "fits": false
+          },
+          {
+            "start": 3,
+            "end": 5,
+            "min": "0",
+            "max": "1120376578899968",
+            "fits": false
+          }
+        ]
+      },
+      {
+        "name": "cjk",
+        "decisions": [
+          {
+            "end": 2,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 4,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 6,
+            "emergency": false,
+            "overflows": false
+          }
+        ],
+        "candidates": [
+          {
+            "start": 0,
+            "end": 1,
+            "min": "0",
+            "max": "1090921693184000",
+            "fits": true
+          },
+          {
+            "start": 0,
+            "end": 2,
+            "min": "0",
+            "max": "2181843386368000",
+            "fits": true
+          },
+          {
+            "start": 0,
+            "end": 3,
+            "min": "0",
+            "max": "3272765079552000",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 4,
+            "min": "0",
+            "max": "4363686772736000",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 5,
+            "min": "0",
+            "max": "5454608465920000",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 6,
+            "min": "0",
+            "max": "6545530159104000",
+            "fits": false
+          },
+          {
+            "start": 2,
+            "end": 3,
+            "min": "0",
+            "max": "1090921693184000",
+            "fits": true
+          },
+          {
+            "start": 2,
+            "end": 4,
+            "min": "0",
+            "max": "2181843386368000",
+            "fits": true
+          },
+          {
+            "start": 2,
+            "end": 5,
+            "min": "0",
+            "max": "3272765079552000",
+            "fits": false
+          },
+          {
+            "start": 2,
+            "end": 6,
+            "min": "0",
+            "max": "4363686772736000",
+            "fits": false
+          },
+          {
+            "start": 4,
+            "end": 5,
+            "min": "0",
+            "max": "1090921693184000",
+            "fits": true
+          },
+          {
+            "start": 4,
+            "end": 6,
+            "min": "0",
+            "max": "2181843386368000",
+            "fits": true
+          }
+        ]
+      },
+      {
+        "name": "cjk-punctuation",
+        "decisions": [
+          {
+            "end": 1,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 3,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 4,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 6,
+            "emergency": false,
+            "overflows": false
+          }
+        ],
+        "candidates": [
+          {
+            "start": 0,
+            "end": 1,
+            "min": "0",
+            "max": "1090921693184000",
+            "fits": true
+          },
+          {
+            "start": 0,
+            "end": 3,
+            "min": "0",
+            "max": "3272765079552000",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 4,
+            "min": "0",
+            "max": "4363686772736000",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 6,
+            "min": "0",
+            "max": "6545530159104000",
+            "fits": false
+          },
+          {
+            "start": 1,
+            "end": 3,
+            "min": "0",
+            "max": "2181843386368000",
+            "fits": true
+          },
+          {
+            "start": 1,
+            "end": 4,
+            "min": "0",
+            "max": "3272765079552000",
+            "fits": false
+          },
+          {
+            "start": 1,
+            "end": 6,
+            "min": "0",
+            "max": "5454608465920000",
+            "fits": false
+          },
+          {
+            "start": 3,
+            "end": 4,
+            "min": "0",
+            "max": "1090921693184000",
+            "fits": true
+          },
+          {
+            "start": 3,
+            "end": 6,
+            "min": "0",
+            "max": "3272765079552000",
+            "fits": false
+          },
+          {
+            "start": 4,
+            "end": 6,
+            "min": "0",
+            "max": "2181843386368000",
+            "fits": true
+          }
+        ]
+      },
+      {
+        "name": "emoji",
+        "decisions": [
+          {
+            "end": 1,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 5,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 6,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 7,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 8,
+            "emergency": false,
+            "overflows": false
+          }
+        ],
+        "candidates": [
+          {
+            "start": 0,
+            "end": 1,
+            "min": "0",
+            "max": "654553015910400",
+            "fits": true
+          },
+          {
+            "start": 0,
+            "end": 5,
+            "min": "0",
+            "max": "2039512196710400",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 6,
+            "min": "0",
+            "max": "2694065212620800",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 7,
+            "min": "0",
+            "max": "4079024393420800",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 8,
+            "min": "0",
+            "max": "4733577409331200",
+            "fits": false
+          },
+          {
+            "start": 1,
+            "end": 5,
+            "min": "0",
+            "max": "1384959180800000",
+            "fits": true
+          },
+          {
+            "start": 1,
+            "end": 6,
+            "min": "0",
+            "max": "2039512196710400",
+            "fits": false
+          },
+          {
+            "start": 1,
+            "end": 7,
+            "min": "0",
+            "max": "3424471377510400",
+            "fits": false
+          },
+          {
+            "start": 1,
+            "end": 8,
+            "min": "0",
+            "max": "4079024393420800",
+            "fits": false
+          },
+          {
+            "start": 5,
+            "end": 6,
+            "min": "0",
+            "max": "654553015910400",
+            "fits": true
+          },
+          {
+            "start": 5,
+            "end": 7,
+            "min": "0",
+            "max": "2039512196710400",
+            "fits": false
+          },
+          {
+            "start": 5,
+            "end": 8,
+            "min": "0",
+            "max": "2694065212620800",
+            "fits": false
+          },
+          {
+            "start": 6,
+            "end": 7,
+            "min": "0",
+            "max": "1384959180800000",
+            "fits": true
+          },
+          {
+            "start": 6,
+            "end": 8,
+            "min": "0",
+            "max": "2039512196710400",
+            "fits": false
+          },
+          {
+            "start": 7,
+            "end": 8,
+            "min": "0",
+            "max": "654553015910400",
+            "fits": true
+          }
+        ]
+      },
+      {
+        "name": "combining",
+        "decisions": [
+          {
+            "end": 2,
+            "emergency": true,
+            "overflows": false
+          },
+          {
+            "end": 3,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 4,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 5,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 6,
+            "emergency": false,
+            "overflows": false
+          }
+        ],
+        "candidates": [
+          {
+            "start": 0,
+            "end": 3,
+            "min": "0",
+            "max": "1309106031820800",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 4,
+            "min": "0",
+            "max": "1963659047731200",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 5,
+            "min": "0",
+            "max": "2618212063641600",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 6,
+            "min": "0",
+            "max": "3272765079552000",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 2,
+            "min": "0",
+            "max": "654553015910400",
+            "fits": true
+          },
+          {
+            "start": 2,
+            "end": 3,
+            "min": "0",
+            "max": "654553015910400",
+            "fits": true
+          },
+          {
+            "start": 2,
+            "end": 4,
+            "min": "0",
+            "max": "1309106031820800",
+            "fits": false
+          },
+          {
+            "start": 2,
+            "end": 5,
+            "min": "0",
+            "max": "1963659047731200",
+            "fits": false
+          },
+          {
+            "start": 2,
+            "end": 6,
+            "min": "0",
+            "max": "2618212063641600",
+            "fits": false
+          },
+          {
+            "start": 3,
+            "end": 4,
+            "min": "0",
+            "max": "654553015910400",
+            "fits": true
+          },
+          {
+            "start": 3,
+            "end": 5,
+            "min": "0",
+            "max": "1309106031820800",
+            "fits": false
+          },
+          {
+            "start": 3,
+            "end": 6,
+            "min": "0",
+            "max": "1963659047731200",
+            "fits": false
+          },
+          {
+            "start": 4,
+            "end": 5,
+            "min": "0",
+            "max": "654553015910400",
+            "fits": true
+          },
+          {
+            "start": 4,
+            "end": 6,
+            "min": "0",
+            "max": "1309106031820800",
+            "fits": false
+          },
+          {
+            "start": 5,
+            "end": 6,
+            "min": "0",
+            "max": "654553015910400",
+            "fits": true
+          }
+        ]
+      },
+      {
+        "name": "word-overflow",
+        "decisions": [
+          {
+            "end": 5,
+            "emergency": false,
+            "overflows": true
+          }
+        ],
+        "candidates": [
+          {
+            "start": 0,
+            "end": 5,
+            "min": "0",
+            "max": "3272765079552000",
+            "fits": false
+          }
+        ]
+      },
+      {
+        "name": "word-emergency",
+        "decisions": [
+          {
+            "end": 1,
+            "emergency": true,
+            "overflows": false
+          },
+          {
+            "end": 2,
+            "emergency": true,
+            "overflows": false
+          },
+          {
+            "end": 3,
+            "emergency": true,
+            "overflows": false
+          },
+          {
+            "end": 4,
+            "emergency": true,
+            "overflows": false
+          },
+          {
+            "end": 5,
+            "emergency": false,
+            "overflows": false
+          }
+        ],
+        "candidates": [
+          {
+            "start": 0,
+            "end": 5,
+            "min": "0",
+            "max": "3272765079552000",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 1,
+            "min": "0",
+            "max": "654553015910400",
+            "fits": true
+          },
+          {
+            "start": 0,
+            "end": 2,
+            "min": "0",
+            "max": "1309106031820800",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 3,
+            "min": "0",
+            "max": "1963659047731200",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 4,
+            "min": "0",
+            "max": "2618212063641600",
+            "fits": false
+          },
+          {
+            "start": 1,
+            "end": 5,
+            "min": "0",
+            "max": "2618212063641600",
+            "fits": false
+          },
+          {
+            "start": 1,
+            "end": 2,
+            "min": "0",
+            "max": "654553015910400",
+            "fits": true
+          },
+          {
+            "start": 1,
+            "end": 3,
+            "min": "0",
+            "max": "1309106031820800",
+            "fits": false
+          },
+          {
+            "start": 1,
+            "end": 4,
+            "min": "0",
+            "max": "1963659047731200",
+            "fits": false
+          },
+          {
+            "start": 2,
+            "end": 5,
+            "min": "0",
+            "max": "1963659047731200",
+            "fits": false
+          },
+          {
+            "start": 2,
+            "end": 3,
+            "min": "0",
+            "max": "654553015910400",
+            "fits": true
+          },
+          {
+            "start": 2,
+            "end": 4,
+            "min": "0",
+            "max": "1309106031820800",
+            "fits": false
+          },
+          {
+            "start": 3,
+            "end": 5,
+            "min": "0",
+            "max": "1309106031820800",
+            "fits": false
+          },
+          {
+            "start": 3,
+            "end": 4,
+            "min": "0",
+            "max": "654553015910400",
+            "fits": true
+          },
+          {
+            "start": 4,
+            "end": 5,
+            "min": "0",
+            "max": "654553015910400",
+            "fits": true
+          }
+        ]
+      },
+      {
+        "name": "egc-overflow",
+        "decisions": [
+          {
+            "end": 2,
+            "emergency": true,
+            "overflows": true
+          },
+          {
+            "end": 3,
+            "emergency": false,
+            "overflows": true
+          }
+        ],
+        "candidates": [
+          {
+            "start": 0,
+            "end": 3,
+            "min": "0",
+            "max": "1309106031820800",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 2,
+            "min": "0",
+            "max": "654553015910400",
+            "fits": false
+          },
+          {
+            "start": 2,
+            "end": 3,
+            "min": "0",
+            "max": "654553015910400",
+            "fits": false
+          }
+        ]
+      },
+      {
+        "name": "space-mark-tailoring",
+        "decisions": [
+          {
+            "end": 3,
+            "emergency": false,
+            "overflows": true
+          }
+        ],
+        "candidates": [
+          {
+            "start": 0,
+            "end": 3,
+            "min": "0",
+            "max": "1309106031820800",
+            "fits": false
+          }
+        ]
+      },
+      {
+        "name": "mandatory",
+        "decisions": [
+          {
+            "end": 2,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 3,
+            "emergency": false,
+            "overflows": false
+          }
+        ],
+        "candidates": [
+          {
+            "start": 0,
+            "end": 2,
+            "min": "0",
+            "max": "654553015910400",
+            "fits": true
+          },
+          {
+            "start": 2,
+            "end": 3,
+            "min": "0",
+            "max": "654553015910400",
+            "fits": true
+          }
+        ]
+      },
+      {
+        "name": "terminal-explicit",
+        "decisions": [
+          {
+            "end": 2,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 2,
+            "emergency": false,
+            "overflows": false
+          }
+        ],
+        "candidates": [
+          {
+            "start": 0,
+            "end": 2,
+            "min": "0",
+            "max": "654553015910400",
+            "fits": true
+          }
+        ]
+      },
+      {
+        "name": "form-feed",
+        "decisions": [
+          {
+            "end": 2,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 4,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 4,
+            "emergency": false,
+            "overflows": false
+          }
+        ],
+        "candidates": [
+          {
+            "start": 0,
+            "end": 2,
+            "min": "0",
+            "max": "654553015910400",
+            "fits": true
+          },
+          {
+            "start": 2,
+            "end": 4,
+            "min": "0",
+            "max": "654553015910400",
+            "fits": true
+          }
+        ]
+      },
+      {
+        "name": "terminal-paragraph",
+        "decisions": [
+          {
+            "end": 3,
+            "emergency": false,
+            "overflows": false
+          }
+        ],
+        "candidates": [
+          {
+            "start": 0,
+            "end": 3,
+            "min": "0",
+            "max": "654553015910400",
+            "fits": true
+          }
+        ]
+      },
+      {
+        "name": "empty",
+        "decisions": [
+          {
+            "end": 0,
+            "emergency": false,
+            "overflows": false
+          }
+        ],
+        "candidates": []
+      },
+      {
+        "name": "sub-emu-fitting",
+        "decisions": [
+          {
+            "end": 1,
+            "emergency": true,
+            "overflows": false
+          },
+          {
+            "end": 2,
+            "emergency": false,
+            "overflows": false
+          }
+        ],
+        "candidates": [
+          {
+            "start": 0,
+            "end": 2,
+            "min": "0",
+            "max": "5153960755",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 1,
+            "min": "0",
+            "max": "2576980378",
+            "fits": true
+          },
+          {
+            "start": 1,
+            "end": 2,
+            "min": "0",
+            "max": "2576980378",
+            "fits": true
+          }
+        ]
+      },
+      {
+        "name": "mixed-styles",
+        "decisions": [
+          {
+            "end": 4,
+            "emergency": true,
+            "overflows": false
+          },
+          {
+            "end": 7,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 11,
+            "emergency": false,
+            "overflows": false
+          }
+        ],
+        "candidates": [
+          {
+            "start": 0,
+            "end": 7,
+            "min": "0",
+            "max": "4818624487710785",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 9,
+            "min": "0",
+            "max": "7127020172082151",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 11,
+            "min": "0",
+            "max": "7781032876811747",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 1,
+            "min": "0",
+            "max": "660015419741962",
+            "fits": true
+          },
+          {
+            "start": 0,
+            "end": 2,
+            "min": "0",
+            "max": "1035296914603508",
+            "fits": true
+          },
+          {
+            "start": 0,
+            "end": 3,
+            "min": "0",
+            "max": "1410578409465053",
+            "fits": true
+          },
+          {
+            "start": 0,
+            "end": 4,
+            "min": "0",
+            "max": "1973495111249559",
+            "fits": true
+          },
+          {
+            "start": 0,
+            "end": 5,
+            "min": "0",
+            "max": "3020781998290501",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 6,
+            "min": "0",
+            "max": "4251344090563608",
+            "fits": false
+          },
+          {
+            "start": 4,
+            "end": 7,
+            "min": "0",
+            "max": "2845129376461226",
+            "fits": true
+          },
+          {
+            "start": 4,
+            "end": 9,
+            "min": "0",
+            "max": "5153525060832592",
+            "fits": false
+          },
+          {
+            "start": 4,
+            "end": 11,
+            "min": "0",
+            "max": "5807537765562188",
+            "fits": false
+          },
+          {
+            "start": 7,
+            "end": 9,
+            "min": "0",
+            "max": "2308395684371366",
+            "fits": true
+          },
+          {
+            "start": 7,
+            "end": 11,
+            "min": "0",
+            "max": "2962408389100962",
+            "fits": true
+          }
+        ]
+      },
+      {
+        "name": "axes-and-global-features",
+        "decisions": [
+          {
+            "end": 5,
+            "emergency": true,
+            "overflows": false
+          },
+          {
+            "end": 7,
+            "emergency": false,
+            "overflows": false
+          },
+          {
+            "end": 12,
+            "emergency": true,
+            "overflows": false
+          },
+          {
+            "end": 13,
+            "emergency": false,
+            "overflows": false
+          }
+        ],
+        "candidates": [
+          {
+            "start": 0,
+            "end": 7,
+            "min": "0",
+            "max": "3350220519768064",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 13,
+            "min": "0",
+            "max": "6416801399308288",
+            "fits": false
+          },
+          {
+            "start": 0,
+            "end": 1,
+            "min": "0",
+            "max": "681826058240000",
+            "fits": true
+          },
+          {
+            "start": 0,
+            "end": 2,
+            "min": "0",
+            "max": "1104012753502208",
+            "fits": true
+          },
+          {
+            "start": 0,
+            "end": 3,
+            "min": "0",
+            "max": "1526199448764416",
+            "fits": true
+          },
+          {
+            "start": 0,
+            "end": 4,
+            "min": "0",
+            "max": "1852385035026432",
+            "fits": true
+          },
+          {
+            "start": 0,
+            "end": 5,
+            "min": "0",
+            "max": "2415300628709376",
+            "fits": true
+          },
+          {
+            "start": 0,
+            "end": 6,
+            "min": "0",
+            "max": "3066580879540224",
+            "fits": false
+          },
+          {
+            "start": 5,
+            "end": 7,
+            "min": "0",
+            "max": "934919891058688",
+            "fits": true
+          },
+          {
+            "start": 5,
+            "end": 13,
+            "min": "0",
+            "max": "4001500770598912",
+            "fits": false
+          },
+          {
+            "start": 7,
+            "end": 13,
+            "min": "0",
+            "max": "3066580879540224",
+            "fits": false
+          },
+          {
+            "start": 7,
+            "end": 8,
+            "min": "0",
+            "max": "681826058240000",
+            "fits": true
+          },
+          {
+            "start": 7,
+            "end": 9,
+            "min": "0",
+            "max": "1104012753502208",
+            "fits": true
+          },
+          {
+            "start": 7,
+            "end": 10,
+            "min": "0",
+            "max": "1526199448764416",
+            "fits": true
+          },
+          {
+            "start": 7,
+            "end": 11,
+            "min": "0",
+            "max": "1852385035026432",
+            "fits": true
+          },
+          {
+            "start": 7,
+            "end": 12,
+            "min": "0",
+            "max": "2415300628709376",
+            "fits": true
+          },
+          {
+            "start": 12,
+            "end": 13,
+            "min": "0",
+            "max": "651280250830848",
+            "fits": true
+          }
+        ]
+      }
+    ]
+  },
+  "contractReport": {
+    "paragraphLayoutResponses": 37,
+    "lineGeometryResponses": 35,
+    "lineShapeResponses": 34,
+    "fontMetricsResponses": 29,
+    "lineBreakResponses": 41,
+    "itemizationResponses": 197,
+    "paragraphResponses": 51,
+    "bidiResponses": 22,
+    "cascadeResponses": 43,
+    "unicodeResponses": 21,
+    "textResponses": 57,
+    "fontRequests": 35,
+    "fontResponses": 39,
+    "schemas": 36,
+    "positiveInputs": 11,
+    "negativeMutations": 9,
+    "responses": 22,
+    "opcResponses": 21,
+    "sourceResponses": 73,
+    "sourceRequests": 95,
+    "colorRequests": 118,
+    "colorResponses": 122
+  },
+  "regressionReports": {
+    "document": {
+      "report": {
+        "path": ".codex-work/paragraph-layout/document-regression.json",
+        "byteLength": 113671,
+        "sha256": "e0c3bedbd1bd6bc7446bcfebb072d1aeb52d159822c341f866b4130dfb75adc5"
+      },
+      "batches": 22,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "opc": {
+      "report": {
+        "path": ".codex-work/paragraph-layout/opc-regression.json",
+        "byteLength": 24248,
+        "sha256": "6259552d0872398aa760ce6b320b4cb282e5b375750fe0bed7691157ee0b7110"
+      },
+      "batches": 21,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "export": {
+      "report": {
+        "path": ".codex-work/paragraph-layout/export-regression.json",
+        "byteLength": 3289,
+        "sha256": "6d019cc469b858e3a62251c36467fb0482ef96e2a71a8e494dad8557f6a2bece"
+      },
+      "batches": 17,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "source": {
+      "report": {
+        "path": ".codex-work/paragraph-layout/source-regression.json",
+        "byteLength": 2590039,
+        "sha256": "da1a1b058b7b06920b5a93c21613e96547404ae7fbf647d3318b006d4ed0ec8e"
+      },
+      "batches": 168,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "color": {
+      "report": {
+        "path": ".codex-work/paragraph-layout/color-regression.json",
+        "byteLength": 812732,
+        "sha256": "6d0b080d2c4729a773a36387fb877b8c06d720080b3828144bc78252fe922b43"
+      },
+      "batches": 122,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "font": {
+      "report": {
+        "path": ".codex-work/paragraph-layout/font-regression.json",
+        "byteLength": 16531668,
+        "sha256": "25528b3711e319ba91837296356e394c5852a2bec42947e4d3d2140ce75d019d"
+      },
+      "batches": 39,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "shaping": {
+      "report": {
+        "path": ".codex-work/text-shaping/parity.json",
+        "byteLength": 364600,
+        "sha256": "988302ff551450e63935db1789017522c4090e54883971564f48efd75e8b370e"
+      },
+      "batches": 57,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "unicode": {
+      "report": {
+        "path": ".codex-work/unicode/verification/parity.json",
+        "byteLength": 10020,
+        "sha256": "c5568852247e244ef779f79b8299dbfaa4b5cd32293eff8d0ba8407e12b5f61c"
+      },
+      "batches": 21,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "cascade": {
+      "report": {
+        "path": ".codex-work/font-cascade/parity.json",
+        "byteLength": 259616,
+        "sha256": "094aaeccaa2b765840bc4b7e5742f32ea1209abc8b6768645770b4ebc7e588e6"
+      },
+      "batches": 43,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "bidi": {
+      "report": {
+        "path": ".codex-work/bidi/parity.json",
+        "byteLength": 9089,
+        "sha256": "c7d607536ebe5c7ee607785feb2f0c7e763948d80ce746c05f7cd46e8be60c17"
+      },
+      "batches": 22,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "bidiConformance": {
+      "report": {
+        "path": ".codex-work/bidi/conformance.json",
+        "byteLength": 262069,
+        "sha256": "69d6059e98984046c9d15618959656bbeaa4b52cf34a112fd438a0a8425e9675"
+      },
+      "batches": 843,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "itemizationAndParagraph": {
+      "report": {
+        "path": ".codex-work/itemization/parity.json",
+        "byteLength": 107362,
+        "sha256": "d4db0b0b474fc36baa4dbf6501ed16502b250c84f09848084699666c29570691"
+      },
+      "batches": 231,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "mixedFont": {
+      "report": {
+        "path": ".codex-work/font-fallback/parity.json",
+        "byteLength": 12741,
+        "sha256": "f238469bf4dec70e357c32420248c7776b29bff9ebea459e813eb8478e00a9cb"
+      },
+      "batches": 17,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "lineBreaking": {
+      "report": {
+        "path": ".codex-work/line-break/parity.json",
+        "byteLength": 20072,
+        "sha256": "526323af749103b0d4158125f12159c50c04e8d02a58f14cac98b382e08a27a8"
+      },
+      "batches": 41,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "fontMetrics": {
+      "report": {
+        "path": ".codex-work/font-metrics/parity.json",
+        "byteLength": 16615,
+        "sha256": "50b6910167bf3c6ebb70d689aca32b4542028f2787f4212744e40f6baf243a08"
+      },
+      "batches": 29,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "lineShaping": {
+      "report": {
+        "path": ".codex-work/line-shaping/parity.json",
+        "byteLength": 25630,
+        "sha256": "6ceef3b5de29b05887c0d7ad28e352935cc141e8c4500c9fd430b5d6ef201002"
+      },
+      "batches": 34,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    },
+    "lineGeometry": {
+      "report": {
+        "path": ".codex-work/line-geometry/parity.json",
+        "byteLength": 24052,
+        "sha256": "91f67b5258e2b851db7e66f6481b4dd61a9079f57c31e1d26290ac6c4f2cb1e0"
+      },
+      "batches": 35,
+      "artifactHashesVerified": true,
+      "semanticResultsUnchanged": true
+    }
+  },
+  "rustTestNames": [
+    "text::tests::timeout_kills_and_reaps_worker_with_blocked_input",
+    "tests::hue_wrap_achromatic_and_transparent_colors_are_well_defined",
+    "tests::invalid_numbers_fail_and_extended_gamut_is_reported_at_sampling",
+    "tests::transform_order_and_linear_rgb_space_are_observable",
+    "tests::srgb_transfer_and_sampling_do_not_round_working_channels",
+    "coordinates_reject_lossy_or_noncanonical_inputs",
+    "non_finite_numbers_cannot_silently_become_null_in_a_digest",
+    "duplicate_keys_are_rejected_at_every_depth",
+    "identifiers_are_constrained_on_deserialization",
+    "time_is_exact_at_extremes_and_ntsc_rate",
+    "byte_lengths_reject_numeric_loss_overflow_and_noncanonical_spellings",
+    "canonical_bytes_have_stable_keys_and_preserve_text",
+    "rational_normalization_preserves_time",
+    "every_i64_coordinate_round_trips",
+    "every_u64_byte_length_round_trips",
+    "cmap::validation::tests::format10_valid_array_and_invalid_glyph_are_distinct",
+    "tests::collection_face_and_other_directory_ranges_are_checked",
+    "tests::directory_checksums_and_table_overlap_are_rejected",
+    "tests::legacy_charmaps_are_not_implicit_unicode_fallbacks",
+    "tests::cancellation_interrupts_multiple_stages",
+    "tests::name_format_one_preserves_language_tag_identity",
+    "tests::untrusted_maximum_offsets_do_not_overflow_platform_width",
+    "tests::verified_face_queries_reuse_immutable_bytes_and_keep_per_call_limits",
+    "tests::variation_mapping_never_silently_falls_back",
+    "tests::resource_identity_and_request_scalars_checked",
+    "tests::malformed_consumed_metadata_is_not_replaced",
+    "tests::malformed_cmap_cannot_masquerade_as_missing_glyph",
+    "tests::actual_ttf_cff_and_collection_metadata",
+    "tests::every_configurable_limit_is_enforced",
+    "tests::all_prefix_truncations_are_errors_without_panics",
+    "tests::creating_a_new_wrapper_cannot_clear_instance_invalidation",
+    "line_break::tests::strict_json_and_cancellation_do_not_publish_partial_batches",
+    "line_break::tests::invalid_later_input_and_batch_limits_have_no_partial_results",
+    "inspection_preserves_budget_and_cancellation_error_categories",
+    "source_bridge_preserves_nested_limit_and_cancel_categories",
+    "color_bridge_preserves_cancel_limit_and_source_conflict_categories",
+    "zip_structure::tests::descriptors_accept_both_widths_and_signature_modes_including_crc_collision",
+    "overlapping_local_entries_are_rejected_even_with_matching_names_and_crc",
+    "part_names_and_relationship_resolution_follow_uri_scope",
+    "writer_validates_xml_bytes_and_resources_before_exposing_output",
+    "cancellation_and_declared_budgets_fail_before_unbounded_work",
+    "streamed_open_resolves_graph_and_retains_opaque_bytes",
+    "malformed_xml_in_a_regular_part_is_not_hidden_by_a_valid_zip",
+    "equivalent_names_traversal_and_header_disagreement_are_rejected",
+    "missing_targets_duplicate_relationship_ids_and_orphan_overrides_fail",
+    "crc_truncation_extra_bytes_and_entry_count_mismatches_are_rejected",
+    "duplicate_rewrite_does_not_replace_the_already_prepared_value",
+    "signed_packages_may_be_copied_but_not_silently_modified",
+    "no_op_rewrite_is_byte_identical_and_mutation_preserves_unedited_parts",
+    "deterministic_builder_uses_real_reopened_output_and_external_links_do_not_fetch",
+    "stream_resources_are_digest_bound_and_reads_stay_bounded",
+    "missing_resources_cancellation_and_output_budgets_are_enforced",
+    "invalid_or_unimplemented_mapping_never_silently_flattens_content",
+    "authored_deck_exports_deterministically_with_native_parts_and_relationships",
+    "real_pptx_projection_resolves_pages_surfaces_native_identity_and_groups",
+    "reader_and_editor_enforce_cancellation_and_projection_budgets",
+    "native_themes_are_shared_and_selected_without_mutating_author_declarations",
+    "omitted_color_map_is_not_an_explicit_marker_or_an_invented_default",
+    "ambiguous_placeholders_are_reported_without_first_match_geometry",
+    "malformed_identity_and_relationships_never_produce_a_partial_success",
+    "source_theme_colors_keep_all_models_exact_percentages_and_transform_order",
+    "compatibility_wrappers_do_not_hide_pages_or_discard_source_leaf_structure",
+    "source_bindings_use_physical_ordinals_after_mce_projection_and_preserve_branches",
+    "theme_mce_and_retained_declarations_cannot_inject_active_scheme_state",
+    "placeholder_dimensions_resolve_per_property_without_flattening_author_data",
+    "text_edit_reopens_candidate_and_preserves_unknown_xml_and_other_parts",
+    "color_map_inheritance_keeps_author_markers_and_candidate_provenance",
+    "noop_copy_and_multi_part_edits_are_atomic_with_source_preconditions",
+    "theme_validation_and_aggregate_budgets_prevent_partial_success",
+    "unsupported_parent_placeholder_context_does_not_leak_geometry_into_descendants",
+    "timing_references_in_active_and_inactive_branches_block_text_mutation",
+    "malformed_color_maps_cannot_produce_partial_success",
+    "explicit_zero_dimensions_and_missing_or_detached_matches_do_not_invent_geometry",
+    "invalid_placeholder_attributes_are_rejected",
+    "numeric_range_and_resource_budget_are_distinct_from_valid_extended_gamut",
+    "color_budget_digest_and_cancellation_fail_atomically",
+    "unresolved_context_is_not_black_and_host_system_color_has_provenance",
+    "normative_color_examples_use_distinct_channel_and_tint_spaces",
+    "ownership_cycle_cannot_be_committed",
+    "final_reference_validation_rolls_back_entire_transaction",
+    "failure_does_not_publish_earlier_operations",
+    "out_of_range_splices_fail_without_mutating_content",
+    "deletion_rejects_dependencies_unless_explicitly_cascaded",
+    "scalar_splice_preserves_emoji_combining_marks_and_run_identity",
+    "revision_conflicts_do_not_rebase_and_retries_use_original_receipt",
+    "unknown_fields_and_variants_are_rejected_at_wire_boundary",
+    "limit_errors_cannot_be_hidden_by_zero_diagnostic_budget",
+    "unbounded_host_depth_setting_still_rejects_cycles_without_overflow",
+    "duplicate_and_orphaned_ownership_are_rejected",
+    "mismatched_resource_kind_and_missing_fonts_are_rejected",
+    "connectors_cannot_target_another_slide",
+    "fallback::tests::unsafe_break_dependencies_in_later_candidate_can_require_one_font",
+    "fallback::tests::rtl_clusters_keep_logical_fragment_ranges_and_visual_glyph_order",
+    "cascade::tests::component_failure_is_fatal_and_never_a_font_fallback",
+    "fallback::tests::unresolved_ranges_remain_explicit_and_cover_the_input",
+    "cascade::tests::ordered_fallback_reuses_a_verified_face_and_preserves_failed_evidence",
+    "fallback::tests::mixed_fonts_reshape_in_batches_instead_of_splicing_unsafe_concat_glyphs",
+    "fallback::tests::failures_and_limits_do_not_publish_partial_fragments",
+    "geometry::number::tests::design_prefix_quantization_is_not_per_glyph_wire_rounding",
+    "fallback::tests::final_reshape_failure_advances_candidates_without_leaking_old_glyphs",
+    "geometry::number::tests::signed_ties_large_values_and_range_are_explicit",
+    "flow::tests::actual_width_selects_legal_lines_and_reuses_selected_shapes",
+    "cascade::tests::selectors_cannot_disappear_behind_a_successful_glyph_array",
+    "fallback::tests::observed_ligatures_and_extended_graphemes_are_indivisible",
+    "cascade::tests::unused_candidates_and_resources_are_not_exempt_from_validation",
+    "cascade::tests::all_cascade_budgets_and_cancellation_fail_without_partial_results",
+    "flow::tests::fitting_uses_internal_precision_not_rounded_output_advance",
+    "geometry::tests::empty_line_uses_verified_strut_metrics_and_explicit_spacing",
+    "geometry::tests::geometry_style_changes_prevent_incorrect_shape_merging_and_reuse_metrics",
+    "flow::tests::longer_context_can_fit_after_a_shorter_context_overflows",
+    "geometry::tests::signed_pen_and_offsets_cross_fragments_without_becoming_advances",
+    "itemize::tests::controls_and_style_changes_keep_exhaustive_logical_coordinates",
+    "geometry::tests::scalar_l2_orders_whole_fragments_and_keeps_rtl_glyph_sequence",
+    "itemize::tests::isolates_do_not_leak_script_context_or_bracket_pairs",
+    "itemize::tests::script_data_preserves_unknown_and_full_extensions_without_locale_guessing",
+    "itemize::tests::marks_and_emoji_are_never_split_and_foreign_marks_are_diagnosed",
+    "itemize::tests::script_extensions_constrain_common_symbols_and_shared_explicit_digits",
+    "flow::tests::forced_breaks_and_trailing_empty_line_have_real_strut_boxes",
+    "geometry::tests::numeric_validation_precedes_component_and_unresolved_layout_is_explicit",
+    "itemize::tests::paired_punctuation_uses_outer_script_across_script_and_direction_changes",
+    "geometry::tests::zero_metrics_are_present_but_need_positive_explicit_line_height",
+    "lines::tests::bidi_resolution_stays_in_paragraph_while_line_trailing_levels_reset",
+    "lines::tests::line_context_clips_features_and_rebases_all_public_coordinates",
+    "metrics::tests::empty_measurement_verifies_font_without_component_work",
+    "flow::tests::overflow_and_emergency_are_explicit_without_losing_source",
+    "flow::tests::grapheme_tailoring_and_unsupported_prerequisites_are_visible",
+    "lines::tests::empty_and_control_only_lines_preserve_source_without_shaping",
+    "lines::tests::every_line_and_style_is_validated_before_shaping",
+    "metrics::tests::missing_values_and_real_zero_are_distinct_and_many_instances_batch_once",
+    "metrics::tests::all_instance_parameters_are_checked_before_component_call",
+    "tests::explicit_scalar_coordinates_and_signed_positions",
+    "tests::identity_limits_and_cancellation_precede_backend",
+    "tests::internal_frame_cannot_smuggle_lengths_or_trailing_words",
+    "paragraph::tests::unused_and_control_only_styles_are_validated_before_any_shaping",
+    "tests::failed_batch_has_no_partial_result_and_memory_failure_invalidates",
+    "tests::missing_glyphs_remain_explicit",
+    "tests::invalid_request_does_not_invoke_component",
+    "tests::verified_shaping_requires_matching_identity_and_face_without_reloading",
+    "itemize::tests::invalid_spans_paragraphs_budgets_and_every_cancel_checkpoint_fail_atomically",
+    "metrics::tests::malformed_reply_or_failure_never_publishes_partial_metrics",
+    "tests::every_truncated_reply_and_trailing_word_invalidates",
+    "tests::output_headers_and_glyph_references_are_checked",
+    "metrics::tests::every_cancellation_checkpoint_discards_the_batch_and_postcall_invalidates",
+    "metrics::tests::cancelling_empty_measurement_does_not_invalidate_an_unused_component",
+    "paragraph::tests::paragraph_size_identity_and_cancellation_fail_before_component",
+    "geometry::tests::failure_after_shaping_and_cancellation_do_not_return_partial_positions",
+    "fallback::tests::cancellation_at_every_own_checkpoint_returns_no_result",
+    "lines::tests::later_component_failure_and_any_cancellation_publish_no_partial_lines",
+    "itemize::tests::deep_and_unmatched_brackets_preserve_all_text_without_depth_truncation",
+    "flow::tests::all_styles_validate_and_work_budgets_cancel_atomically",
+    "bidi::tests::invalid_paragraphs_and_line_boundaries_are_rejected",
+    "bidi::tests::prepared_ranges_reject_split_graphemes_and_cancel_without_result",
+    "line_break::tests::hard_breaks_and_empty_text_have_explicit_semantics",
+    "line_break::tests::combining_context_and_dictionary_responsibility_are_preserved",
+    "line_break::tests::scalar_utf8_and_utf16_positions_do_not_alias",
+    "bidi::tests::unicode18_brackets_and_cross_utf16_mirroring_are_explicit",
+    "bidi::tests::line_resets_are_separate_from_paragraph_resolution",
+    "bidi::tests::scalar_coordinates_preserve_supplementary_text_and_original_order",
+    "line_break::tests::punctuation_numbers_and_emoji_are_not_arbitrarily_split",
+    "line_break::tests::unicode18_hyphens_and_nonbreaking_spaces_follow_revision57",
+    "bidi::tests::formatting_removal_is_an_index_mapping_not_content_deletion",
+    "bidi::tests::prepared_ranges_keep_paragraph_resolution_and_allow_terminal_empty_line",
+    "tests::controls_override_prepend_and_extenders",
+    "properties::tests::generated_table_is_sorted_nonoverlapping_and_has_valid_values",
+    "tests::emoji_flags_and_combining_marks_keep_scalar_and_utf16_coordinates_distinct",
+    "tests::limits_and_midstream_cancellation_fail_without_partial_output",
+    "tests::unicode18_linker_rule_does_not_require_a_leading_consonant",
+    "bidi::tests::budgets_and_all_cancellation_checkpoints_are_effective",
+    "line_break::tests::resource_limits_and_each_cancellation_checkpoint_are_atomic",
+    "properties::tests::selectors_match_the_explicit_font_contract",
+    "fallback_nested_selection_and_no_matching_branch_preserve_sibling_positions",
+    "underlying_xml_limits_and_cancellation_apply_to_ignored_content",
+    "chooses_first_understood_branch_with_original_ordinals_and_logical_depths",
+    "extension_content_suspends_mce_and_source_observer_sees_inactive_data",
+    "ignorable_and_process_content_resolve_namespace_scopes_not_prefix_spellings",
+    "must_understand_only_applies_to_content_that_is_processed",
+    "malformed_mce_control_and_rule_declarations_are_not_silently_discarded",
+    "character_data_and_attributes_follow_xml_normalization_without_unicode_folding",
+    "namespaces_restore_after_nested_shadowing",
+    "xml_declarations_are_checked_and_cancellation_is_observable",
+    "limits_bound_depth_elements_attributes_and_text",
+    "utf16_and_bom_utf8_are_supported_without_lossy_replacement",
+    "prefixes_are_resolved_and_default_namespaces_do_not_apply_to_attributes",
+    "dtd_external_entities_and_malformed_documents_are_rejected",
+    "rewriting_honors_span_output_and_cancellation_budgets",
+    "empty_elements_expand_without_dropping_attributes_and_textless_comments_survive",
+    "preconditions_and_nested_elements_prevent_wrong_or_destructive_edits",
+    "text_rewrite_retains_unknown_attributes_siblings_comments_and_pi_bytes",
+    "utf8_and_utf16_encodings_boms_and_original_lexical_forms_are_preserved"
+  ],
+  "dependencyChanges": {
+    "newInternalCrates": [],
+    "newExternalVersions": [],
+    "featureChanges": [],
+    "newUnicodeData": []
+  },
+  "sourceFiles": [
+    {
+      "path": "AGENTS.md",
+      "byteLength": 3516,
+      "sha256": "155ce005ed777e464da515d8008b7ad25c4b4b184fa072da93997483c8e0d7f9"
+    },
+    {
+      "path": "Cargo.lock",
+      "byteLength": 21385,
+      "sha256": "281fff796c2ca685a67fd2471af18c64c3afb5254c72c297296f084ad885162e"
+    },
+    {
+      "path": "Cargo.toml",
+      "byteLength": 1846,
+      "sha256": "d5f5cc0d1cdf5419286290e1851592f41cf24e342391c50af492c72640a42d83"
+    },
+    {
+      "path": "README.md",
+      "byteLength": 5364,
+      "sha256": "5f228955f85bb530bbcfb131c774b1c0d77cf323bb67162b800764db8ccea669"
+    },
+    {
+      "path": "components/harfbuzz/README.md",
+      "byteLength": 5874,
+      "sha256": "b4a8af7c82e8b919a56abb989c63c8fcb6e4d53ee4837f4c21b9d10a415f3517"
+    },
+    {
+      "path": "components/harfbuzz/lock.json",
+      "byteLength": 485,
+      "sha256": "09f7d48e187b4e03265cd8d9e9a89fdcc8dcfc373555ea66992d125d750fa363"
+    },
+    {
+      "path": "components/harfbuzz/mo_hb.cpp",
+      "byteLength": 5591,
+      "sha256": "57a5a53cf18d153cfd4c46d62f56c24f5568ffcfaf3a2b2510fad88b19ff57fa"
+    },
+    {
+      "path": "components/harfbuzz/mo_hb.h",
+      "byteLength": 1124,
+      "sha256": "6fd464d8797cf1d7fdaf5646987a606a907ebc553572d421b65195c2600e9202"
+    },
+    {
+      "path": "components/harfbuzz/mo_hb_allocator.cpp",
+      "byteLength": 3640,
+      "sha256": "f041e0a5ee7a33097b11c24f7d0467a6a71ad59ca9a0f1283209bbe5a7891997"
+    },
+    {
+      "path": "components/harfbuzz/mo_hb_allocator.h",
+      "byteLength": 508,
+      "sha256": "3177db2198adea0f6d97fa4e90e45d56f7b8564f1eeb7c6394e6945dd668c58a"
+    },
+    {
+      "path": "components/harfbuzz/mo_hb_font.h",
+      "byteLength": 2426,
+      "sha256": "68282e43430157a05ab343b691e0066c0ca595dbb1bf355045b0591754d3587c"
+    },
+    {
+      "path": "components/harfbuzz/mo_hb_metrics.cpp",
+      "byteLength": 3185,
+      "sha256": "9364612ee95367cdef499145c0cc608620c89ef904c33a6675ce37704266194e"
+    },
+    {
+      "path": "components/unicode-bidi/AUTHORS",
+      "byteLength": 121,
+      "sha256": "1ff3a7c8519b29544bb28ba9b1e7502df0cb764051fb9a1172e60006aa2b8dcc"
+    },
+    {
+      "path": "components/unicode-bidi/COPYRIGHT",
+      "byteLength": 412,
+      "sha256": "edb20b474f6cbd4f4db066b54a9e0f687d0009d309412a63431189b59b8e2a07"
+    },
+    {
+      "path": "components/unicode-bidi/LICENSE-MIT",
+      "byteLength": 1071,
+      "sha256": "7b63ecd5f1902af1b63729947373683c32745c16a10e8e6292e2e2dcd7e90ae0"
+    },
+    {
+      "path": "components/unicode-bidi/component.json",
+      "byteLength": 675,
+      "sha256": "85f237648bd743ff937631121a7471cfd28ee1f78b4a2a3c7fac5e820f836de9"
+    },
+    {
+      "path": "contracts/README.md",
+      "byteLength": 8088,
+      "sha256": "78dac0db9548031e9d022819ffa9a013f61ad5a08d728d744be1168c85d71ce4"
+    },
+    {
+      "path": "contracts/generated/bidi-analysis-request.schema.json",
+      "byteLength": 1443,
+      "sha256": "6a78ed9088562383a063afbd7fff8c012265ff444cad76b8ab8301c6da7525ef"
+    },
+    {
+      "path": "contracts/generated/bidi-analysis-response.schema.json",
+      "byteLength": 6088,
+      "sha256": "66aa5f64509116ea8f3c48ea4c6a50ea927f2120ce17d269112470a3e69e81cb"
+    },
+    {
+      "path": "contracts/generated/cascade-request.schema.json",
+      "byteLength": 5023,
+      "sha256": "076a03bf5b87cf40fa61475a4627dfab2b80b265088199c18df2b2e7e868cbc7"
+    },
+    {
+      "path": "contracts/generated/cascade-response.schema.json",
+      "byteLength": 11223,
+      "sha256": "ae7d3fe9741e24c68bccf2e9e1df8ec840a4e56549a35e41d2e3fd2944212a93"
+    },
+    {
+      "path": "contracts/generated/document.schema.json",
+      "byteLength": 36989,
+      "sha256": "8e487d3f97750f84b000d5a15137002cf6941d9ea0aa1bb8ae67446b5cbaef71"
+    },
+    {
+      "path": "contracts/generated/font-metrics-request.schema.json",
+      "byteLength": 2541,
+      "sha256": "d353b95d789254b078cb22234506d0c8fb46b9e3881a9681beeab51a822ee1d9"
+    },
+    {
+      "path": "contracts/generated/font-metrics-response.schema.json",
+      "byteLength": 5035,
+      "sha256": "077d012d3635037e982e5b34d35d90fa32f34fb14d9078a03e889cf6ce323c44"
+    },
+    {
+      "path": "contracts/generated/font-request.schema.json",
+      "byteLength": 1229,
+      "sha256": "104a42aa97c778fe1aea98e88c0f9aaef1f6d39ce935bbf8770d4861fbf53766"
+    },
+    {
+      "path": "contracts/generated/font-response.schema.json",
+      "byteLength": 14831,
+      "sha256": "3425f7707b284575e519717379fa8e2973340cef05dd372bbc7d8e1da1972f49"
+    },
+    {
+      "path": "contracts/generated/itemization-request.schema.json",
+      "byteLength": 1259,
+      "sha256": "ee9efed903a60130b62a8fdd3ec60321a96c8d8963efa3f73aa779d1ebc6df0e"
+    },
+    {
+      "path": "contracts/generated/itemization-response.schema.json",
+      "byteLength": 9338,
+      "sha256": "76562ba4ab1d649c0dd8942914ec87c251d2f3fec7c4e2f77e568d7c5be01b6a"
+    },
+    {
+      "path": "contracts/generated/kernel-request.schema.json",
+      "byteLength": 50494,
+      "sha256": "964d8503079175b3c9a479a57cbf0f0778410c9eb26e997aea45382c0d344e72"
+    },
+    {
+      "path": "contracts/generated/kernel-response.schema.json",
+      "byteLength": 45531,
+      "sha256": "3a34026903bf39c630ee76f0173158c6e51b283baffb2c3f95e49f86f43ccd5b"
+    },
+    {
+      "path": "contracts/generated/line-break-request.schema.json",
+      "byteLength": 533,
+      "sha256": "60aea3a77c443279f97abcc844491e9296e37384fcf12ac9db80a4525185140d"
+    },
+    {
+      "path": "contracts/generated/line-break-response.schema.json",
+      "byteLength": 5449,
+      "sha256": "895cf441d96afa60460536ad93aabcbe9e24a8d28ad820821896bacf69a239e7"
+    },
+    {
+      "path": "contracts/generated/line-geometry-request.schema.json",
+      "byteLength": 8205,
+      "sha256": "056c3271b292bda9ea1bf6125f8f474371963528242de603cc821720f7496810"
+    },
+    {
+      "path": "contracts/generated/line-geometry-response.schema.json",
+      "byteLength": 32846,
+      "sha256": "7f1bfaa54927e342daf6f4b4c1be6abb8d11e8ee89bab00ae40fc79955179952"
+    },
+    {
+      "path": "contracts/generated/line-shape-request.schema.json",
+      "byteLength": 5552,
+      "sha256": "a219dc1cbe23692a0efcbbb2942204856253060edf2bfc33a6bd2670472fdbf9"
+    },
+    {
+      "path": "contracts/generated/line-shape-response.schema.json",
+      "byteLength": 23094,
+      "sha256": "d63f9502c95dcc69c071c082bf64e99dda7be5298b6c10ac8833dc4175b5ede2"
+    },
+    {
+      "path": "contracts/generated/package-inspection.schema.json",
+      "byteLength": 6031,
+      "sha256": "9b2484a0439ff591c8b5f5f34d46f08399baa0ece75fe5df597ff37226df1063"
+    },
+    {
+      "path": "contracts/generated/paragraph-layout-request.schema.json",
+      "byteLength": 7694,
+      "sha256": "0336f9045db0039fb08f3779b65ef4c1bc340a3e3e68f22b99ae314daa4720d6"
+    },
+    {
+      "path": "contracts/generated/paragraph-layout-response.schema.json",
+      "byteLength": 39697,
+      "sha256": "8ad3e84598a74d631ac4b9dee03785e22cd38252b1e0671c6943ef61ea119366"
+    },
+    {
+      "path": "contracts/generated/paragraph-shape-request.schema.json",
+      "byteLength": 4868,
+      "sha256": "1f26f5a43b0b5353ef928c5dfc37ad7cdb0c557ac9c1218f4965e395f84df113"
+    },
+    {
+      "path": "contracts/generated/paragraph-shape-response.schema.json",
+      "byteLength": 22327,
+      "sha256": "74a79a061d704c640e575ad82fd16da298144f00b92745cfe1f26ccf91f8cdaf"
+    },
+    {
+      "path": "contracts/generated/pptx-color-query.schema.json",
+      "byteLength": 11319,
+      "sha256": "1c103246b220921eb901bf87bb8bd7386ae17517b5a8b12167e806bf03f596d7"
+    },
+    {
+      "path": "contracts/generated/pptx-color-response.schema.json",
+      "byteLength": 11775,
+      "sha256": "0bec5d1eb4aa3f84324842382722cdb06f7416722d0ffe69d8850f0c6c71a7d4"
+    },
+    {
+      "path": "contracts/generated/pptx-export-request.schema.json",
+      "byteLength": 40856,
+      "sha256": "5ba52973e870eaa06142d76609676537f0f8b44c4ded4952428054996067bdda"
+    },
+    {
+      "path": "contracts/generated/pptx-source-response.schema.json",
+      "byteLength": 52654,
+      "sha256": "9c2d57b301edcd9846e1fbe3d0c0fede20d8409d83153e1058848dbbe7b56156"
+    },
+    {
+      "path": "contracts/generated/pptx-text-edits.schema.json",
+      "byteLength": 1708,
+      "sha256": "ef2542ed9e24f8986d3a3f980efddb0a4c8c15ff02f6e2e5a185de37ed4e7734"
+    },
+    {
+      "path": "contracts/generated/shape-request.schema.json",
+      "byteLength": 4600,
+      "sha256": "adcd4f02ce7134cb5248f8bcfa510550dec4379827cd55ece52cf3177b35da59"
+    },
+    {
+      "path": "contracts/generated/shape-response.schema.json",
+      "byteLength": 5599,
+      "sha256": "e5daf007a1a6b546110e1f7c9792e565b8ef0ef170815492ee25c117af57b7fc"
+    },
+    {
+      "path": "contracts/generated/text-analysis-request.schema.json",
+      "byteLength": 539,
+      "sha256": "cfb44331895f7ba3e22d8cb11a11faa9622a40172506c54cc80518924e7c2a65"
+    },
+    {
+      "path": "contracts/generated/text-analysis-response.schema.json",
+      "byteLength": 4419,
+      "sha256": "e6745e95da384e3aa116ca3a6975d84b05b99167d8abb5ed7de7ce2f4c90df76"
+    },
+    {
+      "path": "contracts/generated/transaction-receipt.schema.json",
+      "byteLength": 6045,
+      "sha256": "58e19899b71399b1bef09f2c9fe905705a526d327663a47e7a3fe7a1a78d40d6"
+    },
+    {
+      "path": "contracts/generated/transaction.schema.json",
+      "byteLength": 45948,
+      "sha256": "bd85a94f89b916ea42c9ca40455e58bb89853c3bda97b04cc0c2250de20415d8"
+    },
+    {
+      "path": "contracts/generated/validation-report.schema.json",
+      "byteLength": 1128,
+      "sha256": "8e49dd078ea8259cf8181cf8ebe4238299e525b683c99739355ed3efdade2dbf"
+    },
+    {
+      "path": "crates/mo-color/Cargo.toml",
+      "byteLength": 224,
+      "sha256": "996030b77079cd11bbe61bff0c4f0efa55962c2c0488dd2aa080c29037f36209"
+    },
+    {
+      "path": "crates/mo-color/src/lib.rs",
+      "byteLength": 10685,
+      "sha256": "3f2a979ec551b368a8983a5ea70c975e9526dffe8a3ff61d56d236308b773b95"
+    },
+    {
+      "path": "crates/mo-color/src/space.rs",
+      "byteLength": 1517,
+      "sha256": "39e4a14b24422adb95fdafc3facb5ca787606fcab8b6f2ea4189d295253edda1"
+    },
+    {
+      "path": "crates/mo-common/Cargo.toml",
+      "byteLength": 348,
+      "sha256": "7b447f65fd8567e7ca49008ab3b611135697c68ac06941cdcf2a1e898036b48b"
+    },
+    {
+      "path": "crates/mo-common/src/byte_length.rs",
+      "byteLength": 1546,
+      "sha256": "8da492fba15038570411f1084930f8a85d0ad276cb33141cf014baebc2bf2a89"
+    },
+    {
+      "path": "crates/mo-common/src/canonical.rs",
+      "byteLength": 2788,
+      "sha256": "315f823665b0e46c6c3858ea53d4e3a17897df191953c26c56ca995c0d862366"
+    },
+    {
+      "path": "crates/mo-common/src/ids.rs",
+      "byteLength": 3810,
+      "sha256": "293c64d14b7f720dda1654fe0a31d9e79853e16b98c6da265f964ad111109587"
+    },
+    {
+      "path": "crates/mo-common/src/integer_json.rs",
+      "byteLength": 5783,
+      "sha256": "8d93f32e52fae9bd30d49cf7e65e70416d4a94fa45b66bdda4ee84ca6c6a7906"
+    },
+    {
+      "path": "crates/mo-common/src/lib.rs",
+      "byteLength": 348,
+      "sha256": "9bb5974cc2d7a05ff1e5657686756740e0bf452c7bde4cd9a499c89992ac2258"
+    },
+    {
+      "path": "crates/mo-common/src/strict_json.rs",
+      "byteLength": 3165,
+      "sha256": "943af803cddda071370f13f3cfcd2d244ecc655f04f27988e79634104b299198"
+    },
+    {
+      "path": "crates/mo-common/src/units.rs",
+      "byteLength": 4704,
+      "sha256": "095e757c6572c99c9a65997fd41bbc495b4e2fdb6ed18912204b3745d2253f92"
+    },
+    {
+      "path": "crates/mo-common/tests/wire.rs",
+      "byteLength": 4304,
+      "sha256": "29be69916d05c23a9918b5bf6c22f9ceea2500682629d58f862d56602869e922"
+    },
+    {
+      "path": "crates/mo-font/Cargo.toml",
+      "byteLength": 355,
+      "sha256": "e5af7d13ddf2b09b5bbe65e91d3606bac2ac0404a14f5af9def353f667e94262"
+    },
+    {
+      "path": "crates/mo-font/src/cmap.rs",
+      "byteLength": 5298,
+      "sha256": "7a15dbb8e3f94c5d237120756072800cc7a2305e711ca2fadd88437377018512"
+    },
+    {
+      "path": "crates/mo-font/src/cmap/validation.rs",
+      "byteLength": 5354,
+      "sha256": "b39f44d9f389cbc5aa5e64ed98aa600f2efdca21e7fdf39c5634844a6d42c992"
+    },
+    {
+      "path": "crates/mo-font/src/cmap/variation.rs",
+      "byteLength": 2896,
+      "sha256": "8c50bfc5d723ccd4fa7672770e9345ab58692b3887b788f4824db84246e67793"
+    },
+    {
+      "path": "crates/mo-font/src/container.rs",
+      "byteLength": 7819,
+      "sha256": "d808fd7534b41e82c469cf2c7f2e9aa7be586b5f60c64057a9aa254562d9f4c6"
+    },
+    {
+      "path": "crates/mo-font/src/lib.rs",
+      "byteLength": 7543,
+      "sha256": "0bed399f07b2b7c7e7519bfd2ea7aa7e81328e62c8323f36d452cf87575d9789"
+    },
+    {
+      "path": "crates/mo-font/src/metadata.rs",
+      "byteLength": 7035,
+      "sha256": "9236326ad473894aad0bfcc9d9fc09141f50ff16821c2d10b924e24997e66eb9"
+    },
+    {
+      "path": "crates/mo-font/src/tests.rs",
+      "byteLength": 12543,
+      "sha256": "34dbee4db38b1151985b4b0730ce7e3efba22908028abf45372e287e768c6091"
+    },
+    {
+      "path": "crates/mo-font/src/types.rs",
+      "byteLength": 5092,
+      "sha256": "2f5a4689fe3d90213782e9a2cf141be4e15849d2a2d31d4ba9e0ae14d49261c4"
+    },
+    {
+      "path": "crates/mo-harfbuzz-sys/Cargo.toml",
+      "byteLength": 366,
+      "sha256": "6a6ac6c3144d3a073a3e2ff7d60311fab8c6be5446f7e2052a34f62250a966db"
+    },
+    {
+      "path": "crates/mo-harfbuzz-sys/build.rs",
+      "byteLength": 2623,
+      "sha256": "884ee6b371aef08cd506fb4d63cdcf695b27ca7b93d4cb5094e43592c13b5994"
+    },
+    {
+      "path": "crates/mo-harfbuzz-sys/src/ffi.rs",
+      "byteLength": 4008,
+      "sha256": "6417a991c72cc8e4c52cc8b62fe9910fbe61c2ccfd7c1b6ab3d60f198bfb9022"
+    },
+    {
+      "path": "crates/mo-harfbuzz-sys/src/lib.rs",
+      "byteLength": 3252,
+      "sha256": "dd3b3074fdb3133f7995a639f7ce59d218e51719f55a74a0d7d16285908d5914"
+    },
+    {
+      "path": "crates/mo-kernel-api/Cargo.toml",
+      "byteLength": 512,
+      "sha256": "d7b0a076169f06cda745ab990139e083de276352c076130a698524b1d7a3a38c"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/bidi.rs",
+      "byteLength": 4307,
+      "sha256": "5d60f4375bbf0cd62f3a95fb39e7a8cd0114a04913456b5c9df8a647320480e0"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/cascade.rs",
+      "byteLength": 1694,
+      "sha256": "6306b69c49acb236aa1e7a1e6329073f6404fb8ce9670fde331af686aaa3d5dd"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/flow.rs",
+      "byteLength": 1113,
+      "sha256": "d01d8d15cf8c6fb4baa942c375abb539c34d9cd442dd4bcf0c514d95a1e7792a"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/font.rs",
+      "byteLength": 2571,
+      "sha256": "8799724a37b840b755807eea53404eac6cecad71a3b307aba3f9c7b744b9a9ef"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/geometry.rs",
+      "byteLength": 1089,
+      "sha256": "28cbd8998a61fd4e3ba548c0ad9cf2ec717f564712a15d200f8ebb5b95fbe9ae"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/lib.rs",
+      "byteLength": 5199,
+      "sha256": "a7b64d3845456d10f8b4ccd22c2290ac480a1f6086aabdcce799c2ea7b3350bb"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/line_break.rs",
+      "byteLength": 6625,
+      "sha256": "7a15e7b0039c0add8432c333f22a07c1086a1279a5ff7cc321234096619753be"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/metrics.rs",
+      "byteLength": 1572,
+      "sha256": "094d1ac92ce24c334c1a2c795b023da41458b3a3e48abfcb2d5308129b8459e5"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/package.rs",
+      "byteLength": 7007,
+      "sha256": "30e91e0da739a254422a52f05e1b78126d42b9bc5d5c5191a5e810f4d5b2992e"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/paragraph.rs",
+      "byteLength": 3252,
+      "sha256": "58d5500090fa8e218b23b93ef39e9069663af8c1a25bfaec861c858080d61ddb"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/pptx.rs",
+      "byteLength": 2784,
+      "sha256": "6a76c54660c37b5b86afe41e08c418c05e8f1b40655402913b195939b559fcf5"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/pptx_color.rs",
+      "byteLength": 2414,
+      "sha256": "4fffa2c44287ccd811d8b95b7cb529976ede787f95d01cbde1249ba1532b1725"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/pptx_source.rs",
+      "byteLength": 4562,
+      "sha256": "94cd9c87781a8a5c715957c8472bd1c8b2f95227c5aab76fb5ed299dab55de07"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/text.rs",
+      "byteLength": 3047,
+      "sha256": "70d6d6c26a4ea03a8c1f9ed3ef777c7e7850c5ac51661c0b4c99a00e7f1c98ac"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/unicode.rs",
+      "byteLength": 3743,
+      "sha256": "85113da5188220ec1836f6b358bae5dcd4c2e26fa11b931a24e5a8b2ebd55241"
+    },
+    {
+      "path": "crates/mo-kernel-api/tests/package.rs",
+      "byteLength": 746,
+      "sha256": "3f6ad4a8febafc624f522320175f0fd2fd2309c275a8db8ae567ddba0bb6d039"
+    },
+    {
+      "path": "crates/mo-kernel-api/tests/pptx_source.rs",
+      "byteLength": 2752,
+      "sha256": "773e5fb7eb6a243386547e51b530a3b4a90ef4e5af4ab53cfb7058c10ae4d9d5"
+    },
+    {
+      "path": "crates/mo-opc/Cargo.toml",
+      "byteLength": 321,
+      "sha256": "fec7946008a6705d94add1465091e4df31e3ee376b20b6a7f4e0bc469483a48d"
+    },
+    {
+      "path": "crates/mo-opc/examples/package_fixture.rs",
+      "byteLength": 2794,
+      "sha256": "1b7a54acc6203be8ad05257c6d607a24be863e0a6a1a6d7d0ff22eff30abce9a"
+    },
+    {
+      "path": "crates/mo-opc/src/lib.rs",
+      "byteLength": 2176,
+      "sha256": "5996c601d5278bd1d9dccfdd68ec8e47caf766509c1e8d55846cfc9471fe4f72"
+    },
+    {
+      "path": "crates/mo-opc/src/metadata.rs",
+      "byteLength": 11949,
+      "sha256": "98c3e747355b8c2e27ecc61befb1d930b994f834dbc0fee5885eee0dec60475c"
+    },
+    {
+      "path": "crates/mo-opc/src/names.rs",
+      "byteLength": 6466,
+      "sha256": "6a4709a39b73b1f9621e11660914f827791cdd5874a08cb1ab9256eacc12297a"
+    },
+    {
+      "path": "crates/mo-opc/src/package.rs",
+      "byteLength": 18747,
+      "sha256": "63005aa7d1940ca24fa9a5c2959ce6f2615804c4aaf4f5c05b4068b26cdf1c52"
+    },
+    {
+      "path": "crates/mo-opc/src/writer.rs",
+      "byteLength": 16450,
+      "sha256": "6f7d4a21eb226b43eec146868e3fe5ad1589521576dfdc3ae71964af47122152"
+    },
+    {
+      "path": "crates/mo-opc/src/zip_structure.rs",
+      "byteLength": 4081,
+      "sha256": "c5368a18c8821a676cb3822ef16f0e2fbe4a2ccc044bec5774a6367895608d8f"
+    },
+    {
+      "path": "crates/mo-opc/tests/packages.rs",
+      "byteLength": 15506,
+      "sha256": "8534c213404aa685f2a8779cd383314f34be93661375bdc3c268f95511dc2f6e"
+    },
+    {
+      "path": "crates/mo-pptx/Cargo.toml",
+      "byteLength": 438,
+      "sha256": "b978aee92e8ab55e47562e2b39b701c6ba590404f31e1432ebe0f5ff4ef11472"
+    },
+    {
+      "path": "crates/mo-pptx/src/definitions.rs",
+      "byteLength": 6511,
+      "sha256": "8fd8e07dc870019eb94daf3145ec3d07c18e784962a429cbab9fa139b89a278e"
+    },
+    {
+      "path": "crates/mo-pptx/src/drawing.rs",
+      "byteLength": 14176,
+      "sha256": "53980541eb584ea4704b125a4adacb7e7ce6bdcfca750eb63c3b6aae98b31b31"
+    },
+    {
+      "path": "crates/mo-pptx/src/lib.rs",
+      "byteLength": 3555,
+      "sha256": "31c1cab03abf506b4f606606ef2ab0f47547e0adfb46663c715a2beca61f18e0"
+    },
+    {
+      "path": "crates/mo-pptx/src/source.rs",
+      "byteLength": 7193,
+      "sha256": "7777e60b128c902e9d93c24dec24f63de8340acd9e2cca4621c751f8e0a17904"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/color.rs",
+      "byteLength": 10438,
+      "sha256": "507836da860a10b717e94ecb43888cbbb6831dc9664b6ca5be05f51265a8a375"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/color/preset.rs",
+      "byteLength": 9832,
+      "sha256": "438ad1dc7761be960b8769820365a36c529ff07ce0a88cb1b777aace60d351d2"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/color/transforms.rs",
+      "byteLength": 2406,
+      "sha256": "abe68baa8d541e0937fb12e1558b16cd5286bcb1442d32da84d0ac1bd2adbded"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/color/types.rs",
+      "byteLength": 4013,
+      "sha256": "2399a46afc850c3219294aedbc96324dc67c60f1e463973b8f75b698e66d1459"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/color_mapping.rs",
+      "byteLength": 5374,
+      "sha256": "b05fa5381811dda4d223f37847b7f472873f7c342dae3567e9e29e1f9600556b"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/compatibility.rs",
+      "byteLength": 2812,
+      "sha256": "8de4ed4972e3b3fdf625e00cb6377027617fc46da0e427e7ec97542fc55f2521"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/edit.rs",
+      "byteLength": 5385,
+      "sha256": "6c58f8ce0504ef597b431a9aada84a298963682c48aafd8860daf971723bddae"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/inheritance.rs",
+      "byteLength": 12749,
+      "sha256": "7bb21216ae63415898058bc0006ffec856493defacc1e376985f6ae2dea2c230"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/links.rs",
+      "byteLength": 3568,
+      "sha256": "665ec5ec1669050719fa3799762a256a4b18f820c7f8975b8239848b9a9970d4"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/presentation.rs",
+      "byteLength": 10326,
+      "sha256": "38f7c42d782a6c45e2499af09b85179a6cd872afcf53f8edfc6e6925e11da501"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/surface.rs",
+      "byteLength": 23332,
+      "sha256": "cb01e7e42870afe7ac12894bdee9fe2c7f07cb9e565ff975978c28bca052b070"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/theme.rs",
+      "byteLength": 6492,
+      "sha256": "a9a4b01455daaab52ddcb759267452a17068496a015d1be17a625cc80bc0eece"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/theme/names.rs",
+      "byteLength": 13147,
+      "sha256": "12481d865b6300017a64846f38b06b064fe3e60b750dcd4014fbbafb135b128d"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/theme/read.rs",
+      "byteLength": 17708,
+      "sha256": "32cb9a504fd1d94268e6fac4ad146b791070ecf4bb039e5f1c495ece0da1767b"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/theme/values.rs",
+      "byteLength": 9655,
+      "sha256": "e26abca4638278226a5b1fa53181cedf59105e8f9f0d78e3975cdcb48676a4ba"
+    },
+    {
+      "path": "crates/mo-pptx/src/text.rs",
+      "byteLength": 6817,
+      "sha256": "e8f2d56b8a95c4117dea74b15227e4b49f30fe13b66595e8104a920f25dc0870"
+    },
+    {
+      "path": "crates/mo-pptx/src/write.rs",
+      "byteLength": 11976,
+      "sha256": "376898cf1388b7f0dba7db73025bd81e051b14fa418b9f25967f3de33c97e112"
+    },
+    {
+      "path": "crates/mo-pptx/src/xml.rs",
+      "byteLength": 2020,
+      "sha256": "ccb472b5a7a4f6192bbac1291e98339c69c437b5320993878fdfce36041ead0e"
+    },
+    {
+      "path": "crates/mo-pptx/tests/export.rs",
+      "byteLength": 4087,
+      "sha256": "6b64207332cf3f04dc092fdf4003bab9bf2b6f57dedd08c3f4c5abecc12353e9"
+    },
+    {
+      "path": "crates/mo-pptx/tests/source.rs",
+      "byteLength": 30985,
+      "sha256": "796c98bf1d39baa16c03c77a3ae68ea2a9e486ebe6f3caaaaddfc7e4c06ebad1"
+    },
+    {
+      "path": "crates/mo-pptx/tests/source_colors.rs",
+      "byteLength": 6848,
+      "sha256": "f66da3920a7a38d846da0066f2a7e047e8ef0a1b02e9a68ccde9183b97d73ea2"
+    },
+    {
+      "path": "crates/mo-pptx/tests/support/mod.rs",
+      "byteLength": 964,
+      "sha256": "646501d7163b93c2e67de75f9d4ebc028e05672071a43d084c0d1436a1533cac"
+    },
+    {
+      "path": "crates/mo-presentation-edit/Cargo.toml",
+      "byteLength": 357,
+      "sha256": "5da36bbe80bf21f605381fbd691088163f52a72f043e05d24406a61a1265e8a5"
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/apply.rs",
+      "byteLength": 10833,
+      "sha256": "893df4face1215d0aa9b0f77ea8d593474b2e71394049f37842ec9a6dde2eff5"
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/lib.rs",
+      "byteLength": 184,
+      "sha256": "cfddd7f6cbe29c52f4667b5236e9a6a36b496092c8646f31d47d828fe08a059c"
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/operations.rs",
+      "byteLength": 2577,
+      "sha256": "535a5abf1f01b2a2d4d0507ef7cbb428c9c80c8945b9d4cbfe04ecafc4aefbaa"
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/transaction.rs",
+      "byteLength": 11192,
+      "sha256": "93131b514e51edf6bdff9912befd243e01be24a8555e0b020ade8a1120b65e9d"
+    },
+    {
+      "path": "crates/mo-presentation-edit/tests/support/mod.rs",
+      "byteLength": 3314,
+      "sha256": "9f1ba64634cecf1ab2316c2d6d0f0a9510ccbcfb2767b90067e85decd3c90d9b"
+    },
+    {
+      "path": "crates/mo-presentation-edit/tests/transactions.rs",
+      "byteLength": 8585,
+      "sha256": "73199270211b81a361c39a7983f2d8784db76b89cdcd521de512e8c34dee6859"
+    },
+    {
+      "path": "crates/mo-presentation-edit/tests/validation.rs",
+      "byteLength": 3808,
+      "sha256": "ce57b22e3dadf7f00fa056055cf2e054ef0c7d9fc3c2d06a8aea2991605a70dd"
+    },
+    {
+      "path": "crates/mo-presentation-model/Cargo.toml",
+      "byteLength": 338,
+      "sha256": "686ad4d89c724137533c16c8417b58f830c494d18dbd140225141adc2b295632"
+    },
+    {
+      "path": "crates/mo-presentation-model/src/document.rs",
+      "byteLength": 5407,
+      "sha256": "1a564f30eb48e3d58e589a7edeb24b36aa2dd79c1e09cd7f4af1498a96f99663"
+    },
+    {
+      "path": "crates/mo-presentation-model/src/geometry.rs",
+      "byteLength": 1824,
+      "sha256": "c357689b0fd629252acf2da581879aa967e1ba1ae24f141ae5f0377fd79db69c"
+    },
+    {
+      "path": "crates/mo-presentation-model/src/lib.rs",
+      "byteLength": 249,
+      "sha256": "f9862c8e44fdf3a30484a2e4b7b7ed9fc77bf90c93bab8ba7822f2d189789fda"
+    },
+    {
+      "path": "crates/mo-presentation-model/src/styles.rs",
+      "byteLength": 3267,
+      "sha256": "71df96a08e62e38eb06459de6297e580811bd917769da5a8317b068ed79f636a"
+    },
+    {
+      "path": "crates/mo-presentation-model/src/text.rs",
+      "byteLength": 2220,
+      "sha256": "82805f8b393baefeaa6ae3b3d07c4e07f340d438f807f173869b9b9db787d76f"
+    },
+    {
+      "path": "crates/mo-presentation-model/src/validation.rs",
+      "byteLength": 20501,
+      "sha256": "88f73437576a26004180b834dd8bb8b3715070f2e3e4bb49086db43e24d394c9"
+    },
+    {
+      "path": "crates/mo-text/Cargo.toml",
+      "byteLength": 400,
+      "sha256": "c62e484a6ff33163b5f1f365af24215e0ef36230903e57f1783e818d1f61d568"
+    },
+    {
+      "path": "crates/mo-text/src/backend.rs",
+      "byteLength": 4023,
+      "sha256": "07b3298ffa9665b94ad796f0f4423ecc92de8fe22ca9452803854406abdd88f7"
+    },
+    {
+      "path": "crates/mo-text/src/cascade/context.rs",
+      "byteLength": 9113,
+      "sha256": "9dc7a5d79f8683090e999307b8542c3cbc88c24daab047700e72b92fc51e8890"
+    },
+    {
+      "path": "crates/mo-text/src/cascade/mod.rs",
+      "byteLength": 4672,
+      "sha256": "3f0b4011ae4db5360624811b24c760f6650fdb05887c7b31d2668478de6751fd"
+    },
+    {
+      "path": "crates/mo-text/src/cascade/tests.rs",
+      "byteLength": 6862,
+      "sha256": "7a4760471a5afad0fb6f4aeec693e0a6695340197f0cfb8811ecfb8680ef37da"
+    },
+    {
+      "path": "crates/mo-text/src/cascade/types.rs",
+      "byteLength": 4549,
+      "sha256": "f2c56b02de25b7ecfb507c11848b8e81bec79ff5f9d76983687c79ea9072bb33"
+    },
+    {
+      "path": "crates/mo-text/src/fallback/mod.rs",
+      "byteLength": 10612,
+      "sha256": "41e5885247086477888727599152c8c179991a890e46f6a12f50b8e3c0dc6efc"
+    },
+    {
+      "path": "crates/mo-text/src/fallback/partition.rs",
+      "byteLength": 3083,
+      "sha256": "337953de39dbce107f023371a0230cd37b24ad4a5229ea7b051641f163067533"
+    },
+    {
+      "path": "crates/mo-text/src/fallback/tests.rs",
+      "byteLength": 11085,
+      "sha256": "fedd6558481bdf7fd8ed788e44b5835c7e6a22fdb4e432abd1c79da57b0daec2"
+    },
+    {
+      "path": "crates/mo-text/src/fallback/types.rs",
+      "byteLength": 2093,
+      "sha256": "40cc5247bb7c4909e4bb2c53c00e9cf4ed9c5e307351aad416170bb8e7eeb28e"
+    },
+    {
+      "path": "crates/mo-text/src/flow/mod.rs",
+      "byteLength": 14190,
+      "sha256": "246e7a472f8bb4880d74f0859b4017e896b33a086f5567cc5d7dbba679dedfa3"
+    },
+    {
+      "path": "crates/mo-text/src/flow/tests.rs",
+      "byteLength": 7489,
+      "sha256": "da7591207c999be0a49f31fede6647f68c3d9c882c7deb505e77db175fc940bf"
+    },
+    {
+      "path": "crates/mo-text/src/flow/types.rs",
+      "byteLength": 2271,
+      "sha256": "57cc33fd40c37f213330dcd9cb73d4ed750c4da626aad805eedd1d00521564af"
+    },
+    {
+      "path": "crates/mo-text/src/geometry/metrics.rs",
+      "byteLength": 4294,
+      "sha256": "3863f83eec181fa9feeb0ae16deadb8962cc7697a08254124877ed5caf9fbacc"
+    },
+    {
+      "path": "crates/mo-text/src/geometry/mod.rs",
+      "byteLength": 7811,
+      "sha256": "ad3dc4febb42a1df17ed5b3f1ba23f92e254251f03be3026b381ddcf9d5995c7"
+    },
+    {
+      "path": "crates/mo-text/src/geometry/number.rs",
+      "byteLength": 3343,
+      "sha256": "0318e98eb88bfe072411ebe0185fa88da17cfd991f93f5ed1c39042a5e4e3445"
+    },
+    {
+      "path": "crates/mo-text/src/geometry/order.rs",
+      "byteLength": 3004,
+      "sha256": "a4c14d0b07b1532d173e5d217cfe61afcf1d9d98fae98ab750684b398fa5063d"
+    },
+    {
+      "path": "crates/mo-text/src/geometry/test_support.rs",
+      "byteLength": 4077,
+      "sha256": "394bbf8176e1df508382e81688a88679a27df0093d449e38f103bb10bebc9a33"
+    },
+    {
+      "path": "crates/mo-text/src/geometry/tests.rs",
+      "byteLength": 6343,
+      "sha256": "1933dcace7b12774d34dd55197a8957560d606791480b25104f3b6919d242721"
+    },
+    {
+      "path": "crates/mo-text/src/geometry/types.rs",
+      "byteLength": 3373,
+      "sha256": "5faa58c39745085df218445dddcf79d195124322787d7ac727739b1ee9e48bd0"
+    },
+    {
+      "path": "crates/mo-text/src/itemize/mod.rs",
+      "byteLength": 7244,
+      "sha256": "02ded0303ea5f1f8c3e794639e130d614158e58a487db45c7eabdd2512f4f633"
+    },
+    {
+      "path": "crates/mo-text/src/itemize/scripts.rs",
+      "byteLength": 3763,
+      "sha256": "b113474857a4a39044e3ccb0ce2e81222ad12eccc06addec938a777ea1f30854"
+    },
+    {
+      "path": "crates/mo-text/src/itemize/tests.rs",
+      "byteLength": 7641,
+      "sha256": "a727ebf13911bbcbae2db93c5bfaa7b34d775347159c9fd1f70fbc83f2264a81"
+    },
+    {
+      "path": "crates/mo-text/src/itemize/types.rs",
+      "byteLength": 2384,
+      "sha256": "4079ed1998e9dc2b58e3d646d9a37403e7d9ccaa986898afafb61ea07c0b09d0"
+    },
+    {
+      "path": "crates/mo-text/src/lib.rs",
+      "byteLength": 3098,
+      "sha256": "0e9045d4d8fcd34d30bb76f3f8f1adbf64deef8c6b8dd715104629df285051b1"
+    },
+    {
+      "path": "crates/mo-text/src/lines.rs",
+      "byteLength": 4614,
+      "sha256": "bab1671bf80786015e605421136fe0604a2881cd4579772f07837ab5f245bd4a"
+    },
+    {
+      "path": "crates/mo-text/src/lines/plan.rs",
+      "byteLength": 5597,
+      "sha256": "aa7201cf5888f7f7823cb3c7c9b3fc82d163a9f692ad1aee436e70ad51e473a8"
+    },
+    {
+      "path": "crates/mo-text/src/lines_tests.rs",
+      "byteLength": 6995,
+      "sha256": "0c10ee93ca4a9c1aca7a2eec08306cd0ba2b63bf72f0e81a4a7147d761147104"
+    },
+    {
+      "path": "crates/mo-text/src/metrics/mod.rs",
+      "byteLength": 6309,
+      "sha256": "3becc88306619d53a06bb5a17509ea5c8a04f1c985f65823e7eba3c0492b9f4a"
+    },
+    {
+      "path": "crates/mo-text/src/metrics/tests.rs",
+      "byteLength": 6986,
+      "sha256": "65c09b7a8ac05b1d299dcd397b27c32a261484d68d547c72bf8d071baf3d6fd2"
+    },
+    {
+      "path": "crates/mo-text/src/metrics/types.rs",
+      "byteLength": 3638,
+      "sha256": "b19fa50418125c7aede6c7483558ab9d1025c8a231a406daff926665723002a2"
+    },
+    {
+      "path": "crates/mo-text/src/paragraph.rs",
+      "byteLength": 8141,
+      "sha256": "e4370ba4ed2187f547b0026068384c20fee05909620b24be774c5dba69c3c618"
+    },
+    {
+      "path": "crates/mo-text/src/paragraph_tests.rs",
+      "byteLength": 3743,
+      "sha256": "69a85a3c5e45e2c8350c238598884171261aa6013bad718f777c72ad4e407376"
+    },
+    {
+      "path": "crates/mo-text/src/prepare.rs",
+      "byteLength": 5585,
+      "sha256": "f8bbd6b8fe5567737c8197c78f809eb807b34b391c077c787fc7141ea48a6733"
+    },
+    {
+      "path": "crates/mo-text/src/result.rs",
+      "byteLength": 4341,
+      "sha256": "40e4890112e1e012c1d04051f73aa5d06d503fb39aeaf96b56b45117ff95d68b"
+    },
+    {
+      "path": "crates/mo-text/src/tests.rs",
+      "byteLength": 7723,
+      "sha256": "665195731090cb209a8d8cb81de050b28a50fd1278639202d17936efb7af5272"
+    },
+    {
+      "path": "crates/mo-text/src/types.rs",
+      "byteLength": 5367,
+      "sha256": "828ff818cb806c28827c7b2cbaf0d4e9ad986009dd3f1bade466855adf5bb324"
+    },
+    {
+      "path": "crates/mo-unicode/Cargo.toml",
+      "byteLength": 283,
+      "sha256": "1a815475ceb4e7c6e8e5111c0ab96a14095b58282f16d7075f9ca2f810660a02"
+    },
+    {
+      "path": "crates/mo-unicode/data/LICENSE-UNICODE",
+      "byteLength": 1995,
+      "sha256": "e7a93b009565cfce55919a381437ac4db883e9da2126fa28b91d12732bc53d96"
+    },
+    {
+      "path": "crates/mo-unicode/data/bidi-manifest.json",
+      "byteLength": 1561,
+      "sha256": "c2c896949521e03fd3775ed4d705483c2a21a3573845b874b27d1ded7ce385ac"
+    },
+    {
+      "path": "crates/mo-unicode/data/bidi.bin",
+      "byteLength": 14007,
+      "sha256": "d31866bbf23a9d7dca0124834efd271e727d6f21b4171586f5fef31d88627305"
+    },
+    {
+      "path": "crates/mo-unicode/data/line-break-manifest.json",
+      "byteLength": 1175,
+      "sha256": "c59b94befc02629fcd8827e367a0fe9516087713d8921933c2a318a28785e10f"
+    },
+    {
+      "path": "crates/mo-unicode/data/line-break.bin",
+      "byteLength": 31752,
+      "sha256": "fd3e6f15b8bfbf03e5142e74c04bf8cf828f966e8974fee1975048fde71eb014"
+    },
+    {
+      "path": "crates/mo-unicode/data/manifest.json",
+      "byteLength": 1566,
+      "sha256": "bab7e1712392250584b5609bc6126471fba5bbefeaf415c51d2a5e92ed43d31b"
+    },
+    {
+      "path": "crates/mo-unicode/data/properties.bin",
+      "byteLength": 16502,
+      "sha256": "4eddcd2c58f6cc92a6b7d9072faca49776b56b8618d004c7ddd325481a87aae5"
+    },
+    {
+      "path": "crates/mo-unicode/data/script-manifest.json",
+      "byteLength": 834,
+      "sha256": "d9e87053786ab7f841bad07604e16c817e81e9b1d29dc92eee4d1d100aa282f1"
+    },
+    {
+      "path": "crates/mo-unicode/data/scripts.bin",
+      "byteLength": 16670,
+      "sha256": "acdc3326559b49d793d26b58cb45424f4773ecebd3e95a0443a8d0cdf2745639"
+    },
+    {
+      "path": "crates/mo-unicode/examples/line_break_conformance.rs",
+      "byteLength": 1792,
+      "sha256": "ef26319f19a58a7fb0cf6423601d7304c9b53820849b861722b94eab30700bdc"
+    },
+    {
+      "path": "crates/mo-unicode/examples/line_break_properties.rs",
+      "byteLength": 1330,
+      "sha256": "768e47813f1a0f481c862fb6cda97466ae91d07c179bd55f12243949aaf5cb1a"
+    },
+    {
+      "path": "crates/mo-unicode/examples/script_properties.rs",
+      "byteLength": 1305,
+      "sha256": "e687f11434e9c413319cc4b922014368fae7ccd00c5765939fc2e528bc5f78bb"
+    },
+    {
+      "path": "crates/mo-unicode/src/bidi/mod.rs",
+      "byteLength": 7786,
+      "sha256": "9d2a11cc1849ef84fd3cdb4a7f1f3a7f700674283b48e4884aea7808ac73bafe"
+    },
+    {
+      "path": "crates/mo-unicode/src/bidi/properties.rs",
+      "byteLength": 5043,
+      "sha256": "459709b9d64b7e613d21bd2928c652fa1b1fc57c6ea72162571b7fd805028268"
+    },
+    {
+      "path": "crates/mo-unicode/src/bidi/tests.rs",
+      "byteLength": 6230,
+      "sha256": "47b3f80051c4f698bd42bfd481a6e00705dd25b2f987281917014b66bad3a360"
+    },
+    {
+      "path": "crates/mo-unicode/src/bidi/types.rs",
+      "byteLength": 2113,
+      "sha256": "2108524971bdd4f7106123cf12393a20097350fe12a8cb14008b64d34876367c"
+    },
+    {
+      "path": "crates/mo-unicode/src/lib.rs",
+      "byteLength": 7145,
+      "sha256": "9384ecc5756e214f6bc56e9316c0eab6fb4165584509925686ce436688840e5f"
+    },
+    {
+      "path": "crates/mo-unicode/src/line_break/mod.rs",
+      "byteLength": 6465,
+      "sha256": "a8966ee857409a33805769d10c26cf13e9e4d6ba3e3a91c0a99ebb44c3b3fb27"
+    },
+    {
+      "path": "crates/mo-unicode/src/line_break/properties.rs",
+      "byteLength": 2334,
+      "sha256": "ee5418a44ed6474ff9e2f13f95be9c085dbfa50c844c0650b8b372d5eb43c8dc"
+    },
+    {
+      "path": "crates/mo-unicode/src/line_break/rules.rs",
+      "byteLength": 4999,
+      "sha256": "bb5638972a2e3bd410b9187f171dd5b074c46664e735bde8a367ee18b5fd5184"
+    },
+    {
+      "path": "crates/mo-unicode/src/line_break/tests.rs",
+      "byteLength": 3997,
+      "sha256": "812d76092039c3e95ae1190546c73f2a7dbe635a0c7354c16c1cd3ea1c7eb029"
+    },
+    {
+      "path": "crates/mo-unicode/src/properties.rs",
+      "byteLength": 3732,
+      "sha256": "e735aac4bb7c4f67c4f07c786982740f968a32c3d7f0074d1f9e8906458171f0"
+    },
+    {
+      "path": "crates/mo-unicode/src/script.rs",
+      "byteLength": 4502,
+      "sha256": "4fe254165b387fe63a2182bb7ca584c073ae5f0207a0c57b04f552e6295b9af5"
+    },
+    {
+      "path": "crates/mo-wasm/Cargo.toml",
+      "byteLength": 299,
+      "sha256": "c14339263e39f843610896489179310b827527c2ea0923fe706bf4a545e48777"
+    },
+    {
+      "path": "crates/mo-wasm/src/lib.rs",
+      "byteLength": 1576,
+      "sha256": "c9cb5fb3b5602b3ee5c3061ec057f0f6bfde7a9fc5d82efaa3d8083a967e7a82"
+    },
+    {
+      "path": "crates/mo-wasm/src/text.rs",
+      "byteLength": 3229,
+      "sha256": "e3741319647d811b6b266ab5196bda0aeffb8a1a2478eff6f0151b10b0b5a5ec"
+    },
+    {
+      "path": "crates/mo-xml/Cargo.toml",
+      "byteLength": 227,
+      "sha256": "853e966df02894265a57e178174f37bc3d47c391bdfc6f2f51073d7dfa1c9194"
+    },
+    {
+      "path": "crates/mo-xml/src/encoding.rs",
+      "byteLength": 2703,
+      "sha256": "9e8d6ae2954cca572a9d11c1b62412307e4092f440a997cbeb032f372a629900"
+    },
+    {
+      "path": "crates/mo-xml/src/lib.rs",
+      "byteLength": 3007,
+      "sha256": "09fe3e54791b663aa9db13339d6dfa38bacf46c902ee024b68c1cf1ad7e8d6e5"
+    },
+    {
+      "path": "crates/mo-xml/src/mce.rs",
+      "byteLength": 2062,
+      "sha256": "52c3ba303e4af2a922a5d718c286ab1accf292b0ced9cca8be6520f4a74d9618"
+    },
+    {
+      "path": "crates/mo-xml/src/mce/rules.rs",
+      "byteLength": 5300,
+      "sha256": "f913b6ed681688510ce9f824c4e144597c00fb610054b761c78425fa37ebaeba"
+    },
+    {
+      "path": "crates/mo-xml/src/mce/stream.rs",
+      "byteLength": 12915,
+      "sha256": "2dce269a1f4f3712081af296be91f47dc1af3fc8e48b37a21ed8aab4d4ca7ef7"
+    },
+    {
+      "path": "crates/mo-xml/src/names.rs",
+      "byteLength": 2413,
+      "sha256": "19e8f209182717b29edd54d32f82bd191606d2f3894f28a2b04d0d10b4b9ccaf"
+    },
+    {
+      "path": "crates/mo-xml/src/scan.rs",
+      "byteLength": 12996,
+      "sha256": "5a8efe98f82cc495f9f7dc87356757017f548d9b891a824e717d320bbe05e578"
+    },
+    {
+      "path": "crates/mo-xml/src/text_edit.rs",
+      "byteLength": 10128,
+      "sha256": "cce569187b97de226580986929ba131c68f487711efc2528a79cd705d147b3ed"
+    },
+    {
+      "path": "crates/mo-xml/tests/mce.rs",
+      "byteLength": 8965,
+      "sha256": "9c63d77affacda92dee7814b3dafac8f9c1c56f135a512af5ff0f6fef153e518"
+    },
+    {
+      "path": "crates/mo-xml/tests/scanner.rs",
+      "byteLength": 6035,
+      "sha256": "358087316fb66a77471722eb71acec10a1e0cf401a93cff68f9ba23e6c002c4d"
+    },
+    {
+      "path": "crates/mo-xml/tests/text_edit.rs",
+      "byteLength": 5302,
+      "sha256": "064f5ce630d3dc1d2d9b48f0f6b222adffe7db06bc878899f8e25db88ddc69ed"
+    },
+    {
+      "path": "docs/implementation/bidi.md",
+      "byteLength": 7225,
+      "sha256": "d822ab45b9f8b96bb3f062c0b293fcace11a47fda17dca0b6fd8f8dc8d4a81ca"
+    },
+    {
+      "path": "docs/implementation/dependencies.md",
+      "byteLength": 12196,
+      "sha256": "cefac9da7f01879ff0e352e7e4203c84e70bb0ce6a09876fce48d559b627ee5c"
+    },
+    {
+      "path": "docs/implementation/development.md",
+      "byteLength": 12715,
+      "sha256": "5a463a65b6eaee3158f60a2b3602d118f85db6c2919101b7b8f0e2cf2f7cef49"
+    },
+    {
+      "path": "docs/implementation/font-cascade.md",
+      "byteLength": 7297,
+      "sha256": "c643108d148486cdca9da0ca471cf91d4a43768ad6d57fe32fb51480934a71ee"
+    },
+    {
+      "path": "docs/implementation/font-fallback.md",
+      "byteLength": 7701,
+      "sha256": "0c4964e424180a439d4da585ad47000c44c90c67eeb8aa8c7710dcc5569971b1"
+    },
+    {
+      "path": "docs/implementation/font-instance-metrics.md",
+      "byteLength": 7354,
+      "sha256": "5d1fc90fb7ac6ed9c0c1e81787f2162375ffb7a34386b25c6ca0a6015a24ed65"
+    },
+    {
+      "path": "docs/implementation/font-resources.md",
+      "byteLength": 7882,
+      "sha256": "162c34df6a81ee367688b6ef46e9b45d2dcfd16267f5ac3c7918298bfd4985a2"
+    },
+    {
+      "path": "docs/implementation/harfbuzz-component.md",
+      "byteLength": 8623,
+      "sha256": "62fe9e2bc498adda0bb914c89c5cc5b955fcacb7c34fae40e7a6342252477039"
+    },
+    {
+      "path": "docs/implementation/line-breaking.md",
+      "byteLength": 6280,
+      "sha256": "87936855c8d17ee96e7f9707129b5d5e560747cf24f53b94a64c212213190d0a"
+    },
+    {
+      "path": "docs/implementation/line-geometry.md",
+      "byteLength": 7683,
+      "sha256": "5cdb9444065767b5be0669a0190918136dba60d251b1f8e46e384b6a705798f6"
+    },
+    {
+      "path": "docs/implementation/line-shaping.md",
+      "byteLength": 6077,
+      "sha256": "83f899f0137ca9d0db9c60a0fc1b4d74044f34971378e372faca03f03e85d537"
+    },
+    {
+      "path": "docs/implementation/mce.md",
+      "byteLength": 5472,
+      "sha256": "c57bc24d5962afcd9932958d3aee5eebd3c8965f16156dca4dd2dc22867948f7"
+    },
+    {
+      "path": "docs/implementation/package-io.md",
+      "byteLength": 4530,
+      "sha256": "89ecabc6323252cc54341c52d779e97dec7fdb949ad30fcb6eeee0a4e2d1230d"
+    },
+    {
+      "path": "docs/implementation/paragraph-layout.md",
+      "byteLength": 7958,
+      "sha256": "ea50545a7b02922c88d2a60d19f13bb5806d38deb91466470b9d0f3132bca339"
+    },
+    {
+      "path": "docs/implementation/pptx-export.md",
+      "byteLength": 5523,
+      "sha256": "c5d3312f2f6d31d715c24e2ed3cad7850007134b7124bf1544a1f7fe84e3ea0c"
+    },
+    {
+      "path": "docs/implementation/pptx-source.md",
+      "byteLength": 8522,
+      "sha256": "3f56f10357ce7da26713c76550b4c2b7e0f44fa67b690032dd9a9ddacabe3063"
+    },
+    {
+      "path": "docs/implementation/progress.md",
+      "byteLength": 21778,
+      "sha256": "11cc505932a62d47973c31df97f3b4fad428b4b2d56b00b302ccd7b09579693a"
+    },
+    {
+      "path": "docs/implementation/source-color-mapping.md",
+      "byteLength": 5194,
+      "sha256": "a2355cccf0a542493bfc0f93f46b55da9e44aac6eef8256eba62ea54bb81df06"
+    },
+    {
+      "path": "docs/implementation/source-colors.md",
+      "byteLength": 7149,
+      "sha256": "d8784ce88592e3e4b733c065ac3438da6d907361ce223b570b7b04a4bd96e9da"
+    },
+    {
+      "path": "docs/implementation/source-inheritance.md",
+      "byteLength": 5732,
+      "sha256": "de1b1809ad4600197109be6d82e512ecf4073ee327c713ffd52d3cc2376db2be"
+    },
+    {
+      "path": "docs/implementation/source-themes.md",
+      "byteLength": 5897,
+      "sha256": "2c50356b97c5115fb2ea9f8c01a2dff9a7f6e74266a58985a872f20cbb1cc20a"
+    },
+    {
+      "path": "docs/implementation/text-itemization.md",
+      "byteLength": 7301,
+      "sha256": "72d5a78f18a38bfa66f524c4c8339fd247c88b54c4c4b066ff8d27c05c5ddfc0"
+    },
+    {
+      "path": "docs/implementation/text-shaping.md",
+      "byteLength": 6995,
+      "sha256": "f5c46dca367f766a2906d1bf97285b977b6ca6fcaeeb2e8dfcb55c74ce610647"
+    },
+    {
+      "path": "docs/implementation/unicode-text.md",
+      "byteLength": 4850,
+      "sha256": "85aa8127f48e9b479ff7792bc834af73a5e060db8787c88ea60baf9e0933edd7"
+    },
+    {
+      "path": "fixtures/fonts/README.md",
+      "byteLength": 1556,
+      "sha256": "016427c45a20cf4148c0a7234cf209a14ed182a8cd2f21d568cf003401b7dfc1"
+    },
+    {
+      "path": "fixtures/fonts/owned-metrics-hhea.ttf",
+      "byteLength": 2380,
+      "sha256": "c58d61596e441c7e48f25320293c886dca9df487e1a12687f38a9584f7c44cb0"
+    },
+    {
+      "path": "fixtures/fonts/owned-metrics-typo.ttf",
+      "byteLength": 2380,
+      "sha256": "11c5fa36a93a7ec0d504b12bcff99819adab67c082f6683f42b724ad1f08cc04"
+    },
+    {
+      "path": "fixtures/fonts/owned-metrics.json",
+      "byteLength": 379,
+      "sha256": "214674b886e64d6795648bf25cbeb56553fc78adb440578a486082eb252c0641"
+    },
+    {
+      "path": "fixtures/fonts/owned.json",
+      "byteLength": 502,
+      "sha256": "b6d5a541cbb91a33c727965d53b68bf6f99b5d2c77988aae0b4e15484a9120c0"
+    },
+    {
+      "path": "fixtures/fonts/owned.otf",
+      "byteLength": 1632,
+      "sha256": "867c8e6bbb688380a8cbe08325e927485ef9f1a58dbc23c1aacefdb5ce7c0380"
+    },
+    {
+      "path": "fixtures/fonts/owned.ttc",
+      "byteLength": 3372,
+      "sha256": "24c5ce1534147f4873ac550b915c720ac747ba69072b49154c422c83afe15c57"
+    },
+    {
+      "path": "fixtures/fonts/owned.ttf",
+      "byteLength": 1920,
+      "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+    },
+    {
+      "path": "fixtures/fonts/upstream.json",
+      "byteLength": 4367,
+      "sha256": "b794d33eff5af15346d936c74bc8011f53f0ee66fc8bf66b58541046fd306ab1"
+    },
+    {
+      "path": "fixtures/presentations/basic-shape.json",
+      "byteLength": 1499,
+      "sha256": "3e4fe191a804814ff0f8061d5876c4b58285a255351460e0edf38040e16b9640"
+    },
+    {
+      "path": "fixtures/presentations/native-export/README.md",
+      "byteLength": 575,
+      "sha256": "399658ce0db8a74c746f0b70a8ebec3d50bd1954b5ddf0ae093e06f7fc8c3a02"
+    },
+    {
+      "path": "fixtures/presentations/native-export/request.json",
+      "byteLength": 34818,
+      "sha256": "f20f7ac49f8958e3cf6b3185f407832f75b6c9d7e35d7695958af34948c85b1d"
+    },
+    {
+      "path": "fixtures/presentations/native-export/resources.bin",
+      "byteLength": 147,
+      "sha256": "3f76a9a5cae823017a1ddda66fe4cadf422e496bb0e6364ea5050dcac13afd82"
+    },
+    {
+      "path": "package.json",
+      "byteLength": 622,
+      "sha256": "0b551014ce67001c43aa1afaf4fa1008fa37e053516818883634e91ae6582e5d"
+    },
+    {
+      "path": "packages/contracts/src/generated/bidi-analysis-request.ts",
+      "byteLength": 824,
+      "sha256": "1966e3c4115685b5cefcaf466a0d2b863d55c9fe3ae4b34a7cccbffaba2ac3f0"
+    },
+    {
+      "path": "packages/contracts/src/generated/bidi-analysis-response.ts",
+      "byteLength": 1849,
+      "sha256": "e87ac55dd796a151a8046de059504f3f3930cd8760971dcd17870d18d0de3cff"
+    },
+    {
+      "path": "packages/contracts/src/generated/cascade-request.ts",
+      "byteLength": 2401,
+      "sha256": "6f69e06560bb1d7252228a99d5f384498efe9d818febb52ff63b4b713611fdab"
+    },
+    {
+      "path": "packages/contracts/src/generated/cascade-response.ts",
+      "byteLength": 2668,
+      "sha256": "fe9477e727e3a1c0434354f2a1d6cecab19d4a44641e66cadce0131b6f2dc950"
+    },
+    {
+      "path": "packages/contracts/src/generated/document.ts",
+      "byteLength": 15601,
+      "sha256": "f4ee579d71af46ef028dfb24ce2464542dd882d120ed50d4423f7cf3a104d693"
+    },
+    {
+      "path": "packages/contracts/src/generated/font-metrics-request.ts",
+      "byteLength": 1656,
+      "sha256": "1b67beec8ac4bdce546a07b739fde674d44f4ae5768a7db31ed35fa9ac68f684"
+    },
+    {
+      "path": "packages/contracts/src/generated/font-metrics-response.ts",
+      "byteLength": 1952,
+      "sha256": "de3eb0d2ba23ffcfd01b40ba8629f996de2f7ab2044142c1ffe1b7639dfee7c3"
+    },
+    {
+      "path": "packages/contracts/src/generated/font-request.ts",
+      "byteLength": 559,
+      "sha256": "52131b9043ad89a21e7bca1f1e8139eca20be5d2ec5ec9e84d20e88d4af1301a"
+    },
+    {
+      "path": "packages/contracts/src/generated/font-response.ts",
+      "byteLength": 3128,
+      "sha256": "673efa9ffaf59df5ced570c50254a5b6cb3c7c239f2801dac6fd2632da43f017"
+    },
+    {
+      "path": "packages/contracts/src/generated/itemization-request.ts",
+      "byteLength": 772,
+      "sha256": "94dd32c880561fd7eebcb9d51340e0542e1d8c87719eb6bf501398058bae8f90"
+    },
+    {
+      "path": "packages/contracts/src/generated/itemization-response.ts",
+      "byteLength": 3947,
+      "sha256": "4ebff1c4e74e38ef9af35f1c17392f76b6c057a42fdc0274ef73c28635ab9ee0"
+    },
+    {
+      "path": "packages/contracts/src/generated/kernel-request.ts",
+      "byteLength": 11263,
+      "sha256": "af7ff37be0f4547f1aed3d943eb8c470bde381205868002ed259690ccdf1897d"
+    },
+    {
+      "path": "packages/contracts/src/generated/kernel-response.ts",
+      "byteLength": 10929,
+      "sha256": "312fca898a886903f24a2ee2ed16e5a07d50374f82c86d44b542281e82e10337"
+    },
+    {
+      "path": "packages/contracts/src/generated/line-break-request.ts",
+      "byteLength": 187,
+      "sha256": "dac767d62267af2d1cc5b65e78bae4417bc09f9d0641fcc077e9cf5c5a10a410"
+    },
+    {
+      "path": "packages/contracts/src/generated/line-break-response.ts",
+      "byteLength": 2025,
+      "sha256": "4d62d2756b1ec1fd910cf621f1dd03f907ff052954e85a0bfc16b233ecaa8c87"
+    },
+    {
+      "path": "packages/contracts/src/generated/line-geometry-request.ts",
+      "byteLength": 4037,
+      "sha256": "c321ca35646a2444949f683b3e90430bd297181543298fdfb334696cc2e3f1bd"
+    },
+    {
+      "path": "packages/contracts/src/generated/line-geometry-response.ts",
+      "byteLength": 9796,
+      "sha256": "4a7919c4afe86a8d71fb4ff4e1c12d0f87f04918d8013351cbdfc09079d00e74"
+    },
+    {
+      "path": "packages/contracts/src/generated/line-shape-request.ts",
+      "byteLength": 2785,
+      "sha256": "16e1ebbcfa037152e0e15c7ab7725fab476509b4aed9bd1d1992a65297578cb4"
+    },
+    {
+      "path": "packages/contracts/src/generated/line-shape-response.ts",
+      "byteLength": 7127,
+      "sha256": "399711d290399cb23bf9b66e3e147b3320f6bd1bdd0e48f06bf229380d62d53f"
+    },
+    {
+      "path": "packages/contracts/src/generated/package-inspection.ts",
+      "byteLength": 1653,
+      "sha256": "a24e02f0dd751526794216e3e4bffdab048e7efbdffebb08e1cb616ecdb8ee3e"
+    },
+    {
+      "path": "packages/contracts/src/generated/paragraph-layout-request.ts",
+      "byteLength": 3778,
+      "sha256": "04dbab73f179c4ac32d196d93480aa5b6cd1ca635ecbddb900f5fee532dd9c48"
+    },
+    {
+      "path": "packages/contracts/src/generated/paragraph-layout-response.ts",
+      "byteLength": 11429,
+      "sha256": "3d8587de889f70b530b53a7fcd7b11d73c9e6c5cee2dc8801028f88353afa533"
+    },
+    {
+      "path": "packages/contracts/src/generated/paragraph-shape-request.ts",
+      "byteLength": 2443,
+      "sha256": "fcdc7c67243c2bbb36207317823a80348fc4ceec65badbee1cc4bcc2c4655298"
+    },
+    {
+      "path": "packages/contracts/src/generated/paragraph-shape-response.ts",
+      "byteLength": 6972,
+      "sha256": "5f564b281dd0b427924688bb35887fcbc2ebe14d2bb34d1d2903d9ed0c204a25"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-color-query.ts",
+      "byteLength": 4301,
+      "sha256": "67151379429f01eb89bf6cae7c2899a56c4137a62da2b313d17681a153262805"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-color-response.ts",
+      "byteLength": 3587,
+      "sha256": "22f8e4422c3cb46e1a055e53342eb64f9d49625e4bb08ce25e6103901017f39a"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-export-request.ts",
+      "byteLength": 17799,
+      "sha256": "7e589d649106926f4c631b86e643c0241a0c2fbc455e66e5c6a944e6dbaef04e"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-source-response.ts",
+      "byteLength": 15504,
+      "sha256": "d3395fd6b4ac936982c81de352ca154db6da7fb5d4ee993e0af8424b3ebb7755"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-text-edits.ts",
+      "byteLength": 801,
+      "sha256": "0226877cda0170ffd2ecba5a8cc302c12b8b34115ea72a0beeae7a5425771246"
+    },
+    {
+      "path": "packages/contracts/src/generated/shape-request.ts",
+      "byteLength": 2323,
+      "sha256": "9d897013e28abd6e96a52584b9f9feab9a6250fe7156a151577ba908246db0df"
+    },
+    {
+      "path": "packages/contracts/src/generated/shape-response.ts",
+      "byteLength": 1545,
+      "sha256": "0e878a569febd52db55e6a648d97761151705d1662e7bb75cbca4909b4f52c7d"
+    },
+    {
+      "path": "packages/contracts/src/generated/text-analysis-request.ts",
+      "byteLength": 190,
+      "sha256": "278876c46d7c530945a34a561f2b11e19165532c633b46bfaed3352eb95d2c16"
+    },
+    {
+      "path": "packages/contracts/src/generated/text-analysis-response.ts",
+      "byteLength": 1344,
+      "sha256": "d716e958d9e81cbd3aa8db0a56e588c795139d8eaf452a62b02715135ff37158"
+    },
+    {
+      "path": "packages/contracts/src/generated/transaction-receipt.ts",
+      "byteLength": 2837,
+      "sha256": "5c881ad297af3679dc5e359434d7c77f3fd38ef52d71db2af2d014000b03a242"
+    },
+    {
+      "path": "packages/contracts/src/generated/transaction.ts",
+      "byteLength": 16526,
+      "sha256": "6ddd740a544fc13429a7a8126f789ea5c486be417b9dd9230249a5dbc834601b"
+    },
+    {
+      "path": "packages/contracts/src/generated/validation-report.ts",
+      "byteLength": 722,
+      "sha256": "eca1b9f9a2b84352469ab0841cf4e6842928f09beccc7222e32c6e3ed63cfb04"
+    },
+    {
+      "path": "packages/contracts/tests/wire.ts",
+      "byteLength": 1455,
+      "sha256": "0f0092bfe458322bc26e2ec8b55781d444207f21b395a7a57c92acfb42c0c249"
+    },
+    {
+      "path": "packages/contracts/tsconfig.json",
+      "byteLength": 308,
+      "sha256": "4fcb6f03c7e852ccc08b854a1a26a8e7fc7312e561db7bcb7e20309d413deae2"
+    },
+    {
+      "path": "packages/text-component/src/index.ts",
+      "byteLength": 6525,
+      "sha256": "ed0319229f6bb5881821e403c2ec65f8011d05010192c618c253decfa6cdd1ee"
+    },
+    {
+      "path": "packages/text-component/tsconfig.json",
+      "byteLength": 316,
+      "sha256": "0344a0004c0c2836438a6eb840fb538283fc3565ecfd6f0afe7db40d146db3fb"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "byteLength": 11026,
+      "sha256": "b98030e955ae688a6490e8a6ef21007c18468596b851255439c37893b51f29c0"
+    },
+    {
+      "path": "rust-toolchain.toml",
+      "byteLength": 123,
+      "sha256": "060751f06f70853677293dd84de1c855fa72295c5dbc17ce811a3a57b75861c0"
+    },
+    {
+      "path": "tools/components/build-harfbuzz.py",
+      "byteLength": 5181,
+      "sha256": "a075fe15ba86df5cfdf63906020b6dd8bd382413f9e433c8590715dce7a64b90"
+    },
+    {
+      "path": "tools/contracts/build-wasm-node.mjs",
+      "byteLength": 1004,
+      "sha256": "958156b80bf75ebf4649e43ff5f1dca1d7fb483fb42d64810cfe74a9c1481660"
+    },
+    {
+      "path": "tools/contracts/generate-types.mjs",
+      "byteLength": 1500,
+      "sha256": "3eadbd43ee77696b2590d8bd8346e92038ccb2ae9f352e8520aea38c1bb44c59"
+    },
+    {
+      "path": "tools/mo-cli/Cargo.toml",
+      "byteLength": 252,
+      "sha256": "b9e3761bb92f60910ef0b9e5bf937108d9d8c9f08b2fe419727d2cfe83fa80c2"
+    },
+    {
+      "path": "tools/mo-cli/src/main.rs",
+      "byteLength": 5033,
+      "sha256": "5e9bb98f5ee18004e379a786c3a1d448fe4c308f395e222676efb79dcf763a96"
+    },
+    {
+      "path": "tools/mo-cli/src/pptx.rs",
+      "byteLength": 3490,
+      "sha256": "400765e1d0918cdd4cf4d3a865b5d11a4bd65304454fc2120f6b1d8b0c182245"
+    },
+    {
+      "path": "tools/mo-cli/src/text.rs",
+      "byteLength": 3797,
+      "sha256": "2399d040a2ac78c29d2dfeba3e4cf54ddf08423d0785faba99ff29c4cb71a3fa"
+    },
+    {
+      "path": "tools/mo-contract-codegen/Cargo.toml",
+      "byteLength": 348,
+      "sha256": "cee1ac85df3e34b5f58f810c3d98735da788f46bc22de2abd4cffb4ee420078d"
+    },
+    {
+      "path": "tools/mo-contract-codegen/src/main.rs",
+      "byteLength": 4633,
+      "sha256": "2871c6baff6cdc3d910e707d6198587c874d9bfe2edfb8fe3bfbf14734c83048"
+    },
+    {
+      "path": "tools/mo-text-worker/Cargo.toml",
+      "byteLength": 245,
+      "sha256": "53582e6055b4454aebdd2e987be7022a392f5f60d507cadafa07b54ad1ea8b9d"
+    },
+    {
+      "path": "tools/mo-text-worker/src/main.rs",
+      "byteLength": 2236,
+      "sha256": "863faed1ccaaab995cbfa394596dfb36e299ebf7d3c9911100d3e04b5f3fc870"
+    },
+    {
+      "path": "tools/unicode/compare-segmentation.rs",
+      "byteLength": 1041,
+      "sha256": "437823847d6a2d2e20aa9509012c59edca5f99d8f480322008d857d7ac26a089"
+    },
+    {
+      "path": "tools/unicode/fetch.py",
+      "byteLength": 1094,
+      "sha256": "e38ffa8e7f1a32fc0ca256df7b29223f55191a8bd16487708d646a632773b292"
+    },
+    {
+      "path": "tools/unicode/fixtures.py",
+      "byteLength": 3522,
+      "sha256": "147d5ce21b1342bae9841be2c21f8c78d97fca009bd169eb2d7460a76c6856c5"
+    },
+    {
+      "path": "tools/unicode/generate-bidi.py",
+      "byteLength": 3693,
+      "sha256": "ade4ea8a5080b04ad61937da2a6007fef0cd939111d5c58b4dc65033f86458c6"
+    },
+    {
+      "path": "tools/unicode/generate-line-break.py",
+      "byteLength": 2338,
+      "sha256": "f4c5695f96a963cfbd5d295919f962b4357cb5c0da185fb235733909e7e46649"
+    },
+    {
+      "path": "tools/unicode/generate-scripts.py",
+      "byteLength": 2722,
+      "sha256": "883c526c3bca4e14c47b2b3e224dba96eceade646e6d745ef7cfe31039c56b4c"
+    },
+    {
+      "path": "tools/unicode/generate.py",
+      "byteLength": 2565,
+      "sha256": "4f6342e7cf73123fd9555fd8996a981f22243d5cb39489a53d9ecb8f9e00e2bd"
+    },
+    {
+      "path": "tools/verification/bidi-conformance.mjs",
+      "byteLength": 5698,
+      "sha256": "872c3744a98fd0393b61e8657b0afefb0c2371f5658603bc1692238a3c9dcbef"
+    },
+    {
+      "path": "tools/verification/bidi-parity.mjs",
+      "byteLength": 5555,
+      "sha256": "5d856fb1debdd27c651f179b38f670ad6b8aed0975607d03e6b682c96c513a46"
+    },
+    {
+      "path": "tools/verification/bidi-properties.py",
+      "byteLength": 4512,
+      "sha256": "ec39cdec45614a6e6fb59274c8148df40e70b00a6dda940f8efa527a85ed52a6"
+    },
+    {
+      "path": "tools/verification/cascade-benchmark.mjs",
+      "byteLength": 4673,
+      "sha256": "52c8a6482ebf8293027f2c22868cd662c0aa4c3391f8bc0c4da92e6c138ea84a"
+    },
+    {
+      "path": "tools/verification/cascade-parity.mjs",
+      "byteLength": 15180,
+      "sha256": "180703a2acddde2c02dbd193c095e19e3a34ff6d9d769c35949a5818b467d404"
+    },
+    {
+      "path": "tools/verification/color-preset-facts.py",
+      "byteLength": 1808,
+      "sha256": "aecf20c19bbad93b19f3eb91d08b18c3d4d11b48e73311c7e8cca57630f5c9bd"
+    },
+    {
+      "path": "tools/verification/contracts.py",
+      "byteLength": 12377,
+      "sha256": "ca44094102902de8e8c6bd5966c3407d7bbdee2e42453623908e86c9509945ad"
+    },
+    {
+      "path": "tools/verification/fetch-ecma-schemas.py",
+      "byteLength": 2417,
+      "sha256": "77b7487f7ad2fa052e4e1f3987c60cc594a1491c09aa518cdf8a9f1f5cdb5d27"
+    },
+    {
+      "path": "tools/verification/fetch-font-corpus.py",
+      "byteLength": 1596,
+      "sha256": "9f564c5fe08406f5da77e76f646462935ded1beb53c9603f9675ef725bd255cc"
+    },
+    {
+      "path": "tools/verification/font-fallback-benchmark.mjs",
+      "byteLength": 4804,
+      "sha256": "e473837255fd22fbe797b0bfbfcc78cfd4fb466fbda69ea7e61424972e3fc981"
+    },
+    {
+      "path": "tools/verification/font-fallback-parity.mjs",
+      "byteLength": 6696,
+      "sha256": "ad984a8d334381a4ce8edbdc63726f4c13f3f6771ab6106b1b4fd0b2bb8627dd"
+    },
+    {
+      "path": "tools/verification/font-fixtures.py",
+      "byteLength": 5422,
+      "sha256": "b4b311d2f0b50dd395070f1ff478ac2d533955469111ef0f8ad4d88922b6580a"
+    },
+    {
+      "path": "tools/verification/font-independent.py",
+      "byteLength": 5409,
+      "sha256": "821924fc189402f330921ebf8cad082d742d79df8f740f4c7ba9e1d14dfbdde4"
+    },
+    {
+      "path": "tools/verification/font-metrics-parity.mjs",
+      "byteLength": 8304,
+      "sha256": "83bf73d33e5f34a25fd6cc4899e1c48b9c0769267d6aab1b533a4370d1957e19"
+    },
+    {
+      "path": "tools/verification/font-metrics-reference.py",
+      "byteLength": 4855,
+      "sha256": "152ad70ac553a1d40485c3befbe604fbd0186624bed3026eb017e7fe931230d9"
+    },
+    {
+      "path": "tools/verification/font-metrics-safety.mjs",
+      "byteLength": 7451,
+      "sha256": "447cf92cd659be4fad87c775dd2761d6fba30d99fcd6abae9b26eaf7d68f9d6c"
+    },
+    {
+      "path": "tools/verification/font-parity.mjs",
+      "byteLength": 3098,
+      "sha256": "d3512ad755ec03cd22edd25ae64cda9bba4055d0aa9340cdef66b8e391bc1680"
+    },
+    {
+      "path": "tools/verification/harfbuzz-cases.py",
+      "byteLength": 5661,
+      "sha256": "51cc2fc587dc85e3bc3196c31976ba539ecc8b6916b1ccd2893aee6c50d46975"
+    },
+    {
+      "path": "tools/verification/harfbuzz-fault-observer.cpp",
+      "byteLength": 2368,
+      "sha256": "7f9c083597642e0e0d097dc7ae3f4052e058196d9bece45a90e167ba36f82a39"
+    },
+    {
+      "path": "tools/verification/harfbuzz-metrics-reference.cpp",
+      "byteLength": 1303,
+      "sha256": "407fcb252fda2002ee536850df601daf4712baa4bd63b955264ed09a2f73ddae"
+    },
+    {
+      "path": "tools/verification/harfbuzz-parity.mjs",
+      "byteLength": 6914,
+      "sha256": "9e392fe83476631b955d165f8d90ff8cbf61000d69e6ab9829ab9e522657688a"
+    },
+    {
+      "path": "tools/verification/harfbuzz-probe.cpp",
+      "byteLength": 2156,
+      "sha256": "9377e6d05144bba55d8053563f3efb1f8069c628bd34336e6541ce3f92b5782a"
+    },
+    {
+      "path": "tools/verification/harfbuzz-safety.py",
+      "byteLength": 2686,
+      "sha256": "708b3fbf2d7d019978143f71778b4ff694dd53ce2b9a373aeb3172645707466a"
+    },
+    {
+      "path": "tools/verification/itemization-parity.mjs",
+      "byteLength": 6975,
+      "sha256": "d78b35e97639ee5973a7bd5d1926c298e94be684e89ab41a5c6d2faadd999017"
+    },
+    {
+      "path": "tools/verification/line-break-parity.mjs",
+      "byteLength": 7037,
+      "sha256": "e91e2609320a58ccce9278c04aa4cdade403fee4689a3a8f4140d01ade82d5e2"
+    },
+    {
+      "path": "tools/verification/line-break-properties.py",
+      "byteLength": 3110,
+      "sha256": "3468bfd750454058ed604a9e71359571b8450eea0b21d51b9b4ab60f84de2d1d"
+    },
+    {
+      "path": "tools/verification/line-geometry-parity.mjs",
+      "byteLength": 8948,
+      "sha256": "1a59db80657a00f995595a138df787f4f89820d5e302657caaaa00cbb4b897f1"
+    },
+    {
+      "path": "tools/verification/line-geometry-reference.py",
+      "byteLength": 8258,
+      "sha256": "52db4cd3f774e0caca07ac790352c7044fe245ab247347843c0c159d22081465"
+    },
+    {
+      "path": "tools/verification/line-reference.mjs",
+      "byteLength": 2351,
+      "sha256": "29b19b8943c2081afb03ce548aaf8a0e5afcebd350e08e3d001c05ca557cbfcd"
+    },
+    {
+      "path": "tools/verification/line-shape-parity.mjs",
+      "byteLength": 9770,
+      "sha256": "77af42fc11cf98b130a8ca962a946bffbf9b70f4ca5cf3dad77cd306f849e3f8"
+    },
+    {
+      "path": "tools/verification/mce_reference.py",
+      "byteLength": 8539,
+      "sha256": "36349c605934ee95633b2c3bc4b181bd1906c4c35ddb13cdf8574ca5451e524b"
+    },
+    {
+      "path": "tools/verification/metric-font-fixtures.py",
+      "byteLength": 2301,
+      "sha256": "161cff19001b0b53982469629257566dcd3f3b90d2cad5bff956812673c455c6"
+    },
+    {
+      "path": "tools/verification/native-wasm-parity.mjs",
+      "byteLength": 5096,
+      "sha256": "16ff25ff788d11e07dc0bcd5007e75b155f61c9348f50ea8328abad2ee049b26"
+    },
+    {
+      "path": "tools/verification/opc-fixtures.py",
+      "byteLength": 7125,
+      "sha256": "6444c4fd8d5074d0c59a111b0ac2fc589cd9b12c31f264d56a1f4423b90b34a7"
+    },
+    {
+      "path": "tools/verification/opc-parity.mjs",
+      "byteLength": 2389,
+      "sha256": "cdddcf4b160a507b73da23a9e5af33f99e806aec4685a4060e4a4cf02ec83d12"
+    },
+    {
+      "path": "tools/verification/owned-font-fixtures.py",
+      "byteLength": 3490,
+      "sha256": "ca1d53b56380c310c2dc377d6928bc96176f8a7c5adc79827905980cab70d9a7"
+    },
+    {
+      "path": "tools/verification/paragraph-harness.mjs",
+      "byteLength": 8261,
+      "sha256": "90a91a27ce60f9f936e63422fee106f65b291ebe699c37e7c2a63d446465f957"
+    },
+    {
+      "path": "tools/verification/paragraph-layout-parity.mjs",
+      "byteLength": 8950,
+      "sha256": "de8a342537b6d045d355e80f889178b87020652cef2af31a8e26e4f72bf0f1de"
+    },
+    {
+      "path": "tools/verification/paragraph-layout-selection.mjs",
+      "byteLength": 4879,
+      "sha256": "b8cce9d2c312ad109d86e09d7c68d3e5d40a090eda5d8ea472b7401d97bc1f94"
+    },
+    {
+      "path": "tools/verification/pptx-color-external.py",
+      "byteLength": 1805,
+      "sha256": "3639f595247bd334d6adb7fbc70104b342d80b994b2493ea15f264c796182aa7"
+    },
+    {
+      "path": "tools/verification/pptx-color-fixtures.py",
+      "byteLength": 9052,
+      "sha256": "b21b4208f34f784871b9c248793a46db2b47c84c5ce4366fc3a25140ba737e99"
+    },
+    {
+      "path": "tools/verification/pptx-color-independent.py",
+      "byteLength": 11855,
+      "sha256": "dead1da94181045aa75785c5bce4fd0a9ccb0aa81e247b6d429a72942646c141"
+    },
+    {
+      "path": "tools/verification/pptx-color-map-external.py",
+      "byteLength": 1338,
+      "sha256": "e3479e741e4ca41fd8b3648da59f4a6d94eb9aa051e15b088c355a241f70f424"
+    },
+    {
+      "path": "tools/verification/pptx-color-map-fixtures.py",
+      "byteLength": 6401,
+      "sha256": "f283e4d30cbadfdcb73027ca576e8914ee8459bf9c4ac87196b0d8826c4aa3fe"
+    },
+    {
+      "path": "tools/verification/pptx-color-map-independent.py",
+      "byteLength": 4356,
+      "sha256": "642feaabb0dd4e44c2406bb80bdfdcd73ba68e38f7ba9f3c29bba462a7986671"
+    },
+    {
+      "path": "tools/verification/pptx-color-parity.mjs",
+      "byteLength": 3849,
+      "sha256": "439215427344c697d98316d87065f277d0e8cfd92f3f99f97451ff81f512ecad"
+    },
+    {
+      "path": "tools/verification/pptx-fixture.py",
+      "byteLength": 7988,
+      "sha256": "f098faf7dee35d53004bc311c513e5bcef27e2480777b98ddd0f70afb53dc0d7"
+    },
+    {
+      "path": "tools/verification/pptx-independent.py",
+      "byteLength": 12055,
+      "sha256": "319f2879c923153fd2c3790df11b2546fad186f1b770146c702943d53168da7a"
+    },
+    {
+      "path": "tools/verification/pptx-inheritance-fixtures.py",
+      "byteLength": 8223,
+      "sha256": "a0a58cae8e1a22e5013af55d3b60f08746a59bf36717a27571b630b2a7d60c72"
+    },
+    {
+      "path": "tools/verification/pptx-inheritance-independent.py",
+      "byteLength": 7200,
+      "sha256": "64b582e9dea3c49e5685079b3888184868aaa4a3132ea16a303aadd464c7d8bb"
+    },
+    {
+      "path": "tools/verification/pptx-parity.mjs",
+      "byteLength": 6173,
+      "sha256": "e4f81bdf6d2926d07b386d1843cd90b1b167aff5746b9408c68c4ab04b3f08c9"
+    },
+    {
+      "path": "tools/verification/pptx-source-fixtures.py",
+      "byteLength": 9544,
+      "sha256": "05f4d695bee7f30051616df473f899ac181c0a5984e08bef0a7869046f491b66"
+    },
+    {
+      "path": "tools/verification/pptx-source-independent.py",
+      "byteLength": 4683,
+      "sha256": "e761dd6508e5499628a462becfb92c474f17f289d3d79c06d487ae9c89fb0bed"
+    },
+    {
+      "path": "tools/verification/pptx-source-parity.mjs",
+      "byteLength": 9808,
+      "sha256": "b9f2001182467707a967fafed6e01cd4259ffcc8545b2da3d001490eda97d44e"
+    },
+    {
+      "path": "tools/verification/pptx-theme-fixtures.py",
+      "byteLength": 7807,
+      "sha256": "c2e52631d9d2bc5bfd7dcdc30e69cac7d3f41eeccd8442e06adffe5a5e20408a"
+    },
+    {
+      "path": "tools/verification/pptx-theme-independent.py",
+      "byteLength": 9261,
+      "sha256": "9d3bc1fc68710cb6b76b353e05b2a993954fd8e33c1f9c5b0a948e02a0ae4561"
+    },
+    {
+      "path": "tools/verification/pptx_color_observer.py",
+      "byteLength": 3170,
+      "sha256": "4c2feeab7eb7f25bdf91f10b200220eb17e8a76392f883428743b16e0603fdba"
+    },
+    {
+      "path": "tools/verification/script-properties.py",
+      "byteLength": 3695,
+      "sha256": "54788a6708c9b8612ea9ba18d2673bceee577f3bffe227166d62771ad69623e1"
+    },
+    {
+      "path": "tools/verification/text-parity.mjs",
+      "byteLength": 10365,
+      "sha256": "8f2becf15dad306a37fc7cbe53030f6b7f0bb069b10cf0632b7abb37e7e5af07"
+    },
+    {
+      "path": "tools/verification/unicode-parity.mjs",
+      "byteLength": 4436,
+      "sha256": "286b6a106d3ac53b6874339ab58d42749b1a8670d69c03670cc0284cf71f7e5d"
+    }
+  ],
+  "limitations": [
+    "This draft profile preserves all whitespace advance, including trailing spaces. It does not implement target Office/WPS space hanging, paragraph policies, hyphenation, tab stops, alignment, justification, vertical text or painting.",
+    "EGC-safe intersection is explicit tailoring of default UAX14. SA positions are reported without dictionary segmentation or target CJK tailoring. EmergencyGrapheme is an explicit additional-break policy, not unmodified UAX14 conformance.",
+    "Descending candidate search proves furthest fit but has non-linear worst-case cost and cumulative work limits. A valid document can exceed the present budget. This implementation is not a completed performance gate.",
+    "Paragraph itemization and the reusable bidi object each resolve the paragraph during initialization; neither runs in the candidate loop. Persistent component font objects, safe width bounds, candidate batching and incremental caches remain future work.",
+    "Tab, soft hyphen and contingent objects return explicit issues with no plan. Unresolved candidate fonts and mixed-level graphemes also prevent any plan publication. Final missing metrics are represented by the existing geometry diagnostics/null layout.",
+    "Only one logical bidi paragraph is accepted. A terminal explicit line break gets a final empty line; terminal CRLF is a paragraph terminator. Document-level paragraph splitting and all Office paragraph semantics remain incomplete.",
+    "Width fits use the internal Q32 pen envelope inside [0,width], not visible ink/effect bounds or rounded integer coordinates. Existing metric/strut and quantization policies remain draft; observed 0.5 EMU wire error is corpus-specific.",
+    "Selection verification independently enumerates all candidate ends in forward order and uses BigInt arithmetic through the separate explicit-line entry. It shares the core shaper/bidi and excludes long budget corpora. The non-monotonic-width regression is a simulated backend counterexample.",
+    "The actual fault probe is a second-candidate WASM allocation failure, no partial result and permanent module quarantine. It is not exhaustive failure injection or production host/browser validation.",
+    "Existing corpus responses remain identical. U+000C form feed is now correctly itemized as an explicit line control; new layout tests cover it, while the old corpus had no corresponding form-feed case.",
+    "Editable advanced presentation objects, playback, Office/WPS acceptance, production hosting and Musterwork replacement gates E0-E3 remain incomplete."
+  ]
+}
