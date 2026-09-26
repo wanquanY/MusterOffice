@@ -1,8 +1,11 @@
 [workspace]
 members = [
   "crates/mo-common",
+  "crates/mo-timeline",
   "crates/mo-geometry",
   "crates/mo-color",
+  "crates/mo-presentation-model",
+  "crates/mo-presentation-edit",
   "crates/mo-xml",
   "crates/mo-opc",
 ]
@@ -17,8 +20,11 @@ publish = false
 [workspace.dependencies]
 mo-common = { path = "crates/mo-common" }
 rusqlite = { version = "=0.40.2", default-features = false, features = ["bundled"] }
+mo-timeline = { path = "crates/mo-timeline" }
 mo-geometry = { path = "crates/mo-geometry" }
 mo-color = { path = "crates/mo-color" }
+mo-presentation-model = { path = "crates/mo-presentation-model" }
+mo-presentation-edit = { path = "crates/mo-presentation-edit" }
 mo-xml = { path = "crates/mo-xml" }
 mo-opc = { path = "crates/mo-opc" }
 rawzip = "=0.5.1"
