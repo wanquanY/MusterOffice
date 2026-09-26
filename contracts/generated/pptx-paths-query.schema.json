@@ -1,0 +1,98 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:pptx-paths-query",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SourceNativePathsQuery",
+  "type": "object",
+  "properties": {
+    "geometry": {
+      "$ref": "#/$defs/SourceGeometryQuery"
+    },
+    "options": {
+      "$ref": "#/$defs/NativePathOptions"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "geometry",
+    "options"
+  ],
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "FixedQ32": {
+      "description": "Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,38})$",
+      "x-integer-maximum": "170141183460469231731687303715884105727",
+      "x-integer-minimum": "-170141183460469231731687303715884105728"
+    },
+    "GeometryProfile": {
+      "type": "string",
+      "enum": [
+        "ecma376-2016-ms-presets-draft-v2"
+      ]
+    },
+    "NativePathOptions": {
+      "type": "object",
+      "properties": {
+        "coordinateTolerance": {
+          "description": "Per-axis local shape EMU, Q32. Does not include upstream guide error,\npage transforms, raster conversion, coverage or application differences.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "profile": {
+          "$ref": "#/$defs/NativePathProfile"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "coordinateTolerance"
+      ]
+    },
+    "NativePathProfile": {
+      "type": "string",
+      "enum": [
+        "drawingml-polar-arcs-q96-hermite-v1-draft"
+      ]
+    },
+    "SourceGeometryQuery": {
+      "type": "object",
+      "properties": {
+        "expectedSourceSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "objects": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "profile": {
+          "$ref": "#/$defs/GeometryProfile"
+        },
+        "surface": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "expectedSourceSha256",
+        "surface",
+        "objects",
+        "profile"
+      ]
+    }
+  }
+}

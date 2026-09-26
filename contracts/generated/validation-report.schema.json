@@ -1,0 +1,56 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:validation-report",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ValidationReport",
+  "type": "object",
+  "properties": {
+    "issues": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ValidationIssue"
+      }
+    },
+    "truncated": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "issues",
+    "truncated"
+  ],
+  "$defs": {
+    "ValidationCode": {
+      "type": "string",
+      "enum": [
+        "IDENTITY_MISMATCH",
+        "MISSING_REFERENCE",
+        "DUPLICATE_IDENTITY",
+        "INVALID_VALUE",
+        "OWNERSHIP_CONFLICT",
+        "REFERENCE_CYCLE",
+        "LIMIT_EXCEEDED"
+      ]
+    },
+    "ValidationIssue": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/ValidationCode"
+        },
+        "message": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "path",
+        "message"
+      ]
+    }
+  }
+}

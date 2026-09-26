@@ -1,0 +1,185 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:pptx-radial-layout-request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PptxRadialLayoutRequest",
+  "type": "object",
+  "properties": {
+    "fills": {
+      "$ref": "#/$defs/SourceFillQuery"
+    },
+    "options": {
+      "$ref": "#/$defs/RadialLayoutOptions"
+    },
+    "profile": {
+      "$ref": "#/$defs/RadialLayoutProfile"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "profile",
+    "fills",
+    "options"
+  ],
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "FillProfile": {
+      "description": "An explicit interpretation, not a certificate for any Office/WPS version.",
+      "type": "string",
+      "enum": [
+        "ms-oi29500-fills-2024-draft-v1"
+      ]
+    },
+    "FillTarget": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "object"
+            },
+            "nativeId": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nativeId"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "line"
+            },
+            "nativeId": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nativeId"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "picture"
+            },
+            "nativeId": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nativeId"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "rootGroup"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "background"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "FixedQ32": {
+      "description": "Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,38})$",
+      "x-integer-maximum": "170141183460469231731687303715884105727",
+      "x-integer-minimum": "-170141183460469231731687303715884105728"
+    },
+    "RadialLayoutOptions": {
+      "type": "object",
+      "properties": {
+        "coordinateTolerance": {
+          "description": "Per-axis Q32 local EMU path/bounds tolerance, relative to evaluated guides.\nDerived focus errors may be larger. Excludes page placement and application differences.",
+          "$ref": "#/$defs/FixedQ32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "coordinateTolerance"
+      ]
+    },
+    "RadialLayoutProfile": {
+      "type": "string",
+      "enum": [
+        "drawingml-circle-path-bounds-q96-v1-draft",
+        "drawingml-circle-anchor-focus-q96-v2-draft"
+      ]
+    },
+    "SourceFillQuery": {
+      "type": "object",
+      "properties": {
+        "expectedSourceSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "profile": {
+          "$ref": "#/$defs/FillProfile"
+        },
+        "surface": {
+          "type": "string"
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FillTarget"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "expectedSourceSha256",
+        "surface",
+        "targets",
+        "profile"
+      ]
+    }
+  }
+}

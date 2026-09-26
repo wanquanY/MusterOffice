@@ -1,0 +1,527 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:itemization-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ItemizationResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/$defs/ItemizationResult"
+        },
+        "status": {
+          "type": "string",
+          "const": "itemized"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "result"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/ShapeFailure"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "error"
+      ]
+    }
+  ],
+  "$defs": {
+    "BidiLine": {
+      "type": "object",
+      "properties": {
+        "end": {
+          "$ref": "#/$defs/TextBoundary"
+        },
+        "levels": {
+          "description": "L1-adjusted levels, one per scalar in this line. X9 entries remain None.",
+          "type": "array",
+          "items": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "uint8",
+            "maximum": 255,
+            "minimum": 0
+          }
+        },
+        "start": {
+          "$ref": "#/$defs/TextBoundary"
+        },
+        "visualOrder": {
+          "description": "L2 visual-to-logical scalar indices relative to the full paragraph.\nX9 entries are omitted. This is not a glyph/cluster painting order (L3/L4).",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end",
+        "levels",
+        "visualOrder"
+      ]
+    },
+    "BidiParagraphResult": {
+      "type": "object",
+      "properties": {
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/BidiLine"
+          }
+        },
+        "paragraphLevel": {
+          "type": "integer",
+          "format": "uint8",
+          "maximum": 255,
+          "minimum": 0
+        },
+        "profile": {
+          "type": "string"
+        },
+        "resolvedLevels": {
+          "description": "I1/I2 result, before line-specific L1 resets. None means removed by X9.",
+          "type": "array",
+          "items": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "uint8",
+            "maximum": 255,
+            "minimum": 0
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "paragraphLevel",
+        "resolvedLevels",
+        "lines"
+      ]
+    },
+    "FontSelectionFailure": {
+      "type": "object",
+      "properties": {
+        "fontStyle": {
+          "$ref": "#/$defs/FontStyle"
+        },
+        "reason": {
+          "$ref": "#/$defs/FontSelectionReason"
+        },
+        "style": {
+          "description": "Index in the actual ManifestParagraphInput.styles, not a native run id.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "typeface": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "style",
+        "typeface",
+        "fontStyle",
+        "reason"
+      ]
+    },
+    "FontSelectionReason": {
+      "type": "string",
+      "enum": [
+        "unmappedTypeface",
+        "missingStyle"
+      ]
+    },
+    "FontStyle": {
+      "type": "string",
+      "enum": [
+        "regular",
+        "bold",
+        "italic",
+        "boldItalic"
+      ]
+    },
+    "ItemizationNotice": {
+      "type": "object",
+      "properties": {
+        "end": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "kind": {
+          "$ref": "#/$defs/ItemizationNoticeKind"
+        },
+        "start": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end",
+        "kind"
+      ]
+    },
+    "ItemizationNoticeKind": {
+      "type": "string",
+      "enum": [
+        "mixedScriptCluster",
+        "mixedLevelCluster",
+        "ambiguousScript"
+      ]
+    },
+    "ItemizationResult": {
+      "type": "object",
+      "properties": {
+        "bidi": {
+          "$ref": "#/$defs/BidiParagraphResult"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TextItem"
+          }
+        },
+        "notices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ItemizationNotice"
+          }
+        },
+        "profile": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "bidi",
+        "items",
+        "notices"
+      ]
+    },
+    "Script": {
+      "type": "string",
+      "enum": [
+        "Adlm",
+        "Aghb",
+        "Ahom",
+        "Arab",
+        "Armi",
+        "Armn",
+        "Avst",
+        "Bali",
+        "Bamu",
+        "Bass",
+        "Batk",
+        "Beng",
+        "Berf",
+        "Bhks",
+        "Bopo",
+        "Brah",
+        "Brai",
+        "Bugi",
+        "Buhd",
+        "Cakm",
+        "Cans",
+        "Cari",
+        "Cham",
+        "Cher",
+        "Chrs",
+        "Copt",
+        "Cpmn",
+        "Cprt",
+        "Cyrl",
+        "Deva",
+        "Diak",
+        "Dogr",
+        "Dsrt",
+        "Dupl",
+        "Egyp",
+        "Elba",
+        "Elym",
+        "Ethi",
+        "Gara",
+        "Geor",
+        "Glag",
+        "Gong",
+        "Gonm",
+        "Goth",
+        "Gran",
+        "Grek",
+        "Gujr",
+        "Gukh",
+        "Guru",
+        "Hang",
+        "Hani",
+        "Hano",
+        "Hatr",
+        "Hebr",
+        "Hira",
+        "Hluw",
+        "Hmng",
+        "Hmnp",
+        "Hrkt",
+        "Hung",
+        "Ital",
+        "Java",
+        "Jurc",
+        "Kali",
+        "Kana",
+        "Kawi",
+        "Khar",
+        "Khmr",
+        "Khoj",
+        "Kits",
+        "Knda",
+        "Krai",
+        "Kthi",
+        "Lana",
+        "Laoo",
+        "Latn",
+        "Lepc",
+        "Limb",
+        "Lina",
+        "Linb",
+        "Lisu",
+        "Lyci",
+        "Lydi",
+        "Mahj",
+        "Maka",
+        "Mand",
+        "Mani",
+        "Marc",
+        "Medf",
+        "Mend",
+        "Merc",
+        "Mero",
+        "Mlym",
+        "Modi",
+        "Mong",
+        "Mroo",
+        "Mtei",
+        "Mult",
+        "Mymr",
+        "Nagm",
+        "Nand",
+        "Narb",
+        "Nbat",
+        "Newa",
+        "Nkoo",
+        "Nshu",
+        "Ogam",
+        "Olck",
+        "Onao",
+        "Orkh",
+        "Orya",
+        "Osge",
+        "Osma",
+        "Ougr",
+        "Palm",
+        "Pauc",
+        "Pcun",
+        "Perm",
+        "Phag",
+        "Phli",
+        "Phlp",
+        "Phnx",
+        "Plrd",
+        "Prti",
+        "Rjng",
+        "Rohg",
+        "Runr",
+        "Samr",
+        "Sarb",
+        "Saur",
+        "Seal",
+        "Sgnw",
+        "Shaw",
+        "Shrd",
+        "Sidd",
+        "Sidt",
+        "Sind",
+        "Sinh",
+        "Sogd",
+        "Sogo",
+        "Sora",
+        "Soyo",
+        "Sund",
+        "Sunu",
+        "Sylo",
+        "Syrc",
+        "Tagb",
+        "Takr",
+        "Tale",
+        "Talu",
+        "Taml",
+        "Tang",
+        "Tavt",
+        "Tayo",
+        "Telu",
+        "Tfng",
+        "Tglg",
+        "Thaa",
+        "Thai",
+        "Tibt",
+        "Tirh",
+        "Tnsa",
+        "Todr",
+        "Tols",
+        "Toto",
+        "Tutg",
+        "Ugar",
+        "Vaii",
+        "Vith",
+        "Wara",
+        "Wcho",
+        "Xpeo",
+        "Xsux",
+        "Yezi",
+        "Yiii",
+        "Zanb",
+        "Zinh",
+        "Zyyy",
+        "Zzzz"
+      ]
+    },
+    "ShapeFailure": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/ShapeFailureCode"
+        },
+        "fontSelection": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FontSelectionFailure"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "ShapeFailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "FONT_INVALID",
+        "UNSUPPORTED",
+        "RESOURCE_CONFLICT",
+        "RESOURCE_REQUIRED",
+        "LIMIT_EXCEEDED",
+        "CANCELLED",
+        "COMPONENT_FAILURE",
+        "COMPONENT_INVALID",
+        "HOST_FAILURE"
+      ]
+    },
+    "TextBoundary": {
+      "type": "object",
+      "properties": {
+        "scalarOffset": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "utf16Offset": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "utf8Offset": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "scalarOffset",
+        "utf8Offset",
+        "utf16Offset"
+      ]
+    },
+    "TextItem": {
+      "type": "object",
+      "properties": {
+        "end": {
+          "$ref": "#/$defs/TextBoundary"
+        },
+        "kind": {
+          "$ref": "#/$defs/TextItemKind"
+        },
+        "level": {
+          "description": "Before line-specific L1 resets; not a final glyph painting order.",
+          "type": "integer",
+          "format": "uint8",
+          "maximum": 255,
+          "minimum": 0
+        },
+        "script": {
+          "$ref": "#/$defs/Script"
+        },
+        "start": {
+          "$ref": "#/$defs/TextBoundary"
+        },
+        "style": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end",
+        "style",
+        "script",
+        "level",
+        "kind"
+      ]
+    },
+    "TextItemKind": {
+      "type": "string",
+      "enum": [
+        "text",
+        "tab",
+        "lineBreak",
+        "paragraphBreak",
+        "bidiControl"
+      ]
+    }
+  }
+}

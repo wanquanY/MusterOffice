@@ -1,0 +1,30 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:presentation-renderer-identity",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RendererIdentity",
+  "type": "object",
+  "properties": {
+    "implementationSha256": {
+      "$ref": "#/$defs/Digest"
+    },
+    "profile": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "implementationSha256",
+    "profile"
+  ],
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

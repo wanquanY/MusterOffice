@@ -1,0 +1,180 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:pptx-transform-edits",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SourceTransformEdits",
+  "type": "object",
+  "properties": {
+    "edits": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/SourceTransformEdit"
+      }
+    },
+    "expectedSourceSha256": {
+      "$ref": "#/$defs/Digest"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "expectedSourceSha256",
+    "edits"
+  ],
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "Emu": {
+      "description": "Signed int64 EMU. 1 point = 12700 EMU. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,18})$",
+      "x-integer-maximum": "9223372036854775807",
+      "x-integer-minimum": "-9223372036854775808"
+    },
+    "Point": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/Emu"
+        },
+        "y": {
+          "$ref": "#/$defs/Emu"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "Size": {
+      "type": "object",
+      "properties": {
+        "height": {
+          "$ref": "#/$defs/Emu"
+        },
+        "width": {
+          "$ref": "#/$defs/Emu"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height"
+      ]
+    },
+    "SourceObjectRef": {
+      "type": "object",
+      "properties": {
+        "nativeId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "part": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "nativeId"
+      ]
+    },
+    "SourceTransformEdit": {
+      "type": "object",
+      "properties": {
+        "expected": {
+          "$ref": "#/$defs/SourceTransformValues"
+        },
+        "replacement": {
+          "$ref": "#/$defs/SourceTransformValues"
+        },
+        "target": {
+          "description": "Immutable source part and native object ID, including the shape-tree ID.",
+          "$ref": "#/$defs/SourceObjectRef"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "expected",
+        "replacement"
+      ]
+    },
+    "SourceTransformValues": {
+      "description": "Direct native declarations, never resolved placement or inherited values.\nAngles use native 1/60000 degree units; signed/multi-turn values are retained.",
+      "type": "object",
+      "properties": {
+        "childOrigin": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Point"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "childSize": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Size"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "flipHorizontal": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "flipVertical": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "origin": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Point"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rotation": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int32"
+        },
+        "size": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Size"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

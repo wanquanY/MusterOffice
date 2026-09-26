@@ -1,0 +1,57 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:itemization-request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ItemizationRequest",
+  "type": "object",
+  "properties": {
+    "direction": {
+      "$ref": "#/$defs/ParagraphDirection"
+    },
+    "spans": {
+      "description": "Contiguous, exhaustive, grapheme-aligned style spans. Style identities\nmust already represent effective shaping properties, not author run IDs.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/StyleSpan"
+      }
+    },
+    "text": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "direction",
+    "spans"
+  ],
+  "$defs": {
+    "ParagraphDirection": {
+      "type": "string",
+      "enum": [
+        "autoLeftToRight",
+        "leftToRight",
+        "rightToLeft"
+      ]
+    },
+    "StyleSpan": {
+      "type": "object",
+      "properties": {
+        "end": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "style": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "end",
+        "style"
+      ]
+    }
+  }
+}

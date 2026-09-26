@@ -1,0 +1,210 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:upload-info",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UploadInfo",
+  "type": "object",
+  "properties": {
+    "asset": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/AssetInfo"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "chunkBytes": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0
+    },
+    "createdAt": {
+      "$ref": "#/$defs/UnixMillis"
+    },
+    "descriptor": {
+      "$ref": "#/$defs/AssetDescriptor"
+    },
+    "error": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Failure"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expiresAt": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/UnixMillis"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "id": {
+      "$ref": "#/$defs/RequestId"
+    },
+    "receivedBytes": {
+      "$ref": "#/$defs/ByteLength"
+    },
+    "requestId": {
+      "$ref": "#/$defs/RequestId"
+    },
+    "state": {
+      "$ref": "#/$defs/UploadState"
+    },
+    "updatedAt": {
+      "$ref": "#/$defs/UnixMillis"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "requestId",
+    "descriptor",
+    "state",
+    "chunkBytes",
+    "receivedBytes",
+    "createdAt",
+    "updatedAt"
+  ],
+  "$defs": {
+    "AssetDescriptor": {
+      "type": "object",
+      "properties": {
+        "byteLength": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "mediaType": {
+          "description": "A declaration, not evidence of successful decoding or safe execution.",
+          "type": "string"
+        },
+        "sha256": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sha256",
+        "byteLength",
+        "mediaType"
+      ]
+    },
+    "AssetInfo": {
+      "type": "object",
+      "properties": {
+        "descriptor": {
+          "$ref": "#/$defs/AssetDescriptor"
+        },
+        "id": {
+          "$ref": "#/$defs/RequestId"
+        },
+        "verification": {
+          "$ref": "#/$defs/AssetVerification"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "descriptor",
+        "verification"
+      ]
+    },
+    "AssetVerification": {
+      "type": "string",
+      "enum": [
+        "bytesSha256"
+      ]
+    },
+    "ByteLength": {
+      "description": "Canonical uint64 byte length. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9]"
+      },
+      "pattern": "^(0|[1-9][0-9]{0,19})$",
+      "x-integer-maximum": "18446744073709551615",
+      "x-integer-minimum": "0"
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "Failure": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/FailureCode"
+        },
+        "detail": true,
+        "message": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "FailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "NOT_AUTHORIZED",
+        "NOT_FOUND",
+        "REQUEST_ID_REUSED",
+        "REVISION_CONFLICT",
+        "REFERENCE_CONFLICT",
+        "DOCUMENT_EXISTS",
+        "LIMIT_EXCEEDED",
+        "CANCELLED",
+        "EXECUTION_INTERRUPTED",
+        "EXECUTOR_MISMATCH",
+        "STALE_EXECUTION",
+        "STORAGE_FAILURE",
+        "RESOURCE_CONFLICT",
+        "RESOURCE_EXPIRED",
+        "RESOURCE_INCOMPLETE",
+        "RESOURCE_BUSY",
+        "MAPPING_NOT_IMPLEMENTED",
+        "RENDER_FAILURE"
+      ]
+    },
+    "RequestId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "UnixMillis": {
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9]"
+      },
+      "pattern": "^(0|[1-9][0-9]{0,18})$",
+      "x-integer-maximum": "9223372036854775807"
+    },
+    "UploadState": {
+      "type": "string",
+      "enum": [
+        "uploading",
+        "verifying",
+        "sealed",
+        "failed",
+        "cancelled"
+      ]
+    }
+  }
+}

@@ -1,0 +1,371 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:font-outlines-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FontOutlinesResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "outlines": {
+          "$ref": "#/$defs/FontOutlinesResult"
+        },
+        "status": {
+          "type": "string",
+          "const": "outlined"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "outlines"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/ShapeFailure"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "error"
+      ]
+    }
+  ],
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "EffectiveVariation": {
+      "type": "object",
+      "properties": {
+        "effectiveF32Bits": {
+          "description": "Effective IEEE754 binary32 design coordinate. Rounding is explicit.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "requested1616": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "tag": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "tag",
+        "requested1616",
+        "effectiveF32Bits"
+      ]
+    },
+    "FontOutlinesResult": {
+      "type": "object",
+      "properties": {
+        "colorTables": {
+          "description": "Presence only: does not imply that a particular glyph uses these tables.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "faceIndex": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "fontSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "instances": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/OutlinedInstance"
+          }
+        },
+        "positionUnitsPerEm": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "profile": {
+          "type": "string"
+        },
+        "unitsPerEm": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "fontSha256",
+        "faceIndex",
+        "unitsPerEm",
+        "positionUnitsPerEm",
+        "profile",
+        "colorTables",
+        "instances"
+      ]
+    },
+    "FontSelectionFailure": {
+      "type": "object",
+      "properties": {
+        "fontStyle": {
+          "$ref": "#/$defs/FontStyle"
+        },
+        "reason": {
+          "$ref": "#/$defs/FontSelectionReason"
+        },
+        "style": {
+          "description": "Index in the actual ManifestParagraphInput.styles, not a native run id.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "typeface": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "style",
+        "typeface",
+        "fontStyle",
+        "reason"
+      ]
+    },
+    "FontSelectionReason": {
+      "type": "string",
+      "enum": [
+        "unmappedTypeface",
+        "missingStyle"
+      ]
+    },
+    "FontStyle": {
+      "type": "string",
+      "enum": [
+        "regular",
+        "bold",
+        "italic",
+        "boldItalic"
+      ]
+    },
+    "GlyphOutline": {
+      "type": "object",
+      "properties": {
+        "glyphId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "path": {
+          "description": "None is unavailable/failed, Some([]) is a valid empty outline (e.g. space).",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/$defs/OutlineCommand"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "glyphId"
+      ]
+    },
+    "OutlineCommand": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "move"
+            },
+            "to": {
+              "$ref": "#/$defs/OutlinePoint"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "line"
+            },
+            "to": {
+              "$ref": "#/$defs/OutlinePoint"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "control": {
+              "$ref": "#/$defs/OutlinePoint"
+            },
+            "kind": {
+              "type": "string",
+              "const": "quadratic"
+            },
+            "to": {
+              "$ref": "#/$defs/OutlinePoint"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "control",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "control1": {
+              "$ref": "#/$defs/OutlinePoint"
+            },
+            "control2": {
+              "$ref": "#/$defs/OutlinePoint"
+            },
+            "kind": {
+              "type": "string",
+              "const": "cubic"
+            },
+            "to": {
+              "$ref": "#/$defs/OutlinePoint"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "control1",
+            "control2",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "close"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "OutlinePoint": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "y": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "OutlinedInstance": {
+      "type": "object",
+      "properties": {
+        "effectiveVariations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EffectiveVariation"
+          }
+        },
+        "glyphs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/GlyphOutline"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "effectiveVariations",
+        "glyphs"
+      ]
+    },
+    "ShapeFailure": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/ShapeFailureCode"
+        },
+        "fontSelection": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FontSelectionFailure"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "ShapeFailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "FONT_INVALID",
+        "UNSUPPORTED",
+        "RESOURCE_CONFLICT",
+        "RESOURCE_REQUIRED",
+        "LIMIT_EXCEEDED",
+        "CANCELLED",
+        "COMPONENT_FAILURE",
+        "COMPONENT_INVALID",
+        "HOST_FAILURE"
+      ]
+    }
+  }
+}

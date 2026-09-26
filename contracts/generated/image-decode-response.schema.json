@@ -1,0 +1,372 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:image-decode-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ImageDecodeResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "info": {
+          "$ref": "#/$defs/DecodedImageInfo"
+        },
+        "status": {
+          "type": "string",
+          "const": "decoded"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "info"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/ImageFailure"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "error"
+      ]
+    }
+  ],
+  "$defs": {
+    "DecodedImageInfo": {
+      "type": "object",
+      "properties": {
+        "byteLength": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "encodedBitDepth": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "encodedHeight": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "encodedWidth": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "format": {
+          "$ref": "#/$defs/ImageFormat"
+        },
+        "height": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "orientation": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "pixelsSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "profile": {
+          "type": "string"
+        },
+        "resolution": {
+          "$ref": "#/$defs/ImageResolution"
+        },
+        "sourceColor": {
+          "$ref": "#/$defs/SourceColor"
+        },
+        "sourceSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "width": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "sourceSha256",
+        "pixelsSha256",
+        "width",
+        "height",
+        "encodedWidth",
+        "encodedHeight",
+        "orientation",
+        "format",
+        "encodedBitDepth",
+        "sourceColor",
+        "byteLength",
+        "resolution"
+      ]
+    },
+    "Density": {
+      "type": "object",
+      "properties": {
+        "denominator": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 1
+        },
+        "numerator": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "numerator",
+        "denominator"
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "Emu": {
+      "description": "Signed int64 EMU. 1 point = 12700 EMU. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,18})$",
+      "x-integer-maximum": "9223372036854775807",
+      "x-integer-minimum": "-9223372036854775808"
+    },
+    "ImageFailure": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/ImageFailureCode"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "ImageFailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "LIMIT_EXCEEDED",
+        "UNSUPPORTED",
+        "CANCELLED",
+        "COMPONENT_FAILURE",
+        "COMPONENT_INVALID",
+        "HOST_FAILURE"
+      ]
+    },
+    "ImageFormat": {
+      "type": "string",
+      "enum": [
+        "png",
+        "jpeg"
+      ]
+    },
+    "ImageResolution": {
+      "type": "object",
+      "properties": {
+        "declarations": {
+          "description": "Raw fields in encoded axes. Missing EXIF fields remain null; derivation\nuses Exif's specified defaults (72, 72, inch), never a host DPI default.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ResolutionDeclaration"
+          }
+        },
+        "physicalPixelSize": {
+          "$ref": "#/$defs/PhysicalPixelSize"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "declarations",
+        "physicalPixelSize"
+      ]
+    },
+    "PhysicalPixelSize": {
+      "oneOf": [
+        {
+          "description": "No absolute unit is present. Aspect-only declarations stay in the list.",
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "unspecified"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ]
+        },
+        {
+          "description": "A declared density has zero magnitude and cannot define physical size.",
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "zeroDensity"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ]
+        },
+        {
+          "description": "Absolute densities or relative axis ratios disagree; no source wins.",
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "conflicting"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "known"
+            },
+            "x": {
+              "$ref": "#/$defs/PixelExtent"
+            },
+            "y": {
+              "$ref": "#/$defs/PixelExtent"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "x",
+            "y"
+          ]
+        }
+      ]
+    },
+    "PixelExtent": {
+      "description": "Reduced, positive rational EMU per normalized output pixel.",
+      "type": "object",
+      "properties": {
+        "denominator": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 1
+        },
+        "numerator": {
+          "$ref": "#/$defs/Emu"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "numerator",
+        "denominator"
+      ]
+    },
+    "ResolutionDeclaration": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "$ref": "#/$defs/ResolutionSource"
+        },
+        "sourceOffset": {
+          "description": "Absolute byte offset of the PNG chunk or JPEG marker in source bytes.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "unit": {
+          "description": "None preserves an absent EXIF ResolutionUnit. Derivation applies the\nExif specification's inch default without rewriting this declaration.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ResolutionUnit"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "x": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Density"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "y": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Density"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "sourceOffset"
+      ]
+    },
+    "ResolutionSource": {
+      "type": "string",
+      "enum": [
+        "pngPhysical",
+        "jfif",
+        "exifIfd0"
+      ]
+    },
+    "ResolutionUnit": {
+      "type": "string",
+      "enum": [
+        "aspectRatio",
+        "inch",
+        "centimetre",
+        "metre"
+      ]
+    },
+    "SourceColor": {
+      "type": "string",
+      "enum": [
+        "assumedSrgb",
+        "icc",
+        "pngColor"
+      ]
+    }
+  }
+}

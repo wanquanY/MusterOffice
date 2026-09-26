@@ -1,0 +1,1851 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:pptx-page-raster-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PptxPageRasterResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "info": {
+          "$ref": "#/$defs/SourcePageRasterInfo"
+        },
+        "status": {
+          "type": "string",
+          "const": "rendered"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "info"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/PptxPageFailure"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "error"
+      ]
+    }
+  ],
+  "$defs": {
+    "ByteLength": {
+      "description": "Canonical uint64 byte length. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9]"
+      },
+      "pattern": "^(0|[1-9][0-9]{0,19})$",
+      "x-integer-maximum": "18446744073709551615",
+      "x-integer-minimum": "0"
+    },
+    "ClipWork": {
+      "type": "object",
+      "properties": {
+        "applications": {
+          "description": "Actual pushes when preserving common ancestors between consecutive draws.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "appliedCommands": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "maximumDepth": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "nodes": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "placementCommands": {
+          "description": "All supplied clip path commands checked during device placement.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "placementCommands",
+        "nodes",
+        "maximumDepth",
+        "applications",
+        "appliedCommands"
+      ]
+    },
+    "CompositeWork": {
+      "type": "object",
+      "properties": {
+        "capturedBytes": {
+          "description": "Exact packed pixel bytes copied for all snapshots; not process RSS.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "captures": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "snapshotDraws": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "sourceDraws": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "captures",
+        "capturedBytes",
+        "snapshotDraws",
+        "sourceDraws"
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "EllipticGradientWork": {
+      "description": "Maximum across elliptic fields; excludes pixel coverage and shader inverse arithmetic.",
+      "type": "object",
+      "properties": {
+        "coordinateErrorBound": {
+          "description": "Conservative device Q32 displacement of corresponding ellipse-family\npoints from parameter/plane conversion, including the tile phase budget.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "encodedRootIntervalBound": {
+          "description": "Q32 width of a successful solver enclosure for the encoded binary32\nfield. Not a bound on the source field's scalar or on pixel color.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "parameterErrorBounds": {
+          "description": "Dimensionless Q32 source uncertainty plus binary32 conversion error,\nordered scaleX/Y, centerX/Y, radiusX/Y.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FixedQ32"
+          },
+          "maxItems": 6,
+          "minItems": 6
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "parameterErrorBounds",
+        "coordinateErrorBound",
+        "encodedRootIntervalBound"
+      ]
+    },
+    "FillOrigin": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "declaration"
+            },
+            "owner": {
+              "$ref": "#/$defs/FillOwner"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "owner",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "theme"
+            },
+            "part": {
+              "type": "string"
+            },
+            "referenceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "styleIndex": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "via": {
+              "$ref": "#/$defs/FillOwner"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part",
+            "sourceOrdinal",
+            "via",
+            "referenceOrdinal",
+            "styleIndex"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "schemaDefault"
+            },
+            "part": {
+              "type": "string"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "profileDefault"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "FillOwner": {
+      "type": "object",
+      "properties": {
+        "part": {
+          "type": "string"
+        },
+        "target": {
+          "$ref": "#/$defs/FillTarget"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "target"
+      ]
+    },
+    "FillRedirect": {
+      "type": "object",
+      "properties": {
+        "declaredBy": {
+          "$ref": "#/$defs/FillOrigin"
+        },
+        "target": {
+          "$ref": "#/$defs/FillOwner"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "declaredBy",
+        "target"
+      ]
+    },
+    "FillTarget": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "object"
+            },
+            "nativeId": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nativeId"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "line"
+            },
+            "nativeId": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nativeId"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "picture"
+            },
+            "nativeId": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nativeId"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "rootGroup"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "background"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "FixedQ32": {
+      "description": "Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,38})$",
+      "x-integer-maximum": "170141183460469231731687303715884105727",
+      "x-integer-minimum": "-170141183460469231731687303715884105728"
+    },
+    "FormulaIssue": {
+      "type": "string",
+      "enum": [
+        "unknownOperation",
+        "arity",
+        "divisionByZero",
+        "undefinedDirection",
+        "tangentPole"
+      ]
+    },
+    "GeometryOrigin": {
+      "description": "Ordinals are zero-based element preorder in the indicated XML resource.\nPreset ordinals address the pinned, generated catalog definition, not the\ndocument part. A document override always retains its physical source.",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "document"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "definitionOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "preset"
+            },
+            "preset": {
+              "$ref": "#/$defs/NativeShapeType"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "preset",
+            "definitionOrdinal"
+          ]
+        }
+      ]
+    },
+    "GeometryUnresolved": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingDeclaration"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "unsupportedObject"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingExtent"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "invalidExtent"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "retainedContent"
+            },
+            "origin": {
+              "$ref": "#/$defs/GeometryOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "issue": {
+              "$ref": "#/$defs/FormulaIssue"
+            },
+            "kind": {
+              "type": "string",
+              "const": "formula"
+            },
+            "origin": {
+              "$ref": "#/$defs/GeometryOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin",
+            "issue"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "invalidCoordinate"
+            },
+            "origin": {
+              "$ref": "#/$defs/GeometryOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "invalidAngle"
+            },
+            "origin": {
+              "$ref": "#/$defs/GeometryOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "unknownReference"
+            },
+            "origin": {
+              "$ref": "#/$defs/GeometryOrigin"
+            },
+            "token": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin",
+            "token"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "reservedGuide"
+            },
+            "origin": {
+              "$ref": "#/$defs/GeometryOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "invalidGuideName"
+            },
+            "origin": {
+              "$ref": "#/$defs/GeometryOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "invalidHandleReference"
+            },
+            "origin": {
+              "$ref": "#/$defs/GeometryOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "numericRange"
+            },
+            "origin": {
+              "$ref": "#/$defs/GeometryOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin"
+          ]
+        }
+      ]
+    },
+    "NativeShapeType": {
+      "type": "string",
+      "enum": [
+        "accentBorderCallout1",
+        "accentBorderCallout2",
+        "accentBorderCallout3",
+        "accentCallout1",
+        "accentCallout2",
+        "accentCallout3",
+        "actionButtonBackPrevious",
+        "actionButtonBeginning",
+        "actionButtonBlank",
+        "actionButtonDocument",
+        "actionButtonEnd",
+        "actionButtonForwardNext",
+        "actionButtonHelp",
+        "actionButtonHome",
+        "actionButtonInformation",
+        "actionButtonMovie",
+        "actionButtonReturn",
+        "actionButtonSound",
+        "arc",
+        "bentArrow",
+        "bentConnector2",
+        "bentConnector3",
+        "bentConnector4",
+        "bentConnector5",
+        "bentUpArrow",
+        "bevel",
+        "blockArc",
+        "borderCallout1",
+        "borderCallout2",
+        "borderCallout3",
+        "bracePair",
+        "bracketPair",
+        "callout1",
+        "callout2",
+        "callout3",
+        "can",
+        "chartPlus",
+        "chartStar",
+        "chartX",
+        "chevron",
+        "chord",
+        "circularArrow",
+        "cloud",
+        "cloudCallout",
+        "corner",
+        "cornerTabs",
+        "cube",
+        "curvedConnector2",
+        "curvedConnector3",
+        "curvedConnector4",
+        "curvedConnector5",
+        "curvedDownArrow",
+        "curvedLeftArrow",
+        "curvedRightArrow",
+        "curvedUpArrow",
+        "decagon",
+        "diagStripe",
+        "diamond",
+        "dodecagon",
+        "donut",
+        "doubleWave",
+        "downArrow",
+        "downArrowCallout",
+        "ellipse",
+        "ellipseRibbon",
+        "ellipseRibbon2",
+        "flowChartAlternateProcess",
+        "flowChartCollate",
+        "flowChartConnector",
+        "flowChartDecision",
+        "flowChartDelay",
+        "flowChartDisplay",
+        "flowChartDocument",
+        "flowChartExtract",
+        "flowChartInputOutput",
+        "flowChartInternalStorage",
+        "flowChartMagneticDisk",
+        "flowChartMagneticDrum",
+        "flowChartMagneticTape",
+        "flowChartManualInput",
+        "flowChartManualOperation",
+        "flowChartMerge",
+        "flowChartMultidocument",
+        "flowChartOfflineStorage",
+        "flowChartOffpageConnector",
+        "flowChartOnlineStorage",
+        "flowChartOr",
+        "flowChartPredefinedProcess",
+        "flowChartPreparation",
+        "flowChartProcess",
+        "flowChartPunchedCard",
+        "flowChartPunchedTape",
+        "flowChartSort",
+        "flowChartSummingJunction",
+        "flowChartTerminator",
+        "foldedCorner",
+        "frame",
+        "funnel",
+        "gear6",
+        "gear9",
+        "halfFrame",
+        "heart",
+        "heptagon",
+        "hexagon",
+        "homePlate",
+        "horizontalScroll",
+        "irregularSeal1",
+        "irregularSeal2",
+        "leftArrow",
+        "leftArrowCallout",
+        "leftBrace",
+        "leftBracket",
+        "leftCircularArrow",
+        "leftRightArrow",
+        "leftRightArrowCallout",
+        "leftRightCircularArrow",
+        "leftRightRibbon",
+        "leftRightUpArrow",
+        "leftUpArrow",
+        "lightningBolt",
+        "line",
+        "lineInv",
+        "mathDivide",
+        "mathEqual",
+        "mathMinus",
+        "mathMultiply",
+        "mathNotEqual",
+        "mathPlus",
+        "moon",
+        "noSmoking",
+        "nonIsoscelesTrapezoid",
+        "notchedRightArrow",
+        "octagon",
+        "parallelogram",
+        "pentagon",
+        "pie",
+        "pieWedge",
+        "plaque",
+        "plaqueTabs",
+        "plus",
+        "quadArrow",
+        "quadArrowCallout",
+        "rect",
+        "ribbon",
+        "ribbon2",
+        "rightArrow",
+        "rightArrowCallout",
+        "rightBrace",
+        "rightBracket",
+        "round1Rect",
+        "round2DiagRect",
+        "round2SameRect",
+        "roundRect",
+        "rtTriangle",
+        "smileyFace",
+        "snip1Rect",
+        "snip2DiagRect",
+        "snip2SameRect",
+        "snipRoundRect",
+        "squareTabs",
+        "star10",
+        "star12",
+        "star16",
+        "star24",
+        "star32",
+        "star4",
+        "star5",
+        "star6",
+        "star7",
+        "star8",
+        "straightConnector1",
+        "stripedRightArrow",
+        "sun",
+        "swooshArrow",
+        "teardrop",
+        "trapezoid",
+        "triangle",
+        "upArrow",
+        "upArrowCallout",
+        "upDownArrow",
+        "upDownArrowCallout",
+        "uturnArrow",
+        "verticalScroll",
+        "wave",
+        "wedgeEllipseCallout",
+        "wedgeRectCallout",
+        "wedgeRoundRectCallout"
+      ]
+    },
+    "PlaceholderMatchRule": {
+      "type": "string",
+      "enum": [
+        "slideIndex",
+        "masterType"
+      ]
+    },
+    "PlacementCause": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingSize"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "inheritance"
+            },
+            "status": {
+              "$ref": "#/$defs/SourcePlaceholderMatch"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "status"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "retainedTransform"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "kind": {
+              "type": "string",
+              "const": "invalidCoordinate"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "field"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "numericRange"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "PlacementUnresolved": {
+      "type": "object",
+      "properties": {
+        "cause": {
+          "$ref": "#/$defs/PlacementCause"
+        },
+        "object": {
+          "$ref": "#/$defs/SourceObjectRef"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "object",
+        "cause"
+      ]
+    },
+    "PptxPageFailure": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/PptxPageFailureCode"
+        },
+        "issue": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourcePageIssue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "location": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourcePageLocation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "PptxPageFailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "SOURCE_CONFLICT",
+        "PRESERVATION_CONFLICT",
+        "MAPPING_NOT_IMPLEMENTED",
+        "RESOURCE_REQUIRED",
+        "LIMIT_EXCEEDED",
+        "CANCELLED",
+        "READ_FAILED",
+        "COORDINATE_RANGE",
+        "PRECISION_EXCEEDED",
+        "COMPONENT_FAILURE",
+        "COMPONENT_INVALID",
+        "HOST_FAILURE"
+      ]
+    },
+    "RasterInfo": {
+      "type": "object",
+      "properties": {
+        "byteLength": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "frameSha256": {
+          "description": "SHA-256 of the little-endian device batch; use together with profile.",
+          "$ref": "#/$defs/Digest"
+        },
+        "height": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "profile": {
+          "type": "string"
+        },
+        "sha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "width": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "work": {
+          "$ref": "#/$defs/RasterWork"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "width",
+        "height",
+        "byteLength",
+        "sha256",
+        "frameSha256",
+        "work"
+      ]
+    },
+    "RasterWork": {
+      "type": "object",
+      "properties": {
+        "clips": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ClipWork"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "commands": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "compositing": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompositeWork"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "coordinateErrorBound": {
+          "description": "Conservative maximum error of the transformed control coordinates,\nmeasured in raw Q32 pixels. Not a raster coverage error bound.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "drawnCommands": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "draws": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "ellipticGradients": {
+          "description": "Only present for V12 ellipse fields. Geometry and solver errors are separate.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EllipticGradientWork"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "gradientCoordinateErrorBound": {
+          "description": "Device geometry input quantization, not a bound on shader evaluation or pixels.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "gradientDraws": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "gradientStops": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "gradientValueErrorBound": {
+          "description": "Maximum stop/color conversion or linear/rectangular field error.\nElliptic parameter and root bounds are reported separately.",
+          "type": "number",
+          "format": "double"
+        },
+        "gradients": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "miterLimitErrorBound": {
+          "description": "Dimensionless raw Q32; not added to pixel coordinate budgets.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "paths": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "strokeDraws": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "strokeStyles": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "strokeWidthErrorBound": {
+          "description": "Width quantization, in raw Q32 pixels; not an ink boundary error bound.",
+          "$ref": "#/$defs/FixedQ32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "paths",
+        "commands",
+        "draws",
+        "drawnCommands",
+        "coordinateErrorBound",
+        "strokeStyles",
+        "strokeDraws",
+        "strokeWidthErrorBound",
+        "miterLimitErrorBound",
+        "gradients",
+        "gradientStops",
+        "gradientDraws",
+        "gradientCoordinateErrorBound",
+        "gradientValueErrorBound"
+      ]
+    },
+    "SceneClipWork": {
+      "type": "object",
+      "properties": {
+        "compiledNodes": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "sourceNodes": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceNodes",
+        "compiledNodes"
+      ]
+    },
+    "SceneRasterInfo": {
+      "type": "object",
+      "properties": {
+        "profile": {
+          "type": "string"
+        },
+        "raster": {
+          "$ref": "#/$defs/RasterInfo"
+        },
+        "work": {
+          "$ref": "#/$defs/SceneWork"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "raster",
+        "work"
+      ]
+    },
+    "SceneWork": {
+      "type": "object",
+      "properties": {
+        "clips": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SceneClipWork"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "combinedCoordinateErrorBound": {
+          "description": "Transform + final device quantization, raw Q32 pixels.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "compiledCommands": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "compiledPaths": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "evaluatedPoints": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "loweringAttempts": {
+          "description": "2 means the shared matrix candidate failed numeric/precision checks and\nlowering used the original node chain before any backend call.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "maximumDepth": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "pointTransformWork": {
+          "description": "Conservative point/node work per attempt, including identity instances.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "sourceCommands": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "sourcePaths": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "transformErrorBound": {
+          "description": "Quantization/composition error bound, raw Q32 document units (EMU).",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "transforms": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "loweringAttempts",
+        "sourcePaths",
+        "sourceCommands",
+        "transforms",
+        "maximumDepth",
+        "evaluatedPoints",
+        "pointTransformWork",
+        "compiledPaths",
+        "compiledCommands",
+        "transformErrorBound",
+        "combinedCoordinateErrorBound"
+      ]
+    },
+    "SourceObjectKind": {
+      "type": "string",
+      "enum": [
+        "shape",
+        "picture",
+        "group",
+        "connector",
+        "graphicFrame"
+      ]
+    },
+    "SourceObjectRef": {
+      "type": "object",
+      "properties": {
+        "nativeId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "part": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "nativeId"
+      ]
+    },
+    "SourcePageInfo": {
+      "type": "object",
+      "properties": {
+        "arcSegments": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "generatedCommands": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "hiddenSlide": {
+          "type": "boolean"
+        },
+        "imageClipCoordinateErrorBound": {
+          "description": "Upstream image fill-rectangle clip error in Q32 device pixels, before\nshared scene lowering. Image brush uncertainty is accounted downstream.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "layers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourcePageLayer"
+          }
+        },
+        "pathCoordinateErrorBound": {
+          "description": "Relative to evaluated binary64 guide values. Does not bound upstream\nguide evaluation, coverage, color or application compatibility.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "placementCoordinateErrorBound": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "profile": {
+          "$ref": "#/$defs/SourcePageProfile"
+        },
+        "slide": {
+          "type": "string"
+        },
+        "sourceSha256": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "sourceSha256",
+        "slide",
+        "hiddenSlide",
+        "layers",
+        "generatedCommands",
+        "arcSegments",
+        "placementCoordinateErrorBound",
+        "pathCoordinateErrorBound"
+      ]
+    },
+    "SourcePageIssue": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "issue": {
+              "$ref": "#/$defs/SourceVisualIssue"
+            },
+            "kind": {
+              "type": "string",
+              "const": "visual"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "issue"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "object"
+            },
+            "nativeKind": {
+              "$ref": "#/$defs/SourceObjectKind"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nativeKind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "text"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "effects"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "placeholder"
+            },
+            "matching": {
+              "$ref": "#/$defs/SourcePlaceholderMatch"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "matching"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "specialPlaceholder"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "placement"
+            },
+            "reason": {
+              "$ref": "#/$defs/PlacementUnresolved"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reason"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "geometry"
+            },
+            "reason": {
+              "$ref": "#/$defs/GeometryUnresolved"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reason"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "fill"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "line"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "pathFillModifier"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "fillSpace"
+            },
+            "redirects": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/FillRedirect"
+              }
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "redirects"
+          ]
+        }
+      ]
+    },
+    "SourcePageLayer": {
+      "type": "object",
+      "properties": {
+        "hiddenObjects": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "kind": {
+          "$ref": "#/$defs/SurfaceKind"
+        },
+        "objects": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "part": {
+          "type": "string"
+        },
+        "templatePlaceholders": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "visible": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "kind",
+        "visible",
+        "objects",
+        "hiddenObjects",
+        "templatePlaceholders"
+      ]
+    },
+    "SourcePageLocation": {
+      "type": "object",
+      "properties": {
+        "object": {
+          "description": "None denotes a surface/background declaration.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "part": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part"
+      ]
+    },
+    "SourcePageProfile": {
+      "type": "string",
+      "enum": [
+        "drawingml-static-solid-page-v1-draft"
+      ]
+    },
+    "SourcePageRasterInfo": {
+      "type": "object",
+      "properties": {
+        "downstreamCoordinateErrorBound": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "page": {
+          "$ref": "#/$defs/SourcePageInfo"
+        },
+        "scene": {
+          "$ref": "#/$defs/SceneRasterInfo"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "page",
+        "scene",
+        "downstreamCoordinateErrorBound"
+      ]
+    },
+    "SourcePlaceholderMatch": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "notPlaceholder"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "master"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "rule": {
+              "$ref": "#/$defs/PlaceholderMatchRule"
+            },
+            "status": {
+              "type": "string",
+              "const": "matched"
+            },
+            "target": {
+              "$ref": "#/$defs/SourceObjectRef"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "target",
+            "rule"
+          ]
+        },
+        {
+          "description": "Missing relationship or matching placeholder; no synthetic geometry.",
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "unmatched"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ]
+        },
+        {
+          "description": "Slide idx=0xffffffff is explicitly detached from layout matching.",
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "detached"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "candidates": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "part": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "const": "ambiguous"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "part",
+            "candidates"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "unsupportedContext"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ]
+        }
+      ]
+    },
+    "SourceVisualIssue": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/SourceVisualIssueKind"
+        },
+        "localName": {
+          "type": "string"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "kind",
+        "namespace",
+        "localName"
+      ]
+    },
+    "SourceVisualIssueKind": {
+      "type": "string",
+      "enum": [
+        "element",
+        "attribute"
+      ]
+    },
+    "SurfaceKind": {
+      "type": "string",
+      "enum": [
+        "slide",
+        "master",
+        "layout"
+      ]
+    }
+  }
+}

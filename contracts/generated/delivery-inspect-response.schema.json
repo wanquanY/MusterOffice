@@ -1,0 +1,232 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:delivery-inspect-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DeliveryInspectResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "report": {
+          "$ref": "#/$defs/ReceiptInspection"
+        },
+        "status": {
+          "type": "string",
+          "const": "inspected"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "report"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/PptxFailure"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "error"
+      ]
+    }
+  ],
+  "$defs": {
+    "ByteLength": {
+      "description": "Canonical uint64 byte length. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9]"
+      },
+      "pattern": "^(0|[1-9][0-9]{0,19})$",
+      "x-integer-maximum": "18446744073709551615",
+      "x-integer-minimum": "0"
+    },
+    "Claim": {
+      "type": "object",
+      "properties": {
+        "basis": {
+          "$ref": "#/$defs/ClaimBasis"
+        },
+        "evidenceAssetIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RequestId"
+          }
+        },
+        "kind": {
+          "$ref": "#/$defs/ClaimKind"
+        },
+        "profileId": {
+          "type": "string"
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "status": {
+          "$ref": "#/$defs/ClaimStatus"
+        },
+        "subjectSha256": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "status",
+        "subjectSha256",
+        "basis",
+        "profileId",
+        "evidenceAssetIds"
+      ]
+    },
+    "ClaimBasis": {
+      "type": "string",
+      "enum": [
+        "none",
+        "static-inspection",
+        "roundtrip",
+        "application-test"
+      ]
+    },
+    "ClaimKind": {
+      "type": "string",
+      "enum": [
+        "structure",
+        "layout",
+        "native-editability",
+        "playback",
+        "target-application"
+      ]
+    },
+    "ClaimStatus": {
+      "type": "string",
+      "enum": [
+        "passed",
+        "failed",
+        "not_proven",
+        "not_applicable"
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "DocumentId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "PptxFailure": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/PptxFailureCode"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "PptxFailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "SOURCE_CONFLICT",
+        "PRESERVATION_CONFLICT",
+        "MAPPING_NOT_IMPLEMENTED",
+        "RESOURCE_REQUIRED",
+        "LIMIT_EXCEEDED",
+        "CANCELLED",
+        "READ_FAILED"
+      ]
+    },
+    "ReceiptInspection": {
+      "description": "A diagnostic report, not a transferable grant or a substitute for a commit.\nClaims remain producer declarations; this checker does not upgrade them.",
+      "type": "object",
+      "properties": {
+        "assetsVerified": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "bundleDigest": {
+          "$ref": "#/$defs/Digest"
+        },
+        "declaredClaims": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Claim"
+          }
+        },
+        "documentId": {
+          "$ref": "#/$defs/DocumentId"
+        },
+        "pages": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "profile": {
+          "type": "string"
+        },
+        "revision": {
+          "$ref": "#/$defs/Digest"
+        },
+        "semanticDigest": {
+          "$ref": "#/$defs/Digest"
+        },
+        "settingsDigest": {
+          "$ref": "#/$defs/Digest"
+        },
+        "totalBytes": {
+          "$ref": "#/$defs/ByteLength"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "bundleDigest",
+        "documentId",
+        "revision",
+        "semanticDigest",
+        "settingsDigest",
+        "assetsVerified",
+        "totalBytes",
+        "pages",
+        "declaredClaims"
+      ]
+    },
+    "RequestId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    }
+  }
+}

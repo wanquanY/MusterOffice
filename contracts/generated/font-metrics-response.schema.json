@@ -1,0 +1,277 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:font-metrics-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FontMetricsResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "metrics": {
+          "$ref": "#/$defs/FontMetricsResult"
+        },
+        "status": {
+          "type": "string",
+          "const": "measured"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "metrics"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/ShapeFailure"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "error"
+      ]
+    }
+  ],
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "EffectiveVariation": {
+      "type": "object",
+      "properties": {
+        "effectiveF32Bits": {
+          "description": "Effective IEEE754 binary32 design coordinate. Rounding is explicit.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "requested1616": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "tag": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "tag",
+        "requested1616",
+        "effectiveF32Bits"
+      ]
+    },
+    "FontMetric": {
+      "type": "string",
+      "enum": [
+        "horizontalAscender",
+        "horizontalDescender",
+        "horizontalLineGap",
+        "horizontalClippingAscent",
+        "horizontalClippingDescent",
+        "verticalAscender",
+        "verticalDescender",
+        "verticalLineGap",
+        "horizontalCaretRise",
+        "horizontalCaretRun",
+        "horizontalCaretOffset",
+        "verticalCaretRise",
+        "verticalCaretRun",
+        "verticalCaretOffset",
+        "xHeight",
+        "capHeight",
+        "subscriptXSize",
+        "subscriptYSize",
+        "subscriptXOffset",
+        "subscriptYOffset",
+        "superscriptXSize",
+        "superscriptYSize",
+        "superscriptXOffset",
+        "superscriptYOffset",
+        "strikeoutSize",
+        "strikeoutOffset",
+        "underlineSize",
+        "underlineOffset"
+      ]
+    },
+    "FontMetricsResult": {
+      "type": "object",
+      "properties": {
+        "faceIndex": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "fontSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "instances": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MeasuredInstance"
+          }
+        },
+        "positionUnitsPerEm": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "profile": {
+          "type": "string"
+        },
+        "unitsPerEm": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "fontSha256",
+        "faceIndex",
+        "unitsPerEm",
+        "positionUnitsPerEm",
+        "profile",
+        "instances"
+      ]
+    },
+    "FontSelectionFailure": {
+      "type": "object",
+      "properties": {
+        "fontStyle": {
+          "$ref": "#/$defs/FontStyle"
+        },
+        "reason": {
+          "$ref": "#/$defs/FontSelectionReason"
+        },
+        "style": {
+          "description": "Index in the actual ManifestParagraphInput.styles, not a native run id.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "typeface": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "style",
+        "typeface",
+        "fontStyle",
+        "reason"
+      ]
+    },
+    "FontSelectionReason": {
+      "type": "string",
+      "enum": [
+        "unmappedTypeface",
+        "missingStyle"
+      ]
+    },
+    "FontStyle": {
+      "type": "string",
+      "enum": [
+        "regular",
+        "bold",
+        "italic",
+        "boldItalic"
+      ]
+    },
+    "MeasuredInstance": {
+      "type": "object",
+      "properties": {
+        "effectiveVariations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EffectiveVariation"
+          }
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MeasuredMetric"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "effectiveVariations",
+        "values"
+      ]
+    },
+    "MeasuredMetric": {
+      "type": "object",
+      "properties": {
+        "metric": {
+          "$ref": "#/$defs/FontMetric"
+        },
+        "position": {
+          "description": "None means the component could not read this metric; zero is a real value.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "metric"
+      ]
+    },
+    "ShapeFailure": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/ShapeFailureCode"
+        },
+        "fontSelection": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FontSelectionFailure"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "ShapeFailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "FONT_INVALID",
+        "UNSUPPORTED",
+        "RESOURCE_CONFLICT",
+        "RESOURCE_REQUIRED",
+        "LIMIT_EXCEEDED",
+        "CANCELLED",
+        "COMPONENT_FAILURE",
+        "COMPONENT_INVALID",
+        "HOST_FAILURE"
+      ]
+    }
+  }
+}

@@ -1,0 +1,401 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:paragraph-layout-request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ParagraphLayoutRequest",
+  "type": "object",
+  "properties": {
+    "overflow": {
+      "$ref": "#/$defs/OverflowPolicy"
+    },
+    "paragraph": {
+      "$ref": "#/$defs/ParagraphShapeRequest"
+    },
+    "spacing": {
+      "$ref": "#/$defs/LineSpacing"
+    },
+    "strutStyle": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0
+    },
+    "styles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/GeometryStyle"
+      }
+    },
+    "width": {
+      "$ref": "#/$defs/Emu"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "paragraph",
+    "styles",
+    "strutStyle",
+    "spacing",
+    "width",
+    "overflow"
+  ],
+  "$defs": {
+    "BaselineShift": {
+      "description": "Keep legacy integer-EMU inputs while allowing native percentages to reach\nlayout without an intermediate integer-EMU rounding. Equality is numeric.",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Emu"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "q32": {
+              "$ref": "#/$defs/FixedQ32"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "q32"
+          ]
+        }
+      ]
+    },
+    "ByteLength": {
+      "description": "Canonical uint64 byte length. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9]"
+      },
+      "pattern": "^(0|[1-9][0-9]{0,19})$",
+      "x-integer-maximum": "18446744073709551615",
+      "x-integer-minimum": "0"
+    },
+    "CascadeFont": {
+      "description": "Explicit resource bundle bindings, not system font names or legal permissions.",
+      "type": "object",
+      "properties": {
+        "byteLength": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "expectedSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "faceIndex": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "offset": {
+          "$ref": "#/$defs/ByteLength"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "expectedSha256",
+        "faceIndex",
+        "offset",
+        "byteLength"
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "Emu": {
+      "description": "Signed int64 EMU. 1 point = 12700 EMU. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,18})$",
+      "x-integer-maximum": "9223372036854775807",
+      "x-integer-minimum": "-9223372036854775808"
+    },
+    "FixedQ32": {
+      "description": "Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,38})$",
+      "x-integer-maximum": "170141183460469231731687303715884105727",
+      "x-integer-minimum": "-170141183460469231731687303715884105728"
+    },
+    "FontCandidate": {
+      "type": "object",
+      "properties": {
+        "font": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "variations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ShapeVariation"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "font",
+        "variations"
+      ]
+    },
+    "GeometryStyle": {
+      "type": "object",
+      "properties": {
+        "baselineShift": {
+          "description": "Positive values raise the baseline in the y-down output coordinate system.",
+          "$ref": "#/$defs/BaselineShift"
+        },
+        "clusterSpacing": {
+          "description": "Extra visual trailing advance per shaped cluster, including the final\ncluster on a line. Never inserted between glyphs in the same cluster.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "fontSize": {
+          "$ref": "#/$defs/Emu"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "fontSize",
+        "baselineShift"
+      ]
+    },
+    "LineSpacing": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "natural"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "height": {
+              "$ref": "#/$defs/Emu"
+            },
+            "kind": {
+              "type": "string",
+              "const": "exact"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "height"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "height": {
+              "$ref": "#/$defs/Emu"
+            },
+            "kind": {
+              "type": "string",
+              "const": "atLeast"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "height"
+          ]
+        },
+        {
+          "description": "One nonnegative Q32 height per geometry style. Each line uses the\nmaximum among its text items; a text-free line uses the strut style.\nNative percentage policies are resolved once by the source compiler.",
+          "type": "object",
+          "properties": {
+            "heights": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/FixedQ32"
+              }
+            },
+            "kind": {
+              "type": "string",
+              "const": "styleMaximum"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "heights"
+          ]
+        }
+      ]
+    },
+    "OverflowPolicy": {
+      "type": "string",
+      "enum": [
+        "keepUnbreakable",
+        "emergencyGrapheme"
+      ]
+    },
+    "ParagraphDirection": {
+      "type": "string",
+      "enum": [
+        "autoLeftToRight",
+        "leftToRight",
+        "rightToLeft"
+      ]
+    },
+    "ParagraphShapeRequest": {
+      "type": "object",
+      "properties": {
+        "direction": {
+          "$ref": "#/$defs/ParagraphDirection"
+        },
+        "fonts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CascadeFont"
+          }
+        },
+        "spans": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/StyleSpan"
+          }
+        },
+        "styles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ParagraphTextStyle"
+          }
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "text",
+        "direction",
+        "spans",
+        "styles",
+        "fonts"
+      ]
+    },
+    "ParagraphTextStyle": {
+      "type": "object",
+      "properties": {
+        "candidates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FontCandidate"
+          }
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ShapeFeature"
+          }
+        },
+        "language": {
+          "type": "string"
+        },
+        "maxGlyphs": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "suppressDottedCircle": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "language",
+        "features",
+        "candidates",
+        "suppressDottedCircle",
+        "maxGlyphs"
+      ]
+    },
+    "ShapeFeature": {
+      "type": "object",
+      "properties": {
+        "end": {
+          "description": "None means through the end of the full logical text.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "start": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "tag": {
+          "type": "string"
+        },
+        "value": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "tag",
+        "value",
+        "start"
+      ]
+    },
+    "ShapeVariation": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string"
+        },
+        "value1616": {
+          "description": "Exact requested OpenType 16.16 design coordinate.",
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "tag",
+        "value1616"
+      ]
+    },
+    "StyleSpan": {
+      "type": "object",
+      "properties": {
+        "end": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "style": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "end",
+        "style"
+      ]
+    }
+  }
+}

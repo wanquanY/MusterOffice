@@ -1,0 +1,1063 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:image-raster-request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ImageRasterRequest",
+  "type": "object",
+  "properties": {
+    "images": {
+      "description": "Contiguous packed planes in this order, supplied separately as bytes.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ImageResource"
+      }
+    },
+    "raster": {
+      "$ref": "#/$defs/PathRasterRequest"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "raster",
+    "images"
+  ],
+  "$defs": {
+    "BlendMode": {
+      "description": "Porter-Duff composition, separate from the source brush and geometry mask.",
+      "type": "string",
+      "enum": [
+        "sourceOver",
+        "source"
+      ]
+    },
+    "Brush": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "solid"
+            },
+            "rgba": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 4,
+              "minItems": 4
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "rgba"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "gradient": {
+              "$ref": "#/$defs/Gradient"
+            },
+            "kind": {
+              "type": "string",
+              "const": "gradient"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "gradient"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "image": {
+              "$ref": "#/$defs/ImageBrush"
+            },
+            "kind": {
+              "type": "string",
+              "const": "image"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "image"
+          ]
+        },
+        {
+          "description": "Immutable full-viewport pixels after this many preceding draws. Zero\ncaptures the clear color. Device-aligned; path/view transforms do not\nmove it. Draw order is part of the reference, not a host resource ID.",
+          "type": "object",
+          "properties": {
+            "afterDraws": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "snapshot"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "afterDraws"
+          ]
+        }
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "FillPath": {
+      "type": "object",
+      "properties": {
+        "commands": {
+          "description": "Local Q32 EMU; open contours are implicitly closed for filling.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PathCommand"
+          }
+        },
+        "fillRule": {
+          "$ref": "#/$defs/FillRule"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "fillRule",
+        "commands"
+      ]
+    },
+    "FillRule": {
+      "type": "string",
+      "enum": [
+        "nonzero",
+        "evenodd"
+      ]
+    },
+    "FixedQ32": {
+      "description": "Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,38})$",
+      "x-integer-maximum": "170141183460469231731687303715884105727",
+      "x-integer-minimum": "-170141183460469231731687303715884105728"
+    },
+    "Gradient": {
+      "type": "object",
+      "properties": {
+        "alpha": {
+          "$ref": "#/$defs/GradientAlpha"
+        },
+        "geometry": {
+          "$ref": "#/$defs/GradientGeometry"
+        },
+        "interpolation": {
+          "$ref": "#/$defs/GradientInterpolation"
+        },
+        "stops": {
+          "description": "Nondecreasing positions in [0,1]. Repeated positions are hard stops.\nMissing endpoint positions extend the first/last color to that endpoint.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/GradientStop"
+          }
+        },
+        "tile": {
+          "$ref": "#/$defs/GradientTile"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "geometry",
+        "stops",
+        "tile",
+        "interpolation",
+        "alpha"
+      ]
+    },
+    "GradientAlpha": {
+      "type": "string",
+      "enum": [
+        "straight",
+        "premultiplied"
+      ]
+    },
+    "GradientAxisTile": {
+      "type": "string",
+      "enum": [
+        "clamp",
+        "repeat",
+        "mirror"
+      ]
+    },
+    "GradientField": {
+      "oneOf": [
+        {
+          "description": "First closed ellipse membership for q=((2u-1)*scaleX,(2v-1)*scaleY).\nAt t=0 the ellipse has innerCenter and innerRadii; at t=1 it is the\nunit circle at the origin. Non-nested families use the first entry.",
+          "type": "object",
+          "properties": {
+            "innerCenter": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/FixedQ32"
+              },
+              "maxItems": 2,
+              "minItems": 2
+            },
+            "innerRadii": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/FixedQ32"
+              },
+              "maxItems": 2,
+              "minItems": 2
+            },
+            "kind": {
+              "type": "string",
+              "const": "elliptic"
+            },
+            "tileScale": {
+              "description": "Each dimensionless scale is in (0,1].",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/FixedQ32"
+              },
+              "maxItems": 2,
+              "minItems": 2
+            },
+            "uncertainty": {
+              "description": "Nonnegative Q32 errors ordered scaleX/Y, centerX/Y, radiusX/Y.\nThey bound geometry parameters, not a uniform scalar/color error.",
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "$ref": "#/$defs/FixedQ32"
+              },
+              "maxItems": 6,
+              "minItems": 6
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "tileScale",
+            "innerCenter",
+            "innerRadii"
+          ]
+        },
+        {
+          "description": "t = coefficients[0] * u + coefficients[1] * v + coefficients[2].\nu,v are the independently tiled/clamped coordinates in [0,1].",
+          "type": "object",
+          "properties": {
+            "coefficients": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/FixedQ32"
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "kind": {
+              "type": "string",
+              "const": "linear"
+            },
+            "uncertainty": {
+              "description": "Nonnegative dimensionless Q32 errors, before float conversion.",
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "$ref": "#/$defs/FixedQ32"
+              },
+              "maxItems": 3,
+              "minItems": 3
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "coefficients"
+          ]
+        },
+        {
+          "description": "Maximum of four inward edge fields and zero. Rates are ordered left,\ntop, right, bottom; a zero rate disables that edge. Positive rates give\n1-u*left, 1-v*top, 1-(1-u)*right and 1-(1-v)*bottom respectively.",
+          "type": "object",
+          "properties": {
+            "edgeRates": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/FixedQ32"
+              },
+              "maxItems": 4,
+              "minItems": 4
+            },
+            "kind": {
+              "type": "string",
+              "const": "rectangular"
+            },
+            "uncertainty": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "$ref": "#/$defs/FixedQ32"
+              },
+              "maxItems": 4,
+              "minItems": 4
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "edgeRates"
+          ]
+        }
+      ]
+    },
+    "GradientGeometry": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "end": {
+              "$ref": "#/$defs/Point"
+            },
+            "kind": {
+              "type": "string",
+              "const": "linear"
+            },
+            "start": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "start",
+            "end"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "center": {
+              "$ref": "#/$defs/Point"
+            },
+            "kind": {
+              "type": "string",
+              "const": "radial"
+            },
+            "radius": {
+              "$ref": "#/$defs/FixedQ32"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "center",
+            "radius"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "$ref": "#/$defs/GradientField"
+            },
+            "kind": {
+              "type": "string",
+              "const": "plane"
+            },
+            "plane": {
+              "$ref": "#/$defs/GradientPlane"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "plane",
+            "field"
+          ]
+        }
+      ]
+    },
+    "GradientInterpolation": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "srgb",
+            "linearSrgb"
+          ]
+        },
+        {
+          "description": "Office's endpoint-pair RGB curve, exponent 15/8; alpha stays linear.\nRequires two endpoint stops or a symmetric three-stop ramp, straight alpha.",
+          "type": "string",
+          "const": "officeGamma1875"
+        }
+      ]
+    },
+    "GradientPlane": {
+      "type": "object",
+      "properties": {
+        "origin": {
+          "description": "World Q32 EMU position of the unit tile's top-left corner.",
+          "$ref": "#/$defs/Point"
+        },
+        "tileX": {
+          "$ref": "#/$defs/GradientAxisTile"
+        },
+        "tileY": {
+          "$ref": "#/$defs/GradientAxisTile"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/GradientPlaneUncertainty"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "xStep": {
+          "description": "World displacement for a unit change in each tile coordinate.",
+          "$ref": "#/$defs/Point"
+        },
+        "yStep": {
+          "$ref": "#/$defs/Point"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "origin",
+        "xStep",
+        "yStep",
+        "tileX",
+        "tileY"
+      ]
+    },
+    "GradientPlaneUncertainty": {
+      "type": "object",
+      "properties": {
+        "origin": {
+          "description": "Nonnegative Q32 world EMU error per input parameter.",
+          "$ref": "#/$defs/Point"
+        },
+        "xStep": {
+          "$ref": "#/$defs/Point"
+        },
+        "yStep": {
+          "$ref": "#/$defs/Point"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "origin",
+        "xStep",
+        "yStep"
+      ]
+    },
+    "GradientStop": {
+      "type": "object",
+      "properties": {
+        "position": {
+          "type": "number",
+          "format": "double"
+        },
+        "srgb": {
+          "description": "Straight sRGB working channels. Finite RGB may exceed [0,1]; alpha must\nbe in [0,1]. No RGBA8 quantization is performed before interpolation.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxItems": 4,
+          "minItems": 4
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "position",
+        "srgb"
+      ]
+    },
+    "GradientTile": {
+      "type": "string",
+      "enum": [
+        "clamp",
+        "repeat",
+        "mirror",
+        "decal"
+      ]
+    },
+    "ImageAlpha": {
+      "type": "string",
+      "enum": [
+        "straight",
+        "premultiplied"
+      ]
+    },
+    "ImageBrush": {
+      "type": "object",
+      "properties": {
+        "origin": {
+          "description": "World Q32 EMU position of source pixel boundary (0, 0).",
+          "$ref": "#/$defs/Point"
+        },
+        "resource": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "sampling": {
+          "$ref": "#/$defs/ImageSampling"
+        },
+        "sourceDomain": {
+          "description": "Optional continuous source pixel domain; may extend beyond the resource\ninto transparent space. Coordinates are Q32 pixels, not world EMU.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ImageSourceDomain"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tileX": {
+          "$ref": "#/$defs/ImageTile"
+        },
+        "tileY": {
+          "$ref": "#/$defs/ImageTile"
+        },
+        "uncertainty": {
+          "description": "Outward errors from upstream layout/placement. These participate in the\nsame device budget as float conversion, including repeated tile phase.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ImageBrushUncertainty"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "xStep": {
+          "description": "World Q32 EMU displacement per source pixel, not endpoint coordinates.",
+          "$ref": "#/$defs/Point"
+        },
+        "yStep": {
+          "$ref": "#/$defs/Point"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "resource",
+        "origin",
+        "xStep",
+        "yStep",
+        "tileX",
+        "tileY",
+        "sampling"
+      ]
+    },
+    "ImageBrushUncertainty": {
+      "type": "object",
+      "properties": {
+        "origin": {
+          "description": "Nonnegative Q32 world EMU errors; rebase never changes these bounds.",
+          "$ref": "#/$defs/Point"
+        },
+        "sourceDomain": {
+          "description": "Nonnegative Q32 source pixel errors, left/top/right/bottom. Must be zero\nwhen the brush has no explicit source domain.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FixedQ32"
+          },
+          "maxItems": 4,
+          "minItems": 4
+        },
+        "xStep": {
+          "description": "Nonnegative Q32 world EMU per source pixel.",
+          "$ref": "#/$defs/Point"
+        },
+        "yStep": {
+          "$ref": "#/$defs/Point"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "origin",
+        "xStep",
+        "yStep",
+        "sourceDomain"
+      ]
+    },
+    "ImageResource": {
+      "type": "object",
+      "properties": {
+        "alpha": {
+          "$ref": "#/$defs/ImageAlpha"
+        },
+        "height": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "sha256": {
+          "description": "Hash of tightly packed, row-major RGBA8 bytes for this resource.",
+          "$ref": "#/$defs/Digest"
+        },
+        "width": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height",
+        "alpha",
+        "sha256"
+      ]
+    },
+    "ImageSampling": {
+      "type": "string",
+      "enum": [
+        "nearest",
+        "linear"
+      ]
+    },
+    "ImageSourceDomain": {
+      "type": "object",
+      "properties": {
+        "bottom": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "left": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "right": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "top": {
+          "$ref": "#/$defs/FixedQ32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "left",
+        "top",
+        "right",
+        "bottom"
+      ]
+    },
+    "ImageTile": {
+      "type": "string",
+      "enum": [
+        "clamp",
+        "repeat",
+        "mirror",
+        "decal"
+      ]
+    },
+    "PathClip": {
+      "description": "A reusable intersection of a filled path with its parent or the viewport.\nEmpty paths clip everything. Origin is world Q32 EMU, independent of draws.",
+      "type": "object",
+      "properties": {
+        "origin": {
+          "$ref": "#/$defs/Point"
+        },
+        "parent": {
+          "description": "Parents must precede children. Maximum depth 64, maximum 8192 nodes.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "path": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "origin"
+      ]
+    },
+    "PathCommand": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "move"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "line"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "control": {
+              "$ref": "#/$defs/Point"
+            },
+            "kind": {
+              "type": "string",
+              "const": "quadratic"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "control",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "control1": {
+              "$ref": "#/$defs/Point"
+            },
+            "control2": {
+              "$ref": "#/$defs/Point"
+            },
+            "kind": {
+              "type": "string",
+              "const": "cubic"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "control1",
+            "control2",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "close"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "PathDraw": {
+      "type": "object",
+      "properties": {
+        "blend": {
+          "$ref": "#/$defs/BlendMode"
+        },
+        "brush": {
+          "$ref": "#/$defs/Brush"
+        },
+        "clip": {
+          "description": "Last intersection node; None uses the viewport alone.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "origin": {
+          "$ref": "#/$defs/Point"
+        },
+        "path": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "stroke": {
+          "description": "None fills; Some strokes the path, without implicitly closing contours.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/StrokeStyle"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "origin",
+        "brush"
+      ]
+    },
+    "PathRasterRequest": {
+      "type": "object",
+      "properties": {
+        "clips": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PathClip"
+          }
+        },
+        "draws": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PathDraw"
+          }
+        },
+        "paths": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FillPath"
+          }
+        },
+        "viewport": {
+          "$ref": "#/$defs/RasterViewport"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "viewport",
+        "paths",
+        "draws"
+      ]
+    },
+    "PixelScale": {
+      "type": "object",
+      "properties": {
+        "denominator": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "numerator": {
+          "description": "Positive rational pixels per EMU; normalized internally.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "numerator",
+        "denominator"
+      ]
+    },
+    "Point": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "y": {
+          "$ref": "#/$defs/FixedQ32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "RasterViewport": {
+      "type": "object",
+      "properties": {
+        "background": {
+          "description": "Straight sRGB RGBA8; output is premultiplied.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint8",
+            "maximum": 255,
+            "minimum": 0
+          },
+          "maxItems": 4,
+          "minItems": 4
+        },
+        "coordinateTolerance": {
+          "description": "Raw Q32 pixels; 256..=2^24 (at most 1/256 pixel).",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "height": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "origin": {
+          "description": "Q32 EMU. Subtracted before converting to device-space float32.",
+          "$ref": "#/$defs/Point"
+        },
+        "scale": {
+          "$ref": "#/$defs/PixelScale"
+        },
+        "width": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height",
+        "origin",
+        "scale",
+        "coordinateTolerance",
+        "background"
+      ]
+    },
+    "StrokeCap": {
+      "type": "string",
+      "enum": [
+        "butt",
+        "round",
+        "square"
+      ]
+    },
+    "StrokeJoin": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "miter"
+            },
+            "limit": {
+              "$ref": "#/$defs/FixedQ32"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "limit"
+          ]
+        },
+        {
+          "description": "Limit 1..=1024, dimensionless Q32. Clip perpendicular to the exterior\nbisector at half-width * limit. Exact reversals use a bevel join.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "miterClip"
+            },
+            "limit": {
+              "$ref": "#/$defs/FixedQ32"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "limit"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "round"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "bevel"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "StrokeStyle": {
+      "type": "object",
+      "properties": {
+        "cap": {
+          "$ref": "#/$defs/StrokeCap"
+        },
+        "join": {
+          "$ref": "#/$defs/StrokeJoin"
+        },
+        "width": {
+          "description": "Q32 page/world EMU. Zero explicitly requests a device hairline.",
+          "$ref": "#/$defs/FixedQ32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "cap",
+        "join"
+      ]
+    }
+  }
+}

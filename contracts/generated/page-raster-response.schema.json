@@ -1,0 +1,680 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:page-raster-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PageRasterResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "info": {
+          "$ref": "#/$defs/PageRasterInfo"
+        },
+        "status": {
+          "type": "string",
+          "const": "rendered"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "info"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/PageFailure"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "error"
+      ]
+    }
+  ],
+  "$defs": {
+    "ByteLength": {
+      "description": "Canonical uint64 byte length. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9]"
+      },
+      "pattern": "^(0|[1-9][0-9]{0,19})$",
+      "x-integer-maximum": "18446744073709551615",
+      "x-integer-minimum": "0"
+    },
+    "ClipWork": {
+      "type": "object",
+      "properties": {
+        "applications": {
+          "description": "Actual pushes when preserving common ancestors between consecutive draws.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "appliedCommands": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "maximumDepth": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "nodes": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "placementCommands": {
+          "description": "All supplied clip path commands checked during device placement.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "placementCommands",
+        "nodes",
+        "maximumDepth",
+        "applications",
+        "appliedCommands"
+      ]
+    },
+    "CompositeWork": {
+      "type": "object",
+      "properties": {
+        "capturedBytes": {
+          "description": "Exact packed pixel bytes copied for all snapshots; not process RSS.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "captures": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "snapshotDraws": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "sourceDraws": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "captures",
+        "capturedBytes",
+        "snapshotDraws",
+        "sourceDraws"
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "EllipticGradientWork": {
+      "description": "Maximum across elliptic fields; excludes pixel coverage and shader inverse arithmetic.",
+      "type": "object",
+      "properties": {
+        "coordinateErrorBound": {
+          "description": "Conservative device Q32 displacement of corresponding ellipse-family\npoints from parameter/plane conversion, including the tile phase budget.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "encodedRootIntervalBound": {
+          "description": "Q32 width of a successful solver enclosure for the encoded binary32\nfield. Not a bound on the source field's scalar or on pixel color.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "parameterErrorBounds": {
+          "description": "Dimensionless Q32 source uncertainty plus binary32 conversion error,\nordered scaleX/Y, centerX/Y, radiusX/Y.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FixedQ32"
+          },
+          "maxItems": 6,
+          "minItems": 6
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "parameterErrorBounds",
+        "coordinateErrorBound",
+        "encodedRootIntervalBound"
+      ]
+    },
+    "FixedQ32": {
+      "description": "Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,38})$",
+      "x-integer-maximum": "170141183460469231731687303715884105727",
+      "x-integer-minimum": "-170141183460469231731687303715884105728"
+    },
+    "ObjectId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "PageFailure": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/PageFailureCode"
+        },
+        "feature": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PageFeature"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "message": {
+          "type": "string"
+        },
+        "object": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObjectId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "report": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ValidationReport"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "PageFailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "LIMIT_EXCEEDED",
+        "COORDINATE_RANGE",
+        "PRECISION_EXCEEDED",
+        "CANCELLED",
+        "MAPPING_NOT_IMPLEMENTED",
+        "COMPONENT_FAILURE",
+        "COMPONENT_INVALID",
+        "HOST_FAILURE"
+      ]
+    },
+    "PageFeature": {
+      "type": "string",
+      "enum": [
+        "shapeText",
+        "picture",
+        "connector",
+        "inheritedFill",
+        "inheritedStroke",
+        "unresolvedStrokeParameters",
+        "groupStroke",
+        "missingThemeColor"
+      ]
+    },
+    "PagePlanInfo": {
+      "type": "object",
+      "properties": {
+        "authorCoordinateErrorBound": {
+          "description": "Raw Q32 pixels, including author matrix quantization at control points.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "authorMiterLimitErrorBound": {
+          "description": "Author percentage -> Draw IR conversion, dimensionless raw Q32.\nSeparate from device miter quantization and pixel coordinate budgets.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "curveSegments": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "documentSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "generatedCommands": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "geometryCoordinateErrorBound": {
+          "description": "Raw Q32 pixels: curve approximation + control-coordinate quantization.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "hidden": {
+          "type": "boolean"
+        },
+        "placementProfile": {
+          "type": "string"
+        },
+        "profile": {
+          "type": "string"
+        },
+        "slide": {
+          "$ref": "#/$defs/SlideId"
+        },
+        "sourceObjects": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "placementProfile",
+        "documentSha256",
+        "slide",
+        "hidden",
+        "sourceObjects",
+        "generatedCommands",
+        "curveSegments",
+        "authorCoordinateErrorBound",
+        "geometryCoordinateErrorBound",
+        "authorMiterLimitErrorBound"
+      ]
+    },
+    "PageRasterInfo": {
+      "type": "object",
+      "properties": {
+        "combinedCoordinateErrorBound": {
+          "description": "All three stages, in raw Q32 pixels; not a raster coverage error bound.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "page": {
+          "$ref": "#/$defs/PagePlanInfo"
+        },
+        "scene": {
+          "$ref": "#/$defs/SceneRasterInfo"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "page",
+        "scene",
+        "combinedCoordinateErrorBound"
+      ]
+    },
+    "RasterInfo": {
+      "type": "object",
+      "properties": {
+        "byteLength": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "frameSha256": {
+          "description": "SHA-256 of the little-endian device batch; use together with profile.",
+          "$ref": "#/$defs/Digest"
+        },
+        "height": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "profile": {
+          "type": "string"
+        },
+        "sha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "width": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "work": {
+          "$ref": "#/$defs/RasterWork"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "width",
+        "height",
+        "byteLength",
+        "sha256",
+        "frameSha256",
+        "work"
+      ]
+    },
+    "RasterWork": {
+      "type": "object",
+      "properties": {
+        "clips": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ClipWork"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "commands": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "compositing": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompositeWork"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "coordinateErrorBound": {
+          "description": "Conservative maximum error of the transformed control coordinates,\nmeasured in raw Q32 pixels. Not a raster coverage error bound.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "drawnCommands": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "draws": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "ellipticGradients": {
+          "description": "Only present for V12 ellipse fields. Geometry and solver errors are separate.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EllipticGradientWork"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "gradientCoordinateErrorBound": {
+          "description": "Device geometry input quantization, not a bound on shader evaluation or pixels.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "gradientDraws": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "gradientStops": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "gradientValueErrorBound": {
+          "description": "Maximum stop/color conversion or linear/rectangular field error.\nElliptic parameter and root bounds are reported separately.",
+          "type": "number",
+          "format": "double"
+        },
+        "gradients": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "miterLimitErrorBound": {
+          "description": "Dimensionless raw Q32; not added to pixel coordinate budgets.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "paths": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "strokeDraws": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "strokeStyles": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "strokeWidthErrorBound": {
+          "description": "Width quantization, in raw Q32 pixels; not an ink boundary error bound.",
+          "$ref": "#/$defs/FixedQ32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "paths",
+        "commands",
+        "draws",
+        "drawnCommands",
+        "coordinateErrorBound",
+        "strokeStyles",
+        "strokeDraws",
+        "strokeWidthErrorBound",
+        "miterLimitErrorBound",
+        "gradients",
+        "gradientStops",
+        "gradientDraws",
+        "gradientCoordinateErrorBound",
+        "gradientValueErrorBound"
+      ]
+    },
+    "SceneClipWork": {
+      "type": "object",
+      "properties": {
+        "compiledNodes": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "sourceNodes": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceNodes",
+        "compiledNodes"
+      ]
+    },
+    "SceneRasterInfo": {
+      "type": "object",
+      "properties": {
+        "profile": {
+          "type": "string"
+        },
+        "raster": {
+          "$ref": "#/$defs/RasterInfo"
+        },
+        "work": {
+          "$ref": "#/$defs/SceneWork"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "raster",
+        "work"
+      ]
+    },
+    "SceneWork": {
+      "type": "object",
+      "properties": {
+        "clips": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SceneClipWork"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "combinedCoordinateErrorBound": {
+          "description": "Transform + final device quantization, raw Q32 pixels.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "compiledCommands": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "compiledPaths": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "evaluatedPoints": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "loweringAttempts": {
+          "description": "2 means the shared matrix candidate failed numeric/precision checks and\nlowering used the original node chain before any backend call.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "maximumDepth": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "pointTransformWork": {
+          "description": "Conservative point/node work per attempt, including identity instances.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "sourceCommands": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "sourcePaths": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "transformErrorBound": {
+          "description": "Quantization/composition error bound, raw Q32 document units (EMU).",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "transforms": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "loweringAttempts",
+        "sourcePaths",
+        "sourceCommands",
+        "transforms",
+        "maximumDepth",
+        "evaluatedPoints",
+        "pointTransformWork",
+        "compiledPaths",
+        "compiledCommands",
+        "transformErrorBound",
+        "combinedCoordinateErrorBound"
+      ]
+    },
+    "SlideId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ValidationCode": {
+      "type": "string",
+      "enum": [
+        "IDENTITY_MISMATCH",
+        "MISSING_REFERENCE",
+        "DUPLICATE_IDENTITY",
+        "INVALID_VALUE",
+        "OWNERSHIP_CONFLICT",
+        "REFERENCE_CYCLE",
+        "LIMIT_EXCEEDED"
+      ]
+    },
+    "ValidationIssue": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/ValidationCode"
+        },
+        "message": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "path",
+        "message"
+      ]
+    },
+    "ValidationReport": {
+      "type": "object",
+      "properties": {
+        "issues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ValidationIssue"
+          }
+        },
+        "truncated": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "issues",
+        "truncated"
+      ]
+    }
+  }
+}

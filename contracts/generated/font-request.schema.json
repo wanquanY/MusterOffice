@@ -1,0 +1,61 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:font-request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FontRequest",
+  "type": "object",
+  "properties": {
+    "characters": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/FontCharacter"
+      }
+    },
+    "expectedSha256": {
+      "$ref": "#/$defs/Digest"
+    },
+    "faceIndex": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "expectedSha256",
+    "faceIndex",
+    "characters"
+  ],
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "FontCharacter": {
+      "type": "object",
+      "properties": {
+        "codepoint": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "variationSelector": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "codepoint"
+      ]
+    }
+  }
+}

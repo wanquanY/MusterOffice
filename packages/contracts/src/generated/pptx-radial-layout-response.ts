@@ -1,0 +1,958 @@
+/* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
+
+export type PptxRadialLayoutResponse =
+  | {
+      plans: SourceRadialLayoutPlan[];
+      status: "evaluated";
+    }
+  | {
+      error: PptxFailure;
+      status: "error";
+    };
+/**
+ * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
+ */
+export type FixedQ32 = string;
+/**
+ * Signed int64 EMU. 1 point = 12700 EMU. Range requires semantic validation.
+ */
+export type Emu = string;
+export type TransformValueSource =
+  | {
+      kind: "declaration";
+      object: SourceObjectRef;
+    }
+  | {
+      kind: "default";
+      object: SourceObjectRef;
+    };
+export type Digest = string;
+export type EffectiveFill =
+  | {
+      declaredBy: FillOrigin;
+      kind: "none";
+    }
+  | {
+      color: FillColorExpression;
+      declaredBy: FillOrigin;
+      kind: "solid";
+    }
+  | {
+      declaredBy: FillOrigin;
+      gradient: EffectiveGradientFill;
+      kind: "gradient";
+    }
+  | {
+      declaredBy: FillOrigin;
+      kind: "pattern";
+      pattern: EffectivePatternFill;
+    }
+  | {
+      declaredBy: FillOrigin;
+      image: EffectiveImageFill;
+      kind: "image";
+    };
+export type FillOrigin =
+  | {
+      kind: "declaration";
+      owner: FillOwner;
+      sourceOrdinal: number;
+    }
+  | {
+      kind: "theme";
+      part: string;
+      referenceOrdinal: number;
+      sourceOrdinal: number;
+      styleIndex: number;
+      via: FillOwner;
+    }
+  | {
+      kind: "schemaDefault";
+      part: string;
+      sourceOrdinal: number;
+    }
+  | {
+      kind: "profileDefault";
+    };
+export type FillTarget =
+  | {
+      kind: "object";
+      nativeId: number;
+    }
+  | {
+      kind: "line";
+      nativeId: number;
+    }
+  | {
+      kind: "picture";
+      nativeId: number;
+    }
+  | {
+      kind: "rootGroup";
+    }
+  | {
+      kind: "background";
+    };
+export type SourceColorTransform =
+  | {
+      kind: "tint";
+      value: NativePercentage;
+    }
+  | {
+      kind: "shade";
+      value: NativePercentage;
+    }
+  | {
+      kind: "comp";
+    }
+  | {
+      kind: "inv";
+    }
+  | {
+      kind: "gray";
+    }
+  | {
+      kind: "alpha";
+      value: NativePercentage;
+    }
+  | {
+      kind: "alphaOff";
+      value: NativePercentage;
+    }
+  | {
+      kind: "alphaMod";
+      value: NativePercentage;
+    }
+  | {
+      kind: "hue";
+      value: number;
+    }
+  | {
+      kind: "hueOff";
+      value: number;
+    }
+  | {
+      kind: "hueMod";
+      value: NativePercentage;
+    }
+  | {
+      kind: "sat";
+      value: NativePercentage;
+    }
+  | {
+      kind: "satOff";
+      value: NativePercentage;
+    }
+  | {
+      kind: "satMod";
+      value: NativePercentage;
+    }
+  | {
+      kind: "lum";
+      value: NativePercentage;
+    }
+  | {
+      kind: "lumOff";
+      value: NativePercentage;
+    }
+  | {
+      kind: "lumMod";
+      value: NativePercentage;
+    }
+  | {
+      kind: "red";
+      value: NativePercentage;
+    }
+  | {
+      kind: "redOff";
+      value: NativePercentage;
+    }
+  | {
+      kind: "redMod";
+      value: NativePercentage;
+    }
+  | {
+      kind: "green";
+      value: NativePercentage;
+    }
+  | {
+      kind: "greenOff";
+      value: NativePercentage;
+    }
+  | {
+      kind: "greenMod";
+      value: NativePercentage;
+    }
+  | {
+      kind: "blue";
+      value: NativePercentage;
+    }
+  | {
+      kind: "blueOff";
+      value: NativePercentage;
+    }
+  | {
+      kind: "blueMod";
+      value: NativePercentage;
+    }
+  | {
+      kind: "gamma";
+    }
+  | {
+      kind: "invGamma";
+    };
+/**
+ * Exact native percentage: int32 thousandths of a percent or decimal percent; ranges depend on use.
+ */
+export type NativePercentage = string;
+export type SourceColorValue =
+  | {
+      kind: "srgb";
+      /**
+       * @minItems 3
+       * @maxItems 3
+       */
+      rgb: [number, number, number];
+    }
+  | {
+      blue: NativePercentage;
+      green: NativePercentage;
+      kind: "scRgb";
+      red: NativePercentage;
+    }
+  | {
+      hue: number;
+      kind: "hsl";
+      luminance: NativePercentage;
+      saturation: NativePercentage;
+    }
+  | {
+      color: SystemColor;
+      kind: "system";
+      /**
+       * @minItems 3
+       * @maxItems 3
+       */
+      lastColor?: [number, number, number] | null;
+    }
+  | {
+      kind: "scheme";
+      slot: SchemeColor;
+    }
+  | {
+      color: PresetColor;
+      kind: "preset";
+    };
+export type SystemColor =
+  | "scrollBar"
+  | "background"
+  | "activeCaption"
+  | "inactiveCaption"
+  | "menu"
+  | "window"
+  | "windowFrame"
+  | "menuText"
+  | "windowText"
+  | "captionText"
+  | "activeBorder"
+  | "inactiveBorder"
+  | "appWorkspace"
+  | "highlight"
+  | "highlightText"
+  | "btnFace"
+  | "btnShadow"
+  | "grayText"
+  | "btnText"
+  | "inactiveCaptionText"
+  | "btnHighlight"
+  | "3dDkShadow"
+  | "3dLight"
+  | "infoText"
+  | "infoBk"
+  | "hotLight"
+  | "gradientActiveCaption"
+  | "gradientInactiveCaption"
+  | "menuHighlight"
+  | "menuBar";
+export type SchemeColor =
+  | "bg1"
+  | "tx1"
+  | "bg2"
+  | "tx2"
+  | "accent1"
+  | "accent2"
+  | "accent3"
+  | "accent4"
+  | "accent5"
+  | "accent6"
+  | "hlink"
+  | "folHlink"
+  | "phClr"
+  | "dk1"
+  | "lt1"
+  | "dk2"
+  | "lt2";
+export type PresetColor =
+  | "aliceBlue"
+  | "antiqueWhite"
+  | "aqua"
+  | "aquamarine"
+  | "azure"
+  | "beige"
+  | "bisque"
+  | "black"
+  | "blanchedAlmond"
+  | "blue"
+  | "blueViolet"
+  | "brown"
+  | "burlyWood"
+  | "cadetBlue"
+  | "chartreuse"
+  | "chocolate"
+  | "coral"
+  | "cornflowerBlue"
+  | "cornsilk"
+  | "crimson"
+  | "cyan"
+  | "darkBlue"
+  | "darkCyan"
+  | "darkGoldenrod"
+  | "darkGray"
+  | "darkGrey"
+  | "darkGreen"
+  | "darkKhaki"
+  | "darkMagenta"
+  | "darkOliveGreen"
+  | "darkOrange"
+  | "darkOrchid"
+  | "darkRed"
+  | "darkSalmon"
+  | "darkSeaGreen"
+  | "darkSlateBlue"
+  | "darkSlateGray"
+  | "darkSlateGrey"
+  | "darkTurquoise"
+  | "darkViolet"
+  | "dkBlue"
+  | "dkCyan"
+  | "dkGoldenrod"
+  | "dkGray"
+  | "dkGrey"
+  | "dkGreen"
+  | "dkKhaki"
+  | "dkMagenta"
+  | "dkOliveGreen"
+  | "dkOrange"
+  | "dkOrchid"
+  | "dkRed"
+  | "dkSalmon"
+  | "dkSeaGreen"
+  | "dkSlateBlue"
+  | "dkSlateGray"
+  | "dkSlateGrey"
+  | "dkTurquoise"
+  | "dkViolet"
+  | "deepPink"
+  | "deepSkyBlue"
+  | "dimGray"
+  | "dimGrey"
+  | "dodgerBlue"
+  | "firebrick"
+  | "floralWhite"
+  | "forestGreen"
+  | "fuchsia"
+  | "gainsboro"
+  | "ghostWhite"
+  | "gold"
+  | "goldenrod"
+  | "gray"
+  | "grey"
+  | "green"
+  | "greenYellow"
+  | "honeydew"
+  | "hotPink"
+  | "indianRed"
+  | "indigo"
+  | "ivory"
+  | "khaki"
+  | "lavender"
+  | "lavenderBlush"
+  | "lawnGreen"
+  | "lemonChiffon"
+  | "lightBlue"
+  | "lightCoral"
+  | "lightCyan"
+  | "lightGoldenrodYellow"
+  | "lightGray"
+  | "lightGrey"
+  | "lightGreen"
+  | "lightPink"
+  | "lightSalmon"
+  | "lightSeaGreen"
+  | "lightSkyBlue"
+  | "lightSlateGray"
+  | "lightSlateGrey"
+  | "lightSteelBlue"
+  | "lightYellow"
+  | "ltBlue"
+  | "ltCoral"
+  | "ltCyan"
+  | "ltGoldenrodYellow"
+  | "ltGray"
+  | "ltGrey"
+  | "ltGreen"
+  | "ltPink"
+  | "ltSalmon"
+  | "ltSeaGreen"
+  | "ltSkyBlue"
+  | "ltSlateGray"
+  | "ltSlateGrey"
+  | "ltSteelBlue"
+  | "ltYellow"
+  | "lime"
+  | "limeGreen"
+  | "linen"
+  | "magenta"
+  | "maroon"
+  | "medAquamarine"
+  | "medBlue"
+  | "medOrchid"
+  | "medPurple"
+  | "medSeaGreen"
+  | "medSlateBlue"
+  | "medSpringGreen"
+  | "medTurquoise"
+  | "medVioletRed"
+  | "mediumAquamarine"
+  | "mediumBlue"
+  | "mediumOrchid"
+  | "mediumPurple"
+  | "mediumSeaGreen"
+  | "mediumSlateBlue"
+  | "mediumSpringGreen"
+  | "mediumTurquoise"
+  | "mediumVioletRed"
+  | "midnightBlue"
+  | "mintCream"
+  | "mistyRose"
+  | "moccasin"
+  | "navajoWhite"
+  | "navy"
+  | "oldLace"
+  | "olive"
+  | "oliveDrab"
+  | "orange"
+  | "orangeRed"
+  | "orchid"
+  | "paleGoldenrod"
+  | "paleGreen"
+  | "paleTurquoise"
+  | "paleVioletRed"
+  | "papayaWhip"
+  | "peachPuff"
+  | "peru"
+  | "pink"
+  | "plum"
+  | "powderBlue"
+  | "purple"
+  | "red"
+  | "rosyBrown"
+  | "royalBlue"
+  | "saddleBrown"
+  | "salmon"
+  | "sandyBrown"
+  | "seaGreen"
+  | "seaShell"
+  | "sienna"
+  | "silver"
+  | "skyBlue"
+  | "slateBlue"
+  | "slateGray"
+  | "slateGrey"
+  | "snow"
+  | "springGreen"
+  | "steelBlue"
+  | "tan"
+  | "teal"
+  | "thistle"
+  | "tomato"
+  | "turquoise"
+  | "violet"
+  | "wheat"
+  | "white"
+  | "whiteSmoke"
+  | "yellow"
+  | "yellowGreen";
+export type NativeTileFlip = "none" | "x" | "y" | "xy";
+export type EffectiveGradientShade =
+  | {
+      angle: FillValue3;
+      declaredBy: FillOrigin;
+      kind: "linear";
+      scaled: FillValue4;
+    }
+  | {
+      declaredBy: FillOrigin;
+      fillToRect: EffectiveFillRect;
+      kind: "path";
+      path: FillValue5;
+    };
+export type NativePathShade = "shape" | "circle" | "rect";
+export type NativePattern =
+  | "pct5"
+  | "pct10"
+  | "pct20"
+  | "pct25"
+  | "pct30"
+  | "pct40"
+  | "pct50"
+  | "pct60"
+  | "pct70"
+  | "pct75"
+  | "pct80"
+  | "pct90"
+  | "horz"
+  | "vert"
+  | "ltHorz"
+  | "ltVert"
+  | "dkHorz"
+  | "dkVert"
+  | "narHorz"
+  | "narVert"
+  | "dashHorz"
+  | "dashVert"
+  | "cross"
+  | "dnDiag"
+  | "upDiag"
+  | "ltDnDiag"
+  | "ltUpDiag"
+  | "dkDnDiag"
+  | "dkUpDiag"
+  | "wdDnDiag"
+  | "wdUpDiag"
+  | "dashDnDiag"
+  | "dashUpDiag"
+  | "diagCross"
+  | "smCheck"
+  | "lgCheck"
+  | "smGrid"
+  | "lgGrid"
+  | "dotGrid"
+  | "smConfetti"
+  | "lgConfetti"
+  | "horzBrick"
+  | "diagBrick"
+  | "solidDmnd"
+  | "openDmnd"
+  | "dotDmnd"
+  | "plaid"
+  | "sphere"
+  | "weave"
+  | "divot"
+  | "shingle"
+  | "wave"
+  | "trellis"
+  | "zigZag";
+export type NativeBlipCompression = "email" | "screen" | "print" | "hqprint" | "none";
+export type EffectiveImageMode =
+  | {
+      declaredBy: FillOrigin;
+      kind: "tile";
+      tile: EffectiveFillTile;
+    }
+  | {
+      declaredBy: FillOrigin;
+      fillRect: EffectiveFillRect;
+      kind: "stretch";
+    };
+export type NativeFillAlignment = "tl" | "t" | "tr" | "l" | "ctr" | "r" | "bl" | "b" | "br";
+/**
+ * Native coordinate: bounded integer EMU or exact decimal universal measure.
+ */
+export type NativeCoordinate = string;
+export type FillUnresolved =
+  | {
+      kind: "unsupportedTarget";
+      owner: FillOwner;
+    }
+  | {
+      kind: "placeholder";
+      matching: SourcePlaceholderMatch;
+      owner: FillOwner;
+    }
+  | {
+      kind: "missingFormatScheme";
+      owner: FillOwner;
+    }
+  | {
+      available: number;
+      index: number;
+      kind: "styleIndexOutOfRange";
+      owner: FillOwner;
+    }
+  | {
+      kind: "retainedContent";
+      origin: FillOrigin;
+    }
+  | {
+      kind: "effectEvaluationRequired";
+      origin: FillOrigin;
+    }
+  | {
+      kind: "missingImage";
+      origin: FillOrigin;
+    }
+  | {
+      kind: "groupWithoutParent";
+      origin: FillOrigin;
+    }
+  | {
+      kind: "unsupportedBackgroundMode";
+      owner: FillOwner;
+    };
+export type SourcePlaceholderMatch =
+  | {
+      status: "notPlaceholder";
+    }
+  | {
+      status: "master";
+    }
+  | {
+      rule: PlaceholderMatchRule;
+      status: "matched";
+      target: SourceObjectRef;
+    }
+  | {
+      status: "unmatched";
+    }
+  | {
+      status: "detached";
+    }
+  | {
+      candidates: number;
+      part: string;
+      status: "ambiguous";
+    }
+  | {
+      status: "unsupportedContext";
+    };
+export type PlaceholderMatchRule = "slideIndex" | "masterType";
+export type PptxFailureCode =
+  | "INPUT_INVALID"
+  | "SOURCE_CONFLICT"
+  | "PRESERVATION_CONFLICT"
+  | "MAPPING_NOT_IMPLEMENTED"
+  | "RESOURCE_REQUIRED"
+  | "LIMIT_EXCEEDED"
+  | "CANCELLED"
+  | "READ_FAILED";
+
+export interface SourceRadialLayoutPlan {
+  layout: NativeRadialLayout;
+  /**
+   * Local geometry has not yet applied this placement or stationary policy.
+   */
+  placement?: NativePlacement | null;
+  sourceSha256: Digest;
+  /**
+   * Original inheritance/provenance remains available to later painting.
+   */
+  style:
+    | {
+        fill: EffectiveFill;
+        redirects: FillRedirect[];
+        status: "resolved";
+      }
+    | {
+        reason: FillUnresolved;
+        status: "unresolved";
+      };
+  surface: string;
+  target: FillTarget;
+}
+export interface NativeRadialLayout {
+  focusPoint: RadialEstimate2;
+  focusScale: RadialEstimate2;
+  innerCenter: RadialEstimate2;
+  innerRadii: RadialEstimate2;
+  outerCenter: RadialEstimate2;
+  outerRadius: RadialEstimate3;
+  pathBounds: RadialEstimate;
+  profile: string;
+  /**
+   * Preserve declared orientation. Page placement is not applied here.
+   */
+  rotateWithShape: boolean;
+  tileRectangle: RadialEstimate;
+  work: RadialLayoutWork;
+}
+export interface RadialEstimate2 {
+  /**
+   * Nonnegative absolute error per returned value. Not a pixel color bound.
+   *
+   * @minItems 2
+   * @maxItems 2
+   */
+  errors: [FixedQ32, FixedQ32];
+  /**
+   * Local Q32 EMU, or dimensionless Q32 for focusScale. Rectangle order LTRB.
+   *
+   * @minItems 2
+   * @maxItems 2
+   */
+  values: [FixedQ32, FixedQ32];
+}
+export interface RadialEstimate3 {
+  /**
+   * Nonnegative absolute error per returned value. Not a pixel color bound.
+   *
+   * @minItems 1
+   * @maxItems 1
+   */
+  errors: [FixedQ32];
+  /**
+   * Local Q32 EMU, or dimensionless Q32 for focusScale. Rectangle order LTRB.
+   *
+   * @minItems 1
+   * @maxItems 1
+   */
+  values: [FixedQ32];
+}
+export interface RadialEstimate {
+  /**
+   * Nonnegative absolute error per returned value. Not a pixel color bound.
+   *
+   * @minItems 4
+   * @maxItems 4
+   */
+  errors: [FixedQ32, FixedQ32, FixedQ32, FixedQ32];
+  /**
+   * Local Q32 EMU, or dimensionless Q32 for focusScale. Rectangle order LTRB.
+   *
+   * @minItems 4
+   * @maxItems 4
+   */
+  values: [FixedQ32, FixedQ32, FixedQ32, FixedQ32];
+}
+export interface RadialLayoutWork {
+  arcSegments: number;
+  boundsSteps: number;
+  commands: number;
+  paths: number;
+}
+export interface NativePlacement {
+  affine: Affine;
+  anchor: Point21;
+  sourceOrigin: Point;
+  sourceSize: Size;
+  transform: ResolvedNativeTransform;
+  uncertainty: AffineUncertainty;
+}
+/**
+ * Already in surface coordinates; subtract anchor, then apply once.
+ */
+export interface Affine {
+  /**
+   * Dimensionless Q32 in row-major order: xx, xy, yx, yy.
+   *
+   * @minItems 4
+   * @maxItems 4
+   */
+  linear: [FixedQ32, FixedQ32, FixedQ32, FixedQ32];
+  translation: Point2;
+}
+/**
+ * Q32 in the same coordinate unit as the input point.
+ */
+export interface Point2 {
+  x: FixedQ32;
+  y: FixedQ32;
+}
+export interface Point21 {
+  x: FixedQ32;
+  y: FixedQ32;
+}
+export interface Point {
+  x: Emu;
+  y: Emu;
+}
+/**
+ * Effective coordinate viewport. A zero/missing group child extent uses
+ * the corresponding target extent, producing unit scale on that axis.
+ */
+export interface Size {
+  height: Emu;
+  width: Emu;
+}
+export interface ResolvedNativeTransform {
+  childOrigin?: TransformValue | null;
+  childSize?: TransformValue2 | null;
+  flipHorizontal: TransformValue4;
+  flipVertical: TransformValue4;
+  /**
+   * Office ignores a graphic frame's own orientation attributes; parent
+   * group orientation still applies. The original values remain above.
+   */
+  graphicFrameOrientationIgnored: boolean;
+  origin: TransformValue;
+  rotation: TransformValue3;
+  size: TransformValue2;
+}
+export interface TransformValue {
+  source: TransformValueSource;
+  value: Point;
+}
+export interface SourceObjectRef {
+  nativeId: number;
+  part: string;
+}
+export interface TransformValue2 {
+  source: TransformValueSource;
+  value: Size1;
+}
+export interface Size1 {
+  height: Emu;
+  width: Emu;
+}
+export interface TransformValue4 {
+  source: TransformValueSource;
+  value: boolean;
+}
+export interface TransformValue3 {
+  source: TransformValueSource;
+  value: number;
+}
+export interface AffineUncertainty {
+  /**
+   * Nonnegative outward bounds, raw dimensionless Q32.
+   *
+   * @minItems 4
+   * @maxItems 4
+   */
+  linear: [FixedQ32, FixedQ32, FixedQ32, FixedQ32];
+  translation: Point22;
+}
+/**
+ * Nonnegative outward bounds, raw Q32 EMU.
+ */
+export interface Point22 {
+  x: FixedQ32;
+  y: FixedQ32;
+}
+export interface FillOwner {
+  part: string;
+  target: FillTarget;
+}
+export interface FillColorExpression {
+  color: FillColorTerm;
+  /**
+   * Resolve a style reference color in this native owner only if color
+   * evaluation actually reaches phClr. Inheritance does not sample colors.
+   */
+  contextOwner?: FillOwner | null;
+}
+export interface FillColorTerm {
+  declaredBy: FillOrigin;
+  transforms: SourceColorTransform[];
+  value: SourceColorValue;
+}
+export interface EffectiveGradientFill {
+  flip: FillValue6;
+  rotateWithShape: FillValue4;
+  shade: EffectiveGradientShade;
+  stops: FillValue;
+  tileRect: EffectiveFillRect;
+}
+export interface FillValue6 {
+  declaredBy: FillOrigin;
+  value: NativeTileFlip;
+}
+export interface FillValue4 {
+  declaredBy: FillOrigin;
+  value: boolean;
+}
+export interface FillValue3 {
+  declaredBy: FillOrigin;
+  value: number;
+}
+export interface EffectiveFillRect {
+  bottom: FillValue2;
+  declaredBy: FillOrigin;
+  left: FillValue2;
+  right: FillValue2;
+  top: FillValue2;
+}
+export interface FillValue2 {
+  declaredBy: FillOrigin;
+  value: NativePercentage;
+}
+export interface FillValue5 {
+  declaredBy: FillOrigin;
+  value: NativePathShade;
+}
+export interface FillValue {
+  declaredBy: FillOrigin;
+  value: EffectiveGradientStop[];
+}
+export interface EffectiveGradientStop {
+  color: FillColorExpression;
+  position: FillValue2;
+}
+export interface EffectivePatternFill {
+  background: FillColorExpression;
+  foreground: FillColorExpression;
+  preset: FillValue7;
+}
+export interface FillValue7 {
+  declaredBy: FillOrigin;
+  value: NativePattern;
+}
+export interface EffectiveImageFill {
+  compression: FillValue9;
+  dpi: FillValue3;
+  embed: FillValue8;
+  link: FillValue81;
+  mode: EffectiveImageMode;
+  rotateWithShape: FillValue4;
+  sourceRect: EffectiveFillRect;
+}
+export interface FillValue9 {
+  declaredBy: FillOrigin;
+  value: NativeBlipCompression;
+}
+/**
+ * Each relationship belongs to the part in its own declaring origin.
+ * Empty strings are explicit or profile-default empty relationship IDs.
+ */
+export interface FillValue8 {
+  declaredBy: FillOrigin;
+  value: string;
+}
+export interface FillValue81 {
+  declaredBy: FillOrigin;
+  value: string;
+}
+export interface EffectiveFillTile {
+  alignment: FillValue11;
+  flip: FillValue6;
+  scaleX: FillValue2;
+  scaleY: FillValue2;
+  translateX: FillValue10;
+  translateY: FillValue10;
+}
+export interface FillValue11 {
+  declaredBy: FillOrigin;
+  value: NativeFillAlignment;
+}
+export interface FillValue10 {
+  declaredBy: FillOrigin;
+  value: NativeCoordinate;
+}
+export interface FillRedirect {
+  declaredBy: FillOrigin;
+  target: FillOwner;
+}
+export interface PptxFailure {
+  code: PptxFailureCode;
+  message: string;
+}

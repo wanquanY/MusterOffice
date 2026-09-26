@@ -1,0 +1,79 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:asset-info",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssetInfo",
+  "type": "object",
+  "properties": {
+    "descriptor": {
+      "$ref": "#/$defs/AssetDescriptor"
+    },
+    "id": {
+      "$ref": "#/$defs/RequestId"
+    },
+    "verification": {
+      "$ref": "#/$defs/AssetVerification"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "descriptor",
+    "verification"
+  ],
+  "$defs": {
+    "AssetDescriptor": {
+      "type": "object",
+      "properties": {
+        "byteLength": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "mediaType": {
+          "description": "A declaration, not evidence of successful decoding or safe execution.",
+          "type": "string"
+        },
+        "sha256": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sha256",
+        "byteLength",
+        "mediaType"
+      ]
+    },
+    "AssetVerification": {
+      "type": "string",
+      "enum": [
+        "bytesSha256"
+      ]
+    },
+    "ByteLength": {
+      "description": "Canonical uint64 byte length. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9]"
+      },
+      "pattern": "^(0|[1-9][0-9]{0,19})$",
+      "x-integer-maximum": "18446744073709551615",
+      "x-integer-minimum": "0"
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "RequestId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    }
+  }
+}

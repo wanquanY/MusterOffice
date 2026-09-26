@@ -1,0 +1,112 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:font-metrics-request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FontMetricsRequest",
+  "type": "object",
+  "properties": {
+    "expectedSha256": {
+      "$ref": "#/$defs/Digest"
+    },
+    "faceIndex": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0
+    },
+    "instances": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/FontMetricsInstance"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "expectedSha256",
+    "faceIndex",
+    "instances"
+  ],
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "FontMetric": {
+      "type": "string",
+      "enum": [
+        "horizontalAscender",
+        "horizontalDescender",
+        "horizontalLineGap",
+        "horizontalClippingAscent",
+        "horizontalClippingDescent",
+        "verticalAscender",
+        "verticalDescender",
+        "verticalLineGap",
+        "horizontalCaretRise",
+        "horizontalCaretRun",
+        "horizontalCaretOffset",
+        "verticalCaretRise",
+        "verticalCaretRun",
+        "verticalCaretOffset",
+        "xHeight",
+        "capHeight",
+        "subscriptXSize",
+        "subscriptYSize",
+        "subscriptXOffset",
+        "subscriptYOffset",
+        "superscriptXSize",
+        "superscriptYSize",
+        "superscriptXOffset",
+        "superscriptYOffset",
+        "strikeoutSize",
+        "strikeoutOffset",
+        "underlineSize",
+        "underlineOffset"
+      ]
+    },
+    "FontMetricsInstance": {
+      "type": "object",
+      "properties": {
+        "metrics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FontMetric"
+          }
+        },
+        "variations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ShapeVariation"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "variations",
+        "metrics"
+      ]
+    },
+    "ShapeVariation": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string"
+        },
+        "value1616": {
+          "description": "Exact requested OpenType 16.16 design coordinate.",
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "tag",
+        "value1616"
+      ]
+    }
+  }
+}

@@ -1,0 +1,2248 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:paragraph-paths-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ParagraphPathsResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/$defs/ParagraphPathsResult"
+        },
+        "status": {
+          "type": "string",
+          "const": "evaluated"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "result"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/ShapeFailure"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "error"
+      ]
+    }
+  ],
+  "$defs": {
+    "BidiLine": {
+      "type": "object",
+      "properties": {
+        "end": {
+          "$ref": "#/$defs/TextBoundary"
+        },
+        "levels": {
+          "description": "L1-adjusted levels, one per scalar in this line. X9 entries remain None.",
+          "type": "array",
+          "items": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "uint8",
+            "maximum": 255,
+            "minimum": 0
+          }
+        },
+        "start": {
+          "$ref": "#/$defs/TextBoundary"
+        },
+        "visualOrder": {
+          "description": "L2 visual-to-logical scalar indices relative to the full paragraph.\nX9 entries are omitted. This is not a glyph/cluster painting order (L3/L4).",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end",
+        "levels",
+        "visualOrder"
+      ]
+    },
+    "BidiParagraphResult": {
+      "type": "object",
+      "properties": {
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/BidiLine"
+          }
+        },
+        "paragraphLevel": {
+          "type": "integer",
+          "format": "uint8",
+          "maximum": 255,
+          "minimum": 0
+        },
+        "profile": {
+          "type": "string"
+        },
+        "resolvedLevels": {
+          "description": "I1/I2 result, before line-specific L1 resets. None means removed by X9.",
+          "type": "array",
+          "items": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "uint8",
+            "maximum": 255,
+            "minimum": 0
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "paragraphLevel",
+        "resolvedLevels",
+        "lines"
+      ]
+    },
+    "BreakKind": {
+      "type": "string",
+      "enum": [
+        "allowed",
+        "mandatory"
+      ]
+    },
+    "CoverageOutcome": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "glyphId": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "mapped"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "glyphId"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missing"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "unsupportedVariation"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "noUnicodeCmap"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "Direction": {
+      "type": "string",
+      "enum": [
+        "leftToRight",
+        "rightToLeft",
+        "topToBottom",
+        "bottomToTop"
+      ]
+    },
+    "EffectiveVariation": {
+      "type": "object",
+      "properties": {
+        "effectiveF32Bits": {
+          "description": "Effective IEEE754 binary32 design coordinate. Rounding is explicit.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "requested1616": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "tag": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "tag",
+        "requested1616",
+        "effectiveF32Bits"
+      ]
+    },
+    "Emu": {
+      "description": "Signed int64 EMU. 1 point = 12700 EMU. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,18})$",
+      "x-integer-maximum": "9223372036854775807",
+      "x-integer-minimum": "-9223372036854775808"
+    },
+    "FallbackItem": {
+      "type": "object",
+      "properties": {
+        "end": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "fragments": {
+          "description": "Exhaustive, disjoint, logical ranges; not visual painting order.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FontFragment"
+          }
+        },
+        "probes": {
+          "description": "Whole-item probe evidence, in the caller's candidate order.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FontAttempt"
+          }
+        },
+        "protectedBoundaries": {
+          "description": "Grapheme boundaries disallowed by observed clusters/unsafe-to-break.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "reshapeRejections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ReshapeRejection"
+          }
+        },
+        "start": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end",
+        "probes",
+        "protectedBoundaries",
+        "reshapeRejections",
+        "fragments"
+      ]
+    },
+    "FallbackResult": {
+      "type": "object",
+      "properties": {
+        "componentCalls": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "contextScalars": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FallbackItem"
+          }
+        },
+        "probedGlyphs": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "profile": {
+          "type": "string"
+        },
+        "shapingRuns": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "verifiedFaces": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "items",
+        "verifiedFaces",
+        "shapingRuns",
+        "componentCalls",
+        "contextScalars",
+        "probedGlyphs"
+      ]
+    },
+    "FixedQ32": {
+      "description": "Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,38})$",
+      "x-integer-maximum": "170141183460469231731687303715884105727",
+      "x-integer-minimum": "-170141183460469231731687303715884105728"
+    },
+    "FlowIssue": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "tab"
+            },
+            "scalar": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "scalar"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "conditionalHyphen"
+            },
+            "scalar": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "scalar"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "contingentObject"
+            },
+            "scalar": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "scalar"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "end": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "mixedLevelCluster"
+            },
+            "start": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "start",
+            "end"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "end": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "unresolvedFont"
+            },
+            "start": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "start",
+            "end"
+          ]
+        }
+      ]
+    },
+    "FlowWork": {
+      "type": "object",
+      "properties": {
+        "candidateScalars": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "componentCalls": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "contextScalars": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "evaluatedCandidates": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "probedGlyphs": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "shapingRuns": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "verifiedFaces": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "evaluatedCandidates",
+        "candidateScalars",
+        "verifiedFaces",
+        "shapingRuns",
+        "componentCalls",
+        "contextScalars",
+        "probedGlyphs"
+      ]
+    },
+    "FontAttempt": {
+      "type": "object",
+      "properties": {
+        "candidate": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "font": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "missingGlyphClusters": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "variationIssues": {
+          "description": "Conservative cmap-14 evidence, not proof of GSUB-only selector handling.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/VariationIssue"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "candidate",
+        "font",
+        "missingGlyphClusters",
+        "variationIssues"
+      ]
+    },
+    "FontFragment": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "candidate": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "end": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "font": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "shaped": {
+              "$ref": "#/$defs/ShapedText"
+            },
+            "start": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "status": {
+              "type": "string",
+              "const": "selected"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "start",
+            "end",
+            "font",
+            "candidate",
+            "shaped"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "end": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "start": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "status": {
+              "type": "string",
+              "const": "unresolved"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "start",
+            "end"
+          ]
+        }
+      ]
+    },
+    "FontMetric": {
+      "type": "string",
+      "enum": [
+        "horizontalAscender",
+        "horizontalDescender",
+        "horizontalLineGap",
+        "horizontalClippingAscent",
+        "horizontalClippingDescent",
+        "verticalAscender",
+        "verticalDescender",
+        "verticalLineGap",
+        "horizontalCaretRise",
+        "horizontalCaretRun",
+        "horizontalCaretOffset",
+        "verticalCaretRise",
+        "verticalCaretRun",
+        "verticalCaretOffset",
+        "xHeight",
+        "capHeight",
+        "subscriptXSize",
+        "subscriptYSize",
+        "subscriptXOffset",
+        "subscriptYOffset",
+        "superscriptXSize",
+        "superscriptYSize",
+        "superscriptXOffset",
+        "superscriptYOffset",
+        "strikeoutSize",
+        "strikeoutOffset",
+        "underlineSize",
+        "underlineOffset"
+      ]
+    },
+    "FontSelectionFailure": {
+      "type": "object",
+      "properties": {
+        "fontStyle": {
+          "$ref": "#/$defs/FontStyle"
+        },
+        "reason": {
+          "$ref": "#/$defs/FontSelectionReason"
+        },
+        "style": {
+          "description": "Index in the actual ManifestParagraphInput.styles, not a native run id.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "typeface": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "style",
+        "typeface",
+        "fontStyle",
+        "reason"
+      ]
+    },
+    "FontSelectionReason": {
+      "type": "string",
+      "enum": [
+        "unmappedTypeface",
+        "missingStyle"
+      ]
+    },
+    "FontStyle": {
+      "type": "string",
+      "enum": [
+        "regular",
+        "bold",
+        "italic",
+        "boldItalic"
+      ]
+    },
+    "FragmentRef": {
+      "type": "object",
+      "properties": {
+        "fallbackItem": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "fragment": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "fallbackItem",
+        "fragment"
+      ]
+    },
+    "GeometryIssue": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "end": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "unresolvedFont"
+            },
+            "start": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "start",
+            "end"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "instance": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "missingMetric"
+            },
+            "metric": {
+              "$ref": "#/$defs/FontMetric"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "instance",
+            "metric"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "end": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "tab"
+            },
+            "start": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "start",
+            "end"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "end": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "mixedLevelCluster"
+            },
+            "start": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "start",
+            "end"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "nonPositiveNaturalHeight"
+            },
+            "line": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "line"
+          ]
+        }
+      ]
+    },
+    "GeometryLayout": {
+      "type": "object",
+      "properties": {
+        "height": {
+          "$ref": "#/$defs/Emu"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/GeometryLine"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "height",
+        "lines"
+      ]
+    },
+    "GeometryLine": {
+      "type": "object",
+      "properties": {
+        "advance": {
+          "description": "Signed horizontal pen displacement; not ink/visual bounds.",
+          "$ref": "#/$defs/Emu"
+        },
+        "advanceY": {
+          "$ref": "#/$defs/Emu"
+        },
+        "baseline": {
+          "$ref": "#/$defs/Emu"
+        },
+        "bottom": {
+          "$ref": "#/$defs/Emu"
+        },
+        "glyphs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PositionedGlyph"
+          }
+        },
+        "height": {
+          "$ref": "#/$defs/Emu"
+        },
+        "penMax": {
+          "$ref": "#/$defs/Emu"
+        },
+        "penMin": {
+          "$ref": "#/$defs/Emu"
+        },
+        "removedByX9": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FragmentRef"
+          }
+        },
+        "top": {
+          "$ref": "#/$defs/Emu"
+        },
+        "visualFragments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FragmentRef"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "top",
+        "baseline",
+        "bottom",
+        "height",
+        "advance",
+        "advanceY",
+        "penMin",
+        "penMax",
+        "visualFragments",
+        "removedByX9",
+        "glyphs"
+      ]
+    },
+    "GlyphDraw": {
+      "type": "object",
+      "properties": {
+        "glyph": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "line": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "origin": {
+          "$ref": "#/$defs/Point"
+        },
+        "path": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "source": {
+          "$ref": "#/$defs/FragmentRef"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "origin",
+        "line",
+        "source",
+        "glyph"
+      ]
+    },
+    "GlyphPath": {
+      "type": "object",
+      "properties": {
+        "bounds": {
+          "description": "Geometric curve bounds, not filled/stroked/effect ink bounds.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Rect"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "commands": {
+          "description": "Local Q32 EMU, y down, unhinted, nonzero fill; no color/stroke/effects.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PathCommand"
+          }
+        },
+        "font": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "fontSize": {
+          "$ref": "#/$defs/Emu"
+        },
+        "glyphId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "font",
+        "glyphId",
+        "fontSize",
+        "commands"
+      ]
+    },
+    "ItemizationNotice": {
+      "type": "object",
+      "properties": {
+        "end": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "kind": {
+          "$ref": "#/$defs/ItemizationNoticeKind"
+        },
+        "start": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end",
+        "kind"
+      ]
+    },
+    "ItemizationNoticeKind": {
+      "type": "string",
+      "enum": [
+        "mixedScriptCluster",
+        "mixedLevelCluster",
+        "ambiguousScript"
+      ]
+    },
+    "LineBreakAnalysis": {
+      "type": "object",
+      "properties": {
+        "complexContextScalars": {
+          "description": "Original SA positions. Default LB1 maps these to AL/CM; dictionary\nsegmentation and target-application tailoring are separate responsibilities.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "end": {
+          "$ref": "#/$defs/TextBoundary"
+        },
+        "opportunities": {
+          "description": "No start-of-text opportunity; empty text has none (LB2).",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LineBreakOpportunity"
+          }
+        },
+        "profile": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "end",
+        "opportunities",
+        "complexContextScalars"
+      ]
+    },
+    "LineBreakOpportunity": {
+      "type": "object",
+      "properties": {
+        "boundary": {
+          "$ref": "#/$defs/TextBoundary"
+        },
+        "kind": {
+          "$ref": "#/$defs/BreakKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "boundary",
+        "kind"
+      ]
+    },
+    "LineDecision": {
+      "type": "object",
+      "properties": {
+        "emergency": {
+          "type": "boolean"
+        },
+        "end": {
+          "$ref": "#/$defs/TextBoundary"
+        },
+        "overflows": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "end",
+        "emergency",
+        "overflows"
+      ]
+    },
+    "LineGeometryResult": {
+      "type": "object",
+      "properties": {
+        "issues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/GeometryIssue"
+          }
+        },
+        "layout": {
+          "description": "None when any layout prerequisite is unresolved; no partial geometry.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/GeometryLayout"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metricInstances": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MetricInstance"
+          }
+        },
+        "profile": {
+          "type": "string"
+        },
+        "shaping": {
+          "$ref": "#/$defs/LineShapeResult"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "shaping",
+        "metricInstances",
+        "issues"
+      ]
+    },
+    "LineShapeResult": {
+      "type": "object",
+      "properties": {
+        "bidi": {
+          "$ref": "#/$defs/BidiParagraphResult"
+        },
+        "fallback": {
+          "$ref": "#/$defs/FallbackResult"
+        },
+        "items": {
+          "description": "Paragraph-resolved script/style and line-L1-adjusted cluster levels.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TextItem"
+          }
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ShapedLine"
+          }
+        },
+        "notices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ItemizationNotice"
+          }
+        },
+        "profile": {
+          "type": "string"
+        },
+        "shapedItemIndices": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "bidi",
+        "items",
+        "notices",
+        "lines",
+        "shapedItemIndices",
+        "fallback"
+      ]
+    },
+    "MeasuredInstance": {
+      "type": "object",
+      "properties": {
+        "effectiveVariations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EffectiveVariation"
+          }
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MeasuredMetric"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "effectiveVariations",
+        "values"
+      ]
+    },
+    "MeasuredMetric": {
+      "type": "object",
+      "properties": {
+        "metric": {
+          "$ref": "#/$defs/FontMetric"
+        },
+        "position": {
+          "description": "None means the component could not read this metric; zero is a real value.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "metric"
+      ]
+    },
+    "MetricInstance": {
+      "type": "object",
+      "properties": {
+        "font": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "measured": {
+          "$ref": "#/$defs/MeasuredInstance"
+        },
+        "positionUnitsPerEm": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "variations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ShapeVariation"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "font",
+        "variations",
+        "positionUnitsPerEm",
+        "measured"
+      ]
+    },
+    "ParagraphLayoutResult": {
+      "type": "object",
+      "properties": {
+        "breaks": {
+          "$ref": "#/$defs/LineBreakAnalysis"
+        },
+        "decisions": {
+          "description": "Empty if prerequisites prevent a complete plan. A terminal explicit\nline break has one final empty line at the same source end coordinate.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LineDecision"
+          }
+        },
+        "geometry": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LineGeometryResult"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FlowIssue"
+          }
+        },
+        "profile": {
+          "type": "string"
+        },
+        "suppressedGraphemeBreaks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TextBoundary"
+          }
+        },
+        "work": {
+          "$ref": "#/$defs/FlowWork"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "breaks",
+        "suppressedGraphemeBreaks",
+        "decisions",
+        "issues",
+        "work"
+      ]
+    },
+    "ParagraphPathScene": {
+      "type": "object",
+      "properties": {
+        "bounds": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Rect"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "boundsTolerance": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "fonts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SceneFont"
+          }
+        },
+        "glyphs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/GlyphDraw"
+          }
+        },
+        "paths": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/GlyphPath"
+          }
+        },
+        "profile": {
+          "type": "string"
+        },
+        "work": {
+          "$ref": "#/$defs/PathSceneWork"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "boundsTolerance",
+        "fonts",
+        "paths",
+        "glyphs",
+        "work"
+      ]
+    },
+    "ParagraphPathsResult": {
+      "type": "object",
+      "properties": {
+        "issues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PathSceneIssue"
+          }
+        },
+        "layout": {
+          "$ref": "#/$defs/ParagraphLayoutResult"
+        },
+        "scene": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ParagraphPathScene"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "layout",
+        "issues"
+      ]
+    },
+    "PathCommand": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "move"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "line"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "control": {
+              "$ref": "#/$defs/Point"
+            },
+            "kind": {
+              "type": "string",
+              "const": "quadratic"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "control",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "control1": {
+              "$ref": "#/$defs/Point"
+            },
+            "control2": {
+              "$ref": "#/$defs/Point"
+            },
+            "kind": {
+              "type": "string",
+              "const": "cubic"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "control1",
+            "control2",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "close"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "PathSceneIssue": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "font": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "colorRepresentationRequired"
+            },
+            "variations": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/EffectiveVariation"
+              }
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "font",
+            "variations"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "font": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "glyph_id": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "outlineUnavailable"
+            },
+            "variations": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/EffectiveVariation"
+              }
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "font",
+            "variations",
+            "glyph_id"
+          ]
+        }
+      ]
+    },
+    "PathSceneWork": {
+      "type": "object",
+      "properties": {
+        "boundsNodes": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "outlineCalls": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "pathCommands": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "uniqueSourceGlyphs": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "outlineCalls",
+        "uniqueSourceGlyphs",
+        "pathCommands",
+        "boundsNodes"
+      ]
+    },
+    "Point": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "y": {
+          "$ref": "#/$defs/FixedQ32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "PositionedGlyph": {
+      "type": "object",
+      "properties": {
+        "glyph": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "source": {
+          "$ref": "#/$defs/FragmentRef"
+        },
+        "x": {
+          "$ref": "#/$defs/Emu"
+        },
+        "y": {
+          "$ref": "#/$defs/Emu"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "glyph",
+        "x",
+        "y"
+      ]
+    },
+    "Rect": {
+      "type": "object",
+      "properties": {
+        "max": {
+          "$ref": "#/$defs/Point"
+        },
+        "min": {
+          "$ref": "#/$defs/Point"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "min",
+        "max"
+      ]
+    },
+    "ReshapeRejection": {
+      "type": "object",
+      "properties": {
+        "candidate": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "end": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "missingGlyphClusters": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "start": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "variationIssues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/VariationIssue"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end",
+        "candidate",
+        "missingGlyphClusters",
+        "variationIssues"
+      ]
+    },
+    "SceneFont": {
+      "type": "object",
+      "properties": {
+        "effectiveVariations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EffectiveVariation"
+          }
+        },
+        "faceIndex": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "fontSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "positionUnitsPerEm": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "fontSha256",
+        "faceIndex",
+        "effectiveVariations",
+        "positionUnitsPerEm"
+      ]
+    },
+    "Script": {
+      "type": "string",
+      "enum": [
+        "Adlm",
+        "Aghb",
+        "Ahom",
+        "Arab",
+        "Armi",
+        "Armn",
+        "Avst",
+        "Bali",
+        "Bamu",
+        "Bass",
+        "Batk",
+        "Beng",
+        "Berf",
+        "Bhks",
+        "Bopo",
+        "Brah",
+        "Brai",
+        "Bugi",
+        "Buhd",
+        "Cakm",
+        "Cans",
+        "Cari",
+        "Cham",
+        "Cher",
+        "Chrs",
+        "Copt",
+        "Cpmn",
+        "Cprt",
+        "Cyrl",
+        "Deva",
+        "Diak",
+        "Dogr",
+        "Dsrt",
+        "Dupl",
+        "Egyp",
+        "Elba",
+        "Elym",
+        "Ethi",
+        "Gara",
+        "Geor",
+        "Glag",
+        "Gong",
+        "Gonm",
+        "Goth",
+        "Gran",
+        "Grek",
+        "Gujr",
+        "Gukh",
+        "Guru",
+        "Hang",
+        "Hani",
+        "Hano",
+        "Hatr",
+        "Hebr",
+        "Hira",
+        "Hluw",
+        "Hmng",
+        "Hmnp",
+        "Hrkt",
+        "Hung",
+        "Ital",
+        "Java",
+        "Jurc",
+        "Kali",
+        "Kana",
+        "Kawi",
+        "Khar",
+        "Khmr",
+        "Khoj",
+        "Kits",
+        "Knda",
+        "Krai",
+        "Kthi",
+        "Lana",
+        "Laoo",
+        "Latn",
+        "Lepc",
+        "Limb",
+        "Lina",
+        "Linb",
+        "Lisu",
+        "Lyci",
+        "Lydi",
+        "Mahj",
+        "Maka",
+        "Mand",
+        "Mani",
+        "Marc",
+        "Medf",
+        "Mend",
+        "Merc",
+        "Mero",
+        "Mlym",
+        "Modi",
+        "Mong",
+        "Mroo",
+        "Mtei",
+        "Mult",
+        "Mymr",
+        "Nagm",
+        "Nand",
+        "Narb",
+        "Nbat",
+        "Newa",
+        "Nkoo",
+        "Nshu",
+        "Ogam",
+        "Olck",
+        "Onao",
+        "Orkh",
+        "Orya",
+        "Osge",
+        "Osma",
+        "Ougr",
+        "Palm",
+        "Pauc",
+        "Pcun",
+        "Perm",
+        "Phag",
+        "Phli",
+        "Phlp",
+        "Phnx",
+        "Plrd",
+        "Prti",
+        "Rjng",
+        "Rohg",
+        "Runr",
+        "Samr",
+        "Sarb",
+        "Saur",
+        "Seal",
+        "Sgnw",
+        "Shaw",
+        "Shrd",
+        "Sidd",
+        "Sidt",
+        "Sind",
+        "Sinh",
+        "Sogd",
+        "Sogo",
+        "Sora",
+        "Soyo",
+        "Sund",
+        "Sunu",
+        "Sylo",
+        "Syrc",
+        "Tagb",
+        "Takr",
+        "Tale",
+        "Talu",
+        "Taml",
+        "Tang",
+        "Tavt",
+        "Tayo",
+        "Telu",
+        "Tfng",
+        "Tglg",
+        "Thaa",
+        "Thai",
+        "Tibt",
+        "Tirh",
+        "Tnsa",
+        "Todr",
+        "Tols",
+        "Toto",
+        "Tutg",
+        "Ugar",
+        "Vaii",
+        "Vith",
+        "Wara",
+        "Wcho",
+        "Xpeo",
+        "Xsux",
+        "Yezi",
+        "Yiii",
+        "Zanb",
+        "Zinh",
+        "Zyyy",
+        "Zzzz"
+      ]
+    },
+    "ShapeFailure": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/ShapeFailureCode"
+        },
+        "fontSelection": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FontSelectionFailure"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "ShapeFailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "FONT_INVALID",
+        "UNSUPPORTED",
+        "RESOURCE_CONFLICT",
+        "RESOURCE_REQUIRED",
+        "LIMIT_EXCEEDED",
+        "CANCELLED",
+        "COMPONENT_FAILURE",
+        "COMPONENT_INVALID",
+        "HOST_FAILURE"
+      ]
+    },
+    "ShapeVariation": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string"
+        },
+        "value1616": {
+          "description": "Exact requested OpenType 16.16 design coordinate.",
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "tag",
+        "value1616"
+      ]
+    },
+    "ShapedGlyph": {
+      "type": "object",
+      "properties": {
+        "cluster": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "glyphId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "safeToInsertTatweel": {
+          "type": "boolean"
+        },
+        "unsafeToBreak": {
+          "type": "boolean"
+        },
+        "unsafeToConcat": {
+          "type": "boolean"
+        },
+        "xAdvance": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "xOffset": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "yAdvance": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "yOffset": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "glyphId",
+        "cluster",
+        "unsafeToBreak",
+        "unsafeToConcat",
+        "safeToInsertTatweel",
+        "xAdvance",
+        "yAdvance",
+        "xOffset",
+        "yOffset"
+      ]
+    },
+    "ShapedLine": {
+      "type": "object",
+      "properties": {
+        "end": {
+          "$ref": "#/$defs/TextBoundary"
+        },
+        "fallbackEnd": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "fallbackStart": {
+          "description": "Half-open indices into fallback.items and shapedItemIndices.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "itemEnd": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "itemStart": {
+          "description": "Half-open indices into the result's logical items.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "start": {
+          "$ref": "#/$defs/TextBoundary"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end",
+        "itemStart",
+        "itemEnd",
+        "fallbackStart",
+        "fallbackEnd"
+      ]
+    },
+    "ShapedRun": {
+      "type": "object",
+      "properties": {
+        "direction": {
+          "$ref": "#/$defs/Direction"
+        },
+        "effectiveVariations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EffectiveVariation"
+          }
+        },
+        "end": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "glyphs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ShapedGlyph"
+          }
+        },
+        "missingGlyphClusters": {
+          "description": "A computational success may still contain missing glyphs; never hide it.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "start": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end",
+        "direction",
+        "effectiveVariations",
+        "missingGlyphClusters",
+        "glyphs"
+      ]
+    },
+    "ShapedText": {
+      "type": "object",
+      "properties": {
+        "faceIndex": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "fontSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "positionUnitsPerEm": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "profile": {
+          "type": "string"
+        },
+        "runs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ShapedRun"
+          }
+        },
+        "unitsPerEm": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "fontSha256",
+        "faceIndex",
+        "unitsPerEm",
+        "positionUnitsPerEm",
+        "profile",
+        "runs"
+      ]
+    },
+    "TextBoundary": {
+      "type": "object",
+      "properties": {
+        "scalarOffset": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "utf16Offset": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "utf8Offset": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "scalarOffset",
+        "utf8Offset",
+        "utf16Offset"
+      ]
+    },
+    "TextItem": {
+      "type": "object",
+      "properties": {
+        "end": {
+          "$ref": "#/$defs/TextBoundary"
+        },
+        "kind": {
+          "$ref": "#/$defs/TextItemKind"
+        },
+        "level": {
+          "description": "Before line-specific L1 resets; not a final glyph painting order.",
+          "type": "integer",
+          "format": "uint8",
+          "maximum": 255,
+          "minimum": 0
+        },
+        "script": {
+          "$ref": "#/$defs/Script"
+        },
+        "start": {
+          "$ref": "#/$defs/TextBoundary"
+        },
+        "style": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end",
+        "style",
+        "script",
+        "level",
+        "kind"
+      ]
+    },
+    "TextItemKind": {
+      "type": "string",
+      "enum": [
+        "text",
+        "tab",
+        "lineBreak",
+        "paragraphBreak",
+        "bidiControl"
+      ]
+    },
+    "VariationIssue": {
+      "type": "object",
+      "properties": {
+        "baseOffset": {
+          "description": "None for a selector without an immediately preceding non-selector scalar.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "outcome": {
+          "$ref": "#/$defs/CoverageOutcome"
+        },
+        "selectorOffset": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "selectorOffset",
+        "outcome"
+      ]
+    }
+  }
+}

@@ -1,0 +1,207 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:text-analysis-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TextAnalysisResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "characters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CharacterProperties"
+          }
+        },
+        "status": {
+          "type": "string",
+          "const": "analyzed"
+        },
+        "texts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TextSegmentation"
+          }
+        },
+        "unicodeVersion": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "unicodeVersion",
+        "texts",
+        "characters"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/TextAnalysisFailureCode"
+        },
+        "message": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "code",
+        "message"
+      ]
+    }
+  ],
+  "$defs": {
+    "CharacterProperties": {
+      "type": "object",
+      "properties": {
+        "codepoint": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "properties": {
+          "$ref": "#/$defs/Properties"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "codepoint",
+        "properties"
+      ]
+    },
+    "GraphemeBreak": {
+      "type": "string",
+      "enum": [
+        "other",
+        "cr",
+        "lf",
+        "control",
+        "extend",
+        "zwj",
+        "regionalIndicator",
+        "prepend",
+        "spacingMark",
+        "l",
+        "v",
+        "t",
+        "lv",
+        "lvt"
+      ]
+    },
+    "IndicConjunct": {
+      "type": "string",
+      "enum": [
+        "none",
+        "consonant",
+        "extend",
+        "linker"
+      ]
+    },
+    "Properties": {
+      "type": "object",
+      "properties": {
+        "defaultIgnorable": {
+          "type": "boolean"
+        },
+        "extendedPictographic": {
+          "type": "boolean"
+        },
+        "graphemeBreak": {
+          "$ref": "#/$defs/GraphemeBreak"
+        },
+        "indicConjunct": {
+          "$ref": "#/$defs/IndicConjunct"
+        },
+        "variationSelector": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "graphemeBreak",
+        "indicConjunct",
+        "extendedPictographic",
+        "defaultIgnorable",
+        "variationSelector"
+      ]
+    },
+    "TextAnalysisFailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "LIMIT_EXCEEDED",
+        "CANCELLED"
+      ]
+    },
+    "TextBoundary": {
+      "type": "object",
+      "properties": {
+        "scalarOffset": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "utf16Offset": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "utf8Offset": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "scalarOffset",
+        "utf8Offset",
+        "utf16Offset"
+      ]
+    },
+    "TextSegmentation": {
+      "type": "object",
+      "properties": {
+        "boundaries": {
+          "description": "Start and end boundaries; an empty text has one zero sentinel.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TextBoundary"
+          }
+        },
+        "defaultIgnorables": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "profile": {
+          "type": "string"
+        },
+        "variationSelectors": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "boundaries",
+        "defaultIgnorables",
+        "variationSelectors"
+      ]
+    }
+  }
+}

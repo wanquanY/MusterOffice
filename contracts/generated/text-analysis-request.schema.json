@@ -1,0 +1,27 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:text-analysis-request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TextAnalysisRequest",
+  "type": "object",
+  "properties": {
+    "characters": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "format": "uint32",
+        "minimum": 0
+      }
+    },
+    "texts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "texts",
+    "characters"
+  ]
+}

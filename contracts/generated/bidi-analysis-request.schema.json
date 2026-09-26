@@ -1,0 +1,63 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:bidi-analysis-request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BidiAnalysisRequest",
+  "type": "object",
+  "properties": {
+    "characters": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "format": "uint32",
+        "minimum": 0
+      }
+    },
+    "paragraphs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/BidiParagraphRequest"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "paragraphs",
+    "characters"
+  ],
+  "$defs": {
+    "BidiParagraphRequest": {
+      "type": "object",
+      "properties": {
+        "direction": {
+          "$ref": "#/$defs/ParagraphDirection"
+        },
+        "lineEnds": {
+          "description": "Unicode scalar line ends supplied by layout, increasing through text end.\nEmpty means one complete line, not automatic width-based wrapping.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "text",
+        "direction",
+        "lineEnds"
+      ]
+    },
+    "ParagraphDirection": {
+      "type": "string",
+      "enum": [
+        "autoLeftToRight",
+        "leftToRight",
+        "rightToLeft"
+      ]
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:image-decode-request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ImageDecodeRequest",
+  "type": "object",
+  "properties": {
+    "sourceSha256": {
+      "$ref": "#/$defs/Digest"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "sourceSha256"
+  ],
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

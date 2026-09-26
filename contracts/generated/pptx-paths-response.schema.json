@@ -1,0 +1,975 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:pptx-paths-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PptxPathsResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "paths": {
+          "$ref": "#/$defs/SourceNativePaths"
+        },
+        "status": {
+          "type": "string",
+          "const": "compiled"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "paths"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/PptxFailure"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "error"
+      ]
+    }
+  ],
+  "$defs": {
+    "CompiledNativePath": {
+      "type": "object",
+      "properties": {
+        "arcSegments": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "commands": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PathCommand"
+          }
+        },
+        "coordinateErrorBound": {
+          "$ref": "#/$defs/Point"
+        },
+        "curveErrorBound": {
+          "$ref": "#/$defs/Point"
+        },
+        "extrusionOk": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "fill": {
+          "description": "Source paint modifiers are preserved; paint resolution owns defaults.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativePathFill"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "numericErrorBound": {
+          "$ref": "#/$defs/Point"
+        },
+        "origin": {
+          "$ref": "#/$defs/GeometryOrigin"
+        },
+        "sourceMap": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativePathSpan"
+          }
+        },
+        "stroke": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "origin",
+        "commands",
+        "sourceMap",
+        "numericErrorBound",
+        "curveErrorBound",
+        "coordinateErrorBound",
+        "arcSegments"
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "Emu": {
+      "description": "Signed int64 EMU. 1 point = 12700 EMU. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,18})$",
+      "x-integer-maximum": "9223372036854775807",
+      "x-integer-minimum": "-9223372036854775808"
+    },
+    "FixedQ32": {
+      "description": "Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,38})$",
+      "x-integer-maximum": "170141183460469231731687303715884105727",
+      "x-integer-minimum": "-170141183460469231731687303715884105728"
+    },
+    "FormulaIssue": {
+      "type": "string",
+      "enum": [
+        "unknownOperation",
+        "arity",
+        "divisionByZero",
+        "undefinedDirection",
+        "tangentPole"
+      ]
+    },
+    "GeometryOrigin": {
+      "description": "Ordinals are zero-based element preorder in the indicated XML resource.\nPreset ordinals address the pinned, generated catalog definition, not the\ndocument part. A document override always retains its physical source.",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "document"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "definitionOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "preset"
+            },
+            "preset": {
+              "$ref": "#/$defs/NativeShapeType"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "preset",
+            "definitionOrdinal"
+          ]
+        }
+      ]
+    },
+    "GeometryProfile": {
+      "type": "string",
+      "enum": [
+        "ecma376-2016-ms-presets-draft-v2"
+      ]
+    },
+    "GeometryUnresolved": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingDeclaration"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "unsupportedObject"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingExtent"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "invalidExtent"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "retainedContent"
+            },
+            "origin": {
+              "$ref": "#/$defs/GeometryOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "issue": {
+              "$ref": "#/$defs/FormulaIssue"
+            },
+            "kind": {
+              "type": "string",
+              "const": "formula"
+            },
+            "origin": {
+              "$ref": "#/$defs/GeometryOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin",
+            "issue"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "invalidCoordinate"
+            },
+            "origin": {
+              "$ref": "#/$defs/GeometryOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "invalidAngle"
+            },
+            "origin": {
+              "$ref": "#/$defs/GeometryOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "unknownReference"
+            },
+            "origin": {
+              "$ref": "#/$defs/GeometryOrigin"
+            },
+            "token": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin",
+            "token"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "reservedGuide"
+            },
+            "origin": {
+              "$ref": "#/$defs/GeometryOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "invalidGuideName"
+            },
+            "origin": {
+              "$ref": "#/$defs/GeometryOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "invalidHandleReference"
+            },
+            "origin": {
+              "$ref": "#/$defs/GeometryOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "numericRange"
+            },
+            "origin": {
+              "$ref": "#/$defs/GeometryOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin"
+          ]
+        }
+      ]
+    },
+    "NativeObjectPaths": {
+      "type": "object",
+      "properties": {
+        "nativeId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "outcome": {
+          "$ref": "#/$defs/NativeObjectPathsOutcome"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "nativeId",
+        "outcome"
+      ]
+    },
+    "NativeObjectPathsOutcome": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "extent": {
+              "$ref": "#/$defs/SourceResolvedValue"
+            },
+            "paths": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/CompiledNativePath"
+              }
+            },
+            "status": {
+              "type": "string",
+              "const": "compiled"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "extent",
+            "paths"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "reason": {
+              "$ref": "#/$defs/GeometryUnresolved"
+            },
+            "status": {
+              "type": "string",
+              "const": "unresolvedGeometry"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "reason"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "issue": {
+              "$ref": "#/$defs/NativePathIssue"
+            },
+            "origin": {
+              "$ref": "#/$defs/GeometryOrigin"
+            },
+            "status": {
+              "type": "string",
+              "const": "unresolvedPath"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "origin",
+            "issue"
+          ]
+        }
+      ]
+    },
+    "NativePathFill": {
+      "type": "string",
+      "enum": [
+        "none",
+        "norm",
+        "lighten",
+        "lightenLess",
+        "darken",
+        "darkenLess"
+      ]
+    },
+    "NativePathIssue": {
+      "type": "string",
+      "enum": [
+        "invalidExtent",
+        "zeroPathExtent",
+        "negativeRadius",
+        "degenerateArcRadius",
+        "numericRange",
+        "precisionExceeded"
+      ]
+    },
+    "NativePathProfile": {
+      "type": "string",
+      "enum": [
+        "drawingml-polar-arcs-q96-hermite-v1-draft"
+      ]
+    },
+    "NativePathSpan": {
+      "type": "object",
+      "properties": {
+        "commandCount": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "firstCommand": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "origin": {
+          "$ref": "#/$defs/GeometryOrigin"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "origin",
+        "firstCommand",
+        "commandCount"
+      ]
+    },
+    "NativeShapeType": {
+      "type": "string",
+      "enum": [
+        "accentBorderCallout1",
+        "accentBorderCallout2",
+        "accentBorderCallout3",
+        "accentCallout1",
+        "accentCallout2",
+        "accentCallout3",
+        "actionButtonBackPrevious",
+        "actionButtonBeginning",
+        "actionButtonBlank",
+        "actionButtonDocument",
+        "actionButtonEnd",
+        "actionButtonForwardNext",
+        "actionButtonHelp",
+        "actionButtonHome",
+        "actionButtonInformation",
+        "actionButtonMovie",
+        "actionButtonReturn",
+        "actionButtonSound",
+        "arc",
+        "bentArrow",
+        "bentConnector2",
+        "bentConnector3",
+        "bentConnector4",
+        "bentConnector5",
+        "bentUpArrow",
+        "bevel",
+        "blockArc",
+        "borderCallout1",
+        "borderCallout2",
+        "borderCallout3",
+        "bracePair",
+        "bracketPair",
+        "callout1",
+        "callout2",
+        "callout3",
+        "can",
+        "chartPlus",
+        "chartStar",
+        "chartX",
+        "chevron",
+        "chord",
+        "circularArrow",
+        "cloud",
+        "cloudCallout",
+        "corner",
+        "cornerTabs",
+        "cube",
+        "curvedConnector2",
+        "curvedConnector3",
+        "curvedConnector4",
+        "curvedConnector5",
+        "curvedDownArrow",
+        "curvedLeftArrow",
+        "curvedRightArrow",
+        "curvedUpArrow",
+        "decagon",
+        "diagStripe",
+        "diamond",
+        "dodecagon",
+        "donut",
+        "doubleWave",
+        "downArrow",
+        "downArrowCallout",
+        "ellipse",
+        "ellipseRibbon",
+        "ellipseRibbon2",
+        "flowChartAlternateProcess",
+        "flowChartCollate",
+        "flowChartConnector",
+        "flowChartDecision",
+        "flowChartDelay",
+        "flowChartDisplay",
+        "flowChartDocument",
+        "flowChartExtract",
+        "flowChartInputOutput",
+        "flowChartInternalStorage",
+        "flowChartMagneticDisk",
+        "flowChartMagneticDrum",
+        "flowChartMagneticTape",
+        "flowChartManualInput",
+        "flowChartManualOperation",
+        "flowChartMerge",
+        "flowChartMultidocument",
+        "flowChartOfflineStorage",
+        "flowChartOffpageConnector",
+        "flowChartOnlineStorage",
+        "flowChartOr",
+        "flowChartPredefinedProcess",
+        "flowChartPreparation",
+        "flowChartProcess",
+        "flowChartPunchedCard",
+        "flowChartPunchedTape",
+        "flowChartSort",
+        "flowChartSummingJunction",
+        "flowChartTerminator",
+        "foldedCorner",
+        "frame",
+        "funnel",
+        "gear6",
+        "gear9",
+        "halfFrame",
+        "heart",
+        "heptagon",
+        "hexagon",
+        "homePlate",
+        "horizontalScroll",
+        "irregularSeal1",
+        "irregularSeal2",
+        "leftArrow",
+        "leftArrowCallout",
+        "leftBrace",
+        "leftBracket",
+        "leftCircularArrow",
+        "leftRightArrow",
+        "leftRightArrowCallout",
+        "leftRightCircularArrow",
+        "leftRightRibbon",
+        "leftRightUpArrow",
+        "leftUpArrow",
+        "lightningBolt",
+        "line",
+        "lineInv",
+        "mathDivide",
+        "mathEqual",
+        "mathMinus",
+        "mathMultiply",
+        "mathNotEqual",
+        "mathPlus",
+        "moon",
+        "noSmoking",
+        "nonIsoscelesTrapezoid",
+        "notchedRightArrow",
+        "octagon",
+        "parallelogram",
+        "pentagon",
+        "pie",
+        "pieWedge",
+        "plaque",
+        "plaqueTabs",
+        "plus",
+        "quadArrow",
+        "quadArrowCallout",
+        "rect",
+        "ribbon",
+        "ribbon2",
+        "rightArrow",
+        "rightArrowCallout",
+        "rightBrace",
+        "rightBracket",
+        "round1Rect",
+        "round2DiagRect",
+        "round2SameRect",
+        "roundRect",
+        "rtTriangle",
+        "smileyFace",
+        "snip1Rect",
+        "snip2DiagRect",
+        "snip2SameRect",
+        "snipRoundRect",
+        "squareTabs",
+        "star10",
+        "star12",
+        "star16",
+        "star24",
+        "star32",
+        "star4",
+        "star5",
+        "star6",
+        "star7",
+        "star8",
+        "straightConnector1",
+        "stripedRightArrow",
+        "sun",
+        "swooshArrow",
+        "teardrop",
+        "trapezoid",
+        "triangle",
+        "upArrow",
+        "upArrowCallout",
+        "upDownArrow",
+        "upDownArrowCallout",
+        "uturnArrow",
+        "verticalScroll",
+        "wave",
+        "wedgeEllipseCallout",
+        "wedgeRectCallout",
+        "wedgeRoundRectCallout"
+      ]
+    },
+    "PathCommand": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "move"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "line"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "control": {
+              "$ref": "#/$defs/Point"
+            },
+            "kind": {
+              "type": "string",
+              "const": "quadratic"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "control",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "control1": {
+              "$ref": "#/$defs/Point"
+            },
+            "control2": {
+              "$ref": "#/$defs/Point"
+            },
+            "kind": {
+              "type": "string",
+              "const": "cubic"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "control1",
+            "control2",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "close"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "Point": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "y": {
+          "$ref": "#/$defs/FixedQ32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "PptxFailure": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/PptxFailureCode"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "PptxFailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "SOURCE_CONFLICT",
+        "PRESERVATION_CONFLICT",
+        "MAPPING_NOT_IMPLEMENTED",
+        "RESOURCE_REQUIRED",
+        "LIMIT_EXCEEDED",
+        "CANCELLED",
+        "READ_FAILED"
+      ]
+    },
+    "Size": {
+      "type": "object",
+      "properties": {
+        "height": {
+          "$ref": "#/$defs/Emu"
+        },
+        "width": {
+          "$ref": "#/$defs/Emu"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height"
+      ]
+    },
+    "SourceNativePaths": {
+      "type": "object",
+      "properties": {
+        "coordinateTolerance": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "geometryProfile": {
+          "$ref": "#/$defs/GeometryProfile"
+        },
+        "objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeObjectPaths"
+          }
+        },
+        "profile": {
+          "$ref": "#/$defs/NativePathProfile"
+        },
+        "sourceSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "surface": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceSha256",
+        "surface",
+        "geometryProfile",
+        "profile",
+        "coordinateTolerance",
+        "objects"
+      ]
+    },
+    "SourceObjectRef": {
+      "type": "object",
+      "properties": {
+        "nativeId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "part": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "nativeId"
+      ]
+    },
+    "SourceResolvedValue": {
+      "type": "object",
+      "properties": {
+        "declaredBy": {
+          "description": "Ultimate explicit declaration, not merely the next inheritance hop.",
+          "$ref": "#/$defs/SourceObjectRef"
+        },
+        "value": {
+          "$ref": "#/$defs/Size"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "declaredBy"
+      ]
+    }
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:pptx-text-edits",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SourceTextEdits",
+  "type": "object",
+  "properties": {
+    "edits": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/SourceTextEdit"
+      }
+    },
+    "expectedSourceSha256": {
+      "$ref": "#/$defs/Digest"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "expectedSourceSha256",
+    "edits"
+  ],
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "SourceTextEdit": {
+      "type": "object",
+      "properties": {
+        "expectedText": {
+          "type": "string"
+        },
+        "replacement": {
+          "type": "string"
+        },
+        "target": {
+          "$ref": "#/$defs/SourceTextTarget"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "expectedText",
+        "replacement"
+      ]
+    },
+    "SourceTextTarget": {
+      "type": "object",
+      "properties": {
+        "objectId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "paragraph": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "part": {
+          "type": "string"
+        },
+        "run": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "objectId",
+        "paragraph",
+        "run"
+      ]
+    }
+  }
+}

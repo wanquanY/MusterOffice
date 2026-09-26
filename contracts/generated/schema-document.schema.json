@@ -1,0 +1,48 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:schema-document",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SchemaDocument",
+  "type": "object",
+  "properties": {
+    "digest": {
+      "description": "Canonical domain-bound ID+schema digest, not a digest of formatted JSON.",
+      "$ref": "#/$defs/Digest"
+    },
+    "id": {
+      "$ref": "#/$defs/SchemaId"
+    },
+    "schema": true
+  },
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "digest",
+    "schema"
+  ],
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "SchemaId": {
+      "type": "string",
+      "enum": [
+        "host-request",
+        "host-response",
+        "operation-request",
+        "operation-job",
+        "host-capabilities",
+        "schema-document",
+        "document",
+        "upload-request",
+        "upload-info",
+        "asset-info"
+      ]
+    }
+  }
+}

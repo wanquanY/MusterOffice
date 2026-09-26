@@ -1,0 +1,20 @@
+{
+  "name": "musteroffice-development",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "packageManager": "pnpm@10.2.1",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "generate:types": "node tools/contracts/generate-types.mjs write",
+    "check:types": "node tools/contracts/generate-types.mjs check && tsc --project packages/contracts/tsconfig.json && tsc --project packages/text-component/tsconfig.json --noEmit && tsc --project packages/raster-component/tsconfig.json --noEmit",
+    "build:text-component": "tsc --project packages/text-component/tsconfig.json",
+    "build:raster-component": "tsc --project packages/raster-component/tsconfig.json"
+  },
+  "devDependencies": {
+    "json-schema-to-typescript": "16.0.0",
+    "typescript": "7.0.2"
+  }
+}

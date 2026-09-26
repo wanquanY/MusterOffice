@@ -1,0 +1,37 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:asset-binding",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssetBinding",
+  "type": "object",
+  "properties": {
+    "assetId": {
+      "$ref": "#/$defs/RequestId"
+    },
+    "resourceId": {
+      "$ref": "#/$defs/ResourceId"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "resourceId",
+    "assetId"
+  ],
+  "$defs": {
+    "RequestId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ResourceId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    }
+  }
+}

@@ -1,0 +1,258 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:line-break-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LineBreakResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "characters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LineBreakCharacterProperties"
+          }
+        },
+        "status": {
+          "type": "string",
+          "const": "analyzed"
+        },
+        "texts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LineBreakAnalysis"
+          }
+        },
+        "unicodeVersion": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "unicodeVersion",
+        "texts",
+        "characters"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/TextAnalysisFailureCode"
+        },
+        "message": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "code",
+        "message"
+      ]
+    }
+  ],
+  "$defs": {
+    "BreakKind": {
+      "type": "string",
+      "enum": [
+        "allowed",
+        "mandatory"
+      ]
+    },
+    "LineBreakAnalysis": {
+      "type": "object",
+      "properties": {
+        "complexContextScalars": {
+          "description": "Original SA positions. Default LB1 maps these to AL/CM; dictionary\nsegmentation and target-application tailoring are separate responsibilities.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "end": {
+          "$ref": "#/$defs/TextBoundary"
+        },
+        "opportunities": {
+          "description": "No start-of-text opportunity; empty text has none (LB2).",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LineBreakOpportunity"
+          }
+        },
+        "profile": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "end",
+        "opportunities",
+        "complexContextScalars"
+      ]
+    },
+    "LineBreakCharacterProperties": {
+      "type": "object",
+      "properties": {
+        "codepoint": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "properties": {
+          "$ref": "#/$defs/LineBreakProperties"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "codepoint",
+        "properties"
+      ]
+    },
+    "LineBreakClass": {
+      "type": "string",
+      "enum": [
+        "XX",
+        "AI",
+        "AK",
+        "AL",
+        "AP",
+        "AS",
+        "B2",
+        "BA",
+        "BB",
+        "BK",
+        "CB",
+        "CJ",
+        "CL",
+        "CM",
+        "CP",
+        "CR",
+        "EB",
+        "EM",
+        "EX",
+        "GL",
+        "H2",
+        "H3",
+        "HH",
+        "HL",
+        "HY",
+        "ID",
+        "IN",
+        "IS",
+        "JL",
+        "JT",
+        "JV",
+        "LF",
+        "NL",
+        "NS",
+        "NU",
+        "OP",
+        "PO",
+        "PR",
+        "QU",
+        "RI",
+        "SA",
+        "SG",
+        "SP",
+        "SY",
+        "VF",
+        "VI",
+        "WJ",
+        "ZW",
+        "ZWJ"
+      ]
+    },
+    "LineBreakOpportunity": {
+      "type": "object",
+      "properties": {
+        "boundary": {
+          "$ref": "#/$defs/TextBoundary"
+        },
+        "kind": {
+          "$ref": "#/$defs/BreakKind"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "boundary",
+        "kind"
+      ]
+    },
+    "LineBreakProperties": {
+      "type": "object",
+      "properties": {
+        "class": {
+          "$ref": "#/$defs/LineBreakClass"
+        },
+        "combiningMark": {
+          "description": "General_Category is Mn or Mc (not all marks).",
+          "type": "boolean"
+        },
+        "eastAsian": {
+          "description": "East_Asian_Width is F, W or H; not a measured display width.",
+          "type": "boolean"
+        },
+        "finalPunctuation": {
+          "type": "boolean"
+        },
+        "initialPunctuation": {
+          "type": "boolean"
+        },
+        "unassigned": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "class",
+        "combiningMark",
+        "initialPunctuation",
+        "finalPunctuation",
+        "unassigned",
+        "eastAsian"
+      ]
+    },
+    "TextAnalysisFailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "LIMIT_EXCEEDED",
+        "CANCELLED"
+      ]
+    },
+    "TextBoundary": {
+      "type": "object",
+      "properties": {
+        "scalarOffset": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "utf16Offset": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "utf8Offset": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "scalarOffset",
+        "utf8Offset",
+        "utf16Offset"
+      ]
+    }
+  }
+}

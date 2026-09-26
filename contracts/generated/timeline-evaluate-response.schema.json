@@ -1,0 +1,305 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:timeline-evaluate-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TimelineEvaluateResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "frame": {
+          "$ref": "#/$defs/EvaluatedFrame"
+        },
+        "status": {
+          "type": "string",
+          "const": "evaluated"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "frame"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/TimelineFailure"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "error"
+      ]
+    }
+  ],
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "EvaluatedFrame": {
+      "type": "object",
+      "properties": {
+        "sha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "state": {
+          "$ref": "#/$defs/FrameState"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "sha256"
+      ]
+    },
+    "ExactValue": {
+      "description": "Output-only exact reduced ratio. Rotation units remain 1/60000 degree.",
+      "type": "object",
+      "properties": {
+        "denominator": {
+          "type": "string"
+        },
+        "numerator": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "numerator",
+        "denominator"
+      ]
+    },
+    "FrameState": {
+      "type": "object",
+      "properties": {
+        "binding": {
+          "$ref": "#/$defs/PlaybackBinding"
+        },
+        "containers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NodeFrame"
+          }
+        },
+        "eventCursor": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NodeFrame"
+          }
+        },
+        "profile": {
+          "type": "string"
+        },
+        "rotations": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "$ref": "#/$defs/ExactValue"
+            }
+          }
+        },
+        "time": {
+          "$ref": "#/$defs/RationalTime"
+        },
+        "timelineSha256": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "binding",
+        "timelineSha256",
+        "time",
+        "eventCursor",
+        "nodes",
+        "rotations"
+      ]
+    },
+    "NodeFrame": {
+      "type": "object",
+      "properties": {
+        "end": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ExactValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "iteration": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "node": {
+          "$ref": "#/$defs/TimingNodeId"
+        },
+        "phase": {
+          "$ref": "#/$defs/NodePhase"
+        },
+        "progress": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ExactValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "start": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ExactValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "node",
+        "phase"
+      ]
+    },
+    "NodePhase": {
+      "type": "string",
+      "enum": [
+        "waiting",
+        "scheduled",
+        "active",
+        "frozen",
+        "finished",
+        "suppressed"
+      ]
+    },
+    "PlaybackBinding": {
+      "type": "object",
+      "properties": {
+        "generation": {
+          "$ref": "#/$defs/PlaybackGeneration"
+        },
+        "revision": {
+          "$ref": "#/$defs/Digest"
+        },
+        "session": {
+          "$ref": "#/$defs/PlaybackSessionId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "session",
+        "revision",
+        "generation"
+      ]
+    },
+    "PlaybackGeneration": {
+      "description": "Canonical uint64 playback generation; never wraps.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9]"
+      },
+      "pattern": "^(0|[1-9][0-9]{0,19})$",
+      "x-integer-maximum": "18446744073709551615"
+    },
+    "PlaybackSessionId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "RationalTime": {
+      "description": "Exact wire representation. Equality compares author values; compare_time compares instants.",
+      "type": "object",
+      "properties": {
+        "ticks": {
+          "$ref": "#/$defs/Ticks"
+        },
+        "timescale": {
+          "$ref": "#/$defs/Timescale"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "ticks",
+        "timescale"
+      ]
+    },
+    "Ticks": {
+      "description": "Signed int64 ticks. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,18})$",
+      "x-integer-maximum": "9223372036854775807",
+      "x-integer-minimum": "-9223372036854775808"
+    },
+    "TimelineFailure": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/TimelineFailureCode"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "TimelineFailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "REVISION_CONFLICT",
+        "EVENT_HISTORY_REQUIRED",
+        "EVENT_HISTORY_INVALID",
+        "LIMIT_EXCEEDED",
+        "CANCELLED"
+      ]
+    },
+    "Timescale": {
+      "type": "integer",
+      "maximum": 1000000000,
+      "minimum": 1
+    },
+    "TimingNodeId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    }
+  }
+}

@@ -1,0 +1,375 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:host-capabilities",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HostCapabilities",
+  "type": "object",
+  "properties": {
+    "completeFeatureCatalogue": {
+      "type": "boolean"
+    },
+    "contractVersion": {
+      "$ref": "#/$defs/ContractVersion"
+    },
+    "executorDigest": {
+      "$ref": "#/$defs/Digest"
+    },
+    "fullPresentationAcceptance": {
+      "type": "boolean"
+    },
+    "limits": {
+      "$ref": "#/$defs/ServiceLimits"
+    },
+    "operations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/OperationDescriptor"
+      }
+    },
+    "queuedExecution": {
+      "$ref": "#/$defs/JobExecution"
+    },
+    "renderer": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RendererIdentity"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "schemas": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/SchemaId"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "contractVersion",
+    "executorDigest",
+    "operations",
+    "schemas",
+    "limits",
+    "queuedExecution",
+    "completeFeatureCatalogue",
+    "fullPresentationAcceptance"
+  ],
+  "$defs": {
+    "ByteLength": {
+      "description": "Canonical uint64 byte length. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9]"
+      },
+      "pattern": "^(0|[1-9][0-9]{0,19})$",
+      "x-integer-maximum": "18446744073709551615",
+      "x-integer-minimum": "0"
+    },
+    "ContractVersion": {
+      "type": "string",
+      "enum": [
+        "musteroffice.operations/1-draft"
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "ExportLimits": {
+      "type": "object",
+      "properties": {
+        "artifacts": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "assetBytes": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "fontBytes": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "modelBytes": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "pages": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "totalBytes": {
+          "$ref": "#/$defs/ByteLength"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "pages",
+        "artifacts",
+        "modelBytes",
+        "assetBytes",
+        "fontBytes",
+        "totalBytes"
+      ]
+    },
+    "JobExecution": {
+      "type": "string",
+      "enum": [
+        "explicitRun",
+        "hostScheduled"
+      ]
+    },
+    "OperationChannel": {
+      "type": "string",
+      "enum": [
+        "controlJson",
+        "binaryUpload",
+        "binaryRead"
+      ]
+    },
+    "OperationDescriptor": {
+      "type": "object",
+      "properties": {
+        "available": {
+          "type": "boolean"
+        },
+        "channel": {
+          "$ref": "#/$defs/OperationChannel"
+        },
+        "operation": {
+          "$ref": "#/$defs/ServiceOperation"
+        },
+        "outputModes": {
+          "description": "Empty for immediate queries/resource operations. Job preference applies\nonly to document operations accepted into the durable owner.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/OutputMode"
+          }
+        },
+        "profileId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OperationProfile"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "requiredPermissions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Permission"
+          }
+        },
+        "revisionPolicy": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RevisionPolicy"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unavailableReason": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UnavailableReason"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "channel",
+        "requiredPermissions",
+        "available",
+        "outputModes"
+      ]
+    },
+    "OperationProfile": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "presentations-pptx-resource-delivery-v1-draft"
+          ]
+        },
+        {
+          "description": "Existing typed author model and transactions; no full-slide quality claim.",
+          "type": "string",
+          "const": "presentations-author-model-v01-draft"
+        }
+      ]
+    },
+    "OutputMode": {
+      "type": "string",
+      "enum": [
+        "auto",
+        "sync",
+        "job"
+      ]
+    },
+    "Permission": {
+      "type": "string",
+      "enum": [
+        "create",
+        "edit",
+        "export",
+        "readDocument",
+        "readJob",
+        "cancelJob",
+        "writeAssets",
+        "readAssets"
+      ]
+    },
+    "RendererIdentity": {
+      "type": "object",
+      "properties": {
+        "implementationSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "profile": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "implementationSha256",
+        "profile"
+      ]
+    },
+    "RevisionPolicy": {
+      "type": "string",
+      "enum": [
+        "newDocument",
+        "compareCurrentHead",
+        "immutableHistorical",
+        "readSelectedOrHead"
+      ]
+    },
+    "SchemaId": {
+      "type": "string",
+      "enum": [
+        "host-request",
+        "host-response",
+        "operation-request",
+        "operation-job",
+        "host-capabilities",
+        "schema-document",
+        "document",
+        "upload-request",
+        "upload-info",
+        "asset-info"
+      ]
+    },
+    "ServiceLimits": {
+      "type": "object",
+      "properties": {
+        "assetBytes": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "assetChunkBytes": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "documentsPerScope": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "export": {
+          "$ref": "#/$defs/ExportLimits"
+        },
+        "jobsPerPrincipal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "leaseMs": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "outputsPerJob": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "outputsPerScope": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "requestBytes": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "scopeReservedBytes": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "uploadTtlMs": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "uploadsPerScope": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "requestBytes",
+        "assetChunkBytes",
+        "assetBytes",
+        "scopeReservedBytes",
+        "uploadsPerScope",
+        "uploadTtlMs",
+        "jobsPerPrincipal",
+        "documentsPerScope",
+        "leaseMs",
+        "outputsPerJob",
+        "outputsPerScope",
+        "export"
+      ]
+    },
+    "ServiceOperation": {
+      "type": "string",
+      "enum": [
+        "capabilities",
+        "schemas.get",
+        "presentations.create",
+        "presentations.apply",
+        "presentations.export",
+        "presentations.read",
+        "assets.beginUpload",
+        "assets.getUpload",
+        "assets.appendUpload",
+        "assets.sealUpload",
+        "assets.cancelUpload",
+        "assets.read",
+        "assets.readRange",
+        "jobs.get",
+        "jobs.cancel"
+      ]
+    },
+    "UnavailableReason": {
+      "type": "string",
+      "enum": [
+        "previewRendererNotConfigured",
+        "executionUnavailable"
+      ]
+    }
+  }
+}

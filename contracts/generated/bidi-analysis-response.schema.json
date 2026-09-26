@@ -1,0 +1,280 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:bidi-analysis-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BidiAnalysisResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "characters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/BidiCharacterProperties"
+          }
+        },
+        "paragraphs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/BidiParagraphResult"
+          }
+        },
+        "status": {
+          "type": "string",
+          "const": "analyzed"
+        },
+        "unicodeVersion": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "unicodeVersion",
+        "paragraphs",
+        "characters"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/BidiFailureCode"
+        },
+        "message": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "code",
+        "message"
+      ]
+    }
+  ],
+  "$defs": {
+    "BidiBracket": {
+      "type": "object",
+      "properties": {
+        "isOpen": {
+          "type": "boolean"
+        },
+        "normalizedOpening": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "paired": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "paired",
+        "normalizedOpening",
+        "isOpen"
+      ]
+    },
+    "BidiCharacterProperties": {
+      "type": "object",
+      "properties": {
+        "codepoint": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "properties": {
+          "$ref": "#/$defs/BidiProperties"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "codepoint",
+        "properties"
+      ]
+    },
+    "BidiClass": {
+      "type": "string",
+      "enum": [
+        "L",
+        "R",
+        "AL",
+        "EN",
+        "ES",
+        "ET",
+        "AN",
+        "CS",
+        "NSM",
+        "BN",
+        "B",
+        "S",
+        "WS",
+        "ON",
+        "LRE",
+        "LRO",
+        "RLE",
+        "RLO",
+        "PDF",
+        "LRI",
+        "RLI",
+        "FSI",
+        "PDI"
+      ]
+    },
+    "BidiFailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "LIMIT_EXCEEDED",
+        "CANCELLED"
+      ]
+    },
+    "BidiLine": {
+      "type": "object",
+      "properties": {
+        "end": {
+          "$ref": "#/$defs/TextBoundary"
+        },
+        "levels": {
+          "description": "L1-adjusted levels, one per scalar in this line. X9 entries remain None.",
+          "type": "array",
+          "items": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "uint8",
+            "maximum": 255,
+            "minimum": 0
+          }
+        },
+        "start": {
+          "$ref": "#/$defs/TextBoundary"
+        },
+        "visualOrder": {
+          "description": "L2 visual-to-logical scalar indices relative to the full paragraph.\nX9 entries are omitted. This is not a glyph/cluster painting order (L3/L4).",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end",
+        "levels",
+        "visualOrder"
+      ]
+    },
+    "BidiParagraphResult": {
+      "type": "object",
+      "properties": {
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/BidiLine"
+          }
+        },
+        "paragraphLevel": {
+          "type": "integer",
+          "format": "uint8",
+          "maximum": 255,
+          "minimum": 0
+        },
+        "profile": {
+          "type": "string"
+        },
+        "resolvedLevels": {
+          "description": "I1/I2 result, before line-specific L1 resets. None means removed by X9.",
+          "type": "array",
+          "items": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "uint8",
+            "maximum": 255,
+            "minimum": 0
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "paragraphLevel",
+        "resolvedLevels",
+        "lines"
+      ]
+    },
+    "BidiProperties": {
+      "type": "object",
+      "properties": {
+        "bracket": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BidiBracket"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "class": {
+          "$ref": "#/$defs/BidiClass"
+        },
+        "mirrored": {
+          "type": "boolean"
+        },
+        "mirroringGlyph": {
+          "description": "Informative mapping, not a direction-independent character replacement.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "class",
+        "mirrored"
+      ]
+    },
+    "TextBoundary": {
+      "type": "object",
+      "properties": {
+        "scalarOffset": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "utf16Offset": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "utf8Offset": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "scalarOffset",
+        "utf8Offset",
+        "utf16Offset"
+      ]
+    }
+  }
+}

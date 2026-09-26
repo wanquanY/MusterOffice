@@ -1,0 +1,659 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:font-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FontResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "font": {
+          "$ref": "#/$defs/FontInspection"
+        },
+        "status": {
+          "type": "string",
+          "const": "inspected"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "font"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/FontFailure"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "error"
+      ]
+    }
+  ],
+  "$defs": {
+    "ByteLength": {
+      "description": "Canonical uint64 byte length. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9]"
+      },
+      "pattern": "^(0|[1-9][0-9]{0,19})$",
+      "x-integer-maximum": "18446744073709551615",
+      "x-integer-minimum": "0"
+    },
+    "CoverageOutcome": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "glyphId": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "mapped"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "glyphId"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missing"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "unsupportedVariation"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "noUnicodeCmap"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "FontAxis": {
+      "type": "object",
+      "properties": {
+        "default1616": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "flags": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "maximum1616": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "minimum1616": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "nameId": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "tag": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "tag",
+        "minimum1616",
+        "default1616",
+        "maximum1616",
+        "flags",
+        "nameId"
+      ]
+    },
+    "FontCharacter": {
+      "type": "object",
+      "properties": {
+        "codepoint": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "variationSelector": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "codepoint"
+      ]
+    },
+    "FontCmap": {
+      "type": "object",
+      "properties": {
+        "encodingId": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "format": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "platformId": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "recordIndex": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "variationRecordIndex": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "recordIndex",
+        "platformId",
+        "encodingId",
+        "format"
+      ]
+    },
+    "FontCoverage": {
+      "type": "object",
+      "properties": {
+        "character": {
+          "$ref": "#/$defs/FontCharacter"
+        },
+        "outcome": {
+          "$ref": "#/$defs/CoverageOutcome"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "character",
+        "outcome"
+      ]
+    },
+    "FontFailure": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/FontFailureCode"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "FontFailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "FONT_INVALID",
+        "UNSUPPORTED",
+        "RESOURCE_CONFLICT",
+        "LIMIT_EXCEEDED",
+        "CANCELLED"
+      ]
+    },
+    "FontInspection": {
+      "type": "object",
+      "properties": {
+        "axes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FontAxis"
+          }
+        },
+        "byteLength": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "cmap": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FontCmap"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "coverage": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FontCoverage"
+          }
+        },
+        "faceCount": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "faceIndex": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "fontRevision1616": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "glyphCount": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "instances": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FontInstance"
+          }
+        },
+        "languageTags": {
+          "description": "Format 1 language tags, addressed by name language IDs starting at 0x8000.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "metrics": {
+          "$ref": "#/$defs/FontMetrics"
+        },
+        "names": {
+          "description": "Original record order; no locale-dependent family-name selection.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FontName"
+          }
+        },
+        "notices": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "os2": {
+          "description": "OS/2 flags are font declarations, not legal authorization to distribute.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Os2Metadata"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sfntVersion": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "sha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "tables": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FontTable"
+          }
+        },
+        "unitsPerEm": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sha256",
+        "byteLength",
+        "faceCount",
+        "faceIndex",
+        "sfntVersion",
+        "unitsPerEm",
+        "glyphCount",
+        "fontRevision1616",
+        "tables",
+        "names",
+        "languageTags",
+        "metrics",
+        "axes",
+        "instances",
+        "coverage",
+        "notices"
+      ]
+    },
+    "FontInstance": {
+      "type": "object",
+      "properties": {
+        "coordinates1616": {
+          "description": "Exact fvar 16.16 coordinates in original axis order, before avar mapping.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "flags": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "postscriptNameId": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "subfamilyNameId": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "subfamilyNameId",
+        "flags",
+        "coordinates1616"
+      ]
+    },
+    "FontMetrics": {
+      "type": "object",
+      "properties": {
+        "horizontalAscender": {
+          "type": "integer",
+          "format": "int16",
+          "maximum": 32767,
+          "minimum": -32768
+        },
+        "horizontalDescender": {
+          "type": "integer",
+          "format": "int16",
+          "maximum": 32767,
+          "minimum": -32768
+        },
+        "horizontalLineGap": {
+          "type": "integer",
+          "format": "int16",
+          "maximum": 32767,
+          "minimum": -32768
+        },
+        "vertical": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/VerticalMetrics"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "horizontalAscender",
+        "horizontalDescender",
+        "horizontalLineGap"
+      ]
+    },
+    "FontName": {
+      "type": "object",
+      "properties": {
+        "encodingId": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "languageId": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "nameId": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "platformId": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "text": {
+          "description": "None for an unsupported encoding; source bytes remain bound by SHA-256.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "platformId",
+        "encodingId",
+        "languageId",
+        "nameId"
+      ]
+    },
+    "FontTable": {
+      "type": "object",
+      "properties": {
+        "byteLength": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "checksum": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "offset": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "tag": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "tag",
+        "offset",
+        "byteLength",
+        "checksum"
+      ]
+    },
+    "Os2Metadata": {
+      "type": "object",
+      "properties": {
+        "fsSelection": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "fsType": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "typoAscender": {
+          "type": "integer",
+          "format": "int16",
+          "maximum": 32767,
+          "minimum": -32768
+        },
+        "typoDescender": {
+          "type": "integer",
+          "format": "int16",
+          "maximum": 32767,
+          "minimum": -32768
+        },
+        "typoLineGap": {
+          "type": "integer",
+          "format": "int16",
+          "maximum": 32767,
+          "minimum": -32768
+        },
+        "version": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "weightClass": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "widthClass": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "winAscent": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "winDescent": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "weightClass",
+        "widthClass",
+        "fsType",
+        "fsSelection",
+        "typoAscender",
+        "typoDescender",
+        "typoLineGap",
+        "winAscent",
+        "winDescent"
+      ]
+    },
+    "VerticalMetrics": {
+      "type": "object",
+      "properties": {
+        "ascender": {
+          "type": "integer",
+          "format": "int16",
+          "maximum": 32767,
+          "minimum": -32768
+        },
+        "descender": {
+          "type": "integer",
+          "format": "int16",
+          "maximum": 32767,
+          "minimum": -32768
+        },
+        "lineGap": {
+          "type": "integer",
+          "format": "int16",
+          "maximum": 32767,
+          "minimum": -32768
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "ascender",
+        "descender",
+        "lineGap"
+      ]
+    }
+  }
+}

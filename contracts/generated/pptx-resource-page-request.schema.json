@@ -1,0 +1,822 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:pptx-resource-page-request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PptxResourcePageRequest",
+  "type": "object",
+  "properties": {
+    "fonts": {
+      "description": "None disables source text; a visible text body then requires resources.\nFonts are explicit names/content ranges, never OS discovery or paths.",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/FontManifest"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "imageSource": {
+      "$ref": "#/$defs/ImageSourceSelection"
+    },
+    "page": {
+      "$ref": "#/$defs/SourcePageRequest"
+    },
+    "profile": {
+      "$ref": "#/$defs/PptxResourcePageProfile"
+    },
+    "sampling": {
+      "$ref": "#/$defs/ImageSampling"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "profile",
+    "page",
+    "imageSource",
+    "sampling"
+  ],
+  "$defs": {
+    "ByteLength": {
+      "description": "Canonical uint64 byte length. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9]"
+      },
+      "pattern": "^(0|[1-9][0-9]{0,19})$",
+      "x-integer-maximum": "18446744073709551615",
+      "x-integer-minimum": "0"
+    },
+    "CascadeFont": {
+      "description": "Explicit resource bundle bindings, not system font names or legal permissions.",
+      "type": "object",
+      "properties": {
+        "byteLength": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "expectedSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "faceIndex": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "offset": {
+          "$ref": "#/$defs/ByteLength"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "expectedSha256",
+        "faceIndex",
+        "offset",
+        "byteLength"
+      ]
+    },
+    "ColorContext": {
+      "type": "object",
+      "properties": {
+        "placeholder": {
+          "description": "Explicit unassociated sRGB and alpha, supplied by the owning style.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "integer",
+            "format": "uint8",
+            "maximum": 255,
+            "minimum": 0
+          },
+          "maxItems": 4,
+          "minItems": 4
+        },
+        "systemColors": {
+          "type": "object",
+          "properties": {
+            "3dDkShadow": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "3dLight": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "activeBorder": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "activeCaption": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "appWorkspace": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "background": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "btnFace": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "btnHighlight": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "btnShadow": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "btnText": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "captionText": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "gradientActiveCaption": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "gradientInactiveCaption": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "grayText": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "highlight": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "highlightText": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "hotLight": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "inactiveBorder": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "inactiveCaption": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "inactiveCaptionText": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "infoBk": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "infoText": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "menu": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "menuBar": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "menuHighlight": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "menuText": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "scrollBar": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "window": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "windowFrame": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "windowText": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "systemColors"
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "FixedQ32": {
+      "description": "Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,38})$",
+      "x-integer-maximum": "170141183460469231731687303715884105727",
+      "x-integer-minimum": "-170141183460469231731687303715884105728"
+    },
+    "FontManifest": {
+      "type": "object",
+      "properties": {
+        "faces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ManifestFace"
+          }
+        },
+        "fonts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CascadeFont"
+          }
+        },
+        "profile": {
+          "$ref": "#/$defs/FontManifestProfile"
+        },
+        "typefaces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ManifestTypeface"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "fonts",
+        "faces",
+        "typefaces"
+      ]
+    },
+    "FontManifestProfile": {
+      "type": "string",
+      "enum": [
+        "explicit-font-resource-manifest-draft-v1"
+      ]
+    },
+    "FontNameBinding": {
+      "type": "object",
+      "properties": {
+        "expected": {
+          "type": "string"
+        },
+        "record": {
+          "description": "Exact index in VerifiedFont metadata.names, preserving original record order.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "record",
+        "expected"
+      ]
+    },
+    "ImageSampling": {
+      "type": "string",
+      "enum": [
+        "nearest",
+        "linear"
+      ]
+    },
+    "ImageSourceSelection": {
+      "description": "Explicit source policy. An embedded snapshot is never silently substituted\nfor a requested linked source, nor does inspection grant network authority.",
+      "type": "string",
+      "enum": [
+        "embeddedSnapshot",
+        "linkedSource"
+      ]
+    },
+    "ManifestFace": {
+      "type": "object",
+      "properties": {
+        "family": {
+          "$ref": "#/$defs/FontNameBinding"
+        },
+        "font": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "postscript": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FontNameBinding"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "subfamily": {
+          "$ref": "#/$defs/FontNameBinding"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "font",
+        "family",
+        "subfamily"
+      ]
+    },
+    "ManifestInstance": {
+      "type": "object",
+      "properties": {
+        "face": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "variations": {
+          "description": "All axes are validated, including instances unused by this paragraph.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ShapeVariation"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "face",
+        "variations"
+      ]
+    },
+    "ManifestTypeface": {
+      "type": "object",
+      "properties": {
+        "bold": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ManifestInstance"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "boldItalic": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ManifestInstance"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "italic": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ManifestInstance"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "policy": {
+          "$ref": "#/$defs/TypefaceMappingPolicy"
+        },
+        "regular": {
+          "description": "Explicit instance selection; no synthesized bold/slant or slot fallback.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ManifestInstance"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "typeface": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "typeface",
+        "policy"
+      ]
+    },
+    "PixelScale": {
+      "type": "object",
+      "properties": {
+        "denominator": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "numerator": {
+          "description": "Positive rational pixels per EMU; normalized internally.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "numerator",
+        "denominator"
+      ]
+    },
+    "Point": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "y": {
+          "$ref": "#/$defs/FixedQ32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "PptxResourcePageProfile": {
+      "type": "string",
+      "enum": [
+        "drawingml-resource-page-q32-v1-draft"
+      ]
+    },
+    "RasterViewport": {
+      "type": "object",
+      "properties": {
+        "background": {
+          "description": "Straight sRGB RGBA8; output is premultiplied.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint8",
+            "maximum": 255,
+            "minimum": 0
+          },
+          "maxItems": 4,
+          "minItems": 4
+        },
+        "coordinateTolerance": {
+          "description": "Raw Q32 pixels; 256..=2^24 (at most 1/256 pixel).",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "height": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "origin": {
+          "description": "Q32 EMU. Subtracted before converting to device-space float32.",
+          "$ref": "#/$defs/Point"
+        },
+        "scale": {
+          "$ref": "#/$defs/PixelScale"
+        },
+        "width": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height",
+        "origin",
+        "scale",
+        "coordinateTolerance",
+        "background"
+      ]
+    },
+    "ShapeVariation": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string"
+        },
+        "value1616": {
+          "description": "Exact requested OpenType 16.16 design coordinate.",
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "tag",
+        "value1616"
+      ]
+    },
+    "SourcePageProfile": {
+      "type": "string",
+      "enum": [
+        "drawingml-static-solid-page-v1-draft"
+      ]
+    },
+    "SourcePageRequest": {
+      "type": "object",
+      "properties": {
+        "colorContext": {
+          "$ref": "#/$defs/ColorContext"
+        },
+        "expectedSourceSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "profile": {
+          "$ref": "#/$defs/SourcePageProfile"
+        },
+        "slide": {
+          "type": "string"
+        },
+        "viewport": {
+          "$ref": "#/$defs/RasterViewport"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "expectedSourceSha256",
+        "slide",
+        "profile",
+        "viewport",
+        "colorContext"
+      ]
+    },
+    "TypefaceMappingPolicy": {
+      "oneOf": [
+        {
+          "description": "The native typeface must exactly match the selected verified family name.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "exactFamily"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "description": "Explicit host-supplied substitution contract. A digest is evidence identity,\nnot proof of user permission, font licensing or layout equivalence.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "substitution"
+            },
+            "profileSha256": {
+              "$ref": "#/$defs/Digest"
+            },
+            "reason": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "profileSha256",
+            "reason"
+          ]
+        }
+      ]
+    }
+  }
+}

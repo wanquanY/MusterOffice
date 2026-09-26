@@ -1,0 +1,279 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:package-inspection",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PackageInspectionResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "report": {
+          "$ref": "#/$defs/PackageReport"
+        },
+        "status": {
+          "type": "string",
+          "const": "inspected"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "report"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/PackageError"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "error"
+      ]
+    }
+  ],
+  "$defs": {
+    "ByteLength": {
+      "description": "Canonical uint64 byte length. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9]"
+      },
+      "pattern": "^(0|[1-9][0-9]{0,19})$",
+      "x-integer-maximum": "18446744073709551615",
+      "x-integer-minimum": "0"
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "PackageError": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/PackageErrorCode"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "PackageErrorCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "LIMIT_EXCEEDED",
+        "CANCELLED",
+        "UNSUPPORTED",
+        "PRESERVATION_CONFLICT",
+        "READ_FAILED"
+      ]
+    },
+    "PackagePart": {
+      "type": "object",
+      "properties": {
+        "byteLength": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "compressedLength": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "contentType": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "sha256": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "contentType",
+        "byteLength",
+        "compressedLength",
+        "sha256"
+      ]
+    },
+    "PackageRelationship": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "relationshipType": {
+          "type": "string"
+        },
+        "resolved": {
+          "$ref": "#/$defs/PackageTarget"
+        },
+        "target": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "relationshipType",
+        "target",
+        "resolved"
+      ]
+    },
+    "PackageReport": {
+      "type": "object",
+      "properties": {
+        "byteLength": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "containsSignatures": {
+          "description": "True means signature-related parts/relationships exist, not signature validity.",
+          "type": "boolean"
+        },
+        "format": {
+          "$ref": "#/$defs/PackageReportFormat"
+        },
+        "parts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PackagePart"
+          }
+        },
+        "relationships": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RelationshipGroup"
+          }
+        },
+        "sha256": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "format",
+        "sha256",
+        "byteLength",
+        "containsSignatures",
+        "parts",
+        "relationships"
+      ]
+    },
+    "PackageReportFormat": {
+      "type": "string",
+      "enum": [
+        "musteroffice.opc-inspection/1"
+      ]
+    },
+    "PackageSource": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "package"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "part"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "name"
+          ]
+        }
+      ]
+    },
+    "PackageTarget": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "fragment": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "internal"
+            },
+            "part": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "external"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "RelationshipGroup": {
+      "type": "object",
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PackageRelationship"
+          }
+        },
+        "source": {
+          "$ref": "#/$defs/PackageSource"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "relationships"
+      ]
+    }
+  }
+}

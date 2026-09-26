@@ -1,0 +1,214 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:shape-request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ShapeRequest",
+  "type": "object",
+  "properties": {
+    "expectedSha256": {
+      "$ref": "#/$defs/Digest"
+    },
+    "faceIndex": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0
+    },
+    "runs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ShapeRun"
+      }
+    },
+    "text": {
+      "description": "Logical text including context, with no implicit normalization.",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "expectedSha256",
+    "faceIndex",
+    "text",
+    "runs"
+  ],
+  "$defs": {
+    "ClusterLevel": {
+      "type": "string",
+      "enum": [
+        "monotoneGraphemes",
+        "monotoneCharacters",
+        "characters",
+        "graphemes"
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "Direction": {
+      "type": "string",
+      "enum": [
+        "leftToRight",
+        "rightToLeft",
+        "topToBottom",
+        "bottomToTop"
+      ]
+    },
+    "Ignorables": {
+      "type": "string",
+      "enum": [
+        "default",
+        "preserve",
+        "remove"
+      ]
+    },
+    "ShapeFeature": {
+      "type": "object",
+      "properties": {
+        "end": {
+          "description": "None means through the end of the full logical text.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "start": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "tag": {
+          "type": "string"
+        },
+        "value": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "tag",
+        "value",
+        "start"
+      ]
+    },
+    "ShapeFlags": {
+      "type": "object",
+      "properties": {
+        "beginningOfText": {
+          "type": "boolean"
+        },
+        "endOfText": {
+          "type": "boolean"
+        },
+        "ignorables": {
+          "$ref": "#/$defs/Ignorables"
+        },
+        "safeToInsertTatweel": {
+          "type": "boolean"
+        },
+        "suppressDottedCircle": {
+          "type": "boolean"
+        },
+        "unsafeToConcat": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "beginningOfText",
+        "endOfText",
+        "ignorables",
+        "suppressDottedCircle",
+        "unsafeToConcat",
+        "safeToInsertTatweel"
+      ]
+    },
+    "ShapeRun": {
+      "type": "object",
+      "properties": {
+        "clusterLevel": {
+          "$ref": "#/$defs/ClusterLevel"
+        },
+        "direction": {
+          "$ref": "#/$defs/Direction"
+        },
+        "end": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ShapeFeature"
+          }
+        },
+        "flags": {
+          "$ref": "#/$defs/ShapeFlags"
+        },
+        "language": {
+          "type": "string"
+        },
+        "maxGlyphs": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "script": {
+          "type": "string"
+        },
+        "start": {
+          "description": "Half-open Unicode scalar range in the request text (not UTF-16).",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "variations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ShapeVariation"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end",
+        "direction",
+        "script",
+        "language",
+        "clusterLevel",
+        "flags",
+        "features",
+        "variations",
+        "maxGlyphs"
+      ]
+    },
+    "ShapeVariation": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string"
+        },
+        "value1616": {
+          "description": "Exact requested OpenType 16.16 design coordinate.",
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "tag",
+        "value1616"
+      ]
+    }
+  }
+}

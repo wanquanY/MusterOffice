@@ -1,0 +1,555 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:pptx-color-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PptxColorResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "palette": {
+          "$ref": "#/$defs/SourceColorPalette"
+        },
+        "status": {
+          "type": "string",
+          "const": "evaluated"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "palette"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/PptxFailure"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "error"
+      ]
+    }
+  ],
+  "$defs": {
+    "ColorDependency": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "theme"
+            },
+            "part": {
+              "type": "string"
+            },
+            "slot": {
+              "$ref": "#/$defs/ColorSlot"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part",
+            "slot",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "color": {
+              "$ref": "#/$defs/SystemColor"
+            },
+            "kind": {
+              "type": "string",
+              "const": "system"
+            },
+            "origin": {
+              "$ref": "#/$defs/SystemColorOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "color",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "placeholder"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "ColorNotice": {
+      "oneOf": [
+        {
+          "description": "ECMA does not give coefficients. This profile explicitly uses 22/72/6.",
+          "type": "string",
+          "const": "grayWeightsProvisional"
+        },
+        {
+          "description": "2016 table says 250,250,120 for ltGoldenrodYellow, unlike its long alias.",
+          "type": "string",
+          "const": "presetAliasDiscrepancy"
+        }
+      ]
+    },
+    "ColorOutcome": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "clippedForSrgb": {
+              "type": "boolean"
+            },
+            "rgba16": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint16",
+                "maximum": 65535,
+                "minimum": 0
+              },
+              "maxItems": 4,
+              "minItems": 4
+            },
+            "rgba8": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 4,
+              "minItems": 4
+            },
+            "status": {
+              "type": "string",
+              "const": "resolved"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "rgba8",
+            "rgba16",
+            "clippedForSrgb"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "reason": {
+              "$ref": "#/$defs/ColorUnresolved"
+            },
+            "status": {
+              "type": "string",
+              "const": "unresolved"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "reason"
+          ]
+        }
+      ]
+    },
+    "ColorProfile": {
+      "description": "A named, provisional numerical interpretation, not an Office/WPS certificate.",
+      "type": "string",
+      "enum": [
+        "ecma376-2016-draft-v1"
+      ]
+    },
+    "ColorSlot": {
+      "type": "string",
+      "enum": [
+        "dk1",
+        "lt1",
+        "dk2",
+        "lt2",
+        "accent1",
+        "accent2",
+        "accent3",
+        "accent4",
+        "accent5",
+        "accent6",
+        "hlink",
+        "folHlink"
+      ]
+    },
+    "ColorUnresolved": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingColorMap"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingColorScheme"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingThemeSlot"
+            },
+            "slot": {
+              "$ref": "#/$defs/ColorSlot"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "slot"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "color": {
+              "$ref": "#/$defs/SystemColor"
+            },
+            "kind": {
+              "type": "string",
+              "const": "missingSystemColor"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "color"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingPlaceholder"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "retainedPlaceholderContext"
+            },
+            "part": {
+              "type": "string"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "schemeCycle"
+            },
+            "slot": {
+              "$ref": "#/$defs/ColorSlot"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "slot"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "numericRange"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "PptxFailure": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/PptxFailureCode"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "PptxFailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "SOURCE_CONFLICT",
+        "PRESERVATION_CONFLICT",
+        "MAPPING_NOT_IMPLEMENTED",
+        "RESOURCE_REQUIRED",
+        "LIMIT_EXCEEDED",
+        "CANCELLED",
+        "READ_FAILED"
+      ]
+    },
+    "SchemeColor": {
+      "type": "string",
+      "enum": [
+        "bg1",
+        "tx1",
+        "bg2",
+        "tx2",
+        "accent1",
+        "accent2",
+        "accent3",
+        "accent4",
+        "accent5",
+        "accent6",
+        "hlink",
+        "folHlink",
+        "phClr",
+        "dk1",
+        "lt1",
+        "dk2",
+        "lt2"
+      ]
+    },
+    "SchemeColorResult": {
+      "type": "object",
+      "properties": {
+        "dependencies": {
+          "description": "Outer-to-inner dependency path. Original transforms are not rewritten.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ColorDependency"
+          }
+        },
+        "notices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ColorNotice"
+          }
+        },
+        "outcome": {
+          "$ref": "#/$defs/ColorOutcome"
+        },
+        "scheme": {
+          "$ref": "#/$defs/SchemeColor"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "scheme",
+        "outcome",
+        "dependencies",
+        "notices"
+      ]
+    },
+    "SourceColorMapRef": {
+      "type": "object",
+      "properties": {
+        "part": {
+          "type": "string"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "sourceOrdinal"
+      ]
+    },
+    "SourceColorPalette": {
+      "type": "object",
+      "properties": {
+        "colorMapping": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceColorMapRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "colorScheme": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceThemeSchemeRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "colors": {
+          "description": "Input order, including repeated queries.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SchemeColorResult"
+          }
+        },
+        "profile": {
+          "$ref": "#/$defs/ColorProfile"
+        },
+        "sourceSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "surface": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceSha256",
+        "surface",
+        "profile",
+        "colors"
+      ]
+    },
+    "SourceThemeSchemeRef": {
+      "type": "object",
+      "properties": {
+        "part": {
+          "type": "string"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "sourceOrdinal"
+      ]
+    },
+    "SystemColor": {
+      "type": "string",
+      "enum": [
+        "scrollBar",
+        "background",
+        "activeCaption",
+        "inactiveCaption",
+        "menu",
+        "window",
+        "windowFrame",
+        "menuText",
+        "windowText",
+        "captionText",
+        "activeBorder",
+        "inactiveBorder",
+        "appWorkspace",
+        "highlight",
+        "highlightText",
+        "btnFace",
+        "btnShadow",
+        "grayText",
+        "btnText",
+        "inactiveCaptionText",
+        "btnHighlight",
+        "3dDkShadow",
+        "3dLight",
+        "infoText",
+        "infoBk",
+        "hotLight",
+        "gradientActiveCaption",
+        "gradientInactiveCaption",
+        "menuHighlight",
+        "menuBar"
+      ]
+    },
+    "SystemColorOrigin": {
+      "type": "string",
+      "enum": [
+        "hostContext",
+        "fileLastColor"
+      ]
+    }
+  }
+}

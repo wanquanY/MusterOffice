@@ -1,0 +1,1308 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:pptx-image-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PptxImagesResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "images": {
+          "$ref": "#/$defs/SourceImageResources"
+        },
+        "status": {
+          "type": "string",
+          "const": "inspected"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "images"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/PptxFailure"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "error"
+      ]
+    }
+  ],
+  "$defs": {
+    "ByteLength": {
+      "description": "Canonical uint64 byte length. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9]"
+      },
+      "pattern": "^(0|[1-9][0-9]{0,19})$",
+      "x-integer-maximum": "18446744073709551615",
+      "x-integer-minimum": "0"
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "EffectiveFillRect": {
+      "type": "object",
+      "properties": {
+        "bottom": {
+          "$ref": "#/$defs/FillValue3"
+        },
+        "declaredBy": {
+          "$ref": "#/$defs/FillOrigin"
+        },
+        "left": {
+          "$ref": "#/$defs/FillValue3"
+        },
+        "right": {
+          "$ref": "#/$defs/FillValue3"
+        },
+        "top": {
+          "$ref": "#/$defs/FillValue3"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "declaredBy",
+        "left",
+        "top",
+        "right",
+        "bottom"
+      ]
+    },
+    "EffectiveFillTile": {
+      "type": "object",
+      "properties": {
+        "alignment": {
+          "$ref": "#/$defs/FillValue6"
+        },
+        "flip": {
+          "$ref": "#/$defs/FillValue5"
+        },
+        "scaleX": {
+          "$ref": "#/$defs/FillValue3"
+        },
+        "scaleY": {
+          "$ref": "#/$defs/FillValue3"
+        },
+        "translateX": {
+          "$ref": "#/$defs/FillValue4"
+        },
+        "translateY": {
+          "$ref": "#/$defs/FillValue4"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "translateX",
+        "translateY",
+        "scaleX",
+        "scaleY",
+        "flip",
+        "alignment"
+      ]
+    },
+    "EffectiveImageFill": {
+      "type": "object",
+      "properties": {
+        "compression": {
+          "$ref": "#/$defs/FillValue2"
+        },
+        "dpi": {
+          "$ref": "#/$defs/FillValue7"
+        },
+        "embed": {
+          "description": "Each relationship belongs to the part in its own declaring origin.\nEmpty strings are explicit or profile-default empty relationship IDs.",
+          "$ref": "#/$defs/FillValue"
+        },
+        "link": {
+          "$ref": "#/$defs/FillValue"
+        },
+        "mode": {
+          "$ref": "#/$defs/EffectiveImageMode"
+        },
+        "rotateWithShape": {
+          "$ref": "#/$defs/FillValue8"
+        },
+        "sourceRect": {
+          "$ref": "#/$defs/EffectiveFillRect"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "embed",
+        "link",
+        "compression",
+        "sourceRect",
+        "mode",
+        "dpi",
+        "rotateWithShape"
+      ]
+    },
+    "EffectiveImageMode": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "declaredBy": {
+              "$ref": "#/$defs/FillOrigin"
+            },
+            "kind": {
+              "type": "string",
+              "const": "tile"
+            },
+            "tile": {
+              "$ref": "#/$defs/EffectiveFillTile"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "declaredBy",
+            "tile"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "declaredBy": {
+              "$ref": "#/$defs/FillOrigin"
+            },
+            "fillRect": {
+              "$ref": "#/$defs/EffectiveFillRect"
+            },
+            "kind": {
+              "type": "string",
+              "const": "stretch"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "declaredBy",
+            "fillRect"
+          ]
+        }
+      ]
+    },
+    "EncodedImageResource": {
+      "type": "object",
+      "properties": {
+        "byteLength": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "contentType": {
+          "type": "string"
+        },
+        "offset": {
+          "description": "Contiguous offset in the separately extracted encoded-resource bundle.",
+          "$ref": "#/$defs/ByteLength"
+        },
+        "part": {
+          "type": "string"
+        },
+        "sha256": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "contentType",
+        "sha256",
+        "byteLength",
+        "offset"
+      ]
+    },
+    "FillOrigin": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "declaration"
+            },
+            "owner": {
+              "$ref": "#/$defs/FillOwner"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "owner",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "theme"
+            },
+            "part": {
+              "type": "string"
+            },
+            "referenceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "styleIndex": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "via": {
+              "$ref": "#/$defs/FillOwner"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part",
+            "sourceOrdinal",
+            "via",
+            "referenceOrdinal",
+            "styleIndex"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "schemaDefault"
+            },
+            "part": {
+              "type": "string"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "profileDefault"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "FillOwner": {
+      "type": "object",
+      "properties": {
+        "part": {
+          "type": "string"
+        },
+        "target": {
+          "$ref": "#/$defs/FillTarget"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "target"
+      ]
+    },
+    "FillRedirect": {
+      "type": "object",
+      "properties": {
+        "declaredBy": {
+          "$ref": "#/$defs/FillOrigin"
+        },
+        "target": {
+          "$ref": "#/$defs/FillOwner"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "declaredBy",
+        "target"
+      ]
+    },
+    "FillTarget": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "object"
+            },
+            "nativeId": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nativeId"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "line"
+            },
+            "nativeId": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nativeId"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "picture"
+            },
+            "nativeId": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nativeId"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "rootGroup"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "background"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "FillUnresolved": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "unsupportedTarget"
+            },
+            "owner": {
+              "$ref": "#/$defs/FillOwner"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "owner"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "placeholder"
+            },
+            "matching": {
+              "$ref": "#/$defs/SourcePlaceholderMatch"
+            },
+            "owner": {
+              "$ref": "#/$defs/FillOwner"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "owner",
+            "matching"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingFormatScheme"
+            },
+            "owner": {
+              "$ref": "#/$defs/FillOwner"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "owner"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "available": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "index": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "styleIndexOutOfRange"
+            },
+            "owner": {
+              "$ref": "#/$defs/FillOwner"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "owner",
+            "index",
+            "available"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "retainedContent"
+            },
+            "origin": {
+              "$ref": "#/$defs/FillOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "effectEvaluationRequired"
+            },
+            "origin": {
+              "$ref": "#/$defs/FillOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingImage"
+            },
+            "origin": {
+              "$ref": "#/$defs/FillOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "groupWithoutParent"
+            },
+            "origin": {
+              "$ref": "#/$defs/FillOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "unsupportedBackgroundMode"
+            },
+            "owner": {
+              "$ref": "#/$defs/FillOwner"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "owner"
+          ]
+        }
+      ]
+    },
+    "FillValue": {
+      "type": "object",
+      "properties": {
+        "declaredBy": {
+          "$ref": "#/$defs/FillOrigin"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "declaredBy"
+      ]
+    },
+    "FillValue2": {
+      "type": "object",
+      "properties": {
+        "declaredBy": {
+          "$ref": "#/$defs/FillOrigin"
+        },
+        "value": {
+          "$ref": "#/$defs/NativeBlipCompression"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "declaredBy"
+      ]
+    },
+    "FillValue3": {
+      "type": "object",
+      "properties": {
+        "declaredBy": {
+          "$ref": "#/$defs/FillOrigin"
+        },
+        "value": {
+          "$ref": "#/$defs/NativePercentage"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "declaredBy"
+      ]
+    },
+    "FillValue4": {
+      "type": "object",
+      "properties": {
+        "declaredBy": {
+          "$ref": "#/$defs/FillOrigin"
+        },
+        "value": {
+          "$ref": "#/$defs/NativeCoordinate"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "declaredBy"
+      ]
+    },
+    "FillValue5": {
+      "type": "object",
+      "properties": {
+        "declaredBy": {
+          "$ref": "#/$defs/FillOrigin"
+        },
+        "value": {
+          "$ref": "#/$defs/NativeTileFlip"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "declaredBy"
+      ]
+    },
+    "FillValue6": {
+      "type": "object",
+      "properties": {
+        "declaredBy": {
+          "$ref": "#/$defs/FillOrigin"
+        },
+        "value": {
+          "$ref": "#/$defs/NativeFillAlignment"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "declaredBy"
+      ]
+    },
+    "FillValue7": {
+      "type": "object",
+      "properties": {
+        "declaredBy": {
+          "$ref": "#/$defs/FillOrigin"
+        },
+        "value": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "declaredBy"
+      ]
+    },
+    "FillValue8": {
+      "type": "object",
+      "properties": {
+        "declaredBy": {
+          "$ref": "#/$defs/FillOrigin"
+        },
+        "value": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "declaredBy"
+      ]
+    },
+    "ImageReferenceIssue": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingSelectedReference"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingDeclaringPart"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingRelationship"
+            },
+            "ownerPart": {
+              "type": "string"
+            },
+            "relationshipId": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "ownerPart",
+            "relationshipId"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "wrongRelationshipType"
+            },
+            "reference": {
+              "$ref": "#/$defs/SourceImageReference"
+            },
+            "relationshipType": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reference",
+            "relationshipType"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "wrongTargetMode"
+            },
+            "reference": {
+              "$ref": "#/$defs/SourceImageReference"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reference"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "fragment"
+            },
+            "reference": {
+              "$ref": "#/$defs/SourceImageReference"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reference"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "contentType": {
+              "type": "string"
+            },
+            "kind": {
+              "type": "string",
+              "const": "nonImageContentType"
+            },
+            "reference": {
+              "$ref": "#/$defs/SourceImageReference"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reference",
+            "contentType"
+          ]
+        }
+      ]
+    },
+    "ImageSourceSelection": {
+      "description": "Explicit source policy. An embedded snapshot is never silently substituted\nfor a requested linked source, nor does inspection grant network authority.",
+      "type": "string",
+      "enum": [
+        "embeddedSnapshot",
+        "linkedSource"
+      ]
+    },
+    "NativeBlipCompression": {
+      "type": "string",
+      "enum": [
+        "email",
+        "screen",
+        "print",
+        "hqprint",
+        "none"
+      ]
+    },
+    "NativeCoordinate": {
+      "description": "Native coordinate: bounded integer EMU or exact decimal universal measure.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9+.a-z\\-]"
+      },
+      "pattern": "^([+-]?[0-9]+|-?[0-9]+(\\.[0-9]+)?(mm|cm|in|pt|pc|pi))$"
+    },
+    "NativeFillAlignment": {
+      "type": "string",
+      "enum": [
+        "tl",
+        "t",
+        "tr",
+        "l",
+        "ctr",
+        "r",
+        "bl",
+        "b",
+        "br"
+      ]
+    },
+    "NativePercentage": {
+      "description": "Exact native percentage: int32 thousandths of a percent or decimal percent; ranges depend on use.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9+.%\\-]"
+      },
+      "pattern": "^([+-]?[0-9]+|-?[0-9]+(\\.[0-9]+)?%)$"
+    },
+    "NativeTileFlip": {
+      "type": "string",
+      "enum": [
+        "none",
+        "x",
+        "y",
+        "xy"
+      ]
+    },
+    "PlaceholderMatchRule": {
+      "type": "string",
+      "enum": [
+        "slideIndex",
+        "masterType"
+      ]
+    },
+    "PptxFailure": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/PptxFailureCode"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "PptxFailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "SOURCE_CONFLICT",
+        "PRESERVATION_CONFLICT",
+        "MAPPING_NOT_IMPLEMENTED",
+        "RESOURCE_REQUIRED",
+        "LIMIT_EXCEEDED",
+        "CANCELLED",
+        "READ_FAILED"
+      ]
+    },
+    "SourceImageBinding": {
+      "type": "object",
+      "properties": {
+        "declaredBy": {
+          "$ref": "#/$defs/FillOrigin"
+        },
+        "image": {
+          "$ref": "#/$defs/EffectiveImageFill"
+        },
+        "redirects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FillRedirect"
+          }
+        },
+        "reference": {
+          "$ref": "#/$defs/SourceImageReference"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "declaredBy",
+        "image",
+        "redirects",
+        "reference"
+      ]
+    },
+    "SourceImageOutcome": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "binding": {
+              "$ref": "#/$defs/SourceImageBinding"
+            },
+            "resource": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "status": {
+              "type": "string",
+              "const": "available"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "resource",
+            "binding"
+          ]
+        },
+        {
+          "description": "A request for host-authorized bytes, never a command to fetch the URI.",
+          "type": "object",
+          "properties": {
+            "binding": {
+              "$ref": "#/$defs/SourceImageBinding"
+            },
+            "status": {
+              "type": "string",
+              "const": "externalRequired"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "binding"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "reason": {
+              "$ref": "#/$defs/FillUnresolved"
+            },
+            "status": {
+              "type": "string",
+              "const": "unresolvedFill"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "reason"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "issue": {
+              "$ref": "#/$defs/ImageReferenceIssue"
+            },
+            "status": {
+              "type": "string",
+              "const": "unresolvedReference"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "issue"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "notImage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ]
+        }
+      ]
+    },
+    "SourceImageReference": {
+      "type": "object",
+      "properties": {
+        "declaredBy": {
+          "$ref": "#/$defs/FillOrigin"
+        },
+        "ownerPart": {
+          "type": "string"
+        },
+        "relationshipId": {
+          "type": "string"
+        },
+        "targetUri": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "declaredBy",
+        "ownerPart",
+        "relationshipId",
+        "targetUri"
+      ]
+    },
+    "SourceImageResources": {
+      "type": "object",
+      "properties": {
+        "bundleByteLength": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "resources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EncodedImageResource"
+          }
+        },
+        "selection": {
+          "$ref": "#/$defs/ImageSourceSelection"
+        },
+        "sourceSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "surface": {
+          "type": "string"
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceImageResult"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceSha256",
+        "surface",
+        "selection",
+        "targets",
+        "resources",
+        "bundleByteLength"
+      ]
+    },
+    "SourceImageResult": {
+      "type": "object",
+      "properties": {
+        "outcome": {
+          "$ref": "#/$defs/SourceImageOutcome"
+        },
+        "target": {
+          "$ref": "#/$defs/FillTarget"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "outcome"
+      ]
+    },
+    "SourceObjectRef": {
+      "type": "object",
+      "properties": {
+        "nativeId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "part": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "nativeId"
+      ]
+    },
+    "SourcePlaceholderMatch": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "notPlaceholder"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "master"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "rule": {
+              "$ref": "#/$defs/PlaceholderMatchRule"
+            },
+            "status": {
+              "type": "string",
+              "const": "matched"
+            },
+            "target": {
+              "$ref": "#/$defs/SourceObjectRef"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "target",
+            "rule"
+          ]
+        },
+        {
+          "description": "Missing relationship or matching placeholder; no synthetic geometry.",
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "unmatched"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ]
+        },
+        {
+          "description": "Slide idx=0xffffffff is explicitly detached from layout matching.",
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "detached"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "candidates": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "part": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "const": "ambiguous"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "part",
+            "candidates"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "unsupportedContext"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ]
+        }
+      ]
+    }
+  }
+}

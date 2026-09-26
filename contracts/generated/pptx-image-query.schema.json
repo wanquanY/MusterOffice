@@ -1,0 +1,159 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:pptx-image-query",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SourceImageQuery",
+  "type": "object",
+  "properties": {
+    "fill": {
+      "$ref": "#/$defs/SourceFillQuery"
+    },
+    "selection": {
+      "$ref": "#/$defs/ImageSourceSelection"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "fill",
+    "selection"
+  ],
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "FillProfile": {
+      "description": "An explicit interpretation, not a certificate for any Office/WPS version.",
+      "type": "string",
+      "enum": [
+        "ms-oi29500-fills-2024-draft-v1"
+      ]
+    },
+    "FillTarget": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "object"
+            },
+            "nativeId": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nativeId"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "line"
+            },
+            "nativeId": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nativeId"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "picture"
+            },
+            "nativeId": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nativeId"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "rootGroup"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "background"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "ImageSourceSelection": {
+      "description": "Explicit source policy. An embedded snapshot is never silently substituted\nfor a requested linked source, nor does inspection grant network authority.",
+      "type": "string",
+      "enum": [
+        "embeddedSnapshot",
+        "linkedSource"
+      ]
+    },
+    "SourceFillQuery": {
+      "type": "object",
+      "properties": {
+        "expectedSourceSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "profile": {
+          "$ref": "#/$defs/FillProfile"
+        },
+        "surface": {
+          "type": "string"
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FillTarget"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "expectedSourceSha256",
+        "surface",
+        "targets",
+        "profile"
+      ]
+    }
+  }
+}

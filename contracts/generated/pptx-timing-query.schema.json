@@ -1,0 +1,30 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:pptx-timing-query",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SourceTimingQuery",
+  "type": "object",
+  "properties": {
+    "expectedSourceSha256": {
+      "$ref": "#/$defs/Digest"
+    },
+    "slide": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "expectedSourceSha256",
+    "slide"
+  ],
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

@@ -1,0 +1,445 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:page-placement-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PagePlacementResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/$defs/PagePlacements"
+        },
+        "status": {
+          "type": "string",
+          "const": "evaluated"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "result"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/PlacementFailure"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "error"
+      ]
+    }
+  ],
+  "$defs": {
+    "Affine": {
+      "description": "Evaluated affine transform, not author rotation/flip/viewport semantics.",
+      "type": "object",
+      "properties": {
+        "linear": {
+          "description": "Dimensionless Q32 in row-major order: xx, xy, yx, yy.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FixedQ32"
+          },
+          "maxItems": 4,
+          "minItems": 4
+        },
+        "translation": {
+          "description": "Q32 in the same coordinate unit as the input point.",
+          "$ref": "#/$defs/Point"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "linear",
+        "translation"
+      ]
+    },
+    "AffineUncertainty": {
+      "type": "object",
+      "properties": {
+        "linear": {
+          "description": "Nonnegative outward bounds, raw dimensionless Q32.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FixedQ32"
+          },
+          "maxItems": 4,
+          "minItems": 4
+        },
+        "translation": {
+          "description": "Nonnegative outward bounds, raw Q32 EMU.",
+          "$ref": "#/$defs/Point"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "linear",
+        "translation"
+      ]
+    },
+    "ContainerId": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/SlideId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "slide"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/MasterId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "master"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/LayoutId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "layout"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "group"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ]
+        }
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "Emu": {
+      "description": "Signed int64 EMU. 1 point = 12700 EMU. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,18})$",
+      "x-integer-maximum": "9223372036854775807",
+      "x-integer-minimum": "-9223372036854775808"
+    },
+    "FixedQ32": {
+      "description": "Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,38})$",
+      "x-integer-maximum": "170141183460469231731687303715884105727",
+      "x-integer-minimum": "-170141183460469231731687303715884105728"
+    },
+    "LayoutId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "MasterId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ObjectId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ObjectPlacement": {
+      "type": "object",
+      "properties": {
+        "affine": {
+          "description": "Already evaluated into page space; do not apply parent placements again.",
+          "$ref": "#/$defs/Affine"
+        },
+        "anchor": {
+          "description": "Subtract this exact source center before applying the evaluated affine.",
+          "$ref": "#/$defs/Point"
+        },
+        "depth": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "object": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "parent": {
+          "$ref": "#/$defs/ContainerId"
+        },
+        "sourceSize": {
+          "description": "Shape/picture/connector bounds are local 0..size; custom paths and groups\nuse their own viewport. The current author model has no child offset.",
+          "$ref": "#/$defs/Size"
+        },
+        "uncertainty": {
+          "description": "Covers author scale/angle computation and final Q32 quantization. It is\nadditional to mo-render's bounds for an already-quantized affine graph.",
+          "$ref": "#/$defs/AffineUncertainty"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "object",
+        "parent",
+        "depth",
+        "sourceSize",
+        "anchor",
+        "affine",
+        "uncertainty"
+      ]
+    },
+    "PagePlacements": {
+      "type": "object",
+      "properties": {
+        "documentSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "hidden": {
+          "type": "boolean"
+        },
+        "pageSize": {
+          "$ref": "#/$defs/Size"
+        },
+        "profile": {
+          "type": "string"
+        },
+        "slide": {
+          "$ref": "#/$defs/SlideId"
+        },
+        "surfaces": {
+          "description": "Master, layout, slide contexts; not a resolved paint or placeholder list.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PlacementSurface"
+          }
+        },
+        "uniqueAngles": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "documentSha256",
+        "slide",
+        "hidden",
+        "pageSize",
+        "surfaces",
+        "uniqueAngles"
+      ]
+    },
+    "PlacementFailure": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/PlacementFailureCode"
+        },
+        "message": {
+          "type": "string"
+        },
+        "report": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ValidationReport"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "PlacementFailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "LIMIT_EXCEEDED",
+        "COORDINATE_RANGE",
+        "CANCELLED"
+      ]
+    },
+    "PlacementSurface": {
+      "type": "object",
+      "properties": {
+        "container": {
+          "$ref": "#/$defs/ContainerId"
+        },
+        "objects": {
+          "description": "Stable author order, groups followed by their descendants. A group entry\nis a coordinate-space record, not a paint instruction.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectPlacement"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "container",
+        "objects"
+      ]
+    },
+    "Point": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "y": {
+          "$ref": "#/$defs/FixedQ32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "Size": {
+      "type": "object",
+      "properties": {
+        "height": {
+          "$ref": "#/$defs/Emu"
+        },
+        "width": {
+          "$ref": "#/$defs/Emu"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height"
+      ]
+    },
+    "SlideId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ValidationCode": {
+      "type": "string",
+      "enum": [
+        "IDENTITY_MISMATCH",
+        "MISSING_REFERENCE",
+        "DUPLICATE_IDENTITY",
+        "INVALID_VALUE",
+        "OWNERSHIP_CONFLICT",
+        "REFERENCE_CYCLE",
+        "LIMIT_EXCEEDED"
+      ]
+    },
+    "ValidationIssue": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/ValidationCode"
+        },
+        "message": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "path",
+        "message"
+      ]
+    },
+    "ValidationReport": {
+      "type": "object",
+      "properties": {
+        "issues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ValidationIssue"
+          }
+        },
+        "truncated": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "issues",
+        "truncated"
+      ]
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:pptx-geometry-query",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SourceGeometryQuery",
+  "type": "object",
+  "properties": {
+    "expectedSourceSha256": {
+      "$ref": "#/$defs/Digest"
+    },
+    "objects": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "format": "uint32",
+        "minimum": 0
+      }
+    },
+    "profile": {
+      "$ref": "#/$defs/GeometryProfile"
+    },
+    "surface": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "expectedSourceSha256",
+    "surface",
+    "objects",
+    "profile"
+  ],
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "GeometryProfile": {
+      "type": "string",
+      "enum": [
+        "ecma376-2016-ms-presets-draft-v2"
+      ]
+    }
+  }
+}

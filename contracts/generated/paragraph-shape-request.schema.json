@@ -1,0 +1,224 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:paragraph-shape-request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ParagraphShapeRequest",
+  "type": "object",
+  "properties": {
+    "direction": {
+      "$ref": "#/$defs/ParagraphDirection"
+    },
+    "fonts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/CascadeFont"
+      }
+    },
+    "spans": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/StyleSpan"
+      }
+    },
+    "styles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ParagraphTextStyle"
+      }
+    },
+    "text": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "direction",
+    "spans",
+    "styles",
+    "fonts"
+  ],
+  "$defs": {
+    "ByteLength": {
+      "description": "Canonical uint64 byte length. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9]"
+      },
+      "pattern": "^(0|[1-9][0-9]{0,19})$",
+      "x-integer-maximum": "18446744073709551615",
+      "x-integer-minimum": "0"
+    },
+    "CascadeFont": {
+      "description": "Explicit resource bundle bindings, not system font names or legal permissions.",
+      "type": "object",
+      "properties": {
+        "byteLength": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "expectedSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "faceIndex": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "offset": {
+          "$ref": "#/$defs/ByteLength"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "expectedSha256",
+        "faceIndex",
+        "offset",
+        "byteLength"
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "FontCandidate": {
+      "type": "object",
+      "properties": {
+        "font": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "variations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ShapeVariation"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "font",
+        "variations"
+      ]
+    },
+    "ParagraphDirection": {
+      "type": "string",
+      "enum": [
+        "autoLeftToRight",
+        "leftToRight",
+        "rightToLeft"
+      ]
+    },
+    "ParagraphTextStyle": {
+      "type": "object",
+      "properties": {
+        "candidates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FontCandidate"
+          }
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ShapeFeature"
+          }
+        },
+        "language": {
+          "type": "string"
+        },
+        "maxGlyphs": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "suppressDottedCircle": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "language",
+        "features",
+        "candidates",
+        "suppressDottedCircle",
+        "maxGlyphs"
+      ]
+    },
+    "ShapeFeature": {
+      "type": "object",
+      "properties": {
+        "end": {
+          "description": "None means through the end of the full logical text.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "start": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "tag": {
+          "type": "string"
+        },
+        "value": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "tag",
+        "value",
+        "start"
+      ]
+    },
+    "ShapeVariation": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string"
+        },
+        "value1616": {
+          "description": "Exact requested OpenType 16.16 design coordinate.",
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "tag",
+        "value1616"
+      ]
+    },
+    "StyleSpan": {
+      "type": "object",
+      "properties": {
+        "end": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "style": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "end",
+        "style"
+      ]
+    }
+  }
+}

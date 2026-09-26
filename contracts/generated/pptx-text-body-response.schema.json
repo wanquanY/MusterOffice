@@ -1,0 +1,821 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:pptx-text-body-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PptxTextBodyResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "const": "evaluated"
+        },
+        "styles": {
+          "$ref": "#/$defs/SourceTextBodies"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "styles"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/PptxFailure"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "error"
+      ]
+    }
+  ],
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "EffectiveTextAutofit": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "declaredBy": {
+              "$ref": "#/$defs/TextBodyOrigin"
+            },
+            "kind": {
+              "type": "string",
+              "const": "none"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "declaredBy"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "declaredBy": {
+              "$ref": "#/$defs/TextBodyOrigin"
+            },
+            "kind": {
+              "type": "string",
+              "const": "shape"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "declaredBy"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "declaredBy": {
+              "$ref": "#/$defs/TextBodyOrigin"
+            },
+            "fontScale": {
+              "$ref": "#/$defs/NativePercentage"
+            },
+            "fontScaleDefaulted": {
+              "description": "Defaulted within the chosen normAutofit element, not inherited from a different choice.",
+              "type": "boolean"
+            },
+            "kind": {
+              "type": "string",
+              "const": "normal"
+            },
+            "lineSpacingReduction": {
+              "$ref": "#/$defs/NativePercentage"
+            },
+            "lineSpacingReductionDefaulted": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "declaredBy",
+            "fontScale",
+            "lineSpacingReduction",
+            "fontScaleDefaulted",
+            "lineSpacingReductionDefaulted"
+          ]
+        }
+      ]
+    },
+    "EffectiveTextBody": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "description": "All 19 fields are populated after the explicit profile defaults are applied.",
+          "$ref": "#/$defs/SourceTextBodyAttributes"
+        },
+        "autofit": {
+          "$ref": "#/$defs/EffectiveTextAutofit"
+        },
+        "origins": {
+          "type": "object",
+          "properties": {
+            "anchor": {
+              "$ref": "#/$defs/TextBodyOrigin"
+            },
+            "bottomInset": {
+              "$ref": "#/$defs/TextBodyOrigin"
+            },
+            "centerAnchor": {
+              "$ref": "#/$defs/TextBodyOrigin"
+            },
+            "columnSpacing": {
+              "$ref": "#/$defs/TextBodyOrigin"
+            },
+            "columns": {
+              "$ref": "#/$defs/TextBodyOrigin"
+            },
+            "compatibleLineSpacing": {
+              "$ref": "#/$defs/TextBodyOrigin"
+            },
+            "forceAntialiasing": {
+              "$ref": "#/$defs/TextBodyOrigin"
+            },
+            "fromWordArt": {
+              "$ref": "#/$defs/TextBodyOrigin"
+            },
+            "horizontalOverflow": {
+              "$ref": "#/$defs/TextBodyOrigin"
+            },
+            "leftInset": {
+              "$ref": "#/$defs/TextBodyOrigin"
+            },
+            "paragraphSpacing": {
+              "$ref": "#/$defs/TextBodyOrigin"
+            },
+            "rightInset": {
+              "$ref": "#/$defs/TextBodyOrigin"
+            },
+            "rightToLeftColumns": {
+              "$ref": "#/$defs/TextBodyOrigin"
+            },
+            "rotation": {
+              "$ref": "#/$defs/TextBodyOrigin"
+            },
+            "topInset": {
+              "$ref": "#/$defs/TextBodyOrigin"
+            },
+            "upright": {
+              "$ref": "#/$defs/TextBodyOrigin"
+            },
+            "vertical": {
+              "$ref": "#/$defs/TextBodyOrigin"
+            },
+            "verticalOverflow": {
+              "$ref": "#/$defs/TextBodyOrigin"
+            },
+            "wrap": {
+              "$ref": "#/$defs/TextBodyOrigin"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "attributes",
+        "origins",
+        "autofit"
+      ]
+    },
+    "NativeCoordinate": {
+      "description": "Native coordinate: bounded integer EMU or exact decimal universal measure.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9+.a-z\\-]"
+      },
+      "pattern": "^([+-]?[0-9]+|-?[0-9]+(\\.[0-9]+)?(mm|cm|in|pt|pc|pi))$"
+    },
+    "NativePercentage": {
+      "description": "Exact native percentage: int32 thousandths of a percent or decimal percent; ranges depend on use.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9+.%\\-]"
+      },
+      "pattern": "^([+-]?[0-9]+|-?[0-9]+(\\.[0-9]+)?%)$"
+    },
+    "NativeTextAnchor": {
+      "type": "string",
+      "enum": [
+        "t",
+        "ctr",
+        "b",
+        "just",
+        "dist"
+      ]
+    },
+    "NativeTextHorizontalOverflow": {
+      "type": "string",
+      "enum": [
+        "overflow",
+        "clip"
+      ]
+    },
+    "NativeTextVertical": {
+      "type": "string",
+      "enum": [
+        "horz",
+        "vert",
+        "vert270",
+        "wordArtVert",
+        "eaVert",
+        "mongolianVert",
+        "wordArtVertRtl"
+      ]
+    },
+    "NativeTextVerticalOverflow": {
+      "type": "string",
+      "enum": [
+        "overflow",
+        "ellipsis",
+        "clip"
+      ]
+    },
+    "NativeTextWrap": {
+      "type": "string",
+      "enum": [
+        "none",
+        "square"
+      ]
+    },
+    "PlaceholderMatchRule": {
+      "type": "string",
+      "enum": [
+        "slideIndex",
+        "masterType"
+      ]
+    },
+    "PptxFailure": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/PptxFailureCode"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "PptxFailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "SOURCE_CONFLICT",
+        "PRESERVATION_CONFLICT",
+        "MAPPING_NOT_IMPLEMENTED",
+        "RESOURCE_REQUIRED",
+        "LIMIT_EXCEEDED",
+        "CANCELLED",
+        "READ_FAILED"
+      ]
+    },
+    "SourceObjectRef": {
+      "type": "object",
+      "properties": {
+        "nativeId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "part": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "nativeId"
+      ]
+    },
+    "SourcePlaceholderMatch": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "notPlaceholder"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "master"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "rule": {
+              "$ref": "#/$defs/PlaceholderMatchRule"
+            },
+            "status": {
+              "type": "string",
+              "const": "matched"
+            },
+            "target": {
+              "$ref": "#/$defs/SourceObjectRef"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "target",
+            "rule"
+          ]
+        },
+        {
+          "description": "Missing relationship or matching placeholder; no synthetic geometry.",
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "unmatched"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ]
+        },
+        {
+          "description": "Slide idx=0xffffffff is explicitly detached from layout matching.",
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "detached"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "candidates": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "part": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "const": "ambiguous"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "part",
+            "candidates"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "unsupportedContext"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ]
+        }
+      ]
+    },
+    "SourceTextBodies": {
+      "type": "object",
+      "properties": {
+        "objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceTextBodyResult"
+          }
+        },
+        "profile": {
+          "$ref": "#/$defs/TextBodyProfile"
+        },
+        "sourceSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "surface": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceSha256",
+        "surface",
+        "profile",
+        "objects"
+      ]
+    },
+    "SourceTextBodyAttributes": {
+      "type": "object",
+      "properties": {
+        "anchor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeTextAnchor"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "bottomInset": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeCoordinate"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "centerAnchor": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "columnSpacing": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeCoordinate"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "columns": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int32"
+        },
+        "compatibleLineSpacing": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "forceAntialiasing": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "fromWordArt": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "horizontalOverflow": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeTextHorizontalOverflow"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "leftInset": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeCoordinate"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "paragraphSpacing": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "rightInset": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeCoordinate"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rightToLeftColumns": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "rotation": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int32"
+        },
+        "topInset": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeCoordinate"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "upright": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "vertical": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeTextVertical"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "verticalOverflow": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeTextVerticalOverflow"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "wrap": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeTextWrap"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "SourceTextBodyResult": {
+      "type": "object",
+      "properties": {
+        "nativeId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "outcome": {
+          "$ref": "#/$defs/TextBodyOutcome"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "nativeId",
+        "outcome"
+      ]
+    },
+    "SourceThemeDefaultKind": {
+      "type": "string",
+      "enum": [
+        "txDef",
+        "lnDef",
+        "spDef"
+      ]
+    },
+    "TextBodyOrigin": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "object"
+            },
+            "object": {
+              "$ref": "#/$defs/SourceObjectRef"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "defaultKind": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/SourceThemeDefaultKind"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "theme"
+            },
+            "part": {
+              "type": "string"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "profileDefault"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "TextBodyOutcome": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "body": {
+              "$ref": "#/$defs/EffectiveTextBody"
+            },
+            "status": {
+              "type": "string",
+              "const": "resolved"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "body"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "reason": {
+              "$ref": "#/$defs/TextBodyUnresolved"
+            },
+            "status": {
+              "type": "string",
+              "const": "unresolved"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "reason"
+          ]
+        }
+      ]
+    },
+    "TextBodyProfile": {
+      "type": "string",
+      "enum": [
+        "drawingml-body-inheritance-draft-v1"
+      ]
+    },
+    "TextBodyUnresolved": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "noTextBody"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "placeholder"
+            },
+            "matching": {
+              "$ref": "#/$defs/SourcePlaceholderMatch"
+            },
+            "object": {
+              "$ref": "#/$defs/SourceObjectRef"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "matching"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "retainedContent"
+            },
+            "origin": {
+              "$ref": "#/$defs/TextBodyOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin"
+          ]
+        }
+      ]
+    }
+  }
+}

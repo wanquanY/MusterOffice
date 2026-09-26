@@ -1,0 +1,605 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:pptx-timing-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PptxTimingResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "const": "inspected"
+        },
+        "timing": {
+          "$ref": "#/$defs/SourceTiming"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "timing"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/PptxFailure"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "error"
+      ]
+    }
+  ],
+  "$defs": {
+    "ContainerDuration": {
+      "oneOf": [
+        {
+          "description": "End when every child has ended; an untriggered child keeps it unresolved.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "automatic"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "duration": {
+              "$ref": "#/$defs/RationalTime"
+            },
+            "kind": {
+              "type": "string",
+              "const": "fixed"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "duration"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "indefinite"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "ContainerKind": {
+      "type": "string",
+      "enum": [
+        "parallel",
+        "sequence"
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "Effect": {
+      "oneOf": [
+        {
+          "description": "Absolute local rotation in native 1/60000 degree units, including multi-turn.\nReplacement behavior; later activation wins, author order breaks ties.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "kind": {
+              "type": "string",
+              "const": "rotation"
+            },
+            "target": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "to": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "target",
+            "from",
+            "to"
+          ]
+        }
+      ]
+    },
+    "FillMode": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "remove",
+            "freeze"
+          ]
+        },
+        {
+          "description": "Unlike freeze, persists when the next sequence sibling starts.",
+          "type": "string",
+          "const": "hold"
+        }
+      ]
+    },
+    "NativeTimeline": {
+      "type": "object",
+      "properties": {
+        "nodeBindings": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          }
+        },
+        "objectBindings": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          }
+        },
+        "rootId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "timeline": {
+          "$ref": "#/$defs/Timeline"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "rootId",
+        "timeline",
+        "nodeBindings",
+        "objectBindings"
+      ]
+    },
+    "NodeEvent": {
+      "type": "string",
+      "enum": [
+        "begin",
+        "end"
+      ]
+    },
+    "ObjectId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "PptxFailure": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/PptxFailureCode"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "PptxFailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "SOURCE_CONFLICT",
+        "PRESERVATION_CONFLICT",
+        "MAPPING_NOT_IMPLEMENTED",
+        "RESOURCE_REQUIRED",
+        "LIMIT_EXCEEDED",
+        "CANCELLED",
+        "READ_FAILED"
+      ]
+    },
+    "RationalTime": {
+      "description": "Exact wire representation. Equality compares author values; compare_time compares instants.",
+      "type": "object",
+      "properties": {
+        "ticks": {
+          "$ref": "#/$defs/Ticks"
+        },
+        "timescale": {
+          "$ref": "#/$defs/Timescale"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "ticks",
+        "timescale"
+      ]
+    },
+    "RepeatCount": {
+      "description": "Finite values retain the existing integer wire form. Infinity is a named\nalternative, never a sentinel count or a pre-expanded list of iterations.",
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "indefinite"
+          ]
+        },
+        {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      ]
+    },
+    "RepeatDuration": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "indefinite"
+          ]
+        },
+        {
+          "$ref": "#/$defs/RationalTime"
+        }
+      ]
+    },
+    "SourceTiming": {
+      "type": "object",
+      "properties": {
+        "native": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeTimeline"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "partSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "slide": {
+          "type": "string"
+        },
+        "sourceSha256": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceSha256",
+        "slide",
+        "partSha256"
+      ]
+    },
+    "Ticks": {
+      "description": "Signed int64 ticks. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,18})$",
+      "x-integer-maximum": "9223372036854775807",
+      "x-integer-minimum": "-9223372036854775808"
+    },
+    "TimeCondition": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "at"
+            },
+            "offset": {
+              "$ref": "#/$defs/RationalTime"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "offset"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "delay": {
+              "$ref": "#/$defs/RationalTime"
+            },
+            "event": {
+              "$ref": "#/$defs/NodeEvent"
+            },
+            "kind": {
+              "type": "string",
+              "const": "after"
+            },
+            "node": {
+              "$ref": "#/$defs/TimingNodeId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "node",
+            "event",
+            "delay"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "delay": {
+              "$ref": "#/$defs/RationalTime"
+            },
+            "kind": {
+              "type": "string",
+              "const": "click"
+            },
+            "target": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/ObjectId"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "delay"
+          ]
+        }
+      ]
+    },
+    "TimeTransform": {
+      "description": "Local behavior clock. Percentages use native thousandths of one percent;\n100000 speed is normal playback. The clock is independent of effect values.",
+      "type": "object",
+      "properties": {
+        "accelerationMilliPercent": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "autoReverse": {
+          "type": "boolean"
+        },
+        "decelerationMilliPercent": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "speedMilliPercent": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "speedMilliPercent",
+        "autoReverse",
+        "accelerationMilliPercent",
+        "decelerationMilliPercent"
+      ]
+    },
+    "Timeline": {
+      "description": "Behaviors plus an optional explicit timing forest. The legacy graph retains\nits byte representation; version 0.2 owns every behavior through tree roots.",
+      "type": "object",
+      "properties": {
+        "format": {
+          "$ref": "#/$defs/TimelineVersion"
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimingNode"
+          }
+        },
+        "tree": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TimingTree"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "format",
+        "nodes"
+      ]
+    },
+    "TimelineVersion": {
+      "type": "string",
+      "enum": [
+        "musteroffice.timeline/0.1-draft",
+        "musteroffice.timeline/0.2-draft"
+      ]
+    },
+    "Timescale": {
+      "type": "integer",
+      "maximum": 1000000000,
+      "minimum": 1
+    },
+    "TimingContainer": {
+      "type": "object",
+      "properties": {
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimingNodeId"
+          }
+        },
+        "duration": {
+          "$ref": "#/$defs/ContainerDuration"
+        },
+        "endConditions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimeCondition"
+          }
+        },
+        "fill": {
+          "$ref": "#/$defs/FillMode"
+        },
+        "id": {
+          "$ref": "#/$defs/TimingNodeId"
+        },
+        "kind": {
+          "$ref": "#/$defs/ContainerKind"
+        },
+        "start": {
+          "$ref": "#/$defs/TimeCondition"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "start",
+        "duration",
+        "fill",
+        "children"
+      ]
+    },
+    "TimingNode": {
+      "type": "object",
+      "properties": {
+        "duration": {
+          "$ref": "#/$defs/RationalTime"
+        },
+        "effect": {
+          "description": "The current graph activates each node once (native restart=\"never\").",
+          "$ref": "#/$defs/Effect"
+        },
+        "endConditions": {
+          "description": "Earliest resolved eligible end; absent conditions add no end constraint.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimeCondition"
+          }
+        },
+        "fill": {
+          "$ref": "#/$defs/FillMode"
+        },
+        "id": {
+          "$ref": "#/$defs/TimingNodeId"
+        },
+        "repeatDuration": {
+          "description": "Additional bound in local active time, before speed scaling.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RepeatDuration"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "repeatMilli": {
+          "description": "Native count in thousandths, or explicit indefinite repetition.",
+          "$ref": "#/$defs/RepeatCount"
+        },
+        "start": {
+          "$ref": "#/$defs/TimeCondition"
+        },
+        "timeTransform": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TimeTransform"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "start",
+        "duration",
+        "repeatMilli",
+        "fill",
+        "effect"
+      ]
+    },
+    "TimingNodeId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "TimingTree": {
+      "type": "object",
+      "properties": {
+        "containers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimingContainer"
+          }
+        },
+        "roots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimingNodeId"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "roots",
+        "containers"
+      ]
+    }
+  }
+}
