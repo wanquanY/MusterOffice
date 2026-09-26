@@ -1,9 +1,10 @@
 //! Isolated native previews from explicit bytes. Only the trusted operator
 //! configures the worker executable; no path enters core or public arguments.
 use mo_common::Digest;
-use mo_kernel_api::{
-    PptxResourceDocumentRequest, PptxResourcePageProfile, PptxResourcePageRasterResponse,
+use mo_presentation_compile::source_resource_page::protocol::{
+    self, PptxResourceDocumentRequest, PptxResourcePageProfile, ResourcePageRasterResponse,
 };
+type PptxResourcePageRasterResponse = ResourcePageRasterResponse<serde_json::Value>;
 use mo_presentation_compile::source_resource_page::SourceResourcePageImage;
 use mo_presentation_delivery::{
     Content, DeliveryError, PreviewFonts, PreviewRenderer, PreviewRequest, RendererIdentity,
@@ -61,8 +62,8 @@ impl PreviewRenderer for NativePreviewRenderer {
         if executable_digest(&self.executable)? != self.identity.implementation_sha256 {
             return Err(DeliveryError::Invalid("preview worker executable changed"));
         }
-        if source.byte_length > mo_kernel_api::MAX_INLINE_RESOURCE_BYTES as u64
-            || fonts.content.byte_length > mo_kernel_api::MAX_INLINE_FONT_BYTES as u64
+        if source.byte_length > protocol::MAX_SOURCE_BYTES as u64
+            || fonts.content.byte_length > protocol::MAX_FONT_BYTES as u64
         {
             return Err(DeliveryError::Limit("preview worker input bytes"));
         }
@@ -165,7 +166,7 @@ fn request_json(request: &PptxResourceDocumentRequest) -> Result<Vec<u8>, Delive
     struct Bounded(Vec<u8>);
     impl std::io::Write for Bounded {
         fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
-            if bytes.len() > mo_kernel_api::MAX_REQUEST_BYTES.saturating_sub(self.0.len()) {
+            if bytes.len() > protocol::MAX_REQUEST_BYTES.saturating_sub(self.0.len()) {
                 return Err(std::io::Error::other("preview request byte limit"));
             }
             self.0
@@ -198,9 +199,7 @@ fn response_image(
             }
             Err(DeliveryError::Preview {
                 message: "native page rendering failed".into(),
-                diagnostic: Some(Box::new(
-                    serde_json::to_value(error).map_err(|_| DeliveryError::Serialization)?,
-                )),
+                diagnostic: Some(error),
             })
         }
     }

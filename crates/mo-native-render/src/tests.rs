@@ -1,6 +1,25 @@
 use super::*;
 
 #[test]
+fn transport_preserves_structured_diagnostics_without_api_dependency() {
+    let error = serde_json::json!({"stage":"page","error":{"code":"UNSUPPORTED", "location":{"part":"/ppt/slides/slide1.xml","object":5}}, "text":{"kind":"font","details":[1,2]}});
+    let response: PptxResourcePageRasterResponse =
+        serde_json::from_value(serde_json::json!({"status":"error","error":error})).unwrap();
+    let Err(DeliveryError::Preview {
+        diagnostic: Some(detail),
+        ..
+    }) = response_image(response.clone(), vec![])
+    else {
+        panic!("diagnostic lost");
+    };
+    assert_eq!(*detail, error);
+    assert!(matches!(
+        response_image(response, vec![0]),
+        Err(DeliveryError::Invalid(_))
+    ));
+}
+
+#[test]
 fn document_protocol_does_not_multiply_font_metadata_by_page_count() {
     let fixture: serde_json::Value = serde_json::from_str(include_str!(
         "../../../fixtures/presentations/delivery/input.json"
@@ -38,7 +57,6 @@ fn document_protocol_does_not_multiply_font_metadata_by_page_count() {
         decoded.fonts.unwrap().typefaces[0].typeface.len(),
         1024 * 1024
     );
-    batch.fonts.as_mut().unwrap().typefaces[0].typeface =
-        "x".repeat(mo_kernel_api::MAX_REQUEST_BYTES);
+    batch.fonts.as_mut().unwrap().typefaces[0].typeface = "x".repeat(protocol::MAX_REQUEST_BYTES);
     assert!(matches!(request_json(&batch), Err(DeliveryError::Limit(_))));
 }

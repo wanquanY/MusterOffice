@@ -1,6 +1,7 @@
 //! Resource-enabled native pages, using the existing SourcePage engine. The
 //! caller supplies an inspected immutable package, decoder and optional native
 //! font/shaper context. No browser layout, filesystem or font discovery enters.
+pub mod protocol;
 mod resources;
 mod retained;
 mod types;

@@ -1,7 +1,8 @@
 use super::*;
-use mo_kernel_api::{
-    PptxResourcePageProfile, PptxResourcePageRasterResponse, PptxResourcePageRequest,
+use mo_presentation_compile::source_resource_page::protocol::{
+    PptxResourcePageProfile, PptxResourcePageRequest, ResourcePageRasterResponse,
 };
+type PptxResourcePageRasterResponse = ResourcePageRasterResponse<serde_json::Value>;
 use mo_opc::ReaderAt;
 use std::{io::Read, process::Command};
 

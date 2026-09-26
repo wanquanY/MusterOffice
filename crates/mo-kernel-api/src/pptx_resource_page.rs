@@ -22,41 +22,11 @@ pub use prepare::{
     prepare_pptx_resource_document_inputs,
 };
 
-/// Internal document-worker protocol: the font manifest appears once, not once
-/// per page. Public single-page request envelopes remain unchanged.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct PptxResourceDocumentRequest {
-    pub profile: PptxResourcePageProfile,
-    pub pages: Vec<source_resource_page::ResourcePageRequest>,
-    pub fonts: Option<FontManifest>,
-}
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema)]
-pub enum PptxResourcePageProfile {
-    #[serde(rename = "drawingml-resource-page-q32-v1-draft")]
-    NativeResourcesDraftV1,
-}
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct PptxResourcePageRequest {
-    pub profile: PptxResourcePageProfile,
-    pub page: SourcePageRequest,
-    pub image_source: ImageSourceSelection,
-    pub sampling: mo_raster::ImageSampling,
-    /// None disables source text; a visible text body then requires resources.
-    /// Fonts are explicit names/content ranges, never OS discovery or paths.
-    pub fonts: Option<FontManifest>,
-}
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
-#[serde(tag = "status", rename_all = "camelCase", deny_unknown_fields)]
-pub enum PptxResourcePageRasterResponse {
-    Rendered {
-        info: Box<SourceResourcePageRasterInfo>,
-    },
-    Error {
-        error: Box<PptxResourcePageFailure>,
-    },
-}
+pub use source_resource_page::protocol::{
+    PptxResourceDocumentRequest, PptxResourcePageProfile, PptxResourcePageRequest,
+};
+pub type PptxResourcePageRasterResponse =
+    source_resource_page::protocol::ResourcePageRasterResponse<PptxResourcePageFailure>;
 pub struct PptxResourcePageBackends<'a> {
     pub decoder: &'a mut dyn mo_image::ImageDecoder,
     pub text: Option<&'a mut dyn mo_text::backend::TextBackend>,
