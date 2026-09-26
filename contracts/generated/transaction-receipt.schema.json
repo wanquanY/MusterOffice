@@ -137,8 +137,15 @@
           }
         },
         "invalidateAllLayout": {
-          "description": "Conservative until the compiler dependency index can produce a narrower closure.",
+          "description": "Global page geometry changed. Otherwise use invalidated_slides; metadata\nand timeline edits have separate change fields and do not dirty layout.",
           "type": "boolean"
+        },
+        "invalidatedSlides": {
+          "description": "Surviving/new pages whose static layout dependency closure changed.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SlideId"
+          }
         },
         "metadataChanged": {
           "type": "boolean"

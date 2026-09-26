@@ -673,9 +673,14 @@ export interface ChangeSet {
   deletedObjects: ObjectId[];
   deletedSlides: SlideId[];
   /**
-   * Conservative until the compiler dependency index can produce a narrower closure.
+   * Global page geometry changed. Otherwise use invalidated_slides; metadata
+   * and timeline edits have separate change fields and do not dirty layout.
    */
   invalidateAllLayout: boolean;
+  /**
+   * Surviving/new pages whose static layout dependency closure changed.
+   */
+  invalidatedSlides?: SlideId[];
   metadataChanged: boolean;
   slideOrderChanged: boolean;
   updatedObjects: ObjectId[];

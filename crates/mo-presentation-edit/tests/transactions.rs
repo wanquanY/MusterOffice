@@ -4,6 +4,58 @@ use mo_presentation_edit::*;
 use mo_presentation_model::*;
 use support::*;
 
+#[test]
+fn changes_separate_metadata_from_static_page_dependencies() {
+    let original = snapshot();
+    let title = prepare(
+        &original,
+        &transaction(
+            &original,
+            vec![Operation::SetTitle {
+                title: "renamed".into(),
+            }],
+        ),
+        Default::default(),
+    )
+    .unwrap();
+    assert!(title.receipt.changes.metadata_changed);
+    assert!(!title.receipt.changes.invalidate_all_layout);
+    assert!(title.receipt.changes.invalidated_slides.is_empty());
+    let mut transform = original.document().objects[&id()].transform;
+    transform.origin.x = Emu::new(100);
+    let moved = prepare(
+        &original,
+        &transaction(
+            &original,
+            vec![Operation::SetTransform {
+                object: id(),
+                transform,
+            }],
+        ),
+        Default::default(),
+    )
+    .unwrap();
+    assert!(!moved.receipt.changes.invalidate_all_layout);
+    assert_eq!(moved.receipt.changes.invalidated_slides, vec![slide_id()]);
+    let accessibility = prepare(
+        &original,
+        &transaction(
+            &original,
+            vec![Operation::SetAccessibility {
+                object: id(),
+                accessibility: Accessibility {
+                    title: "label".into(),
+                    ..Default::default()
+                },
+            }],
+        ),
+        Default::default(),
+    )
+    .unwrap();
+    assert_eq!(accessibility.receipt.changes.updated_objects, vec![id()]);
+    assert!(accessibility.receipt.changes.invalidated_slides.is_empty());
+}
+
 pub fn snapshot() -> Snapshot {
     Snapshot::new(document(), ValidationLimits::default()).unwrap()
 }

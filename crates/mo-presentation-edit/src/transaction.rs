@@ -84,7 +84,11 @@ pub struct ChangeSet {
     pub changed_resources: Vec<ResourceId>,
     pub slide_order_changed: bool,
     pub metadata_changed: bool,
-    /// Conservative until the compiler dependency index can produce a narrower closure.
+    /// Surviving/new pages whose static layout dependency closure changed.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub invalidated_slides: Vec<SlideId>,
+    /// Global page geometry changed. Otherwise use invalidated_slides; metadata
+    /// and timeline edits have separate change fields and do not dirty layout.
     pub invalidate_all_layout: bool,
     pub anchor_maps: Vec<AnchorMap>,
 }
@@ -286,7 +290,7 @@ pub fn prepare_cancellable(
         "musteroffice.revision/1",
         &(&snapshot.revision, &request_digest, &semantic_digest),
     )?;
-    let changes = changes(&snapshot.document, &document, anchor_maps);
+    let changes = changes(&snapshot.document, &document, anchor_maps, check)?;
     cancelled()?;
     let receipt = TransactionReceipt {
         document_id: document.id.clone(),
@@ -342,11 +346,29 @@ fn changed_keys<K: Ord + Clone, V: PartialEq>(
         .collect()
 }
 
-fn changes(before: &Document, after: &Document, anchor_maps: Vec<AnchorMap>) -> ChangeSet {
+fn changes(
+    before: &Document,
+    after: &Document,
+    anchor_maps: Vec<AnchorMap>,
+    check: &dyn Fn() -> bool,
+) -> Result<ChangeSet, EditError> {
     let (created_objects, updated_objects, deleted_objects) =
         map_diff(&before.objects, &after.objects);
     let (created_slides, updated_slides, deleted_slides) = map_diff(&before.slides, &after.slides);
-    ChangeSet {
+    let mut invalidated_slides = Vec::new();
+    for id in &after.slide_order {
+        if check() {
+            return Err(EditError::Cancelled);
+        }
+        let next = PageDependencies::new(after, id)
+            .ok_or_else(|| EditError::input("page dependency reference"))?;
+        let previous = PageDependencies::new(before, id);
+        if previous.as_ref() != Some(&next) {
+            invalidated_slides.push(id.clone());
+        }
+    }
+
+    Ok(ChangeSet {
         changed_timelines: changed_keys(&before.timelines, &after.timelines),
         created_objects,
         updated_objects,
@@ -361,7 +383,8 @@ fn changes(before: &Document, after: &Document, anchor_maps: Vec<AnchorMap>) -> 
         changed_resources: changed_keys(&before.resources, &after.resources),
         slide_order_changed: before.slide_order != after.slide_order,
         metadata_changed: before.title != after.title,
-        invalidate_all_layout: before != after,
+        invalidated_slides,
+        invalidate_all_layout: before.page_size != after.page_size,
         anchor_maps,
-    }
+    })
 }

@@ -4,6 +4,96 @@ use mo_raster::{BackendReply, RasterBackend, RasterError};
 use serde_json::{Value, json};
 use std::cell::Cell;
 
+#[test]
+fn incremental_plans_equal_full_compilation_across_visual_and_metadata_edits() {
+    use crate::incremental::PagePlanCache;
+    let mut q = request(value());
+    let mut cache = PagePlanCache::new(2, 1000);
+    assert!(!cache.compile(&q, &|| false).unwrap().reused);
+    let mutations: [fn(&mut PageRenderRequest); 5] = [
+        |q| q.page.document.title = "renamed".into(),
+        |q| {
+            q.page
+                .document
+                .objects
+                .values_mut()
+                .next()
+                .unwrap()
+                .accessibility
+                .title = "accessible".into()
+        },
+        |q| {
+            q.page
+                .document
+                .objects
+                .values_mut()
+                .next()
+                .unwrap()
+                .transform
+                .origin
+                .x = mo_common::Emu::new(35)
+        },
+        |q| q.defaults.page_background.red = 70,
+        |q| q.viewport.coordinate_tolerance = Fixed::from_raw(1 << 20),
+    ];
+    for (i, mutate) in mutations.into_iter().enumerate() {
+        mutate(&mut q);
+        let incremental = cache.compile(&q, &|| false).unwrap();
+        assert_eq!(incremental.reused, i < 2);
+        let full = compile_page(&q, &|| false).unwrap();
+        assert_eq!(
+            serde_json::to_value(incremental.plan).unwrap(),
+            serde_json::to_value(full).unwrap()
+        );
+    }
+    // A matching visual key cannot bypass validation or cancellation.
+    assert!(cache.compile(&q, &|| true).is_err());
+    q.page.document.slide_order.push(q.page.slide.clone());
+    assert!(matches!(
+        cache.compile(&q, &|| false),
+        Err(PageError::Placement(CompileError::Document(_)))
+    ));
+}
+
+#[test]
+fn incremental_cache_budgets_and_page_scope_are_enforced() {
+    let mut q = request(value());
+    let other = mo_common::SlideId::new("slide:2").unwrap();
+    let mut slide = q.page.document.slides[&q.page.slide].clone();
+    slide.id = other.clone();
+    slide.objects.clear();
+    q.page.document.slide_order.push(other.clone());
+    q.page.document.slides.insert(other.clone(), slide);
+    let mut cache = crate::incremental::PagePlanCache::new(2, 1000);
+    cache.compile(&q, &|| false).unwrap();
+    q.page.slide = other.clone();
+    cache.compile(&q, &|| false).unwrap();
+    q.page
+        .document
+        .objects
+        .values_mut()
+        .next()
+        .unwrap()
+        .transform
+        .origin
+        .x = mo_common::Emu::new(50);
+    let cached = cache.compile(&q, &|| false).unwrap();
+    assert!(cached.reused, "unrelated page was invalidated");
+    assert_eq!(
+        serde_json::to_value(cached.plan).unwrap(),
+        serde_json::to_value(compile_page(&q, &|| false).unwrap()).unwrap()
+    );
+    let mut bounded = crate::incremental::PagePlanCache::new(1, 1000);
+    bounded.compile(&q, &|| false).unwrap();
+    q.page.slide = mo_common::SlideId::new("slide:1").unwrap();
+    bounded.compile(&q, &|| false).unwrap();
+    q.page.slide = other;
+    assert!(!bounded.compile(&q, &|| false).unwrap().reused);
+    let mut no_commands = crate::incremental::PagePlanCache::new(10, 0);
+    assert!(!no_commands.compile(&q, &|| false).unwrap().reused);
+    assert!(!no_commands.compile(&q, &|| false).unwrap().reused);
+}
+
 fn value() -> Value {
     let mut d: Value = serde_json::from_str(include_str!(
         "../../../fixtures/presentations/basic-shape.json"

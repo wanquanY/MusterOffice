@@ -2,6 +2,7 @@
 //! shared by later painting/hit-testing; it does not resolve text, images or paint.
 mod angle;
 mod coordinate_budget;
+pub mod incremental;
 mod interval;
 mod interval_extended;
 pub mod native_paths;
