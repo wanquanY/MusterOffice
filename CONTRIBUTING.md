@@ -1,6 +1,6 @@
 # 贡献与工程规范
 
-MusterOffice 当前处于设计评审阶段。请先阅读 [README](README.md)、[决策清单](docs/decisions/README.md)和 [Agent 工作规范](AGENTS.md)。
+MusterOffice 已进入一期实现阶段。请先阅读 [README](README.md)、[决策清单](docs/decisions/README.md)和 [Agent 工作规范](AGENTS.md)。
 
 ## 设计变更
 
@@ -10,7 +10,7 @@ MusterOffice 当前处于设计评审阶段。请先阅读 [README](README.md)�
 
 ## 实现准入
 
-开发语言和对应实验/实现范围确认后，再建立语言工作区、锁文件和构建流水线。当前无安装、构建或测试内核的可用命令；不要添加无法执行的示例命令制造“已可用”印象。
+用户已通过 [ADR 0006](docs/decisions/0006-implementation-authorization.md)授权完整一期实现及必要依赖/实验。Rust 工作区、锁文件和可执行检查见[开发说明](docs/implementation/development.md)。构建通过不等于完整内核已可用，保持实现、实验、验收、发行四种状态的区别。
 
 实现必须有明确的合同、受影响功能与验证方式。优先验证真实文件和用户场景；不以整页图片替代原生对象、不隐藏不支持的内容、不为通过测试降低质量门槛。
 
