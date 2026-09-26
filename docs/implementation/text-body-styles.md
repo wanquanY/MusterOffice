@@ -4,7 +4,7 @@
 
 ## 计算边界
 
-Rust [文本框计算](../../crates/mo-pptx/src/source/text/body.rs)按属性求 19 个文本框值，包括内边距、旋转、分栏、方向、锚点、换行、溢出与兼容标志。输出 `attributes` 和类型化 `origins`，逐项区分原生对象、主题部件/默认项和配置默认值。缺省、false、零以及精确坐标词法不会在来源索引中改写。
+Rust [文本框计算](../../crates/mo-presentation-source/src/source/text/body.rs)按属性求 19 个文本框值，包括内边距、旋转、分栏、方向、锚点、换行、溢出与兼容标志。输出 `attributes` 和类型化 `origins`，逐项区分原生对象、主题部件/默认项和配置默认值。缺省、false、零以及精确坐标词法不会在来源索引中改写。
 
 `drawingml-body-inheritance-draft-v1` 明确采用以下计算顺序：当前对象、匹配的版式占位符、当前有效基础主题中的 `txDef` / `lnDef` / `spDef`、匹配的母版占位符、配置默认值。每项只选第一个显式值。直接查询母版对象时，它自身的声明仍是局部声明。普通非占位对象不会从版式上的任意文字对象继承。
 
@@ -16,7 +16,7 @@ Rust [文本框计算](../../crates/mo-pptx/src/source/text/body.rs)按属性求
 
 ## 主题来源与接口
 
-[主题默认读取器](../../crates/mo-pptx/src/source/theme/defaults.rs)只解析主题根下的 `objectDefaults`。`SourceThemePart.textDefaults` 保留对象默认根、shape/line/text 分类与物理序号；每个分类的 `bodyPr` / `lstStyle` 复用已有平坦文本目录和读取器。`spPr` / `style` 属于其他属性族，其内部的同名文本节点不能注入本层。未知属性/扩展保留位置，原包字节仍由来源层持有。
+[主题默认读取器](../../crates/mo-presentation-source/src/source/theme/defaults.rs)只解析主题根下的 `objectDefaults`。`SourceThemePart.textDefaults` 保留对象默认根、shape/line/text 分类与物理序号；每个分类的 `bodyPr` / `lstStyle` 复用已有平坦文本目录和读取器。`spPr` / `style` 属于其他属性族，其内部的同名文本节点不能注入本层。未知属性/扩展保留位置，原包字节仍由来源层持有。
 
 主题内的文字与主文档、页面/版式/母版共用文本声明预算；主题本身仍消耗已有 XML/主题预算。查询有累计操作步数和词法/来源分配预算，默认最多 256 次对象查询、100 万步和 4 MiB 记账预算；这不是最终 JSON 字节长度或生产峰值内存承诺。
 

@@ -3,7 +3,7 @@
 //! without depending on an aggregate API or interpreting domain failures.
 use super::{ResourcePageRequest, SourceResourcePageRasterInfo};
 use crate::source_page::SourcePageRequest;
-use mo_pptx::source::images::ImageSourceSelection;
+use mo_presentation_source::source::images::ImageSourceSelection;
 use mo_text::manifest::FontManifest;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};

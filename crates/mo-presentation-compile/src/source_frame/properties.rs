@@ -1,5 +1,5 @@
 use super::*;
-use mo_pptx::source::text::{body::*, cascade::*, *};
+use mo_presentation_source::source::text::{body::*, cascade::*, *};
 use mo_text::{
     flow::{LineWidths, OverflowPolicy},
     geometry::LineSpacing,

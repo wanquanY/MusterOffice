@@ -1,6 +1,8 @@
 use super::*;
 use crate::{interval::Interval as I, interval_extended::floor_ratio};
-use mo_pptx::source::{drawingml::NativeCoordinate, geometry::evaluate::EvaluatedGeometry};
+use mo_presentation_source::source::{
+    drawingml::NativeCoordinate, geometry::evaluate::EvaluatedGeometry,
+};
 use num_bigint::BigInt;
 
 fn coordinate(value: &NativeCoordinate) -> Result<I, SourceFrameError> {

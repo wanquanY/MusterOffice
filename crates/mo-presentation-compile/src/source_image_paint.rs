@@ -5,7 +5,7 @@ mod number;
 mod types;
 use crate::{interval::Interval as I, source_image_layout::*};
 use mo_geometry::{Affine, Fixed, PathCommand as C, Point};
-use mo_pptx::source::fill::resolve::FillTarget;
+use mo_presentation_source::source::fill::resolve::FillTarget;
 use mo_raster::{
     FillPath, FillRule, ImageBrush, ImageBrushUncertainty, ImageSampling, ImageSourceDomain,
 };

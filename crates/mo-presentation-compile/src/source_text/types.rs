@@ -1,7 +1,7 @@
 use super::*;
 use mo_common::Emu;
 use mo_geometry::Fixed;
-use mo_pptx::source::{
+use mo_presentation_source::source::{
     SourceRunKind,
     text::{cascade::*, fonts::*},
 };
@@ -24,7 +24,7 @@ pub enum SourceTextError {
     #[error(transparent)]
     FontSelection(Box<SourceFontSelectionFailure>),
     #[error(transparent)]
-    Source(#[from] mo_pptx::PptxError),
+    Source(#[from] mo_presentation_source::PptxError),
     #[error(transparent)]
     Text(#[from] mo_text::TextError),
     #[error("source text cancelled")]
@@ -111,7 +111,7 @@ pub struct SourceFontBinding {
 #[error("font selection at {object:?}, paragraph {paragraph}: {selection}")]
 pub struct SourceFontSelectionFailure {
     pub source_sha256: Digest,
-    pub object: mo_pptx::source::SourceObjectRef,
+    pub object: mo_presentation_source::source::SourceObjectRef,
     pub paragraph: u32,
     pub source_ordinal: u32,
     pub selection: Box<FontSelectionFailure>,

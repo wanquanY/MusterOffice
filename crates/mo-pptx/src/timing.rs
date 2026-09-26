@@ -1,14 +1,11 @@
 //! Native timing mapping. Unsupported trees stay in their original source package.
-mod read;
-mod source;
 mod write_tree;
 use crate::{PptxError, xml::Xml};
 use mo_common::{ObjectId, RationalTime, TimingNodeId};
+pub use mo_presentation_source::timing::*;
 use mo_timeline::{
     Effect, FillMode, NodeEvent, RepeatCount, RepeatDuration, StartCondition, Timeline,
 };
-pub use read::*;
-pub use source::*;
 use std::collections::BTreeMap;
 
 fn milliseconds(time: RationalTime) -> Result<u32, PptxError> {

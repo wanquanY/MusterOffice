@@ -1,8 +1,8 @@
 use crate::AffineUncertainty;
 use mo_common::Digest;
 use mo_geometry::{Affine, Point};
-use mo_pptx::source::{SourceObjectRef, SourcePlaceholderMatch};
 use mo_presentation_model::{Point as NativePoint, Size};
+use mo_presentation_source::source::{SourceObjectRef, SourcePlaceholderMatch};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema)]

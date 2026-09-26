@@ -1,5 +1,5 @@
 use super::*;
-use mo_pptx::source::text::{cascade::TextStyleOrigin, fonts::NativeTypeface};
+use mo_presentation_source::source::text::{cascade::TextStyleOrigin, fonts::NativeTypeface};
 
 pub(super) struct Budget {
     pub limits: SourceTextLimits,

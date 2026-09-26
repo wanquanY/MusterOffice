@@ -1,10 +1,10 @@
 use super::{Context, Failure, types::*};
 use mo_common::Emu;
-use mo_pptx::source::{
+use mo_presentation_model::{Point, Size};
+use mo_presentation_source::source::{
     SourceObject, SourceObjectKind, SourceObjectRef, SourcePlaceholderMatch, SourceResolvedValue,
     SourceTransform,
 };
-use mo_presentation_model::{Point, Size};
 const ZERO: Point = Point {
     x: Emu::new(0),
     y: Emu::new(0),

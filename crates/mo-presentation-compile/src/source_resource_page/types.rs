@@ -5,7 +5,7 @@ use crate::{
     source_text_page::{TextPageContent, TextPageLimits},
 };
 use mo_image::DecodedImageInfo;
-use mo_pptx::source::images::{ImageSourceSelection, SourceImageBinding};
+use mo_presentation_source::source::images::{ImageSourceSelection, SourceImageBinding};
 use mo_raster::ImageSampling;
 use serde::Serialize;
 

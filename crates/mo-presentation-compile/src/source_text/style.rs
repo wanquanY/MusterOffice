@@ -1,6 +1,6 @@
 use super::*;
 use mo_common::Emu;
-use mo_pptx::source::text::{cascade::*, fonts::*, *};
+use mo_presentation_source::source::text::{cascade::*, fonts::*, *};
 use mo_text::{ShapeFeature, geometry::GeometryStyle};
 
 pub(super) fn audit(

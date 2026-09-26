@@ -8,7 +8,7 @@ mod spacing;
 mod types;
 use crate::source_text::{self, SourceParagraphPlan, SourceTextLimits, SourceTextPreparation};
 use mo_geometry::{Fixed, Point, Rect};
-use mo_pptx::source::{
+use mo_presentation_source::source::{
     SourceIndex,
     geometry::evaluate::{self, *},
     text::{
@@ -63,7 +63,7 @@ impl PreparedFrame {
     pub(crate) fn accounted_plan_bytes(&self) -> usize {
         self.prepared.accounted_plan_bytes()
     }
-    pub(crate) fn source(&self) -> &mo_pptx::source::text::cascade::CascadedText {
+    pub(crate) fn source(&self) -> &mo_presentation_source::source::text::cascade::CascadedText {
         self.prepared.source()
     }
 }

@@ -7,7 +7,7 @@ use crate::{
 };
 use mo_common::Digest;
 use mo_opc::PartName;
-use mo_pptx::{
+use mo_presentation_source::{
     PptxError,
     source::{fill::resolve::*, images::*},
 };
@@ -54,7 +54,7 @@ pub(super) fn prepare(
     // before the first decoder call. Only fills actually used by paths enter.
     for (part, uses) in groups {
         cancel(check)?;
-        let catalog = mo_pptx::source::images::query_on_page(
+        let catalog = mo_presentation_source::source::images::query_on_page(
             package,
             index,
             &SourceImageQuery {

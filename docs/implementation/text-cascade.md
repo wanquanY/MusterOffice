@@ -1,6 +1,6 @@
 # 来源段落与字符样式
 
-2026-09-25。本阶段新增真实 PPTX 的 Rust 样式计算层，将[来源文本](source-text.md)中的段落、列表层级、字符声明和母版关系连接起来。入口为 [`cascade::resolve`](../../crates/mo-pptx/src/source/text/cascade.rs)，供后续来源文字编译器调用；本阶段没有新增 CLI/WASM 导出或 Agent 操作，也没有接通页面文字绘制。
+2026-09-25。本阶段新增真实 PPTX 的 Rust 样式计算层，将[来源文本](source-text.md)中的段落、列表层级、字符声明和母版关系连接起来。入口为 [`cascade::resolve`](../../crates/mo-presentation-source/src/source/text/cascade.rs)，供后续来源文字编译器调用；本阶段没有新增 CLI/WASM 导出或 Agent 操作，也没有接通页面文字绘制。
 
 ## 数据与职责
 

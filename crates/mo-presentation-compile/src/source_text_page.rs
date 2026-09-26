@@ -14,7 +14,7 @@ use crate::{
     source_page::*,
 };
 use mo_geometry::{Fixed, Point};
-use mo_pptx::source::{
+use mo_presentation_source::source::{
     SourceIndex, SourceObjectRef,
     text::paint::{self, TextPaint, TextRunPaint},
 };
@@ -83,7 +83,8 @@ impl<'a, 'm, 'font> Compiler<'a, 'm, 'font> {
         let mut paragraphs = 0usize;
         let mut runs = 0usize;
         let mut plan_bytes = 0usize;
-        let mut indexed = BTreeMap::<&str, BTreeMap<u32, &mo_pptx::source::SourceObject>>::new();
+        let mut indexed =
+            BTreeMap::<&str, BTreeMap<u32, &mo_presentation_source::source::SourceObject>>::new();
         for object in objects {
             cancel(check)?;
             let at = &object.location;
@@ -137,7 +138,7 @@ impl<'a, 'm, 'font> Compiler<'a, 'm, 'font> {
                 index,
                 frame.source(),
                 &q.color_context,
-                mo_pptx::source::color::ColorLimits::default(),
+                mo_presentation_source::source::color::ColorLimits::default(),
                 check,
             )
             .map_err(|e| SourcePageError::from(e).at(at))?;

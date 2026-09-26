@@ -6,7 +6,7 @@ mod path;
 mod tests;
 mod types;
 use crate::interval::Interval as I;
-use mo_pptx::source::geometry::evaluate::{EvaluatedGeometry, GeometryOrigin};
+use mo_presentation_source::source::geometry::evaluate::{EvaluatedGeometry, GeometryOrigin};
 pub use types::*;
 
 struct Work<'a> {

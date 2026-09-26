@@ -1,7 +1,7 @@
 use crate::{native_paths::NativePathError, source_placement::*};
 use mo_common::Digest;
 use mo_geometry::Fixed;
-use mo_pptx::source::{
+use mo_presentation_source::source::{
     SourceObjectKind, SourcePlaceholderMatch, SourceVisualIssue, SurfaceKind,
     color::ColorContext,
     fill::colors::SourceFillColorResult,
@@ -68,7 +68,7 @@ pub enum SourcePageIssue {
     Line {},
     PathFillModifier {},
     FillSpace {
-        redirects: Vec<mo_pptx::source::fill::resolve::FillRedirect>,
+        redirects: Vec<mo_presentation_source::source::fill::resolve::FillRedirect>,
     },
 }
 #[derive(Debug, thiserror::Error)]
@@ -88,7 +88,7 @@ pub enum SourcePageError {
         issue: Box<SourcePageIssue>,
     },
     #[error(transparent)]
-    Source(#[from] mo_pptx::PptxError),
+    Source(#[from] mo_presentation_source::PptxError),
     #[error(transparent)]
     Placement(#[from] SourcePlacementError),
     #[error(transparent)]
@@ -104,7 +104,7 @@ pub enum SourcePageError {
     #[error(transparent)]
     ImagePaint(#[from] crate::source_image_paint::ImagePaintError),
     #[error("source page image resource required: {0:?}")]
-    ImageResource(Box<mo_pptx::source::images::SourceImageResult>),
+    ImageResource(Box<mo_presentation_source::source::images::SourceImageResult>),
     #[error("source text context required at {location:?}")]
     TextContextRequired {
         location: SourcePageLocation,
@@ -113,7 +113,7 @@ pub enum SourcePageError {
     #[error(transparent)]
     Text(#[from] crate::source_frame::SourceFrameError),
     #[error(transparent)]
-    TextPaint(#[from] mo_pptx::source::text::paint::TextPaintError),
+    TextPaint(#[from] mo_presentation_source::source::text::paint::TextPaintError),
     #[error(transparent)]
     TextGeometry(#[from] mo_geometry::GeometryError),
     #[error("unusable native text decoration metric: {0:?}")]
@@ -170,7 +170,7 @@ pub struct SourcePagePaintSource {
     /// Present for the distinct p:blipFill paint. Ordinary shape/text paints
     /// retain their existing provenance through binding/path/text_sources.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub fill_target: Option<mo_pptx::source::fill::resolve::FillTarget>,
+    pub fill_target: Option<mo_presentation_source::source::fill::resolve::FillTarget>,
 }
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

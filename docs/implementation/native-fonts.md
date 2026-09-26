@@ -1,6 +1,6 @@
 # 原生字体名称与显式资源绑定
 
-2026-09-25。本阶段为来源文字编译补齐两层基础实现：真实 PPTX 的字体名称求值，以及宿主字体资源清单到已有段落塑形管线的绑定。前者位于 [`mo-pptx::source::text::fonts`](../../crates/mo-pptx/src/source/text/fonts.rs)，后者位于 [`mo-text::manifest`](../../crates/mo-text/src/manifest/mod.rs)。两者均为 Rust 库入口；本阶段尚未连接成来源页面文字绘制，也没有新增 CLI/WASM/Agent 操作。
+2026-09-25。本阶段为来源文字编译补齐两层基础实现：真实 PPTX 的字体名称求值，以及宿主字体资源清单到已有段落塑形管线的绑定。前者位于 [`mo-pptx::source::text::fonts`](../../crates/mo-presentation-source/src/source/text/fonts.rs)，后者位于 [`mo-text::manifest`](../../crates/mo-text/src/manifest/mod.rs)。两者均为 Rust 库入口；本阶段尚未连接成来源页面文字绘制，也没有新增 CLI/WASM/Agent 操作。
 
 ## 原生名称与来源
 

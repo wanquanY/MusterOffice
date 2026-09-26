@@ -3,7 +3,7 @@
 use super::*;
 use crate::source_placement::*;
 use mo_image::DecodedImage;
-use mo_pptx::source::{SourceIndex, fill::resolve::FillTarget, images::*};
+use mo_presentation_source::source::{SourceIndex, fill::resolve::FillTarget, images::*};
 use schemars::JsonSchema;
 use serde::Serialize;
 use std::collections::{BTreeMap, BTreeSet};

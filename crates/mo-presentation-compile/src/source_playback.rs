@@ -5,7 +5,7 @@ use crate::{
 };
 use mo_common::{Digest, ObjectId, RationalTime};
 use mo_opc::PackageRead;
-use mo_pptx::{
+use mo_presentation_source::{
     source::{SourceIndex, SourceLimits, SourceObjectKind, SourceObjectRef},
     timing::{self, SourceTimingQuery},
 };

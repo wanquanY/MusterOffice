@@ -123,7 +123,7 @@ pub(crate) fn preflight_sampled(
         part: q.slide.clone(),
         object: None,
     };
-    let mut background = mo_pptx::source::fill::colors::query(
+    let mut background = mo_presentation_source::source::fill::colors::query(
         index,
         &SourceFillColorQuery {
             expected_source_sha256: q.expected_source_sha256.clone(),

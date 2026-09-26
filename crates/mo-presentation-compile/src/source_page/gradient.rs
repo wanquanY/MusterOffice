@@ -2,8 +2,8 @@
 //! the receiving shape, including inherited properties, never the donor box.
 use super::*;
 use crate::source_number::{percentage_interval, percentage_ratio};
-use mo_pptx::source::color::ColorSample;
 use mo_presentation_model::Size;
+use mo_presentation_source::source::color::ColorSample;
 use mo_raster::{
     Gradient, GradientAlpha, GradientAxisTile, GradientField, GradientGeometry,
     GradientInterpolation, GradientPlane, GradientPlaneUncertainty, GradientStop, GradientTile,
@@ -138,7 +138,7 @@ pub(super) fn compile(
             }
             EffectiveGradientShade::Path {
                 path, fill_to_rect, ..
-            } if path.value == mo_pptx::source::fill::NativePathShade::Rectangle => {
+            } if path.value == mo_presentation_source::source::fill::NativePathShade::Rectangle => {
                 super::gradient_rect::field(fill_to_rect)?
             }
             _ => return Err(E::Invalid("native path gradient evaluation required")),

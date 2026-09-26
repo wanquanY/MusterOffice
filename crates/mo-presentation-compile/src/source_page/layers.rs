@@ -1,6 +1,6 @@
 //! Explicit static page composition; source declarations remain immutable.
 use super::*;
-use mo_pptx::source::{
+use mo_presentation_source::source::{
     PlaceholderKind, SourceObject, SourceObjectKind, SourcePlaceholderMatch, SourceSurface,
     SurfaceKind,
 };

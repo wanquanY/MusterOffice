@@ -1,5 +1,5 @@
 use super::*;
-use mo_pptx::source::{
+use mo_presentation_source::source::{
     SourceRun, SourceRunKind,
     text::{cascade::*, fonts::*},
 };
@@ -225,7 +225,7 @@ impl Compiler<'_> {
                 script: script.into(),
             }));
         };
-        let font = match mo_pptx::source::text::fonts::resolve(
+        let font = match mo_presentation_source::source::text::fonts::resolve(
             self.index,
             self.source,
             self.paragraph,

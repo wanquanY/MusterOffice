@@ -1,7 +1,7 @@
 use super::*;
 use mo_common::{Digest, Emu};
 use mo_image::{ImageFormat, ImageResolution, SourceColor};
-use mo_pptx::source::fill::{NativeBlipCompression, resolve::*};
+use mo_presentation_source::source::fill::{NativeBlipCompression, resolve::*};
 use std::cell::Cell;
 
 fn value<T>(value: T) -> FillValue<T> {

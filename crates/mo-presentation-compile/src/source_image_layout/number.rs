@@ -1,6 +1,6 @@
 use super::{ImageLayoutError as E, *};
 use crate::{interval_extended::floor_ratio, source_number::*};
-use mo_pptx::source::drawingml::{NativeCoordinate, NativePercentage};
+use mo_presentation_source::source::drawingml::{NativeCoordinate, NativePercentage};
 use num_bigint::BigInt;
 
 fn decimal(s: &str, factor: i64, unit: i32) -> Result<I, E> {

@@ -2,14 +2,14 @@
 use super::SourceTextError;
 use mo_common::Emu;
 use mo_geometry::Fixed;
-use mo_pptx::source::drawingml::NativePercentage;
+use mo_presentation_source::source::drawingml::NativePercentage;
 use mo_text::geometry::BaselineShift;
 
 pub(super) fn tracking(
-    value: &mo_pptx::source::text::NativeTextPoint,
+    value: &mo_presentation_source::source::text::NativeTextPoint,
 ) -> Result<(Fixed, Fixed), SourceTextError> {
     use crate::source_number::{PercentageError, decimal};
-    use mo_pptx::source::text::NativeTextPoint;
+    use mo_presentation_source::source::text::NativeTextPoint;
     let scaled = match value {
         NativeTextPoint::HundredthPoints { value } => {
             return Ok((Fixed::emu(Emu::new(i64::from(*value) * 127)), Fixed::ZERO));
@@ -124,7 +124,7 @@ mod tests {
     }
     #[test]
     fn tracking_units_signed_fractions_and_conversion_bounds_are_exact() {
-        use mo_pptx::source::text::NativeTextPoint as P;
+        use mo_presentation_source::source::text::NativeTextPoint as P;
         let unit = |s: &str| P::UniversalMeasure {
             value: s.to_owned().try_into().unwrap(),
         };

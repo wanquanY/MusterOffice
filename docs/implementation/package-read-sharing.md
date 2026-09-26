@@ -6,7 +6,7 @@
 
 `PackageRead` 只有已通过实际包校验的 `Package<R>` 可以实现。公开调用者不能直接提交替代包图，也不能把可反序列化的数据当作已验证包。读取器仍是宿主提供的不可变、已授权资源；接口借用原包，不引入包装堆分配、复制包图、第二份媒体内容或新存储 owner。
 
-元数据访问返回原记录的引用；部件读取委托既有的有界、可取消解压路径，保留真实 I/O 失败。`Package::open`、`VerifiedPackage` 的资源所有权以及需要原始 ZIP 条目的流式重写继续保留泛型。文本/变换编辑仍重开并校验候选，播放准备后持有自身资源的生命周期不变。源码见 [OPC 接口](../../crates/mo-opc/src/read.rs)、[来源入口](../../crates/mo-pptx/src/source.rs)和[资源页面准备](../../crates/mo-presentation-compile/src/source_resource_page.rs)。
+元数据访问返回原记录的引用；部件读取委托既有的有界、可取消解压路径，保留真实 I/O 失败。`Package::open`、`VerifiedPackage` 的资源所有权以及需要原始 ZIP 条目的流式重写继续保留泛型。文本/变换编辑仍重开并校验候选，播放准备后持有自身资源的生命周期不变。源码见 [OPC 接口](../../crates/mo-opc/src/read.rs)、[来源入口](../../crates/mo-presentation-source/src/source.rs)和[资源页面准备](../../crates/mo-presentation-compile/src/source_resource_page.rs)。
 
 没有改动公共 JSON/TS 合同、严格 JSON 解析、模型校验、内容/摘要/证据绑定或质量声明。生产依赖和锁文件保持不变。最初的函数体统计还显示类型化反序列化占有明显成本；本次没有通过降低类型和字段检查来减少这部分代码。
 

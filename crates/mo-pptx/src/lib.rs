@@ -1,7 +1,7 @@
 //! PresentationML format adapter. It serializes native objects, never a page raster.
 mod definitions;
 mod drawing;
-pub mod source;
+pub use mo_presentation_source::source;
 mod text;
 pub mod timing;
 mod write;
@@ -9,35 +9,14 @@ mod xml;
 
 use mo_common::{Emu, ResourceId};
 use mo_opc::{PackageLimits, ReaderAt};
-use mo_presentation_model::{Rgba, ThemeColor, ValidationLimits, ValidationReport};
+use mo_presentation_model::{Rgba, ThemeColor, ValidationLimits};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
-use thiserror::Error;
 
 pub use write::{export, export_to};
 
-#[derive(Debug, Error)]
-pub enum PptxError {
-    #[error("PPTX source conflict: {0}")]
-    SourceConflict(String),
-    #[error("invalid document: {0:?}")]
-    InvalidDocument(ValidationReport),
-    #[error("PPTX value at {path}: {message}")]
-    Value { path: String, message: String },
-    #[error("PPTX mapping not implemented: {0}")]
-    Unsupported(String),
-    #[error("authorized resource required: {0}")]
-    ResourceRequired(ResourceId),
-    #[error("PPTX limit exceeded: {0}")]
-    Limit(&'static str),
-    #[error("PPTX computation cancelled")]
-    Cancelled,
-    #[error(transparent)]
-    Opc(#[from] mo_opc::OpcError),
-    #[error(transparent)]
-    Xml(#[from] mo_xml::XmlError),
-}
+pub use mo_presentation_source::PptxError;
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

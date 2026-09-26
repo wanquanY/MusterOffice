@@ -1,5 +1,5 @@
 use super::*;
-use mo_pptx::source::{color::ColorSample, text::paint::TextPaintError};
+use mo_presentation_source::source::{color::ColorSample, text::paint::TextPaintError};
 use mo_text::fallback::FontFragment;
 #[derive(PartialEq, Eq, Clone, Copy)]
 pub(super) struct Color {

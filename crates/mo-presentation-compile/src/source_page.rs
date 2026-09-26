@@ -17,7 +17,7 @@ use crate::{
     source_placement::*,
 };
 use mo_geometry::{Affine, Fixed, PathCommand as C, Point};
-use mo_pptx::source::{
+use mo_presentation_source::source::{
     SourceIndex,
     color::ColorProfile,
     fill::{colors::*, resolve::*},

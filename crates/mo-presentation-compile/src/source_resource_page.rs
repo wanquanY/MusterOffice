@@ -11,7 +11,7 @@ use crate::{
 };
 use mo_image::ImageDecoder;
 use mo_opc::PackageRead;
-use mo_pptx::source::SourceIndex;
+use mo_presentation_source::source::SourceIndex;
 use mo_raster::{PreparedImages, RasterBackend, RasterError};
 pub use retained::{ResourcePagePlan, ResourcePreparationInfo};
 pub use types::*;

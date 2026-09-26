@@ -1,7 +1,7 @@
 //! Bind local radial geometry to the immutable source and receiving shape.
 use super::*;
 use crate::source_placement::*;
-use mo_pptx::source::{
+use mo_presentation_source::source::{
     SourceIndex,
     fill::resolve::*,
     geometry::evaluate::{
@@ -44,7 +44,7 @@ pub enum SourceRadialLayoutError {
     #[error("source radial placement unresolved: {0:?}")]
     PlacementRequired(Box<PlacementUnresolved>),
     #[error(transparent)]
-    Source(#[from] mo_pptx::PptxError),
+    Source(#[from] mo_presentation_source::PptxError),
     #[error(transparent)]
     Placement(#[from] SourcePlacementError),
     #[error(transparent)]
@@ -107,7 +107,7 @@ pub fn layout_source_with_basis(
             }
         }
     }
-    let styles = mo_pptx::source::fill::resolve::query(
+    let styles = mo_presentation_source::source::fill::resolve::query(
         index,
         query,
         FillResolveLimits {
@@ -119,7 +119,7 @@ pub fn layout_source_with_basis(
     let (mut geometries, mut placements) = if ids.is_empty() {
         (BTreeMap::new(), BTreeMap::new())
     } else {
-        let geometry = mo_pptx::source::geometry::evaluate::query(
+        let geometry = mo_presentation_source::source::geometry::evaluate::query(
             index,
             &SourceGeometryQuery {
                 expected_source_sha256: query.expected_source_sha256.clone(),

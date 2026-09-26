@@ -18,7 +18,7 @@ struct Emitter<'a> {
 struct PaintPath<'a> {
     commands: &'a [C],
     affine: Affine,
-    origin: Option<mo_pptx::source::geometry::evaluate::GeometryOrigin>,
+    origin: Option<mo_presentation_source::source::geometry::evaluate::GeometryOrigin>,
 }
 impl<'a> PaintPath<'a> {
     fn native(path: &'a CompiledNativePath, affine: Affine) -> Self {

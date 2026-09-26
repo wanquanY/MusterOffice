@@ -7,11 +7,11 @@ mod types;
 use crate::interval::Interval as I;
 use mo_geometry::{Fixed, Point};
 use mo_image::{DecodedImageInfo, PhysicalPixelSize, PixelExtent};
-use mo_pptx::source::fill::{
+use mo_presentation_model::Size;
+use mo_presentation_source::source::fill::{
     NativeFillAlignment as Alignment, NativeTileFlip,
     resolve::{EffectiveFillRect, EffectiveImageFill, EffectiveImageMode},
 };
-use mo_presentation_model::Size;
 use mo_raster::ImageTile;
 use number::{positive, q32};
 pub use source::{ImageSourceLayoutError, ImageSourceLayoutPlan, layout_source};

@@ -1,13 +1,13 @@
 use super::*;
 use crate::source_number::{PercentageError, percentage};
 use mo_common::Emu;
-use mo_pptx::source::text::{SourceTextValue, cascade};
+use mo_presentation_source::source::text::{SourceTextValue, cascade};
 use mo_text::{geometry::line_style_maximum, lines::LineShapeResult};
 
 pub(super) fn read(
     index: &SourceIndex,
     paragraph: u32,
-    reference: &mo_pptx::source::text::cascade::TextStyleDeclaration,
+    reference: &mo_presentation_source::source::text::cascade::TextStyleDeclaration,
     input: &SourceParagraphPlan,
     check: &dyn Fn() -> bool,
 ) -> Result<(ParagraphSpacing, Fixed), SourceFrameError> {

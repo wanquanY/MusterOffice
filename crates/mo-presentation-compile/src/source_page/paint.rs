@@ -1,5 +1,5 @@
 use super::*;
-use mo_pptx::source::{
+use mo_presentation_source::source::{
     color::ColorSample,
     fill::colors::FillPaintColors,
     line::{colors::LinePaintColor, resolve::*, *},
@@ -22,7 +22,7 @@ impl FillPaint {
     }
 }
 pub(super) fn fill(
-    result: &mo_pptx::source::fill::colors::SourceFillColorResult,
+    result: &mo_presentation_source::source::fill::colors::SourceFillColorResult,
     at: &SourcePageLocation,
     images_enabled: bool,
     placement: Option<&NativePlacement>,
@@ -51,7 +51,7 @@ pub(super) fn fill(
     }
 }
 pub(super) fn line(
-    result: &mo_pptx::source::line::colors::SourceLineColorResult,
+    result: &mo_presentation_source::source::line::colors::SourceLineColorResult,
     at: &SourcePageLocation,
 ) -> Result<Option<([u8; 4], StrokeStyle)>, SourcePageError> {
     if matches!(result.paint, LinePaintColor::None {}) {

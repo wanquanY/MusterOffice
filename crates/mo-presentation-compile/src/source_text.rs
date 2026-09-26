@@ -8,7 +8,7 @@ mod script;
 mod style;
 mod types;
 use mo_common::Digest;
-use mo_pptx::source::{SourceIndex, SourceObjectRef, text::cascade};
+use mo_presentation_source::source::{SourceIndex, SourceObjectRef, text::cascade};
 use mo_text::{backend::TextBackend, manifest::*};
 pub use types::*;
 

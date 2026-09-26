@@ -1,5 +1,5 @@
 use mo_geometry::{Affine, Point};
-use mo_pptx::source::fill::resolve::FillTarget;
+use mo_presentation_source::source::fill::resolve::FillTarget;
 use mo_raster::{FillPath, ImageBrush};
 use schemars::JsonSchema;
 use serde::Serialize;

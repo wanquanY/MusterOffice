@@ -32,7 +32,7 @@ pub(super) fn objects(
             rotations,
             check,
         )?;
-        let geometry = mo_pptx::source::geometry::evaluate::query(
+        let geometry = mo_presentation_source::source::geometry::evaluate::query(
             index,
             &SourceGeometryQuery {
                 expected_source_sha256: q.expected_source_sha256.clone(),
@@ -49,10 +49,10 @@ pub(super) fn objects(
         let picture_ids: std::collections::BTreeSet<u32> = index.surfaces[&layer.part]
             .objects
             .iter()
-            .filter(|o| o.kind == mo_pptx::source::SourceObjectKind::Picture)
+            .filter(|o| o.kind == mo_presentation_source::source::SourceObjectKind::Picture)
             .map(|o| o.native_id)
             .collect();
-        let fills = mo_pptx::source::fill::colors::query_on_page(
+        let fills = mo_presentation_source::source::fill::colors::query_on_page(
             index,
             &SourceFillColorQuery {
                 expected_source_sha256: q.expected_source_sha256.clone(),
@@ -81,7 +81,7 @@ pub(super) fn objects(
             },
             check,
         )?;
-        let lines = mo_pptx::source::line::colors::query_in_context(
+        let lines = mo_presentation_source::source::line::colors::query_in_context(
             index,
             &SourceLineColorQuery {
                 expected_source_sha256: q.expected_source_sha256.clone(),
@@ -97,7 +97,7 @@ pub(super) fn objects(
                     max_queries: 16384,
                     ..Default::default()
                 },
-                colors: mo_pptx::source::color::ColorLimits {
+                colors: mo_presentation_source::source::color::ColorLimits {
                     max_queries: 16384,
                     ..Default::default()
                 },

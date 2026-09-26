@@ -242,7 +242,8 @@ Rust 生成和重写真实 OPC 文件；Python 用独立 ZIP/XML 实现检查输
 | `crates/mo-presentation-edit` | 版本检查、私有工作版本、原子候选、变更集与收据 |
 | `crates/mo-xml` | 有预算的 XML 事件、MCE 逻辑投影、编码和语法感知的来源文本覆盖 |
 | `crates/mo-opc` | ZIP/OPC 包图、关系、流式读写和部件保留 |
-| `crates/mo-pptx` | 原生 PresentationML 基础导出、来源对象/文本与占位符索引、关系及位置/尺寸继承、保留式叶文本编辑 |
+| `crates/mo-presentation-source` | 来源声明、对象/文本与占位符索引、继承解析、来源绑定与原生时间读取 |
+| `crates/mo-pptx` | 原生 PresentationML 写出；兼容转导既有来源读取 API |
 | `crates/mo-kernel-api` | 共用计算入口与稳定错误响应 |
 | `crates/mo-wasm` | WASM 薄绑定 |
 | `tools/mo-cli` | stdin/stdout 计算、显式文件检查、暂存校验后发布 PPTX 的开发宿主 |

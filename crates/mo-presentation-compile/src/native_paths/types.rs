@@ -1,6 +1,6 @@
 use mo_geometry::{Fixed, PathCommand, Point};
-use mo_pptx::source::geometry::NativePathFill;
-use mo_pptx::source::geometry::evaluate::GeometryOrigin;
+use mo_presentation_source::source::geometry::NativePathFill;
+use mo_presentation_source::source::geometry::evaluate::GeometryOrigin;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 

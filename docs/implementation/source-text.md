@@ -14,7 +14,7 @@
 - 文字填充、轮廓、下划线画笔和效果共用既有 DrawingML 读取器。文字效果节点位于该文本目录，不能与形状效果目录混用。
 - 字体声明使用从主题读取器提取的公共 `SourceTextFont` 类型和解析器；主题原有公开类型路径仍保留。
 
-源码按[类型](../../crates/mo-pptx/src/source/text.rs)、[属性](../../crates/mo-pptx/src/source/text/attributes.rs)、[枚举](../../crates/mo-pptx/src/source/text/names.rs)、[文法](../../crates/mo-pptx/src/source/text/grammar.rs)和[流式读取](../../crates/mo-pptx/src/source/text/read.rs)分工。使用已有 CLI `pptx-inspect` / WASM `inspect_pptx` 响应，不新增另一套源文件读取链路。
+源码按[类型](../../crates/mo-presentation-source/src/source/text.rs)、[属性](../../crates/mo-presentation-source/src/source/text/attributes.rs)、[枚举](../../crates/mo-presentation-source/src/source/text/names.rs)、[文法](../../crates/mo-presentation-source/src/source/text/grammar.rs)和[流式读取](../../crates/mo-presentation-source/src/source/text/read.rs)分工。使用已有 CLI `pptx-inspect` / WASM `inspect_pptx` 响应，不新增另一套源文件读取链路。
 
 ## 已解释范围
 

@@ -10,7 +10,7 @@ pub(super) fn required(result: &SourceFillColorResult, at: &SourcePageLocation) 
         && matches!(&result.style, FillOutcome::Resolved { fill, .. }
             if matches!(fill.as_ref(), EffectiveFill::Gradient { gradient, .. }
                 if matches!(gradient.shade, EffectiveGradientShade::Path { ref path, .. }
-                    if path.value == mo_pptx::source::fill::NativePathShade::Circle)))
+                    if path.value == mo_presentation_source::source::fill::NativePathShade::Circle)))
 }
 
 pub(super) struct LayoutContext<'a> {

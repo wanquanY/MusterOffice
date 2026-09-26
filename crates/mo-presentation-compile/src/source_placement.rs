@@ -8,10 +8,10 @@ use crate::{
     placement_core::{Engine, Frame, State},
 };
 use mo_common::Emu;
-use mo_pptx::source::{
+use mo_presentation_model::Point;
+use mo_presentation_source::source::{
     SourceIndex, SourceObject, SourceObjectKind, SourceObjectRef, SourceSurface,
 };
-use mo_presentation_model::Point;
 use std::collections::{BTreeMap, BTreeSet};
 /// Only produced by a bound native timeline sample inside this crate.
 pub(crate) type SourceRotations = BTreeMap<(String, u32), crate::angle::Angle>;

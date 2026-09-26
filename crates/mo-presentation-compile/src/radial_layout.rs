@@ -8,11 +8,11 @@ use crate::{
     source_number::percentage_ratio,
 };
 use mo_geometry::{BoundsBudget, Fixed};
-use mo_pptx::source::fill::{
+use mo_presentation_model::Size;
+use mo_presentation_source::source::fill::{
     NativePathShade,
     resolve::{EffectiveFillRect, EffectiveGradientFill, EffectiveGradientShade},
 };
-use mo_presentation_model::Size;
 use num_bigint::BigInt;
 pub use source::{
     SourceRadialLayoutError, SourceRadialLayoutPlan, layout_source, layout_source_with_basis,

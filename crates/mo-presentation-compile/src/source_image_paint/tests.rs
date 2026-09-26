@@ -1,8 +1,8 @@
 use super::*;
 use crate::source_placement::*;
 use mo_common::Emu;
-use mo_pptx::source::SourceObjectRef;
 use mo_presentation_model::{Point as NativePoint, Size};
+use mo_presentation_source::source::SourceObjectRef;
 use mo_raster::ImageTile;
 use std::cell::Cell;
 fn f(v: i64) -> Fixed {

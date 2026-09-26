@@ -1,6 +1,6 @@
 //! Deliberately versioned computation policy, not an Office/WPS conformance
 //! claim. Unicode script itemization is separate from DrawingML font slots.
-use mo_pptx::source::text::fonts::NativeFontSlot;
+use mo_presentation_source::source::text::fonts::NativeFontSlot;
 
 pub(super) fn select(
     script: &str,

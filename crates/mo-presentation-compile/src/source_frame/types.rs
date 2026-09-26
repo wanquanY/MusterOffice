@@ -1,7 +1,7 @@
 use crate::source_text::{SourceParagraphPlan, SourceTextIssue};
 use mo_common::Digest;
 use mo_geometry::{Fixed, Point, Rect};
-use mo_pptx::source::{
+use mo_presentation_source::source::{
     SourceObjectRef, SourceResolvedValue,
     geometry::evaluate::{GeometryOrigin, GeometryUnresolved},
     text::{NativeTextAlign, body::*, cascade::*},
@@ -61,7 +61,7 @@ pub enum SourceFrameError {
     #[error("native frame mapping required: {0:?}")]
     Mapping(Box<SourceFrameIssue>),
     #[error(transparent)]
-    Source(#[from] mo_pptx::PptxError),
+    Source(#[from] mo_presentation_source::PptxError),
     #[error(transparent)]
     SourceText(#[from] crate::source_text::SourceTextError),
     #[error(transparent)]

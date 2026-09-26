@@ -6,7 +6,7 @@ use crate::{
     source_placement::SourceRotations, source_text_page::retained::RetainedText,
 };
 use mo_common::Digest;
-use mo_pptx::source::fill::resolve::FillOwner;
+use mo_presentation_source::source::fill::resolve::FillOwner;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;

@@ -1,7 +1,7 @@
 //! Exact source percentage arithmetic shared by baseline and paragraph spacing.
 use mo_common::Emu;
 use mo_geometry::Fixed;
-use mo_pptx::source::drawingml::NativePercentage;
+use mo_presentation_source::source::drawingml::NativePercentage;
 use num_bigint::BigInt;
 
 pub(crate) enum PercentageError {
