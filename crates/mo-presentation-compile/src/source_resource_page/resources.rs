@@ -27,7 +27,7 @@ struct Pending<'a> {
     resource: u32,
 }
 pub(super) fn prepare(
-    package: &dyn PackageRead,
+    input: &dyn ImageInput,
     index: &SourceIndex,
     page: &source_page::PreparedPage,
     options: ResourcePageOptions,
@@ -54,8 +54,8 @@ pub(super) fn prepare(
     // before the first decoder call. Only fills actually used by paths enter.
     for (part, uses) in groups {
         cancel(check)?;
-        let catalog = mo_presentation_source::source::images::query_on_page(
-            package,
+        let catalog = mo_presentation_source::source::images::query_input_on_page(
+            input,
             index,
             &SourceImageQuery {
                 fill: SourceFillQuery {
@@ -165,13 +165,11 @@ pub(super) fn prepare(
         cancel(check)?;
         // Descriptors were just computed from this immutable package. Recheck
         // bytes against their digest in mo_image::decode before entering FFI.
-        let encoded = package
-            .read_part(
-                &PartName::new(&descriptor.part).map_err(PptxError::from)?,
-                mo_image::MAX_ENCODED_BYTES as u64,
-                check,
-            )
-            .map_err(PptxError::from)?;
+        let encoded = input.read(
+            &PartName::new(&descriptor.part).map_err(PptxError::from)?,
+            mo_image::MAX_ENCODED_BYTES as u64,
+            check,
+        )?;
         let at = &locations[id];
         let image = mo_image::decode(&encoded, &descriptor.sha256, decoder, check)
             .map_err(|e| SourcePageError::from(e).at(at))?;

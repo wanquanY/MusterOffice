@@ -1,10 +1,6 @@
-use crate::{
-    A, COLOR_SLOTS, ExportDefaults, P, PptxError, R,
-    drawing::{self, Drawing},
-    text,
-    xml::Xml,
-};
-use mo_common::{LayoutId, MasterId, ThemeId};
+use crate::source::theme::*;
+use crate::{A, P, PptxError, R, drawing::Drawing, native, xml::Xml};
+use mo_common::{LayoutId, MasterId};
 use mo_opc::PartName;
 use mo_presentation_model::*;
 
@@ -15,85 +11,81 @@ pub(crate) fn root(x: &mut Xml, tag: &str) -> Result<(), PptxError> {
     x.attr("xmlns:a", A)?;
     x.attr("xmlns:r", R)
 }
-fn background(x: &mut Xml, bg: &Inherited<Fill>) -> Result<(), PptxError> {
-    if let Inherited::Value(f) = bg {
-        x.raw("<p:bg><p:bgPr>")?;
-        drawing::fill(x, f)?;
-        x.raw("<a:effectLst/></p:bgPr></p:bg>")?;
-    }
-    Ok(())
-}
-pub(crate) fn theme(
-    document: &Document,
-    id: Option<&ThemeId>,
-    defaults: &ExportDefaults,
-    max: usize,
-) -> Result<Vec<u8>, PptxError> {
+pub(crate) fn theme(theme: &SourceThemePart, max: usize) -> Result<Vec<u8>, PptxError> {
     let mut x = Xml::new(max)?;
-    let theme = id.map(|id| &document.themes[id]);
-    let name = theme.map_or("MusterOffice", |t| t.name.as_str());
-    let mut family = defaults.font_family.as_str();
-    if let Some(theme) = theme {
-        let mut unsupported = theme.default_text.clone();
-        unsupported.font = Inherited::Inherit;
-        if unsupported != CharacterStyle::default() {
-            return Err(PptxError::Unsupported(
-                "theme-wide character defaults other than font need native style binding".into(),
-            ));
-        }
-        if let Inherited::Value(font) = &theme.default_text.font {
-            family = &document.fonts[font].family;
-        }
-    }
     x.raw("<a:theme")?;
     x.attr("xmlns:a", A)?;
-    x.attr("name", name)?;
+    x.attr("name", theme.name.as_deref().unwrap_or(""))?;
     x.raw("><a:themeElements><a:clrScheme")?;
-    x.attr("name", name)?;
+    let colors = theme.color_scheme.as_ref().expect("planned theme colors");
+    x.attr("name", &colors.name)?;
     x.raw(">")?;
-    for (slot, native) in COLOR_SLOTS {
-        let rgba = theme
-            .and_then(|t| t.colors.get(&slot))
-            .unwrap_or(&defaults.theme_colors[&slot]);
+    for (_, name) in mo_presentation_source::author::COLOR_SLOTS {
+        let slot: ColorSlot = serde::Deserialize::deserialize(serde::de::value::StrDeserializer::<
+            serde::de::value::Error,
+        >::new(name))
+        .expect("native color slot");
         x.raw("<a:")?;
-        x.raw(native)?;
+        x.raw(name)?;
         x.raw(">")?;
-        drawing::color(&mut x, &Color::Srgb { rgba: *rgba })?;
+        native::color(&mut x, &colors.colors[&slot])?;
         x.raw("</a:")?;
-        x.raw(native)?;
+        x.raw(name)?;
         x.raw(">")?;
     }
     x.raw("</a:clrScheme><a:fontScheme")?;
-    x.attr("name", name)?;
+    let fonts = theme.font_scheme.as_ref().expect("planned theme fonts");
+    x.attr("name", &fonts.name)?;
     x.raw(">")?;
-    for font in ["majorFont", "minorFont"] {
+    for (tag, fonts) in [("majorFont", &fonts.major), ("minorFont", &fonts.minor)] {
         x.raw("<a:")?;
-        x.raw(font)?;
+        x.raw(tag)?;
         x.raw(">")?;
-        text::fonts(&mut x, family)?;
+        for (script, font) in [
+            ("latin", &fonts.latin),
+            ("ea", &fonts.east_asian),
+            ("cs", &fonts.complex_script),
+        ] {
+            if let Some(font) = font {
+                native::font(&mut x, script, font)?;
+            }
+        }
         x.raw("</a:")?;
-        x.raw(font)?;
+        x.raw(tag)?;
         x.raw(">")?;
     }
-    x.raw("</a:fontScheme><a:fmtScheme name=\"MusterOffice\"><a:fillStyleLst>")?;
-    for _ in 0..3 {
-        x.raw("<a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill>")?;
+    let format = theme.format_scheme.as_ref().expect("planned theme format");
+    x.raw("</a:fontScheme><a:fmtScheme")?;
+    x.attr("name", format.name.as_deref().unwrap_or(""))?;
+    x.raw(">")?;
+    for (tag, styles) in [
+        ("fillStyleLst", &format.fills),
+        ("lnStyleLst", &format.lines),
+        ("effectStyleLst", &format.effects),
+        ("bgFillStyleLst", &format.background_fills),
+    ] {
+        x.raw("<a:")?;
+        x.raw(tag)?;
+        x.raw(">")?;
+        for style in styles {
+            if let Some(fill) = &style.fill {
+                native::fill(&mut x, fill)?;
+            }
+            if let Some(line) = &style.line {
+                native::line(&mut x, line)?;
+            }
+            if let Some(effect) = &style.effect_style {
+                if !effect.effects.is_explicitly_empty_list() {
+                    return Err(crate::value("author plan", "theme effects"));
+                }
+                x.raw("<a:effectStyle><a:effectLst/></a:effectStyle>")?;
+            }
+        }
+        x.raw("</a:")?;
+        x.raw(tag)?;
+        x.raw(">")?;
     }
-    x.raw("</a:fillStyleLst><a:lnStyleLst>")?;
-    for width in [12700, 25400, 38100] {
-        x.raw("<a:ln")?;
-        x.attr("w", width)?;
-        x.raw("><a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill><a:prstDash val=\"solid\"/></a:ln>")?;
-    }
-    x.raw("</a:lnStyleLst><a:effectStyleLst>")?;
-    for _ in 0..3 {
-        x.raw("<a:effectStyle><a:effectLst/></a:effectStyle>")?;
-    }
-    x.raw("</a:effectStyleLst><a:bgFillStyleLst>")?;
-    for _ in 0..3 {
-        x.raw("<a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill>")?;
-    }
-    x.raw("</a:bgFillStyleLst></a:fmtScheme></a:themeElements></a:theme>")?;
+    x.raw("</a:fmtScheme></a:themeElements></a:theme>")?;
     Ok(x.finish())
 }
 
@@ -102,7 +94,6 @@ pub(crate) fn master(
     id: Option<&MasterId>,
     theme: &PartName,
     layouts: &[(u32, PartName)],
-    defaults: &ExportDefaults,
     max: usize,
 ) -> Result<Vec<u8>, PptxError> {
     ctx.relationship("theme", theme)?;
@@ -112,17 +103,7 @@ pub(crate) fn master(
     x.attr("name", id.map_or("MusterOffice default", |id| id.as_str()))?;
     x.raw(">")?;
     let master = id.map(|id| &ctx.document.masters[id]);
-    background(
-        &mut x,
-        &master.map_or(
-            Inherited::Value(Fill::Solid {
-                color: Color::Srgb {
-                    rgba: defaults.page_background,
-                },
-            }),
-            |m| m.background.clone(),
-        ),
-    )?;
+    native::background(&mut x, &ctx.surface().background)?;
     ctx.tree(&mut x, master.map_or(&[], |m| m.objects.as_slice()))?;
     x.raw("</p:cSld><p:clrMap bg1=\"lt1\" tx1=\"dk1\" bg2=\"lt2\" tx2=\"dk2\" accent1=\"accent1\" accent2=\"accent2\" accent3=\"accent3\" accent4=\"accent4\" accent5=\"accent5\" accent6=\"accent6\" hlink=\"hlink\" folHlink=\"folHlink\"/><p:sldLayoutIdLst>")?;
     for (native_id, path) in layouts {
@@ -132,21 +113,12 @@ pub(crate) fn master(
         x.attr("r:id", rel)?;
         x.raw("/>")?;
     }
-    x.raw("</p:sldLayoutIdLst><p:txStyles>")?;
-    for tag in ["titleStyle", "bodyStyle", "otherStyle"] {
-        x.raw("<p:")?;
-        x.raw(tag)?;
-        x.raw(">")?;
-        if let Some(master) = master {
-            x.raw("<a:lvl1pPr>")?;
-            text::properties(&mut x, "a:defRPr", &master.default_text, ctx.document)?;
-            x.raw("</a:lvl1pPr>")?;
-        }
-        x.raw("</p:")?;
-        x.raw(tag)?;
-        x.raw(">")?;
+    x.raw("</p:sldLayoutIdLst>")?;
+    let catalog = &ctx.surface().text;
+    for root in catalog.roots.iter().filter(|r| r.owner.is_none()) {
+        native::text(&mut x, catalog, root.source_ordinal, &[])?;
     }
-    x.raw("</p:txStyles></p:sldMaster>")?;
+    x.raw("</p:sldMaster>")?;
     Ok(x.finish())
 }
 
@@ -158,19 +130,12 @@ pub(crate) fn layout(
 ) -> Result<Vec<u8>, PptxError> {
     ctx.relationship("slideMaster", master)?;
     let layout = id.map(|id| &ctx.document.layouts[id]);
-    if layout.is_some_and(|l| l.default_text != CharacterStyle::default()) {
-        return Err(PptxError::Unsupported(
-            "layout text defaults require native placeholder bindings".into(),
-        ));
-    }
     let mut x = Xml::new(max)?;
     root(&mut x, "sldLayout")?;
     x.raw(" type=\"blank\" preserve=\"1\"><p:cSld")?;
     x.attr("name", layout.map_or("Blank", |l| l.name.as_str()))?;
     x.raw(">")?;
-    if let Some(layout) = layout {
-        background(&mut x, &layout.background)?;
-    }
+    native::background(&mut x, &ctx.surface().background)?;
     ctx.tree(&mut x, layout.map_or(&[], |l| l.objects.as_slice()))?;
     x.raw("</p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sldLayout>")?;
     Ok(x.finish())
@@ -189,7 +154,7 @@ pub(crate) fn slide(
     x.raw("><p:cSld")?;
     x.attr("name", &slide.name)?;
     x.raw(">")?;
-    background(&mut x, &slide.background)?;
+    native::background(&mut x, &ctx.surface().background)?;
     ctx.tree(&mut x, &slide.objects)?;
     x.raw("</p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>")?;
     if let Some(timeline) = ctx.document.timelines.get(&slide.id) {

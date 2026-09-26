@@ -164,6 +164,15 @@ pub(super) fn load(
         )?;
         themes.insert(part, theme);
     }
+    select(surfaces, &themes, check)?;
+    Ok(themes)
+}
+
+pub(super) fn select(
+    surfaces: &mut BTreeMap<String, SourceSurface>,
+    themes: &BTreeMap<String, SourceThemePart>,
+    check: &dyn Fn() -> bool,
+) -> Result<(), PptxError> {
     for surface in surfaces.values_mut() {
         cancelled(check)?;
         let mut selection = SourceThemeSelection::default();
@@ -190,5 +199,5 @@ pub(super) fn load(
         }
         surface.theme_selection = selection;
     }
-    Ok(themes)
+    Ok(())
 }

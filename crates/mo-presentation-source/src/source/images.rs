@@ -1,8 +1,10 @@
 //! Bind inherited image declarations to the immutable OPC graph. No decoding,
 //! URL access, path lookup or implicit fallback to a different image source.
+mod input;
 mod types;
 use super::{SourceIndex, fill::resolve::*};
 use crate::{PptxError, R, cancelled};
+pub use input::{AuthorImages, ImageInput, ImagePart, PackageImages};
 use mo_common::{ByteLength, Digest};
 use mo_opc::{PackageRead, PartName, Relationship, RelationshipSource, RelationshipTarget};
 use sha2::{Digest as _, Sha256};
@@ -10,7 +12,7 @@ use std::collections::BTreeMap;
 pub use types::*;
 
 struct Resolver<'a> {
-    package: &'a dyn PackageRead,
+    input: &'a dyn ImageInput,
     limits: SourceImageLimits,
     check: &'a dyn Fn() -> bool,
     owners: BTreeMap<String, BTreeMap<&'a str, &'a Relationship>>,
@@ -36,10 +38,7 @@ impl<'a> Resolver<'a> {
     ) -> Result<Option<&'a Relationship>, PptxError> {
         if !self.owners.contains_key(owner) {
             let part = PartName::new(owner)?;
-            let relationships = self
-                .package
-                .relationships()
-                .get(&RelationshipSource::Part(part));
+            let relationships = self.input.relationships(&part);
             let mut refs = BTreeMap::new();
             for rel in relationships.into_iter().flatten() {
                 cancelled(self.check)?;
@@ -117,12 +116,15 @@ impl<'a> Resolver<'a> {
                 },
                 ImageSourceSelection::EmbeddedSnapshot,
             ) => {
-                let info = &self.package.parts()[part];
+                let info = self
+                    .input
+                    .part(part)
+                    .ok_or_else(|| PptxError::SourceConflict("missing image input part".into()))?;
                 if !info.content_type.to_ascii_lowercase().starts_with("image/") {
                     self.account(info.content_type.len())?;
                     return unresolved(ImageReferenceIssue::NonImageContentType {
                         reference: binding.reference,
-                        content_type: info.content_type.clone(),
+                        content_type: info.content_type.to_owned(),
                     });
                 }
                 let resource = if let Some(id) = self.resource_ids.get(part) {
@@ -143,7 +145,7 @@ impl<'a> Resolver<'a> {
                     let id = self.resources.len() as u32;
                     self.resources.push(EncodedImageResource {
                         part: part.to_string(),
-                        content_type: info.content_type.clone(),
+                        content_type: info.content_type.to_owned(),
                         sha256: info.sha256.clone(),
                         byte_length: ByteLength::new(info.byte_length),
                         offset: ByteLength::new(offset),
@@ -198,9 +200,31 @@ pub fn query_on_page(
     limits: SourceImageLimits,
     check: &dyn Fn() -> bool,
 ) -> Result<SourceImageResources, PptxError> {
+    query_input_on_page(
+        &PackageImages(package),
+        index,
+        request,
+        drawing_surface,
+        background_surface,
+        limits,
+        check,
+    )
+}
+
+/// Shared resolution over verified package relationships or logical author
+/// relationships. No XML/ZIP reconstruction is required for authored resources.
+pub fn query_input_on_page(
+    input: &dyn ImageInput,
+    index: &SourceIndex,
+    request: &SourceImageQuery,
+    drawing_surface: &str,
+    background_surface: &str,
+    limits: SourceImageLimits,
+    check: &dyn Fn() -> bool,
+) -> Result<SourceImageResources, PptxError> {
     cancelled(check)?;
-    if package.sha256() != &index.source_sha256
-        || package.sha256() != &request.fill.expected_source_sha256
+    if input.identity() != &index.source_sha256
+        || input.identity() != &request.fill.expected_source_sha256
     {
         return Err(PptxError::SourceConflict(
             "image package/index digest".into(),
@@ -215,7 +239,7 @@ pub fn query_on_page(
         check,
     )?;
     let mut resolver = Resolver {
-        package,
+        input,
         limits,
         check,
         owners: BTreeMap::new(),

@@ -274,6 +274,14 @@ pub fn inspect_source(
     Ok(presentation::read(source, limits, check)?.index)
 }
 
+pub(crate) fn resolve_projection(
+    index: &mut SourceIndex,
+    check: &dyn Fn() -> bool,
+) -> Result<(), crate::PptxError> {
+    inheritance::resolve(&mut index.surfaces, check)?;
+    theme::select(&mut index.surfaces, &index.themes, check)
+}
+
 fn malformed(message: impl Into<String>) -> mo_xml::XmlError {
     mo_xml::XmlError::Malformed(message.into())
 }

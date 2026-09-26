@@ -11,7 +11,10 @@ use crate::{
 };
 use mo_image::ImageDecoder;
 use mo_opc::PackageRead;
-use mo_presentation_source::source::SourceIndex;
+use mo_presentation_source::source::{
+    SourceIndex,
+    images::{ImageInput, PackageImages},
+};
 use mo_raster::{PreparedImages, RasterBackend, RasterError};
 pub use retained::{ResourcePagePlan, ResourcePreparationInfo};
 pub use types::*;
@@ -66,8 +69,53 @@ pub(crate) fn prepare_view(
     options: ResourcePageOptions,
     check: &dyn Fn() -> bool,
 ) -> Result<PreparedResourcePage, SourcePageError> {
+    prepare_input_view(
+        &PackageImages(package),
+        index,
+        view,
+        decoder,
+        text,
+        options,
+        check,
+    )
+}
+
+/// Compile an author plan or inspected source through the same resource, text,
+/// geometry, placement and paint engines. ImageInput keeps provenance explicit.
+pub fn prepare_input(
+    input: &dyn ImageInput,
+    index: &SourceIndex,
+    q: &SourcePageRequest,
+    decoder: &mut dyn ImageDecoder,
+    text: Option<TextPageContext<'_, '_, '_>>,
+    options: ResourcePageOptions,
+    check: &dyn Fn() -> bool,
+) -> Result<PreparedResourcePage, SourcePageError> {
+    prepare_input_view(
+        input,
+        index,
+        PageView {
+            request: q,
+            rotations: None,
+        },
+        decoder,
+        text,
+        options,
+        check,
+    )
+}
+
+fn prepare_input_view(
+    input: &dyn ImageInput,
+    index: &SourceIndex,
+    view: PageView<'_>,
+    decoder: &mut dyn ImageDecoder,
+    text: Option<TextPageContext<'_, '_, '_>>,
+    options: ResourcePageOptions,
+    check: &dyn Fn() -> bool,
+) -> Result<PreparedResourcePage, SourcePageError> {
     cancel(check)?;
-    if package.sha256() != &index.source_sha256 {
+    if input.identity() != &index.source_sha256 {
         return Err(SourcePageError::SourceConflict);
     }
     let q = view.request;
@@ -78,7 +126,7 @@ pub(crate) fn prepare_view(
     if let Some(text) = &mut text {
         text.preflight(index, q, prepared.objects.iter().map(|o| &o.binding), check)?;
     }
-    let images = resources::prepare(package, index, &prepared, options, decoder, check)?;
+    let images = resources::prepare(input, index, &prepared, options, decoder, check)?;
     let built = source_page::build(
         prepared,
         text.as_mut()

@@ -1,6 +1,7 @@
 //! Native presentation declarations and source bindings, with pure format
 //! reading/resolution. This crate has no writer, renderer, host or publication
 //! dependency; both author lowering and source admission target its semantics.
+pub mod author;
 pub mod source;
 pub mod timing;
 use mo_common::ResourceId;

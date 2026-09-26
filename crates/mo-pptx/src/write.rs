@@ -1,31 +1,11 @@
 use crate::{
-    COLOR_SLOTS, ExportDefaults, PptxError, PptxLimits, R, Resources, cancelled, definitions,
-    drawing::Drawing, text, value, xml::Xml,
+    AuthorPlan, ExportDefaults, PptxError, PptxLimits, R, Resources, cancelled, definitions,
+    drawing::Drawing, native, value, xml::Xml,
 };
-use mo_common::{LayoutId, MasterId, ObjectId, ResourceId, ThemeId};
 use mo_opc::{
     PackageBuilder, PartName, Relationship, RelationshipSource, ResultSink, VerifiedPackage,
 };
 use mo_presentation_model::*;
-use std::collections::{BTreeMap, BTreeSet};
-
-struct MasterPlan {
-    id: Option<MasterId>,
-    part: PartName,
-    theme: PartName,
-}
-struct LayoutPlan {
-    id: Option<LayoutId>,
-    part: PartName,
-    master: PartName,
-}
-struct Plan {
-    themes: BTreeMap<Option<ThemeId>, PartName>,
-    masters: Vec<MasterPlan>,
-    layouts: Vec<LayoutPlan>,
-    object_ids: BTreeMap<ObjectId, u32>,
-    images: BTreeMap<ResourceId, PartName>,
-}
 
 /// Generates an authored PPTX into bounded memory, then reopens actual OPC bytes.
 /// This is not yet an imported-document preservation exporter or layout proof.
@@ -51,69 +31,42 @@ pub fn export_to<S: ResultSink>(
     limits: PptxLimits,
     check: &dyn Fn() -> bool,
 ) -> Result<VerifiedPackage<S::Reader>, PptxError> {
-    Ok(
-        prepare_package(document, defaults, resources, limits, check)?.write_sealed(
-            sink,
-            limits.package,
-            check,
-        )?,
-    )
+    let plan = AuthorPlan::new(document, defaults, limits.document, check)?;
+    export_plan_to(&plan, resources, sink, limits.package, check)
+}
+
+/// Writes the immutable semantic plan also consumed by page compilation.
+pub fn export_plan_to<S: ResultSink>(
+    plan: &AuthorPlan<'_>,
+    resources: &(impl Resources + ?Sized),
+    sink: S,
+    limits: mo_opc::PackageLimits,
+    check: &dyn Fn() -> bool,
+) -> Result<VerifiedPackage<S::Reader>, PptxError> {
+    Ok(prepare_package(plan, resources, limits, check)?.write_sealed(sink, limits, check)?)
 }
 
 fn prepare_package<'a>(
-    document: &Document,
-    defaults: &ExportDefaults,
+    author: &AuthorPlan<'_>,
     resources: &'a (impl Resources + ?Sized),
-    limits: PptxLimits,
+    limits: mo_opc::PackageLimits,
     check: &dyn Fn() -> bool,
 ) -> Result<PackageBuilder<'a>, PptxError> {
     cancelled(check)?;
-    let report = validate(document, limits.document);
-    if !report.is_valid() {
-        return Err(PptxError::InvalidDocument(report));
-    }
-    if document
-        .resources
-        .values()
-        .any(|r| r.kind == ResourceKind::SourcePackage)
-    {
-        return Err(PptxError::Unsupported(
-            "imported documents require source-preservation export planning".into(),
-        ));
-    }
-    for length in [document.page_size.width, document.page_size.height] {
-        if !(914400..=51206400).contains(&length.get()) {
-            return Err(value(
-                "pageSize",
-                "native slide dimension must be within 1..=56 inches",
-            ));
-        }
-    }
-    if defaults.font_family.trim().is_empty() {
-        return Err(value(
-            "defaults.fontFamily",
-            "explicit font family is required",
-        ));
-    }
-    text::centipoints(defaults.text_size, "defaults.textSize", 100, 400000)?;
-    for (slot, _) in COLOR_SLOTS {
-        if !defaults.theme_colors.contains_key(&slot) {
-            return Err(value("defaults.themeColors", format!("missing {slot:?}")));
-        }
-    }
-    let plan = plan(document)?;
-    let max = limits.package.xml.max_bytes;
+    let document = author.document();
+    let plan = author.bindings();
+    let max = limits.xml.max_bytes;
     let mut package = PackageBuilder::new();
-    for (id, part) in &plan.themes {
+    for part in plan.themes.values() {
         cancelled(check)?;
         package.add_part(
             part.clone(),
             "application/vnd.openxmlformats-officedocument.theme+xml".into(),
-            definitions::theme(document, id.as_ref(), defaults, max)?,
+            definitions::theme(&author.declarations().themes[&part.to_string()], max)?,
         )?;
     }
     for master in &plan.masters {
-        let mut ctx = context(document, &plan, &master.part, check);
+        let mut ctx = context(author, &master.part, check);
         let layouts = plan
             .layouts
             .iter()
@@ -121,14 +74,8 @@ fn prepare_package<'a>(
             .filter(|(_, l)| l.master == master.part)
             .map(|(i, l)| (2147483648_u32 + i as u32, l.part.clone()))
             .collect::<Vec<_>>();
-        let bytes = definitions::master(
-            &mut ctx,
-            master.id.as_ref(),
-            &master.theme,
-            &layouts,
-            defaults,
-            max,
-        )?;
+        let bytes =
+            definitions::master(&mut ctx, master.id.as_ref(), &master.theme, &layouts, max)?;
         add(
             &mut package,
             master.part.clone(),
@@ -138,7 +85,7 @@ fn prepare_package<'a>(
         )?;
     }
     for layout in &plan.layouts {
-        let mut ctx = context(document, &plan, &layout.part, check);
+        let mut ctx = context(author, &layout.part, check);
         let bytes = definitions::layout(&mut ctx, layout.id.as_ref(), &layout.master, max)?;
         add(
             &mut package,
@@ -163,7 +110,7 @@ fn prepare_package<'a>(
         } else {
             &plan.layouts[0].part
         };
-        let mut ctx = context(document, &plan, &path, check);
+        let mut ctx = context(author, &path, check);
         let bytes = definitions::slide(&mut ctx, slide, layout, max)?;
         add(
             &mut package,
@@ -208,7 +155,7 @@ fn prepare_package<'a>(
         )?;
     }
     let main = part("/ppt/presentation.xml")?;
-    let mut ctx = context(document, &plan, &main, check);
+    let mut ctx = context(author, &main, check);
     let mut x = Xml::new(max)?;
     definitions::root(&mut x, "presentation")?;
     x.raw(" autoCompressPictures=\"0\"><p:sldMasterIdLst>")?;
@@ -234,9 +181,10 @@ fn prepare_package<'a>(
     x.raw("<p:sldSz")?;
     x.attr("cx", document.page_size.width.get())?;
     x.attr("cy", document.page_size.height.get())?;
-    x.raw("/><p:notesSz cx=\"6858000\" cy=\"9144000\"/><p:defaultTextStyle>")?;
-    text::defaults(&mut x, defaults)?;
-    x.raw("</p:defaultTextStyle></p:presentation>")?;
+    x.raw("/><p:notesSz cx=\"6858000\" cy=\"9144000\"/>")?;
+    let text = &author.declarations().text;
+    native::text(&mut x, text, text.roots[0].source_ordinal, &[])?;
+    x.raw("</p:presentation>")?;
     let properties = part("/ppt/presProps.xml")?;
     ctx.relationship("presProps", &properties)?;
     add(
@@ -269,19 +217,11 @@ fn prepare_package<'a>(
 }
 
 fn context<'a>(
-    document: &'a Document,
-    plan: &'a Plan,
+    author: &'a AuthorPlan<'a>,
     path: &PartName,
     check: &'a dyn Fn() -> bool,
 ) -> Drawing<'a> {
-    Drawing {
-        document,
-        object_ids: &plan.object_ids,
-        images: &plan.images,
-        source: path.clone(),
-        relationships: vec![],
-        check,
-    }
+    Drawing::new(author, path, check)
 }
 fn part(path: impl Into<String>) -> Result<PartName, PptxError> {
     Ok(PartName::new(path)?)
@@ -302,91 +242,4 @@ fn add(
         package.set_relationships(RelationshipSource::Part(path), rels)?;
     }
     Ok(())
-}
-fn plan(document: &Document) -> Result<Plan, PptxError> {
-    let mut themes = BTreeMap::new();
-    for (i, id) in std::iter::once(None)
-        .chain(document.themes.keys().cloned().map(Some))
-        .enumerate()
-    {
-        themes.insert(id, part(format!("/ppt/theme/theme{}.xml", i + 1))?);
-    }
-    let mut masters = vec![MasterPlan {
-        id: None,
-        part: part("/ppt/slideMasters/slideMaster1.xml")?,
-        theme: themes[&None].clone(),
-    }];
-    for (i, (id, m)) in document.masters.iter().enumerate() {
-        masters.push(MasterPlan {
-            id: Some(id.clone()),
-            part: part(format!("/ppt/slideMasters/slideMaster{}.xml", i + 2))?,
-            theme: themes[&Some(m.theme.clone())].clone(),
-        });
-    }
-    let mut layouts = vec![LayoutPlan {
-        id: None,
-        part: part("/ppt/slideLayouts/slideLayout1.xml")?,
-        master: masters[0].part.clone(),
-    }];
-    for (i, (id, l)) in document.layouts.iter().enumerate() {
-        layouts.push(LayoutPlan {
-            id: Some(id.clone()),
-            part: part(format!("/ppt/slideLayouts/slideLayout{}.xml", i + 2))?,
-            master: masters
-                .iter()
-                .find(|m| m.id.as_ref() == Some(&l.master))
-                .expect("validated master")
-                .part
-                .clone(),
-        });
-    }
-    for master in &masters {
-        if !layouts.iter().any(|l| l.master == master.part) {
-            layouts.push(LayoutPlan {
-                id: None,
-                part: part(format!(
-                    "/ppt/slideLayouts/slideLayout{}.xml",
-                    layouts.len() + 1
-                ))?,
-                master: master.part.clone(),
-            });
-        }
-    }
-    let mut images = BTreeMap::new();
-    let ids = document
-        .objects
-        .values()
-        .filter_map(|o| match &o.content {
-            ObjectContent::Picture { resource, .. } => Some(resource.clone()),
-            _ => None,
-        })
-        .collect::<BTreeSet<_>>();
-    for (i, id) in ids.into_iter().enumerate() {
-        let extension = match document.resources[&id].media_type.as_str() {
-            "image/png" => "png",
-            "image/jpeg" => "jpg",
-            _ => {
-                return Err(PptxError::Unsupported(
-                    "image format export beyond PNG/JPEG".into(),
-                ));
-            }
-        };
-        images.insert(
-            id,
-            part(format!("/ppt/media/image{}.{}", i + 1, extension))?,
-        );
-    }
-    let object_ids = document
-        .objects
-        .keys()
-        .enumerate()
-        .map(|(i, id)| (id.clone(), i as u32 + 2))
-        .collect();
-    Ok(Plan {
-        themes,
-        masters,
-        layouts,
-        object_ids,
-        images,
-    })
 }
