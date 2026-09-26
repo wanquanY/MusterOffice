@@ -2,6 +2,10 @@
 members = [
   "crates/mo-common",
   "crates/mo-operation-service",
+  "crates/mo-native-io",
+  "crates/mo-native-worker",
+  "crates/mo-native-render",
+  "crates/mo-native-export",
   "crates/mo-timeline",
   "crates/mo-geometry",
   "crates/mo-raster",
@@ -22,8 +26,10 @@ members = [
   "crates/mo-xml",
   "crates/mo-opc",
   "crates/mo-pptx",
+  "tools/mo-cli",
   "tools/mo-text-worker",
   "tools/mo-raster-worker",
+  "tools/mo-export-worker",
   "tools/mo-contract-codegen",
 ]
 resolver = "3"
@@ -37,6 +43,10 @@ publish = false
 [workspace.dependencies]
 mo-common = { path = "crates/mo-common" }
 mo-operation-service = { path = "crates/mo-operation-service" }
+mo-native-io = { path = "crates/mo-native-io" }
+mo-native-worker = { path = "crates/mo-native-worker" }
+mo-native-render = { path = "crates/mo-native-render" }
+mo-native-export = { path = "crates/mo-native-export" }
 rusqlite = { version = "=0.40.2", default-features = false, features = ["bundled"] }
 mo-timeline = { path = "crates/mo-timeline" }
 mo-geometry = { path = "crates/mo-geometry" }

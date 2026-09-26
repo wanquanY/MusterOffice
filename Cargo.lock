@@ -244,6 +244,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "mo-cli"
+version = "0.1.0"
+dependencies = [
+ "mo-common",
+ "mo-kernel-api",
+ "mo-native-io",
+ "mo-native-worker",
+ "mo-opc",
+ "mo-raster",
+ "rawzip",
+ "serde_json",
+ "sha2",
+]
+
+[[package]]
 name = "mo-color"
 version = "0.1.0"
 dependencies = [
@@ -275,6 +290,26 @@ dependencies = [
  "mo-presentation-model",
  "schemars",
  "serde_json",
+]
+
+[[package]]
+name = "mo-export-worker"
+version = "0.1.0"
+dependencies = [
+ "mo-common",
+ "mo-harfbuzz-sys",
+ "mo-kernel-api",
+ "mo-native-export",
+ "mo-opc",
+ "mo-operation-service",
+ "mo-pptx",
+ "mo-presentation-compile",
+ "mo-presentation-delivery",
+ "mo-presentation-edit",
+ "mo-skia-sys",
+ "mo-text",
+ "serde_json",
+ "sha2",
 ]
 
 [[package]]
@@ -356,6 +391,58 @@ dependencies = [
  "serde",
  "serde_json",
 ]
+
+[[package]]
+name = "mo-native-export"
+version = "0.1.0"
+dependencies = [
+ "mo-common",
+ "mo-native-io",
+ "mo-native-worker",
+ "mo-opc",
+ "mo-operation-service",
+ "mo-presentation-delivery",
+ "mo-presentation-edit",
+ "serde",
+ "serde_json",
+ "sha2",
+]
+
+[[package]]
+name = "mo-native-io"
+version = "0.1.0"
+dependencies = [
+ "mo-common",
+ "mo-kernel-api",
+ "mo-opc",
+ "mo-pptx",
+ "rawzip",
+ "sha2",
+]
+
+[[package]]
+name = "mo-native-render"
+version = "0.1.0"
+dependencies = [
+ "mo-common",
+ "mo-kernel-api",
+ "mo-native-io",
+ "mo-native-worker",
+ "mo-opc",
+ "mo-pptx",
+ "mo-presentation-compile",
+ "mo-presentation-delivery",
+ "mo-presentation-edit",
+ "mo-presentation-model",
+ "mo-raster",
+ "serde",
+ "serde_json",
+ "sha2",
+]
+
+[[package]]
+name = "mo-native-worker"
+version = "0.1.0"
 
 [[package]]
 name = "mo-opc"
