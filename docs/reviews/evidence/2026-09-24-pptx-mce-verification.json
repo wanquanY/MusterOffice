@@ -1,0 +1,3190 @@
+{
+  "format": "musteroffice.pptx-mce-verification/1",
+  "scope": "Fixed-profile MCE source projection and source-bound ordinary text edits. No full standard conformance, coordinated branch editing, complete import, layout/fonts, playback, Office/WPS acceptance or Musterwork replacement.",
+  "environment": {
+    "platform": "Darwin",
+    "architecture": "arm64",
+    "python": "3.13.0",
+    "node": "v23.5.0",
+    "rust": "rustc 1.92.0 (ded5c06cf 2025-12-08)"
+  },
+  "standard": {
+    "source": "https://ecma-international.org/wp-content/uploads/ECMA-376-3_5th_edition_december_2015.zip",
+    "sha256": "42294159fbbbe9393ccadac95b859d7729cc68d908898bcbe31034dda059daa8",
+    "pdfSha256": "3742ae2573fcf2eec6878ee345bf540541b77df47f09a57603851ca2d02dfa13",
+    "edition": "ECMA-376 Part 3, fifth edition 2015",
+    "sections": [
+      "7",
+      "8",
+      "9"
+    ],
+    "redistributedInRuntime": false
+  },
+  "checks": {
+    "rustTestsPassed": 70,
+    "rustTests": [
+      "non_finite_numbers_cannot_silently_become_null_in_a_digest",
+      "duplicate_keys_are_rejected_at_every_depth",
+      "byte_lengths_reject_numeric_loss_overflow_and_noncanonical_spellings",
+      "time_is_exact_at_extremes_and_ntsc_rate",
+      "identifiers_are_constrained_on_deserialization",
+      "coordinates_reject_lossy_or_noncanonical_inputs",
+      "canonical_bytes_have_stable_keys_and_preserve_text",
+      "rational_normalization_preserves_time",
+      "every_u64_byte_length_round_trips",
+      "every_i64_coordinate_round_trips",
+      "inspection_preserves_budget_and_cancellation_error_categories",
+      "source_bridge_preserves_nested_limit_and_cancel_categories",
+      "zip_structure::tests::descriptors_accept_both_widths_and_signature_modes_including_crc_collision",
+      "part_names_and_relationship_resolution_follow_uri_scope",
+      "equivalent_names_traversal_and_header_disagreement_are_rejected",
+      "overlapping_local_entries_are_rejected_even_with_matching_names_and_crc",
+      "crc_truncation_extra_bytes_and_entry_count_mismatches_are_rejected",
+      "writer_validates_xml_bytes_and_resources_before_exposing_output",
+      "streamed_open_resolves_graph_and_retains_opaque_bytes",
+      "malformed_xml_in_a_regular_part_is_not_hidden_by_a_valid_zip",
+      "cancellation_and_declared_budgets_fail_before_unbounded_work",
+      "missing_targets_duplicate_relationship_ids_and_orphan_overrides_fail",
+      "duplicate_rewrite_does_not_replace_the_already_prepared_value",
+      "no_op_rewrite_is_byte_identical_and_mutation_preserves_unedited_parts",
+      "signed_packages_may_be_copied_but_not_silently_modified",
+      "deterministic_builder_uses_real_reopened_output_and_external_links_do_not_fetch",
+      "stream_resources_are_digest_bound_and_reads_stay_bounded",
+      "missing_resources_cancellation_and_output_budgets_are_enforced",
+      "invalid_or_unimplemented_mapping_never_silently_flattens_content",
+      "authored_deck_exports_deterministically_with_native_parts_and_relationships",
+      "real_pptx_projection_resolves_pages_surfaces_native_identity_and_groups",
+      "reader_and_editor_enforce_cancellation_and_projection_budgets",
+      "text_edit_reopens_candidate_and_preserves_unknown_xml_and_other_parts",
+      "timing_references_in_active_and_inactive_branches_block_text_mutation",
+      "source_bindings_use_physical_ordinals_after_mce_projection_and_preserve_branches",
+      "compatibility_wrappers_do_not_hide_pages_or_discard_source_leaf_structure",
+      "noop_copy_and_multi_part_edits_are_atomic_with_source_preconditions",
+      "malformed_identity_and_relationships_never_produce_a_partial_success",
+      "ownership_cycle_cannot_be_committed",
+      "final_reference_validation_rolls_back_entire_transaction",
+      "out_of_range_splices_fail_without_mutating_content",
+      "failure_does_not_publish_earlier_operations",
+      "deletion_rejects_dependencies_unless_explicitly_cascaded",
+      "scalar_splice_preserves_emoji_combining_marks_and_run_identity",
+      "revision_conflicts_do_not_rebase_and_retries_use_original_receipt",
+      "unknown_fields_and_variants_are_rejected_at_wire_boundary",
+      "limit_errors_cannot_be_hidden_by_zero_diagnostic_budget",
+      "mismatched_resource_kind_and_missing_fonts_are_rejected",
+      "unbounded_host_depth_setting_still_rejects_cycles_without_overflow",
+      "duplicate_and_orphaned_ownership_are_rejected",
+      "connectors_cannot_target_another_slide",
+      "chooses_first_understood_branch_with_original_ordinals_and_logical_depths",
+      "fallback_nested_selection_and_no_matching_branch_preserve_sibling_positions",
+      "underlying_xml_limits_and_cancellation_apply_to_ignored_content",
+      "ignorable_and_process_content_resolve_namespace_scopes_not_prefix_spellings",
+      "extension_content_suspends_mce_and_source_observer_sees_inactive_data",
+      "must_understand_only_applies_to_content_that_is_processed",
+      "malformed_mce_control_and_rule_declarations_are_not_silently_discarded",
+      "character_data_and_attributes_follow_xml_normalization_without_unicode_folding",
+      "limits_bound_depth_elements_attributes_and_text",
+      "prefixes_are_resolved_and_default_namespaces_do_not_apply_to_attributes",
+      "xml_declarations_are_checked_and_cancellation_is_observable",
+      "namespaces_restore_after_nested_shadowing",
+      "utf16_and_bom_utf8_are_supported_without_lossy_replacement",
+      "dtd_external_entities_and_malformed_documents_are_rejected",
+      "rewriting_honors_span_output_and_cancellation_budgets",
+      "empty_elements_expand_without_dropping_attributes_and_textless_comments_survive",
+      "preconditions_and_nested_elements_prevent_wrong_or_destructive_edits",
+      "text_rewrite_retains_unknown_attributes_siblings_comments_and_pi_bytes",
+      "utf8_and_utf16_encodings_boms_and_original_lexical_forms_are_preserved"
+    ],
+    "clippy": "passed --workspace --all-targets --locked --offline -- -D warnings",
+    "format": "passed cargo fmt --all --check",
+    "generatedSchemas": 10,
+    "typescriptStrictCheck": "passed",
+    "schemaValidation": {
+      "schemas": 10,
+      "positiveInputs": 11,
+      "negativeMutations": 9,
+      "responses": 22,
+      "opcResponses": 21,
+      "sourceResponses": 22,
+      "sourceRequests": 45
+    },
+    "nativeWasmCases": {
+      "document": 22,
+      "opc": 21,
+      "pptxExport": 17,
+      "pptxSource": 67,
+      "total": 127
+    },
+    "independentExportFiles": 7,
+    "xsdExportPartChecks": 70,
+    "independentMceSourceInputs": 17,
+    "independentSourceOutputs": 32,
+    "unchangedCompressedEntryChecks": 669
+  },
+  "artifacts": {
+    "native": {
+      "path": "target/release/mo-cli",
+      "sha256": "e3a66a6740aecc3aa700af484774e94a1135e07e280904b9421ffced02c0e8d8",
+      "byteLength": 3078912
+    },
+    "wasm": {
+      "path": ".codex-work/wasm-node/mo_wasm_bg.wasm",
+      "sha256": "d40335e296578cb879971081b127d8fdfd630145d34409b4279359d6a489c3b4",
+      "byteLength": 2408733
+    }
+  },
+  "sourceCases": [
+    {
+      "name": "inspect-authored",
+      "source": ".codex-work/pptx-mce-fixtures/authored.pptx",
+      "sourceSha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+      "responseSha256": "227d41ab779e2edfcdf8e33ce5de0c7ec8cf6d3062685d604f631a58129464f4",
+      "responseSummary": {
+        "status": "inspected",
+        "slides": 2,
+        "surfaces": 6,
+        "objects": 15,
+        "containsSignatures": false,
+        "compatibilityProfile": "musteroffice.pml-source-mce/1",
+        "mainCompatibility": {
+          "selections": [],
+          "ignoredElements": 0,
+          "ignoredAttributes": 0,
+          "unwrappedElements": 0
+        },
+        "compatibility": {},
+        "textEditBarriers": {}
+      }
+    },
+    {
+      "name": "edit-authored",
+      "status": "edited",
+      "sha256": "0d5419789a0a1e0d38a6f904c86d1ea06246056af1d732d92e45d41ecb4f5589",
+      "byteLength": 10998,
+      "noop": false
+    },
+    {
+      "name": "noop-authored",
+      "status": "edited",
+      "sha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+      "byteLength": 10952,
+      "noop": true
+    },
+    {
+      "name": "inspect-unknown-content",
+      "source": ".codex-work/pptx-mce-fixtures/unknown-content.pptx",
+      "sourceSha256": "59edc00b14b192c3f1f9ed811aa877f6e7c3e99bcb18cb110a6c66ce84be8531",
+      "responseSha256": "384269f01fcca897a9d8089dd457cd53a9b981bdb354d0e14559c9f27f10113e",
+      "responseSummary": {
+        "status": "inspected",
+        "slides": 2,
+        "surfaces": 6,
+        "objects": 15,
+        "containsSignatures": false,
+        "compatibilityProfile": "musteroffice.pml-source-mce/1",
+        "mainCompatibility": {
+          "selections": [],
+          "ignoredElements": 0,
+          "ignoredAttributes": 0,
+          "unwrappedElements": 0
+        },
+        "compatibility": {},
+        "textEditBarriers": {}
+      }
+    },
+    {
+      "name": "edit-unknown-content",
+      "status": "edited",
+      "sha256": "fc763aff5c8ee3f5e1e6c6a7152a1f695bb264c0949648e2eca9a2539ba02304",
+      "byteLength": 11395,
+      "noop": false
+    },
+    {
+      "name": "noop-unknown-content",
+      "status": "edited",
+      "sha256": "59edc00b14b192c3f1f9ed811aa877f6e7c3e99bcb18cb110a6c66ce84be8531",
+      "byteLength": 11001,
+      "noop": true
+    },
+    {
+      "name": "inspect-utf16",
+      "source": ".codex-work/pptx-mce-fixtures/utf16.pptx",
+      "sourceSha256": "0e79549b03170f7031ac151b5db4476107079f6fcb6f78493219a6d2a574f320",
+      "responseSha256": "974b02ce641f8fb1cf57ff4934e68f26aa1477a66ba800527a9ceb5b2ba0d1d8",
+      "responseSummary": {
+        "status": "inspected",
+        "slides": 2,
+        "surfaces": 6,
+        "objects": 15,
+        "containsSignatures": false,
+        "compatibilityProfile": "musteroffice.pml-source-mce/1",
+        "mainCompatibility": {
+          "selections": [],
+          "ignoredElements": 0,
+          "ignoredAttributes": 0,
+          "unwrappedElements": 0
+        },
+        "compatibility": {},
+        "textEditBarriers": {}
+      }
+    },
+    {
+      "name": "edit-utf16",
+      "status": "edited",
+      "sha256": "ab9999a2955837f58c82b4fa2d550d2e8606c7f76a90205682ec1e082fb848ea",
+      "byteLength": 11650,
+      "noop": false
+    },
+    {
+      "name": "noop-utf16",
+      "status": "edited",
+      "sha256": "0e79549b03170f7031ac151b5db4476107079f6fcb6f78493219a6d2a574f320",
+      "byteLength": 11259,
+      "noop": true
+    },
+    {
+      "name": "inspect-duplicate-object-id",
+      "source": ".codex-work/pptx-mce-fixtures/duplicate-object-id.pptx",
+      "sourceSha256": "132e94a5a4b3c4ff07ff160c36a9757a835a87254ab0647fcb41454abcff4569",
+      "responseSha256": "933037264f90a3b7347c23c2b2151729c537bd3cc780070fb6ac09eff1952648",
+      "responseSummary": {
+        "status": "error",
+        "error": {
+          "code": "INPUT_INVALID",
+          "message": "invalid XML: duplicate native object ID"
+        }
+      }
+    },
+    {
+      "name": "inspect-duplicate-slide-id",
+      "source": ".codex-work/pptx-mce-fixtures/duplicate-slide-id.pptx",
+      "sourceSha256": "354618e964cae6d115b095ccbf31b926e4c1192570d6f8e4c8346968fd068701",
+      "responseSha256": "d51ad4b9c192c5ea3941e8c98d6bfe925c11d82dec271fb7804b28f15f7410a0",
+      "responseSummary": {
+        "status": "error",
+        "error": {
+          "code": "INPUT_INVALID",
+          "message": "invalid XML: duplicate or invalid native slide ID"
+        }
+      }
+    },
+    {
+      "name": "inspect-missing-slide-relationship",
+      "source": ".codex-work/pptx-mce-fixtures/missing-slide-relationship.pptx",
+      "sourceSha256": "7f9700cbd79d0d6de69006e12d4baa05a1274f6f0dfaf465e0e66df68b5d5a10",
+      "responseSha256": "a9c7b8a47e0858238cf18a77cd19776dcf01da1ac92b19707114b03c3709ff3d",
+      "responseSummary": {
+        "status": "error",
+        "error": {
+          "code": "INPUT_INVALID",
+          "message": "PPTX value at /ppt/presentation.xml: slide relationship does not exist"
+        }
+      }
+    },
+    {
+      "name": "inspect-main-must-understand",
+      "source": ".codex-work/pptx-mce-fixtures/main-must-understand.pptx",
+      "sourceSha256": "4066deda545ffa0b22a6f20b975a312db27b2c4549f256837ac3c0eb66865373",
+      "responseSha256": "73954acf13297cdf790686389e5613c5b31a7a462d79d5697ea2e6224c6c7844",
+      "responseSummary": {
+        "status": "inspected",
+        "slides": 2,
+        "surfaces": 6,
+        "objects": 15,
+        "containsSignatures": false,
+        "compatibilityProfile": "musteroffice.pml-source-mce/1",
+        "mainCompatibility": {
+          "selections": [],
+          "ignoredElements": 0,
+          "ignoredAttributes": 0,
+          "unwrappedElements": 0
+        },
+        "compatibility": {},
+        "textEditBarriers": {}
+      }
+    },
+    {
+      "name": "edit-main-must-understand",
+      "status": "edited",
+      "sha256": "b4552f72b3d3d3b746602ef38c17d9e96f5cb4f25f50c3f9631b62fd511e3b94",
+      "byteLength": 10916,
+      "noop": false
+    },
+    {
+      "name": "noop-main-must-understand",
+      "status": "edited",
+      "sha256": "4066deda545ffa0b22a6f20b975a312db27b2c4549f256837ac3c0eb66865373",
+      "byteLength": 10533,
+      "noop": true
+    },
+    {
+      "name": "inspect-main-unknown-must-understand",
+      "source": ".codex-work/pptx-mce-fixtures/main-unknown-must-understand.pptx",
+      "sourceSha256": "5b58a3ed2f5069377fcedc92483ce457521a6194dfda65f5a1da217b9f58da43",
+      "responseSha256": "6dc700b571c8e47c6197caf71b0870b7954ca95895fc81a0d333d622234313b9",
+      "responseSummary": {
+        "status": "error",
+        "error": {
+          "code": "MAPPING_NOT_IMPLEMENTED",
+          "message": "XML compatibility profile mismatch: MustUnderstand namespace is not implemented: urn:owned:unsupported"
+        }
+      }
+    },
+    {
+      "name": "inspect-timing",
+      "source": ".codex-work/pptx-mce-fixtures/timing.pptx",
+      "sourceSha256": "0b85044571d242e982630783df8279f16e7a6118dbe605c7e355caecc54bb8d6",
+      "responseSha256": "65fce1622346ddee7c226f3a279d2d61b14c050d9b34c9e818730f246bc2d2d5",
+      "responseSummary": {
+        "status": "inspected",
+        "slides": 2,
+        "surfaces": 6,
+        "objects": 15,
+        "containsSignatures": false,
+        "compatibilityProfile": "musteroffice.pml-source-mce/1",
+        "mainCompatibility": {
+          "selections": [],
+          "ignoredElements": 0,
+          "ignoredAttributes": 0,
+          "unwrappedElements": 0
+        },
+        "compatibility": {},
+        "textEditBarriers": {
+          "/ppt/slides/slide1.xml": [
+            "timing references require text-range retargeting"
+          ]
+        }
+      }
+    },
+    {
+      "name": "edit-timing",
+      "status": "rejected",
+      "code": "MAPPING_NOT_IMPLEMENTED"
+    },
+    {
+      "name": "noop-timing",
+      "status": "edited",
+      "sha256": "0b85044571d242e982630783df8279f16e7a6118dbe605c7e355caecc54bb8d6",
+      "byteLength": 10480,
+      "noop": true
+    },
+    {
+      "name": "inspect-alternate-content",
+      "source": ".codex-work/pptx-mce-fixtures/alternate-content.pptx",
+      "sourceSha256": "07733975cdff2287a438e6e353acbed5020a0765b4954011611871fcb8d5587d",
+      "responseSha256": "8963cb9bf1a96ff3af579e9dde2189018586ef8c70d09dab49279c199aebbfab",
+      "responseSummary": {
+        "status": "inspected",
+        "slides": 2,
+        "surfaces": 6,
+        "objects": 15,
+        "containsSignatures": false,
+        "compatibilityProfile": "musteroffice.pml-source-mce/1",
+        "mainCompatibility": {
+          "selections": [],
+          "ignoredElements": 0,
+          "ignoredAttributes": 0,
+          "unwrappedElements": 0
+        },
+        "compatibility": {
+          "/ppt/slides/slide1.xml": {
+            "selections": [
+              {
+                "sourceOrdinal": 154,
+                "branches": [
+                  {
+                    "sourceOrdinal": 155,
+                    "requires": [
+                      "urn:owned:unsupported"
+                    ],
+                    "fallback": false,
+                    "selected": false
+                  },
+                  {
+                    "sourceOrdinal": 157,
+                    "requires": [],
+                    "fallback": true,
+                    "selected": true
+                  }
+                ]
+              }
+            ],
+            "ignoredElements": 0,
+            "ignoredAttributes": 0,
+            "unwrappedElements": 0
+          }
+        },
+        "textEditBarriers": {}
+      }
+    },
+    {
+      "name": "edit-alternate-content",
+      "status": "edited",
+      "sha256": "108e829c08b432b86ebf3b0470aa5c4c7222c34bdf1c0d57efa6c6057b42a94b",
+      "byteLength": 10964,
+      "noop": false
+    },
+    {
+      "name": "noop-alternate-content",
+      "status": "edited",
+      "sha256": "07733975cdff2287a438e6e353acbed5020a0765b4954011611871fcb8d5587d",
+      "byteLength": 10581,
+      "noop": true
+    },
+    {
+      "name": "inspect-inactive-timing",
+      "source": ".codex-work/pptx-mce-fixtures/inactive-timing.pptx",
+      "sourceSha256": "25cf0cc61d9d99131a35a00e734d88cae2ada80a0a329c3810d6ba02aabd1cc1",
+      "responseSha256": "b41868874aea54dfb8d5204a6153231a94be2452b0828b9ba7b7e9b3029618d5",
+      "responseSummary": {
+        "status": "inspected",
+        "slides": 2,
+        "surfaces": 6,
+        "objects": 15,
+        "containsSignatures": false,
+        "compatibilityProfile": "musteroffice.pml-source-mce/1",
+        "mainCompatibility": {
+          "selections": [],
+          "ignoredElements": 0,
+          "ignoredAttributes": 0,
+          "unwrappedElements": 0
+        },
+        "compatibility": {
+          "/ppt/slides/slide1.xml": {
+            "selections": [
+              {
+                "sourceOrdinal": 154,
+                "branches": [
+                  {
+                    "sourceOrdinal": 155,
+                    "requires": [
+                      "urn:owned:unsupported"
+                    ],
+                    "fallback": false,
+                    "selected": false
+                  },
+                  {
+                    "sourceOrdinal": 157,
+                    "requires": [],
+                    "fallback": true,
+                    "selected": true
+                  }
+                ]
+              }
+            ],
+            "ignoredElements": 0,
+            "ignoredAttributes": 0,
+            "unwrappedElements": 0
+          }
+        },
+        "textEditBarriers": {
+          "/ppt/slides/slide1.xml": [
+            "timing references require text-range retargeting"
+          ]
+        }
+      }
+    },
+    {
+      "name": "edit-inactive-timing",
+      "status": "rejected",
+      "code": "MAPPING_NOT_IMPLEMENTED"
+    },
+    {
+      "name": "noop-inactive-timing",
+      "status": "edited",
+      "sha256": "25cf0cc61d9d99131a35a00e734d88cae2ada80a0a329c3810d6ba02aabd1cc1",
+      "byteLength": 10582,
+      "noop": true
+    },
+    {
+      "name": "inspect-invalid-alternate-content",
+      "source": ".codex-work/pptx-mce-fixtures/invalid-alternate-content.pptx",
+      "sourceSha256": "bd347737a9329c25fbbbde74ea686518fd9902f6832bd9c368cff0b3558741f5",
+      "responseSha256": "c1d1b039dacf0907d1fadba0d4e0197a616df6e0d06d81341c3bb484477db13d",
+      "responseSummary": {
+        "status": "error",
+        "error": {
+          "code": "INPUT_INVALID",
+          "message": "invalid XML: MCE: Choice/Fallback order or cardinality"
+        }
+      }
+    },
+    {
+      "name": "inspect-selected-shape",
+      "source": ".codex-work/pptx-mce-fixtures/selected-shape.pptx",
+      "sourceSha256": "80809041945912c92a29db5a5e14e0d3578261f7b01b4b03cf7348a658d69487",
+      "responseSha256": "18ff56e12ab85a348076084371629d827feccfe0ac084334e222a86e36dee37a",
+      "responseSummary": {
+        "status": "inspected",
+        "slides": 2,
+        "surfaces": 6,
+        "objects": 15,
+        "containsSignatures": false,
+        "compatibilityProfile": "musteroffice.pml-source-mce/1",
+        "mainCompatibility": {
+          "selections": [],
+          "ignoredElements": 0,
+          "ignoredAttributes": 0,
+          "unwrappedElements": 0
+        },
+        "compatibility": {
+          "/ppt/slides/slide1.xml": {
+            "selections": [
+              {
+                "sourceOrdinal": 8,
+                "branches": [
+                  {
+                    "sourceOrdinal": 9,
+                    "requires": [
+                      "http://schemas.openxmlformats.org/presentationml/2006/main"
+                    ],
+                    "fallback": false,
+                    "selected": true
+                  },
+                  {
+                    "sourceOrdinal": 39,
+                    "requires": [],
+                    "fallback": true,
+                    "selected": false
+                  }
+                ]
+              }
+            ],
+            "ignoredElements": 0,
+            "ignoredAttributes": 0,
+            "unwrappedElements": 0
+          }
+        },
+        "textEditBarriers": {}
+      }
+    },
+    {
+      "name": "edit-selected-shape",
+      "status": "rejected",
+      "code": "MAPPING_NOT_IMPLEMENTED"
+    },
+    {
+      "name": "noop-selected-shape",
+      "status": "edited",
+      "sha256": "80809041945912c92a29db5a5e14e0d3578261f7b01b4b03cf7348a658d69487",
+      "byteLength": 10573,
+      "noop": true
+    },
+    {
+      "name": "outside-selected-shape",
+      "status": "edited",
+      "sha256": "34d06ddb58d1f2827c92531b67be5fcd291dc4d4388161125f7b648a910ac6cb",
+      "byteLength": 10902,
+      "noop": false
+    },
+    {
+      "name": "same-value-selected-shape",
+      "status": "edited",
+      "sha256": "80809041945912c92a29db5a5e14e0d3578261f7b01b4b03cf7348a658d69487",
+      "byteLength": 10573,
+      "noop": true
+    },
+    {
+      "name": "inspect-fallback-shape",
+      "source": ".codex-work/pptx-mce-fixtures/fallback-shape.pptx",
+      "sourceSha256": "22f0dcdd72976da824ce685cf33e50e359046443cbb9f5669ec339fe752a43d5",
+      "responseSha256": "980f96726a97698b1610809642446736dec52fd8ee98186f4103d93dc71bbb38",
+      "responseSummary": {
+        "status": "inspected",
+        "slides": 2,
+        "surfaces": 6,
+        "objects": 15,
+        "containsSignatures": false,
+        "compatibilityProfile": "musteroffice.pml-source-mce/1",
+        "mainCompatibility": {
+          "selections": [],
+          "ignoredElements": 0,
+          "ignoredAttributes": 0,
+          "unwrappedElements": 0
+        },
+        "compatibility": {
+          "/ppt/slides/slide1.xml": {
+            "selections": [
+              {
+                "sourceOrdinal": 8,
+                "branches": [
+                  {
+                    "sourceOrdinal": 9,
+                    "requires": [
+                      "urn:owned:unsupported"
+                    ],
+                    "fallback": false,
+                    "selected": false
+                  },
+                  {
+                    "sourceOrdinal": 39,
+                    "requires": [],
+                    "fallback": true,
+                    "selected": true
+                  }
+                ]
+              }
+            ],
+            "ignoredElements": 0,
+            "ignoredAttributes": 0,
+            "unwrappedElements": 0
+          }
+        },
+        "textEditBarriers": {}
+      }
+    },
+    {
+      "name": "edit-fallback-shape",
+      "status": "rejected",
+      "code": "MAPPING_NOT_IMPLEMENTED"
+    },
+    {
+      "name": "noop-fallback-shape",
+      "status": "edited",
+      "sha256": "22f0dcdd72976da824ce685cf33e50e359046443cbb9f5669ec339fe752a43d5",
+      "byteLength": 10573,
+      "noop": true
+    },
+    {
+      "name": "outside-fallback-shape",
+      "status": "edited",
+      "sha256": "da272fcf92d7b4d248a89529c2e63be162f330a6ccb9ac364544b997c85633ee",
+      "byteLength": 10902,
+      "noop": false
+    },
+    {
+      "name": "same-value-fallback-shape",
+      "status": "edited",
+      "sha256": "22f0dcdd72976da824ce685cf33e50e359046443cbb9f5669ec339fe752a43d5",
+      "byteLength": 10573,
+      "noop": true
+    },
+    {
+      "name": "inspect-process-content",
+      "source": ".codex-work/pptx-mce-fixtures/process-content.pptx",
+      "sourceSha256": "a75f8692e743738876ab1863a0d3426fa147d00e450322b4533ad417e2e113ad",
+      "responseSha256": "7bab5b3e067ba1ee3e2a722a9bc8c8a512fd593e55cf1b3abd2c1beaa99ad763",
+      "responseSummary": {
+        "status": "inspected",
+        "slides": 2,
+        "surfaces": 6,
+        "objects": 15,
+        "containsSignatures": false,
+        "compatibilityProfile": "musteroffice.pml-source-mce/1",
+        "mainCompatibility": {
+          "selections": [],
+          "ignoredElements": 0,
+          "ignoredAttributes": 0,
+          "unwrappedElements": 0
+        },
+        "compatibility": {
+          "/ppt/slides/slide1.xml": {
+            "selections": [],
+            "ignoredElements": 0,
+            "ignoredAttributes": 0,
+            "unwrappedElements": 1
+          }
+        },
+        "textEditBarriers": {}
+      }
+    },
+    {
+      "name": "edit-process-content",
+      "status": "edited",
+      "sha256": "ef02b380e6cb963666e1cddfa9d4312697d84e6a67f408c86a2a0b3952b942a2",
+      "byteLength": 10931,
+      "noop": false
+    },
+    {
+      "name": "noop-process-content",
+      "status": "edited",
+      "sha256": "a75f8692e743738876ab1863a0d3426fa147d00e450322b4533ad417e2e113ad",
+      "byteLength": 10546,
+      "noop": true
+    },
+    {
+      "name": "inspect-ignored-subtree",
+      "source": ".codex-work/pptx-mce-fixtures/ignored-subtree.pptx",
+      "sourceSha256": "a5d16dcc30419e51306e924310ab6584c5db9421f5bab3d2e9ea4785823b3fcf",
+      "responseSha256": "12dc14a3d43bc20a81359f70a6bed7e2ad21ea1b3d929cccf05ab5ed0883fb73",
+      "responseSummary": {
+        "status": "inspected",
+        "slides": 2,
+        "surfaces": 6,
+        "objects": 15,
+        "containsSignatures": false,
+        "compatibilityProfile": "musteroffice.pml-source-mce/1",
+        "mainCompatibility": {
+          "selections": [],
+          "ignoredElements": 0,
+          "ignoredAttributes": 0,
+          "unwrappedElements": 0
+        },
+        "compatibility": {
+          "/ppt/slides/slide1.xml": {
+            "selections": [],
+            "ignoredElements": 1,
+            "ignoredAttributes": 1,
+            "unwrappedElements": 0
+          }
+        },
+        "textEditBarriers": {}
+      }
+    },
+    {
+      "name": "edit-ignored-subtree",
+      "status": "edited",
+      "sha256": "061e43beab7c8f539d983093964394785a28016e7183210a164587f5abec8ce4",
+      "byteLength": 10975,
+      "noop": false
+    },
+    {
+      "name": "noop-ignored-subtree",
+      "status": "edited",
+      "sha256": "a5d16dcc30419e51306e924310ab6584c5db9421f5bab3d2e9ea4785823b3fcf",
+      "byteLength": 10604,
+      "noop": true
+    },
+    {
+      "name": "inspect-structured-leaf",
+      "source": ".codex-work/pptx-mce-fixtures/structured-leaf.pptx",
+      "sourceSha256": "706e91d16c3da3d0174e4f41427a9d88ce40abcd31fa2f5ae4795cff5a6ec9be",
+      "responseSha256": "440629c3ffbe6f0ef95f46ae48955e9257f591eb30f3fafcae4456d8e8da0da9",
+      "responseSummary": {
+        "status": "inspected",
+        "slides": 2,
+        "surfaces": 6,
+        "objects": 15,
+        "containsSignatures": false,
+        "compatibilityProfile": "musteroffice.pml-source-mce/1",
+        "mainCompatibility": {
+          "selections": [],
+          "ignoredElements": 0,
+          "ignoredAttributes": 0,
+          "unwrappedElements": 0
+        },
+        "compatibility": {
+          "/ppt/slides/slide1.xml": {
+            "selections": [],
+            "ignoredElements": 1,
+            "ignoredAttributes": 0,
+            "unwrappedElements": 0
+          }
+        },
+        "textEditBarriers": {}
+      }
+    },
+    {
+      "name": "edit-structured-leaf",
+      "status": "rejected",
+      "code": "MAPPING_NOT_IMPLEMENTED"
+    },
+    {
+      "name": "noop-structured-leaf",
+      "status": "edited",
+      "sha256": "706e91d16c3da3d0174e4f41427a9d88ce40abcd31fa2f5ae4795cff5a6ec9be",
+      "byteLength": 10546,
+      "noop": true
+    },
+    {
+      "name": "inspect-main-alternate-root",
+      "source": ".codex-work/pptx-mce-fixtures/main-alternate-root.pptx",
+      "sourceSha256": "958d6c11f882e19faa3fad3533989cc8b647cf86741d4dd1c0f436279c5dfcba",
+      "responseSha256": "ed9148d059ae6280e0f24e84eaf48effa9dea9907605a931e673c10ff957d3b6",
+      "responseSummary": {
+        "status": "inspected",
+        "slides": 2,
+        "surfaces": 6,
+        "objects": 15,
+        "containsSignatures": false,
+        "compatibilityProfile": "musteroffice.pml-source-mce/1",
+        "mainCompatibility": {
+          "selections": [
+            {
+              "sourceOrdinal": 0,
+              "branches": [
+                {
+                  "sourceOrdinal": 1,
+                  "requires": [
+                    "http://schemas.openxmlformats.org/presentationml/2006/main"
+                  ],
+                  "fallback": false,
+                  "selected": true
+                }
+              ]
+            }
+          ],
+          "ignoredElements": 0,
+          "ignoredAttributes": 0,
+          "unwrappedElements": 0
+        },
+        "compatibility": {},
+        "textEditBarriers": {}
+      }
+    },
+    {
+      "name": "edit-main-alternate-root",
+      "status": "edited",
+      "sha256": "482cc27a301cc961e8b5317912e729632f684d2caaa0eb1531bc76be57f0c625",
+      "byteLength": 10918,
+      "noop": false
+    },
+    {
+      "name": "noop-main-alternate-root",
+      "status": "edited",
+      "sha256": "958d6c11f882e19faa3fad3533989cc8b647cf86741d4dd1c0f436279c5dfcba",
+      "byteLength": 10535,
+      "noop": true
+    },
+    {
+      "name": "inspect-field",
+      "source": ".codex-work/pptx-mce-fixtures/field.pptx",
+      "sourceSha256": "5b2dc4b781bf178ec056641dee00bded77eea3978eee2404646f99f742f8c30a",
+      "responseSha256": "cfa2c37f097936705d50e6bdd36c4c2d96947c6c112d50c5a9766e6b1a93dd95",
+      "responseSummary": {
+        "status": "inspected",
+        "slides": 2,
+        "surfaces": 6,
+        "objects": 15,
+        "containsSignatures": false,
+        "compatibilityProfile": "musteroffice.pml-source-mce/1",
+        "mainCompatibility": {
+          "selections": [],
+          "ignoredElements": 0,
+          "ignoredAttributes": 0,
+          "unwrappedElements": 0
+        },
+        "compatibility": {},
+        "textEditBarriers": {}
+      }
+    },
+    {
+      "name": "edit-field",
+      "status": "rejected",
+      "code": "SOURCE_CONFLICT"
+    },
+    {
+      "name": "noop-field",
+      "status": "edited",
+      "sha256": "5b2dc4b781bf178ec056641dee00bded77eea3978eee2404646f99f742f8c30a",
+      "byteLength": 10518,
+      "noop": true
+    },
+    {
+      "name": "inspect-signature-origin",
+      "source": ".codex-work/pptx-mce-fixtures/signature-origin.pptx",
+      "sourceSha256": "d63a28093f5e706482c5115145228de1ba61574e9148240d888a715b60721035",
+      "responseSha256": "31eb833d796f8546f3220c35c2de82e8a8f3427888c46910ef3967261e67598a",
+      "responseSummary": {
+        "status": "inspected",
+        "slides": 2,
+        "surfaces": 6,
+        "objects": 15,
+        "containsSignatures": true,
+        "compatibilityProfile": "musteroffice.pml-source-mce/1",
+        "mainCompatibility": {
+          "selections": [],
+          "ignoredElements": 0,
+          "ignoredAttributes": 0,
+          "unwrappedElements": 0
+        },
+        "compatibility": {},
+        "textEditBarriers": {}
+      }
+    },
+    {
+      "name": "edit-signature-origin",
+      "status": "rejected",
+      "code": "PRESERVATION_CONFLICT"
+    },
+    {
+      "name": "noop-signature-origin",
+      "status": "edited",
+      "sha256": "d63a28093f5e706482c5115145228de1ba61574e9148240d888a715b60721035",
+      "byteLength": 10654,
+      "noop": true
+    },
+    {
+      "name": "inspect-macro-preservation",
+      "source": ".codex-work/pptx-mce-fixtures/macro-preservation.pptx",
+      "sourceSha256": "07eb6f189783200d56623a26586e5240de8cbac8204f62e6bfe6330ab3d456aa",
+      "responseSha256": "00544b7052fd47c0229bd7837cdaa68902015351e831cf2c197cb90c8b0263bb",
+      "responseSummary": {
+        "status": "inspected",
+        "slides": 2,
+        "surfaces": 6,
+        "objects": 15,
+        "containsSignatures": false,
+        "compatibilityProfile": "musteroffice.pml-source-mce/1",
+        "mainCompatibility": {
+          "selections": [],
+          "ignoredElements": 0,
+          "ignoredAttributes": 0,
+          "unwrappedElements": 0
+        },
+        "compatibility": {},
+        "textEditBarriers": {}
+      }
+    },
+    {
+      "name": "edit-macro-preservation",
+      "status": "edited",
+      "sha256": "b249e10e95f90bfaded6599339a83b17a217dd6e043537e8258f3e0e1efcdcc5",
+      "byteLength": 11138,
+      "noop": false
+    },
+    {
+      "name": "noop-macro-preservation",
+      "status": "edited",
+      "sha256": "07eb6f189783200d56623a26586e5240de8cbac8204f62e6bfe6330ab3d456aa",
+      "byteLength": 10739,
+      "noop": true
+    },
+    {
+      "name": "stale-source",
+      "status": "rejected",
+      "code": "SOURCE_CONFLICT"
+    },
+    {
+      "name": "stale-text",
+      "status": "rejected",
+      "code": "SOURCE_CONFLICT"
+    },
+    {
+      "name": "missing-object",
+      "status": "rejected",
+      "code": "SOURCE_CONFLICT"
+    },
+    {
+      "name": "duplicate-target",
+      "status": "rejected",
+      "code": "SOURCE_CONFLICT"
+    },
+    {
+      "name": "forged-part",
+      "status": "rejected",
+      "code": "SOURCE_CONFLICT"
+    },
+    {
+      "name": "invalid-xml-character",
+      "status": "rejected",
+      "code": "SOURCE_CONFLICT"
+    },
+    {
+      "name": "same-value",
+      "status": "edited",
+      "sha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+      "byteLength": 10952,
+      "noop": true
+    },
+    {
+      "name": "inspect-external-owned-roundtrip",
+      "source": ".codex-work/pptx-fixture/lo-roundtrip/native-initial.pptx",
+      "sourceSha256": "0b6e3ca446b83fcc63403aaa0296c71620daa17baa349132910c1a5e22dbc392",
+      "responseSha256": "ff1b8147c00b0f088460c8b361c1202f374353b58048df6f0205c677b5e492e4",
+      "responseSummary": {
+        "status": "inspected",
+        "slides": 2,
+        "surfaces": 6,
+        "objects": 17,
+        "containsSignatures": false,
+        "compatibilityProfile": "musteroffice.pml-source-mce/1",
+        "mainCompatibility": {
+          "selections": [],
+          "ignoredElements": 0,
+          "ignoredAttributes": 0,
+          "unwrappedElements": 0
+        },
+        "compatibility": {
+          "/ppt/slides/slide1.xml": {
+            "selections": [
+              {
+                "sourceOrdinal": 273,
+                "branches": [
+                  {
+                    "sourceOrdinal": 274,
+                    "requires": [
+                      "http://schemas.microsoft.com/office/powerpoint/2010/main"
+                    ],
+                    "fallback": false,
+                    "selected": false
+                  },
+                  {
+                    "sourceOrdinal": 276,
+                    "requires": [],
+                    "fallback": true,
+                    "selected": true
+                  }
+                ]
+              }
+            ],
+            "ignoredElements": 0,
+            "ignoredAttributes": 0,
+            "unwrappedElements": 0
+          },
+          "/ppt/slides/slide2.xml": {
+            "selections": [
+              {
+                "sourceOrdinal": 242,
+                "branches": [
+                  {
+                    "sourceOrdinal": 243,
+                    "requires": [
+                      "http://schemas.microsoft.com/office/powerpoint/2010/main"
+                    ],
+                    "fallback": false,
+                    "selected": false
+                  },
+                  {
+                    "sourceOrdinal": 245,
+                    "requires": [],
+                    "fallback": true,
+                    "selected": true
+                  }
+                ]
+              }
+            ],
+            "ignoredElements": 0,
+            "ignoredAttributes": 0,
+            "unwrappedElements": 0
+          }
+        },
+        "textEditBarriers": {}
+      }
+    },
+    {
+      "name": "external-owned-roundtrip",
+      "status": "edited",
+      "sha256": "36eb645101ef6a10706ecc4db4c4352015f07f549a6d16e008bc07094678ee18",
+      "byteLength": 13289,
+      "noop": false
+    },
+    {
+      "name": "noop-external-owned-roundtrip",
+      "status": "edited",
+      "sha256": "0b6e3ca446b83fcc63403aaa0296c71620daa17baa349132910c1a5e22dbc392",
+      "byteLength": 13260,
+      "noop": true
+    }
+  ],
+  "sourceRequests": [
+    {
+      "name": "edit-authored",
+      "request": {
+        "expectedSourceSha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "原生编辑 😀 é & < >\r\n第二行"
+          }
+        ]
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "noop-authored",
+      "request": {
+        "expectedSourceSha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+        "edits": []
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "edit-unknown-content",
+      "request": {
+        "expectedSourceSha256": "59edc00b14b192c3f1f9ed811aa877f6e7c3e99bcb18cb110a6c66ce84be8531",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "原生编辑 😀 é & < >\r\n第二行"
+          }
+        ]
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "noop-unknown-content",
+      "request": {
+        "expectedSourceSha256": "59edc00b14b192c3f1f9ed811aa877f6e7c3e99bcb18cb110a6c66ce84be8531",
+        "edits": []
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "edit-utf16",
+      "request": {
+        "expectedSourceSha256": "0e79549b03170f7031ac151b5db4476107079f6fcb6f78493219a6d2a574f320",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "原生编辑 😀 é & < >\r\n第二行"
+          }
+        ]
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "noop-utf16",
+      "request": {
+        "expectedSourceSha256": "0e79549b03170f7031ac151b5db4476107079f6fcb6f78493219a6d2a574f320",
+        "edits": []
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "edit-main-must-understand",
+      "request": {
+        "expectedSourceSha256": "4066deda545ffa0b22a6f20b975a312db27b2c4549f256837ac3c0eb66865373",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "原生编辑 😀 é & < >\r\n第二行"
+          }
+        ]
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "noop-main-must-understand",
+      "request": {
+        "expectedSourceSha256": "4066deda545ffa0b22a6f20b975a312db27b2c4549f256837ac3c0eb66865373",
+        "edits": []
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "edit-timing",
+      "request": {
+        "expectedSourceSha256": "0b85044571d242e982630783df8279f16e7a6118dbe605c7e355caecc54bb8d6",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "原生编辑 😀 é & < >\r\n第二行"
+          }
+        ]
+      },
+      "expectedCode": "MAPPING_NOT_IMPLEMENTED"
+    },
+    {
+      "name": "noop-timing",
+      "request": {
+        "expectedSourceSha256": "0b85044571d242e982630783df8279f16e7a6118dbe605c7e355caecc54bb8d6",
+        "edits": []
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "edit-alternate-content",
+      "request": {
+        "expectedSourceSha256": "07733975cdff2287a438e6e353acbed5020a0765b4954011611871fcb8d5587d",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "原生编辑 😀 é & < >\r\n第二行"
+          }
+        ]
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "noop-alternate-content",
+      "request": {
+        "expectedSourceSha256": "07733975cdff2287a438e6e353acbed5020a0765b4954011611871fcb8d5587d",
+        "edits": []
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "edit-inactive-timing",
+      "request": {
+        "expectedSourceSha256": "25cf0cc61d9d99131a35a00e734d88cae2ada80a0a329c3810d6ba02aabd1cc1",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "原生编辑 😀 é & < >\r\n第二行"
+          }
+        ]
+      },
+      "expectedCode": "MAPPING_NOT_IMPLEMENTED"
+    },
+    {
+      "name": "noop-inactive-timing",
+      "request": {
+        "expectedSourceSha256": "25cf0cc61d9d99131a35a00e734d88cae2ada80a0a329c3810d6ba02aabd1cc1",
+        "edits": []
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "edit-selected-shape",
+      "request": {
+        "expectedSourceSha256": "80809041945912c92a29db5a5e14e0d3578261f7b01b4b03cf7348a658d69487",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "Native objects. Editable content."
+          }
+        ]
+      },
+      "expectedCode": "MAPPING_NOT_IMPLEMENTED"
+    },
+    {
+      "name": "noop-selected-shape",
+      "request": {
+        "expectedSourceSha256": "80809041945912c92a29db5a5e14e0d3578261f7b01b4b03cf7348a658d69487",
+        "edits": []
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "outside-selected-shape",
+      "request": {
+        "expectedSourceSha256": "80809041945912c92a29db5a5e14e0d3578261f7b01b4b03cf7348a658d69487",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 16,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "中文 / العربية / 🚀 / é",
+            "replacement": "分支外原生编辑 😀"
+          }
+        ]
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "same-value-selected-shape",
+      "request": {
+        "expectedSourceSha256": "80809041945912c92a29db5a5e14e0d3578261f7b01b4b03cf7348a658d69487",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "Native objects. Editable content."
+          }
+        ]
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "edit-fallback-shape",
+      "request": {
+        "expectedSourceSha256": "22f0dcdd72976da824ce685cf33e50e359046443cbb9f5669ec339fe752a43d5",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "Native objects. Editable content."
+          }
+        ]
+      },
+      "expectedCode": "MAPPING_NOT_IMPLEMENTED"
+    },
+    {
+      "name": "noop-fallback-shape",
+      "request": {
+        "expectedSourceSha256": "22f0dcdd72976da824ce685cf33e50e359046443cbb9f5669ec339fe752a43d5",
+        "edits": []
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "outside-fallback-shape",
+      "request": {
+        "expectedSourceSha256": "22f0dcdd72976da824ce685cf33e50e359046443cbb9f5669ec339fe752a43d5",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 16,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "中文 / العربية / 🚀 / é",
+            "replacement": "分支外原生编辑 😀"
+          }
+        ]
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "same-value-fallback-shape",
+      "request": {
+        "expectedSourceSha256": "22f0dcdd72976da824ce685cf33e50e359046443cbb9f5669ec339fe752a43d5",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "Native objects. Editable content."
+          }
+        ]
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "edit-process-content",
+      "request": {
+        "expectedSourceSha256": "a75f8692e743738876ab1863a0d3426fa147d00e450322b4533ad417e2e113ad",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "原生编辑 😀 é & < >\r\n第二行"
+          }
+        ]
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "noop-process-content",
+      "request": {
+        "expectedSourceSha256": "a75f8692e743738876ab1863a0d3426fa147d00e450322b4533ad417e2e113ad",
+        "edits": []
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "edit-ignored-subtree",
+      "request": {
+        "expectedSourceSha256": "a5d16dcc30419e51306e924310ab6584c5db9421f5bab3d2e9ea4785823b3fcf",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "原生编辑 😀 é & < >\r\n第二行"
+          }
+        ]
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "noop-ignored-subtree",
+      "request": {
+        "expectedSourceSha256": "a5d16dcc30419e51306e924310ab6584c5db9421f5bab3d2e9ea4785823b3fcf",
+        "edits": []
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "edit-structured-leaf",
+      "request": {
+        "expectedSourceSha256": "706e91d16c3da3d0174e4f41427a9d88ce40abcd31fa2f5ae4795cff5a6ec9be",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "原生编辑 😀 é & < >\r\n第二行"
+          }
+        ]
+      },
+      "expectedCode": "MAPPING_NOT_IMPLEMENTED"
+    },
+    {
+      "name": "noop-structured-leaf",
+      "request": {
+        "expectedSourceSha256": "706e91d16c3da3d0174e4f41427a9d88ce40abcd31fa2f5ae4795cff5a6ec9be",
+        "edits": []
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "edit-main-alternate-root",
+      "request": {
+        "expectedSourceSha256": "958d6c11f882e19faa3fad3533989cc8b647cf86741d4dd1c0f436279c5dfcba",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "原生编辑 😀 é & < >\r\n第二行"
+          }
+        ]
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "noop-main-alternate-root",
+      "request": {
+        "expectedSourceSha256": "958d6c11f882e19faa3fad3533989cc8b647cf86741d4dd1c0f436279c5dfcba",
+        "edits": []
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "edit-field",
+      "request": {
+        "expectedSourceSha256": "5b2dc4b781bf178ec056641dee00bded77eea3978eee2404646f99f742f8c30a",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "原生编辑 😀 é & < >\r\n第二行"
+          }
+        ]
+      },
+      "expectedCode": "SOURCE_CONFLICT"
+    },
+    {
+      "name": "noop-field",
+      "request": {
+        "expectedSourceSha256": "5b2dc4b781bf178ec056641dee00bded77eea3978eee2404646f99f742f8c30a",
+        "edits": []
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "edit-signature-origin",
+      "request": {
+        "expectedSourceSha256": "d63a28093f5e706482c5115145228de1ba61574e9148240d888a715b60721035",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "原生编辑 😀 é & < >\r\n第二行"
+          }
+        ]
+      },
+      "expectedCode": "PRESERVATION_CONFLICT"
+    },
+    {
+      "name": "noop-signature-origin",
+      "request": {
+        "expectedSourceSha256": "d63a28093f5e706482c5115145228de1ba61574e9148240d888a715b60721035",
+        "edits": []
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "edit-macro-preservation",
+      "request": {
+        "expectedSourceSha256": "07eb6f189783200d56623a26586e5240de8cbac8204f62e6bfe6330ab3d456aa",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "原生编辑 😀 é & < >\r\n第二行"
+          }
+        ]
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "noop-macro-preservation",
+      "request": {
+        "expectedSourceSha256": "07eb6f189783200d56623a26586e5240de8cbac8204f62e6bfe6330ab3d456aa",
+        "edits": []
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "stale-source",
+      "request": {
+        "expectedSourceSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "new"
+          }
+        ]
+      },
+      "expectedCode": "SOURCE_CONFLICT"
+    },
+    {
+      "name": "stale-text",
+      "request": {
+        "expectedSourceSha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "stale",
+            "replacement": "new"
+          }
+        ]
+      },
+      "expectedCode": "SOURCE_CONFLICT"
+    },
+    {
+      "name": "missing-object",
+      "request": {
+        "expectedSourceSha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 999999,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "new"
+          }
+        ]
+      },
+      "expectedCode": "SOURCE_CONFLICT"
+    },
+    {
+      "name": "duplicate-target",
+      "request": {
+        "expectedSourceSha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "new"
+          },
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "new"
+          }
+        ]
+      },
+      "expectedCode": "SOURCE_CONFLICT"
+    },
+    {
+      "name": "forged-part",
+      "request": {
+        "expectedSourceSha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+        "edits": [
+          {
+            "target": {
+              "part": "/docProps/core.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "new"
+          }
+        ]
+      },
+      "expectedCode": "SOURCE_CONFLICT"
+    },
+    {
+      "name": "invalid-xml-character",
+      "request": {
+        "expectedSourceSha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "\u0000"
+          }
+        ]
+      },
+      "expectedCode": "SOURCE_CONFLICT"
+    },
+    {
+      "name": "same-value",
+      "request": {
+        "expectedSourceSha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 14,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "Native objects. Editable content."
+          }
+        ]
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "external-owned-roundtrip",
+      "request": {
+        "expectedSourceSha256": "0b6e3ca446b83fcc63403aaa0296c71620daa17baa349132910c1a5e22dbc392",
+        "edits": [
+          {
+            "target": {
+              "part": "/ppt/slides/slide1.xml",
+              "objectId": 6,
+              "paragraph": 0,
+              "run": 0
+            },
+            "expectedText": "Native objects. Editable content.",
+            "replacement": "外部文件原生修改 😀"
+          }
+        ]
+      },
+      "expectedCode": null
+    },
+    {
+      "name": "noop-external-owned-roundtrip",
+      "request": {
+        "expectedSourceSha256": "0b6e3ca446b83fcc63403aaa0296c71620daa17baa349132910c1a5e22dbc392",
+        "edits": []
+      },
+      "expectedCode": null
+    }
+  ],
+  "actualSourceOutputs": [
+    {
+      "name": "edit-authored",
+      "source": ".codex-work/pptx-mce-fixtures/authored.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/edit-authored.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/edit-authored.json",
+      "sha256": "0d5419789a0a1e0d38a6f904c86d1ea06246056af1d732d92e45d41ecb4f5589",
+      "noop": false
+    },
+    {
+      "name": "noop-authored",
+      "source": ".codex-work/pptx-mce-fixtures/authored.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/noop-authored.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/noop-authored.json",
+      "sha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+      "noop": true
+    },
+    {
+      "name": "edit-unknown-content",
+      "source": ".codex-work/pptx-mce-fixtures/unknown-content.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/edit-unknown-content.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/edit-unknown-content.json",
+      "sha256": "fc763aff5c8ee3f5e1e6c6a7152a1f695bb264c0949648e2eca9a2539ba02304",
+      "noop": false
+    },
+    {
+      "name": "noop-unknown-content",
+      "source": ".codex-work/pptx-mce-fixtures/unknown-content.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/noop-unknown-content.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/noop-unknown-content.json",
+      "sha256": "59edc00b14b192c3f1f9ed811aa877f6e7c3e99bcb18cb110a6c66ce84be8531",
+      "noop": true
+    },
+    {
+      "name": "edit-utf16",
+      "source": ".codex-work/pptx-mce-fixtures/utf16.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/edit-utf16.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/edit-utf16.json",
+      "sha256": "ab9999a2955837f58c82b4fa2d550d2e8606c7f76a90205682ec1e082fb848ea",
+      "noop": false
+    },
+    {
+      "name": "noop-utf16",
+      "source": ".codex-work/pptx-mce-fixtures/utf16.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/noop-utf16.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/noop-utf16.json",
+      "sha256": "0e79549b03170f7031ac151b5db4476107079f6fcb6f78493219a6d2a574f320",
+      "noop": true
+    },
+    {
+      "name": "edit-main-must-understand",
+      "source": ".codex-work/pptx-mce-fixtures/main-must-understand.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/edit-main-must-understand.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/edit-main-must-understand.json",
+      "sha256": "b4552f72b3d3d3b746602ef38c17d9e96f5cb4f25f50c3f9631b62fd511e3b94",
+      "noop": false
+    },
+    {
+      "name": "noop-main-must-understand",
+      "source": ".codex-work/pptx-mce-fixtures/main-must-understand.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/noop-main-must-understand.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/noop-main-must-understand.json",
+      "sha256": "4066deda545ffa0b22a6f20b975a312db27b2c4549f256837ac3c0eb66865373",
+      "noop": true
+    },
+    {
+      "name": "noop-timing",
+      "source": ".codex-work/pptx-mce-fixtures/timing.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/noop-timing.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/noop-timing.json",
+      "sha256": "0b85044571d242e982630783df8279f16e7a6118dbe605c7e355caecc54bb8d6",
+      "noop": true
+    },
+    {
+      "name": "edit-alternate-content",
+      "source": ".codex-work/pptx-mce-fixtures/alternate-content.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/edit-alternate-content.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/edit-alternate-content.json",
+      "sha256": "108e829c08b432b86ebf3b0470aa5c4c7222c34bdf1c0d57efa6c6057b42a94b",
+      "noop": false
+    },
+    {
+      "name": "noop-alternate-content",
+      "source": ".codex-work/pptx-mce-fixtures/alternate-content.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/noop-alternate-content.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/noop-alternate-content.json",
+      "sha256": "07733975cdff2287a438e6e353acbed5020a0765b4954011611871fcb8d5587d",
+      "noop": true
+    },
+    {
+      "name": "noop-inactive-timing",
+      "source": ".codex-work/pptx-mce-fixtures/inactive-timing.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/noop-inactive-timing.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/noop-inactive-timing.json",
+      "sha256": "25cf0cc61d9d99131a35a00e734d88cae2ada80a0a329c3810d6ba02aabd1cc1",
+      "noop": true
+    },
+    {
+      "name": "noop-selected-shape",
+      "source": ".codex-work/pptx-mce-fixtures/selected-shape.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/noop-selected-shape.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/noop-selected-shape.json",
+      "sha256": "80809041945912c92a29db5a5e14e0d3578261f7b01b4b03cf7348a658d69487",
+      "noop": true
+    },
+    {
+      "name": "outside-selected-shape",
+      "source": ".codex-work/pptx-mce-fixtures/selected-shape.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/outside-selected-shape.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/outside-selected-shape.json",
+      "sha256": "34d06ddb58d1f2827c92531b67be5fcd291dc4d4388161125f7b648a910ac6cb",
+      "noop": false
+    },
+    {
+      "name": "same-value-selected-shape",
+      "source": ".codex-work/pptx-mce-fixtures/selected-shape.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/same-value-selected-shape.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/same-value-selected-shape.json",
+      "sha256": "80809041945912c92a29db5a5e14e0d3578261f7b01b4b03cf7348a658d69487",
+      "noop": true
+    },
+    {
+      "name": "noop-fallback-shape",
+      "source": ".codex-work/pptx-mce-fixtures/fallback-shape.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/noop-fallback-shape.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/noop-fallback-shape.json",
+      "sha256": "22f0dcdd72976da824ce685cf33e50e359046443cbb9f5669ec339fe752a43d5",
+      "noop": true
+    },
+    {
+      "name": "outside-fallback-shape",
+      "source": ".codex-work/pptx-mce-fixtures/fallback-shape.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/outside-fallback-shape.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/outside-fallback-shape.json",
+      "sha256": "da272fcf92d7b4d248a89529c2e63be162f330a6ccb9ac364544b997c85633ee",
+      "noop": false
+    },
+    {
+      "name": "same-value-fallback-shape",
+      "source": ".codex-work/pptx-mce-fixtures/fallback-shape.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/same-value-fallback-shape.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/same-value-fallback-shape.json",
+      "sha256": "22f0dcdd72976da824ce685cf33e50e359046443cbb9f5669ec339fe752a43d5",
+      "noop": true
+    },
+    {
+      "name": "edit-process-content",
+      "source": ".codex-work/pptx-mce-fixtures/process-content.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/edit-process-content.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/edit-process-content.json",
+      "sha256": "ef02b380e6cb963666e1cddfa9d4312697d84e6a67f408c86a2a0b3952b942a2",
+      "noop": false
+    },
+    {
+      "name": "noop-process-content",
+      "source": ".codex-work/pptx-mce-fixtures/process-content.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/noop-process-content.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/noop-process-content.json",
+      "sha256": "a75f8692e743738876ab1863a0d3426fa147d00e450322b4533ad417e2e113ad",
+      "noop": true
+    },
+    {
+      "name": "edit-ignored-subtree",
+      "source": ".codex-work/pptx-mce-fixtures/ignored-subtree.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/edit-ignored-subtree.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/edit-ignored-subtree.json",
+      "sha256": "061e43beab7c8f539d983093964394785a28016e7183210a164587f5abec8ce4",
+      "noop": false
+    },
+    {
+      "name": "noop-ignored-subtree",
+      "source": ".codex-work/pptx-mce-fixtures/ignored-subtree.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/noop-ignored-subtree.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/noop-ignored-subtree.json",
+      "sha256": "a5d16dcc30419e51306e924310ab6584c5db9421f5bab3d2e9ea4785823b3fcf",
+      "noop": true
+    },
+    {
+      "name": "noop-structured-leaf",
+      "source": ".codex-work/pptx-mce-fixtures/structured-leaf.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/noop-structured-leaf.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/noop-structured-leaf.json",
+      "sha256": "706e91d16c3da3d0174e4f41427a9d88ce40abcd31fa2f5ae4795cff5a6ec9be",
+      "noop": true
+    },
+    {
+      "name": "edit-main-alternate-root",
+      "source": ".codex-work/pptx-mce-fixtures/main-alternate-root.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/edit-main-alternate-root.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/edit-main-alternate-root.json",
+      "sha256": "482cc27a301cc961e8b5317912e729632f684d2caaa0eb1531bc76be57f0c625",
+      "noop": false
+    },
+    {
+      "name": "noop-main-alternate-root",
+      "source": ".codex-work/pptx-mce-fixtures/main-alternate-root.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/noop-main-alternate-root.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/noop-main-alternate-root.json",
+      "sha256": "958d6c11f882e19faa3fad3533989cc8b647cf86741d4dd1c0f436279c5dfcba",
+      "noop": true
+    },
+    {
+      "name": "noop-field",
+      "source": ".codex-work/pptx-mce-fixtures/field.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/noop-field.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/noop-field.json",
+      "sha256": "5b2dc4b781bf178ec056641dee00bded77eea3978eee2404646f99f742f8c30a",
+      "noop": true
+    },
+    {
+      "name": "noop-signature-origin",
+      "source": ".codex-work/pptx-mce-fixtures/signature-origin.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/noop-signature-origin.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/noop-signature-origin.json",
+      "sha256": "d63a28093f5e706482c5115145228de1ba61574e9148240d888a715b60721035",
+      "noop": true
+    },
+    {
+      "name": "edit-macro-preservation",
+      "source": ".codex-work/pptx-mce-fixtures/macro-preservation.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/edit-macro-preservation.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/edit-macro-preservation.json",
+      "sha256": "b249e10e95f90bfaded6599339a83b17a217dd6e043537e8258f3e0e1efcdcc5",
+      "noop": false
+    },
+    {
+      "name": "noop-macro-preservation",
+      "source": ".codex-work/pptx-mce-fixtures/macro-preservation.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/noop-macro-preservation.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/noop-macro-preservation.json",
+      "sha256": "07eb6f189783200d56623a26586e5240de8cbac8204f62e6bfe6330ab3d456aa",
+      "noop": true
+    },
+    {
+      "name": "same-value",
+      "source": ".codex-work/pptx-mce-fixtures/authored.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/same-value.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/same-value.json",
+      "sha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+      "noop": true
+    },
+    {
+      "name": "external-owned-roundtrip",
+      "source": ".codex-work/pptx-fixture/lo-roundtrip/native-initial.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/external-owned-roundtrip.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/external-owned-roundtrip.json",
+      "sha256": "36eb645101ef6a10706ecc4db4c4352015f07f549a6d16e008bc07094678ee18",
+      "noop": false
+    },
+    {
+      "name": "noop-external-owned-roundtrip",
+      "source": ".codex-work/pptx-fixture/lo-roundtrip/native-initial.pptx",
+      "output": ".codex-work/pptx-source-parity-vZ6aXG/noop-external-owned-roundtrip.pptx",
+      "request": ".codex-work/pptx-source-parity-vZ6aXG/noop-external-owned-roundtrip.json",
+      "sha256": "0b6e3ca446b83fcc63403aaa0296c71620daa17baa349132910c1a5e22dbc392",
+      "noop": true
+    }
+  ],
+  "independentMceVerification": {
+    "format": "musteroffice.mce-reference/1",
+    "passed": 17,
+    "cases": [
+      {
+        "name": "inspect-authored",
+        "sourceSha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+        "surfaces": 6,
+        "objects": 15
+      },
+      {
+        "name": "inspect-unknown-content",
+        "sourceSha256": "59edc00b14b192c3f1f9ed811aa877f6e7c3e99bcb18cb110a6c66ce84be8531",
+        "surfaces": 6,
+        "objects": 15
+      },
+      {
+        "name": "inspect-utf16",
+        "sourceSha256": "0e79549b03170f7031ac151b5db4476107079f6fcb6f78493219a6d2a574f320",
+        "surfaces": 6,
+        "objects": 15
+      },
+      {
+        "name": "inspect-main-must-understand",
+        "sourceSha256": "4066deda545ffa0b22a6f20b975a312db27b2c4549f256837ac3c0eb66865373",
+        "surfaces": 6,
+        "objects": 15
+      },
+      {
+        "name": "inspect-timing",
+        "sourceSha256": "0b85044571d242e982630783df8279f16e7a6118dbe605c7e355caecc54bb8d6",
+        "surfaces": 6,
+        "objects": 15
+      },
+      {
+        "name": "inspect-alternate-content",
+        "sourceSha256": "07733975cdff2287a438e6e353acbed5020a0765b4954011611871fcb8d5587d",
+        "surfaces": 6,
+        "objects": 15
+      },
+      {
+        "name": "inspect-inactive-timing",
+        "sourceSha256": "25cf0cc61d9d99131a35a00e734d88cae2ada80a0a329c3810d6ba02aabd1cc1",
+        "surfaces": 6,
+        "objects": 15
+      },
+      {
+        "name": "inspect-selected-shape",
+        "sourceSha256": "80809041945912c92a29db5a5e14e0d3578261f7b01b4b03cf7348a658d69487",
+        "surfaces": 6,
+        "objects": 15
+      },
+      {
+        "name": "inspect-fallback-shape",
+        "sourceSha256": "22f0dcdd72976da824ce685cf33e50e359046443cbb9f5669ec339fe752a43d5",
+        "surfaces": 6,
+        "objects": 15
+      },
+      {
+        "name": "inspect-process-content",
+        "sourceSha256": "a75f8692e743738876ab1863a0d3426fa147d00e450322b4533ad417e2e113ad",
+        "surfaces": 6,
+        "objects": 15
+      },
+      {
+        "name": "inspect-ignored-subtree",
+        "sourceSha256": "a5d16dcc30419e51306e924310ab6584c5db9421f5bab3d2e9ea4785823b3fcf",
+        "surfaces": 6,
+        "objects": 15
+      },
+      {
+        "name": "inspect-structured-leaf",
+        "sourceSha256": "706e91d16c3da3d0174e4f41427a9d88ce40abcd31fa2f5ae4795cff5a6ec9be",
+        "surfaces": 6,
+        "objects": 15
+      },
+      {
+        "name": "inspect-main-alternate-root",
+        "sourceSha256": "958d6c11f882e19faa3fad3533989cc8b647cf86741d4dd1c0f436279c5dfcba",
+        "surfaces": 6,
+        "objects": 15
+      },
+      {
+        "name": "inspect-field",
+        "sourceSha256": "5b2dc4b781bf178ec056641dee00bded77eea3978eee2404646f99f742f8c30a",
+        "surfaces": 6,
+        "objects": 15
+      },
+      {
+        "name": "inspect-signature-origin",
+        "sourceSha256": "d63a28093f5e706482c5115145228de1ba61574e9148240d888a715b60721035",
+        "surfaces": 6,
+        "objects": 15
+      },
+      {
+        "name": "inspect-macro-preservation",
+        "sourceSha256": "07eb6f189783200d56623a26586e5240de8cbac8204f62e6bfe6330ab3d456aa",
+        "surfaces": 6,
+        "objects": 15
+      },
+      {
+        "name": "inspect-external-owned-roundtrip",
+        "sourceSha256": "0b6e3ca446b83fcc63403aaa0296c71620daa17baa349132910c1a5e22dbc392",
+        "surfaces": 6,
+        "objects": 17
+      }
+    ],
+    "scope": "Independent tree projection of successful owned PML corpus; not full MCE conformance or rendering."
+  },
+  "independentSourceVerification": {
+    "format": "musteroffice.pptx-source-independent/1",
+    "passed": 32,
+    "cases": [
+      {
+        "name": "edit-authored",
+        "result": "passed",
+        "sourceSha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+        "outputSha256": "0d5419789a0a1e0d38a6f904c86d1ea06246056af1d732d92e45d41ecb4f5589",
+        "noopByteIdentity": false,
+        "changedParts": 1,
+        "unchangedCompressedEntriesVerified": 20
+      },
+      {
+        "name": "noop-authored",
+        "result": "passed",
+        "sourceSha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+        "outputSha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+        "noopByteIdentity": true,
+        "changedParts": 0,
+        "unchangedCompressedEntriesVerified": 21
+      },
+      {
+        "name": "edit-unknown-content",
+        "result": "passed",
+        "sourceSha256": "59edc00b14b192c3f1f9ed811aa877f6e7c3e99bcb18cb110a6c66ce84be8531",
+        "outputSha256": "fc763aff5c8ee3f5e1e6c6a7152a1f695bb264c0949648e2eca9a2539ba02304",
+        "noopByteIdentity": false,
+        "changedParts": 1,
+        "unchangedCompressedEntriesVerified": 21
+      },
+      {
+        "name": "noop-unknown-content",
+        "result": "passed",
+        "sourceSha256": "59edc00b14b192c3f1f9ed811aa877f6e7c3e99bcb18cb110a6c66ce84be8531",
+        "outputSha256": "59edc00b14b192c3f1f9ed811aa877f6e7c3e99bcb18cb110a6c66ce84be8531",
+        "noopByteIdentity": true,
+        "changedParts": 0,
+        "unchangedCompressedEntriesVerified": 22
+      },
+      {
+        "name": "edit-utf16",
+        "result": "passed",
+        "sourceSha256": "0e79549b03170f7031ac151b5db4476107079f6fcb6f78493219a6d2a574f320",
+        "outputSha256": "ab9999a2955837f58c82b4fa2d550d2e8606c7f76a90205682ec1e082fb848ea",
+        "noopByteIdentity": false,
+        "changedParts": 1,
+        "unchangedCompressedEntriesVerified": 21
+      },
+      {
+        "name": "noop-utf16",
+        "result": "passed",
+        "sourceSha256": "0e79549b03170f7031ac151b5db4476107079f6fcb6f78493219a6d2a574f320",
+        "outputSha256": "0e79549b03170f7031ac151b5db4476107079f6fcb6f78493219a6d2a574f320",
+        "noopByteIdentity": true,
+        "changedParts": 0,
+        "unchangedCompressedEntriesVerified": 22
+      },
+      {
+        "name": "edit-main-must-understand",
+        "result": "passed",
+        "sourceSha256": "4066deda545ffa0b22a6f20b975a312db27b2c4549f256837ac3c0eb66865373",
+        "outputSha256": "b4552f72b3d3d3b746602ef38c17d9e96f5cb4f25f50c3f9631b62fd511e3b94",
+        "noopByteIdentity": false,
+        "changedParts": 1,
+        "unchangedCompressedEntriesVerified": 20
+      },
+      {
+        "name": "noop-main-must-understand",
+        "result": "passed",
+        "sourceSha256": "4066deda545ffa0b22a6f20b975a312db27b2c4549f256837ac3c0eb66865373",
+        "outputSha256": "4066deda545ffa0b22a6f20b975a312db27b2c4549f256837ac3c0eb66865373",
+        "noopByteIdentity": true,
+        "changedParts": 0,
+        "unchangedCompressedEntriesVerified": 21
+      },
+      {
+        "name": "noop-timing",
+        "result": "passed",
+        "sourceSha256": "0b85044571d242e982630783df8279f16e7a6118dbe605c7e355caecc54bb8d6",
+        "outputSha256": "0b85044571d242e982630783df8279f16e7a6118dbe605c7e355caecc54bb8d6",
+        "noopByteIdentity": true,
+        "changedParts": 0,
+        "unchangedCompressedEntriesVerified": 21
+      },
+      {
+        "name": "edit-alternate-content",
+        "result": "passed",
+        "sourceSha256": "07733975cdff2287a438e6e353acbed5020a0765b4954011611871fcb8d5587d",
+        "outputSha256": "108e829c08b432b86ebf3b0470aa5c4c7222c34bdf1c0d57efa6c6057b42a94b",
+        "noopByteIdentity": false,
+        "changedParts": 1,
+        "unchangedCompressedEntriesVerified": 20
+      },
+      {
+        "name": "noop-alternate-content",
+        "result": "passed",
+        "sourceSha256": "07733975cdff2287a438e6e353acbed5020a0765b4954011611871fcb8d5587d",
+        "outputSha256": "07733975cdff2287a438e6e353acbed5020a0765b4954011611871fcb8d5587d",
+        "noopByteIdentity": true,
+        "changedParts": 0,
+        "unchangedCompressedEntriesVerified": 21
+      },
+      {
+        "name": "noop-inactive-timing",
+        "result": "passed",
+        "sourceSha256": "25cf0cc61d9d99131a35a00e734d88cae2ada80a0a329c3810d6ba02aabd1cc1",
+        "outputSha256": "25cf0cc61d9d99131a35a00e734d88cae2ada80a0a329c3810d6ba02aabd1cc1",
+        "noopByteIdentity": true,
+        "changedParts": 0,
+        "unchangedCompressedEntriesVerified": 21
+      },
+      {
+        "name": "noop-selected-shape",
+        "result": "passed",
+        "sourceSha256": "80809041945912c92a29db5a5e14e0d3578261f7b01b4b03cf7348a658d69487",
+        "outputSha256": "80809041945912c92a29db5a5e14e0d3578261f7b01b4b03cf7348a658d69487",
+        "noopByteIdentity": true,
+        "changedParts": 0,
+        "unchangedCompressedEntriesVerified": 21
+      },
+      {
+        "name": "outside-selected-shape",
+        "result": "passed",
+        "sourceSha256": "80809041945912c92a29db5a5e14e0d3578261f7b01b4b03cf7348a658d69487",
+        "outputSha256": "34d06ddb58d1f2827c92531b67be5fcd291dc4d4388161125f7b648a910ac6cb",
+        "noopByteIdentity": false,
+        "changedParts": 1,
+        "unchangedCompressedEntriesVerified": 20
+      },
+      {
+        "name": "same-value-selected-shape",
+        "result": "passed",
+        "sourceSha256": "80809041945912c92a29db5a5e14e0d3578261f7b01b4b03cf7348a658d69487",
+        "outputSha256": "80809041945912c92a29db5a5e14e0d3578261f7b01b4b03cf7348a658d69487",
+        "noopByteIdentity": true,
+        "changedParts": 0,
+        "unchangedCompressedEntriesVerified": 21
+      },
+      {
+        "name": "noop-fallback-shape",
+        "result": "passed",
+        "sourceSha256": "22f0dcdd72976da824ce685cf33e50e359046443cbb9f5669ec339fe752a43d5",
+        "outputSha256": "22f0dcdd72976da824ce685cf33e50e359046443cbb9f5669ec339fe752a43d5",
+        "noopByteIdentity": true,
+        "changedParts": 0,
+        "unchangedCompressedEntriesVerified": 21
+      },
+      {
+        "name": "outside-fallback-shape",
+        "result": "passed",
+        "sourceSha256": "22f0dcdd72976da824ce685cf33e50e359046443cbb9f5669ec339fe752a43d5",
+        "outputSha256": "da272fcf92d7b4d248a89529c2e63be162f330a6ccb9ac364544b997c85633ee",
+        "noopByteIdentity": false,
+        "changedParts": 1,
+        "unchangedCompressedEntriesVerified": 20
+      },
+      {
+        "name": "same-value-fallback-shape",
+        "result": "passed",
+        "sourceSha256": "22f0dcdd72976da824ce685cf33e50e359046443cbb9f5669ec339fe752a43d5",
+        "outputSha256": "22f0dcdd72976da824ce685cf33e50e359046443cbb9f5669ec339fe752a43d5",
+        "noopByteIdentity": true,
+        "changedParts": 0,
+        "unchangedCompressedEntriesVerified": 21
+      },
+      {
+        "name": "edit-process-content",
+        "result": "passed",
+        "sourceSha256": "a75f8692e743738876ab1863a0d3426fa147d00e450322b4533ad417e2e113ad",
+        "outputSha256": "ef02b380e6cb963666e1cddfa9d4312697d84e6a67f408c86a2a0b3952b942a2",
+        "noopByteIdentity": false,
+        "changedParts": 1,
+        "unchangedCompressedEntriesVerified": 20
+      },
+      {
+        "name": "noop-process-content",
+        "result": "passed",
+        "sourceSha256": "a75f8692e743738876ab1863a0d3426fa147d00e450322b4533ad417e2e113ad",
+        "outputSha256": "a75f8692e743738876ab1863a0d3426fa147d00e450322b4533ad417e2e113ad",
+        "noopByteIdentity": true,
+        "changedParts": 0,
+        "unchangedCompressedEntriesVerified": 21
+      },
+      {
+        "name": "edit-ignored-subtree",
+        "result": "passed",
+        "sourceSha256": "a5d16dcc30419e51306e924310ab6584c5db9421f5bab3d2e9ea4785823b3fcf",
+        "outputSha256": "061e43beab7c8f539d983093964394785a28016e7183210a164587f5abec8ce4",
+        "noopByteIdentity": false,
+        "changedParts": 1,
+        "unchangedCompressedEntriesVerified": 20
+      },
+      {
+        "name": "noop-ignored-subtree",
+        "result": "passed",
+        "sourceSha256": "a5d16dcc30419e51306e924310ab6584c5db9421f5bab3d2e9ea4785823b3fcf",
+        "outputSha256": "a5d16dcc30419e51306e924310ab6584c5db9421f5bab3d2e9ea4785823b3fcf",
+        "noopByteIdentity": true,
+        "changedParts": 0,
+        "unchangedCompressedEntriesVerified": 21
+      },
+      {
+        "name": "noop-structured-leaf",
+        "result": "passed",
+        "sourceSha256": "706e91d16c3da3d0174e4f41427a9d88ce40abcd31fa2f5ae4795cff5a6ec9be",
+        "outputSha256": "706e91d16c3da3d0174e4f41427a9d88ce40abcd31fa2f5ae4795cff5a6ec9be",
+        "noopByteIdentity": true,
+        "changedParts": 0,
+        "unchangedCompressedEntriesVerified": 21
+      },
+      {
+        "name": "edit-main-alternate-root",
+        "result": "passed",
+        "sourceSha256": "958d6c11f882e19faa3fad3533989cc8b647cf86741d4dd1c0f436279c5dfcba",
+        "outputSha256": "482cc27a301cc961e8b5317912e729632f684d2caaa0eb1531bc76be57f0c625",
+        "noopByteIdentity": false,
+        "changedParts": 1,
+        "unchangedCompressedEntriesVerified": 20
+      },
+      {
+        "name": "noop-main-alternate-root",
+        "result": "passed",
+        "sourceSha256": "958d6c11f882e19faa3fad3533989cc8b647cf86741d4dd1c0f436279c5dfcba",
+        "outputSha256": "958d6c11f882e19faa3fad3533989cc8b647cf86741d4dd1c0f436279c5dfcba",
+        "noopByteIdentity": true,
+        "changedParts": 0,
+        "unchangedCompressedEntriesVerified": 21
+      },
+      {
+        "name": "noop-field",
+        "result": "passed",
+        "sourceSha256": "5b2dc4b781bf178ec056641dee00bded77eea3978eee2404646f99f742f8c30a",
+        "outputSha256": "5b2dc4b781bf178ec056641dee00bded77eea3978eee2404646f99f742f8c30a",
+        "noopByteIdentity": true,
+        "changedParts": 0,
+        "unchangedCompressedEntriesVerified": 21
+      },
+      {
+        "name": "noop-signature-origin",
+        "result": "passed",
+        "sourceSha256": "d63a28093f5e706482c5115145228de1ba61574e9148240d888a715b60721035",
+        "outputSha256": "d63a28093f5e706482c5115145228de1ba61574e9148240d888a715b60721035",
+        "noopByteIdentity": true,
+        "changedParts": 0,
+        "unchangedCompressedEntriesVerified": 22
+      },
+      {
+        "name": "edit-macro-preservation",
+        "result": "passed",
+        "sourceSha256": "07eb6f189783200d56623a26586e5240de8cbac8204f62e6bfe6330ab3d456aa",
+        "outputSha256": "b249e10e95f90bfaded6599339a83b17a217dd6e043537e8258f3e0e1efcdcc5",
+        "noopByteIdentity": false,
+        "changedParts": 1,
+        "unchangedCompressedEntriesVerified": 21
+      },
+      {
+        "name": "noop-macro-preservation",
+        "result": "passed",
+        "sourceSha256": "07eb6f189783200d56623a26586e5240de8cbac8204f62e6bfe6330ab3d456aa",
+        "outputSha256": "07eb6f189783200d56623a26586e5240de8cbac8204f62e6bfe6330ab3d456aa",
+        "noopByteIdentity": true,
+        "changedParts": 0,
+        "unchangedCompressedEntriesVerified": 22
+      },
+      {
+        "name": "same-value",
+        "result": "passed",
+        "sourceSha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+        "outputSha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+        "noopByteIdentity": true,
+        "changedParts": 0,
+        "unchangedCompressedEntriesVerified": 21
+      },
+      {
+        "name": "external-owned-roundtrip",
+        "result": "passed",
+        "sourceSha256": "0b6e3ca446b83fcc63403aaa0296c71620daa17baa349132910c1a5e22dbc392",
+        "outputSha256": "36eb645101ef6a10706ecc4db4c4352015f07f549a6d16e008bc07094678ee18",
+        "noopByteIdentity": false,
+        "changedParts": 1,
+        "unchangedCompressedEntriesVerified": 21
+      },
+      {
+        "name": "noop-external-owned-roundtrip",
+        "result": "passed",
+        "sourceSha256": "0b6e3ca446b83fcc63403aaa0296c71620daa17baa349132910c1a5e22dbc392",
+        "outputSha256": "0b6e3ca446b83fcc63403aaa0296c71620daa17baa349132910c1a5e22dbc392",
+        "noopByteIdentity": true,
+        "changedParts": 0,
+        "unchangedCompressedEntriesVerified": 22
+      }
+    ],
+    "scope": "Actual leaf edits and exact preservation; no complete model, layout, rendering or Office/WPS acceptance."
+  },
+  "sourceFixtureManifest": {
+    "format": "musteroffice.pptx-source-fixtures/1",
+    "scope": "owned synthetic source projection/preservation probes only",
+    "cases": [
+      {
+        "name": "authored",
+        "path": ".codex-work/pptx-mce-fixtures/authored.pptx",
+        "sha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+        "expect": {
+          "edit": "success",
+          "objects": 15
+        }
+      },
+      {
+        "name": "unknown-content",
+        "path": ".codex-work/pptx-mce-fixtures/unknown-content.pptx",
+        "sha256": "59edc00b14b192c3f1f9ed811aa877f6e7c3e99bcb18cb110a6c66ce84be8531",
+        "expect": {
+          "edit": "success",
+          "objects": 15
+        }
+      },
+      {
+        "name": "utf16",
+        "path": ".codex-work/pptx-mce-fixtures/utf16.pptx",
+        "sha256": "0e79549b03170f7031ac151b5db4476107079f6fcb6f78493219a6d2a574f320",
+        "expect": {
+          "edit": "success",
+          "objects": 15
+        }
+      },
+      {
+        "name": "duplicate-object-id",
+        "path": ".codex-work/pptx-mce-fixtures/duplicate-object-id.pptx",
+        "sha256": "132e94a5a4b3c4ff07ff160c36a9757a835a87254ab0647fcb41454abcff4569",
+        "expect": {
+          "error": "INPUT_INVALID"
+        }
+      },
+      {
+        "name": "duplicate-slide-id",
+        "path": ".codex-work/pptx-mce-fixtures/duplicate-slide-id.pptx",
+        "sha256": "354618e964cae6d115b095ccbf31b926e4c1192570d6f8e4c8346968fd068701",
+        "expect": {
+          "error": "INPUT_INVALID"
+        }
+      },
+      {
+        "name": "missing-slide-relationship",
+        "path": ".codex-work/pptx-mce-fixtures/missing-slide-relationship.pptx",
+        "sha256": "7f9700cbd79d0d6de69006e12d4baa05a1274f6f0dfaf465e0e66df68b5d5a10",
+        "expect": {
+          "error": "INPUT_INVALID"
+        }
+      },
+      {
+        "name": "main-must-understand",
+        "path": ".codex-work/pptx-mce-fixtures/main-must-understand.pptx",
+        "sha256": "4066deda545ffa0b22a6f20b975a312db27b2c4549f256837ac3c0eb66865373",
+        "expect": {
+          "edit": "success",
+          "objects": 15
+        }
+      },
+      {
+        "name": "main-unknown-must-understand",
+        "path": ".codex-work/pptx-mce-fixtures/main-unknown-must-understand.pptx",
+        "sha256": "5b58a3ed2f5069377fcedc92483ce457521a6194dfda65f5a1da217b9f58da43",
+        "expect": {
+          "error": "MAPPING_NOT_IMPLEMENTED"
+        }
+      },
+      {
+        "name": "timing",
+        "path": ".codex-work/pptx-mce-fixtures/timing.pptx",
+        "sha256": "0b85044571d242e982630783df8279f16e7a6118dbe605c7e355caecc54bb8d6",
+        "expect": {
+          "edit": "MAPPING_NOT_IMPLEMENTED",
+          "objects": 15,
+          "editable": false
+        }
+      },
+      {
+        "name": "alternate-content",
+        "path": ".codex-work/pptx-mce-fixtures/alternate-content.pptx",
+        "sha256": "07733975cdff2287a438e6e353acbed5020a0765b4954011611871fcb8d5587d",
+        "expect": {
+          "edit": "success",
+          "objects": 15,
+          "editable": true
+        }
+      },
+      {
+        "name": "inactive-timing",
+        "path": ".codex-work/pptx-mce-fixtures/inactive-timing.pptx",
+        "sha256": "25cf0cc61d9d99131a35a00e734d88cae2ada80a0a329c3810d6ba02aabd1cc1",
+        "expect": {
+          "edit": "MAPPING_NOT_IMPLEMENTED",
+          "objects": 15,
+          "editable": false
+        }
+      },
+      {
+        "name": "invalid-alternate-content",
+        "path": ".codex-work/pptx-mce-fixtures/invalid-alternate-content.pptx",
+        "sha256": "bd347737a9329c25fbbbde74ea686518fd9902f6832bd9c368cff0b3558741f5",
+        "expect": {
+          "error": "INPUT_INVALID"
+        }
+      },
+      {
+        "name": "selected-shape",
+        "path": ".codex-work/pptx-mce-fixtures/selected-shape.pptx",
+        "sha256": "80809041945912c92a29db5a5e14e0d3578261f7b01b4b03cf7348a658d69487",
+        "expect": {
+          "edit": "MAPPING_NOT_IMPLEMENTED",
+          "objects": 15,
+          "editable": false,
+          "constraint": "compatibilityBranch",
+          "outsideEdit": true
+        }
+      },
+      {
+        "name": "fallback-shape",
+        "path": ".codex-work/pptx-mce-fixtures/fallback-shape.pptx",
+        "sha256": "22f0dcdd72976da824ce685cf33e50e359046443cbb9f5669ec339fe752a43d5",
+        "expect": {
+          "edit": "MAPPING_NOT_IMPLEMENTED",
+          "objects": 15,
+          "editable": false,
+          "constraint": "compatibilityBranch",
+          "outsideEdit": true
+        }
+      },
+      {
+        "name": "process-content",
+        "path": ".codex-work/pptx-mce-fixtures/process-content.pptx",
+        "sha256": "a75f8692e743738876ab1863a0d3426fa147d00e450322b4533ad417e2e113ad",
+        "expect": {
+          "edit": "success",
+          "objects": 15,
+          "editable": true,
+          "constraint": null,
+          "outsideEdit": false
+        }
+      },
+      {
+        "name": "ignored-subtree",
+        "path": ".codex-work/pptx-mce-fixtures/ignored-subtree.pptx",
+        "sha256": "a5d16dcc30419e51306e924310ab6584c5db9421f5bab3d2e9ea4785823b3fcf",
+        "expect": {
+          "edit": "success",
+          "objects": 15,
+          "editable": true,
+          "constraint": null,
+          "outsideEdit": false
+        }
+      },
+      {
+        "name": "structured-leaf",
+        "path": ".codex-work/pptx-mce-fixtures/structured-leaf.pptx",
+        "sha256": "706e91d16c3da3d0174e4f41427a9d88ce40abcd31fa2f5ae4795cff5a6ec9be",
+        "expect": {
+          "edit": "MAPPING_NOT_IMPLEMENTED",
+          "objects": 15,
+          "editable": false,
+          "constraint": "structuredLeaf",
+          "outsideEdit": false
+        }
+      },
+      {
+        "name": "main-alternate-root",
+        "path": ".codex-work/pptx-mce-fixtures/main-alternate-root.pptx",
+        "sha256": "958d6c11f882e19faa3fad3533989cc8b647cf86741d4dd1c0f436279c5dfcba",
+        "expect": {
+          "edit": "success",
+          "objects": 15
+        }
+      },
+      {
+        "name": "field",
+        "path": ".codex-work/pptx-mce-fixtures/field.pptx",
+        "sha256": "5b2dc4b781bf178ec056641dee00bded77eea3978eee2404646f99f742f8c30a",
+        "expect": {
+          "edit": "SOURCE_CONFLICT",
+          "objects": 15,
+          "editable": false
+        }
+      },
+      {
+        "name": "signature-origin",
+        "path": ".codex-work/pptx-mce-fixtures/signature-origin.pptx",
+        "sha256": "d63a28093f5e706482c5115145228de1ba61574e9148240d888a715b60721035",
+        "expect": {
+          "edit": "PRESERVATION_CONFLICT",
+          "objects": 15,
+          "signature": true
+        }
+      },
+      {
+        "name": "macro-preservation",
+        "path": ".codex-work/pptx-mce-fixtures/macro-preservation.pptx",
+        "sha256": "07eb6f189783200d56623a26586e5240de8cbac8204f62e6bfe6330ab3d456aa",
+        "expect": {
+          "edit": "success",
+          "objects": 15
+        }
+      }
+    ]
+  },
+  "hostChecks": {
+    "noPartialOutputOnRejection": true,
+    "existingOutputPreserved": true,
+    "stagingCleanup": true
+  },
+  "editedLibreOfficeResavePdf": {
+    "application": "LibreOffice",
+    "version": "26.2.0.3",
+    "sourceSha256": "36eb645101ef6a10706ecc4db4c4352015f07f549a6d16e008bc07094678ee18",
+    "pdfSha256": "9ee4ff61f567e62355187cbfc2b4452a2f108f5e7d8ae6b6e6715128a8735ba0",
+    "pages": 2,
+    "editedChineseTextFound": true,
+    "extractionLibrary": "PyMuPDF 1.28.0 (development only)",
+    "scope": "External headless open/PDF export after modifying an owned LibreOffice-resaved deck with MCE transitions; not kernel rendering, visual equivalence, playback or Office/WPS acceptance."
+  },
+  "libreOfficeResaveInventory": {
+    "path": "docs/reviews/evidence/2026-09-24-libreoffice-source-inventory.json",
+    "sha256": "d1ef50cf26a5f2fcf3475c58a2511b28f91a43d1cfc0de82625ebcc5335437a6",
+    "beforeObjects": 15,
+    "afterObjects": 17,
+    "changes": {
+      "addedObjects": [
+        "PlaceHolder 1",
+        "PlaceHolder 2"
+      ],
+      "removedObjects": [],
+      "movedObjects": [
+        {
+          "name": "rule:layout",
+          "fromPart": "/ppt/slideLayouts/slideLayout2.xml",
+          "toPart": "/ppt/slideMasters/slideMaster2.xml"
+        }
+      ]
+    },
+    "textEditResult": "MCE fallback selected; title outside alternate branches edited, all non-target XML bytes preserved; reopened and exported to PDF by LibreOffice."
+  },
+  "dependencyDeclarations": {
+    "path": "docs/reviews/evidence/2026-09-24-pptx-export-dependencies.json",
+    "sha256": "c35b7a8b877e5f046c3720a63c824b34f8bff9fb96ebafce2e123a6db040d5a9",
+    "externalCargoGraphUnchanged": true
+  },
+  "sourceFiles": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "155ce005ed777e464da515d8008b7ad25c4b4b184fa072da93997483c8e0d7f9"
+    },
+    {
+      "path": "Cargo.lock",
+      "sha256": "ec0a2f90be30a0fa3b29657a95561e7455341eed1c2393b9f405b5c2514de778"
+    },
+    {
+      "path": "Cargo.toml",
+      "sha256": "6096e2dfe0c72ca61a036019d9738b7a4613b5702899bd3be912c0a4c5e17cde"
+    },
+    {
+      "path": "README.md",
+      "sha256": "5f228955f85bb530bbcfb131c774b1c0d77cf323bb67162b800764db8ccea669"
+    },
+    {
+      "path": "contracts/README.md",
+      "sha256": "76dfc1f588b00c162c430832a0397b03babfaffcfa644c198d98f6a27f559584"
+    },
+    {
+      "path": "contracts/generated/document.schema.json",
+      "sha256": "8e487d3f97750f84b000d5a15137002cf6941d9ea0aa1bb8ae67446b5cbaef71"
+    },
+    {
+      "path": "contracts/generated/kernel-request.schema.json",
+      "sha256": "964d8503079175b3c9a479a57cbf0f0778410c9eb26e997aea45382c0d344e72"
+    },
+    {
+      "path": "contracts/generated/kernel-response.schema.json",
+      "sha256": "3a34026903bf39c630ee76f0173158c6e51b283baffb2c3f95e49f86f43ccd5b"
+    },
+    {
+      "path": "contracts/generated/package-inspection.schema.json",
+      "sha256": "9b2484a0439ff591c8b5f5f34d46f08399baa0ece75fe5df597ff37226df1063"
+    },
+    {
+      "path": "contracts/generated/pptx-export-request.schema.json",
+      "sha256": "5ba52973e870eaa06142d76609676537f0f8b44c4ded4952428054996067bdda"
+    },
+    {
+      "path": "contracts/generated/pptx-source-response.schema.json",
+      "sha256": "8d2b5ab941ec06bde5418eaddb54b0d96e0e9932366c5de9ffe85461eaaf3529"
+    },
+    {
+      "path": "contracts/generated/pptx-text-edits.schema.json",
+      "sha256": "ef2542ed9e24f8986d3a3f980efddb0a4c8c15ff02f6e2e5a185de37ed4e7734"
+    },
+    {
+      "path": "contracts/generated/transaction-receipt.schema.json",
+      "sha256": "58e19899b71399b1bef09f2c9fe905705a526d327663a47e7a3fe7a1a78d40d6"
+    },
+    {
+      "path": "contracts/generated/transaction.schema.json",
+      "sha256": "bd85a94f89b916ea42c9ca40455e58bb89853c3bda97b04cc0c2250de20415d8"
+    },
+    {
+      "path": "contracts/generated/validation-report.schema.json",
+      "sha256": "8e49dd078ea8259cf8181cf8ebe4238299e525b683c99739355ed3efdade2dbf"
+    },
+    {
+      "path": "crates/mo-common/Cargo.toml",
+      "sha256": "7b447f65fd8567e7ca49008ab3b611135697c68ac06941cdcf2a1e898036b48b"
+    },
+    {
+      "path": "crates/mo-common/src/byte_length.rs",
+      "sha256": "8da492fba15038570411f1084930f8a85d0ad276cb33141cf014baebc2bf2a89"
+    },
+    {
+      "path": "crates/mo-common/src/canonical.rs",
+      "sha256": "315f823665b0e46c6c3858ea53d4e3a17897df191953c26c56ca995c0d862366"
+    },
+    {
+      "path": "crates/mo-common/src/ids.rs",
+      "sha256": "293c64d14b7f720dda1654fe0a31d9e79853e16b98c6da265f964ad111109587"
+    },
+    {
+      "path": "crates/mo-common/src/integer_json.rs",
+      "sha256": "8d93f32e52fae9bd30d49cf7e65e70416d4a94fa45b66bdda4ee84ca6c6a7906"
+    },
+    {
+      "path": "crates/mo-common/src/lib.rs",
+      "sha256": "9bb5974cc2d7a05ff1e5657686756740e0bf452c7bde4cd9a499c89992ac2258"
+    },
+    {
+      "path": "crates/mo-common/src/strict_json.rs",
+      "sha256": "943af803cddda071370f13f3cfcd2d244ecc655f04f27988e79634104b299198"
+    },
+    {
+      "path": "crates/mo-common/src/units.rs",
+      "sha256": "095e757c6572c99c9a65997fd41bbc495b4e2fdb6ed18912204b3745d2253f92"
+    },
+    {
+      "path": "crates/mo-common/tests/wire.rs",
+      "sha256": "29be69916d05c23a9918b5bf6c22f9ceea2500682629d58f862d56602869e922"
+    },
+    {
+      "path": "crates/mo-kernel-api/Cargo.toml",
+      "sha256": "db69d71a568a97f70249f1cbcf775e7917ae81d8fdbd2dca4538a029f601e1d4"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/lib.rs",
+      "sha256": "d52fb067b2aae8aba4ce75ca4aa7d056470aaee8a21a3fb422fdf7dd8dd23e3b"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/package.rs",
+      "sha256": "30e91e0da739a254422a52f05e1b78126d42b9bc5d5c5191a5e810f4d5b2992e"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/pptx.rs",
+      "sha256": "6a76c54660c37b5b86afe41e08c418c05e8f1b40655402913b195939b559fcf5"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/pptx_source.rs",
+      "sha256": "491a6d0387192e583ee939cfefce53a435bf7aebb93375807176f81fa33786fd"
+    },
+    {
+      "path": "crates/mo-kernel-api/tests/package.rs",
+      "sha256": "3f6ad4a8febafc624f522320175f0fd2fd2309c275a8db8ae567ddba0bb6d039"
+    },
+    {
+      "path": "crates/mo-kernel-api/tests/pptx_source.rs",
+      "sha256": "9537b885c62cdf615b719875fe4bbe117249752ae950d6582de8ce79c172d1b7"
+    },
+    {
+      "path": "crates/mo-opc/Cargo.toml",
+      "sha256": "fec7946008a6705d94add1465091e4df31e3ee376b20b6a7f4e0bc469483a48d"
+    },
+    {
+      "path": "crates/mo-opc/examples/package_fixture.rs",
+      "sha256": "1b7a54acc6203be8ad05257c6d607a24be863e0a6a1a6d7d0ff22eff30abce9a"
+    },
+    {
+      "path": "crates/mo-opc/src/lib.rs",
+      "sha256": "5996c601d5278bd1d9dccfdd68ec8e47caf766509c1e8d55846cfc9471fe4f72"
+    },
+    {
+      "path": "crates/mo-opc/src/metadata.rs",
+      "sha256": "98c3e747355b8c2e27ecc61befb1d930b994f834dbc0fee5885eee0dec60475c"
+    },
+    {
+      "path": "crates/mo-opc/src/names.rs",
+      "sha256": "6a4709a39b73b1f9621e11660914f827791cdd5874a08cb1ab9256eacc12297a"
+    },
+    {
+      "path": "crates/mo-opc/src/package.rs",
+      "sha256": "63005aa7d1940ca24fa9a5c2959ce6f2615804c4aaf4f5c05b4068b26cdf1c52"
+    },
+    {
+      "path": "crates/mo-opc/src/writer.rs",
+      "sha256": "6f7d4a21eb226b43eec146868e3fe5ad1589521576dfdc3ae71964af47122152"
+    },
+    {
+      "path": "crates/mo-opc/src/zip_structure.rs",
+      "sha256": "c5368a18c8821a676cb3822ef16f0e2fbe4a2ccc044bec5774a6367895608d8f"
+    },
+    {
+      "path": "crates/mo-opc/tests/packages.rs",
+      "sha256": "8534c213404aa685f2a8779cd383314f34be93661375bdc3c268f95511dc2f6e"
+    },
+    {
+      "path": "crates/mo-pptx/Cargo.toml",
+      "sha256": "7c98c7cb2ac7de394cdc34efa1cb6842654914a62fc71ca9e6e884cbf8ca016c"
+    },
+    {
+      "path": "crates/mo-pptx/src/definitions.rs",
+      "sha256": "8fd8e07dc870019eb94daf3145ec3d07c18e784962a429cbab9fa139b89a278e"
+    },
+    {
+      "path": "crates/mo-pptx/src/drawing.rs",
+      "sha256": "53980541eb584ea4704b125a4adacb7e7ce6bdcfca750eb63c3b6aae98b31b31"
+    },
+    {
+      "path": "crates/mo-pptx/src/lib.rs",
+      "sha256": "31c1cab03abf506b4f606606ef2ab0f47547e0adfb46663c715a2beca61f18e0"
+    },
+    {
+      "path": "crates/mo-pptx/src/source.rs",
+      "sha256": "60971adcaf5b5ea220700593f5cea96a11cd4d7f7505881ae0850a8f756875d9"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/compatibility.rs",
+      "sha256": "8de4ed4972e3b3fdf625e00cb6377027617fc46da0e427e7ec97542fc55f2521"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/edit.rs",
+      "sha256": "6c58f8ce0504ef597b431a9aada84a298963682c48aafd8860daf971723bddae"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/presentation.rs",
+      "sha256": "7326c830d6736cac48fea445127a81139bc7aa2ffab494b1e42059677488011f"
+    },
+    {
+      "path": "crates/mo-pptx/src/source/surface.rs",
+      "sha256": "9ec50453fe165884b94f4088aab0821eab45b994e369ff0c3222a4de4bbd758e"
+    },
+    {
+      "path": "crates/mo-pptx/src/text.rs",
+      "sha256": "e8f2d56b8a95c4117dea74b15227e4b49f30fe13b66595e8104a920f25dc0870"
+    },
+    {
+      "path": "crates/mo-pptx/src/write.rs",
+      "sha256": "376898cf1388b7f0dba7db73025bd81e051b14fa418b9f25967f3de33c97e112"
+    },
+    {
+      "path": "crates/mo-pptx/src/xml.rs",
+      "sha256": "ccb472b5a7a4f6192bbac1291e98339c69c437b5320993878fdfce36041ead0e"
+    },
+    {
+      "path": "crates/mo-pptx/tests/export.rs",
+      "sha256": "6b64207332cf3f04dc092fdf4003bab9bf2b6f57dedd08c3f4c5abecc12353e9"
+    },
+    {
+      "path": "crates/mo-pptx/tests/source.rs",
+      "sha256": "6b9d4adb64700375a789ae146d465c643acfbbcb5b90c6b8c941a92135999065"
+    },
+    {
+      "path": "crates/mo-pptx/tests/support/mod.rs",
+      "sha256": "646501d7163b93c2e67de75f9d4ebc028e05672071a43d084c0d1436a1533cac"
+    },
+    {
+      "path": "crates/mo-presentation-edit/Cargo.toml",
+      "sha256": "5da36bbe80bf21f605381fbd691088163f52a72f043e05d24406a61a1265e8a5"
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/apply.rs",
+      "sha256": "893df4face1215d0aa9b0f77ea8d593474b2e71394049f37842ec9a6dde2eff5"
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/lib.rs",
+      "sha256": "cfddd7f6cbe29c52f4667b5236e9a6a36b496092c8646f31d47d828fe08a059c"
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/operations.rs",
+      "sha256": "535a5abf1f01b2a2d4d0507ef7cbb428c9c80c8945b9d4cbfe04ecafc4aefbaa"
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/transaction.rs",
+      "sha256": "93131b514e51edf6bdff9912befd243e01be24a8555e0b020ade8a1120b65e9d"
+    },
+    {
+      "path": "crates/mo-presentation-edit/tests/support/mod.rs",
+      "sha256": "9f1ba64634cecf1ab2316c2d6d0f0a9510ccbcfb2767b90067e85decd3c90d9b"
+    },
+    {
+      "path": "crates/mo-presentation-edit/tests/transactions.rs",
+      "sha256": "73199270211b81a361c39a7983f2d8784db76b89cdcd521de512e8c34dee6859"
+    },
+    {
+      "path": "crates/mo-presentation-edit/tests/validation.rs",
+      "sha256": "ce57b22e3dadf7f00fa056055cf2e054ef0c7d9fc3c2d06a8aea2991605a70dd"
+    },
+    {
+      "path": "crates/mo-presentation-model/Cargo.toml",
+      "sha256": "686ad4d89c724137533c16c8417b58f830c494d18dbd140225141adc2b295632"
+    },
+    {
+      "path": "crates/mo-presentation-model/src/document.rs",
+      "sha256": "1a564f30eb48e3d58e589a7edeb24b36aa2dd79c1e09cd7f4af1498a96f99663"
+    },
+    {
+      "path": "crates/mo-presentation-model/src/geometry.rs",
+      "sha256": "c357689b0fd629252acf2da581879aa967e1ba1ae24f141ae5f0377fd79db69c"
+    },
+    {
+      "path": "crates/mo-presentation-model/src/lib.rs",
+      "sha256": "f9862c8e44fdf3a30484a2e4b7b7ed9fc77bf90c93bab8ba7822f2d189789fda"
+    },
+    {
+      "path": "crates/mo-presentation-model/src/styles.rs",
+      "sha256": "71df96a08e62e38eb06459de6297e580811bd917769da5a8317b068ed79f636a"
+    },
+    {
+      "path": "crates/mo-presentation-model/src/text.rs",
+      "sha256": "82805f8b393baefeaa6ae3b3d07c4e07f340d438f807f173869b9b9db787d76f"
+    },
+    {
+      "path": "crates/mo-presentation-model/src/validation.rs",
+      "sha256": "88f73437576a26004180b834dd8bb8b3715070f2e3e4bb49086db43e24d394c9"
+    },
+    {
+      "path": "crates/mo-wasm/Cargo.toml",
+      "sha256": "00821a6aa808354f00ef21bde9c25c8a133cfbd0c1f2e81b65e174b47bfb5baa"
+    },
+    {
+      "path": "crates/mo-wasm/src/lib.rs",
+      "sha256": "8aff95068b9f0e3184d964bea8e7b69dd24fec05d7d70c1283f42039457225e1"
+    },
+    {
+      "path": "crates/mo-xml/Cargo.toml",
+      "sha256": "853e966df02894265a57e178174f37bc3d47c391bdfc6f2f51073d7dfa1c9194"
+    },
+    {
+      "path": "crates/mo-xml/src/encoding.rs",
+      "sha256": "9e8d6ae2954cca572a9d11c1b62412307e4092f440a997cbeb032f372a629900"
+    },
+    {
+      "path": "crates/mo-xml/src/lib.rs",
+      "sha256": "09fe3e54791b663aa9db13339d6dfa38bacf46c902ee024b68c1cf1ad7e8d6e5"
+    },
+    {
+      "path": "crates/mo-xml/src/mce.rs",
+      "sha256": "52c3ba303e4af2a922a5d718c286ab1accf292b0ced9cca8be6520f4a74d9618"
+    },
+    {
+      "path": "crates/mo-xml/src/mce/rules.rs",
+      "sha256": "f913b6ed681688510ce9f824c4e144597c00fb610054b761c78425fa37ebaeba"
+    },
+    {
+      "path": "crates/mo-xml/src/mce/stream.rs",
+      "sha256": "2dce269a1f4f3712081af296be91f47dc1af3fc8e48b37a21ed8aab4d4ca7ef7"
+    },
+    {
+      "path": "crates/mo-xml/src/names.rs",
+      "sha256": "19e8f209182717b29edd54d32f82bd191606d2f3894f28a2b04d0d10b4b9ccaf"
+    },
+    {
+      "path": "crates/mo-xml/src/scan.rs",
+      "sha256": "5a8efe98f82cc495f9f7dc87356757017f548d9b891a824e717d320bbe05e578"
+    },
+    {
+      "path": "crates/mo-xml/src/text_edit.rs",
+      "sha256": "cce569187b97de226580986929ba131c68f487711efc2528a79cd705d147b3ed"
+    },
+    {
+      "path": "crates/mo-xml/tests/mce.rs",
+      "sha256": "9c63d77affacda92dee7814b3dafac8f9c1c56f135a512af5ff0f6fef153e518"
+    },
+    {
+      "path": "crates/mo-xml/tests/scanner.rs",
+      "sha256": "358087316fb66a77471722eb71acec10a1e0cf401a93cff68f9ba23e6c002c4d"
+    },
+    {
+      "path": "crates/mo-xml/tests/text_edit.rs",
+      "sha256": "064f5ce630d3dc1d2d9b48f0f6b222adffe7db06bc878899f8e25db88ddc69ed"
+    },
+    {
+      "path": "docs/implementation/dependencies.md",
+      "sha256": "1c82160ece5a1eba746d7792c259456ea7106afe3cabe29bed8427addf1308e2"
+    },
+    {
+      "path": "docs/implementation/development.md",
+      "sha256": "bd84f46c1b25563d4707dad15a03be43efe4387d3803c8da4d1d419f7e42e60a"
+    },
+    {
+      "path": "docs/implementation/mce.md",
+      "sha256": "eb78d74c6609612ba93389bee0ce3bd0a230d3f2eaa763b23a171142313355ad"
+    },
+    {
+      "path": "docs/implementation/package-io.md",
+      "sha256": "89ecabc6323252cc54341c52d779e97dec7fdb949ad30fcb6eeee0a4e2d1230d"
+    },
+    {
+      "path": "docs/implementation/pptx-export.md",
+      "sha256": "c5d3312f2f6d31d715c24e2ed3cad7850007134b7124bf1544a1f7fe84e3ea0c"
+    },
+    {
+      "path": "docs/implementation/pptx-source.md",
+      "sha256": "836c1fa4ea13cdcb3840ff852b0057d3c40eceb46c14f08fdcec486ae5a59ded"
+    },
+    {
+      "path": "docs/implementation/progress.md",
+      "sha256": "9ea4714e18ff13c72671f03d7be0ab0cce939a3e4e38c5ecdda518fb5017ff78"
+    },
+    {
+      "path": "fixtures/presentations/basic-shape.json",
+      "sha256": "3e4fe191a804814ff0f8061d5876c4b58285a255351460e0edf38040e16b9640"
+    },
+    {
+      "path": "fixtures/presentations/native-export/README.md",
+      "sha256": "399658ce0db8a74c746f0b70a8ebec3d50bd1954b5ddf0ae093e06f7fc8c3a02"
+    },
+    {
+      "path": "fixtures/presentations/native-export/request.json",
+      "sha256": "f20f7ac49f8958e3cf6b3185f407832f75b6c9d7e35d7695958af34948c85b1d"
+    },
+    {
+      "path": "fixtures/presentations/native-export/resources.bin",
+      "sha256": "3f76a9a5cae823017a1ddda66fe4cadf422e496bb0e6364ea5050dcac13afd82"
+    },
+    {
+      "path": "package.json",
+      "sha256": "43e4d64f2b50e58628471fd2f6be9b4eff8ff1720b6c2e0bbe3e2340290fd758"
+    },
+    {
+      "path": "packages/contracts/src/generated/document.ts",
+      "sha256": "f4ee579d71af46ef028dfb24ce2464542dd882d120ed50d4423f7cf3a104d693"
+    },
+    {
+      "path": "packages/contracts/src/generated/kernel-request.ts",
+      "sha256": "af7ff37be0f4547f1aed3d943eb8c470bde381205868002ed259690ccdf1897d"
+    },
+    {
+      "path": "packages/contracts/src/generated/kernel-response.ts",
+      "sha256": "312fca898a886903f24a2ee2ed16e5a07d50374f82c86d44b542281e82e10337"
+    },
+    {
+      "path": "packages/contracts/src/generated/package-inspection.ts",
+      "sha256": "a24e02f0dd751526794216e3e4bffdab048e7efbdffebb08e1cb616ecdb8ee3e"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-export-request.ts",
+      "sha256": "7e589d649106926f4c631b86e643c0241a0c2fbc455e66e5c6a944e6dbaef04e"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-source-response.ts",
+      "sha256": "373587181552a0c28a0156b6922cbd83f817e3c607cae2af947114eb077049d8"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-text-edits.ts",
+      "sha256": "0226877cda0170ffd2ecba5a8cc302c12b8b34115ea72a0beeae7a5425771246"
+    },
+    {
+      "path": "packages/contracts/src/generated/transaction-receipt.ts",
+      "sha256": "5c881ad297af3679dc5e359434d7c77f3fd38ef52d71db2af2d014000b03a242"
+    },
+    {
+      "path": "packages/contracts/src/generated/transaction.ts",
+      "sha256": "6ddd740a544fc13429a7a8126f789ea5c486be417b9dd9230249a5dbc834601b"
+    },
+    {
+      "path": "packages/contracts/src/generated/validation-report.ts",
+      "sha256": "eca1b9f9a2b84352469ab0841cf4e6842928f09beccc7222e32c6e3ed63cfb04"
+    },
+    {
+      "path": "packages/contracts/tests/wire.ts",
+      "sha256": "0f0092bfe458322bc26e2ec8b55781d444207f21b395a7a57c92acfb42c0c249"
+    },
+    {
+      "path": "packages/contracts/tsconfig.json",
+      "sha256": "4fcb6f03c7e852ccc08b854a1a26a8e7fc7312e561db7bcb7e20309d413deae2"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "b98030e955ae688a6490e8a6ef21007c18468596b851255439c37893b51f29c0"
+    },
+    {
+      "path": "rust-toolchain.toml",
+      "sha256": "060751f06f70853677293dd84de1c855fa72295c5dbc17ce811a3a57b75861c0"
+    },
+    {
+      "path": "tools/contracts/build-wasm-node.mjs",
+      "sha256": "958156b80bf75ebf4649e43ff5f1dca1d7fb483fb42d64810cfe74a9c1481660"
+    },
+    {
+      "path": "tools/contracts/generate-types.mjs",
+      "sha256": "3eadbd43ee77696b2590d8bd8346e92038ccb2ae9f352e8520aea38c1bb44c59"
+    },
+    {
+      "path": "tools/mo-cli/Cargo.toml",
+      "sha256": "b9e3761bb92f60910ef0b9e5bf937108d9d8c9f08b2fe419727d2cfe83fa80c2"
+    },
+    {
+      "path": "tools/mo-cli/src/main.rs",
+      "sha256": "7305a3f31dac86e11c118c084fb0cb2400fd8569db4a7ae4a4f37fd207fb1a76"
+    },
+    {
+      "path": "tools/mo-cli/src/pptx.rs",
+      "sha256": "400765e1d0918cdd4cf4d3a865b5d11a4bd65304454fc2120f6b1d8b0c182245"
+    },
+    {
+      "path": "tools/mo-contract-codegen/Cargo.toml",
+      "sha256": "cee1ac85df3e34b5f58f810c3d98735da788f46bc22de2abd4cffb4ee420078d"
+    },
+    {
+      "path": "tools/mo-contract-codegen/src/main.rs",
+      "sha256": "78a8616cbf8946b1fd368173420b077bdf8e23f30d98e8c8b610612ea584a85b"
+    },
+    {
+      "path": "tools/verification/contracts.py",
+      "sha256": "ecec847d0cdcd9b1e212a5447972611ea63648bb194e011ed10cd0dc34ffdcb2"
+    },
+    {
+      "path": "tools/verification/fetch-ecma-schemas.py",
+      "sha256": "77b7487f7ad2fa052e4e1f3987c60cc594a1491c09aa518cdf8a9f1f5cdb5d27"
+    },
+    {
+      "path": "tools/verification/mce_reference.py",
+      "sha256": "1a1ba5b58e724feb2c8da1fd0b84acd5ce3150e5b34ade128e92c9fd66b69c0a"
+    },
+    {
+      "path": "tools/verification/native-wasm-parity.mjs",
+      "sha256": "16ff25ff788d11e07dc0bcd5007e75b155f61c9348f50ea8328abad2ee049b26"
+    },
+    {
+      "path": "tools/verification/opc-fixtures.py",
+      "sha256": "6444c4fd8d5074d0c59a111b0ac2fc589cd9b12c31f264d56a1f4423b90b34a7"
+    },
+    {
+      "path": "tools/verification/opc-parity.mjs",
+      "sha256": "cdddcf4b160a507b73da23a9e5af33f99e806aec4685a4060e4a4cf02ec83d12"
+    },
+    {
+      "path": "tools/verification/pptx-fixture.py",
+      "sha256": "f098faf7dee35d53004bc311c513e5bcef27e2480777b98ddd0f70afb53dc0d7"
+    },
+    {
+      "path": "tools/verification/pptx-independent.py",
+      "sha256": "319f2879c923153fd2c3790df11b2546fad186f1b770146c702943d53168da7a"
+    },
+    {
+      "path": "tools/verification/pptx-parity.mjs",
+      "sha256": "e4f81bdf6d2926d07b386d1843cd90b1b167aff5746b9408c68c4ab04b3f08c9"
+    },
+    {
+      "path": "tools/verification/pptx-source-fixtures.py",
+      "sha256": "05f4d695bee7f30051616df473f899ac181c0a5984e08bef0a7869046f491b66"
+    },
+    {
+      "path": "tools/verification/pptx-source-independent.py",
+      "sha256": "e761dd6508e5499628a462becfb92c474f17f289d3d79c06d487ae9c89fb0bed"
+    },
+    {
+      "path": "tools/verification/pptx-source-parity.mjs",
+      "sha256": "e8d78ca9c5482017be39680db62d65993de876ef5768645b8f51e672f15db3d7"
+    }
+  ],
+  "limitations": [
+    "Only the fixed Transitional source profile is integrated. Supported namespace selection is not complete object semantic support.",
+    "No exhaustive MCE semantic validation inside wholly inactive/discarded descendants; underlying XML validation and budgets still apply.",
+    "Choice/Fallback-contained text stays read-only pending coordinated representations; structured physical leaves are not flattened.",
+    "Timing in any physical branch blocks surface text mutation until reference retargeting exists.",
+    "No layout/font engine, kernel rendering, playback or high-level resolved import.",
+    "LibreOffice previously added two objects, moved one and changed 60 geometry representations; not yet resolved or accepted as equivalent.",
+    "External PDF opening/text extraction does not establish visual/animation equivalence or Office/WPS editing acceptance.",
+    "No full-runtime performance/package-size or Musterwork integration acceptance; binary sizes describe this incomplete development build only."
+  ]
+}

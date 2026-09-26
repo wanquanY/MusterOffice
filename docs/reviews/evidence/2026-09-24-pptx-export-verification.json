@@ -1,0 +1,990 @@
+{
+  "format": "musteroffice.pptx-export-verification/1",
+  "scope": "Authored basic native PPTX export and development binary bridge only. No complete phase-one, source-preserving import, layout/rendering/playback, Office/WPS acceptance, performance, shipping package size or Musterwork replacement claim.",
+  "environment": {
+    "platform": "darwin",
+    "architecture": "arm64",
+    "node": "v23.5.0",
+    "python": "3.13.0",
+    "rust": "rustc 1.92.0 (ded5c06cf 2025-12-08)"
+  },
+  "checks": {
+    "rustTestsPassed": 54,
+    "rustTests": [
+      "non_finite_numbers_cannot_silently_become_null_in_a_digest",
+      "duplicate_keys_are_rejected_at_every_depth",
+      "identifiers_are_constrained_on_deserialization",
+      "coordinates_reject_lossy_or_noncanonical_inputs",
+      "byte_lengths_reject_numeric_loss_overflow_and_noncanonical_spellings",
+      "time_is_exact_at_extremes_and_ntsc_rate",
+      "canonical_bytes_have_stable_keys_and_preserve_text",
+      "rational_normalization_preserves_time",
+      "every_i64_coordinate_round_trips",
+      "every_u64_byte_length_round_trips",
+      "inspection_preserves_budget_and_cancellation_error_categories",
+      "zip_structure::tests::descriptors_accept_both_widths_and_signature_modes_including_crc_collision",
+      "part_names_and_relationship_resolution_follow_uri_scope",
+      "overlapping_local_entries_are_rejected_even_with_matching_names_and_crc",
+      "writer_validates_xml_bytes_and_resources_before_exposing_output",
+      "equivalent_names_traversal_and_header_disagreement_are_rejected",
+      "crc_truncation_extra_bytes_and_entry_count_mismatches_are_rejected",
+      "streamed_open_resolves_graph_and_retains_opaque_bytes",
+      "malformed_xml_in_a_regular_part_is_not_hidden_by_a_valid_zip",
+      "cancellation_and_declared_budgets_fail_before_unbounded_work",
+      "missing_targets_duplicate_relationship_ids_and_orphan_overrides_fail",
+      "duplicate_rewrite_does_not_replace_the_already_prepared_value",
+      "no_op_rewrite_is_byte_identical_and_mutation_preserves_unedited_parts",
+      "signed_packages_may_be_copied_but_not_silently_modified",
+      "deterministic_builder_uses_real_reopened_output_and_external_links_do_not_fetch",
+      "stream_resources_are_digest_bound_and_reads_stay_bounded",
+      "missing_resources_cancellation_and_output_budgets_are_enforced",
+      "invalid_or_unimplemented_mapping_never_silently_flattens_content",
+      "authored_deck_exports_deterministically_with_native_parts_and_relationships",
+      "ownership_cycle_cannot_be_committed",
+      "final_reference_validation_rolls_back_entire_transaction",
+      "out_of_range_splices_fail_without_mutating_content",
+      "failure_does_not_publish_earlier_operations",
+      "deletion_rejects_dependencies_unless_explicitly_cascaded",
+      "scalar_splice_preserves_emoji_combining_marks_and_run_identity",
+      "revision_conflicts_do_not_rebase_and_retries_use_original_receipt",
+      "unknown_fields_and_variants_are_rejected_at_wire_boundary",
+      "limit_errors_cannot_be_hidden_by_zero_diagnostic_budget",
+      "unbounded_host_depth_setting_still_rejects_cycles_without_overflow",
+      "connectors_cannot_target_another_slide",
+      "duplicate_and_orphaned_ownership_are_rejected",
+      "mismatched_resource_kind_and_missing_fonts_are_rejected",
+      "character_data_and_attributes_follow_xml_normalization_without_unicode_folding",
+      "namespaces_restore_after_nested_shadowing",
+      "prefixes_are_resolved_and_default_namespaces_do_not_apply_to_attributes",
+      "xml_declarations_are_checked_and_cancellation_is_observable",
+      "limits_bound_depth_elements_attributes_and_text",
+      "utf16_and_bom_utf8_are_supported_without_lossy_replacement",
+      "dtd_external_entities_and_malformed_documents_are_rejected",
+      "rewriting_honors_span_output_and_cancellation_budgets",
+      "empty_elements_expand_without_dropping_attributes_and_textless_comments_survive",
+      "preconditions_and_nested_elements_prevent_wrong_or_destructive_edits",
+      "text_rewrite_retains_unknown_attributes_siblings_comments_and_pi_bytes",
+      "utf8_and_utf16_encodings_boms_and_original_lexical_forms_are_preserved"
+    ],
+    "clippy": "passed --workspace --all-targets --locked --offline -- -D warnings",
+    "rustFormat": "passed cargo fmt --all --check",
+    "generatedSchemas": 8,
+    "schemaCheck": {
+      "positiveInputs": 11,
+      "negativeMutations": 9,
+      "documentResponses": 22,
+      "opcResponses": 21
+    },
+    "typescriptStrictCheck": "passed",
+    "nativeWasmCases": {
+      "document": 22,
+      "opc": 21,
+      "pptxExport": 17,
+      "total": 60
+    },
+    "successfulIndependentPptxReads": 7,
+    "xsdPartChecks": 70
+  },
+  "artifacts": {
+    "native": {
+      "path": "target/release/mo-cli",
+      "sha256": "bf01a1f1291e062cac23e5e9711840015ebbe76a5d1973819f1958220b073cdd",
+      "byteLength": 2639840
+    },
+    "wasm": {
+      "path": ".codex-work/wasm-node/mo_wasm_bg.wasm",
+      "sha256": "79b63ef877389f87fcbf911c5fc7106ecdbb4aded94b25f27939d69f2d1ae900",
+      "byteLength": 2089361
+    },
+    "samplePptx": {
+      "path": ".codex-work/pptx-parity-s6fhzJ/native-objects.pptx",
+      "sha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+      "byteLength": 10952,
+      "slides": 2,
+      "nativeObjects": 15,
+      "parts": 20
+    }
+  },
+  "pptxParity": {
+    "format": "musteroffice.pptx-export-parity/1",
+    "scope": "Current authored PresentationML subset and binary bridge. No full import, layout/rendering/playback, font embedding, Office/WPS acceptance or replacement claim.",
+    "platform": "darwin",
+    "architecture": "arm64",
+    "node": "v23.5.0",
+    "nativeSha256": "bf01a1f1291e062cac23e5e9711840015ebbe76a5d1973819f1958220b073cdd",
+    "wasmSha256": "79b63ef877389f87fcbf911c5fc7106ecdbb4aded94b25f27939d69f2d1ae900",
+    "artifactDirectory": ".codex-work/pptx-parity-s6fhzJ",
+    "passed": 17,
+    "cases": [
+      {
+        "name": "native-objects",
+        "status": "exported",
+        "sha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+        "byteLength": 10952,
+        "parts": 20
+      },
+      {
+        "name": "deterministic-replay",
+        "status": "exported",
+        "sha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+        "byteLength": 10952,
+        "parts": 20
+      },
+      {
+        "name": "rgba8-alpha",
+        "status": "exported",
+        "sha256": "e36ff4a1e2fcf9234c83e9d2d32ff3dc062813029780e7b91eb517c43a128778",
+        "byteLength": 10965,
+        "parts": 20
+      },
+      {
+        "name": "hidden-slide",
+        "status": "exported",
+        "sha256": "9dcd061ce33abafefbd0287fa450de4bdf76af69f85cafcb837a4a15af70ebc3",
+        "byteLength": 10953,
+        "parts": 20
+      },
+      {
+        "name": "rtl-paragraph",
+        "status": "exported",
+        "sha256": "f59f6e7f88bc90adf303e227aa53306d5a02f73652a9449eb14cafb691c31884",
+        "byteLength": 10961,
+        "parts": 20
+      },
+      {
+        "name": "vertical-ltr-body",
+        "status": "exported",
+        "sha256": "9085914549304ffc77eb668939b74fbe4c851bd57072f9e4dd7b810210a34735",
+        "byteLength": 10963,
+        "parts": 20
+      },
+      {
+        "name": "vertical-rtl-body",
+        "status": "exported",
+        "sha256": "c91d72d8f1daa95c69a61bc0c22c89418a55dfe6e853383e92a0958ab5e92b54",
+        "byteLength": 10958,
+        "parts": 20
+      },
+      {
+        "name": "missing-image",
+        "status": "rejected",
+        "code": "RESOURCE_REQUIRED"
+      },
+      {
+        "name": "resource-digest-mismatch",
+        "status": "rejected",
+        "code": "INPUT_INVALID"
+      },
+      {
+        "name": "range-outside-bundle",
+        "status": "rejected",
+        "code": "INPUT_INVALID"
+      },
+      {
+        "name": "duplicate-resource-binding",
+        "status": "rejected",
+        "code": "INPUT_INVALID"
+      },
+      {
+        "name": "noncanonical-resource-length",
+        "status": "rejected",
+        "code": "INPUT_INVALID"
+      },
+      {
+        "name": "missing-theme-color",
+        "status": "rejected",
+        "code": "INPUT_INVALID"
+      },
+      {
+        "name": "nonrepresentable-font-size",
+        "status": "rejected",
+        "code": "INPUT_INVALID"
+      },
+      {
+        "name": "unsupported-layout-style",
+        "status": "rejected",
+        "code": "MAPPING_NOT_IMPLEMENTED"
+      },
+      {
+        "name": "invalid-xml-character",
+        "status": "rejected",
+        "code": "INPUT_INVALID"
+      },
+      {
+        "name": "unsupported-decorative",
+        "status": "rejected",
+        "code": "MAPPING_NOT_IMPLEMENTED"
+      }
+    ],
+    "hostChecks": {
+      "actualStagedFileReopened": true,
+      "existingOutputPreserved": true,
+      "noPartialOutputOnRejection": true,
+      "stagingCleanup": true
+    }
+  },
+  "independentReads": [
+    {
+      "name": "native-objects",
+      "format": "musteroffice.pptx-independent/1",
+      "result": "passed",
+      "fileSha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+      "requestSha256": "b1d7a184e9b8df899e806f75cfd31865d5db617255b6d7e81ac35a7a54764464",
+      "externalRoundtrip": false,
+      "schemasChecked": [
+        "ppt/presentation.xml",
+        "ppt/presProps.xml",
+        "ppt/slideLayouts/slideLayout1.xml",
+        "ppt/slideLayouts/slideLayout2.xml",
+        "ppt/slideMasters/slideMaster1.xml",
+        "ppt/slideMasters/slideMaster2.xml",
+        "ppt/slides/slide1.xml",
+        "ppt/slides/slide2.xml",
+        "ppt/theme/theme1.xml",
+        "ppt/theme/theme2.xml"
+      ],
+      "slides": 2,
+      "nativeObjectsCompared": 15,
+      "checks": [
+        "ZIP CRC",
+        "native object kinds",
+        "order and group ownership",
+        "geometry and rotation",
+        "Unicode paragraph text",
+        "image content digest",
+        "connector references",
+        "geometry commands",
+        "explicit RGB fill and decoded 8-bit opacity",
+        "explicit text body size/color",
+        "writing mode and explicit paragraph direction",
+        "flips",
+        "hidden slides"
+      ],
+      "geometryToleranceEmu": 0,
+      "differences": [],
+      "scope": "Generated subset only. External geometry differences are reported without an invented acceptance tolerance. No Office/WPS, playback or kernel rendering claim."
+    },
+    {
+      "name": "deterministic-replay",
+      "format": "musteroffice.pptx-independent/1",
+      "result": "passed",
+      "fileSha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+      "requestSha256": "b1d7a184e9b8df899e806f75cfd31865d5db617255b6d7e81ac35a7a54764464",
+      "externalRoundtrip": false,
+      "schemasChecked": [
+        "ppt/presentation.xml",
+        "ppt/presProps.xml",
+        "ppt/slideLayouts/slideLayout1.xml",
+        "ppt/slideLayouts/slideLayout2.xml",
+        "ppt/slideMasters/slideMaster1.xml",
+        "ppt/slideMasters/slideMaster2.xml",
+        "ppt/slides/slide1.xml",
+        "ppt/slides/slide2.xml",
+        "ppt/theme/theme1.xml",
+        "ppt/theme/theme2.xml"
+      ],
+      "slides": 2,
+      "nativeObjectsCompared": 15,
+      "checks": [
+        "ZIP CRC",
+        "native object kinds",
+        "order and group ownership",
+        "geometry and rotation",
+        "Unicode paragraph text",
+        "image content digest",
+        "connector references",
+        "geometry commands",
+        "explicit RGB fill and decoded 8-bit opacity",
+        "explicit text body size/color",
+        "writing mode and explicit paragraph direction",
+        "flips",
+        "hidden slides"
+      ],
+      "geometryToleranceEmu": 0,
+      "differences": [],
+      "scope": "Generated subset only. External geometry differences are reported without an invented acceptance tolerance. No Office/WPS, playback or kernel rendering claim."
+    },
+    {
+      "name": "rgba8-alpha",
+      "format": "musteroffice.pptx-independent/1",
+      "result": "passed",
+      "fileSha256": "e36ff4a1e2fcf9234c83e9d2d32ff3dc062813029780e7b91eb517c43a128778",
+      "requestSha256": "110952faf08a4657d972a6ba9bd5fec9abf98bb114f92259dde1a4cc9451d1a3",
+      "externalRoundtrip": false,
+      "schemasChecked": [
+        "ppt/presentation.xml",
+        "ppt/presProps.xml",
+        "ppt/slideLayouts/slideLayout1.xml",
+        "ppt/slideLayouts/slideLayout2.xml",
+        "ppt/slideMasters/slideMaster1.xml",
+        "ppt/slideMasters/slideMaster2.xml",
+        "ppt/slides/slide1.xml",
+        "ppt/slides/slide2.xml",
+        "ppt/theme/theme1.xml",
+        "ppt/theme/theme2.xml"
+      ],
+      "slides": 2,
+      "nativeObjectsCompared": 15,
+      "checks": [
+        "ZIP CRC",
+        "native object kinds",
+        "order and group ownership",
+        "geometry and rotation",
+        "Unicode paragraph text",
+        "image content digest",
+        "connector references",
+        "geometry commands",
+        "explicit RGB fill and decoded 8-bit opacity",
+        "explicit text body size/color",
+        "writing mode and explicit paragraph direction",
+        "flips",
+        "hidden slides"
+      ],
+      "geometryToleranceEmu": 0,
+      "differences": [],
+      "scope": "Generated subset only. External geometry differences are reported without an invented acceptance tolerance. No Office/WPS, playback or kernel rendering claim."
+    },
+    {
+      "name": "hidden-slide",
+      "format": "musteroffice.pptx-independent/1",
+      "result": "passed",
+      "fileSha256": "9dcd061ce33abafefbd0287fa450de4bdf76af69f85cafcb837a4a15af70ebc3",
+      "requestSha256": "64d79c7e557a1a89f8d8c10b20c350f7af44d6222ec6fa2f77dda6faf011aeef",
+      "externalRoundtrip": false,
+      "schemasChecked": [
+        "ppt/presentation.xml",
+        "ppt/presProps.xml",
+        "ppt/slideLayouts/slideLayout1.xml",
+        "ppt/slideLayouts/slideLayout2.xml",
+        "ppt/slideMasters/slideMaster1.xml",
+        "ppt/slideMasters/slideMaster2.xml",
+        "ppt/slides/slide1.xml",
+        "ppt/slides/slide2.xml",
+        "ppt/theme/theme1.xml",
+        "ppt/theme/theme2.xml"
+      ],
+      "slides": 2,
+      "nativeObjectsCompared": 15,
+      "checks": [
+        "ZIP CRC",
+        "native object kinds",
+        "order and group ownership",
+        "geometry and rotation",
+        "Unicode paragraph text",
+        "image content digest",
+        "connector references",
+        "geometry commands",
+        "explicit RGB fill and decoded 8-bit opacity",
+        "explicit text body size/color",
+        "writing mode and explicit paragraph direction",
+        "flips",
+        "hidden slides"
+      ],
+      "geometryToleranceEmu": 0,
+      "differences": [],
+      "scope": "Generated subset only. External geometry differences are reported without an invented acceptance tolerance. No Office/WPS, playback or kernel rendering claim."
+    },
+    {
+      "name": "rtl-paragraph",
+      "format": "musteroffice.pptx-independent/1",
+      "result": "passed",
+      "fileSha256": "f59f6e7f88bc90adf303e227aa53306d5a02f73652a9449eb14cafb691c31884",
+      "requestSha256": "4a2e29902b67079eec28b1529fd15ecb056e60c789b874a51f284380f0cc8b18",
+      "externalRoundtrip": false,
+      "schemasChecked": [
+        "ppt/presentation.xml",
+        "ppt/presProps.xml",
+        "ppt/slideLayouts/slideLayout1.xml",
+        "ppt/slideLayouts/slideLayout2.xml",
+        "ppt/slideMasters/slideMaster1.xml",
+        "ppt/slideMasters/slideMaster2.xml",
+        "ppt/slides/slide1.xml",
+        "ppt/slides/slide2.xml",
+        "ppt/theme/theme1.xml",
+        "ppt/theme/theme2.xml"
+      ],
+      "slides": 2,
+      "nativeObjectsCompared": 15,
+      "checks": [
+        "ZIP CRC",
+        "native object kinds",
+        "order and group ownership",
+        "geometry and rotation",
+        "Unicode paragraph text",
+        "image content digest",
+        "connector references",
+        "geometry commands",
+        "explicit RGB fill and decoded 8-bit opacity",
+        "explicit text body size/color",
+        "writing mode and explicit paragraph direction",
+        "flips",
+        "hidden slides"
+      ],
+      "geometryToleranceEmu": 0,
+      "differences": [],
+      "scope": "Generated subset only. External geometry differences are reported without an invented acceptance tolerance. No Office/WPS, playback or kernel rendering claim."
+    },
+    {
+      "name": "vertical-ltr-body",
+      "format": "musteroffice.pptx-independent/1",
+      "result": "passed",
+      "fileSha256": "9085914549304ffc77eb668939b74fbe4c851bd57072f9e4dd7b810210a34735",
+      "requestSha256": "5ae8522f558597248348b242866a826c4be226cef41dc64913c4412add142f75",
+      "externalRoundtrip": false,
+      "schemasChecked": [
+        "ppt/presentation.xml",
+        "ppt/presProps.xml",
+        "ppt/slideLayouts/slideLayout1.xml",
+        "ppt/slideLayouts/slideLayout2.xml",
+        "ppt/slideMasters/slideMaster1.xml",
+        "ppt/slideMasters/slideMaster2.xml",
+        "ppt/slides/slide1.xml",
+        "ppt/slides/slide2.xml",
+        "ppt/theme/theme1.xml",
+        "ppt/theme/theme2.xml"
+      ],
+      "slides": 2,
+      "nativeObjectsCompared": 15,
+      "checks": [
+        "ZIP CRC",
+        "native object kinds",
+        "order and group ownership",
+        "geometry and rotation",
+        "Unicode paragraph text",
+        "image content digest",
+        "connector references",
+        "geometry commands",
+        "explicit RGB fill and decoded 8-bit opacity",
+        "explicit text body size/color",
+        "writing mode and explicit paragraph direction",
+        "flips",
+        "hidden slides"
+      ],
+      "geometryToleranceEmu": 0,
+      "differences": [],
+      "scope": "Generated subset only. External geometry differences are reported without an invented acceptance tolerance. No Office/WPS, playback or kernel rendering claim."
+    },
+    {
+      "name": "vertical-rtl-body",
+      "format": "musteroffice.pptx-independent/1",
+      "result": "passed",
+      "fileSha256": "c91d72d8f1daa95c69a61bc0c22c89418a55dfe6e853383e92a0958ab5e92b54",
+      "requestSha256": "c9daef550407ee7b5a72fa399625968ceda31594e76caee6e3d26e58fb853f77",
+      "externalRoundtrip": false,
+      "schemasChecked": [
+        "ppt/presentation.xml",
+        "ppt/presProps.xml",
+        "ppt/slideLayouts/slideLayout1.xml",
+        "ppt/slideLayouts/slideLayout2.xml",
+        "ppt/slideMasters/slideMaster1.xml",
+        "ppt/slideMasters/slideMaster2.xml",
+        "ppt/slides/slide1.xml",
+        "ppt/slides/slide2.xml",
+        "ppt/theme/theme1.xml",
+        "ppt/theme/theme2.xml"
+      ],
+      "slides": 2,
+      "nativeObjectsCompared": 15,
+      "checks": [
+        "ZIP CRC",
+        "native object kinds",
+        "order and group ownership",
+        "geometry and rotation",
+        "Unicode paragraph text",
+        "image content digest",
+        "connector references",
+        "geometry commands",
+        "explicit RGB fill and decoded 8-bit opacity",
+        "explicit text body size/color",
+        "writing mode and explicit paragraph direction",
+        "flips",
+        "hidden slides"
+      ],
+      "geometryToleranceEmu": 0,
+      "differences": [],
+      "scope": "Generated subset only. External geometry differences are reported without an invented acceptance tolerance. No Office/WPS, playback or kernel rendering claim."
+    }
+  ],
+  "libreOffice": {
+    "version": "26.2.0.3",
+    "sourcePptxSha256": "779f732d9704e24f9f373f1e814d3e5759ac652ee46d5131187dfdc87978b93e",
+    "headlessOpenAndPdfExport": "succeeded",
+    "pdf": {
+      "sha256": "7ee4bd16969c4f9506a59f9a8613bba0110be031f72ffad019708139ce3d4476",
+      "byteLength": 75913,
+      "pages": 2,
+      "pageSizesPoints": [
+        [
+          960.0094604492188,
+          540.0
+        ],
+        [
+          960.0094604492188,
+          540.0
+        ]
+      ],
+      "renderer": "LibreOffice, not MusterOffice"
+    },
+    "headlessPptxResave": "succeeded",
+    "resavedPptxSha256": "0b6e3ca446b83fcc63403aaa0296c71620daa17baa349132910c1a5e22dbc392",
+    "independentResult": "differences",
+    "geometryRepresentationDifferences": 60,
+    "worldSpaceVisualAndEditingEquivalence": "not yet evaluated",
+    "differenceRecord": "docs/reviews/evidence/2026-09-24-libreoffice-roundtrip-differences.json",
+    "differenceRecordSha256": "b4d7934741b25098cbc1f4833ea03dadf74ee3bf75cca4baeda0ab6b342c1f8a",
+    "fontPolicy": "Reference-only; external application font resolution not frozen or measured"
+  },
+  "wps": {
+    "installedVersion": "12.1.22553",
+    "tested": false,
+    "reason": "GUI automation daemon missing Accessibility and Screen Recording permissions; daemon stopped before WPS app interaction"
+  },
+  "microsoftOffice": {
+    "tested": false
+  },
+  "schemaInputs": {
+    "receipt": "docs/reviews/evidence/2026-09-24-ecma-schema-inputs.json",
+    "sha256": "4abdb8b4eadada4b2c223d9543922946b70b4c0604d2974532528a9ef04c8766"
+  },
+  "dependencies": {
+    "snapshot": "docs/reviews/evidence/2026-09-24-pptx-export-dependencies.json",
+    "sha256": "c35b7a8b877e5f046c3720a63c824b34f8bff9fb96ebafce2e123a6db040d5a9"
+  },
+  "sourceFiles": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "155ce005ed777e464da515d8008b7ad25c4b4b184fa072da93997483c8e0d7f9"
+    },
+    {
+      "path": "Cargo.lock",
+      "sha256": "ec0a2f90be30a0fa3b29657a95561e7455341eed1c2393b9f405b5c2514de778"
+    },
+    {
+      "path": "Cargo.toml",
+      "sha256": "6096e2dfe0c72ca61a036019d9738b7a4613b5702899bd3be912c0a4c5e17cde"
+    },
+    {
+      "path": "README.md",
+      "sha256": "a3bb28567006e4213c67a992ec66121f541297a2ed2b55a847d25d4a488045ec"
+    },
+    {
+      "path": "contracts/README.md",
+      "sha256": "fbcc963c683a2a89b3ef03c11b6eef15358bee2b8410310a3f19345343938d6f"
+    },
+    {
+      "path": "contracts/generated/document.schema.json",
+      "sha256": "8e487d3f97750f84b000d5a15137002cf6941d9ea0aa1bb8ae67446b5cbaef71"
+    },
+    {
+      "path": "contracts/generated/kernel-request.schema.json",
+      "sha256": "964d8503079175b3c9a479a57cbf0f0778410c9eb26e997aea45382c0d344e72"
+    },
+    {
+      "path": "contracts/generated/kernel-response.schema.json",
+      "sha256": "3a34026903bf39c630ee76f0173158c6e51b283baffb2c3f95e49f86f43ccd5b"
+    },
+    {
+      "path": "contracts/generated/package-inspection.schema.json",
+      "sha256": "9b2484a0439ff591c8b5f5f34d46f08399baa0ece75fe5df597ff37226df1063"
+    },
+    {
+      "path": "contracts/generated/pptx-export-request.schema.json",
+      "sha256": "5ba52973e870eaa06142d76609676537f0f8b44c4ded4952428054996067bdda"
+    },
+    {
+      "path": "contracts/generated/transaction-receipt.schema.json",
+      "sha256": "58e19899b71399b1bef09f2c9fe905705a526d327663a47e7a3fe7a1a78d40d6"
+    },
+    {
+      "path": "contracts/generated/transaction.schema.json",
+      "sha256": "bd85a94f89b916ea42c9ca40455e58bb89853c3bda97b04cc0c2250de20415d8"
+    },
+    {
+      "path": "contracts/generated/validation-report.schema.json",
+      "sha256": "8e49dd078ea8259cf8181cf8ebe4238299e525b683c99739355ed3efdade2dbf"
+    },
+    {
+      "path": "crates/mo-common/Cargo.toml",
+      "sha256": "7b447f65fd8567e7ca49008ab3b611135697c68ac06941cdcf2a1e898036b48b"
+    },
+    {
+      "path": "crates/mo-common/src/byte_length.rs",
+      "sha256": "8da492fba15038570411f1084930f8a85d0ad276cb33141cf014baebc2bf2a89"
+    },
+    {
+      "path": "crates/mo-common/src/canonical.rs",
+      "sha256": "315f823665b0e46c6c3858ea53d4e3a17897df191953c26c56ca995c0d862366"
+    },
+    {
+      "path": "crates/mo-common/src/ids.rs",
+      "sha256": "293c64d14b7f720dda1654fe0a31d9e79853e16b98c6da265f964ad111109587"
+    },
+    {
+      "path": "crates/mo-common/src/integer_json.rs",
+      "sha256": "8d93f32e52fae9bd30d49cf7e65e70416d4a94fa45b66bdda4ee84ca6c6a7906"
+    },
+    {
+      "path": "crates/mo-common/src/lib.rs",
+      "sha256": "9bb5974cc2d7a05ff1e5657686756740e0bf452c7bde4cd9a499c89992ac2258"
+    },
+    {
+      "path": "crates/mo-common/src/strict_json.rs",
+      "sha256": "943af803cddda071370f13f3cfcd2d244ecc655f04f27988e79634104b299198"
+    },
+    {
+      "path": "crates/mo-common/src/units.rs",
+      "sha256": "095e757c6572c99c9a65997fd41bbc495b4e2fdb6ed18912204b3745d2253f92"
+    },
+    {
+      "path": "crates/mo-common/tests/wire.rs",
+      "sha256": "29be69916d05c23a9918b5bf6c22f9ceea2500682629d58f862d56602869e922"
+    },
+    {
+      "path": "crates/mo-kernel-api/Cargo.toml",
+      "sha256": "db69d71a568a97f70249f1cbcf775e7917ae81d8fdbd2dca4538a029f601e1d4"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/lib.rs",
+      "sha256": "c417a5e2299c714071c1b3552cc61eaada6e87935846f92784e35a40d717c443"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/package.rs",
+      "sha256": "30e91e0da739a254422a52f05e1b78126d42b9bc5d5c5191a5e810f4d5b2992e"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/pptx.rs",
+      "sha256": "c986cf9a66883fa0c51d9baa1d6af6f0de701d64ea1056fb6ed061ac7ffa5afc"
+    },
+    {
+      "path": "crates/mo-kernel-api/tests/package.rs",
+      "sha256": "3f6ad4a8febafc624f522320175f0fd2fd2309c275a8db8ae567ddba0bb6d039"
+    },
+    {
+      "path": "crates/mo-opc/Cargo.toml",
+      "sha256": "fec7946008a6705d94add1465091e4df31e3ee376b20b6a7f4e0bc469483a48d"
+    },
+    {
+      "path": "crates/mo-opc/examples/package_fixture.rs",
+      "sha256": "1b7a54acc6203be8ad05257c6d607a24be863e0a6a1a6d7d0ff22eff30abce9a"
+    },
+    {
+      "path": "crates/mo-opc/src/lib.rs",
+      "sha256": "5996c601d5278bd1d9dccfdd68ec8e47caf766509c1e8d55846cfc9471fe4f72"
+    },
+    {
+      "path": "crates/mo-opc/src/metadata.rs",
+      "sha256": "98c3e747355b8c2e27ecc61befb1d930b994f834dbc0fee5885eee0dec60475c"
+    },
+    {
+      "path": "crates/mo-opc/src/names.rs",
+      "sha256": "6a4709a39b73b1f9621e11660914f827791cdd5874a08cb1ab9256eacc12297a"
+    },
+    {
+      "path": "crates/mo-opc/src/package.rs",
+      "sha256": "63005aa7d1940ca24fa9a5c2959ce6f2615804c4aaf4f5c05b4068b26cdf1c52"
+    },
+    {
+      "path": "crates/mo-opc/src/writer.rs",
+      "sha256": "6f7d4a21eb226b43eec146868e3fe5ad1589521576dfdc3ae71964af47122152"
+    },
+    {
+      "path": "crates/mo-opc/src/zip_structure.rs",
+      "sha256": "c5368a18c8821a676cb3822ef16f0e2fbe4a2ccc044bec5774a6367895608d8f"
+    },
+    {
+      "path": "crates/mo-opc/tests/packages.rs",
+      "sha256": "8534c213404aa685f2a8779cd383314f34be93661375bdc3c268f95511dc2f6e"
+    },
+    {
+      "path": "crates/mo-pptx/Cargo.toml",
+      "sha256": "7c98c7cb2ac7de394cdc34efa1cb6842654914a62fc71ca9e6e884cbf8ca016c"
+    },
+    {
+      "path": "crates/mo-pptx/src/definitions.rs",
+      "sha256": "8fd8e07dc870019eb94daf3145ec3d07c18e784962a429cbab9fa139b89a278e"
+    },
+    {
+      "path": "crates/mo-pptx/src/drawing.rs",
+      "sha256": "53980541eb584ea4704b125a4adacb7e7ce6bdcfca750eb63c3b6aae98b31b31"
+    },
+    {
+      "path": "crates/mo-pptx/src/lib.rs",
+      "sha256": "43f4dfc5d32b4931b079650f5ba3404cdaf7472e4c206d6d1613441ae6b9eb9b"
+    },
+    {
+      "path": "crates/mo-pptx/src/text.rs",
+      "sha256": "e8f2d56b8a95c4117dea74b15227e4b49f30fe13b66595e8104a920f25dc0870"
+    },
+    {
+      "path": "crates/mo-pptx/src/write.rs",
+      "sha256": "376898cf1388b7f0dba7db73025bd81e051b14fa418b9f25967f3de33c97e112"
+    },
+    {
+      "path": "crates/mo-pptx/src/xml.rs",
+      "sha256": "ccb472b5a7a4f6192bbac1291e98339c69c437b5320993878fdfce36041ead0e"
+    },
+    {
+      "path": "crates/mo-pptx/tests/export.rs",
+      "sha256": "1bb53d58bc8d3fad86ae952ecca8c47f3495a016fb6d65186196e865038c2354"
+    },
+    {
+      "path": "crates/mo-presentation-edit/Cargo.toml",
+      "sha256": "5da36bbe80bf21f605381fbd691088163f52a72f043e05d24406a61a1265e8a5"
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/apply.rs",
+      "sha256": "893df4face1215d0aa9b0f77ea8d593474b2e71394049f37842ec9a6dde2eff5"
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/lib.rs",
+      "sha256": "cfddd7f6cbe29c52f4667b5236e9a6a36b496092c8646f31d47d828fe08a059c"
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/operations.rs",
+      "sha256": "535a5abf1f01b2a2d4d0507ef7cbb428c9c80c8945b9d4cbfe04ecafc4aefbaa"
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/transaction.rs",
+      "sha256": "93131b514e51edf6bdff9912befd243e01be24a8555e0b020ade8a1120b65e9d"
+    },
+    {
+      "path": "crates/mo-presentation-edit/tests/support/mod.rs",
+      "sha256": "9f1ba64634cecf1ab2316c2d6d0f0a9510ccbcfb2767b90067e85decd3c90d9b"
+    },
+    {
+      "path": "crates/mo-presentation-edit/tests/transactions.rs",
+      "sha256": "73199270211b81a361c39a7983f2d8784db76b89cdcd521de512e8c34dee6859"
+    },
+    {
+      "path": "crates/mo-presentation-edit/tests/validation.rs",
+      "sha256": "ce57b22e3dadf7f00fa056055cf2e054ef0c7d9fc3c2d06a8aea2991605a70dd"
+    },
+    {
+      "path": "crates/mo-presentation-model/Cargo.toml",
+      "sha256": "686ad4d89c724137533c16c8417b58f830c494d18dbd140225141adc2b295632"
+    },
+    {
+      "path": "crates/mo-presentation-model/src/document.rs",
+      "sha256": "1a564f30eb48e3d58e589a7edeb24b36aa2dd79c1e09cd7f4af1498a96f99663"
+    },
+    {
+      "path": "crates/mo-presentation-model/src/geometry.rs",
+      "sha256": "c357689b0fd629252acf2da581879aa967e1ba1ae24f141ae5f0377fd79db69c"
+    },
+    {
+      "path": "crates/mo-presentation-model/src/lib.rs",
+      "sha256": "f9862c8e44fdf3a30484a2e4b7b7ed9fc77bf90c93bab8ba7822f2d189789fda"
+    },
+    {
+      "path": "crates/mo-presentation-model/src/styles.rs",
+      "sha256": "71df96a08e62e38eb06459de6297e580811bd917769da5a8317b068ed79f636a"
+    },
+    {
+      "path": "crates/mo-presentation-model/src/text.rs",
+      "sha256": "82805f8b393baefeaa6ae3b3d07c4e07f340d438f807f173869b9b9db787d76f"
+    },
+    {
+      "path": "crates/mo-presentation-model/src/validation.rs",
+      "sha256": "88f73437576a26004180b834dd8bb8b3715070f2e3e4bb49086db43e24d394c9"
+    },
+    {
+      "path": "crates/mo-wasm/Cargo.toml",
+      "sha256": "00821a6aa808354f00ef21bde9c25c8a133cfbd0c1f2e81b65e174b47bfb5baa"
+    },
+    {
+      "path": "crates/mo-wasm/src/lib.rs",
+      "sha256": "e2d6a596af7aedf7bc86631b56f1dc862c5d4e23c59399dff143cab5129269e2"
+    },
+    {
+      "path": "crates/mo-xml/Cargo.toml",
+      "sha256": "853e966df02894265a57e178174f37bc3d47c391bdfc6f2f51073d7dfa1c9194"
+    },
+    {
+      "path": "crates/mo-xml/src/encoding.rs",
+      "sha256": "9e8d6ae2954cca572a9d11c1b62412307e4092f440a997cbeb032f372a629900"
+    },
+    {
+      "path": "crates/mo-xml/src/lib.rs",
+      "sha256": "3bfb1ea54b81ec38b61877921bc61a815690eacb108d626251cc696232e8aa07"
+    },
+    {
+      "path": "crates/mo-xml/src/names.rs",
+      "sha256": "19e8f209182717b29edd54d32f82bd191606d2f3894f28a2b04d0d10b4b9ccaf"
+    },
+    {
+      "path": "crates/mo-xml/src/scan.rs",
+      "sha256": "ee86bfb8bf6d828e7381ec32ab9b154a3813c9ca77f7a0f383184798057a1123"
+    },
+    {
+      "path": "crates/mo-xml/src/text_edit.rs",
+      "sha256": "ab168d37018c7e03bba8040f273c37b17e836447ce90e585079b95af39d6fda0"
+    },
+    {
+      "path": "crates/mo-xml/tests/scanner.rs",
+      "sha256": "358087316fb66a77471722eb71acec10a1e0cf401a93cff68f9ba23e6c002c4d"
+    },
+    {
+      "path": "crates/mo-xml/tests/text_edit.rs",
+      "sha256": "064f5ce630d3dc1d2d9b48f0f6b222adffe7db06bc878899f8e25db88ddc69ed"
+    },
+    {
+      "path": "docs/implementation/dependencies.md",
+      "sha256": "847694b4b1c8710f07bab5d8509c0cff1459a12980386d7ae871107f1cd11c8a"
+    },
+    {
+      "path": "docs/implementation/development.md",
+      "sha256": "9a296027bee80f54c0b6e793e4f32ecb95aca9675fef66709ba1d24c67b51bdf"
+    },
+    {
+      "path": "docs/implementation/package-io.md",
+      "sha256": "89ecabc6323252cc54341c52d779e97dec7fdb949ad30fcb6eeee0a4e2d1230d"
+    },
+    {
+      "path": "docs/implementation/pptx-export.md",
+      "sha256": "cadb571889ab39426648de7c23e0f6343c719f3cea10514053180ce304780e03"
+    },
+    {
+      "path": "docs/implementation/progress.md",
+      "sha256": "14d6d6129ca9397842debe78045a62063a6b520a750523967ef540a6c01b86f0"
+    },
+    {
+      "path": "fixtures/presentations/basic-shape.json",
+      "sha256": "3e4fe191a804814ff0f8061d5876c4b58285a255351460e0edf38040e16b9640"
+    },
+    {
+      "path": "fixtures/presentations/native-export/README.md",
+      "sha256": "399658ce0db8a74c746f0b70a8ebec3d50bd1954b5ddf0ae093e06f7fc8c3a02"
+    },
+    {
+      "path": "fixtures/presentations/native-export/request.json",
+      "sha256": "f20f7ac49f8958e3cf6b3185f407832f75b6c9d7e35d7695958af34948c85b1d"
+    },
+    {
+      "path": "fixtures/presentations/native-export/resources.bin",
+      "sha256": "3f76a9a5cae823017a1ddda66fe4cadf422e496bb0e6364ea5050dcac13afd82"
+    },
+    {
+      "path": "package.json",
+      "sha256": "43e4d64f2b50e58628471fd2f6be9b4eff8ff1720b6c2e0bbe3e2340290fd758"
+    },
+    {
+      "path": "packages/contracts/src/generated/document.ts",
+      "sha256": "f4ee579d71af46ef028dfb24ce2464542dd882d120ed50d4423f7cf3a104d693"
+    },
+    {
+      "path": "packages/contracts/src/generated/kernel-request.ts",
+      "sha256": "af7ff37be0f4547f1aed3d943eb8c470bde381205868002ed259690ccdf1897d"
+    },
+    {
+      "path": "packages/contracts/src/generated/kernel-response.ts",
+      "sha256": "312fca898a886903f24a2ee2ed16e5a07d50374f82c86d44b542281e82e10337"
+    },
+    {
+      "path": "packages/contracts/src/generated/package-inspection.ts",
+      "sha256": "a24e02f0dd751526794216e3e4bffdab048e7efbdffebb08e1cb616ecdb8ee3e"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-export-request.ts",
+      "sha256": "7e589d649106926f4c631b86e643c0241a0c2fbc455e66e5c6a944e6dbaef04e"
+    },
+    {
+      "path": "packages/contracts/src/generated/transaction-receipt.ts",
+      "sha256": "5c881ad297af3679dc5e359434d7c77f3fd38ef52d71db2af2d014000b03a242"
+    },
+    {
+      "path": "packages/contracts/src/generated/transaction.ts",
+      "sha256": "6ddd740a544fc13429a7a8126f789ea5c486be417b9dd9230249a5dbc834601b"
+    },
+    {
+      "path": "packages/contracts/src/generated/validation-report.ts",
+      "sha256": "eca1b9f9a2b84352469ab0841cf4e6842928f09beccc7222e32c6e3ed63cfb04"
+    },
+    {
+      "path": "packages/contracts/tests/wire.ts",
+      "sha256": "0f0092bfe458322bc26e2ec8b55781d444207f21b395a7a57c92acfb42c0c249"
+    },
+    {
+      "path": "packages/contracts/tsconfig.json",
+      "sha256": "4fcb6f03c7e852ccc08b854a1a26a8e7fc7312e561db7bcb7e20309d413deae2"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "b98030e955ae688a6490e8a6ef21007c18468596b851255439c37893b51f29c0"
+    },
+    {
+      "path": "rust-toolchain.toml",
+      "sha256": "060751f06f70853677293dd84de1c855fa72295c5dbc17ce811a3a57b75861c0"
+    },
+    {
+      "path": "tools/contracts/build-wasm-node.mjs",
+      "sha256": "958156b80bf75ebf4649e43ff5f1dca1d7fb483fb42d64810cfe74a9c1481660"
+    },
+    {
+      "path": "tools/contracts/generate-types.mjs",
+      "sha256": "3eadbd43ee77696b2590d8bd8346e92038ccb2ae9f352e8520aea38c1bb44c59"
+    },
+    {
+      "path": "tools/mo-cli/Cargo.toml",
+      "sha256": "b9e3761bb92f60910ef0b9e5bf937108d9d8c9f08b2fe419727d2cfe83fa80c2"
+    },
+    {
+      "path": "tools/mo-cli/src/main.rs",
+      "sha256": "da3f63a65c731d46dc5ef23f1f4d20b0ecda4bc383bcca51522779222a6bd514"
+    },
+    {
+      "path": "tools/mo-cli/src/pptx.rs",
+      "sha256": "53aacb06682b5ef2885189ee7d99fc470a7a4bcdc2d50b7564ff1d62029aa236"
+    },
+    {
+      "path": "tools/mo-contract-codegen/Cargo.toml",
+      "sha256": "cee1ac85df3e34b5f58f810c3d98735da788f46bc22de2abd4cffb4ee420078d"
+    },
+    {
+      "path": "tools/mo-contract-codegen/src/main.rs",
+      "sha256": "d3542fdf04d1dc12971ade186f65e7cf777dbd9d03a00e564739d5222e45061e"
+    },
+    {
+      "path": "tools/verification/contracts.py",
+      "sha256": "60f0af5ef99ea2ac26073459444bdbe7b5fb6e6d16cb5d032b3ea6f30efb136d"
+    },
+    {
+      "path": "tools/verification/fetch-ecma-schemas.py",
+      "sha256": "77b7487f7ad2fa052e4e1f3987c60cc594a1491c09aa518cdf8a9f1f5cdb5d27"
+    },
+    {
+      "path": "tools/verification/native-wasm-parity.mjs",
+      "sha256": "16ff25ff788d11e07dc0bcd5007e75b155f61c9348f50ea8328abad2ee049b26"
+    },
+    {
+      "path": "tools/verification/opc-fixtures.py",
+      "sha256": "6444c4fd8d5074d0c59a111b0ac2fc589cd9b12c31f264d56a1f4423b90b34a7"
+    },
+    {
+      "path": "tools/verification/opc-parity.mjs",
+      "sha256": "cdddcf4b160a507b73da23a9e5af33f99e806aec4685a4060e4a4cf02ec83d12"
+    },
+    {
+      "path": "tools/verification/pptx-fixture.py",
+      "sha256": "f098faf7dee35d53004bc311c513e5bcef27e2480777b98ddd0f70afb53dc0d7"
+    },
+    {
+      "path": "tools/verification/pptx-independent.py",
+      "sha256": "319f2879c923153fd2c3790df11b2546fad186f1b770146c702943d53168da7a"
+    },
+    {
+      "path": "tools/verification/pptx-parity.mjs",
+      "sha256": "5670cba5b4e9be31f60d100427db0e8c2f1a7f8fb84fea3af51ab8262df8b59c"
+    }
+  ],
+  "limitations": [
+    "Authored model subset only; no native semantic importer or source-preserving PPTX edit API",
+    "Reference-only fonts; no shaping, resolved layout, embedding or glyph fidelity proof",
+    "No internal renderer, animation/media playback or advanced-object implementation",
+    "Independent reader is a development verifier, not the kernel semantic reader",
+    "LibreOffice roundtrip has unresolved geometry representation changes; not an acceptance pass",
+    "No WPS or Microsoft Office editing/roundtrip validation",
+    "No full OOXML conformance or security certification",
+    "No complete cancellation latency, memory, performance or shipping package measurements",
+    "No Musterwork Artifact/CAS, migration or product replacement acceptance"
+  ]
+}
