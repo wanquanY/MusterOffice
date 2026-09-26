@@ -1,0 +1,41 @@
+[workspace]
+
+[package]
+name = "mo-mcp"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.92"
+publish = false
+
+[dependencies]
+mo-common = { path = "../../crates/mo-common" }
+mo-opc = { path = "../../crates/mo-opc" }
+mo-operation-service = { path = "../../crates/mo-operation-service" }
+mo-standard-host = { path = "../../crates/mo-standard-host" }
+mo-native-render = { path = "../../crates/mo-native-render" }
+rmcp = { version = "=3.4.0", default-features = false, features = ["server", "transport-io"] }
+tokio = { version = "=1.53.1", features = ["rt", "macros", "io-util", "time", "sync"] }
+tokio-util = { version = "=0.7.19", features = ["codec"] }
+futures = "=0.3.34"
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = { version = "=1.0.151", features = ["float_roundtrip"] }
+sha2 = "=0.10.9"
+base64 = "=0.22.1"
+
+[target.'cfg(unix)'.dependencies]
+tokio = { version = "=1.53.1", features = ["net"] }
+
+[target.'cfg(not(unix))'.dependencies]
+tokio = { version = "=1.53.1", features = ["io-std"] }
+
+[dev-dependencies]
+rusqlite = { version = "=0.40.2", default-features = false, features = ["bundled"] }
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[profile.release]
+codegen-units = 1
+lto = "thin"
+strip = "debuginfo"
+overflow-checks = true
