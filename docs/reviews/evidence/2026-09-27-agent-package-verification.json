@@ -1,0 +1,816 @@
+{
+  "format": "musteroffice.agent-package-verification/1",
+  "date": "2026-09-27",
+  "status": "passed-with-open-acceptance",
+  "scope": "Offline development packaging and local independent protocol client on macOS arm64. Not client installation/LLM behavior, complete PPT capability, Office/WPS, product replacement, release size or performance acceptance.",
+  "environment": {
+    "os": "Darwin",
+    "machine": "arm64",
+    "osVersion": "26.2",
+    "rustc": "rustc 1.92.0 (ded5c06cf 2025-12-08)",
+    "python": "3.13.0",
+    "zlib": "1.2.12"
+  },
+  "boundary": {
+    "coreAndSdkUnchanged": true,
+    "coreAndSdkFileCount": 1097,
+    "coreAndSdkIdentitySha256": "08cbf98f7e53a18c0e73c4da9d9359cc7d62c39707eaf1e086c685e4d37a3e9e",
+    "musterworkModifiedByThisStage": false,
+    "userClientInstalledOrConfigured": false,
+    "published": false,
+    "ownedBusinessDatabase": false,
+    "ownedUi": false,
+    "hostOwnsInputOutputAndCommit": true,
+    "goalComplete": false
+  },
+  "sources": {
+    "baselineTrackedOrNonIgnoredFiles": 2200,
+    "baseline": {
+      "path": ".codex-work/agent-package/baseline.json",
+      "sha256": "01194908964936a4d29d0722f3f8d36b5d5421e7a1d550491bed0371e08b21a6",
+      "byteLength": 262858
+    },
+    "changed": [
+      "README.md",
+      "docs/README.md",
+      "docs/architecture/agent-integration.md",
+      "docs/implementation/kernel-boundary-roadmap.md",
+      "docs/implementation/mcp-protocol-status.md",
+      "docs/implementation/progress.md",
+      "tools/mo-mcp/src/compute/config.rs",
+      "tools/mo-mcp/src/main.rs",
+      "tools/verification/current.py",
+      "tools/verification/test_current.py"
+    ],
+    "added": [
+      "docs/implementation/agent-package.md",
+      "integrations/package-README.md",
+      "integrations/plugin.json",
+      "integrations/skills/musteroffice-presentations/SKILL.md",
+      "integrations/skills/musteroffice-presentations/agents/openai.yaml",
+      "integrations/skills/musteroffice-presentations/references/advanced-content.md",
+      "integrations/skills/musteroffice-presentations/references/authoring.md",
+      "integrations/skills/musteroffice-presentations/references/quality-and-delivery.md",
+      "integrations/skills/musteroffice-presentations/references/tool-bindings.md",
+      "tools/agent-package/README.md",
+      "tools/agent-package/build.py",
+      "tools/agent-package/check.py",
+      "tools/agent-package/check_support.py",
+      "tools/agent-package/test_build.py",
+      "tools/agent-package/validate.py"
+    ],
+    "finalChangedFileSha256": {
+      "README.md": "98296423ae17e45419deef1623779be418fe6bf05c168fbb9c1c63c3bc6e70aa",
+      "docs/README.md": "b769ffe41e5a040ad02b436f54ea3e050d609706c1d2039de495ac3d8f47090f",
+      "docs/architecture/agent-integration.md": "74c05900c184be63be64abf1c4f765307fc818d0c9ae4dc8d5c680de8eb9dd01",
+      "docs/implementation/agent-package.md": "f6c0222d0da2ba70af66575b388e941335aba33202f5a1062a3ebe6b57748f36",
+      "docs/implementation/kernel-boundary-roadmap.md": "45a8415bee22959b90f595e749ab9fd759e310573db9ee6fc1a56dd00893b7cd",
+      "docs/implementation/mcp-protocol-status.md": "a5f16a8c797eec4bf35623b74fec3ecfbbaac8dbcf0f5a6927fbcdccacc70614",
+      "docs/implementation/progress.md": "7ac9e9c8f1f0ce5e8b1069474f82ec58cb6349d210d7559447320f45497817e7",
+      "integrations/package-README.md": "102b9e332818350acd0f48c553cdcdb3bb9232733d644fe572f536ed6630538e",
+      "integrations/plugin.json": "585a532ea8915467fe8cbf171fc51ad8509e8d74c33d89fbfcf5279cba0051da",
+      "integrations/skills/musteroffice-presentations/SKILL.md": "cd5f1a7b96246088d0b04234b7885f0fe5c713aa674b24cf7992e805abf2b7be",
+      "integrations/skills/musteroffice-presentations/agents/openai.yaml": "6be68ad54fb2411e5ac7a57a579fb90fa0d8bbe3b5747a70a49e724a8a310ead",
+      "integrations/skills/musteroffice-presentations/references/advanced-content.md": "b359c9b05315c32aa5b0e2d83e8a345fb34bc1c5c84a7010723b1338d2c509b4",
+      "integrations/skills/musteroffice-presentations/references/authoring.md": "9098596b42dfc49c7dc1bc4a8cb81f310312d1b1eb93629263693136d2f32aaf",
+      "integrations/skills/musteroffice-presentations/references/quality-and-delivery.md": "04a28bf3a3d3c14a6d889f5af907cc1dc6f07e8fea1879841a70cab902bc44a2",
+      "integrations/skills/musteroffice-presentations/references/tool-bindings.md": "574bf1d90d2538009db35196f8e1c5f60c02d8eaa1fe21b5800048b2e663e3d2",
+      "tools/agent-package/README.md": "32a369577b10924353384a4fe0f646d7fa1df391da18b09931c3af912c01f225",
+      "tools/agent-package/build.py": "7d8cf1ced2654a89f93d09cd9aad4a96102566048b5b1eb625603f0f3200aa36",
+      "tools/agent-package/check.py": "1a11cade68aca036d86d9e23b11e7e9cd4851d7433c879ea73e8b7b098bfaab1",
+      "tools/agent-package/check_support.py": "1e663495f63ab60ce82974329718ca35ff00b682794ec87ea2c8fa639114782f",
+      "tools/agent-package/test_build.py": "c668daea9b9f3cb279545d23ec970d1ddca34de7ca641d5fd5d1e3223fd9bd8d",
+      "tools/agent-package/validate.py": "fdbcc995c89657a039605bf5b711328bc0e9c9cb8dcfc39f6800368b104ec6ca",
+      "tools/mo-mcp/src/compute/config.rs": "faff159b66c7804e7edad97763b05197b1930684e151f9703633af4e1a4eb587",
+      "tools/mo-mcp/src/main.rs": "e28b7e2e97b62e167fa52134e25d06d936aa139269b3b9cbb11a0f3c853cb181",
+      "tools/verification/current.py": "359960f979c70ca477355dfcf693ab4733638855e29f6087cc2318f6afde80bb",
+      "tools/verification/test_current.py": "b79bcc6cdde39be2bb85201c1a51f6654d4ced23b2fdd43b28ea215830c232e8"
+    }
+  },
+  "protocols": {
+    "agentPlugins": "1.0.0",
+    "agentSkills": "https://agentskills.io/specification",
+    "openAiPluginGuidance": "https://developers.openai.com/plugins/build/plugins",
+    "mcpStdio": [
+      "2025-11-25",
+      "2026-07-28"
+    ],
+    "musterOfficeComputation": "musteroffice.computation/1-draft",
+    "packageVersion": "0.1.0-dev.1",
+    "schemas": [
+      {
+        "url": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+        "sha256": "0a4aad95ce337878ad38802ebf0daa3fde76abe3f65400c86bcbb1ec0b3ab883",
+        "byteLength": 1805
+      },
+      {
+        "url": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+        "sha256": "6539175bfcdf43085855183e86da40ea94b166547a72b47ae9a0a390516d3acb",
+        "byteLength": 3408
+      }
+    ]
+  },
+  "runtime": [
+    {
+      "name": "mo-mcp",
+      "path": "tools/mo-mcp/target/debug/mo-mcp",
+      "sha256": "1f934e949b81245660d85e4f7202741202c86e3b2aeaeb8feacd439caabbdd61",
+      "byteLength": 35537512,
+      "dynamicLibraries": [
+        "/usr/lib/libiconv.2.dylib",
+        "/usr/lib/libSystem.B.dylib"
+      ]
+    },
+    {
+      "name": "mo-export-worker",
+      "path": "target/debug/mo-export-worker",
+      "sha256": "f46756532a3859f2ff4ea58e03e8e593f5c7e40c2f94e5f8fddaa6c74831b6a9",
+      "byteLength": 38298336,
+      "dynamicLibraries": [
+        "/usr/lib/libiconv.2.dylib",
+        "/usr/lib/libc++.1.dylib",
+        "/usr/lib/libSystem.B.dylib"
+      ]
+    }
+  ],
+  "developmentPackage": {
+    "archive": {
+      "path": ".codex-work/agent-package/protocol-01/musteroffice.zip",
+      "sha256": "157c370a0ce9d4e934a6c7a9fd4577c2b7c73c2b49f2c5d3b928b69c1b9eb9ef",
+      "byteLength": 18938876
+    },
+    "secondArchive": {
+      "path": ".codex-work/agent-package/protocol-01/replacement.zip",
+      "sha256": "157c370a0ce9d4e934a6c7a9fd4577c2b7c73c2b49f2c5d3b928b69c1b9eb9ef",
+      "byteLength": 18938876
+    },
+    "manifest": {
+      "path": ".codex-work/agent-package/protocol-01/assembly/musteroffice/bundle-manifest.json",
+      "sha256": "4b350d48af2214d09d062cd6dcdb9bbd77fd647a0782f0de81179f544a04a895",
+      "byteLength": 18284
+    },
+    "files": 87,
+    "skillSha256": "cd5f1a7b96246088d0b04234b7885f0fe5c713aa674b24cf7992e805abf2b7be",
+    "deterministicAssemblies": true,
+    "runtimeRequiresNodeOrPython": false,
+    "licenseClosureComplete": false,
+    "signed": false,
+    "debugBuildSizeOnly": true
+  },
+  "verification": {
+    "commands": [
+      {
+        "name": "mcp-build-02",
+        "record": {
+          "path": ".codex-work/agent-package/mcp-build-02.json",
+          "sha256": "ad80502147ef2a0693b9e08d2c1f8d821c4ba0b448c485fa19b30f59536bafd6",
+          "byteLength": 189202
+        },
+        "log": {
+          "path": ".codex-work/agent-package/mcp-build-02.log",
+          "sha256": "89d6b39daa16b0629ec0a006bb8a65751167432367ac69858dd5df4fb12b691c",
+          "byteLength": 160
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true,
+        "inputIdentitySha256": "5c7346c736c04f81218f32d2e4689723a88eb6a3ecefd504962d134d6c631962"
+      },
+      {
+        "name": "package-protocol-01",
+        "record": {
+          "path": ".codex-work/agent-package/package-protocol-01.json",
+          "sha256": "ecc2fe27c94b205be2f85fdf415f25ef9538b09e26b2b323fd4ff17411b5a904",
+          "byteLength": 79416
+        },
+        "log": {
+          "path": ".codex-work/agent-package/package-protocol-01.log",
+          "sha256": "8647b96c6c0c412219d2ffd4acc8de9b9ae847ca719de97ab941eefcbd4b57ef",
+          "byteLength": 835
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true,
+        "inputIdentitySha256": "f3c8d7b3bb49d45cce4cd5366a960af0911c093fcdaf628f5b8d9a6f33829d82"
+      },
+      {
+        "name": "portable-schema-01",
+        "record": {
+          "path": ".codex-work/agent-package/portable-schema-01.json",
+          "sha256": "5772182ac37b557e9c4e50bc7296271544ecb75eb1a7da9fa7bf905ef0d93ecc",
+          "byteLength": 34664
+        },
+        "log": {
+          "path": ".codex-work/agent-package/portable-schema-01.log",
+          "sha256": "2d63ba5b6a05ab36a114c50a95354da7f8741a6edcfeeeb58e33a129d26dcebb",
+          "byteLength": 606
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true,
+        "inputIdentitySha256": "647499268edee3a2ee33f38126c3ba4659df0411045402febf56cc1482b68fad"
+      },
+      {
+        "name": "codex-manifest-01",
+        "record": {
+          "path": ".codex-work/agent-package/codex-manifest-01.json",
+          "sha256": "46f9668f1e3672c152387604a5fbacc1458feeac813acd8ad347765e29d89fcb",
+          "byteLength": 6029
+        },
+        "log": {
+          "path": ".codex-work/agent-package/codex-manifest-01.log",
+          "sha256": "3c9040919e989f13a2fb6282f36b12b656b8c4b1b58faff3fc9cf05a36e3daff",
+          "byteLength": 132
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true,
+        "inputIdentitySha256": "914db7359e8750daf32e8b949f29f3423f7fe5b71c6065a4f8ec0458c53f6762"
+      },
+      {
+        "name": "skill-validation-02",
+        "record": {
+          "path": ".codex-work/agent-package/skill-validation-02.json",
+          "sha256": "3e5c3ebd7d31048c62c44e8d5eb8ca94578f37290f8bc3b9954e26be3f1a5693",
+          "byteLength": 2201
+        },
+        "log": {
+          "path": ".codex-work/agent-package/skill-validation-02.log",
+          "sha256": "db349825903d66adffea3ecf1bd8e1803043e8a71cf1a051235dabc5371f5bb0",
+          "byteLength": 16
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true,
+        "inputIdentitySha256": "c05167f35498dd80ad052928b0a0df1165150a84920719a25b5e3c0fb0a9cb81"
+      },
+      {
+        "name": "stdio-regression-01",
+        "record": {
+          "path": ".codex-work/agent-package/stdio-regression-01.json",
+          "sha256": "254e6bce7ea2672676a89f0130a2ce2519df6402f6250f598a2ae11f15e3ccf5",
+          "byteLength": 192979
+        },
+        "log": {
+          "path": ".codex-work/agent-package/stdio-regression-01.log",
+          "sha256": "83a6758fa2783871f07a2813904e5f94c2204ad0e85da8567b2b25f273056cf6",
+          "byteLength": 717
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true,
+        "inputIdentitySha256": "9cbeb652efb6b43cf76739ffdff9205c25dd3d0ba6569cabbe5ff2bd34462fdd"
+      },
+      {
+        "name": "stdio-lifecycle-01",
+        "record": {
+          "path": ".codex-work/agent-package/stdio-lifecycle-01.json",
+          "sha256": "a649b83bc97b253be5b264babdc109e94e42be575dc959a23609f7bbe1fa8c6e",
+          "byteLength": 192698
+        },
+        "log": {
+          "path": ".codex-work/agent-package/stdio-lifecycle-01.log",
+          "sha256": "cb41302808869b17971f0049bee67abe0301ce2172092dfee98de3f37d4430d9",
+          "byteLength": 545
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true,
+        "inputIdentitySha256": "c5c92c917d02c13f49bf03f23fb4261858916646531ab0e0092495add921eb9a"
+      },
+      {
+        "name": "packaging-unit-02",
+        "record": {
+          "path": ".codex-work/agent-package/packaging-unit-02.json",
+          "sha256": "ee6bd52806c1bed97fa629f3f133e6852f68fa7d8c7fe093a20868fa285686f9",
+          "byteLength": 3893
+        },
+        "log": {
+          "path": ".codex-work/agent-package/packaging-unit-02.log",
+          "sha256": "4a953511de46d1403971ac653d78e29cb63e63d0ddd5212f063c42bae0464640",
+          "byteLength": 783
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true,
+        "inputIdentitySha256": "05e427861ddc587ff92c2a0401fa5f2c1e1c1f853df499b43fdf50b27bf24ea7"
+      },
+      {
+        "name": "runner-tests-01",
+        "record": {
+          "path": ".codex-work/agent-package/runner-tests-01.json",
+          "sha256": "95a830492206b066f7f4c5ee9df230d849c811ea4f04d048b9faa9a3af0d3a11",
+          "byteLength": 906
+        },
+        "log": {
+          "path": ".codex-work/agent-package/runner-tests-01.log",
+          "sha256": "30cfb4e0a3033890315beb9f9a979f1dbeba7f4c7b35c7bab0425ccb4ff245b7",
+          "byteLength": 625
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true,
+        "inputIdentitySha256": "89fa1beb3bed3c0ec78cdce957ea34f0f50d1962e3ab2d8a0a69f39128418f68"
+      }
+    ],
+    "mcpGates": {
+      "report": {
+        "path": ".codex-work/agent-package/mcp-gates-01/report.json",
+        "sha256": "af5de349d1e26a756e69d6971d903536c80c38bac8400c876a69d1b2ad45a982",
+        "byteLength": 5992
+      },
+      "sourceUnchanged": true,
+      "steps": [
+        {
+          "name": "mcp-format",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/agent-package/mcp-gates-01/mcp-format.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "mcp-clippy",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/agent-package/mcp-gates-01/mcp-clippy.log",
+            "sha256": "3ef9d1937794df4c070abd0915c2afedf10b5d3a30d0ea586babcf2e5f65bdc4",
+            "byteLength": 160
+          }
+        },
+        {
+          "name": "mcp-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/agent-package/mcp-gates-01/mcp-tests.log",
+            "sha256": "b1bd947a9d4d08e811dcffce20b21cb69f734d58d775d2350632ee3bd7a84499",
+            "byteLength": 2207
+          }
+        },
+        {
+          "name": "mcp-build",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/agent-package/mcp-gates-01/mcp-build.log",
+            "sha256": "99f71393b9903dca098310bb446022a4bdee195ea9996f351a787195555210a6",
+            "byteLength": 72
+          }
+        },
+        {
+          "name": "mcp-legacy-clippy",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/agent-package/mcp-gates-01/mcp-legacy-clippy.log",
+            "sha256": "4d7d48c65c3a01306ced6753f9abfbae8dae33b0d2f465b814524895b3596d76",
+            "byteLength": 160
+          }
+        },
+        {
+          "name": "mcp-legacy-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/agent-package/mcp-gates-01/mcp-legacy-tests.log",
+            "sha256": "81a307b111dd27cf02dffc53213ef802f3e73bf9086088eeb40b501438429752",
+            "byteLength": 2519
+          }
+        },
+        {
+          "name": "mcp-legacy-build",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/agent-package/mcp-gates-01/mcp-legacy-build.log",
+            "sha256": "d534e8b40256de286adc767dc2c4e79f8d20277abc13c2430267f06825d2d347",
+            "byteLength": 160
+          }
+        },
+        {
+          "name": "mcp-http-clippy",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/agent-package/mcp-gates-01/mcp-http-clippy.log",
+            "sha256": "2681f0fa8309dcc7d7e4a5f18750c3d5796367b107f85a4fbdc9abe71490cfff",
+            "byteLength": 160
+          }
+        },
+        {
+          "name": "mcp-http-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/agent-package/mcp-gates-01/mcp-http-tests.log",
+            "sha256": "4a45e21d1fd57101b0aa6f2e22f34c7452a40a26f3ac6011946da2ca01ee2177",
+            "byteLength": 2775
+          }
+        },
+        {
+          "name": "mcp-http-build",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/agent-package/mcp-gates-01/mcp-http-build.log",
+            "sha256": "ff0509dab93f28750a5aad5ec7cc752d06721e8ba69b33f7ee26ef2eeb95a469",
+            "byteLength": 160
+          }
+        },
+        {
+          "name": "mcp-all-features-clippy",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/agent-package/mcp-gates-01/mcp-all-features-clippy.log",
+            "sha256": "5ad6f9bd562fd5496a10834e13dcd8ee938c5d3767ce2f06188dda7bf8f95c49",
+            "byteLength": 160
+          }
+        }
+      ],
+      "unitTests": {
+        "default": 17,
+        "legacyFeature": 18,
+        "httpFeature": 22,
+        "countsOverlap": true
+      }
+    },
+    "packageProtocol": {
+      "format": "musteroffice.agent-package-check/1",
+      "status": "passed",
+      "targetOs": "macos",
+      "targetArch": "aarch64",
+      "archiveSha256": "157c370a0ce9d4e934a6c7a9fd4577c2b7c73c2b49f2c5d3b928b69c1b9eb9ef",
+      "archiveByteLength": 18938876,
+      "archiveReproducible": true,
+      "packageFiles": 87,
+      "mcpSha256": "1f934e949b81245660d85e4f7202741202c86e3b2aeaeb8feacd439caabbdd61",
+      "workerSha256": "f46756532a3859f2ff4ea58e03e8e593f5c7e40c2f94e5f8fddaa6c74831b6a9",
+      "skillSha256": "cd5f1a7b96246088d0b04234b7885f0fe5c713aa674b24cf7992e805abf2b7be",
+      "protocolOutputsByteIdentical": true,
+      "historicalOutputComparison": true,
+      "observations": [
+        {
+          "protocol": "2025-11-25",
+          "calls": 40,
+          "exports": [
+            {
+              "name": "exported",
+              "pptxSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+              "assets": 12
+            },
+            {
+              "name": "exported-edited",
+              "pptxSha256": "a1545fba01e0941fb2bcac04a8787dcc0709ad9f2c3b21d2af343ecbaa3d41b6",
+              "assets": 12
+            }
+          ],
+          "rejectedStartups": [
+            {
+              "case": "missing-manifest",
+              "exitCode": 1,
+              "stderrSha256": "4a4d3759cbff626df0fa07f9349b9a7de58ccfaa96fbbffbbffc939d55a4d5c8"
+            },
+            {
+              "case": "wrong-format",
+              "exitCode": 1,
+              "stderrSha256": "b559aeaddc0be83cb97ccb785d7a40b48ef742a58a5c6037b462e8d8e1fdda42"
+            },
+            {
+              "case": "wrong-os",
+              "exitCode": 1,
+              "stderrSha256": "b559aeaddc0be83cb97ccb785d7a40b48ef742a58a5c6037b462e8d8e1fdda42"
+            },
+            {
+              "case": "wrong-arch",
+              "exitCode": 1,
+              "stderrSha256": "b559aeaddc0be83cb97ccb785d7a40b48ef742a58a5c6037b462e8d8e1fdda42"
+            },
+            {
+              "case": "wrong-hash",
+              "exitCode": 1,
+              "stderrSha256": "f0a1bc349b44a9c16e8c062dc35baa91acb89486f13cd2b7921901c110abff6e"
+            },
+            {
+              "case": "unknown-field",
+              "exitCode": 1,
+              "stderrSha256": "6e203a48085f24887eb24ea18a2b669b87c884704e2eb733251d62a2d96a34a6"
+            },
+            {
+              "case": "duplicate-key",
+              "exitCode": 1,
+              "stderrSha256": "a8fd8ecacf5081e36c6b509ba71ed16d7efa23dbaf88ea25eee7d6132a4936aa"
+            },
+            {
+              "case": "oversized-manifest",
+              "exitCode": 1,
+              "stderrSha256": "b38f49e9154664e20c112dda1182fba9b35a58a929d489bf6126bf2ea4533044"
+            },
+            {
+              "case": "invalid-utf8",
+              "exitCode": 1,
+              "stderrSha256": "12ea857e9228a0d5bf33319ff4fd3d1ed6b9f497fe954b4bb449f3dc1a98fb66"
+            },
+            {
+              "case": "relative-manifest",
+              "exitCode": 1,
+              "stderrSha256": "5ff386ae1913b66cd2fcefc207069ccd92d196655237367310f81cdb0827eb93"
+            },
+            {
+              "case": "relative-caller",
+              "exitCode": 1,
+              "stderrSha256": "5ff386ae1913b66cd2fcefc207069ccd92d196655237367310f81cdb0827eb93"
+            },
+            {
+              "case": "missing-caller",
+              "exitCode": 1,
+              "stderrSha256": "4a4d3759cbff626df0fa07f9349b9a7de58ccfaa96fbbffbbffc939d55a4d5c8"
+            },
+            {
+              "case": "worker-override",
+              "exitCode": 1,
+              "stderrSha256": "c70c02d5cf8e5d1627cf1b186f4d08ec61ec85fe96f39a3f521d33c8afd40a23"
+            },
+            {
+              "case": "damaged-worker",
+              "exitCode": 1,
+              "stderrSha256": "f0a1bc349b44a9c16e8c062dc35baa91acb89486f13cd2b7921901c110abff6e"
+            },
+            {
+              "case": "missing-worker",
+              "exitCode": 1,
+              "stderrSha256": "4a4d3759cbff626df0fa07f9349b9a7de58ccfaa96fbbffbbffc939d55a4d5c8"
+            },
+            {
+              "case": "directory-worker",
+              "exitCode": 1,
+              "stderrSha256": "f99800ab6e912cfa6d1dfc62c735f5108aea161759e889e1ed6d67d989bd6769"
+            },
+            {
+              "case": "symlink-worker",
+              "exitCode": 1,
+              "stderrSha256": "2b5c81cdd1a5ce25e26964a414279517fd743f55c6f90370b58b7a50dfe4e3c8"
+            },
+            {
+              "case": "symlink-manifest",
+              "exitCode": 1,
+              "stderrSha256": "2b5c81cdd1a5ce25e26964a414279517fd743f55c6f90370b58b7a50dfe4e3c8"
+            }
+          ],
+          "replacementConfigUnchanged": true,
+          "replacementOutputsUnchanged": true
+        },
+        {
+          "protocol": "2026-07-28",
+          "calls": 39,
+          "exports": [
+            {
+              "name": "exported",
+              "pptxSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+              "assets": 12
+            },
+            {
+              "name": "exported-edited",
+              "pptxSha256": "a1545fba01e0941fb2bcac04a8787dcc0709ad9f2c3b21d2af343ecbaa3d41b6",
+              "assets": 12
+            }
+          ],
+          "rejectedStartups": [
+            {
+              "case": "missing-manifest",
+              "exitCode": 1,
+              "stderrSha256": "4a4d3759cbff626df0fa07f9349b9a7de58ccfaa96fbbffbbffc939d55a4d5c8"
+            },
+            {
+              "case": "wrong-format",
+              "exitCode": 1,
+              "stderrSha256": "b559aeaddc0be83cb97ccb785d7a40b48ef742a58a5c6037b462e8d8e1fdda42"
+            },
+            {
+              "case": "wrong-os",
+              "exitCode": 1,
+              "stderrSha256": "b559aeaddc0be83cb97ccb785d7a40b48ef742a58a5c6037b462e8d8e1fdda42"
+            },
+            {
+              "case": "wrong-arch",
+              "exitCode": 1,
+              "stderrSha256": "b559aeaddc0be83cb97ccb785d7a40b48ef742a58a5c6037b462e8d8e1fdda42"
+            },
+            {
+              "case": "wrong-hash",
+              "exitCode": 1,
+              "stderrSha256": "f0a1bc349b44a9c16e8c062dc35baa91acb89486f13cd2b7921901c110abff6e"
+            },
+            {
+              "case": "unknown-field",
+              "exitCode": 1,
+              "stderrSha256": "6e203a48085f24887eb24ea18a2b669b87c884704e2eb733251d62a2d96a34a6"
+            },
+            {
+              "case": "duplicate-key",
+              "exitCode": 1,
+              "stderrSha256": "a8fd8ecacf5081e36c6b509ba71ed16d7efa23dbaf88ea25eee7d6132a4936aa"
+            },
+            {
+              "case": "oversized-manifest",
+              "exitCode": 1,
+              "stderrSha256": "b38f49e9154664e20c112dda1182fba9b35a58a929d489bf6126bf2ea4533044"
+            },
+            {
+              "case": "invalid-utf8",
+              "exitCode": 1,
+              "stderrSha256": "12ea857e9228a0d5bf33319ff4fd3d1ed6b9f497fe954b4bb449f3dc1a98fb66"
+            },
+            {
+              "case": "relative-manifest",
+              "exitCode": 1,
+              "stderrSha256": "5ff386ae1913b66cd2fcefc207069ccd92d196655237367310f81cdb0827eb93"
+            },
+            {
+              "case": "relative-caller",
+              "exitCode": 1,
+              "stderrSha256": "5ff386ae1913b66cd2fcefc207069ccd92d196655237367310f81cdb0827eb93"
+            },
+            {
+              "case": "missing-caller",
+              "exitCode": 1,
+              "stderrSha256": "4a4d3759cbff626df0fa07f9349b9a7de58ccfaa96fbbffbbffc939d55a4d5c8"
+            },
+            {
+              "case": "worker-override",
+              "exitCode": 1,
+              "stderrSha256": "c70c02d5cf8e5d1627cf1b186f4d08ec61ec85fe96f39a3f521d33c8afd40a23"
+            },
+            {
+              "case": "damaged-worker",
+              "exitCode": 1,
+              "stderrSha256": "f0a1bc349b44a9c16e8c062dc35baa91acb89486f13cd2b7921901c110abff6e"
+            },
+            {
+              "case": "missing-worker",
+              "exitCode": 1,
+              "stderrSha256": "4a4d3759cbff626df0fa07f9349b9a7de58ccfaa96fbbffbbffc939d55a4d5c8"
+            },
+            {
+              "case": "directory-worker",
+              "exitCode": 1,
+              "stderrSha256": "f99800ab6e912cfa6d1dfc62c735f5108aea161759e889e1ed6d67d989bd6769"
+            },
+            {
+              "case": "symlink-worker",
+              "exitCode": 1,
+              "stderrSha256": "2b5c81cdd1a5ce25e26964a414279517fd743f55c6f90370b58b7a50dfe4e3c8"
+            },
+            {
+              "case": "symlink-manifest",
+              "exitCode": 1,
+              "stderrSha256": "2b5c81cdd1a5ce25e26964a414279517fd743f55c6f90370b58b7a50dfe4e3c8"
+            }
+          ],
+          "replacementConfigUnchanged": true,
+          "replacementOutputsUnchanged": true
+        }
+      ],
+      "installedClientAcceptance": false,
+      "releaseCleared": false,
+      "productCommitted": false,
+      "scope": "Owned two-page fixture, macOS/Linux pipe client; debug assembly is not complete PPT, Office/WPS, release size or product acceptance."
+    },
+    "packageProtocolRecord": {
+      "path": ".codex-work/agent-package/protocol-01/report.json",
+      "sha256": "712f4d16fd4a49e3d8ec6f4531a5a1882d2dd9a64950f360e1db59eb6ab6fdbd",
+      "byteLength": 8285
+    },
+    "ordinaryStdio": {
+      "format": "musteroffice.thin-mcp-files-check/1",
+      "status": "passed",
+      "binarySha256": "1f934e949b81245660d85e4f7202741202c86e3b2aeaeb8feacd439caabbdd61",
+      "workerSha256": "f46756532a3859f2ff4ea58e03e8e593f5c7e40c2f94e5f8fddaa6c74831b6a9",
+      "observations": [
+        {
+          "protocol": "2025-11-25",
+          "calls": 66,
+          "exports": [
+            {
+              "name": "exported",
+              "pptxSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+              "assets": 12
+            },
+            {
+              "name": "exported-edited",
+              "pptxSha256": "a1545fba01e0941fb2bcac04a8787dcc0709ad9f2c3b21d2af343ecbaa3d41b6",
+              "assets": 12
+            }
+          ],
+          "largeBytes": 1048576
+        },
+        {
+          "protocol": "2026-07-28",
+          "calls": 65,
+          "exports": [
+            {
+              "name": "exported",
+              "pptxSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+              "assets": 12
+            },
+            {
+              "name": "exported-edited",
+              "pptxSha256": "a1545fba01e0941fb2bcac04a8787dcc0709ad9f2c3b21d2af343ecbaa3d41b6",
+              "assets": 12
+            }
+          ],
+          "largeBytes": 1048576
+        },
+        {
+          "protocol": "2025-11-25",
+          "concurrentBatches": 4,
+          "concurrentExports": 8
+        }
+      ],
+      "protocolOutputsByteIdentical": true,
+      "productCommitted": false,
+      "scope": "Local caller-file bridge only; no remote gateway, Office/WPS or full presentation acceptance."
+    },
+    "lifecycle": {
+      "format": "musteroffice.thin-mcp-lifecycle/1",
+      "status": "passed",
+      "binarySha256": "1f934e949b81245660d85e4f7202741202c86e3b2aeaeb8feacd439caabbdd61",
+      "observations": [
+        {
+          "protocol": "2025-11-25",
+          "mode": "cancel",
+          "childStopped": true,
+          "privateFilesReleased": true,
+          "elapsedSeconds": 0.03236612514592707
+        },
+        {
+          "protocol": "2025-11-25",
+          "mode": "eof",
+          "childStopped": true,
+          "privateFilesReleased": true,
+          "elapsedSeconds": 0.03999966708943248
+        },
+        {
+          "protocol": "2026-07-28",
+          "mode": "cancel",
+          "childStopped": true,
+          "privateFilesReleased": true,
+          "elapsedSeconds": 0.032467625103890896
+        },
+        {
+          "protocol": "2026-07-28",
+          "mode": "eof",
+          "childStopped": true,
+          "privateFilesReleased": true,
+          "elapsedSeconds": 0.023234332911670208
+        }
+      ],
+      "scope": "macOS/Unix stdio test with deliberately blocked private worker, not renderer performance."
+    },
+    "packagingUnitTests": 5,
+    "verificationDriverTests": 3,
+    "documentation": {
+      "status": "passed",
+      "markdownFiles": 14,
+      "localLinks": 497,
+      "jsonExamples": 2,
+      "changedSourceLines": {
+        "tools/agent-package/build.py": 198,
+        "tools/agent-package/check.py": 83,
+        "tools/agent-package/check_support.py": 171,
+        "tools/agent-package/test_build.py": 98,
+        "tools/agent-package/validate.py": 50,
+        "tools/mo-mcp/src/compute/config.rs": 161,
+        "tools/mo-mcp/src/main.rs": 50,
+        "tools/verification/current.py": 218,
+        "tools/verification/test_current.py": 49
+      },
+      "diffCheck": "passed",
+      "pendingEvidenceTarget": "docs/reviews/evidence/2026-09-27-agent-package-verification.json"
+    }
+  },
+  "preservedFailures": [
+    {
+      "record": {
+        "path": ".codex-work/agent-package/mcp-clippy-01.json",
+        "sha256": "e2d70e041ce1b9f61c9fa1954d8bc727afcd4c2bfce9085f8f47eda6b3feaa54",
+        "byteLength": 189235
+      },
+      "exitCode": 101,
+      "reason": "PathBuf borrow in package config was corrected before final build and gates."
+    },
+    {
+      "record": {
+        "path": ".codex-work/agent-package/skill-validation-initial.json",
+        "sha256": "10c8f8df72fe76ba93c731b3b45e9a751db09d9a50eba1a22941b93a44e536eb",
+        "byteLength": 240
+      },
+      "exitCode": 1,
+      "reason": "Local Skill validator does not accept compatibility frontmatter; requirements moved into body, then official local validators passed."
+    },
+    {
+      "reason": "Python default CA retrieval failed; official schemas were fetched with system curl using normal TLS verification. No certificate verification bypass."
+    }
+  ],
+  "notRerun": [
+    "Unchanged full core/Native-WASM suite",
+    "Unchanged external HTTP workflow",
+    "Old persistent-host full external protocol suite",
+    "Musterwork product workspace"
+  ],
+  "pending": [
+    "Real Agent client installation, activation and removal",
+    "LLM Skill selection and real work scenarios",
+    "Cross-version update compatibility",
+    "Windows/Linux actual package execution",
+    "Complete transitive license clearance and signing",
+    "Remote attachments and legacy HTTP transport",
+    "Full advanced PPT capability and Office/WPS editing round trips",
+    "Musterwork public API/user-flow integration and replacement acceptance",
+    "Release package and controlled performance/size benchmarks"
+  ]
+}

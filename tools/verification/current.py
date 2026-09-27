@@ -48,6 +48,7 @@ def plan(groups, output, bindgen, python):
     mcp = ("--manifest-path", "tools/mo-mcp/Cargo.toml")
     if "lint" in groups:
         add("verification-driver-tests", python, "-m", "unittest", "discover", "-s", "tools/verification", "-p", "test_current.py", "-v")
+        add("agent-package-tests", python, "-m", "unittest", "discover", "-s", "tools/agent-package", "-p", "test_build.py", "-v")
         add("format", "cargo", "fmt", "--all", "--", "--check")
         add("clippy", "cargo", "clippy", "--workspace", "--all-targets", *cargo, "--", "-D", "warnings")
     if "rust" in groups:
@@ -84,6 +85,7 @@ def plan(groups, output, bindgen, python):
         add("document-native-wasm-parity", "node", "tools/verification/native-wasm-parity.mjs", "target/debug/mo-cli", output / "wasm/mo_wasm.js")
     if "mcp-protocol" in groups:
         thin = ROOT / "tools/mo-mcp/target/debug/mo-mcp"
+        add("mcp-agent-package", python, "tools/agent-package/check.py", output / "mcp-agent-package", thin, ROOT / "target/debug/mo-export-worker")
         add("mcp-computation", python, "tools/mo-mcp/compute_check.py", output / "mcp-computation", thin, ROOT / "target/debug/mo-export-worker")
         add("mcp-computation-lifecycle", python, "tools/mo-mcp/compute_lifecycle.py", output / "mcp-computation-lifecycle", thin)
         http = ROOT / "tools/mo-mcp/target/debug/mo-mcp-http"
@@ -107,7 +109,7 @@ def file_digest(path):
 def source_identity():
     names = subprocess.check_output([
         "git", "ls-files", "-z", "--cached", "--others", "--exclude-standard", "--",
-        "crates", "tools", "packages", "contracts", "components", "fixtures",
+        "crates", "tools", "packages", "contracts", "components", "fixtures", "integrations",
         "Cargo.toml", "Cargo.lock", "rust-toolchain.toml", "package.json", "pnpm-lock.yaml",
     ], cwd=ROOT).decode().split("\0")
     entries = [(name, file_digest(ROOT / name) if (ROOT / name).is_file() else None)
