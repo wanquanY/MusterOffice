@@ -58,28 +58,10 @@ int mo_validate_image_brush(const uint32_t* p, const uint32_t* descriptors,
     return 0;
 }
 
-sk_sp<SkImage> mo_make_image(const uint32_t* p, const uint8_t* data) {
-    const size_t bytes = size_t(p[1]) * p[2] * 4;
-    sk_sp<SkData> pixels;
-    if (p[3]) {
-        pixels = SkData::MakeWithoutCopy(data + p[0], bytes);
-    } else {
-        // Skia interpolates stored straight channels before premultiplication.
-        // Normalize once per resource so transparent colors cannot tint edges.
-        // Prefer normalized premul inputs to avoid this bounded allocation/copy.
-        pixels = SkData::MakeUninitialized(bytes);
-        if (!pixels) return nullptr;
-        auto* out = static_cast<uint8_t*>(pixels->writable_data());
-        const auto* src = data + p[0];
-        for (size_t i = 0; i < bytes; i += 4) {
-            for (size_t k = 0; k < 3; ++k) out[i+k] = (uint32_t(src[i+k])*src[i+3] + 127) / 255;
-            out[i+3] = src[i+3];
-        }
-    }
+sk_sp<SkImage> mo_make_image(const uint32_t* p, sk_sp<SkData> pixels) {
+    if (!pixels || pixels->size() != size_t(p[1]) * p[2] * 4) return nullptr;
     const auto info = SkImageInfo::Make(p[1], p[2], kRGBA_8888_SkColorType,
         kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
-    // Borrowed immutable pixels live through the synchronous complete render.
-    // All shaders/images are destroyed before control returns to the host.
     return SkImages::RasterFromData(info, std::move(pixels), size_t(p[1]) * 4);
 }
 

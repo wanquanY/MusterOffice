@@ -4,6 +4,7 @@
 #include "mo_miter_clip.h"
 #include "mo_gradient.h"
 #include "mo_image.h"
+#include "mo_pixel_work.h"
 #include "include/core/SkCanvas.h"
 #include "include/core/SkColorSpace.h"
 #include "include/core/SkImageInfo.h"
@@ -11,6 +12,8 @@
 #include "include/core/SkPath.h"
 #include "include/core/SkPathBuilder.h"
 #include "include/core/SkSurface.h"
+#include "src/core/SkBitmapDevice.h"
+#include "src/core/SkCanvasPriv.h"
 #include <atomic>
 #include <algorithm>
 #include <bit>
@@ -196,127 +199,275 @@ extern "C" uint32_t mo_skia_elliptic_gradients_abi(void) { return 1; }
 extern "C" uint32_t mo_skia_compositing_abi(void) { return 1; }
 extern "C" uint32_t mo_skia_images_abi(void) { return 2; }
 extern "C" void mo_skia_free(void* pixels) { std::free(pixels); }
-static int32_t raster(const uint32_t* r, uint32_t words, const uint8_t* data,
-                      uint32_t bytes_in, bool with_images, uint8_t** pixels, uint32_t* length) {
-    if (!pixels || !length) return 1;
-    *pixels = nullptr;
-    *length = 0;
-    if (invalid.load(std::memory_order_acquire)) return 4;
-    Plan plan{};
-    if (const int status = validate(r, words, data, bytes_in, with_images, plan)) return status;
+// Retained only within one host-owned component instance. No scheduler, clock,
+// background work, resource fetch or global task registry lives here.
+struct MoSkiaRasterTask {
+    const uint32_t* r;
+    const uint8_t* data;
+    Plan plan;
     MoGradientState gradient_state;
+    MoPixelTransfer transfer;
     std::vector<sk_sp<SkShader>> shaders;
-    shaders.reserve(r[9] + plan.brush_count + plan.snapshot_count);
-    for (uint32_t i = 0; i < r[9]; ++i) {
-        auto shader = mo_make_gradient(r + plan.gradients[i], &gradient_state);
-        if (!shader) return fail_allocation();
-        shaders.push_back(std::move(shader));
-    }
     std::vector<sk_sp<SkImage>> images;
-    images.reserve(plan.image_count);
-    for (uint32_t i = 0; i < plan.image_count; ++i) {
-        auto image = mo_make_image(r + plan.images + 4*i, data);
-        if (!image) return fail_allocation();
-        images.push_back(std::move(image));
-    }
-    for (uint32_t i = 0; i < plan.brush_count; ++i) {
-        const auto* brush = r + plan.brushes + plan.brush_words*i;
-        auto shader = plan.brush_words == 14 ? mo_make_image_domain(brush, images[brush[0]])
-                                            : mo_make_image_brush(brush, images[brush[0]]);
-        if (!shader) return fail_allocation();
-        shaders.push_back(std::move(shader));
-    }
-    shaders.resize(r[9] + plan.brush_count + plan.snapshot_count);
-    const uint32_t bytes = r[2] * r[3] * 4;
-    std::unique_ptr<uint8_t, decltype(&std::free)> buffer(
-        static_cast<uint8_t*>(std::malloc(bytes)), &std::free);
-    if (!buffer) return fail_allocation();
-    const auto info = SkImageInfo::Make(r[2], r[3], kRGBA_8888_SkColorType,
-                                      kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
-    auto surface = SkSurfaces::WrapPixels(info, buffer.get(), size_t(r[2]) * 4);
-    if (!surface) return fail_allocation();
-    auto* canvas = surface->getCanvas();
-    canvas->clear(color(r[4]));
+    std::unique_ptr<uint8_t, decltype(&std::free)> buffer{nullptr, &std::free};
+    sk_sp<SkSurface> surface;
     std::vector<SkPath> paths;
-    paths.reserve(r[5]);
-    for (uint32_t i = 0; i < r[5]; ++i) {
-        uint32_t pos = plan.offsets[i];
-        SkPathBuilder builder(r[pos] ? SkPathFillType::kEvenOdd : SkPathFillType::kWinding);
-        pos += 2;
-        for (uint32_t j = 0; j < plan.counts[i]; ++j, pos += 7) {
-            const float a = scalar(r[pos + 1]), b = scalar(r[pos + 2]);
-            const float c = scalar(r[pos + 3]), d = scalar(r[pos + 4]);
-            const float e = scalar(r[pos + 5]), f = scalar(r[pos + 6]);
-            switch (r[pos]) {
-                case 1: builder.moveTo(a, b); break;
-                case 2: builder.lineTo(a, b); break;
-                case 3: builder.quadTo(a, b, c, d); break;
-                case 4: builder.cubicTo(a, b, c, d, e, f); break;
-                case 5: builder.close(); break;
-            }
-        }
-        paths.push_back(builder.detach());
-    }
+    std::unique_ptr<SkPathBuilder> builder;
+    SkImageInfo info;
     SkPaint paint;
-    paint.setAntiAlias(true);
-    paint.setStyle(SkPaint::kFill_Style);
-    paint.setBlendMode(SkBlendMode::kSrcOver);
-    MoClipStack clip_stack;
-    uint32_t next_snapshot = 0;
-    for (uint32_t i = 0, pos = plan.draws; i < r[6]; ++i, pos += plan.draw_words) {
-        if (next_snapshot < plan.snapshot_count && r[plan.snapshots + next_snapshot] == i) {
-            auto shader = mo_snapshot_shader(info, buffer.get(), bytes);
+    MoClipStack clips;
+    enum Phase { Gradients, Images, Brushes, Surface, Clear, Paths, Draws, Complete, Taken, Failed } phase = Gradients;
+    uint32_t index = 0, command = 0, next_snapshot = 0;
+    int status = 0;
+    bool draw_ready = false;
+    bool drawing = false;
+    mo::RasterStorage drawing_storage;
+    // Destroy suspended scan/blitter frames before their canvas, paint, paths
+    // and output buffer. Cancellation cannot leave borrowers of a dead device.
+    mo::RasterTask drawing_task;
+
+    MoSkiaRasterTask(const uint32_t* request, const uint8_t* pixels, const Plan& parsed)
+        : r(request), data(pixels), plan(parsed) {}
+
+    int prepare_draw() {
+        auto* canvas = surface->getCanvas();
+        const uint32_t pos = plan.draws + index * plan.draw_words;
+        if (next_snapshot < plan.snapshot_count && r[plan.snapshots + next_snapshot] == index) {
+            if (!transfer.active()) {
+                if (!transfer.begin(buffer.get(), size_t(r[2]) * r[3] * 4, MoPixelTransfer::Copy))
+                    return fail_allocation();
+                return 0;
+            }
+            if (!transfer.advance()) return 0;
+            auto shader = mo_snapshot_shader(info, transfer.take());
             if (!shader) return fail_allocation();
             shaders[r[9] + plan.brush_count + next_snapshot++] = std::move(shader);
+            return 0;
         }
         if (plan.draw_words >= 7) {
-            const uint32_t old_depth = clip_stack.length;
-            const uint32_t common = clip_stack.transition(r + plan.clips, r[pos + 6]);
+            const uint32_t old_depth = clips.length;
+            const uint32_t common = clips.transition(r + plan.clips, r[pos + 6]);
             for (uint32_t k = common; k < old_depth; ++k) canvas->restore();
-            for (uint32_t k = common; k < clip_stack.length; ++k) {
-                const auto* clip = r + plan.clips + (clip_stack.nodes[k] - 1) * 4;
+            for (uint32_t k = common; k < clips.length; ++k) {
+                const auto* clip = r + plan.clips + (clips.nodes[k] - 1) * 4;
                 canvas->save();
                 canvas->translate(scalar(clip[2]), scalar(clip[3]));
                 canvas->clipPath(paths[clip[1]], SkClipOp::kIntersect, true);
                 canvas->resetMatrix();
             }
         }
-        canvas->save();
-        canvas->translate(scalar(r[pos + 1]), scalar(r[pos + 2]));
-        // World-space brushes do not move when a reused local path is placed.
-        // The inverse translation cancels the canvas placement only for paint.
+        // World-space brushes remain independent of local path placement.
         auto shader = r[pos + 5] ? shaders[r[pos + 5] - 1]->makeWithLocalMatrix(
             SkMatrix::Translate(-scalar(r[pos + 1]), -scalar(r[pos + 2]))) : nullptr;
         if (r[pos + 5] && !shader) return fail_allocation();
+        paint.setAntiAlias(true);
         paint.setShader(std::move(shader));
         paint.setColor(r[pos + 5] ? SK_ColorWHITE : color(r[pos + 3]));
         paint.setBlendMode(plan.draw_words == 8 && r[pos + 7] ? SkBlendMode::kSrc : SkBlendMode::kSrcOver);
         if (r[pos + 4]) {
-            const uint32_t s = plan.strokes + (r[pos + 4] - 1) * 4;
+            const uint32_t stroke = plan.strokes + (r[pos + 4] - 1) * 4;
             paint.setStyle(SkPaint::kStroke_Style);
-            paint.setStrokeWidth(scalar(r[s]));
-            paint.setStrokeCap(r[s + 1] == 0 ? SkPaint::kButt_Cap : r[s + 1] == 1 ? SkPaint::kRound_Cap : SkPaint::kSquare_Cap);
-            paint.setStrokeJoin(r[s + 2] == 1 ? SkPaint::kRound_Join : r[s + 2] == 2 ? SkPaint::kBevel_Join : SkPaint::kMiter_Join);
-            paint.setStrokeMiter(scalar(r[s + 3]));
-            if (r[s + 2] == 3) {
-                mo_draw_miter_clip(*canvas, paths[r[pos]], paint);
-                canvas->restore();
-                if (const auto status=gradient_state.failure.load(std::memory_order_relaxed)) return status;
-                continue;
-            }
-        } else {
-            paint.setStyle(SkPaint::kFill_Style);
-        }
-        canvas->drawPath(paths[r[pos]], paint);
-        canvas->restore();
-        if (const auto status=gradient_state.failure.load(std::memory_order_relaxed)) return status;
+            paint.setStrokeWidth(scalar(r[stroke]));
+            paint.setStrokeCap(r[stroke + 1] == 0 ? SkPaint::kButt_Cap : r[stroke + 1] == 1 ? SkPaint::kRound_Cap : SkPaint::kSquare_Cap);
+            paint.setStrokeJoin(r[stroke + 2] == 1 ? SkPaint::kRound_Join : r[stroke + 2] == 2 ? SkPaint::kBevel_Join : SkPaint::kMiter_Join);
+            paint.setStrokeMiter(scalar(r[stroke + 3]));
+        } else paint.setStyle(SkPaint::kFill_Style);
+        draw_ready = true;
+        return 0;
     }
-    for (uint32_t k = 0; k < clip_stack.length; ++k) canvas->restore();
-    // Destroy Skia's references before transferring the caller-owned buffer.
-    surface.reset();
-    *pixels = buffer.release();
-    *length = bytes;
+
+    int draw() {
+        if (index == r[6]) {
+            for (uint32_t k = 0; k < clips.length; ++k) surface->getCanvas()->restore();
+            surface.reset(); // No references to the output when it is transferred.
+            phase = Complete;
+            return 0;
+        }
+        if (!draw_ready) return prepare_draw();
+        auto* canvas = surface->getCanvas();
+        if (!drawing) {
+            canvas->save();
+            const uint32_t pos = plan.draws + index * plan.draw_words;
+            canvas->translate(scalar(r[pos + 1]), scalar(r[pos + 2]));
+            // WrapPixels creates a bitmap device; no layers/filters or other
+            // device types are accepted by this component's paint grammar.
+            auto* device = static_cast<SkBitmapDevice*>(SkCanvasPriv::TopDevice(canvas));
+            device->setMoRasterTaskSink(&drawing_task, &drawing_storage);
+            if (r[pos + 4] && r[plan.strokes + (r[pos + 4] - 1) * 4 + 2] == 3)
+                mo_draw_miter_clip(*canvas, paths[r[pos]], paint);
+            else canvas->drawPath(paths[r[pos]], paint);
+            device->setMoRasterTaskSink(nullptr);
+            drawing = true;
+            // Capture itself does no scan work. Enter the captured computation
+            // in this work unit; its real scan suspension points remain intact.
+        }
+        const auto state = drawing_task.step();
+        if (state == mo::RasterTask::Status::AllocationFailure) return fail_allocation();
+        if (const auto failure = gradient_state.failure.load(std::memory_order_relaxed)) return failure;
+        if (state == mo::RasterTask::Status::Yielded) return 0;
+        drawing_task = {};
+        canvas->restore();
+        if (const auto failure = gradient_state.failure.load(std::memory_order_relaxed)) return failure;
+        ++index; draw_ready = false; drawing = false;
+        return 0;
+    }
+
+    int advance() {
+        switch (phase) {
+            case Gradients:
+                if (index < r[9]) {
+                    auto shader = mo_make_gradient(r + plan.gradients[index++], &gradient_state);
+                    if (!shader) return fail_allocation();
+                    shaders.push_back(std::move(shader));
+                } else { phase = Images; index = 0; }
+                break;
+            case Images:
+                if (index < plan.image_count) {
+                    const auto* descriptor = r + plan.images + 4 * index;
+                    const size_t bytes = size_t(descriptor[1]) * descriptor[2] * 4;
+                    sk_sp<SkData> pixels;
+                    if (descriptor[3]) {
+                        pixels = SkData::MakeWithoutCopy(data + descriptor[0], bytes);
+                    } else {
+                        // Interpolating straight channels would tint translucent
+                        // edges. Retain exact normalization, once per resource.
+                        if (!transfer.active()) {
+                            if (!transfer.begin(data + descriptor[0], bytes, MoPixelTransfer::Premultiply))
+                                return fail_allocation();
+                            break;
+                        }
+                        if (!transfer.advance()) break;
+                        pixels = transfer.take();
+                    }
+                    auto image = mo_make_image(descriptor, std::move(pixels));
+                    if (!image) return fail_allocation();
+                    images.push_back(std::move(image)); ++index;
+                } else { phase = Brushes; index = 0; }
+                break;
+            case Brushes:
+                if (index < plan.brush_count) {
+                    const auto* brush = r + plan.brushes + plan.brush_words * index++;
+                    auto shader = plan.brush_words == 14 ? mo_make_image_domain(brush, images[brush[0]])
+                                                        : mo_make_image_brush(brush, images[brush[0]]);
+                    if (!shader) return fail_allocation();
+                    shaders.push_back(std::move(shader));
+                } else {
+                    shaders.resize(r[9] + plan.brush_count + plan.snapshot_count);
+                    phase = Surface; index = 0;
+                }
+                break;
+            case Surface:
+                buffer.reset(static_cast<uint8_t*>(std::malloc(r[2] * r[3] * 4)));
+                if (!buffer) return fail_allocation();
+                info = SkImageInfo::Make(r[2], r[3], kRGBA_8888_SkColorType,
+                                         kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
+                phase = Clear;
+                break;
+            case Clear: {
+                // Uniform Src clearing has no path/AA state. Use the original
+                // Skia color conversion on bounded rows, then bind the complete
+                // surface once. Never subdivide or re-clip actual path draws.
+                const uint32_t rows = std::min(r[3] - index, mo_pixels_per_work_unit / r[2]);
+                auto part = SkSurfaces::WrapPixels(info.makeWH(r[2], rows),
+                    buffer.get() + size_t(index) * r[2] * 4, size_t(r[2]) * 4);
+                if (!part) return fail_allocation();
+                part->getCanvas()->clear(color(r[4]));
+                index += rows;
+                if (index < r[3]) break;
+                surface = SkSurfaces::WrapPixels(info, buffer.get(), size_t(r[2]) * 4);
+                if (!surface) return fail_allocation();
+                phase = Paths; index = 0;
+                break;
+            }
+            case Paths:
+                if (index < r[5]) {
+                    const uint32_t offset = plan.offsets[index];
+                    if (!builder) builder.reset(new (std::nothrow) SkPathBuilder(
+                        r[offset] ? SkPathFillType::kEvenOdd : SkPathFillType::kWinding));
+                    if (!builder) return fail_allocation();
+                    const uint32_t end = std::min(plan.counts[index], command + 4096);
+                    for (; command < end; ++command) {
+                        const uint32_t pos = offset + 2 + command * 7;
+                        const float a = scalar(r[pos + 1]), b = scalar(r[pos + 2]);
+                        const float c = scalar(r[pos + 3]), d = scalar(r[pos + 4]);
+                        const float e = scalar(r[pos + 5]), f = scalar(r[pos + 6]);
+                        switch (r[pos]) {
+                            case 1: builder->moveTo(a, b); break;
+                            case 2: builder->lineTo(a, b); break;
+                            case 3: builder->quadTo(a, b, c, d); break;
+                            case 4: builder->cubicTo(a, b, c, d, e, f); break;
+                            case 5: builder->close(); break;
+                        }
+                    }
+                    if (command == plan.counts[index]) {
+                        paths.push_back(builder->detach()); builder.reset(); ++index; command = 0;
+                    }
+                } else { phase = Draws; index = 0; }
+                break;
+            case Draws: return draw();
+            case Complete: return 0;
+            case Failed: return status;
+            case Taken: return 1;
+        }
+        return 0;
+    }
+};
+
+extern "C" uint32_t mo_skia_execution_abi(void) { return 1; }
+extern "C" int32_t mo_skia_raster_begin(const uint32_t* r, uint32_t words,
+    const uint8_t* data, uint32_t bytes, uint32_t with_images, MoSkiaRasterTask** out) {
+    if (!out) return 1;
+    *out = nullptr;
+    if (invalid.load(std::memory_order_acquire)) return 4;
+    if (with_images > 1 || (!with_images && (data || bytes))) return 1;
+    Plan plan{};
+    if (const int status = validate(r, words, data, bytes, with_images != 0, plan)) return status;
+    auto task = std::unique_ptr<MoSkiaRasterTask>(new (std::nothrow) MoSkiaRasterTask(r, data, plan));
+    if (!task) return fail_allocation();
+    task->shaders.reserve(r[9] + plan.brush_count + plan.snapshot_count);
+    task->images.reserve(plan.image_count);
+    task->paths.reserve(r[5]);
+    *out = task.release();
     return 0;
+}
+extern "C" int32_t mo_skia_raster_step(MoSkiaRasterTask* task, uint32_t budget, uint32_t* complete) {
+    if (!complete) return 1;
+    *complete = 0;
+    if (invalid.load(std::memory_order_acquire)) return 4;
+    if (!task || !budget || budget > 4096) return 1;
+    int result = 0;
+    for (uint32_t i = 0; i < budget; ++i) {
+        result = task->advance();
+        if (result && task->phase != MoSkiaRasterTask::Taken) {
+            task->status = result; task->phase = MoSkiaRasterTask::Failed;
+        }
+        if (result || task->phase == MoSkiaRasterTask::Complete) break;
+    }
+    if (!result && task->phase == MoSkiaRasterTask::Complete) *complete = 1;
+    return result;
+}
+extern "C" int32_t mo_skia_raster_take(MoSkiaRasterTask* task, uint8_t** pixels, uint32_t* bytes) {
+    if (!pixels || !bytes) return 1;
+    *pixels = nullptr; *bytes = 0;
+    if (invalid.load(std::memory_order_acquire)) return 4;
+    if (!task) return 1;
+    if (task->phase == MoSkiaRasterTask::Failed) return task->status;
+    if (task->phase != MoSkiaRasterTask::Complete) return 1;
+    *pixels = task->buffer.release(); *bytes = task->r[2] * task->r[3] * 4;
+    task->phase = MoSkiaRasterTask::Taken;
+    return 0;
+}
+extern "C" void mo_skia_raster_drop(MoSkiaRasterTask* task) { delete task; }
+static int32_t raster(const uint32_t* r, uint32_t words, const uint8_t* data,
+                      uint32_t bytes, bool with_images, uint8_t** pixels, uint32_t* length) {
+    if (!pixels || !length) return 1;
+    *pixels = nullptr; *length = 0;
+    MoSkiaRasterTask* raw = nullptr;
+    if (const auto status = mo_skia_raster_begin(r, words, data, bytes, with_images, &raw)) return status;
+    const std::unique_ptr<MoSkiaRasterTask> task(raw);
+    uint32_t complete = 0;
+    while (!complete) if (const auto status = mo_skia_raster_step(raw, 4096, &complete)) return status;
+    return mo_skia_raster_take(raw, pixels, length);
 }
 
 extern "C" int32_t mo_skia_raster(const uint32_t* r, uint32_t words,

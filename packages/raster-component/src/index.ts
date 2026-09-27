@@ -1,4 +1,7 @@
 /** No fetching, files, fonts, clock or ambient environment. Host owns code trust. */
+import {RasterExecution, type RasterExecutionStart} from './execution.js';
+export {RasterExecution} from './execution.js';
+export type {RasterExecutionStart, RasterExecutionStep} from './execution.js';
 export interface RasterModule {
   HEAPU8: Uint8Array;
   HEAPU32: Uint32Array;
@@ -17,6 +20,11 @@ export interface RasterModule {
   _mo_image_decode_abi?(): number;
   _mo_image_decode?(encoded: number, length: number, output: number, info: number): number;
   _mo_skia_raster(request: number, words: number, output: number, bytes: number): number;
+  _mo_skia_execution_abi?(): number;
+  _mo_skia_raster_begin?(request: number, words: number, images: number, imageBytes: number, withImages: number, task: number): number;
+  _mo_skia_raster_step?(task: number, workUnits: number, complete: number): number;
+  _mo_skia_raster_take?(task: number, pixels: number, bytes: number): number;
+  _mo_skia_raster_drop?(task: number): void;
 }
 export type RasterFactory = (options: {
   instantiateWasm(imports: WebAssembly.Imports, receive: (instance: WebAssembly.Instance, module: WebAssembly.Module) => void): WebAssembly.Exports;
@@ -78,6 +86,29 @@ export class RasterComponent {
   }
   get invalid(): boolean { return !this.#module; }
   invalidate(): void { this.#module = undefined; }
+  get supportsExecution(): boolean {
+    const m = this.#module;
+    try { return !!m && m._mo_skia_execution_abi?.() === 1 &&
+      typeof m._mo_skia_raster_begin === 'function' && typeof m._mo_skia_raster_step === 'function' &&
+      typeof m._mo_skia_raster_take === 'function' && typeof m._mo_skia_raster_drop === 'function'; }
+    catch (error) {this.invalidate(); throw error;}
+  }
+  beginRaster(frame: Uint32Array, images?: Uint8Array): RasterExecutionStart {
+    const m = this.#module;
+    if (!m || this.#busy) throw Error('Raster instance unavailable');
+    if (!this.supportsExecution) throw Error('Raster execution extension unavailable');
+    for (const input of images ? [frame, images] : [frame]) {
+      if (!(input.buffer instanceof ArrayBuffer) || input.buffer === m.HEAPU8.buffer) {
+        throw Error('Execution inputs must use independent host ArrayBuffers');
+      }
+    }
+    if (frame.length < 10 || frame.length > 2895950 || (images && images.byteLength > 67108864)) {
+      return {status: 1, pixels: new Uint8Array(0)};
+    }
+    this.#busy = true;
+    return RasterExecution.begin(m, frame, images, () => this.#module === m,
+      () => this.invalidate(), () => {this.#busy = false;});
+  }
   get supportsClips(): boolean {
     const m = this.#module;
     try { return !!m && typeof m._mo_skia_clips_abi === "function" && m._mo_skia_clips_abi() === 1; }

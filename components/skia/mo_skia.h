@@ -32,6 +32,27 @@ uint32_t mo_skia_rect_gradients_abi(void);
 // V12 adds bounded elliptic fields. Status 3 also covers numerical precision
 // exhaustion. All failures retain zero output ownership; instance stays valid.
 uint32_t mo_skia_elliptic_gradients_abi(void);
+// Optional retained execution extension 1. Borrow request/images immutably until
+// drop; they must remain alive and cannot alias output. Handles are single-owner
+// host capabilities, never serialized or shared between component instances.
+// begin validates the whole grammar before allocating a task. step performs at
+// most work_units state transitions (one paint, <=4096 path commands,
+// <=65536 pixels of image normalization/clear/snapshot copy, allocation,
+// draw setup or a retained Skia scan interval/row). Work units are NOT time
+// guarantees. Filled paths retain edges, AA accumulators and blitters across
+// steps. Geometry/stroke preparation, a complex scan interval, hairlines, clips,
+// small mask commits, validation, allocations and input/output transfers can
+// still be synchronous. No path re-clipping or partial output is used to yield.
+typedef struct MoSkiaRasterTask MoSkiaRasterTask;
+uint32_t mo_skia_execution_abi(void);
+int32_t mo_skia_raster_begin(const uint32_t* request, uint32_t words,
+    const uint8_t* images, uint32_t image_bytes, uint32_t with_images, MoSkiaRasterTask** task);
+int32_t mo_skia_raster_step(MoSkiaRasterTask* task, uint32_t work_units, uint32_t* complete);
+// Only a completed successful task can transfer its pixels, exactly once.
+int32_t mo_skia_raster_take(MoSkiaRasterTask* task, uint8_t** pixels, uint32_t* byte_length);
+// Cancel or release. No pixel ownership escapes; null is permitted. An invalid
+// component must instead be quarantined by terminating its process/Worker.
+void mo_skia_raster_drop(MoSkiaRasterTask* task);
 void mo_skia_free(void *pixels);
 uint32_t mo_skia_abi(void);
 #ifdef __cplusplus

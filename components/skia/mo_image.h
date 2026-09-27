@@ -1,4 +1,5 @@
 #pragma once
+#include "include/core/SkData.h"
 #include "include/core/SkImage.h"
 #include "include/core/SkShader.h"
 #include <cstdint>
@@ -11,7 +12,9 @@ int mo_validate_images(const uint32_t* descriptors, uint32_t count,
 // Affine maps source pixel boundaries to world/device pixels. No mipmapping.
 int mo_validate_image_brush(const uint32_t* brush, const uint32_t* descriptors,
                             uint32_t count);
-sk_sp<SkImage> mo_make_image(const uint32_t* descriptor, const uint8_t* data);
+// Already normalized immutable pixels, borrowed or owned by SkData. A borrowed
+// bundle must outlive the entire retained task, including all of its shaders.
+sk_sp<SkImage> mo_make_image(const uint32_t* descriptor, sk_sp<SkData> pixels);
 sk_sp<SkShader> mo_make_image_brush(const uint32_t* brush, const sk_sp<SkImage>& image);
 // V6 appends source pixel domain [left,top,right,bottom] to the V5 record.
 int mo_validate_image_domain(const uint32_t* brush);

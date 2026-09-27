@@ -1,0 +1,950 @@
+{
+  "format": "musteroffice.stepped-raster-verification/1",
+  "date": "2026-09-27",
+  "status": "passed-scoped-component-lifecycle-with-open-primitive-suspension-gap",
+  "scope": "Retained preparation and whole-Skia-draw boundaries. No pixel/timing bound, in-primitive suspension, end-to-end asynchronous playback, complete PPT or cancellation SLA acceptance.",
+  "environment": {
+    "os": "Darwin",
+    "machine": "arm64",
+    "osVersion": "26.2",
+    "node": "v23.5.0",
+    "python": "3.13.0"
+  },
+  "boundary": {
+    "core": "Rust office semantics unchanged. Domain-independent graphics component stores bounded task state.",
+    "task": "Explicit borrowed C inputs; TS owns copied component memory until take/close. No partial pixels.",
+    "host": "Scheduling/yield/cancel between steps, Worker/process isolation, result publication and resources.",
+    "noMusterworkWrites": true,
+    "noNewRegistryDependencies": true,
+    "noProductUiPermissionsStorage": true
+  },
+  "sources": {
+    "baseline": {
+      "path": ".codex-work/stepped-raster/baseline.json",
+      "byteLength": 269798,
+      "sha256": "238d309186eb38a8d09ef647f9d1dc9904f3d4f4f44274aaf66baa0dca44cb32"
+    },
+    "baselineFiles": 2259,
+    "changed": [
+      {
+        "path": "components/skia/mo_skia.cpp",
+        "byteLength": 20690,
+        "sha256": "5b3a25ebbe0c9c8156a42b691ea5f2393d21733675f2e5ac26ac2040299899a7",
+        "previousSha256": "b78f4b14d9a753d7069618013222479192d1c2763a6700bee64575d8bec444ed"
+      },
+      {
+        "path": "components/skia/mo_skia.h",
+        "byteLength": 3584,
+        "sha256": "55a36f2fc8ccfd9ffe3f9cb338359398c5df1cdada0264369a3304e06752e860",
+        "previousSha256": "8ae5c84a2b9ea8d0fb4722cf1d21bb13fd7886d530b2734beaba7c605c4d4adc"
+      },
+      {
+        "path": "docs/README.md",
+        "byteLength": 26462,
+        "sha256": "914f47c8b12c4dcf8e2495f9fb02fd5a6dfb3ee03ae51ac144d17908c89797e2",
+        "previousSha256": "405eb8c1ff69360a5fbbe93c2567776273b3b69f0550c76752218ade3fb21119"
+      },
+      {
+        "path": "docs/design/presentations/runtime-performance.md",
+        "byteLength": 12638,
+        "sha256": "9edff09265688ce4ca2bae77d61e84a1ac99fa4335fdc23dd08b33a1856ef0f7",
+        "previousSha256": "61ba6429392cf5482c2553f9dba8f9d038964b701d4fd3e322883051b2af6c8a"
+      },
+      {
+        "path": "docs/implementation/progress.md",
+        "byteLength": 101081,
+        "sha256": "3d735e008153aab2b3cd44ed74de15a618cf914c530f8d872542bd5379d6c4c1",
+        "previousSha256": "ae1d539fa6b911a6676f9546f20ce706ca26fd10f216bd23e9a8508bd0d3b7d3"
+      },
+      {
+        "path": "docs/implementation/stepped-raster.md",
+        "byteLength": 5887,
+        "sha256": "a32dfb6ed44351bc6478a98a92176ec060a402fc6cf663022476c1ae92b9c471",
+        "previousSha256": null
+      },
+      {
+        "path": "packages/raster-component/src/execution.ts",
+        "byteLength": 5702,
+        "sha256": "9dd4042dd1b88e7356e4adc525acf54169ad9d2baaf9b8564e0aefee77a23dc3",
+        "previousSha256": null
+      },
+      {
+        "path": "packages/raster-component/src/index.ts",
+        "byteLength": 15157,
+        "sha256": "7b3663adaa3f97e6af45e190fcd169a0460c343b012acf2939b69a57536e86aa",
+        "previousSha256": "71b048aa2f4307691f6ddb440cff5c90e511396daa78d60a016e0005b60ae806"
+      },
+      {
+        "path": "tools/components/build-skia.py",
+        "byteLength": 11411,
+        "sha256": "ad733d40f97bc8213a297f5b01506b46efd98fdb0342b6dedb36a5b873ad2e9b",
+        "previousSha256": "5f67776aca649dc2003924c4ea7d659be07d3113c95f11a070a928609c2aee1f"
+      },
+      {
+        "path": "tools/verification/skia-step-probe.cpp",
+        "byteLength": 3728,
+        "sha256": "d5e3ae7cc8e05ec17067ef360b23d3644cbcc2e16e1b5abeaf7fb2191cae6e5d",
+        "previousSha256": null
+      },
+      {
+        "path": "tools/verification/stepped-raster-native.py",
+        "byteLength": 3229,
+        "sha256": "dbe55e65af41ea2408feb4a236135a78c2514b40ad88e343689219ff59362a9d",
+        "previousSha256": null
+      },
+      {
+        "path": "tools/verification/stepped-raster-wasm.mjs",
+        "byteLength": 6040,
+        "sha256": "c4eac118dc1319095faf9ac25985d7ef5712fc010ac81e5437d93f5d2fd0f7c0",
+        "previousSha256": null
+      }
+    ],
+    "unchangedScopes": {
+      "crates/": 685,
+      "contracts/": 120,
+      "fixtures/": 30,
+      "integrations/": 8,
+      "tools/mo-mcp/": 44,
+      "tools/playback-sdk/": 7,
+      "packages/contracts/": 125,
+      "packages/playback-client/": 9,
+      "components/image-codec/": 10,
+      "components/harfbuzz/": 9,
+      "Cargo.toml": 1,
+      "Cargo.lock": 1,
+      "package.json": 1,
+      "pnpm-lock.yaml": 1,
+      "tools/mo-mcp/Cargo.lock": 1,
+      "components/skia/lock.json": 1,
+      "components/skia/cpu-profile.json": 1
+    },
+    "sourceLineCounts": {
+      "components/skia/mo_skia.cpp": 420,
+      "components/skia/mo_skia.h": 58,
+      "packages/raster-component/src/execution.ts": 126,
+      "packages/raster-component/src/index.ts": 287,
+      "tools/components/build-skia.py": 170,
+      "tools/verification/skia-step-probe.cpp": 73,
+      "tools/verification/stepped-raster-native.py": 63,
+      "tools/verification/stepped-raster-wasm.mjs": 101
+    },
+    "localLinksChecked": 389,
+    "gitDiffCheck": "passed",
+    "assembler": {
+      "path": ".codex-work/stepped-raster/assemble_evidence.py",
+      "byteLength": 13587,
+      "sha256": "cf9fa330156185beb97c618e354578ac62056ba0cf6bd434a70d571c76a67837"
+    }
+  },
+  "builds": {
+    "adapterRebuilds": [
+      {
+        "record": {
+          "path": ".codex-work/stepped-raster/native-02/build.json",
+          "byteLength": 471597,
+          "sha256": "0185c8afee9665b6465f8e22ec52172ce2d675b5e1bfdeae9041b6614e3b24dc"
+        },
+        "artifacts": [
+          {
+            "path": ".codex-work/stepped-raster/native-02/libmo_skia_adapter.a",
+            "sha256": "af290d001be5c7dbdd911899f7566274793c79a43ab20b2964ddba88de9367a0",
+            "byteLength": 106256
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-02/mo-gradient-plane.o",
+            "sha256": "0bebcb4729885bcb796debd3a6628cf98d7ed6fceb46bb3407459a6a650f4f18",
+            "byteLength": 4512
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-02/mo-gradient.o",
+            "sha256": "55a5759c82269726bfa7d57e19280c4ad8876bf227659e0b153cf31f99529ee6",
+            "byteLength": 5952
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-02/mo-image-domain.o",
+            "sha256": "fb22fff3f666d69ae750e13d2b3046a2be25e5d0159272a3e92b4e65217cc011",
+            "byteLength": 4432
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-02/mo-image.o",
+            "sha256": "a6454a75952b1748df00a662eb891dcfe50f80b8764fe264b4af169ccec695f3",
+            "byteLength": 3784
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-02/mo-miter-clip.o",
+            "sha256": "29b84eacb51b5e02312a882ac6d6b0c64efd8d4c94f639e974a1209d6b23f465",
+            "byteLength": 2232
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-02/mo-office-gradient.o",
+            "sha256": "402fc49e606d2c2c4e4eaf8cc6e35cc40d933cbf8a3d6499c195742d8e2d1e38",
+            "byteLength": 3248
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-02/mo-skia-adapter.o",
+            "sha256": "e00755d459e187875a303505d6d73ecea4021774f028f804054474de2dfbf2e1",
+            "byteLength": 20256
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-02/mo-skia-probe",
+            "sha256": "8d44e40887d877f848b8ae88bf3d0f0c45ae1a808e4386b95acb3fedbf73e6c8",
+            "byteLength": 2146000
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-02/mo_decode.o",
+            "sha256": "74e065fbda4fa5d8207849fd4d74858f596d3869cc613833a32485e1388ef266",
+            "byteLength": 2496
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-02/mo_elliptic_field.o",
+            "sha256": "cd91d5158848344723c3dc6d75ded472f005f994ca90aa69ca903c6859bc5f5a",
+            "byteLength": 18240
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-02/mo_elliptic_prepared.o",
+            "sha256": "c2c4f256fd9d5c91c52ab2870ec03467c0baf53af1544c7a12705b37c421fa6f",
+            "byteLength": 9736
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-02/mo_envelope.o",
+            "sha256": "202d2902933b92c0ea372a1df8218fb396820ac38002460cf71cc0fe21df6f70",
+            "byteLength": 5416
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-02/mo_gradient_coordinates.o",
+            "sha256": "04234afb7db39f7d80f57ed2d3827cc5b7c98b97e4016027a6fbdff40f07b327",
+            "byteLength": 18880
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-02/native-link.map",
+            "sha256": "0af7e79f8a829afaf89bdd9ab094a18ddf34a9b1881b22d46b26ead02d8b066e",
+            "byteLength": 1344846
+          }
+        ],
+        "scope": "Rebuilt all adapter C++ against hash-verified retained upstream Skia/codec archives. No dependency or upstream source change."
+      },
+      {
+        "record": {
+          "path": ".codex-work/stepped-raster/native-asan-01/build.json",
+          "byteLength": 482991,
+          "sha256": "93346f9ded06eacf6c96854a4ac7ef585eaea09c60ebae1648db54593c56a390"
+        },
+        "artifacts": [
+          {
+            "path": ".codex-work/stepped-raster/native-asan-01/libmo_skia_adapter_asan.a",
+            "sha256": "b2a56758fa0c2f5718ff3fbc85f2f9427cf33b439ccdbd07a1ea180315216b09",
+            "byteLength": 1146600
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-asan-01/mo-gradient-asan.o",
+            "sha256": "4ec477ff42408a87d7b97a10353ac5d9063dc735828349b488f5f1a6f89c1864",
+            "byteLength": 175952
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-asan-01/mo-gradient-plane-asan.o",
+            "sha256": "aba4ad3a713ff89f2cec924713e155e16e9a43c3c4644b00946ec673fa482acb",
+            "byteLength": 65336
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-asan-01/mo-image-asan.o",
+            "sha256": "2e4bc53db22e5e1c3e827d7d3970d49cab2e88975a96e219bc6aaf7cd6cd6a3e",
+            "byteLength": 88496
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-asan-01/mo-image-domain-asan.o",
+            "sha256": "6064614282a40cff1513b070447270b0e966062fce43eec6cc9dbce812d66f01",
+            "byteLength": 58440
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-asan-01/mo-miter-clip-asan.o",
+            "sha256": "c42e33889fe38e2a6b06fc529939babd8f338f6744ff768d5ed9a51a3c641e43",
+            "byteLength": 10312
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-asan-01/mo-office-gradient-asan.o",
+            "sha256": "13c1c891ba8f52aabd41109a3501134b22d2702d7ad3eefd9e459188d1e0e42e",
+            "byteLength": 34264
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-asan-01/mo-skia-adapter-asan.o",
+            "sha256": "8a101b8f12ab5148fa438615c1444746ef5bd6b5f75847a91b45c29d4c0edc76",
+            "byteLength": 350856
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-asan-01/mo-skia-probe-asan",
+            "sha256": "f3558ea149f9aceb7f2f86379382f56e66d5b5f0e9cecbd6e59ffa40b6985a21",
+            "byteLength": 14946064
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-asan-01/mo_decode-asan.o",
+            "sha256": "69da6d9124809e98c79575ec49be4ca6796a859918a46c654e9c90d61db21e6b",
+            "byteLength": 37472
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-asan-01/mo_elliptic_field-asan.o",
+            "sha256": "212462e6b2b92159b9e851f802cf358c6709c8d63aad522f53723d049493e1ed",
+            "byteLength": 81152
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-asan-01/mo_elliptic_prepared-asan.o",
+            "sha256": "10c16294297c3242aa89fa1773779a4f81968b32889872e7df0a8d2b6f97c482",
+            "byteLength": 43312
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-asan-01/mo_envelope-asan.o",
+            "sha256": "f18633182ac559ee88547ea530efd9ac6b3c0513bee6c9a8bc6a6047153e6819",
+            "byteLength": 55864
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-asan-01/mo_gradient_coordinates-asan.o",
+            "sha256": "c09205f807e6d3d2e7ca09f153dcab3a138a7b492da8a03a52d92f8801b43d74",
+            "byteLength": 124184
+          },
+          {
+            "path": ".codex-work/stepped-raster/native-asan-01/native-asan-link.map",
+            "sha256": "7c8a910b8f8e4ff6f36587d9143ab42770860ac384758204246f3367b07a0f2f",
+            "byteLength": 12695316
+          }
+        ],
+        "scope": "Rebuilt all adapter C++ against hash-verified retained upstream Skia/codec archives. No dependency or upstream source change."
+      },
+      {
+        "record": {
+          "path": ".codex-work/stepped-raster/wasm-02/build.json",
+          "byteLength": 453218,
+          "sha256": "9ec29301c661b9077b23ce4b4c3b17fc83664df506583fb14f71986facef53a5"
+        },
+        "artifacts": [
+          {
+            "path": ".codex-work/stepped-raster/wasm-02/mo-skia.mjs",
+            "sha256": "33385fba164ea12851e13e74ae5eeba3978189789232a057e232cb60e25b5cac",
+            "byteLength": 13954
+          },
+          {
+            "path": ".codex-work/stepped-raster/wasm-02/mo-skia.wasm",
+            "sha256": "e5e514678901e1b08dd3badbdc39909891089872a75604c9ea493baf4f32b2db",
+            "byteLength": 2372547
+          }
+        ],
+        "scope": "Rebuilt all adapter C++ against hash-verified retained upstream Skia/codec archives. No dependency or upstream source change."
+      }
+    ],
+    "nativeConsumerRecord": {
+      "path": ".codex-work/stepped-raster/native-02/native-build.json",
+      "byteLength": 48407,
+      "sha256": "afce1176477c96bb14fe2130c03d2db40220e5aa9872c8db5a1586e046ef75a2"
+    },
+    "recordProducer": {
+      "path": ".codex-work/stepped-raster/index-build.py",
+      "byteLength": 1509,
+      "sha256": "6c16aa7108296c091b0a58590d495fee533cfc037cb17b54253e0184fcccfedc"
+    },
+    "recipe": {
+      "path": ".codex-work/stepped-raster/build.py",
+      "byteLength": 2532,
+      "sha256": "3cb3563857e570d6fb3344d32189661b13544f1a42fe057b0c195282d92c4ea8"
+    },
+    "probeRecipe": {
+      "path": ".codex-work/stepped-raster/build-probe.py",
+      "byteLength": 519,
+      "sha256": "9351e1a4b9e9427105c733835898172676629a73624836803aafc50744592d83"
+    },
+    "upstreamRecompiled": false,
+    "upstreamLibrariesHashVerified": true
+  },
+  "verification": {
+    "gates": {
+      "report": {
+        "path": ".codex-work/stepped-raster/workspace-01/report.json",
+        "byteLength": 9784,
+        "sha256": "9e737dcc84746d1d7a0ba386beb542904ad4f4dd8f360c11fbf4b5f7e513d18b"
+      },
+      "sourceSha256": "09653cbedd6c24326eb9d897d059ff45a045c16d4493c186cd41748b2909aaf7",
+      "steps": [
+        {
+          "name": "verification-driver-tests",
+          "log": {
+            "path": ".codex-work/stepped-raster/workspace-01/verification-driver-tests.log",
+            "byteLength": 625,
+            "sha256": "97095eaf2dbb30fbfb2faa6139f60022ed28e6c42abee21a200f27d179bdb007"
+          },
+          "summaries": []
+        },
+        {
+          "name": "agent-package-tests",
+          "log": {
+            "path": ".codex-work/stepped-raster/workspace-01/agent-package-tests.log",
+            "byteLength": 783,
+            "sha256": "5d4a8a6b2192f9103d0b9658dd423dae9727cdb496cdc0889fc44c5b97cb0d57"
+          },
+          "summaries": []
+        },
+        {
+          "name": "playback-sdk-package-tests",
+          "log": {
+            "path": ".codex-work/stepped-raster/workspace-01/playback-sdk-package-tests.log",
+            "byteLength": 473,
+            "sha256": "f56a77c78239432eb68ac10fee97a3430875feaf0c3e2ea56e7f8dd9282ff41f"
+          },
+          "summaries": []
+        },
+        {
+          "name": "format",
+          "log": {
+            "path": ".codex-work/stepped-raster/workspace-01/format.log",
+            "byteLength": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "summaries": []
+        },
+        {
+          "name": "clippy",
+          "log": {
+            "path": ".codex-work/stepped-raster/workspace-01/clippy.log",
+            "byteLength": 598,
+            "sha256": "8aba2c7cd15d7adb29ba420f50f1a293066b3f8350c59e28eb618b9b490e521d"
+          },
+          "summaries": []
+        },
+        {
+          "name": "schemas",
+          "log": {
+            "path": ".codex-work/stepped-raster/workspace-01/schemas.log",
+            "byteLength": 7207,
+            "sha256": "691478796a0d51a5a7b92e87906e224c8110e27e89b0250bbaec78739dc78cf1"
+          },
+          "summaries": []
+        },
+        {
+          "name": "types",
+          "log": {
+            "path": ".codex-work/stepped-raster/workspace-01/types.log",
+            "byteLength": 4062,
+            "sha256": "d7e17b3835c0310c1f30511f433bd246de225322ce1f5251fba374558fc52372"
+          },
+          "summaries": []
+        },
+        {
+          "name": "client-tests",
+          "log": {
+            "path": ".codex-work/stepped-raster/workspace-01/client-tests.log",
+            "byteLength": 1900,
+            "sha256": "2ae3b08c066c5a377d2be10cfb56a9936443a1dea1b0b72fe6eb0ad828ea0ab2"
+          },
+          "summaries": []
+        },
+        {
+          "name": "playback-client-tests",
+          "log": {
+            "path": ".codex-work/stepped-raster/workspace-01/playback-client-tests.log",
+            "byteLength": 1666,
+            "sha256": "06de7dad7f15c57b3a6ecb46f47e9a1522f23ba331948c5655ee9f892922ccee"
+          },
+          "summaries": []
+        },
+        {
+          "name": "native-build",
+          "log": {
+            "path": ".codex-work/stepped-raster/workspace-01/native-build.log",
+            "byteLength": 387,
+            "sha256": "a3ac6ed7550cb02c72d662da38e14d0dc4141d2a4065ca1863b9752fafcc3a3c"
+          },
+          "summaries": []
+        },
+        {
+          "name": "native-render-tests",
+          "log": {
+            "path": ".codex-work/stepped-raster/workspace-01/native-render-tests.log",
+            "byteLength": 624,
+            "sha256": "2ed78e483f135c1477062270c8cd100754f337d644238257fa16f43c586c85cb"
+          },
+          "summaries": [
+            "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 21.62s"
+          ]
+        },
+        {
+          "name": "native-playback-tests",
+          "log": {
+            "path": ".codex-work/stepped-raster/workspace-01/native-playback-tests.log",
+            "byteLength": 523,
+            "sha256": "bd188ebe30eb6ce527af509e66076353954ca67e78e2133b7dbb803c0c2a87d2"
+          },
+          "summaries": [
+            "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.42s"
+          ]
+        },
+        {
+          "name": "native-host-export-tests",
+          "log": {
+            "path": ".codex-work/stepped-raster/workspace-01/native-host-export-tests.log",
+            "byteLength": 1024,
+            "sha256": "a9641b4eab7534ea8dcb404649976054ddc09b7df276d12cef8c1dfed3aa57eb"
+          },
+          "summaries": [
+            "test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 14.50s"
+          ]
+        },
+        {
+          "name": "native-export-tests",
+          "log": {
+            "path": ".codex-work/stepped-raster/workspace-01/native-export-tests.log",
+            "byteLength": 1665,
+            "sha256": "806f6e1574a6d8d6b268cd36a226f1556097797aeb17c6f272043c69e188ff44"
+          },
+          "summaries": [
+            "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+            "test result: ok. 12 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 11.04s"
+          ]
+        },
+        {
+          "name": "native-computation-cli-tests",
+          "log": {
+            "path": ".codex-work/stepped-raster/workspace-01/native-computation-cli-tests.log",
+            "byteLength": 344,
+            "sha256": "f05853fab046b4371ab274fec0e771c20c195c2423b695b6ac3c2d5db6b00bc8"
+          },
+          "summaries": [
+            "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 10.22s"
+          ]
+        }
+      ]
+    },
+    "commands": {
+      "native-build-02": {
+        "record": {
+          "path": ".codex-work/stepped-raster/native-build-02.json",
+          "byteLength": 8920,
+          "sha256": "0874446fe121dbec26026a91606c16789d166f67a8022a8e917752518cf144de"
+        },
+        "log": {
+          "path": ".codex-work/stepped-raster/native-build-02.log",
+          "byteLength": 34,
+          "sha256": "f519480951a0609214e18de539b1faa52841d3bafedb0069931181b8315e981d"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      "wasm-build-02": {
+        "record": {
+          "path": ".codex-work/stepped-raster/wasm-build-02.json",
+          "byteLength": 8917,
+          "sha256": "932d4f61987a3c54f10065d27d79ee061430bcc2220e34992ea51561895c9df5"
+        },
+        "log": {
+          "path": ".codex-work/stepped-raster/wasm-build-02.log",
+          "byteLength": 31,
+          "sha256": "4eade5f54df67a6bc3ed78255b126186b0226471c0331a6391b9b4db45d605fb"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      "asan-build-01": {
+        "record": {
+          "path": ".codex-work/stepped-raster/asan-build-01.json",
+          "byteLength": 8932,
+          "sha256": "7af9ce28c1562addbcc7fbb779178792cdeda3958fa302b8631a6725527f0234"
+        },
+        "log": {
+          "path": ".codex-work/stepped-raster/asan-build-01.log",
+          "byteLength": 39,
+          "sha256": "cb2e7f5939d7206fff31a448bc0ff3b2bacfa6626fa32634f68589ca1277a6d3"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      "native-step-probe-02": {
+        "record": {
+          "path": ".codex-work/stepped-raster/native-step-probe-02.json",
+          "byteLength": 8989,
+          "sha256": "fcfe4cfc02a16b945c5d478c8b68798cc53fd82b2e58c600c7b9c36a63bee399"
+        },
+        "log": {
+          "path": ".codex-work/stepped-raster/native-step-probe-02.log",
+          "byteLength": 1649,
+          "sha256": "f20adc46c1ea0c1a61a53a2dfc661cb38bfebf0934ec00b810dd9821b14005ab"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      "asan-step-probe-01": {
+        "record": {
+          "path": ".codex-work/stepped-raster/asan-step-probe-01.json",
+          "byteLength": 8997,
+          "sha256": "1d7f2ed4b9a625090d2dd8962a4b8de4487b56762a7e9f171c63fcc897775811"
+        },
+        "log": {
+          "path": ".codex-work/stepped-raster/asan-step-probe-01.log",
+          "byteLength": 1722,
+          "sha256": "f11ad8bc9b9ba16eb54a7bb498cd05ef0155dac31b9528395d73534e2dbaf6a3"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      "ts-build-01": {
+        "record": {
+          "path": ".codex-work/stepped-raster/ts-build-01.json",
+          "byteLength": 1143,
+          "sha256": "3eb815f1f591a8511c3bd5605fd1d9a4c8808e8776cb2012c8431375a22fc361"
+        },
+        "log": {
+          "path": ".codex-work/stepped-raster/ts-build-01.log",
+          "byteLength": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      "native-parity-02": {
+        "record": {
+          "path": ".codex-work/stepped-raster/native-parity-02.json",
+          "byteLength": 10152,
+          "sha256": "6e674485a715bd97530affd0d2d2b6d421b0ddfb8dd281ebd922deaad3a39c5b"
+        },
+        "log": {
+          "path": ".codex-work/stepped-raster/native-parity-02.log",
+          "byteLength": 137295,
+          "sha256": "8dd827255647df3f6216e0738ad613ff1883d000d535a2e74a6fb3cb68e787c2"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      "asan-parity-01": {
+        "record": {
+          "path": ".codex-work/stepped-raster/asan-parity-01.json",
+          "byteLength": 10295,
+          "sha256": "270052511f86baa4ccd4f2a1d367509a4a98c0bf63445b2646378324a035b3db"
+        },
+        "log": {
+          "path": ".codex-work/stepped-raster/asan-parity-01.log",
+          "byteLength": 181213,
+          "sha256": "38d32021e2502bee43a0fbfa4057b0cd80d9da9398c55a4512ddb189dc2f1110"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      "wasm-parity-01": {
+        "record": {
+          "path": ".codex-work/stepped-raster/wasm-parity-01.json",
+          "byteLength": 10115,
+          "sha256": "a43dedb76e4db9a3a8844901c5364cb0cb62c98694b1ab54f679cae60ab2e56e"
+        },
+        "log": {
+          "path": ".codex-work/stepped-raster/wasm-parity-01.log",
+          "byteLength": 85,
+          "sha256": "bb79c1cfe300423a542e70d52e2c1d8b63f3f21d728cbb8038d3e2ad92f24f6a"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      "package-01": {
+        "record": {
+          "path": ".codex-work/stepped-raster/package-01.json",
+          "byteLength": 41303,
+          "sha256": "221b8c4d6cdd8f7883e9998e0aaf2e672f1f4b2c3356bdf4ca4a0cbc8a1153d8"
+        },
+        "log": {
+          "path": ".codex-work/stepped-raster/package-01.log",
+          "byteLength": 100,
+          "sha256": "a4866270941f49a8b91cd624660e6cd2bcccadeb3ea4971936f784d9f53077b7"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      "package-repeat-01": {
+        "record": {
+          "path": ".codex-work/stepped-raster/package-repeat-01.json",
+          "byteLength": 41317,
+          "sha256": "7704184f8adafd20f56d342bb7cc2b96b470684f11ba38ef5df93107f3c30758"
+        },
+        "log": {
+          "path": ".codex-work/stepped-raster/package-repeat-01.log",
+          "byteLength": 100,
+          "sha256": "a4866270941f49a8b91cd624660e6cd2bcccadeb3ea4971936f784d9f53077b7"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      "browser-01": {
+        "record": {
+          "path": ".codex-work/stepped-raster/browser-01.json",
+          "byteLength": 20100,
+          "sha256": "bd1ef2d637b4fe662bcc5a76f77b5f1bb9821589b846437df28a99e08d28849f"
+        },
+        "log": {
+          "path": ".codex-work/stepped-raster/browser-01.log",
+          "byteLength": 135,
+          "sha256": "26ef3aee570a7ba96ede66730368c843504da92091f9761b3469ca9303571783"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      "raster-rust-tests-02": {
+        "record": {
+          "path": ".codex-work/stepped-raster/raster-rust-tests-02.json",
+          "byteLength": 10271,
+          "sha256": "05a8c80ef28d859e779040e28336ac3122c94fff7615dc6b6410edd2b77bef04"
+        },
+        "log": {
+          "path": ".codex-work/stepped-raster/raster-rust-tests-02.log",
+          "byteLength": 572,
+          "sha256": "d8a640b9f98ef94d5b24b913f64033b6608c60cd49dc969084a12e8ef162e1e9"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      }
+    },
+    "schemas": 119,
+    "existingTsOwnershipTests": 13,
+    "existingOperationClientTests": 17,
+    "distinctComponentInputs": 554,
+    "nativeCalls": 1662,
+    "wasmSteppedCalls": 1662,
+    "wasmSynchronousCalls": 554,
+    "sanitizerCalls": 2216,
+    "nativeReport": {
+      "path": ".codex-work/stepped-raster/native-parity-02/report.json",
+      "byteLength": 729111,
+      "sha256": "e2b6f387c0392fa7f7d0e0d01d2ed84ccd18d67bcb08af725a30328c310ab199"
+    },
+    "wasmReport": {
+      "path": ".codex-work/stepped-raster/wasm-parity-01/report.json",
+      "byteLength": 502399,
+      "sha256": "47004eaefaad762b1fe793a8439f804de8797caf385b589d0eb410d66e4ba51a"
+    },
+    "sanitizerReport": {
+      "path": ".codex-work/stepped-raster/asan-parity-01/report.json",
+      "byteLength": 922118,
+      "sha256": "40ae5f655324b11a6c49a0d6b53cd964e7cf4d8624d5dbbe4332c31fe40bfcca"
+    },
+    "addressSanitizer": true,
+    "undefinedBehaviorSanitizer": true,
+    "leakSanitizer": false,
+    "sanitizerActualCancellations": 1607,
+    "tsTaskHandlesCreatedAndDropped": 1611,
+    "remainingTsInputLoans": 0,
+    "tsCancellationCases": [
+      {
+        "after": 0,
+        "actualSteps": 0,
+        "inputsAndHandlesReleased": true,
+        "reusedHealthyComponent": true
+      },
+      {
+        "after": 1,
+        "actualSteps": 1,
+        "inputsAndHandlesReleased": true,
+        "reusedHealthyComponent": true
+      },
+      {
+        "after": 4,
+        "actualSteps": 4,
+        "inputsAndHandlesReleased": true,
+        "reusedHealthyComponent": true
+      },
+      {
+        "after": 8,
+        "actualSteps": 8,
+        "inputsAndHandlesReleased": true,
+        "reusedHealthyComponent": true
+      },
+      {
+        "after": 12,
+        "actualSteps": 12,
+        "inputsAndHandlesReleased": true,
+        "reusedHealthyComponent": true
+      },
+      {
+        "after": 16,
+        "actualSteps": 16,
+        "inputsAndHandlesReleased": true,
+        "reusedHealthyComponent": true
+      }
+    ],
+    "browser": {
+      "report": {
+        "path": ".codex-work/stepped-raster/browser-01/report.json",
+        "byteLength": 63121,
+        "sha256": "3443ab12dae953c13a76ab7bc9a59c49063fc74e9b0b8bd39cf16ecb7588b2a0"
+      },
+      "log": {
+        "path": ".codex-work/stepped-raster/browser-01/browser.log",
+        "byteLength": 4529,
+        "sha256": "f7d570959502d7e00529ab053d1c3922e7e73e3bec4e888f7f52bb09955b312e"
+      },
+      "actualBrowserReport": {
+        "path": ".codex-work/stepped-raster/browser-01/browser.json",
+        "byteLength": 236674,
+        "sha256": "3afdfec02d4d1b1fde6d0973812516045d61138fc3dbc965b0c750646379910e"
+      },
+      "browser": "Google Chrome 153.0.8010.53",
+      "frames": 71,
+      "scope": "Existing synchronous playback API uses rebuilt raster component; not step-based playback integration."
+    },
+    "overlap": "Different work batches and repeated cancellation runs reuse the same 554 component inputs. Do not count them as new document features or independent corpus items.",
+    "ignored": "native-export owner_helper is a subprocess helper exercised by recovery. Native CLI integration selected one ignored integration test; two regular tests were filtered, not rerun here."
+  },
+  "rejectedApproach": {
+    "reason": "Integer clip tiling alters Skia analytic antialiasing; reverted to complete primitive semantics. Finer suspension must preserve scan-conversion state.",
+    "record": {
+      "path": ".codex-work/stepped-raster/native-parity-01.json",
+      "byteLength": 9138,
+      "sha256": "c5d47ea484db03e8588f9d18910a662c24dea20a30c24e243d246754064bf7df"
+    },
+    "log": {
+      "path": ".codex-work/stepped-raster/native-parity-01.log",
+      "byteLength": 93555,
+      "sha256": "ecaefac4ac5fd6484bd030039c4f77b9d46e330eceb6247435a4389f98758c2e"
+    },
+    "sources": [
+      {
+        "path": ".codex-work/stepped-raster/rejected-clip-tiling/mo_skia.cpp",
+        "byteLength": 21136,
+        "sha256": "95185d0711deff4c3aa55dd920d9ff3872d5aefe62d6455c94e75a0b887286b7"
+      },
+      {
+        "path": ".codex-work/stepped-raster/rejected-clip-tiling/mo_skia.h",
+        "byteLength": 3517,
+        "sha256": "80b1b25791ac0365b442a226ff65cc3d5ef035a27d550333eba55837bdc6a319"
+      },
+      {
+        "path": ".codex-work/stepped-raster/rejected-clip-tiling/skia-step-probe.cpp",
+        "byteLength": 3734,
+        "sha256": "2cd4e85ee2212c36e0402970e27e747c2af0c919fb5bc2da4fae65a00a4b31bc"
+      },
+      {
+        "path": ".codex-work/stepped-raster/rejected-clip-tiling/stepped-raster-native.py",
+        "byteLength": 3233,
+        "sha256": "3b144857b004c91044565a3a88c8f3cad157a76674fe3387cdcc863cdd2bdcab"
+      }
+    ],
+    "baseline": {
+      "path": ".codex-work/gradient-coordinates/components/540.rgba",
+      "byteLength": 480000,
+      "sha256": "2591ae6ad5020f0a7ad3901e4dfbfda177f506e68e1ef7e95d742b30fe2f1841"
+    },
+    "failedOutput": {
+      "path": ".codex-work/stepped-raster/native-parity-01/1081.out",
+      "byteLength": 480008,
+      "sha256": "526e23d5a4c7a0e7727ef8ece483c988a709bbc6b81bf989832524b1b7d03835"
+    },
+    "changedChannelBytes": 1402,
+    "comparisonTolerance": 0
+  },
+  "preservedCommandFailure": {
+    "record": {
+      "path": ".codex-work/stepped-raster/raster-rust-tests-01.json",
+      "byteLength": 10180,
+      "sha256": "39536af4d262b541ae54eebe4d7761aa915708d09d6f6d3e807d5a16f72476a3"
+    },
+    "log": {
+      "path": ".codex-work/stepped-raster/raster-rust-tests-01.log",
+      "byteLength": 825,
+      "sha256": "1765e31e7d5357b5a3b40ef967558e4940a13c9bcf906f07217b7bb3883ebe37"
+    },
+    "reason": "Relative native component directory was resolved from Cargo crate cwd. Repeated with explicit absolute directory; no validation changes."
+  },
+  "package": {
+    "manifest": {
+      "path": ".codex-work/stepped-raster/bundle-01/bundle-manifest.json",
+      "byteLength": 10361,
+      "sha256": "b0e0484ccbf4aa66fc92f492427867b6f4b737250c3f4f5ad2b73aebaf27d9c3"
+    },
+    "archive": {
+      "path": ".codex-work/stepped-raster/bundle-01.tar.gz",
+      "byteLength": 4093078,
+      "sha256": "69eefd07a158a1d95b8a23dc277fa98910d210395ff562194a7c5d768c77b3ff"
+    },
+    "repeatedArchive": {
+      "path": ".codex-work/stepped-raster/bundle-repeat-01.tar.gz",
+      "byteLength": 4093078,
+      "sha256": "69eefd07a158a1d95b8a23dc277fa98910d210395ff562194a7c5d768c77b3ff"
+    },
+    "files": 58,
+    "filesBytesExcludingManifest": 14170545,
+    "wasmModules": [
+      {
+        "path": "runtime/mo-hb.wasm",
+        "sha256": "a9ee660dba755e41959a190db1e05522211234c2ee38215cb55dea8907a4302f",
+        "byteLength": 841468
+      },
+      {
+        "path": "runtime/mo-skia.wasm",
+        "sha256": "e5e514678901e1b08dd3badbdc39909891089872a75604c9ea493baf4f32b2db",
+        "byteLength": 2372547
+      },
+      {
+        "path": "runtime/mo_wasm_bg.wasm",
+        "sha256": "e7972376d5ae45e3c06f95f65d5390b8b9eec07716d99889920348bb3e43b67b",
+        "byteLength": 10630592
+      }
+    ],
+    "unchangedPreviousFiles": [
+      "README.md",
+      "examples/browser-runtime.mjs",
+      "examples/browser-worker.mjs",
+      "examples/dispatch.mjs",
+      "examples/node-worker.mjs",
+      "index.d.mts",
+      "index.mjs",
+      "lib/contracts/src/generated/playback-session-request.d.ts",
+      "lib/contracts/src/generated/playback-session-request.js",
+      "lib/contracts/src/generated/playback-session-response.d.ts",
+      "lib/contracts/src/generated/playback-session-response.js",
+      "lib/contracts/src/generated/pptx-playback-session-request.d.ts",
+      "lib/contracts/src/generated/pptx-playback-session-request.js",
+      "lib/contracts/src/generated/pptx-playback-session-response.d.ts",
+      "lib/contracts/src/generated/pptx-playback-session-response.js",
+      "lib/playback-client/src/author.d.ts",
+      "lib/playback-client/src/author.js",
+      "lib/playback-client/src/index.d.ts",
+      "lib/playback-client/src/index.js",
+      "lib/playback-client/src/owner.d.ts",
+      "lib/playback-client/src/owner.js",
+      "lib/playback-client/src/ports.d.ts",
+      "lib/playback-client/src/ports.js",
+      "lib/playback-client/src/source.d.ts",
+      "lib/playback-client/src/source.js",
+      "lib/text-component/src/index.d.ts",
+      "lib/text-component/src/index.js",
+      "notices/drawingml-presets/COPYRIGHT.txt",
+      "notices/harfbuzz/lock.json",
+      "notices/image-codec/licenses/libjpeg-turbo/LICENSE.md",
+      "notices/image-codec/licenses/libpng/LICENSE",
+      "notices/image-codec/licenses/zlib/LICENSE",
+      "notices/image-codec/lock.json",
+      "notices/rust-numeric/component.json",
+      "notices/rust-numeric/num-bigint-LICENSE-APACHE.txt",
+      "notices/rust-numeric/num-bigint-LICENSE-MIT.txt",
+      "notices/rust-numeric/num-integer-LICENSE-APACHE.txt",
+      "notices/rust-numeric/num-integer-LICENSE-MIT.txt",
+      "notices/rust-numeric/num-traits-LICENSE-APACHE.txt",
+      "notices/rust-numeric/num-traits-LICENSE-MIT.txt",
+      "notices/skia/THIRD-PARTY-NOTICES.txt",
+      "notices/skia/lock.json",
+      "notices/unicode-bidi/AUTHORS",
+      "notices/unicode-bidi/COPYRIGHT",
+      "notices/unicode-bidi/LICENSE-MIT",
+      "notices/unicode-bidi/component.json",
+      "package.json",
+      "runtime/mo-hb.mjs",
+      "runtime/mo-hb.wasm",
+      "runtime/mo_wasm.d.ts",
+      "runtime/mo_wasm.js",
+      "runtime/mo_wasm_bg.wasm"
+    ],
+    "byteIdentical": true,
+    "releaseCleared": false,
+    "scope": "Local development package only, not full-capability or Musterwork size."
+  },
+  "timingLimit": "Per-probe maximum step instrumentation is diagnostic only. Different suites ran concurrently; no isolated repeated latency statistics, CPU/RSS or performance improvement claim.",
+  "notRerun": [
+    "Full Rust and MCP protocol suites: Rust/protocol/locks unchanged; strict Clippy and affected native SDK/CLI/component integration executed.",
+    "Upstream Skia/codec compilation, Office/WPS, complete-browser matrix and real Musterwork product chain."
+  ],
+  "pending": [
+    "Suspend/cancel inside individual Skia primitives, clips/snapshot/validation/cleanup critical sections without changing pixels.",
+    "Explicit Rust playback frame preparation, async component execution and validated correlated completion; current callbacks remain synchronous.",
+    "Full bounded parsing/shaping/layout/export and actual cancellation P95/force-stop/memory gates.",
+    "Full PPT advanced contents, Office/WPS edit/visual roundtrip, Musterwork integration/history migration and complete replacement acceptance."
+  ]
+}

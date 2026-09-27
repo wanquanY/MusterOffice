@@ -55,12 +55,14 @@ with tarfile.open(archive) as t:
 source = source_root / f"skia-{lock['commit']}"
 for license_record in lock['licenses']:
     require(digest(source / license_record['path'])['sha256'] == license_record['sha256'], 'Skia license input mismatch')
-for patch in ['explicit-emsdk.patch', 'custom-stroke-join.patch', 'deterministic-raster.patch', 'image-domain.patch', 'gradient-plane.patch', 'office-gradient.patch', 'rect-gradient.patch', 'elliptic-gradient.patch']:
+for patch in ['explicit-emsdk.patch', 'custom-stroke-join.patch', 'deterministic-raster.patch', 'image-domain.patch', 'gradient-plane.patch', 'office-gradient.patch', 'rect-gradient.patch', 'elliptic-gradient.patch', 'scan-continuation.patch']:
     subprocess.run(['patch', '-p1', '--batch', '--fuzz=0', '-i', str(component / patch)],
                    cwd=source, check=True)
 (source / 'src/opts/mo_image_domain_stage.h').write_bytes((component / 'mo_image_domain_stage.h').read_bytes())
 (source / 'src/opts/mo_gradient_plane_stage.h').write_bytes((component / 'mo_gradient_plane_stage.h').read_bytes())
 (source / 'src/opts/mo_office_gradient_stage.h').write_bytes((component / 'mo_office_gradient_stage.h').read_bytes())
+(source / 'src/core/mo_raster_task.h').write_bytes((component / 'mo_raster_task.h').read_bytes())
+(source / 'src/core/mo_raster_storage.h').write_bytes((component / 'mo_raster_storage.h').read_bytes())
 env = os.environ.copy()
 env['EM_CONFIG'] = str(emsdk / '.emscripten')
 if a.target == 'wasm':
@@ -137,6 +139,7 @@ else:
     library = output / 'libskia.wasm.a'
     module = directory / 'mo-skia.mjs'
     exports = ['_mo_skia_elliptic_gradients_abi', '_mo_skia_rect_gradients_abi', '_mo_skia_office_gradients_abi', '_mo_skia_gradient_planes_abi', '_mo_skia_compositing_abi', '_mo_skia_clips_abi', '_mo_skia_raster_images', '_mo_skia_images_abi', '_mo_skia_raster', '_mo_skia_free', '_mo_skia_abi', '_malloc', '_free']
+    exports += ['_mo_skia_execution_abi', '_mo_skia_raster_begin', '_mo_skia_raster_step', '_mo_skia_raster_take', '_mo_skia_raster_drop']
     if codec_sources:
         exports += ['_mo_image_decode', '_mo_image_decode_abi']
     # Keep auditable import names. Emscripten -O3 enables JS/wasm meta-DCE and
