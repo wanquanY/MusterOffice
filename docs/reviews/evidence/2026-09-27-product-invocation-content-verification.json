@@ -1,0 +1,655 @@
+{
+  "format": "musteroffice.product-invocation-content-verification/1",
+  "parent": {
+    "path": "docs/reviews/evidence/2026-09-27-product-native-commit-verification.json",
+    "byteLength": 184997,
+    "sha256": "1daff588fe9b435fa9051ac3fc9837fe017c89fe26e219f12016e5beeb471981"
+  },
+  "environment": {
+    "system": "Darwin",
+    "release": "25.2.0",
+    "machine": "arm64",
+    "rustc": "rustc 1.92.0 (ded5c06cf 2025-12-08)"
+  },
+  "productSchema": 186,
+  "privateProductChangedFiles": [
+    {
+      "path": "crates/runtime/content/src/invocation.rs",
+      "byteLength": 2128,
+      "sha256": "2fdb9e1d904f0c02013d31aa5ddb876cc66ea4ba34e529b06826e5cd85090c0f"
+    },
+    {
+      "path": "crates/runtime/content/src/lib.rs",
+      "byteLength": 18945,
+      "sha256": "9deeb7cae1b82aed5557053b98e5a009abb544fe99e8c2282d9d2fbf9e7294e9"
+    },
+    {
+      "path": "crates/infrastructure/sqlite/src/schema_v186.rs",
+      "byteLength": 3121,
+      "sha256": "a09d6bdf5c6ae56a751290b118293a7129bcc821db1d8e286444c798a7cb997c"
+    },
+    {
+      "path": "crates/infrastructure/sqlite/src/schema_v186/tests.rs",
+      "byteLength": 4951,
+      "sha256": "f6c897c82d832d16c565b8e7c4a2b6969bf9645559de4f14667035bbb2739e83"
+    },
+    {
+      "path": "crates/infrastructure/sqlite/src/lib.rs",
+      "byteLength": 42587,
+      "sha256": "0bec49f245fe1ab88d5249bcaa25f28983d8e6825dc3667b77a262769e6b154c"
+    },
+    {
+      "path": "crates/infrastructure/sqlite/src/schema.rs",
+      "byteLength": 50286,
+      "sha256": "704e122ca10216685edc33a57d893b0ea25d69e0278837199a6f3015e6081a71"
+    },
+    {
+      "path": "crates/infrastructure/sqlite/src/schema_collaboration.rs",
+      "byteLength": 2457,
+      "sha256": "dccd78cac38f9e6d906bc41b8b254152033996c225aa3b7d5828ed1abe7a696b"
+    },
+    {
+      "path": "crates/infrastructure/sqlite/src/content.rs",
+      "byteLength": 25314,
+      "sha256": "f307a9bdca3607d21b4a11b05a19512c727cd7486c1c3d257bb41b085636311c"
+    },
+    {
+      "path": "crates/infrastructure/sqlite/src/content/invocation.rs",
+      "byteLength": 11055,
+      "sha256": "5c6905ace2194524d3f7e3aa08943cfdd7f31cc122b828c5285b41fa19e2e306"
+    },
+    {
+      "path": "crates/infrastructure/sqlite/src/content/invocation/port.rs",
+      "byteLength": 3277,
+      "sha256": "bb60f82707d07182a109b8e3baaf48d7496b5ad2bb62a51a6f1bb7efcf7d0c0c"
+    },
+    {
+      "path": "crates/infrastructure/sqlite/src/content/stream.rs",
+      "byteLength": 7118,
+      "sha256": "b1b81c902fd48d98bb178a8ee436b32105256bc2b5f8f3c63929105f9efb7373"
+    },
+    {
+      "path": "tests/conformance/tests/sqlite_agent_loop/presentation_authoring.rs",
+      "byteLength": 40627,
+      "sha256": "8a214d1706cd27da718c1284680c494e1a4458ea28ba713c0935acd4ae3f6c40"
+    },
+    {
+      "path": "tests/conformance/tests/sqlite_agent_loop/invocation_content.rs",
+      "byteLength": 12966,
+      "sha256": "44a23ca88b8afa3209d588498eb067df4a52be970d05d0e12644fd4f820e9ccf"
+    },
+    {
+      "path": "crates/infrastructure/sqlite/src/content/material/tests.rs",
+      "byteLength": 17014,
+      "sha256": "d6040fb8fa3debee085877d27bb6b5737b05a522d41e43e65c53ebcd540a61b1"
+    },
+    {
+      "path": "crates/infrastructure/sqlite/src/schema_v184.rs",
+      "byteLength": 3739,
+      "sha256": "631fb110d3030f5b3d2cb108afa09ba02d1637eb7b6b36d23373e9648f88481b"
+    }
+  ],
+  "compiledSourceFilesBound": 3307,
+  "commands": [
+    {
+      "name": "invocation-tests-final",
+      "args": [
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::invocation_content",
+        "--locked",
+        "--offline",
+        "--",
+        "--test-threads=4"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 85.03975712496322,
+      "logSha256": "195a7a89093203319bd371fddec47a51de9388325d58d6d02868f04113e6cc76",
+      "workingDirectory": "MW:apps/agent-runtime",
+      "log": ".codex-work/product-native-resources/invocation-tests-final.log",
+      "sourceSetSha256": "0a192a7ecc11f95f39f9e2499e6eff8207e195f5da3a8505738f8898bae42880",
+      "sourceUnchangedDuringCommand": true,
+      "finalSource": true
+    },
+    {
+      "name": "schema-tests-final",
+      "args": [
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-sqlite",
+        "--lib",
+        "schema::tests::",
+        "--locked",
+        "--offline",
+        "--",
+        "--test-threads=4"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 46.37568575004116,
+      "logSha256": "2b35c1ccc115b136892879831b0bab39937c40c40f9ed360713a3efbeaa5e431",
+      "workingDirectory": "MW:apps/agent-runtime",
+      "log": ".codex-work/product-native-resources/schema-tests-final.log",
+      "sourceSetSha256": "0a192a7ecc11f95f39f9e2499e6eff8207e195f5da3a8505738f8898bae42880",
+      "sourceUnchangedDuringCommand": true,
+      "finalSource": true
+    },
+    {
+      "name": "clippy-final",
+      "args": [
+        "cargo",
+        "clippy",
+        "-p",
+        "musterwork-agent-runtime-content",
+        "-p",
+        "musterwork-agent-sqlite",
+        "--lib",
+        "--no-deps",
+        "--locked",
+        "--offline",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 30.317704749992117,
+      "logSha256": "b999caf21980521bfa5f932f231b300814b8cfd323be39686385a16e7adbff3b",
+      "workingDirectory": "MW:apps/agent-runtime",
+      "log": ".codex-work/product-native-resources/clippy-final.log",
+      "sourceSetSha256": "0a192a7ecc11f95f39f9e2499e6eff8207e195f5da3a8505738f8898bae42880",
+      "sourceUnchangedDuringCommand": true,
+      "finalSource": true
+    },
+    {
+      "name": "worker-regression",
+      "args": [
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::office_drafts::exports::",
+        "--locked",
+        "--offline",
+        "--",
+        "--ignored",
+        "--test-threads=1"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 43.461268790997565,
+      "logSha256": "c5cb7385992c13d6487f7f2f23fe41287a1e35a9cfc4300d4c3a2d6e78199c6d",
+      "workingDirectory": "MW:apps/agent-runtime",
+      "log": ".codex-work/product-native-resources/worker-regression.log",
+      "sourceSetSha256": "0a192a7ecc11f95f39f9e2499e6eff8207e195f5da3a8505738f8898bae42880",
+      "sourceUnchangedDuringCommand": true,
+      "finalSource": true
+    },
+    {
+      "name": "workspace-check",
+      "args": [
+        "cargo",
+        "check",
+        "--workspace",
+        "--all-targets",
+        "--locked",
+        "--offline"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 41.131987417000346,
+      "logSha256": "d39272de403eb19c0ab89c97a8acc3e0330d0f15c0aa8c370ec1d9d7cdc02f08",
+      "workingDirectory": "MW:apps/agent-runtime",
+      "log": ".codex-work/product-native-resources/workspace-check.log",
+      "sourceSetSha256": "0a192a7ecc11f95f39f9e2499e6eff8207e195f5da3a8505738f8898bae42880",
+      "sourceUnchangedDuringCommand": true,
+      "finalSource": true
+    },
+    {
+      "name": "migration-tests-02",
+      "args": [
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-sqlite",
+        "--lib",
+        "schema_v18",
+        "--locked",
+        "--offline"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 1.125380999990739,
+      "logSha256": "7c8e4f06444c4cecc02ff9d66992de1bf24dfb707220581a0dbe7f9b9e248af2",
+      "workingDirectory": "MW:apps/agent-runtime",
+      "log": ".codex-work/product-native-resources/migration-tests-02.log",
+      "sourceSetSha256": "95ee452e369b2eb8b0c91aaceeb5b82596feccb126eab36fce799c4b4385e681",
+      "sourceUnchangedDuringCommand": true,
+      "finalSource": false
+    },
+    {
+      "name": "content-tests-02",
+      "args": [
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-sqlite",
+        "--lib",
+        "content::",
+        "--locked",
+        "--offline",
+        "--",
+        "--test-threads=4"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 169.9372642079834,
+      "logSha256": "0eb489cf9e546bc42d38c4cd47332b3872da4b94e445114679d64939265e82f0",
+      "workingDirectory": "MW:apps/agent-runtime",
+      "log": ".codex-work/product-native-resources/content-tests-02.log",
+      "sourceSetSha256": "95ee452e369b2eb8b0c91aaceeb5b82596feccb126eab36fce799c4b4385e681",
+      "sourceUnchangedDuringCommand": true,
+      "finalSource": false
+    },
+    {
+      "name": "authoring-tests-02",
+      "args": [
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::",
+        "--locked",
+        "--offline",
+        "--",
+        "--test-threads=4"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 417.4956789580174,
+      "logSha256": "efd791f858f136b0affc1e3505b605e16284ad2edc242c85f35aedac4e580ee1",
+      "workingDirectory": "MW:apps/agent-runtime",
+      "log": ".codex-work/product-native-resources/authoring-tests-02.log",
+      "sourceSetSha256": "95ee452e369b2eb8b0c91aaceeb5b82596feccb126eab36fce799c4b4385e681",
+      "sourceUnchangedDuringCommand": true,
+      "finalSource": false
+    },
+    {
+      "name": "historical-upgrade-01",
+      "args": [
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-sqlite",
+        "--lib",
+        "content::material::tests::reopening_version_182",
+        "--locked",
+        "--offline"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 24.656763416947797,
+      "logSha256": "592d39c668f73901f8935e57ce796976dd75da763dbbcc0a3d1765474f1fc6b3",
+      "workingDirectory": "MW:apps/agent-runtime",
+      "log": ".codex-work/product-native-resources/historical-upgrade-01.log",
+      "sourceSetSha256": "95ee452e369b2eb8b0c91aaceeb5b82596feccb126eab36fce799c4b4385e681",
+      "sourceUnchangedDuringCommand": true,
+      "finalSource": false
+    }
+  ],
+  "tests": {
+    "invocation-tests-final": {
+      "passed": 7,
+      "ignored": 0,
+      "names": [
+        "presentation_authoring::invocation_content::concurrent_reservations_share_original_durable_quota",
+        "presentation_authoring::invocation_content::complete_reservation_is_atomic_bounded_and_idempotent",
+        "presentation_authoring::invocation_content::final_registration_and_metadata_rollback_together",
+        "presentation_authoring::invocation_content::reopened_runtime_preserves_reservations_and_rejects_old_writer",
+        "presentation_authoring::invocation_content::unreserved_foreign_and_stale_scopes_fail_before_consuming_input",
+        "presentation_authoring::invocation_content::ordinary_content_never_adopts_or_overwrites_an_invocation_identity",
+        "presentation_authoring::invocation_content::authority_revoked_during_actual_file_write_cannot_publish_metadata"
+      ]
+    },
+    "schema-tests-final": {
+      "passed": 17,
+      "ignored": 0,
+      "names": [
+        "schema::tests::latest_schema_has_no_explicit_index_duplicating_a_unique_constraint",
+        "schema::tests::empty_v4_store_migrates_atomically_to_latest",
+        "schema::tests::latest_schema_reopen_uses_identity_without_replaying_base_ddl",
+        "schema::tests::deployed_v38_store_without_late_secondary_objects_converges_to_latest",
+        "schema::tests::populated_v10_store_migrates_to_v14_without_losing_existing_content",
+        "schema::tests::populated_v47_standing_goal_graph_migrates_to_latest_without_cascading_children",
+        "schema::tests::v25_preserves_existing_admission_stages_and_accepts_runtime_private_slots",
+        "schema::tests::v11_migration_rolls_back_every_table_when_identity_update_aborts",
+        "schema::tests::v60_excludes_private_activity_learning_without_deleting_audit_evidence",
+        "schema::tests::v61_reopens_only_pre_execution_ordinary_dream_jobs",
+        "schema::tests::v62_adds_restart_stable_model_authority_without_trusting_legacy_rows",
+        "schema::tests::v5_rejects_nonempty_unowned_placeholder_rows",
+        "schema::tests::v6_rejects_nonempty_unowned_tool_placeholder_rows",
+        "schema::tests::v50_rejects_presealed_skill_rows_that_require_governed_reimport",
+        "schema::tests::v58_rebuilds_versioned_embedding_space_without_leaving_old_vector_tables",
+        "schema::tests::v6_store_migrates_atomically_to_latest",
+        "schema::tests::v7_store_adds_independent_tool_argument_output_checkpoint"
+      ]
+    },
+    "worker-regression": {
+      "passed": 3,
+      "ignored": 0,
+      "names": [
+        "presentation_authoring::office_drafts::exports::actual_export_read_sets_and_commit_failures_preserve_original_transaction",
+        "presentation_authoring::office_drafts::exports::native_export_recovery_rejects_forged_identity_and_candidate_state_corruption",
+        "presentation_authoring::office_drafts::exports::real_export_commits_artifact_tool_candidate_and_edits_same_artifact_with_exact_replay"
+      ]
+    },
+    "migration-tests-02": {
+      "passed": 7,
+      "ignored": 0,
+      "names": [
+        "schema_v183::tests::material_journal_migration_is_atomic_and_rejects_invalid_rows",
+        "schema_v184::tests::retirement_migration_backfills_distinct_tombstones_and_rolls_back_late_failure",
+        "schema_v186::tests::late_reservation_migration_failure_rolls_back_every_new_relation_and_index",
+        "schema_v186::tests::reservation_migration_preserves_rows_and_enforces_owner_identity_and_ready_fk",
+        "schema_v185::tests::invalid_old_foreign_key_rolls_back_rebuild_and_restores_connection",
+        "schema_v185::tests::late_schema_failure_preserves_all_original_tables_indexes_and_guards",
+        "schema_v185::tests::native_capacity_migration_preserves_historical_graph_and_guards"
+      ]
+    },
+    "content-tests-02": {
+      "passed": 41,
+      "ignored": 3,
+      "names": [
+        "content::material::fs::platform::tests::directory_sync_reaches_real_directory_and_rejects_other_targets",
+        "content::material::retirement::tests::crashes::actual_process_kill_recovers_tombstone_unlink_and_uncommitted_dequeue",
+        "content::material::retirement::tests::failed_delete_is_durable_and_idle_maintenance_ignores_vacuum_threshold",
+        "content::material::retirement::tests::admission_release_reenqueues_retained_bytes_and_rollback_keeps_claim",
+        "content::material::retirement::tests::retained_oldest_entry_does_not_starve_bounded_batches_or_targeted_delete",
+        "content::material::tests::actual_process_kill_recovers_registration_partial_and_durable_write_boundaries",
+        "content::material::tests::aliases_and_other_live_writes_protect_shared_cas_bytes",
+        "content::material::tests::cancellation::cancelled_temporary_open_cannot_outlive_its_material_lease",
+        "content::material::retirement::tests::unlink_failure_keeps_durable_intent_for_retry",
+        "content::material::tests::cancellation::cancelled_recovery_keeps_registry_until_queued_file_removal_finishes",
+        "content::material::tests::cancellation::cancelled_retirement_holds_registry_and_replays_missing_file_before_discharge",
+        "content::material::tests::pending_admission_protects_bytes_from_recovery_and_alias_deletion",
+        "content::material::tests::reopening_version_182_preserves_existing_metadata_and_blob_bytes",
+        "content::material::tests::recovery_respects_live_material_then_reclaims_only_unpublished_bytes",
+        "content::material::tests::reservation_capacity_is_checked_before_accepting_any_source_bytes",
+        "content::material::tests::retirement_rechecks_alias_claims_after_tombstone_commit",
+        "content::range::tests::actual_delivery_files_roundtrip_through_reverse_ranges",
+        "content::range::tests::cancellation::cancelled_verification_keeps_concurrency_permit_until_queued_work_exits",
+        "content::range::tests::empty_and_builtin_material_use_the_same_exact_range_contract",
+        "content::range::tests::cancellation::metadata_revoked_after_initial_authorization_never_returns_or_records_a_reader",
+        "content::range::tests::exact_ranges_record_verified_identity_and_reject_invalid_authority",
+        "content::range::tests::range_open_rejects_symlink_and_corrupt_material_without_recording",
+        "content::range::tests::retained_handle_ignores_path_replacement_and_rejects_in_place_corruption",
+        "content::read::tests::batch_preserves_exact_identity_for_aliases_and_reserved_builtins",
+        "content::read::tests::batch_rechecks_tenant_reference_and_tombstone",
+        "content::read::tests::batch_rejects_corrupt_blob_and_never_returns_a_partial_request",
+        "content::read::tests::batch_is_exact_across_metadata_groups_duplicates_and_builtins",
+        "content::stream::tests::cancellation_removes_partial_material_and_does_not_hold_sqlite_writer",
+        "content::stream::tests::cases::changed_writer_generation_cannot_publish_after_slow_input",
+        "content::stream::tests::cases::racing_destination_is_not_overwritten_by_a_completed_temporary_file",
+        "content::stream::tests::cases::native_delivery_fixture_streams_through_real_product_storage",
+        "content::stream::tests::cases::streamed_reads_and_replays_reject_symlink_material",
+        "content::stream::tests::create_at_rejects_conflicts_tombstones_and_corrupt_existing_bytes_without_repair",
+        "content::stream::tests::invalid_source_never_publishes_and_retries_same_id_after_cleanup",
+        "content::stream::tests::deletion_during_copy_does_not_return_success_or_record_a_read",
+        "content::stream::tests::multi_megabyte_stream_is_bounded_and_matches_final_file_and_legacy_read",
+        "content::stream::tests::oversized_sources_and_builtin_shadowing_are_rejected_before_consumption",
+        "content::stream::tests::read_rechecks_exact_tenant_identity_and_records_only_verified_references",
+        "content::tests::device_agent_material_is_exact_read_only_and_not_persisted",
+        "content::tests::ordinary_put_reuses_the_tenant_semantic_content_identity",
+        "content::tests::predeclared_identity_replays_exact_bytes_and_rejects_different_bytes"
+      ]
+    },
+    "authoring-tests-02": {
+      "passed": 57,
+      "ignored": 6,
+      "names": [
+        "presentation_authoring::failed_receipt_write_rolls_back_draft_tool_and_ledger_together",
+        "presentation_authoring::draft_revision_cas_is_atomic_replayable_and_conversation_scoped",
+        "presentation_authoring::invocation_content::complete_reservation_is_atomic_bounded_and_idempotent",
+        "presentation_authoring::invocation_content::concurrent_reservations_share_original_durable_quota",
+        "presentation_authoring::cancelled_or_expired_attempt_cannot_commit_prepared_presentation",
+        "presentation_authoring::invocation_content::final_registration_and_metadata_rollback_together",
+        "presentation_authoring::invocation_content::ordinary_content_never_adopts_or_overwrites_an_invocation_identity",
+        "presentation_authoring::invocation_content::reopened_runtime_preserves_reservations_and_rejects_old_writer",
+        "presentation_authoring::invocation_content::unreserved_foreign_and_stale_scopes_fail_before_consuming_input",
+        "presentation_authoring::invocation_content::authority_revoked_during_actual_file_write_cannot_publish_metadata",
+        "presentation_authoring::native_tools::current_template_tools_exclude_review_and_report_bad_operations_without_aborting",
+        "presentation_authoring::native_tools::agent_content_handles_resolve_only_owned_refs_and_keep_claimed_metadata_strict",
+        "presentation_authoring::native_tools::model_input_errors_return_actionable_feedback_without_terminating_the_stage",
+        "presentation_authoring::native_tools::native_client_pending_reconciles_same_tool_without_an_agent_failure",
+        "presentation_authoring::native_tools::native_tools_commit_real_tool_receipts_and_replay_without_reexecuting_engine",
+        "presentation_authoring::native_tools::native_engine_failures_are_durable_feedback_and_next_tool_can_continue",
+        "presentation_authoring::native_tools::native_tools_enforce_sealed_content_authority_and_independent_stage_verification",
+        "presentation_authoring::native_tools::stage_preparation_retains_native_repair_diagnostics_in_durable_tool_receipt",
+        "presentation_authoring::native_tools::stress_assets_are_stable_tool_owned_content_and_cannot_be_forged",
+        "presentation_authoring::native_tools::template_argument_failures_are_recorded_and_replayed_without_native_execution",
+        "presentation_authoring::native_tools::structured_text_reports_remain_readable_without_authorizing_nested_content",
+        "presentation_authoring::office_drafts::computed::computed_checkpoint_rejects_missing_forged_and_noncanonical_provenance",
+        "presentation_authoring::office_drafts::computed::computed_create_and_atomic_edit_commit_real_models_receipts_and_recovery",
+        "presentation_authoring::office_drafts::computed::computed_edit_validates_stored_semantics_and_rolls_back_a_failing_operation_batch",
+        "presentation_authoring::office_drafts::computed::computed_preparation_rejects_invalid_input_without_output_writes",
+        "presentation_authoring::office_drafts::computed::dropping_computation_keeps_its_budget_until_the_actual_worker_returns",
+        "presentation_authoring::office_drafts::native_codec_and_resource_metadata_reject_ambiguous_or_over_budget_state",
+        "presentation_authoring::office_drafts::native_drafts_share_atomic_owner_and_replay_original_receipt_after_edits",
+        "presentation_authoring::office_drafts::native_revision_rejects_kernel_parent_rebinding_and_mixed_engine_mutations",
+        "presentation_authoring::office_drafts::native_state_detects_corruption_in_redundant_identity_columns",
+        "presentation_authoring::parent::review_child_observes_parent_stop_in_heartbeat_and_cannot_be_admitted_late",
+        "presentation_authoring::private_control_cancellation_blocks_late_admission_and_uses_canonical_device_run_cancel",
+        "presentation_authoring::private_presentation_admission_survives_snapshot_reload_and_dispatches_once",
+        "presentation_authoring::private_presentation_snapshot_round_trip_preserves_purpose_and_rejects_over_capacity_review",
+        "presentation_authoring::product_tools::export_lifecycle::client_export_failure_feedback_then_editable_versioned_delivery_without_review",
+        "presentation_authoring::office_drafts::native_draft_rollback_fence_and_content_revocation_preserve_all_tables",
+        "presentation_authoring::product_tools::export_lifecycle::export_failure_feedback_then_editable_versioned_delivery_without_review",
+        "presentation_authoring::product_tools::governed_review_retains_terminal_child_error_and_never_resubmits_it",
+        "presentation_authoring::product_tools::lifecycle::client_tools_compile_review_publish_and_reopen_without_pdf",
+        "presentation_authoring::product_tools::lifecycle::ordinary_tools_compile_review_publish_and_reopen_exact_delivered_version",
+        "presentation_authoring::product_tools::model_fields::model_baseline_survives_read_and_rejects_stale_edit_before_native_work",
+        "presentation_authoring::office_drafts::computed::computed_inputs_are_reauthorized_even_after_the_edit_removes_them",
+        "presentation_authoring::product_tools::model_fields::template_identity_is_resolved_by_its_owner_without_current_run_catalog_receipts",
+        "presentation_authoring::product_tools::ordinary_authoring_preparation_keeps_cas_and_large_diagnostics_readable",
+        "presentation_authoring::product_tools::ordinary_external_import_binds_original_source_and_evidence_before_creating_draft",
+        "presentation_authoring::product_tools::template_assets::template_inspection_authorizes_local_assets_and_preserves_immutable_source_package",
+        "presentation_authoring::read_only_presentation_receipt_preserves_success_identity_after_sqlite_roundtrip",
+        "presentation_authoring::review_codec_requires_real_image_parts_and_the_private_profile",
+        "presentation_authoring::template_compilation::current_template_loop_uses_active_tool_calls_and_submission_without_reviewer",
+        "presentation_authoring::template_compilation::template_loop_restores_tool_history_and_completes_from_the_validated_submission",
+        "presentation_authoring::template_compilation::template_loop_rejects_a_complete_turn_larger_than_the_pinned_model_window",
+        "presentation_authoring::visual_review::a_candidate_cannot_authorize_its_own_preview_image",
+        "presentation_authoring::visual_review::completed_review_recovers_from_a_staged_model_commit_without_redispatch",
+        "presentation_authoring::visual_review::invalid_staged_review_recovers_then_corrects_without_replaying_the_first_request",
+        "presentation_authoring::visual_review::review_format_correction_keeps_strict_evidence_and_same_candidate_images",
+        "presentation_authoring::visual_review::malformed_reviews_have_bounded_corrections_without_dispatching_a_continuation",
+        "presentation_authoring::visual_review::private_review_executes_real_image_contract_and_retains_completed_model_evidence"
+      ]
+    },
+    "historical-upgrade-01": {
+      "passed": 1,
+      "ignored": 0,
+      "names": [
+        "content::material::tests::reopening_version_182_preserves_existing_metadata_and_blob_bytes"
+      ]
+    }
+  },
+  "finalSourceBoundary": "After the broad regressions, only the private Invocation authority predicate was tightened to exclude all shared Home scopes. The seven affected tests, strict production-library Clippy, all workspace targets and three actual export regressions ran on the final source.",
+  "priorFailedOrNonEvidenceRuns": [
+    {
+      "log": {
+        "path": ".codex-work/product-native-resources/content-tests-01.log",
+        "byteLength": 10263,
+        "sha256": "922e6748dd1ef659d9b2718523308685383bcc2cac28fb1d3a0bb18098e4ccaf"
+      },
+      "exitCode": 101,
+      "reason": "Old test reconstructed v182 by partially undoing current schema; replaced with the actual historical migration program and rechecked."
+    },
+    {
+      "log": {
+        "path": ".codex-work/product-native-resources/schema-tests-02.log",
+        "byteLength": 271,
+        "sha256": "d41b0a3525f532e772939e55ea2ab0c4b664a1764490c8f6b119ee2177969b85"
+      },
+      "exitCode": 0,
+      "reason": "Filter matched zero tests; excluded from validation and corrected to schema::tests::."
+    }
+  ],
+  "scopedProductionStrictClippy": true,
+  "productWorkspaceAllTargetsCompile": true,
+  "worker": {
+    "path": ".codex-work/embedded-export/frozen/mo-export-worker",
+    "byteLength": 10027936,
+    "sha256": "1151581c9b689d8329ceec6100aed4103d1f78e38ac178c894ebaf63bfede50f"
+  },
+  "deliveries": [
+    {
+      "version": 1,
+      "assets": [
+        {
+          "path": ".codex-work/product-native-resources/actual-regression/version-1/000.bin",
+          "byteLength": 20032,
+          "sha256": "9a4ad7d6ac0822277d1cd87f93c685818174c70928bcaa25882ea8d87dbda66d"
+        },
+        {
+          "path": ".codex-work/product-native-resources/actual-regression/version-1/001.bin",
+          "byteLength": 147,
+          "sha256": "3f76a9a5cae823017a1ddda66fe4cadf422e496bb0e6364ea5050dcac13afd82"
+        },
+        {
+          "path": ".codex-work/product-native-resources/actual-regression/version-1/002.bin",
+          "byteLength": 1920,
+          "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+        },
+        {
+          "path": ".codex-work/product-native-resources/actual-regression/version-1/003.bin",
+          "byteLength": 797,
+          "sha256": "9ed1d3c6874d012c168a25eaa5af58e68047116d811d7cf9cc32ef722892e0a0"
+        },
+        {
+          "path": ".codex-work/product-native-resources/actual-regression/version-1/004.bin",
+          "byteLength": 1176,
+          "sha256": "0f5119d7dac31d299829342ff36995dc8744374641f95ede9542febb5445f364"
+        },
+        {
+          "path": ".codex-work/product-native-resources/actual-regression/version-1/005.bin",
+          "byteLength": 2386,
+          "sha256": "d4f4c9941c5e60b70c161e862ab96d0496e0abe1ee76510bc54a11c434f2f12f"
+        },
+        {
+          "path": ".codex-work/product-native-resources/actual-regression/version-1/006.bin",
+          "byteLength": 14915,
+          "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d"
+        },
+        {
+          "path": ".codex-work/product-native-resources/actual-regression/version-1/007.bin",
+          "byteLength": 3142,
+          "sha256": "2d09fc9dae985581017301e7c7e1b3fe97097998f8941fd3821ea0267d3c540e"
+        },
+        {
+          "path": ".codex-work/product-native-resources/actual-regression/version-1/008.bin",
+          "byteLength": 11174,
+          "sha256": "b347f37576dff5268f77cc7666066568d50e993ee690d3941c27693734acd0c9"
+        },
+        {
+          "path": ".codex-work/product-native-resources/actual-regression/version-1/009.bin",
+          "byteLength": 2474,
+          "sha256": "e74ac67a479f9039fb68a724216c45109cf39ff57e0619e415f12abbb63be0d5"
+        },
+        {
+          "path": ".codex-work/product-native-resources/actual-regression/version-1/010.bin",
+          "byteLength": 745,
+          "sha256": "2f944aeada9915c91a949b0d0ee88f7959e1571983c449c08ea826d686747772"
+        },
+        {
+          "path": ".codex-work/product-native-resources/actual-regression/version-1/011.bin",
+          "byteLength": 10735,
+          "sha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5"
+        }
+      ],
+      "pptxPages": 2,
+      "title": "Owned delivery integration fixture",
+      "firstVersionMatchesSealedBaseline": true
+    },
+    {
+      "version": 2,
+      "assets": [
+        {
+          "path": ".codex-work/product-native-resources/actual-regression/version-2/000.bin",
+          "byteLength": 20025,
+          "sha256": "7ef51789e520aa165065462ea90e4645511b960963e03bd24c704849e3687b26"
+        },
+        {
+          "path": ".codex-work/product-native-resources/actual-regression/version-2/001.bin",
+          "byteLength": 147,
+          "sha256": "3f76a9a5cae823017a1ddda66fe4cadf422e496bb0e6364ea5050dcac13afd82"
+        },
+        {
+          "path": ".codex-work/product-native-resources/actual-regression/version-2/002.bin",
+          "byteLength": 1920,
+          "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+        },
+        {
+          "path": ".codex-work/product-native-resources/actual-regression/version-2/003.bin",
+          "byteLength": 797,
+          "sha256": "9ed1d3c6874d012c168a25eaa5af58e68047116d811d7cf9cc32ef722892e0a0"
+        },
+        {
+          "path": ".codex-work/product-native-resources/actual-regression/version-2/004.bin",
+          "byteLength": 1176,
+          "sha256": "0f5119d7dac31d299829342ff36995dc8744374641f95ede9542febb5445f364"
+        },
+        {
+          "path": ".codex-work/product-native-resources/actual-regression/version-2/005.bin",
+          "byteLength": 2386,
+          "sha256": "2dc490c4326b55dfa9fd51ce3e24ad4f5d5d67b6f8a9da1f943c81d15c8f5e4f"
+        },
+        {
+          "path": ".codex-work/product-native-resources/actual-regression/version-2/006.bin",
+          "byteLength": 14915,
+          "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d"
+        },
+        {
+          "path": ".codex-work/product-native-resources/actual-regression/version-2/007.bin",
+          "byteLength": 3142,
+          "sha256": "cde5d6be2a19b07c8f660ebf5bb08b09f442b5800c86a0bc1bc8d7b63d667e84"
+        },
+        {
+          "path": ".codex-work/product-native-resources/actual-regression/version-2/008.bin",
+          "byteLength": 11174,
+          "sha256": "b347f37576dff5268f77cc7666066568d50e993ee690d3941c27693734acd0c9"
+        },
+        {
+          "path": ".codex-work/product-native-resources/actual-regression/version-2/009.bin",
+          "byteLength": 2474,
+          "sha256": "a75233259ce8dd594d9dc8f2de70301cea84fd7119b0a7ba24c21d61161e5c0e"
+        },
+        {
+          "path": ".codex-work/product-native-resources/actual-regression/version-2/010.bin",
+          "byteLength": 745,
+          "sha256": "8f488ef11290f5866626ba0a2284454978b0025507a685d219350580561e39b8"
+        },
+        {
+          "path": ".codex-work/product-native-resources/actual-regression/version-2/011.bin",
+          "byteLength": 10729,
+          "sha256": "62994f6dc2c998ca9620091a3dc6c7cb20cceaf41784a322275e1f06904ea240"
+        }
+      ],
+      "pptxPages": 2,
+      "title": "Revised native presentation",
+      "firstVersionMatchesSealedBaseline": false
+    }
+  ],
+  "localLinksChecked": 436,
+  "limitations": [
+    "The storage authority and lifetime quota are implemented. Office producers have not yet been required to reserve through the new port; fixed-worker checks exercise the existing export route only.",
+    "Canonical retention transfer, terminal cleanup, privacy-retention coordination and worker crash spool recovery remain pending. No Invocation account is automatically released.",
+    "Limits count logical output identities and bytes, not physical disk deduplication, worker memory, file handles or global device capacity.",
+    "Private Device execution only. Shared Home/PostgreSQL authority and production tool routing remain open.",
+    "General authoring includes seven Invocation tests; the final seven-test rerun overlaps and is not an additional seven cases. Three fixed-worker tests were ignored in the ordinary run and then executed explicitly.",
+    "The v186 relation tests use minimal historical signatures. The content upgrade test uses the real historical migration program to build v182; neither is a user database upgrade acceptance.",
+    "No complete product suite, full advanced content, author/import semantic convergence, Viewer/Player, Office/WPS editing, cross-platform runtime, performance, installer or replacement acceptance is established.",
+    "The frozen worker does not validate concurrently edited core sources."
+  ]
+}
