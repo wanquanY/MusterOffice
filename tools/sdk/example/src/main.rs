@@ -153,7 +153,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     )?;
     candidate.discard()?;
     drop(assets);
-    if fs::read_dir(spool)?.next().is_some() {
+    let entries: Vec<_> = fs::read_dir(&spool)?
+        .map(|entry| entry.map(|entry| entry.file_name()))
+        .collect::<Result<_, _>>()?;
+    let managed: Vec<_> = fs::read_dir(spool.join(".mo-executions-v1"))?
+        .map(|entry| entry.map(|entry| entry.file_name()))
+        .collect::<Result<_, _>>()?;
+    if entries != [".mo-executions-v1"] || managed != ["registry.lock"] {
         return Err("private spool cleanup incomplete".into());
     }
     println!(

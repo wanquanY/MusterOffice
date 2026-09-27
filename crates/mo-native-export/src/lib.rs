@@ -1,6 +1,7 @@
 //! Stateless native export computation for an existing host owner. No database,
 //! job queue, credentials, Artifact commit or implicit font/resource discovery.
 mod client;
+mod execution;
 mod storage;
 mod wire;
 mod worker;

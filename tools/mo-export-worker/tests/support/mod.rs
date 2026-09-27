@@ -45,8 +45,24 @@ impl Root {
         self.path().join("spool")
     }
     pub fn clean(&self) {
-        assert!(fs::read_dir(self.spool()).unwrap().next().is_none());
+        let entries: Vec<_> = fs::read_dir(self.spool())
+            .unwrap()
+            .map(|entry| entry.unwrap().file_name())
+            .collect();
+        assert_eq!(entries, [".mo-executions-v1"]);
+        let entries: Vec<_> = fs::read_dir(self.spool().join(".mo-executions-v1"))
+            .unwrap()
+            .map(|entry| entry.unwrap().file_name())
+            .collect();
+        assert_eq!(entries, ["registry.lock"]);
         assert_eq!(fs::read(self.path().join("host-owned")).unwrap(), b"keep");
+    }
+    pub fn executions(&self) -> Vec<PathBuf> {
+        fs::read_dir(self.spool().join(".mo-executions-v1"))
+            .unwrap()
+            .map(|entry| entry.unwrap().path())
+            .filter(|path| path.file_name().unwrap() != "registry.lock")
+            .collect()
     }
 }
 pub fn digest(bytes: &[u8]) -> Digest {
@@ -140,10 +156,13 @@ pub fn input(renderer: RendererIdentity) -> (SnapshotRecord, OperationRequest, A
     };
     (snapshot, request, assets)
 }
-pub fn exporter(root: &Root) -> NativeExporter {
-    let exe = std::env::var_os("MO_EXPORT_WORKER_TEST_BIN")
+pub fn worker_path() -> PathBuf {
+    std::env::var_os("MO_EXPORT_WORKER_TEST_BIN")
         .map(PathBuf::from)
-        .unwrap_or_else(|| PathBuf::from(env!("CARGO_BIN_EXE_mo-export-worker")));
+        .unwrap_or_else(|| PathBuf::from(env!("CARGO_BIN_EXE_mo-export-worker")))
+}
+pub fn exporter(root: &Root) -> NativeExporter {
+    let exe = worker_path();
     let sha = mo_native_export::executable_digest(&exe).unwrap();
     if std::env::var_os("MO_EXPORT_WORKER_TEST_BIN").is_some() {
         assert_eq!(

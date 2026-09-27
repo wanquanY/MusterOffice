@@ -1,6 +1,7 @@
+use crate::execution::RetainedSpool;
 use crate::{storage::*, wire::*, *};
 use mo_common::RequestId;
-use mo_native_io::SpoolDirectory;
+use mo_native_io::{ExecutionSpoolRoot, SpoolRecovery};
 use mo_operation_service::{DocumentAction, ExportAssets, ExportReceipt, OperationRequest};
 use mo_presentation_delivery::{
     Content, DeliveryAsset, DeliveryError, DeliverySource, ReceiptInspection, ReceivedDelivery,
@@ -11,12 +12,12 @@ use std::{
     collections::{BTreeMap, BTreeSet},
     path::PathBuf,
     process::Command,
-    time::Duration,
+    time::{Duration, Instant},
 };
 
 pub struct NativeExporter {
     executable: PathBuf,
-    root: PathBuf,
+    root: ExecutionSpoolRoot,
     timeout: Duration,
     identity: RendererIdentity,
 }
@@ -30,7 +31,7 @@ pub struct NativeExportCandidate {
     request_digest: Digest,
     expectation: mo_presentation_delivery::DeliveryExpectation,
     // Last field: readers close before directory cleanup, including on Windows.
-    workspace: SpoolDirectory,
+    workspace: RetainedSpool,
 }
 impl NativeExportCandidate {
     /// Pins validated against the accepted request, before computation. Use
@@ -63,6 +64,17 @@ impl NativeExportCandidate {
         drop(assets);
         workspace.discard().map_err(storage_failure)
     }
+    /// The caller keeps its execution slot while transient registry contention
+    /// is resolved. This is resource cleanup, not a business retry or job.
+    pub fn discard_with_wait(self, timeout: Duration) -> Result<(), Failure> {
+        let Self {
+            assets, workspace, ..
+        } = self;
+        drop(assets);
+        workspace
+            .discard_with_wait(timeout)
+            .map_err(storage_failure)
+    }
 }
 impl NativeExporter {
     /// Operator configuration. The root must be private/protected and have a
@@ -84,9 +96,7 @@ impl NativeExporter {
                 "export worker executable digest differs",
             ));
         }
-        if !root.is_dir() {
-            return Err(invalid("export spool root must exist"));
-        }
+        let root = ExecutionSpoolRoot::open(&root).map_err(storage_failure)?;
         Ok(Self {
             executable,
             root,
@@ -99,6 +109,12 @@ impl NativeExporter {
     }
     pub fn renderer_identity(&self) -> RendererIdentity {
         self.identity.clone()
+    }
+    /// Host startup/maintenance may recover abandoned executions in bounded
+    /// batches. A contended registry returns `WouldBlock`; all live candidates
+    /// and workers remain protected independently of application task state.
+    pub fn recover_spools(&self, max_reclaims: usize) -> std::io::Result<SpoolRecovery> {
+        self.root.recover(max_reclaims)
     }
     /// Called inside the existing Runtime task. Input assets are already
     /// authorized immutable capabilities. This does not create a second job.
@@ -150,15 +166,49 @@ impl NativeExporter {
         };
         let expected = wire.validate(&self.identity)?;
         let framed = encode(&wire)?;
-        let workspace = SpoolDirectory::create(&self.root).map_err(storage_failure)?;
+        let start = Instant::now();
+        let workspace = loop {
+            if check() {
+                return Err(cancel());
+            }
+            if start.elapsed() >= self.timeout {
+                return Err(Failure::new(
+                    FailureCode::ExecutionInterrupted,
+                    "export spool acquisition timed out",
+                ));
+            }
+            match self.root.create() {
+                Ok(workspace) => break workspace,
+                Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
+                    std::thread::sleep(Duration::from_millis(5));
+                }
+                Err(error) => return Err(storage_failure(error)),
+            }
+        };
+        let workspace = RetainedSpool::new(workspace, self.timeout);
+        let remaining = self
+            .timeout
+            .checked_sub(start.elapsed())
+            .filter(|t| !t.is_zero())
+            .ok_or_else(|| {
+                Failure::new(
+                    FailureCode::ExecutionInterrupted,
+                    "export spool acquisition timed out",
+                )
+            })?;
         let receive_root = workspace.path().to_path_buf();
         let mut command = Command::new(&self.executable);
-        command.arg("--spool-dir").arg(workspace.path());
+        // Old workers reject the extra argument before doing any work. New
+        // workers require it and acquire a participant lease before I/O.
+        command
+            .arg("--spool-dir")
+            .arg(workspace.path())
+            .arg("--execution-lease-v1");
         let mut part = 0usize;
         let mut offset = 0u64;
         let outcome = mo_native_worker::exchange_stream(
             command,
-            self.timeout,
+            remaining,
             check,
             || {
                 loop {

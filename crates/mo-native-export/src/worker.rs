@@ -16,6 +16,7 @@ pub fn run_worker(
     spool_root: &Path,
     renderer: &mut dyn PreviewRenderer,
 ) -> Result<(), Failure> {
+    let _lease = mo_native_io::ExecutionSpoolLease::join(spool_root).map_err(storage_failure)?;
     let request: Request = read(input)?;
     request.validate(&renderer.identity())?;
     let mut assets = Inputs(BTreeMap::new());

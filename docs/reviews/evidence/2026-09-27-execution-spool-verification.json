@@ -1,0 +1,993 @@
+{
+  "format": "musteroffice.execution-spool-verification/1",
+  "buildSource": {
+    "path": ".codex-work/execution-spool-recovery/build-source-complete.json",
+    "byteLength": 131549,
+    "sha256": "301602cc972cc2a7882abd93fef3d87fc398d1ba89d4d1e584cd54413d2c6d1b"
+  },
+  "buildSourceSetSha256": "312ed25c5641593fb3f817219943c685ffbdb38e7737b6c5f5dd850fae424631",
+  "sourceFilesBound": 1067,
+  "currentImplementationFiles": [
+    {
+      "path": "Cargo.toml",
+      "byteLength": 3528,
+      "sha256": "c4bb2626e6678fdce05702c3304fbbf542746678b3045b731e487e2aade32bc2"
+    },
+    {
+      "path": "crates/mo-native-io/Cargo.toml",
+      "byteLength": 411,
+      "sha256": "646e0ff78466ddd9c9ed0042dbef817f63a9c74cee018fd453522445dcf9f3e7"
+    },
+    {
+      "path": "crates/mo-native-io/src/lib.rs",
+      "byteLength": 8373,
+      "sha256": "eb1fe9fc9427d3d4c500d86c346a59d301bed1adc1729d7edcaadb96e1feac95"
+    },
+    {
+      "path": "crates/mo-native-io/src/directory.rs",
+      "byteLength": 2900,
+      "sha256": "d016c42648f6adcdd878ef3f2758ad65c7b729939144872802421aca58a8b4bd"
+    },
+    {
+      "path": "crates/mo-native-io/src/execution.rs",
+      "byteLength": 10311,
+      "sha256": "154bc0744f07360f0aa4d7c76f68405c9b7afe88f4c5b01a3a23598344a4b255"
+    },
+    {
+      "path": "crates/mo-native-io/src/execution/platform.rs",
+      "byteLength": 2585,
+      "sha256": "642db1c3082f8d8b1b46fbb4f2eee2876d52f7bb054ebaea0682c782e2008045"
+    },
+    {
+      "path": "crates/mo-native-io/src/execution/tests.rs",
+      "byteLength": 12606,
+      "sha256": "5760ee8f6c8a8c689286536dcb9945a887e0756b7bd7727982b59e381046650d"
+    },
+    {
+      "path": "crates/mo-native-export/src/client.rs",
+      "byteLength": 10973,
+      "sha256": "9b071b651452190b3534808083b308b1f0411f80a8d181d424c28f9f5bb2f3e1"
+    },
+    {
+      "path": "crates/mo-native-export/src/worker.rs",
+      "byteLength": 3252,
+      "sha256": "c8a9e8eebed90bc4441ad8b5ba9beb342ede79732af31dbfd932ac69b21300dc"
+    },
+    {
+      "path": "tools/mo-export-worker/Cargo.toml",
+      "byteLength": 670,
+      "sha256": "67297cea4def5c681d30470cfcf216a391af58e9382972024de363d139312f8e"
+    },
+    {
+      "path": "tools/mo-export-worker/src/main.rs",
+      "byteLength": 1195,
+      "sha256": "0997b0af1cfcd659cb22e78a0a31b97c0bddab07758baeb938fc64eec2fc80a1"
+    },
+    {
+      "path": "tools/mo-export-worker/tests/native_export.rs",
+      "byteLength": 9370,
+      "sha256": "487296b77f484db2c45e985d22aac88f027a71d0a2c2f04aa1258b51f078356e"
+    },
+    {
+      "path": "tools/mo-export-worker/tests/native_export/recovery.rs",
+      "byteLength": 6550,
+      "sha256": "9664dca71b30e31b32fba6f831bf7b0540c9e8dd81d09e67c847190908fba9a4"
+    },
+    {
+      "path": "tools/mo-export-worker/tests/support/mod.rs",
+      "byteLength": 6119,
+      "sha256": "8719df0626cfb2bc532b878628bbb4a356fa44015e1b9622fee2afb8f902dead"
+    },
+    {
+      "path": "tools/sdk/build.py",
+      "byteLength": 9630,
+      "sha256": "310394539254bf336a9aaef7439b511ae6fd64db365ab87ed6759514d077f989"
+    },
+    {
+      "path": "tools/sdk/test_build.py",
+      "byteLength": 1862,
+      "sha256": "4715724130f99d3a18625f243a405582631e5e0afdbbb730c836d940bfffe40d"
+    },
+    {
+      "path": "tools/sdk/README.md",
+      "byteLength": 2589,
+      "sha256": "bbc9dfa2f7bc1dd4c97dd6776f917b71dfd54967aba5f01cb1fc9f4bcd914f28"
+    },
+    {
+      "path": "tools/sdk/example/src/main.rs",
+      "byteLength": 6373,
+      "sha256": "fa594504065f206dfce103a80eb51a0349aa787e72f8d005242bd00fa572ae55"
+    }
+  ],
+  "currentWorkspaceDifferences": [
+    "crates/mo-kernel-api/src/pptx_resource_page/batch.rs",
+    "crates/mo-kernel-api/src/pptx_resource_page.rs",
+    "tools/mo-export-worker/src/renderer.rs"
+  ],
+  "commands": [
+    {
+      "name": "cohort-libraries",
+      "args": [
+        "env",
+        "MO_SKIA_LIB_DIR=BUILD_ROOT:/.codex-work/gradient-coordinates/component",
+        "CARGO_TARGET_DIR=ROOT:/.codex-work/execution-spool-recovery/target-cohort",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-native-io",
+        "-p",
+        "mo-native-export"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 36.312311250017956,
+      "sourceUnchanged": true,
+      "sourceFilesBound": 1066,
+      "log": {
+        "path": ".codex-work/execution-spool-recovery/cohort-libraries.log",
+        "byteLength": 8321,
+        "sha256": "e19c9ffe6c449bab22fdd2507afaa8c7ef6622d29a30beab627336206c32f664"
+      }
+    },
+    {
+      "name": "cohort-clippy-02",
+      "args": [
+        "env",
+        "MO_SKIA_LIB_DIR=BUILD_ROOT:/.codex-work/gradient-coordinates/component",
+        "CARGO_TARGET_DIR=ROOT:/.codex-work/execution-spool-recovery/target-cohort",
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-native-io",
+        "-p",
+        "mo-native-export",
+        "-p",
+        "mo-export-worker",
+        "--all-targets",
+        "--no-deps",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 6.207968750037253,
+      "sourceUnchanged": true,
+      "sourceFilesBound": 1067,
+      "log": {
+        "path": ".codex-work/execution-spool-recovery/cohort-clippy-02.log",
+        "byteLength": 4047,
+        "sha256": "5301a34242cffbe443c4d2c5199bebb678133709b0a74531c8faf7b812d9234b"
+      }
+    },
+    {
+      "name": "cohort-release-build",
+      "args": [
+        "env",
+        "MO_SKIA_LIB_DIR=BUILD_ROOT:/.codex-work/gradient-coordinates/component",
+        "CARGO_TARGET_DIR=ROOT:/.codex-work/execution-spool-recovery/target-cohort",
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--release",
+        "-p",
+        "mo-export-worker"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 101.2739127499517,
+      "sourceUnchanged": true,
+      "sourceFilesBound": 1067,
+      "log": {
+        "path": ".codex-work/execution-spool-recovery/cohort-release-build.log",
+        "byteLength": 5614,
+        "sha256": "18c4e6bc9e6a5ea3130965f98350c65d1489c0522ef2f7ba7a3a073780093f4b"
+      }
+    },
+    {
+      "name": "cohort-linux",
+      "args": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-native-io",
+        "-p",
+        "mo-native-export",
+        "--lib",
+        "--no-deps",
+        "--target",
+        "x86_64-unknown-linux-musl",
+        "--target-dir",
+        "ROOT:/.codex-work/execution-spool-recovery/target-cross-cohort",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 20.01439304102678,
+      "sourceUnchanged": true,
+      "sourceFilesBound": 1066,
+      "log": {
+        "path": ".codex-work/execution-spool-recovery/cohort-linux.log",
+        "byteLength": 4988,
+        "sha256": "8c69983aaa2323ab445d90c45284abf8439bd352ff2bf1511d76e422c67d0925"
+      }
+    },
+    {
+      "name": "cohort-windows",
+      "args": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-native-io",
+        "-p",
+        "mo-native-export",
+        "--lib",
+        "--no-deps",
+        "--target",
+        "x86_64-pc-windows-gnu",
+        "--target-dir",
+        "ROOT:/.codex-work/execution-spool-recovery/target-cross-cohort",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 11.104046125081368,
+      "sourceUnchanged": true,
+      "sourceFilesBound": 1066,
+      "log": {
+        "path": ".codex-work/execution-spool-recovery/cohort-windows.log",
+        "byteLength": 4491,
+        "sha256": "da43d865f8cabcf50ef434f4a011f1a4d2099aa06e433ec3ed078c0eb96865d5"
+      }
+    },
+    {
+      "name": "cohort-sdk-tests",
+      "args": [
+        "env",
+        "MO_SKIA_LIB_DIR=BUILD_ROOT:/.codex-work/gradient-coordinates/component",
+        "CARGO_TARGET_DIR=ROOT:/.codex-work/execution-spool-recovery/target-cohort",
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/sdk",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.14163245796225965,
+      "sourceUnchanged": true,
+      "sourceFilesBound": 1067,
+      "log": {
+        "path": ".codex-work/execution-spool-recovery/cohort-sdk-tests.log",
+        "byteLength": 1058,
+        "sha256": "2248751ced3b9b5675a28393f52a755b68d08d167493c79ef58db84043e5642e"
+      }
+    },
+    {
+      "name": "cohort-sdk-one",
+      "args": [
+        "env",
+        "MO_SKIA_LIB_DIR=BUILD_ROOT:/.codex-work/gradient-coordinates/component",
+        "CARGO_TARGET_DIR=ROOT:/.codex-work/execution-spool-recovery/target-cohort",
+        "python3",
+        "tools/sdk/build.py",
+        "--output",
+        "ROOT:/.codex-work/execution-spool-recovery/sdk-cohort-one",
+        "--archive",
+        "ROOT:/.codex-work/execution-spool-recovery/sdk-cohort-one.tar.gz"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.5929110419237986,
+      "sourceUnchanged": true,
+      "sourceFilesBound": 1067,
+      "log": {
+        "path": ".codex-work/execution-spool-recovery/cohort-sdk-one.log",
+        "byteLength": 199,
+        "sha256": "c4cad9baff7c8b0ec0ec322818f7addf3f7d79f3acec69f64e719a54b2026018"
+      }
+    },
+    {
+      "name": "cohort-sdk-two",
+      "args": [
+        "env",
+        "MO_SKIA_LIB_DIR=BUILD_ROOT:/.codex-work/gradient-coordinates/component",
+        "CARGO_TARGET_DIR=ROOT:/.codex-work/execution-spool-recovery/target-cohort",
+        "python3",
+        "tools/sdk/build.py",
+        "--output",
+        "ROOT:/.codex-work/execution-spool-recovery/sdk-cohort-two",
+        "--archive",
+        "ROOT:/.codex-work/execution-spool-recovery/sdk-cohort-two.tar.gz"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.6152647919952869,
+      "sourceUnchanged": true,
+      "sourceFilesBound": 1067,
+      "log": {
+        "path": ".codex-work/execution-spool-recovery/cohort-sdk-two.log",
+        "byteLength": 199,
+        "sha256": "c4cad9baff7c8b0ec0ec322818f7addf3f7d79f3acec69f64e719a54b2026018"
+      }
+    },
+    {
+      "name": "cohort-release-integration",
+      "args": [
+        "env",
+        "MO_SKIA_LIB_DIR=BUILD_ROOT:/.codex-work/gradient-coordinates/component",
+        "CARGO_TARGET_DIR=ROOT:/.codex-work/execution-spool-recovery/target-cohort",
+        "MO_EXPORT_WORKER_TEST_BIN=ROOT:/.codex-work/execution-spool-recovery/frozen/mo-export-worker-cohort",
+        "MO_EXPORT_WORKER_TEST_SHA256=47a2f4ff55ed7df0272870e645e02604a252dc355faef8dd6d687921015682e7",
+        "MO_NATIVE_EXPORT_EVIDENCE=ROOT:/.codex-work/execution-spool-recovery/actual-cohort",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-export-worker",
+        "--test",
+        "native_export"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 7.77903412503656,
+      "sourceUnchanged": true,
+      "sourceFilesBound": 1067,
+      "log": {
+        "path": ".codex-work/execution-spool-recovery/cohort-release-integration.log",
+        "byteLength": 1914,
+        "sha256": "7e6bf0eec6e16a2151bfc6d10afc2f39db3e38ba4aa97cd24717f4cab431d1bf"
+      }
+    },
+    {
+      "name": "cohort-reference",
+      "args": [
+        "python3",
+        "tools/verification/delivery-reference.py",
+        "ROOT:/.codex-work/execution-spool-recovery/actual-cohort"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.4553296249359846,
+      "sourceUnchanged": true,
+      "sourceFilesBound": 1067,
+      "log": {
+        "path": ".codex-work/execution-spool-recovery/cohort-reference.log",
+        "byteLength": 88,
+        "sha256": "ca13e051a020d42a0cdcde20ba1b006e46db6e8d1ba40c48b20ff7a5e2e8a087"
+      }
+    }
+  ],
+  "libraryTests": {
+    "passed": 23,
+    "ignored": 1,
+    "names": [
+      "wire::tests::duplicate_keys_invalid_utf8_truncation_and_length_limits_fail_closed",
+      "wire::tests::serialization_stops_at_budget_including_escaped_bytes",
+      "wire::tests::exact_asset_coverage_duplicate_ids_and_budgets_are_required",
+      "wire::tests::prepared_response_uses_camel_case_request_digest",
+      "wire::tests::typed_frames_reject_paths_wrong_version_action_and_revision",
+      "directory::tests::explicit_cleanup_relinquishes_path_before_drop",
+      "execution::tests::missing_registry_is_never_recreated_beside_executions",
+      "execution::tests::symlinks_are_not_followed_and_nested_orphan_links_do_not_delete_targets",
+      "execution::tests::completed_cleanup_relinquishes_path_before_drop",
+      "execution::tests::owners_and_workers_exclude_recovery_until_last_participant_exits",
+      "execution::tests::parent_death_cannot_reclaim_a_live_worker",
+      "execution::tests::process_death_at_creation_and_unlink_boundaries_recovers_on_reopen",
+      "execution::tests::concurrent_initializers_and_allocators_keep_live_readers",
+      "execution::tests::bounded_recovery_scans_past_live_entries_and_preserves_unknown_siblings",
+      "execution::tests::registry_contention_and_capacity_are_explicit_and_retryable",
+      "private_spool_has_bounded_writes_sticky_failure_and_cleanup",
+      "corrupted_real_stored_bytes_are_rejected_and_removed",
+      "execution_directory_removes_orphans_and_preserves_operator_siblings",
+      "sealed_file_range_reads_and_explicit_cleanup_preserve_unrelated_files",
+      "concurrent_spools_are_exclusive_and_publish_only_the_winning_link",
+      "cancellation_and_output_limit_remove_unpublished_disk_files",
+      "actual_stored_pptx_streams_then_links_same_verified_file_without_overwrite",
+      "multi_megabyte_input_and_output_use_bounded_io_without_whole_file_buffers"
+    ]
+  },
+  "processTests": {
+    "passed": 11,
+    "ignored": 1,
+    "names": [
+      "faults::changed_operator_executable_is_rejected_before_execution",
+      "recovery::worker_rejects_legacy_cli_and_unmanaged_directories_before_io",
+      "recovery::actual_worker_survives_owner_death_without_losing_its_input_directory",
+      "cancellation_before_start_and_during_output_removes_all_execution_files",
+      "native_font_failure_keeps_shared_structured_diagnostic",
+      "input_authorization_and_reader_failures_never_become_candidates",
+      "corrupt_asset_snapshot_and_revision_fail_without_retained_outputs",
+      "real_worker_retains_verified_outputs_repeats_deterministically_and_cleans",
+      "recovery::registry_wait_obeys_host_cancellation_and_deadline",
+      "faults::killed_or_timed_out_worker_is_reaped_before_its_orphans_are_removed",
+      "faults::forged_pins_corrupted_or_truncated_bytes_and_failed_exit_are_rejected"
+    ]
+  },
+  "sdkTests": 9,
+  "worker": {
+    "path": ".codex-work/execution-spool-recovery/frozen/mo-export-worker-cohort",
+    "byteLength": 10940400,
+    "sha256": "47a2f4ff55ed7df0272870e645e02604a252dc355faef8dd6d687921015682e7"
+  },
+  "sdkManifest": {
+    "path": ".codex-work/execution-spool-recovery/sdk-cohort-one/sdk-manifest.json",
+    "byteLength": 182088,
+    "sha256": "35e9a712d7bde8342783fcdf7a284335fd907d0a0f8acbfd4ad8a6c40650fb07"
+  },
+  "sdkArchives": [
+    {
+      "path": ".codex-work/execution-spool-recovery/sdk-cohort-one.tar.gz",
+      "byteLength": 747107,
+      "sha256": "3e4293fa06186b281e5f00238437c7cce2b4fbb15be1a206c4773d15714152ad"
+    },
+    {
+      "path": ".codex-work/execution-spool-recovery/sdk-cohort-two.tar.gz",
+      "byteLength": 747107,
+      "sha256": "3e4293fa06186b281e5f00238437c7cce2b4fbb15be1a206c4773d15714152ad"
+    }
+  ],
+  "sdkLibraries": [
+    "mo-color",
+    "mo-common",
+    "mo-embedded-sdk",
+    "mo-font",
+    "mo-geometry",
+    "mo-image",
+    "mo-native-export",
+    "mo-native-io",
+    "mo-native-worker",
+    "mo-opc",
+    "mo-operation-service",
+    "mo-pptx",
+    "mo-presentation-compile",
+    "mo-presentation-delivery",
+    "mo-presentation-edit",
+    "mo-presentation-model",
+    "mo-presentation-source",
+    "mo-raster",
+    "mo-render",
+    "mo-text",
+    "mo-timeline",
+    "mo-unicode",
+    "mo-xml"
+  ],
+  "sdkRegistryPackages": [
+    {
+      "license": "0BSD OR MIT OR Apache-2.0",
+      "name": "adler2",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "2.0.1"
+    },
+    {
+      "license": "Apache-2.0 OR MIT",
+      "name": "autocfg",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.5.1"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "bitflags",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "2.13.2"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "block-buffer",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.10.4"
+    },
+    {
+      "license": "Zlib OR Apache-2.0 OR MIT",
+      "name": "bytemuck",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.25.2"
+    },
+    {
+      "license": "Zlib OR Apache-2.0 OR MIT",
+      "name": "bytemuck_derive",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.12.1"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "cfg-if",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.0.5"
+    },
+    {
+      "license": "MIT",
+      "name": "core_maths",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.1.1"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "cpufeatures",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.2.17"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "crc32fast",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.5.2"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "crypto-common",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.1.7"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "digest",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.10.7"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "dyn-clone",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.0.20"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "errno",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.3.14"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "flate2",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.1.9"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "font-types",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.12.5"
+    },
+    {
+      "license": "MIT",
+      "name": "generic-array",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.14.7"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "itoa",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.0.18"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "libc",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.2.189"
+    },
+    {
+      "license": "MIT",
+      "name": "libm",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.2.16"
+    },
+    {
+      "license": "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT",
+      "name": "linux-raw-sys",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.12.1"
+    },
+    {
+      "license": "Unlicense OR MIT",
+      "name": "memchr",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "2.8.3"
+    },
+    {
+      "license": "MIT OR Zlib OR Apache-2.0",
+      "name": "miniz_oxide",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.8.9"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "num-bigint",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.4.8"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "num-integer",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.1.47"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "num-traits",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.2.19"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "once_cell",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.21.4"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "proc-macro2",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.0.107"
+    },
+    {
+      "license": "MIT",
+      "name": "quick-xml",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.42.0"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "quote",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.0.47"
+    },
+    {
+      "license": "MIT",
+      "name": "rawzip",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.5.1"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "read-fonts",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.43.3"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "ref-cast",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.0.27"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "ref-cast-impl",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.0.27"
+    },
+    {
+      "license": "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT",
+      "name": "rustix",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.1.5"
+    },
+    {
+      "license": "MIT",
+      "name": "schemars",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.2.2"
+    },
+    {
+      "license": "MIT",
+      "name": "schemars_derive",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.2.2"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "serde",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.0.229"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "serde_core",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.0.229"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "serde_derive",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.0.229"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "serde_derive_internals",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.30.0"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "serde_json",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.0.151"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "sha2",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.10.9"
+    },
+    {
+      "license": "MIT",
+      "name": "simd-adler32",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.3.10"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "syn",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "3.0.6"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "thiserror",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "2.0.20"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "thiserror-impl",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "2.0.20"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "typenum",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.20.1"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "unicode-bidi",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.3.18"
+    },
+    {
+      "license": "(MIT OR Apache-2.0) AND Unicode-3.0",
+      "name": "unicode-ident",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.0.26"
+    },
+    {
+      "license": "MIT/Apache-2.0",
+      "name": "version_check",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.9.5"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "windows-link",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.2.1"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "windows-sys",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.61.2"
+    },
+    {
+      "license": "MIT",
+      "name": "zmij",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.0.23"
+    }
+  ],
+  "sdkConsumer": {
+    "command": {
+      "path": ".codex-work/execution-spool-recovery/sdk-consumer.json",
+      "byteLength": 164167,
+      "sha256": "b69decafc9c24552d079e7028f3fafdbeabf92046415e8fafc15c36b4c5d85fe"
+    },
+    "log": {
+      "path": ".codex-work/execution-spool-recovery/sdk-consumer.log",
+      "byteLength": 5872,
+      "sha256": "788b7367461006e487671630d86b6bf825180b0535cd0cb8e7c7817e6b76ca54"
+    },
+    "assets": [
+      {
+        "path": ".codex-work/execution-spool-recovery/actual-sdk/000.bin",
+        "byteLength": 20032,
+        "sha256": "9a4ad7d6ac0822277d1cd87f93c685818174c70928bcaa25882ea8d87dbda66d"
+      },
+      {
+        "path": ".codex-work/execution-spool-recovery/actual-sdk/001.bin",
+        "byteLength": 147,
+        "sha256": "3f76a9a5cae823017a1ddda66fe4cadf422e496bb0e6364ea5050dcac13afd82"
+      },
+      {
+        "path": ".codex-work/execution-spool-recovery/actual-sdk/002.bin",
+        "byteLength": 1920,
+        "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+      },
+      {
+        "path": ".codex-work/execution-spool-recovery/actual-sdk/003.bin",
+        "byteLength": 797,
+        "sha256": "9ed1d3c6874d012c168a25eaa5af58e68047116d811d7cf9cc32ef722892e0a0"
+      },
+      {
+        "path": ".codex-work/execution-spool-recovery/actual-sdk/004.bin",
+        "byteLength": 1176,
+        "sha256": "0f5119d7dac31d299829342ff36995dc8744374641f95ede9542febb5445f364"
+      },
+      {
+        "path": ".codex-work/execution-spool-recovery/actual-sdk/005.bin",
+        "byteLength": 2386,
+        "sha256": "46fa2372d7b6fdac95144ee7de120f94776e55babdb1461cb1003793b9c5e550"
+      },
+      {
+        "path": ".codex-work/execution-spool-recovery/actual-sdk/006.png",
+        "byteLength": 14915,
+        "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d"
+      },
+      {
+        "path": ".codex-work/execution-spool-recovery/actual-sdk/007.bin",
+        "byteLength": 3222,
+        "sha256": "2eb1b25c80ed0f8c222269a197e9590d8202532d60192935ec71b13025f41637"
+      },
+      {
+        "path": ".codex-work/execution-spool-recovery/actual-sdk/008.png",
+        "byteLength": 11174,
+        "sha256": "b347f37576dff5268f77cc7666066568d50e993ee690d3941c27693734acd0c9"
+      },
+      {
+        "path": ".codex-work/execution-spool-recovery/actual-sdk/009.bin",
+        "byteLength": 2554,
+        "sha256": "82d01b39cc3907bf96ba5804da72b8e3b9f2523f95ddf97e64df66ee624a2e2e"
+      },
+      {
+        "path": ".codex-work/execution-spool-recovery/actual-sdk/010.bin",
+        "byteLength": 745,
+        "sha256": "f9314335291e11372dd3d3c0a4ccdb126764e2d826b3a80a447959066ac198a4"
+      },
+      {
+        "path": ".codex-work/execution-spool-recovery/actual-sdk/011.pptx",
+        "byteLength": 10735,
+        "sha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5"
+      }
+    ],
+    "sameActualBytesAndInspection": true
+  },
+  "actualAssets": [
+    {
+      "path": ".codex-work/execution-spool-recovery/actual-cohort/000.json",
+      "byteLength": 20032,
+      "sha256": "9a4ad7d6ac0822277d1cd87f93c685818174c70928bcaa25882ea8d87dbda66d"
+    },
+    {
+      "path": ".codex-work/execution-spool-recovery/actual-cohort/001.png",
+      "byteLength": 147,
+      "sha256": "3f76a9a5cae823017a1ddda66fe4cadf422e496bb0e6364ea5050dcac13afd82"
+    },
+    {
+      "path": ".codex-work/execution-spool-recovery/actual-cohort/002.bin",
+      "byteLength": 1920,
+      "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+    },
+    {
+      "path": ".codex-work/execution-spool-recovery/actual-cohort/003.json",
+      "byteLength": 797,
+      "sha256": "9ed1d3c6874d012c168a25eaa5af58e68047116d811d7cf9cc32ef722892e0a0"
+    },
+    {
+      "path": ".codex-work/execution-spool-recovery/actual-cohort/004.json",
+      "byteLength": 1176,
+      "sha256": "0f5119d7dac31d299829342ff36995dc8744374641f95ede9542febb5445f364"
+    },
+    {
+      "path": ".codex-work/execution-spool-recovery/actual-cohort/005.json",
+      "byteLength": 2386,
+      "sha256": "46fa2372d7b6fdac95144ee7de120f94776e55babdb1461cb1003793b9c5e550"
+    },
+    {
+      "path": ".codex-work/execution-spool-recovery/actual-cohort/006.png",
+      "byteLength": 14915,
+      "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d"
+    },
+    {
+      "path": ".codex-work/execution-spool-recovery/actual-cohort/007.json",
+      "byteLength": 3222,
+      "sha256": "2eb1b25c80ed0f8c222269a197e9590d8202532d60192935ec71b13025f41637"
+    },
+    {
+      "path": ".codex-work/execution-spool-recovery/actual-cohort/008.png",
+      "byteLength": 11174,
+      "sha256": "b347f37576dff5268f77cc7666066568d50e993ee690d3941c27693734acd0c9"
+    },
+    {
+      "path": ".codex-work/execution-spool-recovery/actual-cohort/009.json",
+      "byteLength": 2554,
+      "sha256": "82d01b39cc3907bf96ba5804da72b8e3b9f2523f95ddf97e64df66ee624a2e2e"
+    },
+    {
+      "path": ".codex-work/execution-spool-recovery/actual-cohort/010.json",
+      "byteLength": 745,
+      "sha256": "f9314335291e11372dd3d3c0a4ccdb126764e2d826b3a80a447959066ac198a4"
+    },
+    {
+      "path": ".codex-work/execution-spool-recovery/actual-cohort/011.pptx",
+      "byteLength": 10735,
+      "sha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5"
+    }
+  ],
+  "reference": {
+    "path": ".codex-work/execution-spool-recovery/actual-cohort/reference.json",
+    "byteLength": 5067,
+    "sha256": "41029a26a3580551880d310e505a687bb01d17de9722de255d4c2bf0552ff4cb"
+  },
+  "baselineEvidence": {
+    "path": "docs/reviews/evidence/2026-09-26-embedded-export-verification.json",
+    "byteLength": 442906,
+    "sha256": "35f680df59857e0dcda66db1dab36675715681a234cb0f6f43b2c8084bb664ae"
+  },
+  "pptxAndPixelsUnchanged": true,
+  "legacyWorkerRejection": {
+    "path": ".codex-work/execution-spool-recovery/legacy-worker.json",
+    "byteLength": 406,
+    "sha256": "9a77e58865351df087142647f16e5ec0768d9fcf012e0949258d80fac50696e2"
+  },
+  "environment": {
+    "system": "Darwin",
+    "machine": "arm64",
+    "rustc": "rustc 1.92.0 (ded5c06cf 2025-12-08)"
+  },
+  "documentation": [
+    {
+      "path": "README.md",
+      "byteLength": 19959,
+      "sha256": "48e6d267fd4ad116877f3e505dfc32f0d5b04a4ffd4cd6134c428950d8e379b4"
+    },
+    {
+      "path": "docs/README.md",
+      "byteLength": 22563,
+      "sha256": "8b0115dafa06fa59abbab17ea2a5e442778d6ee9182f139760e759199b47a333"
+    },
+    {
+      "path": "docs/implementation/progress.md",
+      "byteLength": 92233,
+      "sha256": "f2601bc4949ebbf5c5097ce2968e62efb56a847b18bfb8106b5662fdeed69558"
+    },
+    {
+      "path": "docs/implementation/dependencies.md",
+      "byteLength": 21958,
+      "sha256": "f376316196e986fed97027ae3f9f1dbe5b7e43c2133f6e9af3317d1654984bde"
+    },
+    {
+      "path": "docs/implementation/execution-spool-recovery.md",
+      "byteLength": 6578,
+      "sha256": "56844544a786ee5d3885e5cf4ec4414957399963f74cd787e0a430ea14f7c8fc"
+    },
+    {
+      "path": "docs/design/implementation/musterwork-adapter-spec.md",
+      "byteLength": 15642,
+      "sha256": "a010488dab305a49605fe49a4023dafafa2be44dd45e10a5cd8bbb26a54a7510"
+    }
+  ],
+  "verifier": {
+    "path": "tools/verification/execution-spool-evidence.py",
+    "byteLength": 10236,
+    "sha256": "629215532e0f52b56f8de9f91b2e9154011eb7c43e492e51d9330b951d2e2a9d"
+  },
+  "localLinksChecked": 493,
+  "limitations": [
+    "macOS process/runtime evidence; Linux and Windows host-library cross compilation is not platform runtime or renderer acceptance.",
+    "Two ignored tests are subprocess entry points explicitly exercised by parent crash/recovery tests; they are not missing external tests.",
+    "Build inputs are frozen and own changed files are checked against the workspace. This is scoped validation, not a complete workspace or capability regression.",
+    "Musterwork still uses the previous frozen SDK/worker. Product SDK refresh and startup/maintenance wiring are pending.",
+    "Legacy unleased execution directories are preserved. No application terminal content GC, quota-account retirement, aggregate disk bound or power-loss claim.",
+    "Complete advanced content, Viewer/Player, history, Office/WPS, performance, installer and E0-E3 acceptance remain open."
+  ]
+}

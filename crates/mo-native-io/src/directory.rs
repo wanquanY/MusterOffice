@@ -23,7 +23,9 @@ impl SpoolDirectory {
                 "mo-execution-{}-{epoch}-{nonce}",
                 std::process::id()
             ));
-            let mut builder = fs::DirBuilder::new();
+            let builder = fs::DirBuilder::new();
+            #[cfg(unix)]
+            let mut builder = builder;
             #[cfg(unix)]
             {
                 use std::os::unix::fs::DirBuilderExt;

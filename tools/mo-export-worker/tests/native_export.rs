@@ -1,6 +1,8 @@
 #[cfg(unix)]
 #[path = "native_export/faults.rs"]
 mod faults;
+#[path = "native_export/recovery.rs"]
+mod recovery;
 mod support;
 use mo_common::Digest;
 use mo_native_export::NativeExportCandidate;
@@ -48,7 +50,8 @@ fn real_worker_retains_verified_outputs_repeats_deterministically_and_cleans() {
     for asset in candidate.assets() {
         assert_eq!(digest(&bytes(&candidate, &asset.id)), asset.sha256);
     }
-    assert_eq!(fs::read_dir(root.spool()).unwrap().count(), 1);
+    assert_eq!(root.executions().len(), 1);
+    assert_eq!(exporter.recover_spools(64).unwrap().live, 1);
     let repeated = exporter
         .prepare(&request, snapshot, &assets, &|| false)
         .unwrap();
@@ -74,7 +77,7 @@ fn real_worker_retains_verified_outputs_repeats_deterministically_and_cleans() {
         );
     }
     repeated.discard().unwrap();
-    assert_eq!(fs::read_dir(root.spool()).unwrap().count(), 1);
+    assert_eq!(root.executions().len(), 1);
     drop(candidate);
     root.clean();
 }
@@ -124,12 +127,10 @@ fn cancellation_before_start_and_during_output_removes_all_execution_files() {
         let triggered = Cell::new(false);
         let check = || {
             let ready = !during
-                || fs::read_dir(root.spool())
-                    .unwrap()
-                    .flatten()
-                    .any(|execution| {
-                        fs::read_dir(execution.path()).is_ok_and(|children| children.count() >= 3)
-                    });
+                || root.executions().into_iter().any(|execution| {
+                    // participants.lock is infrastructure, not output.
+                    fs::read_dir(execution).is_ok_and(|children| children.count() >= 4)
+                });
             if ready {
                 triggered.set(true);
             }

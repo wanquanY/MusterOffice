@@ -2,6 +2,8 @@
 //! not an Artifact store or a commit owner. The pure kernel never depends on it.
 mod directory;
 pub use directory::SpoolDirectory;
+mod execution;
+pub use execution::{ExecutionSpool, ExecutionSpoolLease, ExecutionSpoolRoot, SpoolRecovery};
 use mo_opc::{ReaderAt, ResultSink, SealedOutput};
 use std::{
     fs::{self, DirBuilder, File, OpenOptions},
@@ -66,7 +68,9 @@ impl FileSpool {
             let nonce = NEXT_SPOOL.fetch_add(1, Ordering::Relaxed);
             let directory =
                 operator_root.join(format!("mo-spool-{}-{epoch}-{nonce}", std::process::id()));
-            let mut builder = DirBuilder::new();
+            let builder = DirBuilder::new();
+            #[cfg(unix)]
+            let mut builder = builder;
             #[cfg(unix)]
             {
                 use std::os::unix::fs::DirBuilderExt;

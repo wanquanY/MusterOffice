@@ -47,6 +47,18 @@ def toml_document(value):
     return result
 
 
+def production_dependencies(manifest):
+    """Keep platform predicates intact; development edges cannot enter the SDK."""
+    manifest.pop('dev-dependencies', None)
+    dependencies = list(manifest.get('dependencies', {}).items())
+    for selector, target in manifest.get('target', {}).items():
+        if not isinstance(target, dict) or set(target) - {'dependencies', 'dev-dependencies'}:
+            raise ValueError(f'unsupported SDK target table: {selector}')
+        target.pop('dev-dependencies', None)
+        dependencies.extend(target.get('dependencies', {}).items())
+    return dependencies
+
+
 def build(destination):
     destination = destination.resolve()
     destination.mkdir(parents=True, exist_ok=False)
@@ -67,9 +79,9 @@ def build(destination):
         assert manifest['package']['name'] == name
         # Distribution is the production library closure. Dev/test graphs are
         # verified in the source repository, not embedded into a host product.
-        assert not any(k in manifest for k in ['build-dependencies', 'target', 'bin', 'example', 'test', 'bench'])
+        assert not any(k in manifest for k in ['build-dependencies', 'bin', 'example', 'test', 'bench'])
         assert 'build' not in manifest['package'] and not (directory / 'build.rs').exists()
-        manifest.pop('dev-dependencies', None)
+        production = production_dependencies(manifest)
         manifest['package'].update(autobins=False, autoexamples=False, autotests=False, autobenches=False)
         # A product may vendor this SDK beneath its own Cargo workspace. Pin
         # each library to the SDK workspace so inherited dependencies cannot
@@ -77,7 +89,7 @@ def build(destination):
         manifest['package']['workspace'] = '../..'
         manifest.setdefault('lib', {}).update(test=False, doctest=False, bench=False)
         selected[name] = (directory, manifest)
-        for key, dep in manifest.get('dependencies', {}).items():
+        for key, dep in production:
             assert isinstance(dep, dict) and dep.get('workspace') is True, (name, key)
             required_dependencies.add(key)
             inherited = dependency_table[key]
@@ -115,7 +127,7 @@ def build(destination):
         target = destination / directory.relative_to(ROOT) / 'Cargo.toml'
         target.write_text(toml_document(manifest))
     # Preset includes retain their exact source-relative paths and notices.
-    for name in ['drawingml-presets', 'unicode-bidi', 'rust-numeric']:
+    for name in ['drawingml-presets', 'unicode-bidi', 'rust-numeric', 'rustix']:
         for path in sorted((ROOT / 'components' / name).rglob('*')):
             if path.is_file() and path.name != 'README.md':
                 copy(path)
