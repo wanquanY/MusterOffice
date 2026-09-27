@@ -1,19 +1,19 @@
 # MusterOffice 整体架构
 
-状态：架构评审稿。产品名称、独立项目、可扩展办公定位和语言/组件策略已确认；具体组件、协议档案及实现仍待验证。
+2026-09-27：职责以 [ADR 0007](../decisions/0007-kernel-only-integration-boundary.md) 为准。MusterOffice 专注计算与薄接入；业务权限、持久存储、任务平台和产品 UI 属于接入方。部分实现已存在，依赖收敛及完整验收仍待完成。
 
 ## 分层建议
 
 ```text
-Agent / Automation / Application
+接入产品：Agent / 权限 / 任务 / 存储 / UI
               │
        Skill / platform Plugin
               │
        MCP / SDK / CLI adapters
               │
-         Operation Service
+       统一计算操作与 Schema
               │
-       Host execution adapter
+       资源 I/O / 计算执行适配
               │
    ┌──────────┼────────────┐
 Presentations Documents Spreadsheets …
@@ -34,13 +34,15 @@ Presentations Documents Spreadsheets …
 | 文字/绘图 | 字体塑形、字形、二维几何、颜色     | 演示文稿固定画布、文档分页规则        |
 | 计算      | 取消点、资源预算、增量依赖基础设施 | 表格公式语义、分页、图表数据语义      |
 | 格式      | ZIP/OPC/XML 等经过验证的底层工具   | PPTX、DOCX、XLSX 的各自读写与兼容规则 |
-| 宿主      | 文件、网络、缓存、任务持久化、隔离 | 产品权限、账户、计费与发布策略        |
+| 计算运行  | 有界内存缓存、取消、隔离、输入输出适配 | 文件/网络权限、持久存储、任务、账户、计费、发布与产品 UI 全部由接入方拥有 |
 
 不把所有办公领域塞进演示文稿的页面/Scene 模型。电子表格需要公式依赖和重算；文档需要流式段落与分页；演示文稿采用固定页面。这些语义分别拥有自己的模型与验收。
 
 ## 按需装配
 
 接入演示文稿的产品不应被迫下载未来的电子表格公式引擎。公共发行清单声明模块、版本和资源闭包，宿主按需要安装或预置。
+
+SDK、MCP/HTTP 及 CLI 按接入方式选择，SDK 不强带服务、数据库或 UI。PPT 完整能力不因选择入口而缩减；全部字体/codec 和离线资源成本仍需计量，详见[边界与包装合同](../design/implementation/kernel-host-boundary.md)。
 
 模块不是任意脚本插件。首版采用可审查、版本明确的实现边界，不让输入文档动态执行代码。跨领域转换作为显式适配，报告损失与验证范围，不承诺天然无损。
 
@@ -52,9 +54,9 @@ Presentations Documents Spreadsheets …
 
 ## 标准 Agent 接入
 
-通用调用采用 MCP，任务方法采用 Agent Skill，平台安装采用 Plugin，嵌入和实时播放采用 SDK/CLI，共用版本化 Operation Contract。标准宿主支持独立本地/自托管；产品宿主可接入已有 Runtime 和存储。内核不直接依赖这些协议和身份系统。
+通用调用采用 MCP，任务方法采用 Agent Skill，平台安装采用 Plugin，嵌入和实时播放采用 SDK/CLI，共用版本化 Operation Contract。MCP 适配可运行于本地或远程；SDK 直接调用计算能力。二者均不自建业务权限、内容库、持久任务或页面，接入产品提供其已有设施。
 
-Musterwork 的接入形式为 Skill＋MCP 注册＋宿主/Artifact 适配＋Viewer/Player SDK；其他产品无需引入 Musterwork。大文件和逐帧数据通过宿主数据通道，模型侧只接收有界工具结果与资源引用。详见[接入总设计](agent-integration.md)及[接口规格](../design/agent-interfaces.md)。
+Musterwork 使用公共 SDK/MCP 和薄资源/Artifact 桥接，产品自有 Viewer/Player UI 消费无界面渲染/播放接口；其他产品无需引入 Musterwork。大文件和逐帧数据通过宿主数据通道，模型侧只接收有界工具结果与资源引用。详见[接入总设计](agent-integration.md)及[接口规格](../design/agent-interfaces.md)。
 
 ## 首个模块
 

@@ -1,6 +1,6 @@
 # 实施顺序、风险实验与完成条件
 
-v0.4 设计基线。本页是实施合同，**不代表本轮已运行 E0 或启动内核开发**。工期不用于缩减质量目标，阶段用于尽早暴露不可行的技术路线。
+v0.4 设计基线，2026-09-27 按 [ADR 0007](../../decisions/0007-kernel-only-integration-boundary.md)修订接入职责。本页是实施合同；已有部分实现，完整阶段结果以[实现进度](../../implementation/progress.md)及证据为准。工期不用于缩减质量目标。
 
 ## 1. D1 与 E0 的关系
 
@@ -19,7 +19,7 @@ D1 固定产品目标、模型/操作责任、接口、能力分解、实验输�
 | E0-3 SmartArt/数学 | 多种布局算法、节点增删/重排/换布局、长文本、嵌套分式/矩阵；目标应用继续编辑 | 原生模型与派生绘制一致；能覆盖算法类而非单张样图；不得转普通组或图片 |
 | E0-4 动态/媒体/扩展 | W-D 加 Morph、3D、墨迹；点击/路径/文字分步、媒体书签、seek/跨页；Web/Native 运行 | retained 渲染与时钟可行、无逐帧 PNG；目标应用支持交集明确；全功能包与codec许可/大小计量 |
 | E0-5 来源/大文件/取消 | 80页共享部件、未知扩展、二进制旧文件、加密样本、流式大媒体；每阶段取消、损坏输入 | 选择性写回、强终止、全资源释放、预算与离线闭包；任何破坏合法未改内容或半成品发布均失败 |
-| E0-6 接入/提交/发行 | 本地 stdio、远程 HTTP、只支持基本 tools 的客户端、嵌入 MW 模拟提交；重复/断线/取消竞争 | 同一 OperationService/Job、无双 owner；完整依赖尺寸；第三方无需 MW 源码；并非只返回一句“连接成功” |
+| E0-6 接入/提交/发行 | 简单 SDK、本地 stdio、宿主网关后的远程 HTTP、基本 tools 客户端；产品任务/提交桥接反例 | 同源计算，普通调用无账号/持久库/UI 前提；可选持久任务由产品拥有；相同质量下测完整依赖与封装成本；第三方实际取得 PPTX |
 
 选型对照使用相同 workload、同精度、同字体、同输出与 QA：Rust 为主混合方案为默认；必要时对照同职责的纯 Rust 组件/更窄 C++ 边界。若必须改变已确认主体语言，提交证据和新 ADR，不由性能直觉决定。
 
@@ -31,16 +31,18 @@ E0 结束要产生：`dependency-lock`、`feature-registry` 的高风险项、`c
 | --- | --- | --- | --- |
 | P00 合同与样本基础 | 统一 IDL、注册表、生成器、资源/摘要、诊断、corpus manifest、验证工具 | v0.4 规格 | API/Schema/语言绑定同源；正反例及许可可追踪 |
 | P01 文档/编辑 | model/edit、继承、锚点、changeSet、查询、undo/redo | P00 | 全对象模型可表达，事务失败不留部分变更，引用/继承不压平 |
-| P02 资源/执行 | ResourceProvider/ResultSink、预算、Native/WASM隔离、增量DAG | P00 | 有界内存/IO、取消、spool重读、generation、防晚结果 |
+| P02 资源/执行 | ResourceProvider/ResultSink、预算、Native/WASM隔离、增量DAG | P00 | 有界内存/IO、取消、宿主提供的临时输出重读、generation、防晚结果；无隐式持久库 |
 | P03 原生读写 | OPC/OOXML、来源overlay、legacy/加密边界、字体嵌入 | P01/P02 | 实际字节检查、回存、未知内容闭包、损坏输入隔离 |
 | P04 排版/图形 | text/geometry/CPU Draw IR/主题/表格 | P01/P02 | 跨端语义/布局、文本自然再编辑、完整图形效果 |
 | P05 高级对象 | charts/diagrams/math/model3d/ink | P03/P04 | 每种对象读/建/改/画/写/目标编辑；不只静态缓存 |
 | P06 播放 | timeline、合成、media adapter、事件/seek | P02/P04/P05 | 动态轨迹、全效果播放、同步与资源释放 |
-| P07 通用接入 | OperationService、StandardHost、CLI/MCP/Skill/Plugin/SDK | P00/P02，持续接入P01–P06 | 五种独立入口同合同，第三方产品端到端 |
-| P08 Musterwork | EmbeddedHost、Tool successor、draft/candidate/proof/artifact、Viewer | P03/P06/P07 | MW01–MW16、T/A/B/I要求共同通过 |
+| P07 通用接入 | 计算合同、薄 CLI/MCP/SDK、Skill/Plugin；从公共依赖中分离旧 StandardHost | P00/P02，持续接入P01–P06 | I01–I20；无需自有权限/存储/UI 的实际调用、完整质量与成本分别通过 |
+| P08 Musterwork | 原 Runtime/内容/Artifact 的公共接口桥接、Tool successor、历史转换及产品自有 UI | P03/P06/P07 | MW01–MW16、T/A/B/I要求共同通过；核心无产品私有依赖 |
 | P09 发行工程 | 构建/SBOM、模块/字体/codec包、升级/回滚、全语料性能 | 所有包 | 已批准目标矩阵、质量/性能/许可/产品门禁，无旧PPT运行依赖 |
 
 P03/P04 及 P07 可以在稳定 P00/P01 接口后独立推进；P05/P06 必须早有纵向样本，不能等“静态全部完成”才发现模型容不下动画/SmartArt。所有工作包持续用同一内核和合同，不为演示 demo 维护另一套引擎。
+
+当前先按[内核与接入产品边界](kernel-host-boundary.md)分离计算/宿主公共合同，形成无需 JobStore 或业务数据库的 SDK/CLI/MCP 纵向调用，再收敛旧宿主依赖并接入 Musterwork。纯计算入口不以全产品存储或全局 GC 重构为前提；实际影响产品链路的数据安全缺陷仍由产品负责修复。先行完成单条公共调用不代表完整一期通过，P01–P09 与各质量门禁继续有效。
 
 ## 4. 阶段验收
 

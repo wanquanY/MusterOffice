@@ -2,7 +2,7 @@
 
 v0.4 设计提案 · 2026-09-24。本页是 MusterOffice 的接入合同；实际源码字段、author@3 行为和 MW01–MW16 验收已在[适配实施规格](../implementation/musterwork-adapter-spec.md)展开。Musterwork 的具体 Runtime/Schema/发行仍由其仓库维护；本项目不跨仓库导入私有源码，不因迁移文档直接修改产品 wire 协议。
 
-接入形态已补充为 **官方集成包：Skill＋MCP＋宿主/Artifact 适配＋Viewer/Player SDK**。公共架构见[Agent 接入总设计](../../architecture/agent-integration.md)，工具/资源/异步合同见[公共接口规格](../agent-interfaces.md)。这些能力也可独立提供给其他 AI 产品。
+2026-09-27 接入职责按 [ADR 0007](../../decisions/0007-kernel-only-integration-boundary.md)修订：**Skill＋公共 SDK 或薄 MCP＋产品自己的资源/任务/Artifact/UI 桥接**。MusterOffice 提供无界面渲染/播放计算，不提供权限、持久存储、业务任务平台或产品页面。公共架构见[接入总设计](../../architecture/agent-integration.md)，所有权与旧实现收敛见[边界合同](../implementation/kernel-host-boundary.md)。
 
 ## 1. 已观察基线与目标
 
@@ -94,20 +94,20 @@ Agent 新结果不得覆盖用户已外部修改的文件；产品以新版本/�
 
 Musterwork 替换报告逐消费者列：Tool/Schema/Artifact 版本、宿主、输入/输出 hash、测试、用户操作、失败/取消恢复、旧依赖移除证据。产品集成通过还必须结合[完整能力验收](verification-and-roadmap.md)，不能以“现有静态功能已迁移”替代一期完成。
 
-本次只迁移设计依据、完善接入合同，没有修改 Musterwork 运行时代码、启用新路由、执行迁移或清理任何旧依赖。
+本次职责修订只修改文档；此前已有产品桥接源码及阶段验证，见[实现进度](../../implementation/progress.md)。这些历史证据不等于完整替换通过，也不表示新边界已经落地。
 
 ## 9. 官方集成包的落地边界
 
 | 集成件 | MusterOffice 负责 | Musterwork 负责 |
 | --- | --- | --- |
 | Skill | 可移植的演示文稿工作流、工具绑定约束、参考资料 | 注册/加载、用户上下文、现有工具发行与权限 |
-| MCP | 统一工具/资源/任务适配，stdio/HTTP 与版本档案 | MCP Client/注册、Invocation 上下文和执行路由 |
-| Host Bridge | 公共 Resource/Execution/Job/Commit 接口 | 连接 Content Store、Browser Gateway、Managed、CAS/fence |
+| SDK / MCP | 同源计算接口、工具/资源薄适配，stdio/HTTP 与版本档案 | SDK 调用或 MCP Client/注册、Invocation 和执行路由；认证归产品/网关 |
+| I/O / 任务桥接 | 读取/输出/取消/进度合同；持久任务扩展可选 | 连接原 Content Store、任务、Browser Gateway、Managed、CAS/fence |
 | Artifact | 文件、模型、预览、播放及 QA 的公共引用与摘要 | 产品 Artifact Schema、共享解析器、持久提交与下载 |
-| Viewer/Player | 同一内核的显示与播放 SDK | 面板/交互、实际权限、生命周期与状态展示 |
+| 渲染/播放 | 同一内核的无界面绘制、时间轴与播放接口 | Viewer/Player 页面、编辑器、交互、权限及状态展示 |
 | 安装/升级 | 公共发行清单、二进制/资源完整性及兼容记录 | 产品 Plugin 或内置能力的具体安装发行机制 |
 
-Agent 工具调用首先属于现有 Runtime Invocation，然后进入 MCP/Operation Service；返回的 Job 是这次 Invocation 所属计算的投影。桥接层绑定已有工作，不再递归创建另一条 Run 或 AgentLoop。Musterwork 若将工具内嵌为原生调用，也必须执行相同操作 Schema 和宿主合同。
+Agent 工具调用首先属于现有 Runtime Invocation，然后进入公共 SDK 或 MCP。产品可把已有任务映射为可选 Job，普通计算不要求 JobStore；桥接不创建第二条 Run 或 AgentLoop。直接嵌入调用使用相同计算 Schema 和质量规则，无须绕经 MCP 服务。
 
 Web 场景的 MCP 接口可以由受控服务承载，再通过既有客户端执行网关调度 WASM Worker；这不意味着把布局移回服务器。Desktop 采用受管原生执行，Managed 为无客户端任务提供相同能力。显示与播放直接使用 SDK 数据通道，不把每帧内容变成 Agent 工具消息。
 

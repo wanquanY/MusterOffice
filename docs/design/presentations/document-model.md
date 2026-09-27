@@ -73,7 +73,7 @@ PresentationDocument
 }
 ```
 
-该示例展示语义，不定义正式 wire discriminator。执行顺序为：版本检查 → 操作/权限能力校验 → 在私有草稿计算变更 → 修复显式授权引用 → 校验依赖与来源闭包 → 原子产生新 revision。任一步失败，原 revision 不变。
+该示例展示语义，不定义正式 wire discriminator。按 [ADR 0007](../../decisions/0007-kernel-only-integration-boundary.md)，接入产品先完成业务授权；内核执行：版本检查 → 操作/计算能力校验 → 在私有工作版本计算变更 → 更新显式资源引用 → 校验依赖与来源闭包 → 原子产生新 revision。任一步失败，原 revision 不变。此处私有工作版本是计算状态，不要求文稿数据库。
 
 | 修改 | 必须共同处理 |
 | --- | --- |

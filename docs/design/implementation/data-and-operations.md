@@ -73,13 +73,13 @@ Schema 演进顺序：领域记录 → 类型化操作 → Reader/Writer 映射 
 
 ## 4. 事务、撤销和并发
 
-事务顺序固定为：信封/版本检查 → 所需权限和 capability 检查 → 构建私有工作版本 → 按列表应用 → 全局引用/来源闭包检查 → 产生 immutable revision 与 changeSet。中间状态不可被查询或播放观察；冲突/失败时无部分提交。
+接入产品先完成业务授权；按 [ADR 0007](../../decisions/0007-kernel-only-integration-boundary.md)，内核事务顺序固定为：信封/版本检查 → 操作与计算 capability 检查 → 构建私有工作版本 → 按列表应用 → 全局引用/来源闭包检查 → 产生 immutable revision 与 changeSet。计算 API 不要求身份、权限或持久 Job 参数。中间状态不可被查询或播放观察；冲突/失败时无部分提交。
 
-每个操作有 `operationId`；事务有 `requestId/baseRevision`。同一幂等范围内相同 requestId+规范请求摘要返回原收据；不同摘要返回 `REQUEST_ID_REUSED`。旧 revision 返回 `REVISION_CONFLICT` 并附当前版本及可查询的差异引用。**不自动把 Agent 修改重放到新版本**，因为可能改变用户文字、图表数据和动画目标。
+每个操作有 `operationId`；事务有 `requestId/baseRevision`。声明会话内去重时，相同 requestId+规范请求摘要返回原收据，不同摘要返回 `REQUEST_ID_REUSED`；其有效期限于明确的计算会话，持久幂等由产品拥有。旧 revision 返回 `REVISION_CONFLICT` 并附当前版本及可查询的差异引用。**不自动把 Agent 修改重放到新版本**，因为可能改变用户文字、图表数据和动画目标。
 
 undo/redo 是新的有版本操作。宿主保存有限历史和 inverse changeSet/被删除资源句柄，内核计算可逆修改；遇到已被其他修改改变的依赖时报告冲突。清理历史前确认没有旧 Artifact、活动会话或迁移引用。多端协作可将有序事务提交到同一 CAS owner，本期不要求用 CRDT 重写整个 Office 对象图。
 
-ChangeSet 至少包含 created/updated/deleted IDs、ID/anchor maps、受影响定义与资源、来源覆盖、时间引用变化、布局失效集合及新摘要。宿主必须把 revision、收据和业务提交放进自己的持久事务；核心的成功不等于产品 Artifact 已发布。
+ChangeSet 至少包含 created/updated/deleted IDs、ID/anchor maps、受影响定义与资源、来源覆盖、时间引用变化、布局失效集合及新摘要。需要持久发布的产品把 revision、收据和业务提交放进自己的事务；普通内存计算无需数据库。核心的成功不等于产品 Artifact 已发布。
 
 ## 5. 编译 DAG 与缓存
 

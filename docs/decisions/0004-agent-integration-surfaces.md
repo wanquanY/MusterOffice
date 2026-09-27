@@ -1,5 +1,7 @@
 # ADR 0004：标准 Agent 接入与统一办公操作合同
 
+> 2026-09-27：本提案已被 [ADR 0007](0007-kernel-only-integration-boundary.md)部分取代。SDK/MCP/CLI/Skill/Plugin 和同源计算方向保留；MusterOffice 自带持久任务/资源宿主及产品 UI 的安排不再是当前交付要求。权限、存储、持久任务与产品页面归接入方，普通 SDK 无需这些业务设施。以下原文保留用于追踪旧设计与实现。
+
 - 状态：**Proposed（本轮接入架构）；跨 AI 产品便捷接入的目标已由用户确认**。
 - 日期：2026-09-24。
 - 依据：用户要求明确 Musterwork 的接入形式，采用 Skill、MCP、Plugin 等成熟机制，让其他 AI 产品快速接入独立办公内核。
