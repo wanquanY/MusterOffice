@@ -2,6 +2,7 @@ use mo_raster::{BackendReply, RasterBackend, RasterError};
 use wasm_bindgen::prelude::*;
 #[wasm_bindgen(typescript_custom_section)]
 const INTERFACE: &str = r#"
+export interface RasterReply { status: number; pixels: Uint8Array; }
 export interface RasterComponent {
     raster(frame: Uint32Array): {status: number; pixels: Uint8Array};
     rasterImages?(frame: Uint32Array, images: Uint8Array): {status: number; pixels: Uint8Array};
@@ -12,7 +13,8 @@ export interface RasterComponent {
 extern "C" {
     #[wasm_bindgen(typescript_type = "RasterComponent")]
     pub type RasterComponent;
-    type Reply;
+    #[wasm_bindgen(typescript_type = "RasterReply")]
+    pub type Reply;
     #[wasm_bindgen(method, catch, js_name = raster)]
     fn invoke(this: &RasterComponent, frame: &[u32]) -> Result<Reply, JsValue>;
     #[wasm_bindgen(method, catch, js_name = rasterImages)]
@@ -44,41 +46,45 @@ impl Backend<'_> {
             None => self.0.invoke(frame),
         }
         .map_err(|_| RasterError::Host("WASM raster component call failed"))?;
-        let status = r
-            .status()
-            .map_err(|_| RasterError::ComponentInvalid("WASM status"))?;
-        if !status.is_finite() || status.fract() != 0.0 || !(0.0..=4.0).contains(&status) {
-            return Err(RasterError::ComponentInvalid("WASM status"));
-        }
-        let source = r
-            .pixels()
-            .map_err(|_| RasterError::ComponentInvalid("WASM pixels"))?
-            .dyn_into::<PixelBytes>()
-            .map_err(|_| RasterError::ComponentInvalid("WASM pixel type"))?;
-        let expected = if status == 0.0 {
-            u64::from(frame[2]) * u64::from(frame[3]) * 4
-        } else {
-            0
-        };
-        let length = source
-            .length()
-            .map_err(|_| RasterError::ComponentInvalid("WASM pixel length"))?;
-        if expected > mo_raster::MAX_PIXEL_BYTES as u64 || length != expected as f64 {
-            return Err(RasterError::ComponentInvalid("WASM pixel length"));
-        }
-        let mut pixels = Vec::new();
-        pixels
-            .try_reserve_exact(expected as usize)
-            .map_err(|_| RasterError::Host("WASM pixels allocation"))?;
-        pixels.resize(expected as usize, 0);
-        copy_pixels(&mut pixels, &source)
-            .map_err(|_| RasterError::ComponentInvalid("WASM pixel copy"))?;
-        Ok(BackendReply {
-            status: status as u32,
-            pixels,
-        })
+        read_reply(&r, frame)
     }
 }
+pub(crate) fn read_reply(r: &Reply, frame: &[u32]) -> Result<BackendReply, RasterError> {
+    let status = r
+        .status()
+        .map_err(|_| RasterError::ComponentInvalid("WASM status"))?;
+    if !status.is_finite() || status.fract() != 0.0 || !(0.0..=4.0).contains(&status) {
+        return Err(RasterError::ComponentInvalid("WASM status"));
+    }
+    let source = r
+        .pixels()
+        .map_err(|_| RasterError::ComponentInvalid("WASM pixels"))?
+        .dyn_into::<PixelBytes>()
+        .map_err(|_| RasterError::ComponentInvalid("WASM pixel type"))?;
+    let expected = if status == 0.0 {
+        u64::from(frame[2]) * u64::from(frame[3]) * 4
+    } else {
+        0
+    };
+    let length = source
+        .length()
+        .map_err(|_| RasterError::ComponentInvalid("WASM pixel length"))?;
+    if expected > mo_raster::MAX_PIXEL_BYTES as u64 || length != expected as f64 {
+        return Err(RasterError::ComponentInvalid("WASM pixel length"));
+    }
+    let mut pixels = Vec::new();
+    pixels
+        .try_reserve_exact(expected as usize)
+        .map_err(|_| RasterError::Host("WASM pixels allocation"))?;
+    pixels.resize(expected as usize, 0);
+    copy_pixels(&mut pixels, &source)
+        .map_err(|_| RasterError::ComponentInvalid("WASM pixel copy"))?;
+    Ok(BackendReply {
+        status: status as u32,
+        pixels,
+    })
+}
+
 impl RasterBackend for Backend<'_> {
     fn raster(&mut self, frame: &[u32]) -> Result<BackendReply, RasterError> {
         self.call(frame, None)

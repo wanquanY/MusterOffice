@@ -49,6 +49,7 @@ def plan(groups, output, bindgen, python):
     if "lint" in groups:
         add("verification-driver-tests", python, "-m", "unittest", "discover", "-s", "tools/verification", "-p", "test_current.py", "-v")
         add("agent-package-tests", python, "-m", "unittest", "discover", "-s", "tools/agent-package", "-p", "test_build.py", "-v")
+        add("playback-sdk-package-tests", python, "-m", "unittest", "discover", "-s", "tools/playback-sdk", "-p", "test_build.py", "-v")
         add("format", "cargo", "fmt", "--all", "--", "--check")
         add("clippy", "cargo", "clippy", "--workspace", "--all-targets", *cargo, "--", "-D", "warnings")
     if "rust" in groups:
@@ -58,6 +59,7 @@ def plan(groups, output, bindgen, python):
     if "typescript" in groups:
         add("types", "pnpm", "check:types")
         add("client-tests", "pnpm", "test:operation-client")
+        add("playback-client-tests", "pnpm", "test:playback-client")
     if "native" in groups or "wasm" in groups:
         add("native-build", "cargo", "build", *cargo, "-p", "mo-cli", "-p", "mo-host", "-p", "mo-raster-worker", "-p", "mo-export-worker")
     if "native" in groups:

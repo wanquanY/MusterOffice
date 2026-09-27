@@ -1,5 +1,6 @@
 use crate::raster::{Backend, RasterComponent, RenderedRaster};
 use wasm_bindgen::prelude::*;
+mod prepared;
 
 /// Explicitly owned sampler. Run in the host's worker; free() releases the plan.
 /// No global registry, clocks, filesystem or implicit component allocation.

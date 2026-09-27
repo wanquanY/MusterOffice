@@ -1,0 +1,2346 @@
+{
+  "format": "musteroffice.wasm-playback-sdk-verification/1",
+  "date": "2026-09-27",
+  "status": "passed-scoped-development",
+  "scope": "Typed TS adapter and relocatable local development package consuming existing Rust playback in actual Node Workers. No complete presentation/browser/Office-WPS/product replacement or release performance claim.",
+  "environment": {
+    "os": "Darwin",
+    "machine": "arm64",
+    "osVersion": "26.2",
+    "node": "v23.5.0",
+    "rustc": "rustc 1.92.0 (ded5c06cf 2025-12-08)",
+    "python": "3.13.0"
+  },
+  "boundary": {
+    "core": "Existing Rust validation, timeline, page compilation and raster semantics unchanged.",
+    "sdk": "Explicit typed owner, response correlation, no extra pixel copy, deterministic WASM handle release, reentry guard.",
+    "product": "Worker scheduling/termination, clocks/events/display/media, authorized input and persistent results.",
+    "realComponentInvalidation": "Terminate the host Worker. Core plan survival after an invalid external reply does not override the real component isolation policy.",
+    "noMusterworkWrites": true,
+    "noUserInstallationOrPublication": true,
+    "noNewRegistryDependencies": true
+  },
+  "sources": {
+    "baseline": {
+      "path": ".codex-work/wasm-playback-sdk/baseline.json",
+      "byteLength": 266340,
+      "sha256": "d805d263f3acc1aa3dc8e49c35d811a6be8de3b0fc77d52e12638025bfce58c9"
+    },
+    "baselineFiles": 2229,
+    "changed": [
+      {
+        "path": "README.md",
+        "byteLength": 22772,
+        "sha256": "953617d1a46c7fea36ee54884f0929a60d151e4c17115475ea7ebad4855b7346",
+        "previousSha256": "cb12dec10bd58bc335fb5e6f9780445173a7d1b9feebf339b4a436b33ac24a50"
+      },
+      {
+        "path": "docs/README.md",
+        "byteLength": 26014,
+        "sha256": "194cc3922f3d572961a5d8479048c79f0c36bc41ec044f444fe73f9445223ca8",
+        "previousSha256": "bda8a0d56d7ceb17b478f67e7e92c6351bc4bc52305579c1d867c9f07a7c9b88"
+      },
+      {
+        "path": "docs/implementation/kernel-boundary-roadmap.md",
+        "byteLength": 3196,
+        "sha256": "cdfc56de2944b674705de9babb0d8f4f22d590524d31ba7b1474196888ae784c",
+        "previousSha256": "633f08f9db1c5f2670b02451ab45dda44d82470dac49cf2e799d9edcc83d7b3c"
+      },
+      {
+        "path": "docs/implementation/progress.md",
+        "byteLength": 99877,
+        "sha256": "086ee610d4ac752b8433322f68813cfb5b3fa639204f7159026bd61cac04db10",
+        "previousSha256": "54aa7c1bab6fd6118d1e5126238881e8ba95a6d75ee51adbb72f297a3b7d8d75"
+      },
+      {
+        "path": "docs/implementation/wasm-playback-sdk.md",
+        "byteLength": 7426,
+        "sha256": "385e5e92819a4462bbe4c5e7e87a35b53002dfe61a1d22655e165eff62b000e6",
+        "previousSha256": null
+      },
+      {
+        "path": "package.json",
+        "byteLength": 1325,
+        "sha256": "a91fdfe5cf28ac8a27f8f04b8776f287ad22fe25846f506552789dddff45b15e",
+        "previousSha256": "d447856da460ad0ba71d6501e2e300847c00cc57b3f13d0850b024b64da707e5"
+      },
+      {
+        "path": "packages/playback-client/README.md",
+        "byteLength": 4468,
+        "sha256": "4bc23c04e20bd8815c23924bc95addec226d074023c4fa21af93bc131fa2d31d",
+        "previousSha256": null
+      },
+      {
+        "path": "packages/playback-client/bundle/index.d.mts",
+        "byteLength": 662,
+        "sha256": "d376f35227a2127bf31330fec2989676358c259461c3450e562471322f1e69b1",
+        "previousSha256": null
+      },
+      {
+        "path": "packages/playback-client/bundle/index.mjs",
+        "byteLength": 1459,
+        "sha256": "4c7c5e74d2bb6d6b81594bb5f2eb9f2a70d75c0c4c6111828e8131a13fc7a18b",
+        "previousSha256": null
+      },
+      {
+        "path": "packages/playback-client/src/author.ts",
+        "byteLength": 4244,
+        "sha256": "ab7217a8824fca08b7da780b18815b20692899ff9eb33dc0e30d4b3cb7971a39",
+        "previousSha256": null
+      },
+      {
+        "path": "packages/playback-client/src/index.ts",
+        "byteLength": 1904,
+        "sha256": "8f72d15f48372c7657cda4bf1eacee4ba196971afe81834e1041109aa77f51f2",
+        "previousSha256": null
+      },
+      {
+        "path": "packages/playback-client/src/owner.ts",
+        "byteLength": 5712,
+        "sha256": "7c61a4c7d5d13da0010ab0d66775f033bfc9cb5ab9e072241b2028a970082052",
+        "previousSha256": null
+      },
+      {
+        "path": "packages/playback-client/src/ports.ts",
+        "byteLength": 1566,
+        "sha256": "02df34e2593e32f8ffac1ee4b2d5e11c759049de000904f38324790d46cb216d",
+        "previousSha256": null
+      },
+      {
+        "path": "packages/playback-client/src/source.ts",
+        "byteLength": 4775,
+        "sha256": "4607b4c1faa6e2f4d07a63e28ea0e1a99fe27740d745582bc7dfce84345e20c3",
+        "previousSha256": null
+      },
+      {
+        "path": "packages/playback-client/tsconfig.json",
+        "byteLength": 347,
+        "sha256": "e59ffe2ede8b77ba501ae1b6d19a739b66c3e3abc2e3eed4862c55979c50c328",
+        "previousSha256": null
+      },
+      {
+        "path": "tools/playback-sdk/README.md",
+        "byteLength": 2620,
+        "sha256": "42ab924eb70c104cfd2c7efe7663cbb7db8bfb459b39fdf101e6d522b1929f44",
+        "previousSha256": null
+      },
+      {
+        "path": "tools/playback-sdk/build.py",
+        "byteLength": 5283,
+        "sha256": "2d555552ab2cdddd74ac69bd80062d30c46ef6ebd2ac41f5136e4b201c51fde1",
+        "previousSha256": null
+      },
+      {
+        "path": "tools/playback-sdk/example.mjs",
+        "byteLength": 6649,
+        "sha256": "620d17e8500fae7d12743464594cac2e5f9bc60ac7979674a84b1040ba7a9cee",
+        "previousSha256": null
+      },
+      {
+        "path": "tools/playback-sdk/test_build.py",
+        "byteLength": 2379,
+        "sha256": "469c0c4d230a2c73279f8190d1e0ddb6ff4ff712f1a310b622b0a47802be18b9",
+        "previousSha256": null
+      },
+      {
+        "path": "tools/verification/current.py",
+        "byteLength": 12525,
+        "sha256": "9d5a02f6a108b84a70e36ea054b7f8fef54a9cfcbf4f9d802d570b1b27304883",
+        "previousSha256": "684f1ec64a90efb02f58506f4cd149300595afa0684f4398917052d8e0f746e0"
+      },
+      {
+        "path": "tools/verification/playback-client-tests.mjs",
+        "byteLength": 8732,
+        "sha256": "eeffdb27b6ffe8623107dda8249d7596e5d9427f7638b2068793019890f5baac",
+        "previousSha256": null
+      },
+      {
+        "path": "tools/verification/test_current.py",
+        "byteLength": 2915,
+        "sha256": "f33a856f94a113ffed89560aaa5c3517bd5c9388e2bacff3f29f88d0e89b5c61",
+        "previousSha256": "c0c376b9b04f4b1d13bf61758624d3875f8d905d069fcc842c50dd295b065015"
+      },
+      {
+        "path": "tools/verification/wasm-playback-lifecycle.mjs",
+        "byteLength": 6033,
+        "sha256": "cd31d80fd4cc360be3447db0dbb672092579b6df52ef7286be03d3c606833891",
+        "previousSha256": null
+      },
+      {
+        "path": "tools/verification/wasm-playback-reference.mjs",
+        "byteLength": 5433,
+        "sha256": "5fc385f45382053a6b2dd23a72f6be2766af295df2b8eb4a34dc3c7ab599fdc3",
+        "previousSha256": null
+      }
+    ],
+    "unchangedScopes": {
+      "crates/": 685,
+      "components/": 151,
+      "contracts/": 120,
+      "fixtures/": 30,
+      "integrations/": 8,
+      "packages/contracts/": 125,
+      "packages/raster-component/": 2,
+      "packages/text-component/": 2,
+      "packages/operation-client/": 9,
+      "tools/sdk/": 9,
+      "tools/mo-mcp/": 44,
+      "tools/mo-raster-worker/": 5,
+      "Cargo.toml": 1,
+      "Cargo.lock": 1,
+      "tools/mo-mcp/Cargo.lock": 1,
+      "pnpm-lock.yaml": 1
+    },
+    "sourceLineCounts": {
+      "packages/playback-client/bundle/index.d.mts": 16,
+      "packages/playback-client/bundle/index.mjs": 22,
+      "packages/playback-client/src/author.ts": 73,
+      "packages/playback-client/src/index.ts": 27,
+      "packages/playback-client/src/owner.ts": 131,
+      "packages/playback-client/src/ports.ts": 41,
+      "packages/playback-client/src/source.ts": 84,
+      "tools/playback-sdk/build.py": 110,
+      "tools/playback-sdk/example.mjs": 122,
+      "tools/playback-sdk/test_build.py": 44,
+      "tools/verification/current.py": 221,
+      "tools/verification/playback-client-tests.mjs": 124,
+      "tools/verification/test_current.py": 52,
+      "tools/verification/wasm-playback-lifecycle.mjs": 100,
+      "tools/verification/wasm-playback-reference.mjs": 91
+    },
+    "localLinksChecked": 480,
+    "gitDiffCheck": "passed",
+    "assembler": {
+      "path": ".codex-work/wasm-playback-sdk/assemble_evidence.py",
+      "byteLength": 11704,
+      "sha256": "88d00daddcec84354b021f02970774e1cceaa9568998302933891251b7b4cf8c"
+    }
+  },
+  "package": {
+    "manifest": {
+      "path": ".codex-work/wasm-playback-sdk/bundle-07/bundle-manifest.json",
+      "byteLength": 9509,
+      "sha256": "8014dcb24caa394480b82cd98e61848d41aae8f6353fe2ec4c4076adfb332009"
+    },
+    "archive": {
+      "path": ".codex-work/wasm-playback-sdk/bundle-07.tar.gz",
+      "byteLength": 4089028,
+      "sha256": "deff31f1dcf4660b3dcf9b5861b43272a6b6d72dbca9e15d89b2b1997e5961ec"
+    },
+    "repeatedArchive": {
+      "path": ".codex-work/wasm-playback-sdk/bundle-repeat-02.tar.gz",
+      "byteLength": 4089028,
+      "sha256": "deff31f1dcf4660b3dcf9b5861b43272a6b6d72dbca9e15d89b2b1997e5961ec"
+    },
+    "relocatedManifest": {
+      "path": ".codex-work/wasm-playback-sdk/external-04/SDK With Spaces/bundle-manifest.json",
+      "byteLength": 9509,
+      "sha256": "8014dcb24caa394480b82cd98e61848d41aae8f6353fe2ec4c4076adfb332009"
+    },
+    "byteIdentical": true,
+    "files": 53,
+    "filesBytesExcludingManifest": 14152324,
+    "facadeAndInitializerJsBytes": 15530,
+    "wasmModules": [
+      {
+        "path": "runtime/mo-hb.wasm",
+        "sha256": "a9ee660dba755e41959a190db1e05522211234c2ee38215cb55dea8907a4302f",
+        "byteLength": 841468
+      },
+      {
+        "path": "runtime/mo-skia.wasm",
+        "sha256": "448d60262d326443c3e371eac4bc519e858fd84c5e8cf8c30bbf32594128ef4d",
+        "byteLength": 2370691
+      },
+      {
+        "path": "runtime/mo_wasm_bg.wasm",
+        "sha256": "e7972376d5ae45e3c06f95f65d5390b8b9eec07716d99889920348bb3e43b67b",
+        "byteLength": 10630592
+      }
+    ],
+    "runtimeNpmDependencies": 0,
+    "releaseCleared": false,
+    "sizeScope": "Unminified local development bundle, existing partial profiles. No desktop size prediction or full future-capability size claim."
+  },
+  "verification": {
+    "gates": {
+      "report": {
+        "path": ".codex-work/wasm-playback-sdk/workspace-03/report.json",
+        "byteLength": 7562,
+        "sha256": "b99b71781d125e399eadbf5a16d2834a24cdbe6f758b8d340cb0ccb7ab860eb8"
+      },
+      "sourceSha256": "95383bfb6644194ea343d96bf6474b5d08747fb6311bb1cbac73c1485649f1d5",
+      "sourceUnchanged": true,
+      "steps": [
+        {
+          "name": "verification-driver-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/wasm-playback-sdk/workspace-03/verification-driver-tests.log",
+            "byteLength": 625,
+            "sha256": "8bd93d107d61ae8e0f12615a3ab7f9c0122adff1f4233ee10bbbec8d658e784d"
+          }
+        },
+        {
+          "name": "agent-package-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/wasm-playback-sdk/workspace-03/agent-package-tests.log",
+            "byteLength": 783,
+            "sha256": "99b159ae4a65d4c4692466ed9602f7518c3c12568b86be2e22ba9b2837a872fe"
+          }
+        },
+        {
+          "name": "playback-sdk-package-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/wasm-playback-sdk/workspace-03/playback-sdk-package-tests.log",
+            "byteLength": 473,
+            "sha256": "fb45060c12c8de29467e2c3ca059e01132a798ded60e0823a98bb33976778a95"
+          }
+        },
+        {
+          "name": "format",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/wasm-playback-sdk/workspace-03/format.log",
+            "byteLength": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "name": "clippy",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/wasm-playback-sdk/workspace-03/clippy.log",
+            "byteLength": 598,
+            "sha256": "8bcfeeea227bc2ff432f595633e36bb41e67f90d33153e9d7d2b5cb216f06883"
+          }
+        },
+        {
+          "name": "schemas",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/wasm-playback-sdk/workspace-03/schemas.log",
+            "byteLength": 7207,
+            "sha256": "ec41d5e8d13d7cbdc0f9f7590448d207c5b395da318efa2ceb06d256047c7267"
+          }
+        },
+        {
+          "name": "types",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/wasm-playback-sdk/workspace-03/types.log",
+            "byteLength": 4062,
+            "sha256": "d7e17b3835c0310c1f30511f433bd246de225322ce1f5251fba374558fc52372"
+          }
+        },
+        {
+          "name": "client-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/wasm-playback-sdk/workspace-03/client-tests.log",
+            "byteLength": 1898,
+            "sha256": "8dec5349ae8ac61c4470043522df2c027bdf2b0804340ae1baa66fde193fb812"
+          }
+        },
+        {
+          "name": "playback-client-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/wasm-playback-sdk/workspace-03/playback-client-tests.log",
+            "byteLength": 1668,
+            "sha256": "00dfa366f37e0ce65b4b7ab02646d35e4883fe1f09ce0ca7a6bc950466a626f7"
+          }
+        },
+        {
+          "name": "native-build",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/wasm-playback-sdk/workspace-03/native-build.log",
+            "byteLength": 72,
+            "sha256": "2b34696728dc82b03cbf6311d7e3a6a41658bbde097834c3010a78bc82842c1a"
+          }
+        },
+        {
+          "name": "pure-operation-wasm",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/wasm-playback-sdk/workspace-03/pure-operation-wasm.log",
+            "byteLength": 72,
+            "sha256": "c92508a29848820f033cd2ea015c85dde0953c88b07cc967ce34b7c08f610549"
+          }
+        },
+        {
+          "name": "legacy-host-wasm",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/wasm-playback-sdk/workspace-03/legacy-host-wasm.log",
+            "byteLength": 72,
+            "sha256": "8c233a54790c4800d3dd585436af679aa838da259bfdb129412e2d51cdb75cdc"
+          }
+        },
+        {
+          "name": "wasm-build",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/wasm-playback-sdk/workspace-03/wasm-build.log",
+            "byteLength": 62,
+            "sha256": "85c8dbac64ed6a362d668bf3988686e26e947620bb15cfdbe2e999a0ff8261b2"
+          }
+        },
+        {
+          "name": "wasm-bindgen",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/wasm-playback-sdk/workspace-03/wasm-bindgen.log",
+            "byteLength": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "name": "document-native-wasm-parity",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/wasm-playback-sdk/workspace-03/document-native-wasm-parity.log",
+            "byteLength": 336664,
+            "sha256": "679f122d332acad98fd981a30557821fd1b86cc9738ef31173e3592331e88853"
+          }
+        }
+      ]
+    },
+    "commands": [
+      {
+        "name": "wasm-build-01",
+        "record": {
+          "path": ".codex-work/wasm-playback-sdk/wasm-build-01.json",
+          "byteLength": 185718,
+          "sha256": "e442d436cdfe041d53b76d22c829c3357e14e783db61c15276fcffde0170e927"
+        },
+        "log": {
+          "path": ".codex-work/wasm-playback-sdk/wasm-build-01.log",
+          "byteLength": 62,
+          "sha256": "5089e1c94f049189c2882fc87c84f7dc7b10bacee71a9d1d0a37f5d69d73d594"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      {
+        "name": "wasm-bindgen-01",
+        "record": {
+          "path": ".codex-work/wasm-playback-sdk/wasm-bindgen-01.json",
+          "byteLength": 1041,
+          "sha256": "06a8a73a513036c6ed3cfbddcd2d685a6d4bb2ba7b47910fdd667acc5a9612e1"
+        },
+        "log": {
+          "path": ".codex-work/wasm-playback-sdk/wasm-bindgen-01.log",
+          "byteLength": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      {
+        "name": "bundle-07",
+        "record": {
+          "path": ".codex-work/wasm-playback-sdk/bundle-07.json",
+          "byteLength": 41944,
+          "sha256": "6fc6802337b928748d77582ec0aa45fd39292f5d11468c2f0507a8dc15822414"
+        },
+        "log": {
+          "path": ".codex-work/wasm-playback-sdk/bundle-07.log",
+          "byteLength": 100,
+          "sha256": "749d2f9d929921926a92f7e00e55d49b20c5c0640c026e00ac9902099cca2633"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      {
+        "name": "bundle-repeat-02",
+        "record": {
+          "path": ".codex-work/wasm-playback-sdk/bundle-repeat-02.json",
+          "byteLength": 41957,
+          "sha256": "00a7562f793dc3e6ed223a0dbdbcf65839b317d3838521c323f020144917b4d0"
+        },
+        "log": {
+          "path": ".codex-work/wasm-playback-sdk/bundle-repeat-02.log",
+          "byteLength": 100,
+          "sha256": "749d2f9d929921926a92f7e00e55d49b20c5c0640c026e00ac9902099cca2633"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      {
+        "name": "consumer-types-04",
+        "record": {
+          "path": ".codex-work/wasm-playback-sdk/consumer-types-04.json",
+          "byteLength": 19767,
+          "sha256": "ef2c6644903ae25c94e46c3a72531b2f3b146490acd8ed6ad0aac9db61012ae8"
+        },
+        "log": {
+          "path": ".codex-work/wasm-playback-sdk/consumer-types-04.log",
+          "byteLength": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      {
+        "name": "consumer-raw-types-04",
+        "record": {
+          "path": ".codex-work/wasm-playback-sdk/consumer-raw-types-04.json",
+          "byteLength": 19771,
+          "sha256": "edbbb3138c379b266bcab95e69b1e1ddea0dddc31f71490a1aeec0998167f267"
+        },
+        "log": {
+          "path": ".codex-work/wasm-playback-sdk/consumer-raw-types-04.log",
+          "byteLength": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      {
+        "name": "worker-reference-04",
+        "record": {
+          "path": ".codex-work/wasm-playback-sdk/worker-reference-04.json",
+          "byteLength": 20865,
+          "sha256": "5d983010f9d8f0a0b3d9888fbda54f8331cde7d7ec2cc61069d24c8b218da885"
+        },
+        "log": {
+          "path": ".codex-work/wasm-playback-sdk/worker-reference-04.log",
+          "byteLength": 44,
+          "sha256": "94947827b45cde865d8f8002eb1ea095bdc016f43bbca0488ee1aff2bf84258b"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      {
+        "name": "lifecycle-04",
+        "record": {
+          "path": ".codex-work/wasm-playback-sdk/lifecycle-04.json",
+          "byteLength": 20531,
+          "sha256": "f68493893c6de9f6e4fc3a7417b2b80cfc2880fb95306f9118b95c51f6c87622"
+        },
+        "log": {
+          "path": ".codex-work/wasm-playback-sdk/lifecycle-04.log",
+          "byteLength": 141,
+          "sha256": "5967e93f3949d12f594570b01f93b5fd9f4ce2ae390342eaea95adf6a5f83e28"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      }
+    ],
+    "schemas": 119,
+    "tsOwnershipTests": 13,
+    "packageTests": 3,
+    "legacyOperationClientTests": 17,
+    "documentParity": {
+      "cases": 27,
+      "computationSchemaPairs": 6,
+      "report": {
+        "path": ".codex-work/wasm-playback-sdk/workspace-03/document-native-wasm-parity.log",
+        "byteLength": 336664,
+        "sha256": "679f122d332acad98fd981a30557821fd1b86cc9738ef31173e3592331e88853"
+      }
+    },
+    "actualWorkerFrames": {
+      "report": {
+        "path": ".codex-work/wasm-playback-sdk/worker-reference-04/report.json",
+        "byteLength": 44337,
+        "sha256": "974855d5aad0d0084e3b67eedb5315200dac7f2d7d7a175fb0c4365ab49c0e79"
+      },
+      "authorOwners": 4,
+      "sourceOwners": 6,
+      "authorFrames": 34,
+      "sourceFrames": 37,
+      "inputsDetachedBeforeSampling": true,
+      "implicitFetchDenied": true,
+      "sourcePerFrameTextComponentCalls": 0,
+      "sourcePerFrameFontUploadBytes": 0,
+      "sourcePerFrameGatherCopyBytes": 0
+    },
+    "nativeWasmSdkComparison": {
+      "nativePreviousStageReport": {
+        "path": ".codex-work/sdk-playback/reference-02/report.json",
+        "byteLength": 43106,
+        "sha256": "7142ff272499bd0a8966e0004ff4ecf3994951c4b134505706e65e78a8f811f4"
+      },
+      "pairs": [
+        {
+          "kind": "author",
+          "name": "grouped-0",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-000/output/0000.rgba",
+            "byteLength": 307200,
+            "sha256": "a925f5f6e1dbb7d92ba9cd140bf5cde670858be0c51d18d8113f2f91a064bd2c"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/000-000.rgba",
+            "byteLength": 307200,
+            "sha256": "a925f5f6e1dbb7d92ba9cd140bf5cde670858be0c51d18d8113f2f91a064bd2c"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-000/output/0000.json",
+            "byteLength": 3538,
+            "sha256": "06a1c11f185554e06b09aacc64b58eaf097eec1d3c2c3a45c97547c17ffa3a26"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/000-000.json",
+            "byteLength": 2354,
+            "sha256": "0f6e9da0a60685d0ae2c52aa97cd2ebead692b11072e5930da3438359995f962"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "grouped-1",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-000/output/0001.rgba",
+            "byteLength": 307200,
+            "sha256": "ebe8675c5e9f909ff34bfcab1cac7bf0f187beb69e9aa86fc1c9fd7d76eab1ab"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/000-001.rgba",
+            "byteLength": 307200,
+            "sha256": "ebe8675c5e9f909ff34bfcab1cac7bf0f187beb69e9aa86fc1c9fd7d76eab1ab"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-000/output/0001.json",
+            "byteLength": 3538,
+            "sha256": "0da4088b2fe4a5fd056fdaf499226bb9634551a26168ff502a478dfe34a5c6b8"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/000-001.json",
+            "byteLength": 2354,
+            "sha256": "98f3fe3675a92c64fe937e1d511de67e3f60e46065e7edea892a336dfdd92685"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "grouped-2",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-000/output/0002.rgba",
+            "byteLength": 307200,
+            "sha256": "4af75ac01dfd4695ce6c6c1cabf8474631866fc633546b730c9a8e8031f4387d"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/000-002.rgba",
+            "byteLength": 307200,
+            "sha256": "4af75ac01dfd4695ce6c6c1cabf8474631866fc633546b730c9a8e8031f4387d"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-000/output/0002.json",
+            "byteLength": 3537,
+            "sha256": "75726f9779456ad14638f45fd1ec03035d703ff3a7bf435738af42aa1917d7e4"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/000-002.json",
+            "byteLength": 2353,
+            "sha256": "f9c5e80b6ff2f1a20f4db25157f9c3b547f2d5550bde0ec4aa978c0386b418fd"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "grouped-3",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-000/output/0003.rgba",
+            "byteLength": 307200,
+            "sha256": "1fb793a25996330983070c7c11533544825588ae7a85e8342dccc31d913b90e6"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/000-003.rgba",
+            "byteLength": 307200,
+            "sha256": "1fb793a25996330983070c7c11533544825588ae7a85e8342dccc31d913b90e6"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-000/output/0003.json",
+            "byteLength": 3556,
+            "sha256": "95abc1698cd1ebcb4d47f64118848b6ecaa52c7ee4f119fdbe246635a4e107b6"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/000-003.json",
+            "byteLength": 2372,
+            "sha256": "1e8231349fdeebfb3140b196919c4e7eb6c76b83ed310d292fd04fceb43c53ce"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "grouped-4",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-000/output/0004.rgba",
+            "byteLength": 307200,
+            "sha256": "a8a3a0746eb0fa497efa84601cdf326424993d9f0548bc0a08d7e9b85f8e4ec5"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/000-004.rgba",
+            "byteLength": 307200,
+            "sha256": "a8a3a0746eb0fa497efa84601cdf326424993d9f0548bc0a08d7e9b85f8e4ec5"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-000/output/0004.json",
+            "byteLength": 3530,
+            "sha256": "78d074ad0fed80a6e7b604249d66379bdbf69fe7322d20a71da8661dbe01468d"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/000-004.json",
+            "byteLength": 2346,
+            "sha256": "a0d4ea22214a59b16eeadc194d48385e92d056cc10720ee344e902e6faa27d4d"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "grouped-5",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-000/output/0005.rgba",
+            "byteLength": 307200,
+            "sha256": "3d319740a84374455d90fd5609b059fcaaa1a8c7d4f8531bae011bbf59005054"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/000-005.rgba",
+            "byteLength": 307200,
+            "sha256": "3d319740a84374455d90fd5609b059fcaaa1a8c7d4f8531bae011bbf59005054"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-000/output/0005.json",
+            "byteLength": 3558,
+            "sha256": "ed2799c3d571737918a7ecf3f6a3962642152c72855a100714f2498995c3388d"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/000-005.json",
+            "byteLength": 2374,
+            "sha256": "09f0c29cbda6540bf47cfa019761b880564b5ac31e4425b3f4b3c6e69b566951"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "grouped-6",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-000/output/0006.rgba",
+            "byteLength": 307200,
+            "sha256": "753112b14803b9cda9c5947a6f9f22ec395efba05e8669b49beb50403207ea10"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/000-006.rgba",
+            "byteLength": 307200,
+            "sha256": "753112b14803b9cda9c5947a6f9f22ec395efba05e8669b49beb50403207ea10"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-000/output/0006.json",
+            "byteLength": 3536,
+            "sha256": "0e251eb5555680750d451c315a9549465de2e18401a1ff87327818e95a7baa3c"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/000-006.json",
+            "byteLength": 2352,
+            "sha256": "4003cac9ad32f8fe4624678dc22cb391516d99e0bef966ee34449f15cd628511"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "grouped-7",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-000/output/0007.rgba",
+            "byteLength": 307200,
+            "sha256": "140b46a57e794ea4f894084c1c5424967ef01893891ab1924e0189626ad69e9e"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/000-007.rgba",
+            "byteLength": 307200,
+            "sha256": "140b46a57e794ea4f894084c1c5424967ef01893891ab1924e0189626ad69e9e"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-000/output/0007.json",
+            "byteLength": 3537,
+            "sha256": "da40307fc923861c4f08a2a79149d6d5979dae649dd39ec1d6dbeeb16fa2a077"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/000-007.json",
+            "byteLength": 2353,
+            "sha256": "1592bf64f4d8d938b94fd62515add5c2019af7bf4c28baf3103fcfc50db447fb"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "grouped-8",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-000/output/0008.rgba",
+            "byteLength": 307200,
+            "sha256": "a925f5f6e1dbb7d92ba9cd140bf5cde670858be0c51d18d8113f2f91a064bd2c"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/000-008.rgba",
+            "byteLength": 307200,
+            "sha256": "a925f5f6e1dbb7d92ba9cd140bf5cde670858be0c51d18d8113f2f91a064bd2c"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-000/output/0008.json",
+            "byteLength": 3375,
+            "sha256": "1271b360e72bb6fbab10650050111700f98eeeb687e3ea66f5699980f3840bea"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/000-008.json",
+            "byteLength": 2273,
+            "sha256": "ffdc9fb8f82549477c3c7a5190ae25b5f59d31e47c520e0a5e7911c0c9c4c766"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "grouped-9",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-000/output/0009.rgba",
+            "byteLength": 307200,
+            "sha256": "ebe8675c5e9f909ff34bfcab1cac7bf0f187beb69e9aa86fc1c9fd7d76eab1ab"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/000-009.rgba",
+            "byteLength": 307200,
+            "sha256": "ebe8675c5e9f909ff34bfcab1cac7bf0f187beb69e9aa86fc1c9fd7d76eab1ab"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-000/output/0009.json",
+            "byteLength": 3538,
+            "sha256": "0da4088b2fe4a5fd056fdaf499226bb9634551a26168ff502a478dfe34a5c6b8"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/000-009.json",
+            "byteLength": 2354,
+            "sha256": "98f3fe3675a92c64fe937e1d511de67e3f60e46065e7edea892a336dfdd92685"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "recovery",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-000/output/0010.rgba",
+            "byteLength": 307200,
+            "sha256": "ebe8675c5e9f909ff34bfcab1cac7bf0f187beb69e9aa86fc1c9fd7d76eab1ab"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/000-010.rgba",
+            "byteLength": 307200,
+            "sha256": "ebe8675c5e9f909ff34bfcab1cac7bf0f187beb69e9aa86fc1c9fd7d76eab1ab"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-000/output/0010.json",
+            "byteLength": 3538,
+            "sha256": "0da4088b2fe4a5fd056fdaf499226bb9634551a26168ff502a478dfe34a5c6b8"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/000-010.json",
+            "byteLength": 2354,
+            "sha256": "98f3fe3675a92c64fe937e1d511de67e3f60e46065e7edea892a336dfdd92685"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "nested-0",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-001/output/0000.rgba",
+            "byteLength": 307200,
+            "sha256": "1bdad45a626c7432699b6c125eaa5a6b8d6fbd17452553845a19aa95a62c3b08"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/001-000.rgba",
+            "byteLength": 307200,
+            "sha256": "1bdad45a626c7432699b6c125eaa5a6b8d6fbd17452553845a19aa95a62c3b08"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-001/output/0000.json",
+            "byteLength": 4044,
+            "sha256": "f5dba0e8b8d8f9f1083cb3a7f4ec57d84d4b48f98c79b32aa79fd863a28167a4"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/001-000.json",
+            "byteLength": 2610,
+            "sha256": "632cebffae13c2182f446fc836a49af9868e251ff3d8fd5531d9ab5f221f97c2"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "nested-1",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-001/output/0001.rgba",
+            "byteLength": 307200,
+            "sha256": "d23e69aaa19b2fa9565d1abf952be890a5b92f486d9fff6366b25b1130faaeaa"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/001-001.rgba",
+            "byteLength": 307200,
+            "sha256": "d23e69aaa19b2fa9565d1abf952be890a5b92f486d9fff6366b25b1130faaeaa"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-001/output/0001.json",
+            "byteLength": 4042,
+            "sha256": "d4e08ef16fb16ed60be681540bd4a81fe2bdbda3870211e2a2abfe411b9088ed"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/001-001.json",
+            "byteLength": 2608,
+            "sha256": "2bfe2f235059b0592f13c2723622cfc4c03049a62738d48705a6f6428d8a838c"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "nested-2",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-001/output/0002.rgba",
+            "byteLength": 307200,
+            "sha256": "e1740ceaae89694d16ec44b88e9b18c0d274692e1632a7f54383e054a7d31c6a"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/001-002.rgba",
+            "byteLength": 307200,
+            "sha256": "e1740ceaae89694d16ec44b88e9b18c0d274692e1632a7f54383e054a7d31c6a"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-001/output/0002.json",
+            "byteLength": 4071,
+            "sha256": "d5299fde7b74eeaba2ee93c109e9d743ea954935c39a56f6b4b6fd4a4cc38f42"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/001-002.json",
+            "byteLength": 2637,
+            "sha256": "43a75ed02023733a112a4a0239a303f07111be0e4ef3b2d7991713f334aa8e8a"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "nested-3",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-001/output/0003.rgba",
+            "byteLength": 307200,
+            "sha256": "f3f26cfa159940e4fea84bb9e3c4e495c56b255860a17be289054d35da49e016"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/001-003.rgba",
+            "byteLength": 307200,
+            "sha256": "f3f26cfa159940e4fea84bb9e3c4e495c56b255860a17be289054d35da49e016"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-001/output/0003.json",
+            "byteLength": 4050,
+            "sha256": "2d7be7a780eb7e855487410e3b0574e2c84c9d401d4453bdd2cfa8393be809a6"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/001-003.json",
+            "byteLength": 2616,
+            "sha256": "aa5a52e05d4f203dd539cc8d9e0dd4cac5f2c879cc98ef2df8fa14c147537b65"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "nested-4",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-001/output/0004.rgba",
+            "byteLength": 307200,
+            "sha256": "a1e383deada3f1f5c7c3a354b87355888d883132ecc3ff84f301e43f9c04eef9"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/001-004.rgba",
+            "byteLength": 307200,
+            "sha256": "a1e383deada3f1f5c7c3a354b87355888d883132ecc3ff84f301e43f9c04eef9"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-001/output/0004.json",
+            "byteLength": 4052,
+            "sha256": "5018d1389189cb19fa7e2681b8f4a1d2bdc1d75c0a41127cdaa973ff0a4e95a7"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/001-004.json",
+            "byteLength": 2618,
+            "sha256": "dd3701c37f4a97133fc368d4614e80307de02667860f5cef19248fd8b72bae81"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "nested-5",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-001/output/0005.rgba",
+            "byteLength": 307200,
+            "sha256": "df97a09111e4aa492862631ac76d4ae7bc730be6b6e86a19d4a342189ca4e4c0"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/001-005.rgba",
+            "byteLength": 307200,
+            "sha256": "df97a09111e4aa492862631ac76d4ae7bc730be6b6e86a19d4a342189ca4e4c0"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-001/output/0005.json",
+            "byteLength": 4053,
+            "sha256": "c00ebf316921f5c2fe53f5e63f1ac52f7fc616c380efe5aff16511b288428747"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/001-005.json",
+            "byteLength": 2619,
+            "sha256": "8391a22ff7d961eb61a8c0508c16f9a9ae9d6283a4dc037f0ec3e761ecf887ce"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "nested-6",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-001/output/0006.rgba",
+            "byteLength": 307200,
+            "sha256": "f0741f428e78d07b5d3727f26d0f381a4d1e78e324bc9716bce7e74c94950aef"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/001-006.rgba",
+            "byteLength": 307200,
+            "sha256": "f0741f428e78d07b5d3727f26d0f381a4d1e78e324bc9716bce7e74c94950aef"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-001/output/0006.json",
+            "byteLength": 4053,
+            "sha256": "58a635ff41a965cdd08c755ced9000b9d4403cf6b947f3cd182a96a2c4f1cc40"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/001-006.json",
+            "byteLength": 2619,
+            "sha256": "a127ad8c1ec874bf139a46e278a8f7ff4333582452e02f5d2bda064013a992d6"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "nested-7",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-001/output/0007.rgba",
+            "byteLength": 307200,
+            "sha256": "6a251843948ccfa07f40d377c2d2779e123f819fe677df8d11c9397e9d065a5c"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/001-007.rgba",
+            "byteLength": 307200,
+            "sha256": "6a251843948ccfa07f40d377c2d2779e123f819fe677df8d11c9397e9d065a5c"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-001/output/0007.json",
+            "byteLength": 4054,
+            "sha256": "fce674c5e02014fbccd5a4d8cd740e2248467a3dc61b871ad436b448e52cedca"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/001-007.json",
+            "byteLength": 2620,
+            "sha256": "6aa920a4b370f4a0626faf7d701d9f25ba40db60842e2e7ba1820df482e9f2d1"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "nested-8",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-001/output/0008.rgba",
+            "byteLength": 307200,
+            "sha256": "b9b1b0e5f346b6d030f93c2ba92bf5ff30e8e5aefef83dd829beaf7f6d83aaa2"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/001-008.rgba",
+            "byteLength": 307200,
+            "sha256": "b9b1b0e5f346b6d030f93c2ba92bf5ff30e8e5aefef83dd829beaf7f6d83aaa2"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-001/output/0008.json",
+            "byteLength": 4037,
+            "sha256": "5d2bc884d2d80002abe53ecf86e5884e1388e52d55deb3e6b53f84ccd9e01bcf"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/001-008.json",
+            "byteLength": 2603,
+            "sha256": "ecb5948c8fa7410b9605d603ec6dbc3b08193c2f5f730f607f212bec610704e5"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "nested-9",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-001/output/0009.rgba",
+            "byteLength": 307200,
+            "sha256": "7a338babf7ae0c29d3b6c613ae65230943d64b360935c9850e5820c358ebe997"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/001-009.rgba",
+            "byteLength": 307200,
+            "sha256": "7a338babf7ae0c29d3b6c613ae65230943d64b360935c9850e5820c358ebe997"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-001/output/0009.json",
+            "byteLength": 3874,
+            "sha256": "a7f2da1d366babec7ae066b88bb7d5adc698977b0dc3d03e71d4bdb090c5cd09"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/001-009.json",
+            "byteLength": 2522,
+            "sha256": "3c41aa491a70e10547a84e74198de03e59ffd66d0e35a37db54ce57de71c05b1"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "nested-10",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-001/output/0010.rgba",
+            "byteLength": 307200,
+            "sha256": "53a7837a2372ff4dbc3b768f799c5a638d1bba0c4bcb64412e96cec2663ba265"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/001-010.rgba",
+            "byteLength": 307200,
+            "sha256": "53a7837a2372ff4dbc3b768f799c5a638d1bba0c4bcb64412e96cec2663ba265"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-001/output/0010.json",
+            "byteLength": 3874,
+            "sha256": "90fd81c1c97d17185bb55a5e75af071565da5100ee29e23aa64529b25a76380e"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/001-010.json",
+            "byteLength": 2522,
+            "sha256": "92b559f5b67bee4a6b3d1b27cb807f79969e472452cd6ad5ab13dadb0f6dc099"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "nested-11",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-001/output/0011.rgba",
+            "byteLength": 307200,
+            "sha256": "31f8974e72208b51f071273ed5cca407995be16f113e3d149ad410330385f0ff"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/001-011.rgba",
+            "byteLength": 307200,
+            "sha256": "31f8974e72208b51f071273ed5cca407995be16f113e3d149ad410330385f0ff"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-001/output/0011.json",
+            "byteLength": 3873,
+            "sha256": "b9f43f3ba88452a68a4f20290b93e42558378c56f467eff9120ec3ade45d7994"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/001-011.json",
+            "byteLength": 2521,
+            "sha256": "aedb43236adebc08c3edf28b229f6047d2e9f653b6c4142ae13eed4810f0b52d"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "rigid-0",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-002/output/0000.rgba",
+            "byteLength": 307200,
+            "sha256": "d9a87b492bd3886f7b21212e83ab8ee545a833e60cbccbe737e5cac3d16f6c79"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/002-000.rgba",
+            "byteLength": 307200,
+            "sha256": "d9a87b492bd3886f7b21212e83ab8ee545a833e60cbccbe737e5cac3d16f6c79"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-002/output/0000.json",
+            "byteLength": 2999,
+            "sha256": "6161d5c12d3a27868c52037d5bb29b7211ff66cb77ad715a1f98c7f54b7319e1"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/002-000.json",
+            "byteLength": 2065,
+            "sha256": "4c3c6b9d730048e480aab11f989c45b39866ec43be5dcc81663a278a830df5d3"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "rigid-1",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-002/output/0001.rgba",
+            "byteLength": 307200,
+            "sha256": "eedf881a0e928257a204d7e7c0f2d1394ccf4d3c72318d92f92187f963b19d50"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/002-001.rgba",
+            "byteLength": 307200,
+            "sha256": "eedf881a0e928257a204d7e7c0f2d1394ccf4d3c72318d92f92187f963b19d50"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-002/output/0001.json",
+            "byteLength": 3005,
+            "sha256": "25490e3cdc88fa457d490c52ae2626958d1204cb900b1383f79216d0d2e250e9"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/002-001.json",
+            "byteLength": 2071,
+            "sha256": "05ba4cc2a3279a513da34fd270c6d31f045ceb80f5f07192965e11e8965ba527"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "rigid-2",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-002/output/0002.rgba",
+            "byteLength": 307200,
+            "sha256": "d9a87b492bd3886f7b21212e83ab8ee545a833e60cbccbe737e5cac3d16f6c79"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/002-002.rgba",
+            "byteLength": 307200,
+            "sha256": "d9a87b492bd3886f7b21212e83ab8ee545a833e60cbccbe737e5cac3d16f6c79"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-002/output/0002.json",
+            "byteLength": 3006,
+            "sha256": "e1d9a01f6cb3bf73a98a96be2aad3171a6d7244e1ee946d45dc06de39ef113ad"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/002-002.json",
+            "byteLength": 2072,
+            "sha256": "a8086958516cc80b4bc351fdd2a8b834e2e54e9863c659fdf585476b4c847cab"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "rigid-3",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-002/output/0003.rgba",
+            "byteLength": 307200,
+            "sha256": "eedf881a0e928257a204d7e7c0f2d1394ccf4d3c72318d92f92187f963b19d50"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/002-003.rgba",
+            "byteLength": 307200,
+            "sha256": "eedf881a0e928257a204d7e7c0f2d1394ccf4d3c72318d92f92187f963b19d50"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-002/output/0003.json",
+            "byteLength": 3006,
+            "sha256": "8f8a4f0f8fdc7cf53a42d86dff5e95cfbdb659700c86a8a731c10e5a300c6ac5"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/002-003.json",
+            "byteLength": 2072,
+            "sha256": "a1ad6bd452d078c3dc1a32157c8bebcd209a11b47448528ee6d914a83bcf7c41"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "rigid-4",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-002/output/0004.rgba",
+            "byteLength": 307200,
+            "sha256": "d9a87b492bd3886f7b21212e83ab8ee545a833e60cbccbe737e5cac3d16f6c79"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/002-004.rgba",
+            "byteLength": 307200,
+            "sha256": "d9a87b492bd3886f7b21212e83ab8ee545a833e60cbccbe737e5cac3d16f6c79"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-002/output/0004.json",
+            "byteLength": 3006,
+            "sha256": "3273e5cc65abe02b140aab76eb5182f95662e18b29722840b012f38b5e7f492c"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/002-004.json",
+            "byteLength": 2072,
+            "sha256": "742035417da3948789ee852d4bad30564015b577d73df8c5e5164f0a71f800c6"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "interactive-0",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-003/output/0000.rgba",
+            "byteLength": 307200,
+            "sha256": "a925f5f6e1dbb7d92ba9cd140bf5cde670858be0c51d18d8113f2f91a064bd2c"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/003-000.rgba",
+            "byteLength": 307200,
+            "sha256": "a925f5f6e1dbb7d92ba9cd140bf5cde670858be0c51d18d8113f2f91a064bd2c"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-003/output/0000.json",
+            "byteLength": 3233,
+            "sha256": "62d140c39a2c04e6ba015f067aadeb436129a33c6c56eefe4de3e44b676058a0"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/003-000.json",
+            "byteLength": 2209,
+            "sha256": "d72dd3f4d19fe4ea2c3381f11a4a896a42bdfefdb3fc4b230a52e81dbe206df9"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "interactive-1",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-003/output/0001.rgba",
+            "byteLength": 307200,
+            "sha256": "a925f5f6e1dbb7d92ba9cd140bf5cde670858be0c51d18d8113f2f91a064bd2c"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/003-001.rgba",
+            "byteLength": 307200,
+            "sha256": "a925f5f6e1dbb7d92ba9cd140bf5cde670858be0c51d18d8113f2f91a064bd2c"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-003/output/0001.json",
+            "byteLength": 3233,
+            "sha256": "58d62594d7afb971de93c1d5e77806e8dee280a39046a1a8431ae696e3aae6c4"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/003-001.json",
+            "byteLength": 2209,
+            "sha256": "57cadddc5565f639208041cf8160f0e85a50588101450b2cdb0165cd41a668d8"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "interactive-2",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-003/output/0002.rgba",
+            "byteLength": 307200,
+            "sha256": "a925f5f6e1dbb7d92ba9cd140bf5cde670858be0c51d18d8113f2f91a064bd2c"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/003-002.rgba",
+            "byteLength": 307200,
+            "sha256": "a925f5f6e1dbb7d92ba9cd140bf5cde670858be0c51d18d8113f2f91a064bd2c"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-003/output/0002.json",
+            "byteLength": 3538,
+            "sha256": "09d0642bfe6a6d85ed5b1b39e1f3243c48a42cb16f913426bfd6b1d5504b3688"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/003-002.json",
+            "byteLength": 2354,
+            "sha256": "1372c413d6e14d68f6c3ba7c318fcfc24cc9a9a3d45055b13d27c3a107eb55f6"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "interactive-3",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-003/output/0003.rgba",
+            "byteLength": 307200,
+            "sha256": "131c1e1104e7dd299270df7cf6cd064f03d9fd9afae24e8e6650c02d4db66b27"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/003-003.rgba",
+            "byteLength": 307200,
+            "sha256": "131c1e1104e7dd299270df7cf6cd064f03d9fd9afae24e8e6650c02d4db66b27"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-003/output/0003.json",
+            "byteLength": 3538,
+            "sha256": "e19512784f6e145eb65e78a081fbe8d009b8d849b5695caf17ec3fbaa4bb08b3"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/003-003.json",
+            "byteLength": 2354,
+            "sha256": "eef5b211a8f2f9eca05a5820d7a6791b38b5d1cd617d415cb96a874ba0f011d6"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "interactive-4",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-003/output/0004.rgba",
+            "byteLength": 307200,
+            "sha256": "a925f5f6e1dbb7d92ba9cd140bf5cde670858be0c51d18d8113f2f91a064bd2c"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/003-004.rgba",
+            "byteLength": 307200,
+            "sha256": "a925f5f6e1dbb7d92ba9cd140bf5cde670858be0c51d18d8113f2f91a064bd2c"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-003/output/0004.json",
+            "byteLength": 3375,
+            "sha256": "4cb25e7c28f5ab54b9ffea1ab7a5316915cfd2e4248f92cda547571729993672"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/003-004.json",
+            "byteLength": 2273,
+            "sha256": "3935292c45eb8093fca31d9d4b86a8bce415adefd9e9a92cba43ce33d861d387"
+          }
+        },
+        {
+          "kind": "author",
+          "name": "interactive-5",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/author-003/output/0005.rgba",
+            "byteLength": 307200,
+            "sha256": "a925f5f6e1dbb7d92ba9cd140bf5cde670858be0c51d18d8113f2f91a064bd2c"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/003-005.rgba",
+            "byteLength": 307200,
+            "sha256": "a925f5f6e1dbb7d92ba9cd140bf5cde670858be0c51d18d8113f2f91a064bd2c"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/author-003/output/0005.json",
+            "byteLength": 3233,
+            "sha256": "58d62594d7afb971de93c1d5e77806e8dee280a39046a1a8431ae696e3aae6c4"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/003-005.json",
+            "byteLength": 2209,
+            "sha256": "57cadddc5565f639208041cf8160f0e85a50588101450b2cdb0165cd41a668d8"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "image-text-0",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-000/output/0000.rgba",
+            "byteLength": 480000,
+            "sha256": "048b5ec3f3418e55926581c269561c99f1798cf8b11891ba15fbf03dfe310e6b"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/004-000.rgba",
+            "byteLength": 480000,
+            "sha256": "048b5ec3f3418e55926581c269561c99f1798cf8b11891ba15fbf03dfe310e6b"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-000/output/0000.json",
+            "byteLength": 6341,
+            "sha256": "8fa5fa6fd81baa63343bf3de02dca393a96bf3b7eccd45279fa0118c2efdac9c"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/004-000.json",
+            "byteLength": 3953,
+            "sha256": "7a53c4f5dc07179337f3d31d0cedf43e6d41ded74ad9fb57a0e580c25595a238"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "image-text-1",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-000/output/0001.rgba",
+            "byteLength": 480000,
+            "sha256": "2c6ed770b4f5f5c523f515814cd43ada7b84bc3ec80298c9328c022e9a230abd"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/004-001.rgba",
+            "byteLength": 480000,
+            "sha256": "2c6ed770b4f5f5c523f515814cd43ada7b84bc3ec80298c9328c022e9a230abd"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-000/output/0001.json",
+            "byteLength": 6408,
+            "sha256": "0e9a141c9caaf302407cc0947b78b5fa49a13fc6a30821a556b7040f59819b78"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/004-001.json",
+            "byteLength": 4010,
+            "sha256": "b1c3bd623465d3fa4fdffca5dd7158c191618e8f0347dd36f3a0983cafe6e086"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "image-text-2",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-000/output/0002.rgba",
+            "byteLength": 480000,
+            "sha256": "c1fbf6b239581b9d25b37adf35745eb8e3b86b9c47a5bf0385b70c2ecf74621a"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/004-002.rgba",
+            "byteLength": 480000,
+            "sha256": "c1fbf6b239581b9d25b37adf35745eb8e3b86b9c47a5bf0385b70c2ecf74621a"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-000/output/0002.json",
+            "byteLength": 6354,
+            "sha256": "bd468b725fcaff7a33cee98c963c406d8ee4de31604904b097955754e5aaa778"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/004-002.json",
+            "byteLength": 3966,
+            "sha256": "91ded5155a2ceb7938e9d71ad06b980e6073e5da1ec1b885b6e12af65c1a5d8f"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "image-text-3",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-000/output/0003.rgba",
+            "byteLength": 480000,
+            "sha256": "03a2e1c92ad6b07684dbac9a07658813192dd35f073a29dfccc2e54807d7c834"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/004-003.rgba",
+            "byteLength": 480000,
+            "sha256": "03a2e1c92ad6b07684dbac9a07658813192dd35f073a29dfccc2e54807d7c834"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-000/output/0003.json",
+            "byteLength": 6356,
+            "sha256": "bc7bc2e6d9f7300c647a79eaee8afffe5b20dd480da47f9e4614d12e7df6e6e6"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/004-003.json",
+            "byteLength": 3968,
+            "sha256": "7868bda03edf56eb27e2e6bdb5740c666612bc908b4eafcde2ab22db58242953"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "image-text-4",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-000/output/0004.rgba",
+            "byteLength": 480000,
+            "sha256": "42f4205b0b82a3b6f53b14a406a3a3e78d09d547c92404fb8b6089f203580f2b"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/004-004.rgba",
+            "byteLength": 480000,
+            "sha256": "42f4205b0b82a3b6f53b14a406a3a3e78d09d547c92404fb8b6089f203580f2b"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-000/output/0004.json",
+            "byteLength": 6356,
+            "sha256": "8641f098a46beb5fcd4db0d62d65710fd4b789bdb94ac5a2b2f7532199399769"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/004-004.json",
+            "byteLength": 3968,
+            "sha256": "38c0010b6a8ee30f4d5f403d3c18224c19bf3d234f3b2237c647f0be4e85f733"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "image-text-5",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-000/output/0005.rgba",
+            "byteLength": 480000,
+            "sha256": "048b5ec3f3418e55926581c269561c99f1798cf8b11891ba15fbf03dfe310e6b"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/004-005.rgba",
+            "byteLength": 480000,
+            "sha256": "048b5ec3f3418e55926581c269561c99f1798cf8b11891ba15fbf03dfe310e6b"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-000/output/0005.json",
+            "byteLength": 6180,
+            "sha256": "f796df2210a6e5d4b27b72066b07498b35935108176aed4d9ed30d16e46e51f8"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/004-005.json",
+            "byteLength": 3888,
+            "sha256": "70eddc083170ec7fef4c61ad7dd5cf4702a3d21fa84e75649e3b89ce23d1ccb6"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "image-text-6",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-000/output/0006.rgba",
+            "byteLength": 480000,
+            "sha256": "2c6ed770b4f5f5c523f515814cd43ada7b84bc3ec80298c9328c022e9a230abd"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/004-006.rgba",
+            "byteLength": 480000,
+            "sha256": "2c6ed770b4f5f5c523f515814cd43ada7b84bc3ec80298c9328c022e9a230abd"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-000/output/0006.json",
+            "byteLength": 6408,
+            "sha256": "0e9a141c9caaf302407cc0947b78b5fa49a13fc6a30821a556b7040f59819b78"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/004-006.json",
+            "byteLength": 4010,
+            "sha256": "b1c3bd623465d3fa4fdffca5dd7158c191618e8f0347dd36f3a0983cafe6e086"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "click-after",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-001/output/0000.rgba",
+            "byteLength": 480000,
+            "sha256": "40048b8d55fbbb3ce66c4debfa3ab152f8c7e0b878c002f7185411ba80f25a2f"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/005-000.rgba",
+            "byteLength": 480000,
+            "sha256": "40048b8d55fbbb3ce66c4debfa3ab152f8c7e0b878c002f7185411ba80f25a2f"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-001/output/0000.json",
+            "byteLength": 6408,
+            "sha256": "1bd72cd47b7e5eda0e749e544a3c00c1cb0287696108f3682f19fdf48c4d712a"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/005-000.json",
+            "byteLength": 4010,
+            "sha256": "bb6d673543431dffcbcd7030bf667f3f88dcaee2a89f003ddbc73117481eb58f"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "click-before",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-001/output/0001.rgba",
+            "byteLength": 480000,
+            "sha256": "048b5ec3f3418e55926581c269561c99f1798cf8b11891ba15fbf03dfe310e6b"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/005-001.rgba",
+            "byteLength": 480000,
+            "sha256": "048b5ec3f3418e55926581c269561c99f1798cf8b11891ba15fbf03dfe310e6b"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-001/output/0001.json",
+            "byteLength": 6020,
+            "sha256": "9916bb61fc30342871f046808ef4bf62b2e45dbd74ee47df97cdc6351b9e943e"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/005-001.json",
+            "byteLength": 3818,
+            "sha256": "29c9c79aa5368694e502f7d3c82bc7cb2ce0af39486e6e7c895cfe3675b63e05"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "group-image-0",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-002/output/0000.rgba",
+            "byteLength": 480000,
+            "sha256": "6b8032afa9fc3774ac7bed68c3b181fefe568f3fbff70e0cc7c9b182298be78f"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/006-000.rgba",
+            "byteLength": 480000,
+            "sha256": "6b8032afa9fc3774ac7bed68c3b181fefe568f3fbff70e0cc7c9b182298be78f"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-002/output/0000.json",
+            "byteLength": 6376,
+            "sha256": "26ac6a72c6d32dfb4f9724ef9c6dab3659f0fcf99054e0cf4260d4e4b9dce49a"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/006-000.json",
+            "byteLength": 3993,
+            "sha256": "783c5424473064a7aca3eeb87b2ee74f0a46173825abe02c14a83b07d67dcaf2"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "group-image-1",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-002/output/0001.rgba",
+            "byteLength": 480000,
+            "sha256": "28ac1f551f1abb321d0f540b7209c0430bcefbc7db950bf98aad82660f1b5663"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/006-001.rgba",
+            "byteLength": 480000,
+            "sha256": "28ac1f551f1abb321d0f540b7209c0430bcefbc7db950bf98aad82660f1b5663"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-002/output/0001.json",
+            "byteLength": 6390,
+            "sha256": "bee58ae4c19e5111137a47b7ef8154a895499fae06c9aa6d267d5c2346e9369c"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/006-001.json",
+            "byteLength": 4007,
+            "sha256": "463a6546a16aee7f6437a58812fb73f7feeb49ecfb91454313b0de040329623b"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "group-image-2",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-002/output/0002.rgba",
+            "byteLength": 480000,
+            "sha256": "efb0eba05166fba4939694db81ba425016eb1e21261b654211930a095bd5b3f1"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/006-002.rgba",
+            "byteLength": 480000,
+            "sha256": "efb0eba05166fba4939694db81ba425016eb1e21261b654211930a095bd5b3f1"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-002/output/0002.json",
+            "byteLength": 6390,
+            "sha256": "8696c26d5b54a1a5fafe83c1683d7176aaf214ea91da425cb4b1581a91f9203f"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/006-002.json",
+            "byteLength": 4007,
+            "sha256": "c41fb22fb76a9154c60a92a2d3925acdf600c81e8813f1cae524a56ad20352a9"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "group-image-3",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-002/output/0003.rgba",
+            "byteLength": 480000,
+            "sha256": "8b50fbbb37097d8cd10f2e7a2da599ae11d3e67d53882450baa7790c3b33e1a2"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/006-003.rgba",
+            "byteLength": 480000,
+            "sha256": "8b50fbbb37097d8cd10f2e7a2da599ae11d3e67d53882450baa7790c3b33e1a2"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-002/output/0003.json",
+            "byteLength": 6391,
+            "sha256": "029e50fc7b26a6aa73be4bcff4bb79bd5aaf1d63b03b4eb68c656589ab440256"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/006-003.json",
+            "byteLength": 4008,
+            "sha256": "19d47dfd99410bcfeccfd09ae546da116f97dee64cbee2807c34dc100dc88a1e"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "group-image-4",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-002/output/0004.rgba",
+            "byteLength": 480000,
+            "sha256": "1928f96e45707148a1d16bb890ab49374b1d1de3c551d22bada09fbd9875446e"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/006-004.rgba",
+            "byteLength": 480000,
+            "sha256": "1928f96e45707148a1d16bb890ab49374b1d1de3c551d22bada09fbd9875446e"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-002/output/0004.json",
+            "byteLength": 6391,
+            "sha256": "90eb5c62f919b61f6aae4db26d094f402de0927526b15d5c3d3ef1c9e662c2c7"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/006-004.json",
+            "byteLength": 4008,
+            "sha256": "439ce94661f60e536a19be510f3524a497846d2f0ddf92396d694b8cc8cc3da1"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "group-image-5",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-002/output/0005.rgba",
+            "byteLength": 480000,
+            "sha256": "18f624b5da562ea052077546ed60dd4265f2e82f44b70a8086e3e011f6926d71"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/006-005.rgba",
+            "byteLength": 480000,
+            "sha256": "18f624b5da562ea052077546ed60dd4265f2e82f44b70a8086e3e011f6926d71"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-002/output/0005.json",
+            "byteLength": 6215,
+            "sha256": "8b5d1a29279f165fde427d8c2d897425576c41970cf73f9988eef21ce23f4054"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/006-005.json",
+            "byteLength": 3928,
+            "sha256": "6762fdbe0bd8f5385f39b04653663fed8b866906bc2742573bf14726e1034f4d"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "group-image-6",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-002/output/0006.rgba",
+            "byteLength": 480000,
+            "sha256": "28ac1f551f1abb321d0f540b7209c0430bcefbc7db950bf98aad82660f1b5663"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/006-006.rgba",
+            "byteLength": 480000,
+            "sha256": "28ac1f551f1abb321d0f540b7209c0430bcefbc7db950bf98aad82660f1b5663"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-002/output/0006.json",
+            "byteLength": 6390,
+            "sha256": "bee58ae4c19e5111137a47b7ef8154a895499fae06c9aa6d267d5c2346e9369c"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/006-006.json",
+            "byteLength": 4007,
+            "sha256": "463a6546a16aee7f6437a58812fb73f7feeb49ecfb91454313b0de040329623b"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "masters-0",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-003/output/0000.rgba",
+            "byteLength": 480000,
+            "sha256": "03485d893fd7123ae0a87bb2d3d3df6190a385ef44eff13c08049f8b7e1d8375"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/007-000.rgba",
+            "byteLength": 480000,
+            "sha256": "03485d893fd7123ae0a87bb2d3d3df6190a385ef44eff13c08049f8b7e1d8375"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-003/output/0000.json",
+            "byteLength": 5757,
+            "sha256": "da5cddee204107ffdc893f45e6e69b4b3c31a94c67b38cbd339516cd01d8f634"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/007-000.json",
+            "byteLength": 3655,
+            "sha256": "579132144642045e61dd141131f68735128c5e171c692a2c53d3e2ee68d5bb54"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "masters-1",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-003/output/0001.rgba",
+            "byteLength": 480000,
+            "sha256": "a0fda2bd064850b1411c0bc2040e8ee6bd071b621ea35a519da6a3c24907bd80"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/007-001.rgba",
+            "byteLength": 480000,
+            "sha256": "a0fda2bd064850b1411c0bc2040e8ee6bd071b621ea35a519da6a3c24907bd80"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-003/output/0001.json",
+            "byteLength": 5827,
+            "sha256": "904924d73291751c7b61b9d54bd9e7fb04ba1c45dd665640575cbe174e14f5b9"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/007-001.json",
+            "byteLength": 3715,
+            "sha256": "5df12eccb0170a02e3a6e4b85cf33648bc1f3051ae08d43fbed92bf99040ebde"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "masters-2",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-003/output/0002.rgba",
+            "byteLength": 480000,
+            "sha256": "d4fcb42e44fac180bb460ee7d2759c4bf6d94f030f1858078020c87f4a4d0077"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/007-002.rgba",
+            "byteLength": 480000,
+            "sha256": "d4fcb42e44fac180bb460ee7d2759c4bf6d94f030f1858078020c87f4a4d0077"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-003/output/0002.json",
+            "byteLength": 5763,
+            "sha256": "8431802bab062eeb406a67e499052543e3e3011bb7ed4be1a11077ba2706f652"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/007-002.json",
+            "byteLength": 3661,
+            "sha256": "1a295ba8c23cf3f9cf766df4ecb869dad46f9baa6f2d95f0156382240a3fbd49"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "masters-3",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-003/output/0003.rgba",
+            "byteLength": 480000,
+            "sha256": "81e91030b50fd1c99698a6f78e2e1d4c050e6f8053d21d3d2cfc8f8de238ff96"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/007-003.rgba",
+            "byteLength": 480000,
+            "sha256": "81e91030b50fd1c99698a6f78e2e1d4c050e6f8053d21d3d2cfc8f8de238ff96"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-003/output/0003.json",
+            "byteLength": 5764,
+            "sha256": "6ac02e87414a4855f3f2fae4a2abb8981f94e303bef9aa9a0e35fd8b7df1bca0"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/007-003.json",
+            "byteLength": 3662,
+            "sha256": "145fe4c742fe64f997aa1fe47b34a93bd2f6e0af109944c47be7aae390ac1e57"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "masters-4",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-003/output/0004.rgba",
+            "byteLength": 480000,
+            "sha256": "74a1a7e5642dd31b1a98287dc9415344ce663a41d7e04c5ade0eab7949073e1a"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/007-004.rgba",
+            "byteLength": 480000,
+            "sha256": "74a1a7e5642dd31b1a98287dc9415344ce663a41d7e04c5ade0eab7949073e1a"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-003/output/0004.json",
+            "byteLength": 5764,
+            "sha256": "1636297d9b63faab79eb63d5987c975dbeced3b4070254d19f929c563ecba3e0"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/007-004.json",
+            "byteLength": 3662,
+            "sha256": "d86d3aaf1b4d1bd9481ee296dbd638b0d756f012022e588e346a4e4c4ac16a3b"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "masters-5",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-003/output/0005.rgba",
+            "byteLength": 480000,
+            "sha256": "03485d893fd7123ae0a87bb2d3d3df6190a385ef44eff13c08049f8b7e1d8375"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/007-005.rgba",
+            "byteLength": 480000,
+            "sha256": "03485d893fd7123ae0a87bb2d3d3df6190a385ef44eff13c08049f8b7e1d8375"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-003/output/0005.json",
+            "byteLength": 5764,
+            "sha256": "fc6a322ad65234e56b6f2aaf186080ed5f156ab907bd866c8df0d0c6a91529ba"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/007-005.json",
+            "byteLength": 3662,
+            "sha256": "4d7657ca59794837f967fe3f6205b3dbf711f251c571b3e77d234ce7e856172d"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "masters-6",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-003/output/0006.rgba",
+            "byteLength": 480000,
+            "sha256": "a0fda2bd064850b1411c0bc2040e8ee6bd071b621ea35a519da6a3c24907bd80"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/007-006.rgba",
+            "byteLength": 480000,
+            "sha256": "a0fda2bd064850b1411c0bc2040e8ee6bd071b621ea35a519da6a3c24907bd80"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-003/output/0006.json",
+            "byteLength": 5827,
+            "sha256": "904924d73291751c7b61b9d54bd9e7fb04ba1c45dd665640575cbe174e14f5b9"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/007-006.json",
+            "byteLength": 3715,
+            "sha256": "5df12eccb0170a02e3a6e4b85cf33648bc1f3051ae08d43fbed92bf99040ebde"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "circle-0",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-004/output/0000.rgba",
+            "byteLength": 480000,
+            "sha256": "0b28c1bc65fa4188470bd05702fe94895fa674288b34fd5351da52b382caa258"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/008-000.rgba",
+            "byteLength": 480000,
+            "sha256": "0b28c1bc65fa4188470bd05702fe94895fa674288b34fd5351da52b382caa258"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-004/output/0000.json",
+            "byteLength": 5084,
+            "sha256": "97f886b6f5e958ff7f1a835e31f66d83feca25635ef123d2ada20c3c3c16e2be"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/008-000.json",
+            "byteLength": 3211,
+            "sha256": "cf0c781126edae7902aba5747effdf20dc528ebcad136c2f2a123b3593212c03"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "circle-1",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-004/output/0001.rgba",
+            "byteLength": 480000,
+            "sha256": "0b28c1bc65fa4188470bd05702fe94895fa674288b34fd5351da52b382caa258"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/008-001.rgba",
+            "byteLength": 480000,
+            "sha256": "0b28c1bc65fa4188470bd05702fe94895fa674288b34fd5351da52b382caa258"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-004/output/0001.json",
+            "byteLength": 5086,
+            "sha256": "0405af2e72636a22b3faeec14134802d98ca5e12853a7f9c5c36d22b3c561133"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/008-001.json",
+            "byteLength": 3213,
+            "sha256": "da2bf95a32f3eb21a75bec710e571be3a713f18a945044546a9e5d31b01ee877"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "circle-2",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-004/output/0002.rgba",
+            "byteLength": 480000,
+            "sha256": "0b28c1bc65fa4188470bd05702fe94895fa674288b34fd5351da52b382caa258"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/008-002.rgba",
+            "byteLength": 480000,
+            "sha256": "0b28c1bc65fa4188470bd05702fe94895fa674288b34fd5351da52b382caa258"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-004/output/0002.json",
+            "byteLength": 5084,
+            "sha256": "b36e8a6a7ad13fdf1c79372f26be9c8825c4c88ce2d3ba1a5124ddd9c343dd1a"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/008-002.json",
+            "byteLength": 3211,
+            "sha256": "ffdafb4846b3cd69721d6365373399cd143f17b53fd777f531b637e31e31760a"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "circle-3",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-004/output/0003.rgba",
+            "byteLength": 480000,
+            "sha256": "0b28c1bc65fa4188470bd05702fe94895fa674288b34fd5351da52b382caa258"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/008-003.rgba",
+            "byteLength": 480000,
+            "sha256": "0b28c1bc65fa4188470bd05702fe94895fa674288b34fd5351da52b382caa258"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-004/output/0003.json",
+            "byteLength": 5084,
+            "sha256": "0a4c981ec49ef9baba2b444196e0c65608d1cadfcfa2284c8ea87e940a55ab70"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/008-003.json",
+            "byteLength": 3211,
+            "sha256": "d5791da95a453677aa9aa46b2dc099c3890aa4f0d055acdfba9ee71b5a8b051c"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "circle-4",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-004/output/0004.rgba",
+            "byteLength": 480000,
+            "sha256": "0b28c1bc65fa4188470bd05702fe94895fa674288b34fd5351da52b382caa258"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/008-004.rgba",
+            "byteLength": 480000,
+            "sha256": "0b28c1bc65fa4188470bd05702fe94895fa674288b34fd5351da52b382caa258"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-004/output/0004.json",
+            "byteLength": 5084,
+            "sha256": "a6095c637b7280725d53570b8561b639de3daec61245005815ed12552ab08a88"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/008-004.json",
+            "byteLength": 3211,
+            "sha256": "a694022ddba717e905067e5c2be290cea4bc28df456913649d35ca315875b632"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "circle-5",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-004/output/0005.rgba",
+            "byteLength": 480000,
+            "sha256": "0b28c1bc65fa4188470bd05702fe94895fa674288b34fd5351da52b382caa258"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/008-005.rgba",
+            "byteLength": 480000,
+            "sha256": "0b28c1bc65fa4188470bd05702fe94895fa674288b34fd5351da52b382caa258"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-004/output/0005.json",
+            "byteLength": 5084,
+            "sha256": "c34ff2536b568e1fc26c307dea9630d5a4e5dc9b99fa19c5088c15f6ea828e31"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/008-005.json",
+            "byteLength": 3211,
+            "sha256": "2aca0aec15059b378e5ab8e132eb61b8104377e8a5125a84c93e04c7bdc4dc22"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "circle-6",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-004/output/0006.rgba",
+            "byteLength": 480000,
+            "sha256": "0b28c1bc65fa4188470bd05702fe94895fa674288b34fd5351da52b382caa258"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/008-006.rgba",
+            "byteLength": 480000,
+            "sha256": "0b28c1bc65fa4188470bd05702fe94895fa674288b34fd5351da52b382caa258"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-004/output/0006.json",
+            "byteLength": 5086,
+            "sha256": "0405af2e72636a22b3faeec14134802d98ca5e12853a7f9c5c36d22b3c561133"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/008-006.json",
+            "byteLength": 3213,
+            "sha256": "da2bf95a32f3eb21a75bec710e571be3a713f18a945044546a9e5d31b01ee877"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "text-0",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-005/output/0000.rgba",
+            "byteLength": 480000,
+            "sha256": "048de742e7e23c90fd6af02d3279257d46e257c1c4aafd8fa16bb53c45ac45cd"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/009-000.rgba",
+            "byteLength": 480000,
+            "sha256": "048de742e7e23c90fd6af02d3279257d46e257c1c4aafd8fa16bb53c45ac45cd"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-005/output/0000.json",
+            "byteLength": 6333,
+            "sha256": "6cdf6b31ebba62384d1c91456c04a1060e1634fba5b9418a16e2f058f2bbcab3"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/009-000.json",
+            "byteLength": 3945,
+            "sha256": "f86b067f3dbf826912cdfb3137b0493d23b598c5a04cbdeb024057cfa825d1c3"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "text-1",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-005/output/0001.rgba",
+            "byteLength": 480000,
+            "sha256": "cf0756b691af56c80276ea41a2b9334a804bb2dc3fc2d313280f46605b8476d0"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/009-001.rgba",
+            "byteLength": 480000,
+            "sha256": "cf0756b691af56c80276ea41a2b9334a804bb2dc3fc2d313280f46605b8476d0"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-005/output/0001.json",
+            "byteLength": 6400,
+            "sha256": "660ca2d5c756debeafb68dbfb6fb8533aed860f94409b569f6c694a8e5b034b1"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/009-001.json",
+            "byteLength": 4002,
+            "sha256": "0700c8781eefe3eb53372c383e65862f972707ff6bfaae4997c4a49fbe43b51a"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "text-2",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-005/output/0002.rgba",
+            "byteLength": 480000,
+            "sha256": "59265ed9420a30cbc984fe1b4f71f01c028c3035f34ce18121745c0eb740b82a"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/009-002.rgba",
+            "byteLength": 480000,
+            "sha256": "59265ed9420a30cbc984fe1b4f71f01c028c3035f34ce18121745c0eb740b82a"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-005/output/0002.json",
+            "byteLength": 6346,
+            "sha256": "bc1801347cd3cb9a1a9888f17a728b0433dfe6f86edbda490813c7db940bce3f"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/009-002.json",
+            "byteLength": 3958,
+            "sha256": "aca30b0b14c53d54152bd4d7c952c044f846e511cb67be4d1c379f5b3a3d5ba0"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "text-3",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-005/output/0003.rgba",
+            "byteLength": 480000,
+            "sha256": "6350695f32a5e321e4ad5e0438d8a730962e8c676e521dbcb003c278eaa8f933"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/009-003.rgba",
+            "byteLength": 480000,
+            "sha256": "6350695f32a5e321e4ad5e0438d8a730962e8c676e521dbcb003c278eaa8f933"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-005/output/0003.json",
+            "byteLength": 6348,
+            "sha256": "fd289c1c8deae951d5b51d060d7a54b6eae2df46463f5f6f9bde91c7fbc61bb6"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/009-003.json",
+            "byteLength": 3960,
+            "sha256": "ed79c82235abec92d7204508c3848f44efad47366d00671bb9093a7b08e3c8df"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "text-4",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-005/output/0004.rgba",
+            "byteLength": 480000,
+            "sha256": "754cef26aaf546f624842f4ba50092727921525cf870066dface556145aa7d47"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/009-004.rgba",
+            "byteLength": 480000,
+            "sha256": "754cef26aaf546f624842f4ba50092727921525cf870066dface556145aa7d47"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-005/output/0004.json",
+            "byteLength": 6348,
+            "sha256": "71b3e1bc32a4e9b6a0235d9135a809e6cdf9223408c82c8c9f65d68d7bd56bb1"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/009-004.json",
+            "byteLength": 3960,
+            "sha256": "4674d9ab66772d9d5a43b58f58eb9acb203270b2245e7f3f01c3f2b4754e1548"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "text-5",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-005/output/0005.rgba",
+            "byteLength": 480000,
+            "sha256": "048de742e7e23c90fd6af02d3279257d46e257c1c4aafd8fa16bb53c45ac45cd"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/009-005.rgba",
+            "byteLength": 480000,
+            "sha256": "048de742e7e23c90fd6af02d3279257d46e257c1c4aafd8fa16bb53c45ac45cd"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-005/output/0005.json",
+            "byteLength": 6172,
+            "sha256": "c151ed157e577e8a5321b3527110e4b8599eb5eac51ae3d274779230d38ea1a9"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/009-005.json",
+            "byteLength": 3880,
+            "sha256": "9ad73d4c6def1d7731a369980fcb9649e55e34acd6bf06981224ab53fcbd75d0"
+          }
+        },
+        {
+          "kind": "source",
+          "name": "text-6",
+          "nativePixels": {
+            "path": ".codex-work/sdk-playback/reference-02/source-005/output/0006.rgba",
+            "byteLength": 480000,
+            "sha256": "cf0756b691af56c80276ea41a2b9334a804bb2dc3fc2d313280f46605b8476d0"
+          },
+          "wasmPixels": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/009-006.rgba",
+            "byteLength": 480000,
+            "sha256": "cf0756b691af56c80276ea41a2b9334a804bb2dc3fc2d313280f46605b8476d0"
+          },
+          "nativeMetadata": {
+            "path": ".codex-work/sdk-playback/reference-02/source-005/output/0006.json",
+            "byteLength": 6400,
+            "sha256": "660ca2d5c756debeafb68dbfb6fb8533aed860f94409b569f6c694a8e5b034b1"
+          },
+          "wasmMetadata": {
+            "path": ".codex-work/wasm-playback-sdk/worker-reference-04/009-006.json",
+            "byteLength": 4002,
+            "sha256": "0700c8781eefe3eb53372c383e65862f972707ff6bfaae4997c4a49fbe43b51a"
+          }
+        }
+      ],
+      "scope": "Compared current WASM SDK output with preserved actual Native SDK artifacts, including complete metadata and pixel bytes. Native sampler was not re-executed in this stage; Rust/core sources unchanged."
+    },
+    "lifecycle": {
+      "report": {
+        "path": ".codex-work/wasm-playback-sdk/lifecycle-04/report.json",
+        "byteLength": 1032,
+        "sha256": "7a9a02ac22dab0981415275d673b07a396ce855cf91169596f690dfaabee74da"
+      },
+      "observations": {
+        "format": "musteroffice.wasm-playback-lifecycle/1",
+        "status": "passed",
+        "bundleManifestSha256": "8014dcb24caa394480b82cd98e61848d41aae8f6353fe2ec4c4076adfb332009",
+        "requestSha256": "9f53da3aa1a430aeaf0ba44a645a8778023b1dec9e2e4a3dc7049bfe396ad8f0",
+        "blockedWorkerTerminated": {
+          "blocked": true,
+          "exitCode": 1
+        },
+        "events": [
+          {
+            "mode": "block",
+            "blocked": true
+          },
+          {
+            "mode": "recover",
+            "recovered": true,
+            "fatalComponentDetected": true,
+            "pixelSha256": "a925f5f6e1dbb7d92ba9cd140bf5cde670858be0c51d18d8113f2f91a064bd2c"
+          }
+        ],
+        "duplicateRuntimeRejected": true,
+        "reentrantRuntimeRejected": true,
+        "moduleAccessorsReadOnce": true,
+        "invalidExternalReplyPreservesPlanWithHealthyComponent": true,
+        "healthyComponentReplacementKeepsPixels": true,
+        "invalidatedRealComponentRequiresWorkerTermination": true,
+        "disposalIdempotentClose": true,
+        "hostDeadlineStopsBeforeReject": true,
+        "scope": "Actual Node Worker and WASM; no browser or full PPT claim."
+      }
+    },
+    "types": {
+      "publicEs2022": "passed without skipLibCheck or raw binding import",
+      "rawWasmBinding": "passed structural compatibility with its required ESNext.Disposable declarations"
+    },
+    "overlap": "The 13 TS tests and 3 package tests are included in the 15 gates. Legacy operation-client regression is not new playback functionality."
+  },
+  "preservedFailure": {
+    "record": {
+      "path": ".codex-work/wasm-playback-sdk/consumer-types-01.json",
+      "byteLength": 19901,
+      "sha256": "d439a317cf3d484dbea94af3c07898818a65ae7f9c9eb34df2eab2d262b6dbba"
+    },
+    "log": {
+      "path": ".codex-work/wasm-playback-sdk/consumer-types-01.log",
+      "byteLength": 1370,
+      "sha256": "5db73792cb53f5b1fb38c0a0cf0f2c2d205f5990f7ca21cf3c93ea4a2ac4f583"
+    },
+    "exitCode": 1,
+    "reason": "Public declarations unnecessarily imported all raw wasm-bindgen types with Symbol.dispose. Removed that coupling and separately verified ES2022 facade and raw bindings with the correct standard library; generated declarations were not rewritten."
+  },
+  "notRerun": [
+    "Full Rust tests, MCP protocol/client installation and native export cases: implementations and dependency locks unchanged. Strict workspace Clippy and current document Native/WASM parity executed.",
+    "C++ sanitizers, Office/WPS, browser Web Workers and product flows: separate acceptance requirements; this stage does not claim them."
+  ],
+  "pending": [
+    "Full high-level creation/import/edit/render/export APIs across integration targets.",
+    "Complete effects/transitions/Morph/media/SmartArt/math and all committed presentation capabilities.",
+    "Browser and platform runtime acceptance, real fonts/corpus and Office/WPS editing roundtrip.",
+    "Musterwork Artifact/Viewer/Player/history migration and full replacement gates.",
+    "Same-condition cold/warm latency, RSS, full release size, complete distribution/license verification."
+  ]
+}

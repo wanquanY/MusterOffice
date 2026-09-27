@@ -22,6 +22,8 @@ class CurrentVerificationTests(unittest.TestCase):
             self.assertIn(name, names)
         self.assertTrue(next(s for s in steps if s.name == "native-render-tests").worker)
         self.assertTrue(next(s for s in steps if s.name == "native-playback-tests").worker)
+        self.assertIn("playback-client-tests", names)
+        self.assertIn("playback-sdk-package-tests", names)
         self.assertIn("--ignored", next(s for s in steps if s.name == "native-render-tests").argv)
 
     def test_protocol_selection_declares_its_build_dependencies(self):
