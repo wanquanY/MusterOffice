@@ -10,6 +10,7 @@ default-run = "mo-mcp"
 
 [features]
 default = []
+http = ["rmcp/transport-streamable-http-server", "dep:axum", "dep:http-body", "dep:http-body-util", "tokio/net", "tokio/signal"]
 legacy-host = ["dep:mo-opc", "dep:mo-operation-service", "dep:mo-standard-host", "dep:mo-native-render", "dep:rusqlite"]
 
 [[bin]]
@@ -21,7 +22,15 @@ name = "mo-mcp-legacy"
 path = "src/legacy_main.rs"
 required-features = ["legacy-host"]
 
+[[bin]]
+name = "mo-mcp-http"
+path = "src/http_main.rs"
+required-features = ["http"]
+
 [dependencies]
+axum = { version = "=0.8.9", default-features = false, features = ["http1", "tokio"], optional = true }
+http-body = { version = "=1.1.0", optional = true }
+http-body-util = { version = "=0.1.4", optional = true }
 mo-embedded-sdk = { path = "../../crates/mo-embedded-sdk" }
 mo-native-compute = { path = "../../crates/mo-native-compute" }
 schemars = "=1.2.2"

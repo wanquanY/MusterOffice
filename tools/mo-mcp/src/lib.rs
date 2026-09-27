@@ -13,3 +13,6 @@ pub mod resources;
 #[cfg(feature = "legacy-host")]
 pub mod server;
 pub mod transport;
+
+#[cfg(feature = "http")]
+pub mod http;

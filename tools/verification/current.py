@@ -72,6 +72,10 @@ def plan(groups, output, bindgen, python):
         add("mcp-legacy-clippy", "cargo", "clippy", *mcp, "--features", "legacy-host", "--all-targets", *cargo, "--", "-D", "warnings")
         add("mcp-legacy-tests", "cargo", "test", *mcp, "--features", "legacy-host", *cargo)
         add("mcp-legacy-build", "cargo", "build", *mcp, "--features", "legacy-host", "--bin", "mo-mcp-legacy", *cargo)
+        add("mcp-http-clippy", "cargo", "clippy", *mcp, "--features", "http", "--all-targets", *cargo, "--", "-D", "warnings")
+        add("mcp-http-tests", "cargo", "test", *mcp, "--features", "http", *cargo)
+        add("mcp-http-build", "cargo", "build", *mcp, "--features", "http", "--bin", "mo-mcp-http", *cargo)
+        add("mcp-all-features-clippy", "cargo", "clippy", *mcp, "--all-features", "--all-targets", *cargo, "--", "-D", "warnings")
     if "wasm" in groups:
         add("pure-operation-wasm", "cargo", "check", *cargo, "-p", "mo-presentation-operations", "--target", "wasm32-unknown-unknown")
         add("legacy-host-wasm", "cargo", "check", *cargo, "-p", "mo-host-compat-wasm", "--target", "wasm32-unknown-unknown")
@@ -82,6 +86,9 @@ def plan(groups, output, bindgen, python):
         thin = ROOT / "tools/mo-mcp/target/debug/mo-mcp"
         add("mcp-computation", python, "tools/mo-mcp/compute_check.py", output / "mcp-computation", thin, ROOT / "target/debug/mo-export-worker")
         add("mcp-computation-lifecycle", python, "tools/mo-mcp/compute_lifecycle.py", output / "mcp-computation-lifecycle", thin)
+        http = ROOT / "tools/mo-mcp/target/debug/mo-mcp-http"
+        add("mcp-http-protocol", python, "tools/mo-mcp/http_check.py", output / "mcp-http-protocol", http, ROOT / "target/debug/mo-export-worker")
+        add("mcp-http-lifecycle", python, "tools/mo-mcp/http_lifecycle.py", output / "mcp-http-lifecycle", http)
         binary = ROOT / "tools/mo-mcp/target/debug/mo-mcp-legacy"
         add("mcp-protocol", python, "tools/mo-mcp/check.py", output / "mcp-protocol", binary, ROOT / "target/debug/mo-raster-worker")
         for suite in ("transport", "lifecycle", "cancellation"):

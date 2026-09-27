@@ -6,7 +6,8 @@ database, durable task service, document library or UI. Existing persistent-host
 code is available only through the separate [legacy entry](LEGACY.md).
 
 This is a source development build, not a published installable release or full
-presentation/Office/WPS acceptance. Remote transports, gateway attachments,
+presentation/Office/WPS acceptance. Optional [Streamable HTTP](HTTP.md) supports
+`2026-07-28` with caller-mounted files. Gateway attachments, older HTTP compatibility,
 Skill/Plugin packaging and remaining presentation capabilities are still open.
 
 The current dependency pin is official Rust SDK `rmcp 3.4.1`. The adapter

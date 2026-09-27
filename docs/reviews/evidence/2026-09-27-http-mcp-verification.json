@@ -1,0 +1,2678 @@
+{
+  "format": "musteroffice.optional-http-verification/1",
+  "date": "2026-09-27",
+  "scope": "MCP 2026-07-28 HTTP using caller-mounted files, loopback TCP and real native export. Not gateway authentication/attachments, legacy HTTP acceptance, full presentation, Office/WPS, package-size or throughput acceptance.",
+  "environment": {
+    "os": "Darwin",
+    "release": "25.2.0",
+    "architecture": "arm64",
+    "python": "3.13.0",
+    "rustc": "rustc 1.92.0 (ded5c06cf 2025-12-08)"
+  },
+  "implementation": {
+    "optionalFeature": "http",
+    "protocol": "2026-07-28",
+    "sdk": "rmcp 3.4.1",
+    "protocolSessions": false,
+    "sourceList": [
+      "tools/mo-mcp/Cargo.lock",
+      "tools/mo-mcp/Cargo.toml",
+      "tools/mo-mcp/src/bridge.rs",
+      "tools/mo-mcp/src/bridge/tests.rs",
+      "tools/mo-mcp/src/catalog.rs",
+      "tools/mo-mcp/src/channel.rs",
+      "tools/mo-mcp/src/compute.rs",
+      "tools/mo-mcp/src/compute/bridge.rs",
+      "tools/mo-mcp/src/compute/config.rs",
+      "tools/mo-mcp/src/compute/resources.rs",
+      "tools/mo-mcp/src/compute/server.rs",
+      "tools/mo-mcp/src/config.rs",
+      "tools/mo-mcp/src/http.rs",
+      "tools/mo-mcp/src/http/body.rs",
+      "tools/mo-mcp/src/http/tests.rs",
+      "tools/mo-mcp/src/http_main.rs",
+      "tools/mo-mcp/src/legacy_main.rs",
+      "tools/mo-mcp/src/lib.rs",
+      "tools/mo-mcp/src/main.rs",
+      "tools/mo-mcp/src/resources.rs",
+      "tools/mo-mcp/src/server.rs",
+      "tools/mo-mcp/src/stdio.rs",
+      "tools/mo-mcp/src/transport.rs",
+      "tools/mo-mcp/src/transport/decode.rs",
+      "tools/mo-mcp/src/transport/framing.rs",
+      "tools/mo-mcp/src/transport/output.rs",
+      "tools/mo-mcp/src/transport/tests.rs"
+    ],
+    "sourceUnchangedSinceStrictCheck": true,
+    "changedFiles": [
+      {
+        "path": "README.md",
+        "byteLength": 22151,
+        "sha256": "8fd4476404eadb3e55e295cb6f00c9541ba72a437987b7036bd36f084687e36b"
+      },
+      {
+        "path": "components/http-runtime/component.json",
+        "byteLength": 20011,
+        "sha256": "a626da236b9b299670a122493c57ac999ae5d115ffa72ed0a77f1748888cc899"
+      },
+      {
+        "path": "components/http-runtime/licenses/async-trait-0.1.92-LICENSE-APACHE.txt",
+        "byteLength": 9723,
+        "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+      },
+      {
+        "path": "components/http-runtime/licenses/async-trait-0.1.92-LICENSE-MIT.txt",
+        "byteLength": 1023,
+        "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+      },
+      {
+        "path": "components/http-runtime/licenses/atomic-waker-1.1.2-LICENSE-APACHE.txt",
+        "byteLength": 10847,
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "path": "components/http-runtime/licenses/atomic-waker-1.1.2-LICENSE-MIT.txt",
+        "byteLength": 1023,
+        "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+      },
+      {
+        "path": "components/http-runtime/licenses/atomic-waker-1.1.2-LICENSE-THIRD-PARTY.txt",
+        "byteLength": 1849,
+        "sha256": "6226d0632e2e1a80c23597e964da9812ae193c535fe058154afb034e94167aa5"
+      },
+      {
+        "path": "components/http-runtime/licenses/axum-0.8.9-LICENSE.txt",
+        "byteLength": 1061,
+        "sha256": "6a13bc24a100a6812f053879ec51b126b103af7cda6dbf48c4188722da44da9f"
+      },
+      {
+        "path": "components/http-runtime/licenses/axum-core-0.5.6-LICENSE.txt",
+        "byteLength": 1080,
+        "sha256": "008c87afcd2e626eaf564093250bed06dd7efb5732113264bba3dda8f1c556a1"
+      },
+      {
+        "path": "components/http-runtime/licenses/base64-0.23.1-LICENSE-APACHE.txt",
+        "byteLength": 10847,
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "path": "components/http-runtime/licenses/base64-0.23.1-LICENSE-MIT.txt",
+        "byteLength": 1093,
+        "sha256": "ab499c75a0f0da8e0fe83bf9ba3a27e5c39705310f07107c6c66b69958d2401c"
+      },
+      {
+        "path": "components/http-runtime/licenses/chacha20-0.10.2-LICENSE-APACHE.txt",
+        "byteLength": 10849,
+        "sha256": "a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5"
+      },
+      {
+        "path": "components/http-runtime/licenses/chacha20-0.10.2-LICENSE-MIT.txt",
+        "byteLength": 1082,
+        "sha256": "b8c6939380a400f53e11923d50fcc4dd2fa1ba8339fd9d04cda38a0251b6c9b0"
+      },
+      {
+        "path": "components/http-runtime/licenses/cpufeatures-0.3.1-LICENSE-APACHE.txt",
+        "byteLength": 10849,
+        "sha256": "a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5"
+      },
+      {
+        "path": "components/http-runtime/licenses/cpufeatures-0.3.1-LICENSE-MIT.txt",
+        "byteLength": 1082,
+        "sha256": "73b9dc2e79c7308998dd30296e073aefaefb944a68fb89aa412c23c0edcabcaa"
+      },
+      {
+        "path": "components/http-runtime/licenses/http-1.5.0-LICENSE-APACHE.txt",
+        "byteLength": 10835,
+        "sha256": "8bb1b50b0e5c9399ae33bd35fab2769010fa6c14e8860c729a52295d84896b7a"
+      },
+      {
+        "path": "components/http-runtime/licenses/http-1.5.0-LICENSE-MIT.txt",
+        "byteLength": 1059,
+        "sha256": "dc91f8200e4b2a1f9261035d4c18c33c246911a6c0f7b543d75347e61b249cff"
+      },
+      {
+        "path": "components/http-runtime/licenses/http-body-1.1.0-LICENSE.txt",
+        "byteLength": 1083,
+        "sha256": "248378d0a3383c173fb925f17141b88e71580b3ba17ddc6ac3d2a344683232ab"
+      },
+      {
+        "path": "components/http-runtime/licenses/http-body-util-0.1.4-LICENSE.txt",
+        "byteLength": 1083,
+        "sha256": "248378d0a3383c173fb925f17141b88e71580b3ba17ddc6ac3d2a344683232ab"
+      },
+      {
+        "path": "components/http-runtime/licenses/httparse-1.10.1-LICENSE-APACHE.txt",
+        "byteLength": 10847,
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "path": "components/http-runtime/licenses/httparse-1.10.1-LICENSE-MIT.txt",
+        "byteLength": 1063,
+        "sha256": "391a5396cec6230bfabd4ef4eb2350eb895bc5efce377a2218f5702ed020d3e3"
+      },
+      {
+        "path": "components/http-runtime/licenses/httpdate-1.0.3-LICENSE-APACHE.txt",
+        "byteLength": 10255,
+        "sha256": "4d10fe5f3aa176b05b229a248866bad70b834c173f1252a814ff4748d8a13837"
+      },
+      {
+        "path": "components/http-runtime/licenses/httpdate-1.0.3-LICENSE-MIT.txt",
+        "byteLength": 1051,
+        "sha256": "934887691e05d69d7c86ad3f2c360980fa30c15b035e351f3c9865e99da4debc"
+      },
+      {
+        "path": "components/http-runtime/licenses/hyper-1.11.1-LICENSE.txt",
+        "byteLength": 1062,
+        "sha256": "2d01890414494742ba4a509fcec8efa40f6d8be22cbd72be7cff08d6fda4ec89"
+      },
+      {
+        "path": "components/http-runtime/licenses/hyper-util-0.1.21-LICENSE.txt",
+        "byteLength": 1062,
+        "sha256": "9e0a97848ea543aef745c98e84fde696a9a3e0735538f6daefdd3cb1942effc1"
+      },
+      {
+        "path": "components/http-runtime/licenses/matchit-0.8.4-LICENSE.httprouter.txt",
+        "byteLength": 1522,
+        "sha256": "162ce11ad71338d0a0c6ebaf5c48af72c6ae237b468859d3656fe2d9ed3f3a85"
+      },
+      {
+        "path": "components/http-runtime/licenses/matchit-0.8.4-LICENSE.txt",
+        "byteLength": 1071,
+        "sha256": "de701d0618d694feb1af90f02181a1763d9b0bdeb70a3a592781e529077dba65"
+      },
+      {
+        "path": "components/http-runtime/licenses/mime-0.3.17-LICENSE-APACHE.txt",
+        "byteLength": 10847,
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "path": "components/http-runtime/licenses/mime-0.3.17-LICENSE-MIT.txt",
+        "byteLength": 1058,
+        "sha256": "df9cfd06d8a44d9a671eadd39ffd97f166481da015a30f45dfd27886209c5922"
+      },
+      {
+        "path": "components/http-runtime/licenses/percent-encoding-2.3.2-LICENSE-APACHE.txt",
+        "byteLength": 10847,
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "path": "components/http-runtime/licenses/percent-encoding-2.3.2-LICENSE-MIT.txt",
+        "byteLength": 1072,
+        "sha256": "b38f11f6096706e6de553dabe2a7ed142d59b6fa8c97e290c67496154745cdd5"
+      },
+      {
+        "path": "components/http-runtime/licenses/rand-0.10.3-COPYRIGHT.txt",
+        "byteLength": 569,
+        "sha256": "90eb64f0279b0d9432accfa6023ff803bc4965212383697eee27a0f426d5f8d5"
+      },
+      {
+        "path": "components/http-runtime/licenses/rand-0.10.3-LICENSE-APACHE.txt",
+        "byteLength": 9724,
+        "sha256": "35242e7a83f69875e6edeff02291e688c97caafe2f8902e4e19b49d3e78b4cab"
+      },
+      {
+        "path": "components/http-runtime/licenses/rand-0.10.3-LICENSE-MIT.txt",
+        "byteLength": 1117,
+        "sha256": "209fbbe0ad52d9235e37badf9cadfe4dbdc87203179c0899e738b39ade42177b"
+      },
+      {
+        "path": "components/http-runtime/licenses/rand_core-0.10.1-COPYRIGHT.txt",
+        "byteLength": 478,
+        "sha256": "92b81db30f7ab6d693e0af5661a40d273ca1947e891123ed823924192c10cbc7"
+      },
+      {
+        "path": "components/http-runtime/licenses/rand_core-0.10.1-LICENSE-APACHE.txt",
+        "byteLength": 10282,
+        "sha256": "6df43f6f4b5d4587f3d8d71e45532c688fd168afa5fe89d571cb32fa09c4ef51"
+      },
+      {
+        "path": "components/http-runtime/licenses/rand_core-0.10.1-LICENSE-MIT.txt",
+        "byteLength": 1076,
+        "sha256": "8b6e9feec03e7c9a5facb26855cecd31662bf989b636bcfe79521bdf8ac863f0"
+      },
+      {
+        "path": "components/http-runtime/licenses/signal-hook-registry-1.4.8-LICENSE-APACHE.txt",
+        "byteLength": 10847,
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "path": "components/http-runtime/licenses/signal-hook-registry-1.4.8-LICENSE-MIT.txt",
+        "byteLength": 1068,
+        "sha256": "503558bfefe66ca15e4e3f7955b3cb0ec87fd52f29bf24b336af7bd00e946d5c"
+      },
+      {
+        "path": "components/http-runtime/licenses/sse-stream-0.2.6-LICENSE-APACHE.txt",
+        "byteLength": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      {
+        "path": "components/http-runtime/licenses/sse-stream-0.2.6-LICENSE-MIT.txt",
+        "byteLength": 1062,
+        "sha256": "049d23c7810a0723f186a193f841378dbc307f62be89bdba21c73126b0df2c52"
+      },
+      {
+        "path": "components/http-runtime/licenses/sync_wrapper-1.0.2-LICENSE.txt",
+        "byteLength": 10174,
+        "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594"
+      },
+      {
+        "path": "components/http-runtime/licenses/tokio-stream-0.1.19-LICENSE.txt",
+        "byteLength": 1070,
+        "sha256": "253cd04c6714889df2d32f3f64d669179a1c95c76ac43c40882c52eb06bc3552"
+      },
+      {
+        "path": "components/http-runtime/licenses/tower-0.5.3-LICENSE.txt",
+        "byteLength": 1062,
+        "sha256": "4249c8e6c5ebb85f97c77e6457c6fafc1066406eb8f1ef61e796fbdc5ff18482"
+      },
+      {
+        "path": "components/http-runtime/licenses/tower-layer-0.3.3-LICENSE.txt",
+        "byteLength": 1062,
+        "sha256": "4249c8e6c5ebb85f97c77e6457c6fafc1066406eb8f1ef61e796fbdc5ff18482"
+      },
+      {
+        "path": "components/http-runtime/licenses/tower-service-0.3.3-LICENSE.txt",
+        "byteLength": 1062,
+        "sha256": "4249c8e6c5ebb85f97c77e6457c6fafc1066406eb8f1ef61e796fbdc5ff18482"
+      },
+      {
+        "path": "docs/README.md",
+        "byteLength": 25252,
+        "sha256": "bb402eddc7f265fe7c55cdfd5462d4880d28c8a55a6809433e6a3230317a1e3b"
+      },
+      {
+        "path": "docs/implementation/dependencies.md",
+        "byteLength": 24035,
+        "sha256": "f49e44721f08bb8970ab2f319001701b09d95bbe81d2314d3362e410bb1b95ab"
+      },
+      {
+        "path": "docs/implementation/http-mcp.md",
+        "byteLength": 5187,
+        "sha256": "6381d612989323a6352d7f430668caab3c8f5968b356e3e2916db6d3f2163642"
+      },
+      {
+        "path": "docs/implementation/kernel-boundary-roadmap.md",
+        "byteLength": 3016,
+        "sha256": "3d3999bb94e1ff403254a31cc98c5a43db36a1f38d7df0ac935d8234da44bad3"
+      },
+      {
+        "path": "docs/implementation/mcp-protocol-status.md",
+        "byteLength": 4101,
+        "sha256": "784196150e170d5309a74d7135948437f250be6c921305dd954c94bc855000e8"
+      },
+      {
+        "path": "docs/implementation/progress.md",
+        "byteLength": 97772,
+        "sha256": "b27c28085e6b9f0b609c075fb254ec1cdcd947c60bfa85bfeea2111081dbe01c"
+      },
+      {
+        "path": "tools/mo-mcp/Cargo.lock",
+        "byteLength": 38615,
+        "sha256": "90f2da7c941d2274299ba7124bb29e120ad05001f983bb8c51f58b9b13c352d9"
+      },
+      {
+        "path": "tools/mo-mcp/Cargo.toml",
+        "byteLength": 2200,
+        "sha256": "ce17385fa483a0f4debb9ab1c2c5d6243fa66fc68f37f6e2d7f60a8ad91e6e60"
+      },
+      {
+        "path": "tools/mo-mcp/HTTP.md",
+        "byteLength": 3241,
+        "sha256": "b36133afbd00f07866369923bd652d03a0364e1fa03de1425139976836a48dae"
+      },
+      {
+        "path": "tools/mo-mcp/README.md",
+        "byteLength": 7829,
+        "sha256": "bd83b8894a1d5598ef36319c314aaacadb1801c9c07e4a6dd085c1e8f14115c7"
+      },
+      {
+        "path": "tools/mo-mcp/http_check.py",
+        "byteLength": 10870,
+        "sha256": "3bc308d30d7968eb66d41a5b78e385e39fed18d6c43e36b7a5ae480946e5e7f0"
+      },
+      {
+        "path": "tools/mo-mcp/http_lifecycle.py",
+        "byteLength": 7831,
+        "sha256": "b3d1135d9dad72ac638cce7d29c4ba617675fa8cca71c3cc9a43b23fbba2365b"
+      },
+      {
+        "path": "tools/mo-mcp/http_support.py",
+        "byteLength": 6073,
+        "sha256": "cc86663edadcc1f64d69e0ae73399a39a2b20ef565399fa6ac4e0095174e7f79"
+      },
+      {
+        "path": "tools/mo-mcp/record_http_components.py",
+        "byteLength": 3974,
+        "sha256": "17b983801d16d4b820a40cf3335f91f3e13b590bbecdcdcfaa3fcc3743232b68"
+      },
+      {
+        "path": "tools/mo-mcp/src/compute/server.rs",
+        "byteLength": 12528,
+        "sha256": "3611ebe5747b99895684c296b556575105219fd53582dd6cb4e67011ed79fa52"
+      },
+      {
+        "path": "tools/mo-mcp/src/http.rs",
+        "byteLength": 8183,
+        "sha256": "c600338abedb629793443b28c1ff9b7bf5494410babd85c9610b1ad98b2cdb37"
+      },
+      {
+        "path": "tools/mo-mcp/src/http/body.rs",
+        "byteLength": 4720,
+        "sha256": "9b2a2bf9a61f8831c3ed144ea37beef76a3458069947e3ae21a228891bc331d0"
+      },
+      {
+        "path": "tools/mo-mcp/src/http/tests.rs",
+        "byteLength": 6633,
+        "sha256": "4f5306976573823e46efb7f4892c5d64637682c617e25fc91f8ee67ee97dd518"
+      },
+      {
+        "path": "tools/mo-mcp/src/http_main.rs",
+        "byteLength": 2341,
+        "sha256": "1e003ad77459a08c67ea6e0df1090ceb17dc80e79381bc74a39188df54240384"
+      },
+      {
+        "path": "tools/mo-mcp/src/lib.rs",
+        "byteLength": 446,
+        "sha256": "1fad9e194281cf5e2770c4f756c76c022c70eec47a89a4b3468924924706975e"
+      },
+      {
+        "path": "tools/verification/current.py",
+        "byteLength": 11881,
+        "sha256": "0625d829d2823ab0226d60bbb4711321b214aff57af5c3df5e03a05b2f65734e"
+      },
+      {
+        "path": "tools/verification/test_current.py",
+        "byteLength": 2666,
+        "sha256": "a444fb6a85beeed82f4a94b2b981f6722d67200b35248dac101d00265f1d038c"
+      }
+    ],
+    "coreAndRootLockUnchanged": true,
+    "musterworkModified": false
+  },
+  "dependencies": {
+    "component": {
+      "path": "components/http-runtime/component.json",
+      "byteLength": 20011,
+      "sha256": "a626da236b9b299670a122493c57ac999ae5d115ffa72ed0a77f1748888cc899"
+    },
+    "existingRegistryVersionsUnchanged": true,
+    "added": [
+      {
+        "name": "async-trait",
+        "version": "0.1.92"
+      },
+      {
+        "name": "atomic-waker",
+        "version": "1.1.2"
+      },
+      {
+        "name": "axum",
+        "version": "0.8.9"
+      },
+      {
+        "name": "axum-core",
+        "version": "0.5.6"
+      },
+      {
+        "name": "base64",
+        "version": "0.23.1"
+      },
+      {
+        "name": "chacha20",
+        "version": "0.10.2"
+      },
+      {
+        "name": "cpufeatures",
+        "version": "0.3.1"
+      },
+      {
+        "name": "http",
+        "version": "1.5.0"
+      },
+      {
+        "name": "http-body",
+        "version": "1.1.0"
+      },
+      {
+        "name": "http-body-util",
+        "version": "0.1.4"
+      },
+      {
+        "name": "httparse",
+        "version": "1.10.1"
+      },
+      {
+        "name": "httpdate",
+        "version": "1.0.3"
+      },
+      {
+        "name": "hyper",
+        "version": "1.11.1"
+      },
+      {
+        "name": "hyper-util",
+        "version": "0.1.21"
+      },
+      {
+        "name": "matchit",
+        "version": "0.8.4"
+      },
+      {
+        "name": "mime",
+        "version": "0.3.17"
+      },
+      {
+        "name": "percent-encoding",
+        "version": "2.3.2"
+      },
+      {
+        "name": "rand",
+        "version": "0.10.3"
+      },
+      {
+        "name": "rand_core",
+        "version": "0.10.1"
+      },
+      {
+        "name": "signal-hook-registry",
+        "version": "1.4.8"
+      },
+      {
+        "name": "sse-stream",
+        "version": "0.2.6"
+      },
+      {
+        "name": "sync_wrapper",
+        "version": "1.0.2"
+      },
+      {
+        "name": "tokio-stream",
+        "version": "0.1.19"
+      },
+      {
+        "name": "tower",
+        "version": "0.5.3"
+      },
+      {
+        "name": "tower-layer",
+        "version": "0.3.3"
+      },
+      {
+        "name": "tower-service",
+        "version": "0.3.3"
+      }
+    ],
+    "graphs": {
+      "default": {
+        "packages": [
+          [
+            "adler2",
+            "v2.0.1"
+          ],
+          [
+            "base64",
+            "v0.22.1"
+          ],
+          [
+            "bitflags",
+            "v2.13.2"
+          ],
+          [
+            "block-buffer",
+            "v0.10.4"
+          ],
+          [
+            "bytemuck",
+            "v1.25.2"
+          ],
+          [
+            "bytemuck_derive",
+            "v1.12.1"
+          ],
+          [
+            "bytes",
+            "v1.12.1"
+          ],
+          [
+            "cfg-if",
+            "v1.0.5"
+          ],
+          [
+            "chrono",
+            "v0.4.45"
+          ],
+          [
+            "core_maths",
+            "v0.1.1"
+          ],
+          [
+            "cpufeatures",
+            "v0.2.17"
+          ],
+          [
+            "crc32fast",
+            "v1.5.2"
+          ],
+          [
+            "crypto-common",
+            "v0.1.7"
+          ],
+          [
+            "digest",
+            "v0.10.7"
+          ],
+          [
+            "dyn-clone",
+            "v1.0.20"
+          ],
+          [
+            "equivalent",
+            "v1.0.2"
+          ],
+          [
+            "errno",
+            "v0.3.14"
+          ],
+          [
+            "flate2",
+            "v1.1.9"
+          ],
+          [
+            "font-types",
+            "v0.12.5"
+          ],
+          [
+            "futures",
+            "v0.3.34"
+          ],
+          [
+            "futures-channel",
+            "v0.3.34"
+          ],
+          [
+            "futures-core",
+            "v0.3.34"
+          ],
+          [
+            "futures-executor",
+            "v0.3.34"
+          ],
+          [
+            "futures-io",
+            "v0.3.34"
+          ],
+          [
+            "futures-macro",
+            "v0.3.34"
+          ],
+          [
+            "futures-sink",
+            "v0.3.34"
+          ],
+          [
+            "futures-task",
+            "v0.3.34"
+          ],
+          [
+            "futures-util",
+            "v0.3.34"
+          ],
+          [
+            "generic-array",
+            "v0.14.7"
+          ],
+          [
+            "getrandom",
+            "v0.4.3"
+          ],
+          [
+            "hashbrown",
+            "v0.17.1"
+          ],
+          [
+            "indexmap",
+            "v2.14.2"
+          ],
+          [
+            "itoa",
+            "v1.0.18"
+          ],
+          [
+            "libc",
+            "v0.2.189"
+          ],
+          [
+            "libm",
+            "v0.2.16"
+          ],
+          [
+            "memchr",
+            "v2.8.3"
+          ],
+          [
+            "miniz_oxide",
+            "v0.8.9"
+          ],
+          [
+            "mio",
+            "v1.2.2"
+          ],
+          [
+            "mo-color",
+            "v0.1.0"
+          ],
+          [
+            "mo-common",
+            "v0.1.0"
+          ],
+          [
+            "mo-embedded-sdk",
+            "v0.1.0"
+          ],
+          [
+            "mo-font",
+            "v0.1.0"
+          ],
+          [
+            "mo-geometry",
+            "v0.1.0"
+          ],
+          [
+            "mo-image",
+            "v0.1.0"
+          ],
+          [
+            "mo-mcp",
+            "v0.1.0"
+          ],
+          [
+            "mo-native-compute",
+            "v0.1.0"
+          ],
+          [
+            "mo-native-export",
+            "v0.1.0"
+          ],
+          [
+            "mo-native-io",
+            "v0.1.0"
+          ],
+          [
+            "mo-native-worker",
+            "v0.1.0"
+          ],
+          [
+            "mo-opc",
+            "v0.1.0"
+          ],
+          [
+            "mo-pptx",
+            "v0.1.0"
+          ],
+          [
+            "mo-presentation-compile",
+            "v0.1.0"
+          ],
+          [
+            "mo-presentation-delivery",
+            "v0.1.0"
+          ],
+          [
+            "mo-presentation-edit",
+            "v0.1.0"
+          ],
+          [
+            "mo-presentation-model",
+            "v0.1.0"
+          ],
+          [
+            "mo-presentation-operations",
+            "v0.1.0"
+          ],
+          [
+            "mo-presentation-source",
+            "v0.1.0"
+          ],
+          [
+            "mo-raster",
+            "v0.1.0"
+          ],
+          [
+            "mo-render",
+            "v0.1.0"
+          ],
+          [
+            "mo-text",
+            "v0.1.0"
+          ],
+          [
+            "mo-timeline",
+            "v0.1.0"
+          ],
+          [
+            "mo-unicode",
+            "v0.1.0"
+          ],
+          [
+            "mo-xml",
+            "v0.1.0"
+          ],
+          [
+            "num-bigint",
+            "v0.4.8"
+          ],
+          [
+            "num-integer",
+            "v0.1.47"
+          ],
+          [
+            "num-traits",
+            "v0.2.19"
+          ],
+          [
+            "once_cell",
+            "v1.21.4"
+          ],
+          [
+            "pastey",
+            "v0.2.3"
+          ],
+          [
+            "pin-project-lite",
+            "v0.2.17"
+          ],
+          [
+            "proc-macro2",
+            "v1.0.107"
+          ],
+          [
+            "quick-xml",
+            "v0.42.0"
+          ],
+          [
+            "quote",
+            "v1.0.47"
+          ],
+          [
+            "rawzip",
+            "v0.5.1"
+          ],
+          [
+            "read-fonts",
+            "v0.43.3"
+          ],
+          [
+            "ref-cast",
+            "v1.0.27"
+          ],
+          [
+            "ref-cast-impl",
+            "v1.0.27"
+          ],
+          [
+            "rmcp",
+            "v3.4.1"
+          ],
+          [
+            "rustix",
+            "v1.1.5"
+          ],
+          [
+            "schemars",
+            "v1.2.2"
+          ],
+          [
+            "schemars_derive",
+            "v1.2.2"
+          ],
+          [
+            "serde",
+            "v1.0.229"
+          ],
+          [
+            "serde_core",
+            "v1.0.229"
+          ],
+          [
+            "serde_derive",
+            "v1.0.229"
+          ],
+          [
+            "serde_derive_internals",
+            "v0.30.0"
+          ],
+          [
+            "serde_json",
+            "v1.0.151"
+          ],
+          [
+            "sha2",
+            "v0.10.9"
+          ],
+          [
+            "simd-adler32",
+            "v0.3.10"
+          ],
+          [
+            "slab",
+            "v0.4.12"
+          ],
+          [
+            "socket2",
+            "v0.6.5"
+          ],
+          [
+            "syn",
+            "v2.0.119"
+          ],
+          [
+            "syn",
+            "v3.0.6"
+          ],
+          [
+            "thiserror",
+            "v2.0.20"
+          ],
+          [
+            "thiserror-impl",
+            "v2.0.20"
+          ],
+          [
+            "tokio",
+            "v1.53.1"
+          ],
+          [
+            "tokio-macros",
+            "v2.7.2"
+          ],
+          [
+            "tokio-util",
+            "v0.7.19"
+          ],
+          [
+            "tracing",
+            "v0.1.44"
+          ],
+          [
+            "tracing-attributes",
+            "v0.1.31"
+          ],
+          [
+            "tracing-core",
+            "v0.1.36"
+          ],
+          [
+            "typenum",
+            "v1.20.1"
+          ],
+          [
+            "unicode-bidi",
+            "v0.3.18"
+          ],
+          [
+            "unicode-ident",
+            "v1.0.26"
+          ],
+          [
+            "uuid",
+            "v1.26.1"
+          ],
+          [
+            "zmij",
+            "v1.0.23"
+          ]
+        ],
+        "count": 104,
+        "forbiddenAbsent": true
+      },
+      "http": {
+        "packages": [
+          [
+            "adler2",
+            "v2.0.1"
+          ],
+          [
+            "async-trait",
+            "v0.1.92"
+          ],
+          [
+            "atomic-waker",
+            "v1.1.2"
+          ],
+          [
+            "axum",
+            "v0.8.9"
+          ],
+          [
+            "axum-core",
+            "v0.5.6"
+          ],
+          [
+            "base64",
+            "v0.22.1"
+          ],
+          [
+            "base64",
+            "v0.23.1"
+          ],
+          [
+            "bitflags",
+            "v2.13.2"
+          ],
+          [
+            "block-buffer",
+            "v0.10.4"
+          ],
+          [
+            "bytemuck",
+            "v1.25.2"
+          ],
+          [
+            "bytemuck_derive",
+            "v1.12.1"
+          ],
+          [
+            "bytes",
+            "v1.12.1"
+          ],
+          [
+            "cfg-if",
+            "v1.0.5"
+          ],
+          [
+            "chacha20",
+            "v0.10.2"
+          ],
+          [
+            "chrono",
+            "v0.4.45"
+          ],
+          [
+            "core_maths",
+            "v0.1.1"
+          ],
+          [
+            "cpufeatures",
+            "v0.2.17"
+          ],
+          [
+            "crc32fast",
+            "v1.5.2"
+          ],
+          [
+            "crypto-common",
+            "v0.1.7"
+          ],
+          [
+            "digest",
+            "v0.10.7"
+          ],
+          [
+            "dyn-clone",
+            "v1.0.20"
+          ],
+          [
+            "equivalent",
+            "v1.0.2"
+          ],
+          [
+            "errno",
+            "v0.3.14"
+          ],
+          [
+            "flate2",
+            "v1.1.9"
+          ],
+          [
+            "font-types",
+            "v0.12.5"
+          ],
+          [
+            "futures",
+            "v0.3.34"
+          ],
+          [
+            "futures-channel",
+            "v0.3.34"
+          ],
+          [
+            "futures-core",
+            "v0.3.34"
+          ],
+          [
+            "futures-executor",
+            "v0.3.34"
+          ],
+          [
+            "futures-io",
+            "v0.3.34"
+          ],
+          [
+            "futures-macro",
+            "v0.3.34"
+          ],
+          [
+            "futures-sink",
+            "v0.3.34"
+          ],
+          [
+            "futures-task",
+            "v0.3.34"
+          ],
+          [
+            "futures-util",
+            "v0.3.34"
+          ],
+          [
+            "generic-array",
+            "v0.14.7"
+          ],
+          [
+            "getrandom",
+            "v0.4.3"
+          ],
+          [
+            "hashbrown",
+            "v0.17.1"
+          ],
+          [
+            "http",
+            "v1.5.0"
+          ],
+          [
+            "http-body",
+            "v1.1.0"
+          ],
+          [
+            "http-body-util",
+            "v0.1.4"
+          ],
+          [
+            "httparse",
+            "v1.10.1"
+          ],
+          [
+            "httpdate",
+            "v1.0.3"
+          ],
+          [
+            "hyper",
+            "v1.11.1"
+          ],
+          [
+            "hyper-util",
+            "v0.1.21"
+          ],
+          [
+            "indexmap",
+            "v2.14.2"
+          ],
+          [
+            "itoa",
+            "v1.0.18"
+          ],
+          [
+            "libc",
+            "v0.2.189"
+          ],
+          [
+            "libm",
+            "v0.2.16"
+          ],
+          [
+            "matchit",
+            "v0.8.4"
+          ],
+          [
+            "memchr",
+            "v2.8.3"
+          ],
+          [
+            "mime",
+            "v0.3.17"
+          ],
+          [
+            "miniz_oxide",
+            "v0.8.9"
+          ],
+          [
+            "mio",
+            "v1.2.2"
+          ],
+          [
+            "mo-color",
+            "v0.1.0"
+          ],
+          [
+            "mo-common",
+            "v0.1.0"
+          ],
+          [
+            "mo-embedded-sdk",
+            "v0.1.0"
+          ],
+          [
+            "mo-font",
+            "v0.1.0"
+          ],
+          [
+            "mo-geometry",
+            "v0.1.0"
+          ],
+          [
+            "mo-image",
+            "v0.1.0"
+          ],
+          [
+            "mo-mcp",
+            "v0.1.0"
+          ],
+          [
+            "mo-native-compute",
+            "v0.1.0"
+          ],
+          [
+            "mo-native-export",
+            "v0.1.0"
+          ],
+          [
+            "mo-native-io",
+            "v0.1.0"
+          ],
+          [
+            "mo-native-worker",
+            "v0.1.0"
+          ],
+          [
+            "mo-opc",
+            "v0.1.0"
+          ],
+          [
+            "mo-pptx",
+            "v0.1.0"
+          ],
+          [
+            "mo-presentation-compile",
+            "v0.1.0"
+          ],
+          [
+            "mo-presentation-delivery",
+            "v0.1.0"
+          ],
+          [
+            "mo-presentation-edit",
+            "v0.1.0"
+          ],
+          [
+            "mo-presentation-model",
+            "v0.1.0"
+          ],
+          [
+            "mo-presentation-operations",
+            "v0.1.0"
+          ],
+          [
+            "mo-presentation-source",
+            "v0.1.0"
+          ],
+          [
+            "mo-raster",
+            "v0.1.0"
+          ],
+          [
+            "mo-render",
+            "v0.1.0"
+          ],
+          [
+            "mo-text",
+            "v0.1.0"
+          ],
+          [
+            "mo-timeline",
+            "v0.1.0"
+          ],
+          [
+            "mo-unicode",
+            "v0.1.0"
+          ],
+          [
+            "mo-xml",
+            "v0.1.0"
+          ],
+          [
+            "num-bigint",
+            "v0.4.8"
+          ],
+          [
+            "num-integer",
+            "v0.1.47"
+          ],
+          [
+            "num-traits",
+            "v0.2.19"
+          ],
+          [
+            "once_cell",
+            "v1.21.4"
+          ],
+          [
+            "pastey",
+            "v0.2.3"
+          ],
+          [
+            "percent-encoding",
+            "v2.3.2"
+          ],
+          [
+            "pin-project-lite",
+            "v0.2.17"
+          ],
+          [
+            "proc-macro2",
+            "v1.0.107"
+          ],
+          [
+            "quick-xml",
+            "v0.42.0"
+          ],
+          [
+            "quote",
+            "v1.0.47"
+          ],
+          [
+            "rand",
+            "v0.10.3"
+          ],
+          [
+            "rand_core",
+            "v0.10.1"
+          ],
+          [
+            "rawzip",
+            "v0.5.1"
+          ],
+          [
+            "read-fonts",
+            "v0.43.3"
+          ],
+          [
+            "ref-cast",
+            "v1.0.27"
+          ],
+          [
+            "ref-cast-impl",
+            "v1.0.27"
+          ],
+          [
+            "rmcp",
+            "v3.4.1"
+          ],
+          [
+            "rustix",
+            "v1.1.5"
+          ],
+          [
+            "schemars",
+            "v1.2.2"
+          ],
+          [
+            "schemars_derive",
+            "v1.2.2"
+          ],
+          [
+            "serde",
+            "v1.0.229"
+          ],
+          [
+            "serde_core",
+            "v1.0.229"
+          ],
+          [
+            "serde_derive",
+            "v1.0.229"
+          ],
+          [
+            "serde_derive_internals",
+            "v0.30.0"
+          ],
+          [
+            "serde_json",
+            "v1.0.151"
+          ],
+          [
+            "sha2",
+            "v0.10.9"
+          ],
+          [
+            "signal-hook-registry",
+            "v1.4.8"
+          ],
+          [
+            "simd-adler32",
+            "v0.3.10"
+          ],
+          [
+            "slab",
+            "v0.4.12"
+          ],
+          [
+            "smallvec",
+            "v1.16.2"
+          ],
+          [
+            "socket2",
+            "v0.6.5"
+          ],
+          [
+            "sse-stream",
+            "v0.2.6"
+          ],
+          [
+            "syn",
+            "v2.0.119"
+          ],
+          [
+            "syn",
+            "v3.0.6"
+          ],
+          [
+            "sync_wrapper",
+            "v1.0.2"
+          ],
+          [
+            "thiserror",
+            "v2.0.20"
+          ],
+          [
+            "thiserror-impl",
+            "v2.0.20"
+          ],
+          [
+            "tokio",
+            "v1.53.1"
+          ],
+          [
+            "tokio-macros",
+            "v2.7.2"
+          ],
+          [
+            "tokio-stream",
+            "v0.1.19"
+          ],
+          [
+            "tokio-util",
+            "v0.7.19"
+          ],
+          [
+            "tower",
+            "v0.5.3"
+          ],
+          [
+            "tower-layer",
+            "v0.3.3"
+          ],
+          [
+            "tower-service",
+            "v0.3.3"
+          ],
+          [
+            "tracing",
+            "v0.1.44"
+          ],
+          [
+            "tracing-attributes",
+            "v0.1.31"
+          ],
+          [
+            "tracing-core",
+            "v0.1.36"
+          ],
+          [
+            "typenum",
+            "v1.20.1"
+          ],
+          [
+            "unicode-bidi",
+            "v0.3.18"
+          ],
+          [
+            "unicode-ident",
+            "v1.0.26"
+          ],
+          [
+            "uuid",
+            "v1.26.1"
+          ],
+          [
+            "zmij",
+            "v1.0.23"
+          ]
+        ],
+        "count": 130,
+        "forbiddenAbsent": true
+      },
+      "sdk": {
+        "packages": [
+          [
+            "adler2",
+            "v2.0.1"
+          ],
+          [
+            "bitflags",
+            "v2.13.2"
+          ],
+          [
+            "block-buffer",
+            "v0.10.4"
+          ],
+          [
+            "bytemuck",
+            "v1.25.2"
+          ],
+          [
+            "bytemuck_derive",
+            "v1.12.1"
+          ],
+          [
+            "cfg-if",
+            "v1.0.5"
+          ],
+          [
+            "core_maths",
+            "v0.1.1"
+          ],
+          [
+            "cpufeatures",
+            "v0.2.17"
+          ],
+          [
+            "crc32fast",
+            "v1.5.2"
+          ],
+          [
+            "crypto-common",
+            "v0.1.7"
+          ],
+          [
+            "digest",
+            "v0.10.7"
+          ],
+          [
+            "dyn-clone",
+            "v1.0.20"
+          ],
+          [
+            "errno",
+            "v0.3.14"
+          ],
+          [
+            "flate2",
+            "v1.1.9"
+          ],
+          [
+            "font-types",
+            "v0.12.5"
+          ],
+          [
+            "generic-array",
+            "v0.14.7"
+          ],
+          [
+            "itoa",
+            "v1.0.18"
+          ],
+          [
+            "libc",
+            "v0.2.189"
+          ],
+          [
+            "libm",
+            "v0.2.16"
+          ],
+          [
+            "memchr",
+            "v2.8.3"
+          ],
+          [
+            "miniz_oxide",
+            "v0.8.9"
+          ],
+          [
+            "mo-color",
+            "v0.1.0"
+          ],
+          [
+            "mo-common",
+            "v0.1.0"
+          ],
+          [
+            "mo-embedded-sdk",
+            "v0.1.0"
+          ],
+          [
+            "mo-font",
+            "v0.1.0"
+          ],
+          [
+            "mo-geometry",
+            "v0.1.0"
+          ],
+          [
+            "mo-image",
+            "v0.1.0"
+          ],
+          [
+            "mo-native-export",
+            "v0.1.0"
+          ],
+          [
+            "mo-native-io",
+            "v0.1.0"
+          ],
+          [
+            "mo-native-worker",
+            "v0.1.0"
+          ],
+          [
+            "mo-opc",
+            "v0.1.0"
+          ],
+          [
+            "mo-pptx",
+            "v0.1.0"
+          ],
+          [
+            "mo-presentation-compile",
+            "v0.1.0"
+          ],
+          [
+            "mo-presentation-delivery",
+            "v0.1.0"
+          ],
+          [
+            "mo-presentation-edit",
+            "v0.1.0"
+          ],
+          [
+            "mo-presentation-model",
+            "v0.1.0"
+          ],
+          [
+            "mo-presentation-operations",
+            "v0.1.0"
+          ],
+          [
+            "mo-presentation-source",
+            "v0.1.0"
+          ],
+          [
+            "mo-raster",
+            "v0.1.0"
+          ],
+          [
+            "mo-render",
+            "v0.1.0"
+          ],
+          [
+            "mo-text",
+            "v0.1.0"
+          ],
+          [
+            "mo-timeline",
+            "v0.1.0"
+          ],
+          [
+            "mo-unicode",
+            "v0.1.0"
+          ],
+          [
+            "mo-xml",
+            "v0.1.0"
+          ],
+          [
+            "num-bigint",
+            "v0.4.8"
+          ],
+          [
+            "num-integer",
+            "v0.1.47"
+          ],
+          [
+            "num-traits",
+            "v0.2.19"
+          ],
+          [
+            "once_cell",
+            "v1.21.4"
+          ],
+          [
+            "proc-macro2",
+            "v1.0.107"
+          ],
+          [
+            "quick-xml",
+            "v0.42.0"
+          ],
+          [
+            "quote",
+            "v1.0.47"
+          ],
+          [
+            "rawzip",
+            "v0.5.1"
+          ],
+          [
+            "read-fonts",
+            "v0.43.3"
+          ],
+          [
+            "ref-cast",
+            "v1.0.27"
+          ],
+          [
+            "ref-cast-impl",
+            "v1.0.27"
+          ],
+          [
+            "rustix",
+            "v1.1.5"
+          ],
+          [
+            "schemars",
+            "v1.2.2"
+          ],
+          [
+            "schemars_derive",
+            "v1.2.2"
+          ],
+          [
+            "serde",
+            "v1.0.229"
+          ],
+          [
+            "serde_core",
+            "v1.0.229"
+          ],
+          [
+            "serde_derive",
+            "v1.0.229"
+          ],
+          [
+            "serde_derive_internals",
+            "v0.30.0"
+          ],
+          [
+            "serde_json",
+            "v1.0.151"
+          ],
+          [
+            "sha2",
+            "v0.10.9"
+          ],
+          [
+            "simd-adler32",
+            "v0.3.10"
+          ],
+          [
+            "syn",
+            "v3.0.6"
+          ],
+          [
+            "thiserror",
+            "v2.0.20"
+          ],
+          [
+            "thiserror-impl",
+            "v2.0.20"
+          ],
+          [
+            "typenum",
+            "v1.20.1"
+          ],
+          [
+            "unicode-bidi",
+            "v0.3.18"
+          ],
+          [
+            "unicode-ident",
+            "v1.0.26"
+          ],
+          [
+            "zmij",
+            "v1.0.23"
+          ]
+        ],
+        "count": 72,
+        "forbiddenAbsent": true
+      }
+    },
+    "graphRecord": {
+      "path": ".codex-work/http-mcp/graphs.json",
+      "byteLength": 17595,
+      "sha256": "cf82beb883937ee498cb9578c54fcea53cd6c723704c102017ef23adf8011e9d"
+    },
+    "graphScope": "Current host normal dependency graph, not source archive closure or binary-size evidence."
+  },
+  "gates": {
+    "record": {
+      "path": ".codex-work/http-mcp/gates-01/report.json",
+      "byteLength": 5895,
+      "sha256": "bef9a3cdff7e02af8c8d38f3543a02dcd4d76d27482d3e256fefc0d027dda59d"
+    },
+    "sourceSha256": "c980030c01424e06b03cfee087cfd21c5d747344c45c78ca63366387c9d58584",
+    "sourceUnchanged": true,
+    "steps": [
+      {
+        "name": "mcp-format",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/http-mcp/gates-01/mcp-format.log",
+          "byteLength": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "mcp-clippy",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/http-mcp/gates-01/mcp-clippy.log",
+          "byteLength": 160,
+          "sha256": "1271f7a6a3435e3a5423bec51305a576dc6a34daeb2d4be4c3dc16d3de35abdc"
+        }
+      },
+      {
+        "name": "mcp-tests",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/http-mcp/gates-01/mcp-tests.log",
+          "byteLength": 2363,
+          "sha256": "5aa41e7cf467cbdb5383c4f7e0ba53cc88cc5c9f43696097acea58dedba669d1"
+        }
+      },
+      {
+        "name": "mcp-build",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/http-mcp/gates-01/mcp-build.log",
+          "byteLength": 160,
+          "sha256": "d534e8b40256de286adc767dc2c4e79f8d20277abc13c2430267f06825d2d347"
+        }
+      },
+      {
+        "name": "mcp-legacy-clippy",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/http-mcp/gates-01/mcp-legacy-clippy.log",
+          "byteLength": 160,
+          "sha256": "fbe1fd0380279b74e1596590a8f4fb10e53ee6aaf91c76940c472f47ba90dfb6"
+        }
+      },
+      {
+        "name": "mcp-legacy-tests",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/http-mcp/gates-01/mcp-legacy-tests.log",
+          "byteLength": 2519,
+          "sha256": "d3feaa5458110e1f00c20aa3569e0f92c58e45ea16442b7a554c68bfa5f774b4"
+        }
+      },
+      {
+        "name": "mcp-legacy-build",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/http-mcp/gates-01/mcp-legacy-build.log",
+          "byteLength": 160,
+          "sha256": "36494e56f301ca9f97961876eb3c09a4463cec032c24c134c42d3e8c4f944a41"
+        }
+      },
+      {
+        "name": "mcp-http-clippy",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/http-mcp/gates-01/mcp-http-clippy.log",
+          "byteLength": 72,
+          "sha256": "22e0df986057b9ba5be07526ac5fb348862a3dedef42108383cc3e088acbb889"
+        }
+      },
+      {
+        "name": "mcp-http-tests",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/http-mcp/gates-01/mcp-http-tests.log",
+          "byteLength": 2775,
+          "sha256": "87f246f4c31791a761b9c741df480c0cced2e2eceb19a49c2c711f72eb48f99c"
+        }
+      },
+      {
+        "name": "mcp-http-build",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/http-mcp/gates-01/mcp-http-build.log",
+          "byteLength": 160,
+          "sha256": "f9d05161df4fbb04b2f40c744874b812f9e81ad2d7b6ea4c33eb5ba6e16248ed"
+        }
+      },
+      {
+        "name": "mcp-all-features-clippy",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/http-mcp/gates-01/mcp-all-features-clippy.log",
+          "byteLength": 525,
+          "sha256": "5366db012b2913f1dc0eb7fa99735f9d1fdfd7784f24d8c0c62ef966c1bc3e43"
+        }
+      }
+    ],
+    "unitTests": {
+      "default": 17,
+      "legacy": 18,
+      "http": 22,
+      "sharedDefaultTests": 17,
+      "newHttpTests": 5
+    }
+  },
+  "commands": [
+    {
+      "name": "http-clippy-03",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "record": {
+        "path": ".codex-work/http-mcp/http-clippy-03.json",
+        "byteLength": 192331,
+        "sha256": "bef6424322b1072f2244d697f54a2ef6e27a7dc411e1562749bd4264d57bf079"
+      },
+      "log": {
+        "path": ".codex-work/http-mcp/http-clippy-03.log",
+        "byteLength": 160,
+        "sha256": "f51fdf49762223cef8ab93ed9635d6a5812f59910a1c1a7ca75269a7e3b6aa27"
+      }
+    },
+    {
+      "name": "protocol-04",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "record": {
+        "path": ".codex-work/http-mcp/protocol-04.json",
+        "byteLength": 230260,
+        "sha256": "9f3b1917d4d2a4fb3f891b524ec0aa46f4dc2765efd1984f420ace00e9dc27c2"
+      },
+      "log": {
+        "path": ".codex-work/http-mcp/protocol-04.log",
+        "byteLength": 297,
+        "sha256": "42fc5b34ccb7b2fc2341108e6c5434c8f3e8c2e4297304240b0f62350a11f317"
+      }
+    },
+    {
+      "name": "lifecycle-03",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "record": {
+        "path": ".codex-work/http-mcp/lifecycle-03.json",
+        "byteLength": 229981,
+        "sha256": "9a1b6bad63859b755e41e2280b527028b5e3ca0bc88539ecdf7d00a7bc571d78"
+      },
+      "log": {
+        "path": ".codex-work/http-mcp/lifecycle-03.log",
+        "byteLength": 499,
+        "sha256": "19c1b3d7b76a0ae15899e8dd0478859e2d13561c74d4f37dd1a003fd9800dc16"
+      }
+    },
+    {
+      "name": "stdio-protocol",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "record": {
+        "path": ".codex-work/http-mcp/stdio-protocol.json",
+        "byteLength": 230246,
+        "sha256": "40f99c1b819b19b4b0b6d798d2d7624b66914c9bf521ad4a94001d03477d6b3c"
+      },
+      "log": {
+        "path": ".codex-work/http-mcp/stdio-protocol.log",
+        "byteLength": 717,
+        "sha256": "83a6758fa2783871f07a2813904e5f94c2204ad0e85da8567b2b25f273056cf6"
+      }
+    },
+    {
+      "name": "stdio-lifecycle",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "record": {
+        "path": ".codex-work/http-mcp/stdio-lifecycle.json",
+        "byteLength": 229966,
+        "sha256": "e70b088629706ce40aa798fec4cbb5ce02f8897038ae4d5e6ae51c5a6b328e26"
+      },
+      "log": {
+        "path": ".codex-work/http-mcp/stdio-lifecycle.log",
+        "byteLength": 544,
+        "sha256": "d3a59137a3558094f4dfc8d127842fcc857f101c63d13c3375eb439aba84cff6"
+      }
+    }
+  ],
+  "protocol": {
+    "record": {
+      "path": ".codex-work/http-mcp/protocol-04-results/report.json",
+      "byteLength": 1336,
+      "sha256": "ecd69a7ca5f8d0cf7913a31db76a651846a7ff063ee897ca66b3170f97c19d19"
+    },
+    "observations": {
+      "format": "musteroffice.http-mcp-check/1",
+      "status": "passed",
+      "binarySha256": "0f02ad43a6d84c1ffeadd1f4f31564568b5964d4b293e26c7d6fadaa206d3643",
+      "workerSha256": "f46756532a3859f2ff4ea58e03e8e593f5c7e40c2f94e5f8fddaa6c74831b6a9",
+      "calls": 46,
+      "exports": [
+        {
+          "export": "exported",
+          "assets": 12,
+          "pptxSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5"
+        },
+        {
+          "export": "exported-edited",
+          "assets": 12,
+          "pptxSha256": "a1545fba01e0941fb2bcac04a8787dcc0709ad9f2c3b21d2af343ecbaa3d41b6"
+        }
+      ],
+      "rejectionChecks": [
+        "method-GET",
+        "method-DELETE",
+        "method-PUT",
+        "tasks-list",
+        "prompts-list",
+        "ping",
+        "unknown-tool",
+        "bad-host",
+        "bad-origin",
+        "null-origin",
+        "missing-version",
+        "method-mismatch",
+        "name-mismatch",
+        "unknown-version",
+        "legacy-http",
+        "legacy-inline",
+        "duplicate-json",
+        "body-limit",
+        "content-type",
+        "accept",
+        "header-budget",
+        "duplicate-Mcp-Method",
+        "duplicate-Origin"
+      ],
+      "reconstructedResourceBytes": 1048576,
+      "isolatedFileNamespaces": true,
+      "concurrentExports": 2,
+      "productCommitted": false,
+      "scope": "2026-07-28 loopback HTTP with caller-mounted files; not public gateway, attachments, Office/WPS or full presentation acceptance."
+    }
+  },
+  "lifecycle": {
+    "record": {
+      "path": ".codex-work/http-mcp/lifecycle-03-results/report.json",
+      "byteLength": 932,
+      "sha256": "40a7651c3cd95dece883a00a35724e3e34c67f6a021eceff6f7646f1058ff56c"
+    },
+    "observations": {
+      "format": "musteroffice.http-mcp-lifecycle/1",
+      "status": "passed",
+      "binarySha256": "0f02ad43a6d84c1ffeadd1f4f31564568b5964d4b293e26c7d6fadaa206d3643",
+      "observations": [
+        {
+          "mode": "disconnect",
+          "workerStopped": true,
+          "privateFilesReleased": true,
+          "elapsedSeconds": 0.03195183305069804
+        },
+        {
+          "mode": "shutdown",
+          "workerStopped": true,
+          "privateFilesReleased": true,
+          "elapsedSeconds": 0.01823233300819993
+        },
+        {
+          "mode": "independent-requests",
+          "sameRpcId": true,
+          "activeWorkers": 2,
+          "isolatedCancellation": true
+        },
+        {
+          "mode": "admission",
+          "capacity": 8,
+          "overflowStatus": 429,
+          "slowBodyStatus": 408,
+          "slowBodyElapsedSeconds": 10.00324183399789,
+          "disconnectedSlotsRecovered": true
+        }
+      ],
+      "scope": "Loopback TCP on macOS with deliberately blocked child, not WAN or renderer performance."
+    }
+  },
+  "stdioRegression": {
+    "protocol": {
+      "path": ".codex-work/http-mcp/stdio-protocol-results/report.json",
+      "byteLength": 1469,
+      "sha256": "ed5f78c9634db3c4e7a21dec0332bf3736ab4c40d4fc34437223ae8e05eca57a"
+    },
+    "lifecycle": {
+      "path": ".codex-work/http-mcp/stdio-lifecycle-results/report.json",
+      "byteLength": 991,
+      "sha256": "bd132b9801b8ccb8cb94fd751591cb50b8237d8f96b8212ce8ad2c6c9c2a349c"
+    }
+  },
+  "binaries": [
+    {
+      "path": "tools/mo-mcp/target/debug/mo-mcp-http",
+      "byteLength": 42341360,
+      "sha256": "0f02ad43a6d84c1ffeadd1f4f31564568b5964d4b293e26c7d6fadaa206d3643"
+    },
+    {
+      "path": "tools/mo-mcp/target/debug/mo-mcp",
+      "byteLength": 35506808,
+      "sha256": "df7e8eb5bf45f6f18def1584723442d52cfa83b6658c62546a502832470977e7"
+    },
+    {
+      "path": "target/debug/mo-export-worker",
+      "byteLength": 38298336,
+      "sha256": "f46756532a3859f2ff4ea58e03e8e593f5c7e40c2f94e5f8fddaa6c74831b6a9"
+    }
+  ],
+  "binarySizeScope": "Development debug artifacts, not distribution or product bundle-size claims.",
+  "outputComparisons": {
+    "comparedAssetOccurrences": 72,
+    "entries": [
+      {
+        "entry": "http",
+        "version": "exported",
+        "assetCount": 12,
+        "byteIdentical": true,
+        "result": {
+          "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported/result.json",
+          "byteLength": 6355,
+          "sha256": "1629858351ff97f6c4307e29639285ad300e336a377d4e3c67726d0d6e3099b7"
+        },
+        "index": {
+          "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported/files.json",
+          "byteLength": 3318,
+          "sha256": "1e2e964afb019ae968e88d5c6464dbfccc48c1eff053f163677f387f258d6f3f"
+        },
+        "assets": [
+          {
+            "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported/asset-0000.bin",
+            "byteLength": 20032,
+            "sha256": "9a4ad7d6ac0822277d1cd87f93c685818174c70928bcaa25882ea8d87dbda66d"
+          },
+          {
+            "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported/asset-0001.bin",
+            "byteLength": 147,
+            "sha256": "3f76a9a5cae823017a1ddda66fe4cadf422e496bb0e6364ea5050dcac13afd82"
+          },
+          {
+            "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported/asset-0002.bin",
+            "byteLength": 1920,
+            "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+          },
+          {
+            "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported/asset-0003.bin",
+            "byteLength": 797,
+            "sha256": "9ed1d3c6874d012c168a25eaa5af58e68047116d811d7cf9cc32ef722892e0a0"
+          },
+          {
+            "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported/asset-0004.bin",
+            "byteLength": 1176,
+            "sha256": "0f5119d7dac31d299829342ff36995dc8744374641f95ede9542febb5445f364"
+          },
+          {
+            "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported/asset-0005.bin",
+            "byteLength": 2386,
+            "sha256": "79b8ab11c4cfdec5a027f2695abcc51b111338553530a4b0ab637ba4e4140cdd"
+          },
+          {
+            "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported/asset-0006.png",
+            "byteLength": 14915,
+            "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d"
+          },
+          {
+            "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported/asset-0007.bin",
+            "byteLength": 3222,
+            "sha256": "2eb1b25c80ed0f8c222269a197e9590d8202532d60192935ec71b13025f41637"
+          },
+          {
+            "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported/asset-0008.png",
+            "byteLength": 11174,
+            "sha256": "b347f37576dff5268f77cc7666066568d50e993ee690d3941c27693734acd0c9"
+          },
+          {
+            "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported/asset-0009.bin",
+            "byteLength": 2554,
+            "sha256": "82d01b39cc3907bf96ba5804da72b8e3b9f2523f95ddf97e64df66ee624a2e2e"
+          },
+          {
+            "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported/asset-0010.bin",
+            "byteLength": 745,
+            "sha256": "8ca3948f3ab0817a5871b47059e78ceed0493a81794861f4d6cd769bcaecc981"
+          },
+          {
+            "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported/asset-0011.pptx",
+            "byteLength": 10735,
+            "sha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5"
+          }
+        ]
+      },
+      {
+        "entry": "http",
+        "version": "exported-edited",
+        "assetCount": 12,
+        "byteIdentical": true,
+        "result": {
+          "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported-edited/result.json",
+          "byteLength": 6355,
+          "sha256": "1edb3c6e989442985bf12633a84893df93f5ad70e4384f49773b198bb8b87b42"
+        },
+        "index": {
+          "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported-edited/files.json",
+          "byteLength": 3318,
+          "sha256": "34ecf7082b71bba5ed91898ad8f24baf04c0200cf3798fb12c4844a467b70c94"
+        },
+        "assets": [
+          {
+            "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported-edited/asset-0000.bin",
+            "byteLength": 20034,
+            "sha256": "3c11432b5a853dff6d41326826644c1d0485dfd1fdd12f149f27fcc2e689a76c"
+          },
+          {
+            "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported-edited/asset-0001.bin",
+            "byteLength": 147,
+            "sha256": "3f76a9a5cae823017a1ddda66fe4cadf422e496bb0e6364ea5050dcac13afd82"
+          },
+          {
+            "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported-edited/asset-0002.bin",
+            "byteLength": 1920,
+            "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+          },
+          {
+            "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported-edited/asset-0003.bin",
+            "byteLength": 797,
+            "sha256": "9ed1d3c6874d012c168a25eaa5af58e68047116d811d7cf9cc32ef722892e0a0"
+          },
+          {
+            "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported-edited/asset-0004.bin",
+            "byteLength": 1176,
+            "sha256": "0f5119d7dac31d299829342ff36995dc8744374641f95ede9542febb5445f364"
+          },
+          {
+            "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported-edited/asset-0005.bin",
+            "byteLength": 2386,
+            "sha256": "cec21463da6df7e3c0b4b462a82f216fd4f884265fd6ed6a517be8de05c5d5d5"
+          },
+          {
+            "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported-edited/asset-0006.png",
+            "byteLength": 15138,
+            "sha256": "0472387c2f63a956202749f5fcb25fcdab00c9164b5a9ead9de9763137c46078"
+          },
+          {
+            "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported-edited/asset-0007.bin",
+            "byteLength": 3222,
+            "sha256": "e5fa36caa442f7d7221b4701171d2dbeb2543ae37d89e0cbf1f88d1a4ef13855"
+          },
+          {
+            "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported-edited/asset-0008.png",
+            "byteLength": 11174,
+            "sha256": "b347f37576dff5268f77cc7666066568d50e993ee690d3941c27693734acd0c9"
+          },
+          {
+            "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported-edited/asset-0009.bin",
+            "byteLength": 2554,
+            "sha256": "c17ee14f06b751edac1c630896c54223bdabf7a0d96b8286f6e749e02a180264"
+          },
+          {
+            "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported-edited/asset-0010.bin",
+            "byteLength": 745,
+            "sha256": "e3be353a77a0bd1905fac4a1691ef6ee5894bac5d0becaf617ce06dcd6490ced"
+          },
+          {
+            "path": ".codex-work/http-mcp/protocol-04-results/caller/output/exported-edited/asset-0011.pptx",
+            "byteLength": 10742,
+            "sha256": "a1545fba01e0941fb2bcac04a8787dcc0709ad9f2c3b21d2af343ecbaa3d41b6"
+          }
+        ]
+      },
+      {
+        "entry": "stdio-2025",
+        "version": "exported",
+        "assetCount": 12,
+        "byteIdentical": true,
+        "result": {
+          "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported/result.json",
+          "byteLength": 6355,
+          "sha256": "1629858351ff97f6c4307e29639285ad300e336a377d4e3c67726d0d6e3099b7"
+        },
+        "index": {
+          "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported/files.json",
+          "byteLength": 3318,
+          "sha256": "1e2e964afb019ae968e88d5c6464dbfccc48c1eff053f163677f387f258d6f3f"
+        },
+        "assets": [
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported/asset-0000.bin",
+            "byteLength": 20032,
+            "sha256": "9a4ad7d6ac0822277d1cd87f93c685818174c70928bcaa25882ea8d87dbda66d"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported/asset-0001.bin",
+            "byteLength": 147,
+            "sha256": "3f76a9a5cae823017a1ddda66fe4cadf422e496bb0e6364ea5050dcac13afd82"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported/asset-0002.bin",
+            "byteLength": 1920,
+            "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported/asset-0003.bin",
+            "byteLength": 797,
+            "sha256": "9ed1d3c6874d012c168a25eaa5af58e68047116d811d7cf9cc32ef722892e0a0"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported/asset-0004.bin",
+            "byteLength": 1176,
+            "sha256": "0f5119d7dac31d299829342ff36995dc8744374641f95ede9542febb5445f364"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported/asset-0005.bin",
+            "byteLength": 2386,
+            "sha256": "79b8ab11c4cfdec5a027f2695abcc51b111338553530a4b0ab637ba4e4140cdd"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported/asset-0006.png",
+            "byteLength": 14915,
+            "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported/asset-0007.bin",
+            "byteLength": 3222,
+            "sha256": "2eb1b25c80ed0f8c222269a197e9590d8202532d60192935ec71b13025f41637"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported/asset-0008.png",
+            "byteLength": 11174,
+            "sha256": "b347f37576dff5268f77cc7666066568d50e993ee690d3941c27693734acd0c9"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported/asset-0009.bin",
+            "byteLength": 2554,
+            "sha256": "82d01b39cc3907bf96ba5804da72b8e3b9f2523f95ddf97e64df66ee624a2e2e"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported/asset-0010.bin",
+            "byteLength": 745,
+            "sha256": "8ca3948f3ab0817a5871b47059e78ceed0493a81794861f4d6cd769bcaecc981"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported/asset-0011.pptx",
+            "byteLength": 10735,
+            "sha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5"
+          }
+        ]
+      },
+      {
+        "entry": "stdio-2025",
+        "version": "exported-edited",
+        "assetCount": 12,
+        "byteIdentical": true,
+        "result": {
+          "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported-edited/result.json",
+          "byteLength": 6355,
+          "sha256": "1edb3c6e989442985bf12633a84893df93f5ad70e4384f49773b198bb8b87b42"
+        },
+        "index": {
+          "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported-edited/files.json",
+          "byteLength": 3318,
+          "sha256": "34ecf7082b71bba5ed91898ad8f24baf04c0200cf3798fb12c4844a467b70c94"
+        },
+        "assets": [
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported-edited/asset-0000.bin",
+            "byteLength": 20034,
+            "sha256": "3c11432b5a853dff6d41326826644c1d0485dfd1fdd12f149f27fcc2e689a76c"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported-edited/asset-0001.bin",
+            "byteLength": 147,
+            "sha256": "3f76a9a5cae823017a1ddda66fe4cadf422e496bb0e6364ea5050dcac13afd82"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported-edited/asset-0002.bin",
+            "byteLength": 1920,
+            "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported-edited/asset-0003.bin",
+            "byteLength": 797,
+            "sha256": "9ed1d3c6874d012c168a25eaa5af58e68047116d811d7cf9cc32ef722892e0a0"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported-edited/asset-0004.bin",
+            "byteLength": 1176,
+            "sha256": "0f5119d7dac31d299829342ff36995dc8744374641f95ede9542febb5445f364"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported-edited/asset-0005.bin",
+            "byteLength": 2386,
+            "sha256": "cec21463da6df7e3c0b4b462a82f216fd4f884265fd6ed6a517be8de05c5d5d5"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported-edited/asset-0006.png",
+            "byteLength": 15138,
+            "sha256": "0472387c2f63a956202749f5fcb25fcdab00c9164b5a9ead9de9763137c46078"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported-edited/asset-0007.bin",
+            "byteLength": 3222,
+            "sha256": "e5fa36caa442f7d7221b4701171d2dbeb2543ae37d89e0cbf1f88d1a4ef13855"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported-edited/asset-0008.png",
+            "byteLength": 11174,
+            "sha256": "b347f37576dff5268f77cc7666066568d50e993ee690d3941c27693734acd0c9"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported-edited/asset-0009.bin",
+            "byteLength": 2554,
+            "sha256": "c17ee14f06b751edac1c630896c54223bdabf7a0d96b8286f6e749e02a180264"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported-edited/asset-0010.bin",
+            "byteLength": 745,
+            "sha256": "e3be353a77a0bd1905fac4a1691ef6ee5894bac5d0becaf617ce06dcd6490ced"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2025-11-25/output/exported-edited/asset-0011.pptx",
+            "byteLength": 10742,
+            "sha256": "a1545fba01e0941fb2bcac04a8787dcc0709ad9f2c3b21d2af343ecbaa3d41b6"
+          }
+        ]
+      },
+      {
+        "entry": "stdio-2026",
+        "version": "exported",
+        "assetCount": 12,
+        "byteIdentical": true,
+        "result": {
+          "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported/result.json",
+          "byteLength": 6355,
+          "sha256": "1629858351ff97f6c4307e29639285ad300e336a377d4e3c67726d0d6e3099b7"
+        },
+        "index": {
+          "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported/files.json",
+          "byteLength": 3318,
+          "sha256": "1e2e964afb019ae968e88d5c6464dbfccc48c1eff053f163677f387f258d6f3f"
+        },
+        "assets": [
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported/asset-0000.bin",
+            "byteLength": 20032,
+            "sha256": "9a4ad7d6ac0822277d1cd87f93c685818174c70928bcaa25882ea8d87dbda66d"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported/asset-0001.bin",
+            "byteLength": 147,
+            "sha256": "3f76a9a5cae823017a1ddda66fe4cadf422e496bb0e6364ea5050dcac13afd82"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported/asset-0002.bin",
+            "byteLength": 1920,
+            "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported/asset-0003.bin",
+            "byteLength": 797,
+            "sha256": "9ed1d3c6874d012c168a25eaa5af58e68047116d811d7cf9cc32ef722892e0a0"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported/asset-0004.bin",
+            "byteLength": 1176,
+            "sha256": "0f5119d7dac31d299829342ff36995dc8744374641f95ede9542febb5445f364"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported/asset-0005.bin",
+            "byteLength": 2386,
+            "sha256": "79b8ab11c4cfdec5a027f2695abcc51b111338553530a4b0ab637ba4e4140cdd"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported/asset-0006.png",
+            "byteLength": 14915,
+            "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported/asset-0007.bin",
+            "byteLength": 3222,
+            "sha256": "2eb1b25c80ed0f8c222269a197e9590d8202532d60192935ec71b13025f41637"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported/asset-0008.png",
+            "byteLength": 11174,
+            "sha256": "b347f37576dff5268f77cc7666066568d50e993ee690d3941c27693734acd0c9"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported/asset-0009.bin",
+            "byteLength": 2554,
+            "sha256": "82d01b39cc3907bf96ba5804da72b8e3b9f2523f95ddf97e64df66ee624a2e2e"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported/asset-0010.bin",
+            "byteLength": 745,
+            "sha256": "8ca3948f3ab0817a5871b47059e78ceed0493a81794861f4d6cd769bcaecc981"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported/asset-0011.pptx",
+            "byteLength": 10735,
+            "sha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5"
+          }
+        ]
+      },
+      {
+        "entry": "stdio-2026",
+        "version": "exported-edited",
+        "assetCount": 12,
+        "byteIdentical": true,
+        "result": {
+          "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported-edited/result.json",
+          "byteLength": 6355,
+          "sha256": "1edb3c6e989442985bf12633a84893df93f5ad70e4384f49773b198bb8b87b42"
+        },
+        "index": {
+          "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported-edited/files.json",
+          "byteLength": 3318,
+          "sha256": "34ecf7082b71bba5ed91898ad8f24baf04c0200cf3798fb12c4844a467b70c94"
+        },
+        "assets": [
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported-edited/asset-0000.bin",
+            "byteLength": 20034,
+            "sha256": "3c11432b5a853dff6d41326826644c1d0485dfd1fdd12f149f27fcc2e689a76c"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported-edited/asset-0001.bin",
+            "byteLength": 147,
+            "sha256": "3f76a9a5cae823017a1ddda66fe4cadf422e496bb0e6364ea5050dcac13afd82"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported-edited/asset-0002.bin",
+            "byteLength": 1920,
+            "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported-edited/asset-0003.bin",
+            "byteLength": 797,
+            "sha256": "9ed1d3c6874d012c168a25eaa5af58e68047116d811d7cf9cc32ef722892e0a0"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported-edited/asset-0004.bin",
+            "byteLength": 1176,
+            "sha256": "0f5119d7dac31d299829342ff36995dc8744374641f95ede9542febb5445f364"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported-edited/asset-0005.bin",
+            "byteLength": 2386,
+            "sha256": "cec21463da6df7e3c0b4b462a82f216fd4f884265fd6ed6a517be8de05c5d5d5"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported-edited/asset-0006.png",
+            "byteLength": 15138,
+            "sha256": "0472387c2f63a956202749f5fcb25fcdab00c9164b5a9ead9de9763137c46078"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported-edited/asset-0007.bin",
+            "byteLength": 3222,
+            "sha256": "e5fa36caa442f7d7221b4701171d2dbeb2543ae37d89e0cbf1f88d1a4ef13855"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported-edited/asset-0008.png",
+            "byteLength": 11174,
+            "sha256": "b347f37576dff5268f77cc7666066568d50e993ee690d3941c27693734acd0c9"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported-edited/asset-0009.bin",
+            "byteLength": 2554,
+            "sha256": "c17ee14f06b751edac1c630896c54223bdabf7a0d96b8286f6e749e02a180264"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported-edited/asset-0010.bin",
+            "byteLength": 745,
+            "sha256": "e3be353a77a0bd1905fac4a1691ef6ee5894bac5d0becaf617ce06dcd6490ced"
+          },
+          {
+            "path": ".codex-work/http-mcp/stdio-protocol-results/2026-07-28/output/exported-edited/asset-0011.pptx",
+            "byteLength": 10742,
+            "sha256": "a1545fba01e0941fb2bcac04a8787dcc0709ad9f2c3b21d2af343ecbaa3d41b6"
+          }
+        ]
+      }
+    ]
+  },
+  "failedAttempts": [
+    {
+      "name": "http-clippy-01",
+      "exitCode": 101,
+      "sourceUnchanged": true,
+      "record": {
+        "path": ".codex-work/http-mcp/http-clippy-01.json",
+        "byteLength": 191497,
+        "sha256": "c4f6ffa49bf369f9622a7beb65747d9c9f5fc3f6dc8558c8adc443cbf73cb556"
+      },
+      "log": {
+        "path": ".codex-work/http-mcp/http-clippy-01.log",
+        "byteLength": 5038,
+        "sha256": "1b810ddd930009884ea429430f52fd587c775319ab249acc27460dc221ca5f8f"
+      },
+      "resolution": "Redundant closure rejected by strict Clippy; fixed without behavior change."
+    },
+    {
+      "name": "http-build-02",
+      "exitCode": 101,
+      "sourceUnchanged": true,
+      "record": {
+        "path": ".codex-work/http-mcp/http-build-02.json",
+        "byteLength": 192095,
+        "sha256": "6a11fdd760de2b7f2c297fb65e7d9f10dcdfd4811699f17cfac076cccd20a770"
+      },
+      "log": {
+        "path": ".codex-work/http-mcp/http-build-02.log",
+        "byteLength": 1196,
+        "sha256": "f47081a77b1e308c3e7856d62bd93061d8bc8764967eb20f0aa19ee52464d31d"
+      },
+      "resolution": "Incorrect SDK initialize method type name; corrected to the actual exported type."
+    },
+    {
+      "name": "protocol-01",
+      "exitCode": 1,
+      "sourceUnchanged": true,
+      "record": {
+        "path": ".codex-work/http-mcp/protocol-01.json",
+        "byteLength": 229835,
+        "sha256": "8854cc0dda026e88a32282a37bff6f2fb239b0672031f9e096cbdc6cd74d28d5"
+      },
+      "log": {
+        "path": ".codex-work/http-mcp/protocol-01.log",
+        "byteLength": 399,
+        "sha256": "e7058296442c01d44a22bb8cd364df88811c282fd35f168ab0c523c30f0d0a77"
+      },
+      "resolution": "Independent client omitted required Mcp-Name resource URI header; client corrected."
+    },
+    {
+      "name": "protocol-02",
+      "exitCode": 1,
+      "sourceUnchanged": true,
+      "record": {
+        "path": ".codex-work/http-mcp/protocol-02.json",
+        "byteLength": 230047,
+        "sha256": "e6db93d52046059ea028764b3a007f3c9bbca4233a5a707afd932ef4309a14ff"
+      },
+      "log": {
+        "path": ".codex-work/http-mcp/protocol-02.log",
+        "byteLength": 1074,
+        "sha256": "09c34de58714dd97bfa778b6f092031fc6a517ef26bace4a6802ea453623d261"
+      },
+      "resolution": "SDK legacy initialize returned a success despite HTTP modern-only scope; explicitly reject handshake in handler."
+    },
+    {
+      "name": "protocol-03",
+      "exitCode": 1,
+      "sourceUnchanged": true,
+      "record": {
+        "path": ".codex-work/http-mcp/protocol-03.json",
+        "byteLength": 230259,
+        "sha256": "2a9f67063d24ecd9c8887a4e18088f8b83132815915b906815cbe58fb9d97bd5"
+      },
+      "log": {
+        "path": ".codex-work/http-mcp/protocol-03.log",
+        "byteLength": 723,
+        "sha256": "094cda00e84a0da84f25ca8963380fa8149f59d4cf7c6b80c467266199b02a44"
+      },
+      "resolution": "Checker applied modern HTTP error status to legacy initialize. Assert legacy HTTP 200 with -32022, no success result or session; modern inline unsupported version separately asserts 400."
+    },
+    {
+      "name": "lifecycle-01",
+      "exitCode": 1,
+      "sourceUnchanged": true,
+      "record": {
+        "path": ".codex-work/http-mcp/lifecycle-01.json",
+        "byteLength": 229769,
+        "sha256": "e92411ce277b3e9a1968b798f203e52ebd90cabfdffab986158e4f771b1924a5"
+      },
+      "log": {
+        "path": ".codex-work/http-mcp/lifecycle-01.log",
+        "byteLength": 227,
+        "sha256": "6ea1ebda702d0e29b1516d0330cb983c9e46ecd85aacbb4b2d09eeb8f5208dce"
+      },
+      "resolution": "Input deadline surfaced as SDK generic Body I/O 500. Adapter now retains typed input cause and returns 408/413/400; confirmed real TCP 408."
+    }
+  ],
+  "notRerun": [
+    "Unchanged core/Native-WASM suite",
+    "Full legacy persistent-host protocol suite",
+    "External Office/WPS",
+    "Musterwork integration",
+    "Native Windows lifecycle"
+  ],
+  "remaining": [
+    "Caller attachment bridge and public product gateway integration",
+    "Skill/Plugin installable packaging",
+    "Legacy HTTP lifecycle compatibility",
+    "Full first-phase presentation scope",
+    "Quality/performance/size and replacement acceptance"
+  ],
+  "finalChecks": {
+    "driverTests": {
+      "path": ".codex-work/http-mcp/driver-tests.json",
+      "byteLength": 905,
+      "sha256": "fb9ea42cb467c947d3f1d3e0af01dacacbf0a3e1fb0e33f45f0eb94ec2e9cc0e"
+    },
+    "documentedRequest": {
+      "path": ".codex-work/http-mcp/documented-example/report.json",
+      "byteLength": 8142,
+      "sha256": "1c4c0cb2bcd5566d11c48cdbd1ed10aee025275cd2546a504647316823620ced"
+    },
+    "markdownFilesChecked": 9,
+    "localLinksChecked": 536,
+    "sourceFilesWithin2000Lines": true,
+    "gitDiffCheck": true
+  }
+}
