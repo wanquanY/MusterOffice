@@ -69,6 +69,9 @@ def plan(groups, output, bindgen, python):
         add("mcp-clippy", "cargo", "clippy", *mcp, "--all-targets", *cargo, "--", "-D", "warnings")
         add("mcp-tests", "cargo", "test", *mcp, *cargo)
         add("mcp-build", "cargo", "build", *mcp, *cargo)
+        add("mcp-legacy-clippy", "cargo", "clippy", *mcp, "--features", "legacy-host", "--all-targets", *cargo, "--", "-D", "warnings")
+        add("mcp-legacy-tests", "cargo", "test", *mcp, "--features", "legacy-host", *cargo)
+        add("mcp-legacy-build", "cargo", "build", *mcp, "--features", "legacy-host", "--bin", "mo-mcp-legacy", *cargo)
     if "wasm" in groups:
         add("pure-operation-wasm", "cargo", "check", *cargo, "-p", "mo-presentation-operations", "--target", "wasm32-unknown-unknown")
         add("legacy-host-wasm", "cargo", "check", *cargo, "-p", "mo-host-compat-wasm", "--target", "wasm32-unknown-unknown")
@@ -76,7 +79,10 @@ def plan(groups, output, bindgen, python):
         add("wasm-bindgen", bindgen, "target/wasm32-unknown-unknown/release/mo_wasm.wasm", "--target", "nodejs", "--out-dir", output / "wasm")
         add("document-native-wasm-parity", "node", "tools/verification/native-wasm-parity.mjs", "target/debug/mo-cli", output / "wasm/mo_wasm.js")
     if "mcp-protocol" in groups:
-        binary = ROOT / "tools/mo-mcp/target/debug/mo-mcp"
+        thin = ROOT / "tools/mo-mcp/target/debug/mo-mcp"
+        add("mcp-computation", python, "tools/mo-mcp/compute_check.py", output / "mcp-computation", thin, ROOT / "target/debug/mo-export-worker")
+        add("mcp-computation-lifecycle", python, "tools/mo-mcp/compute_lifecycle.py", output / "mcp-computation-lifecycle", thin)
+        binary = ROOT / "tools/mo-mcp/target/debug/mo-mcp-legacy"
         add("mcp-protocol", python, "tools/mo-mcp/check.py", output / "mcp-protocol", binary, ROOT / "target/debug/mo-raster-worker")
         for suite in ("transport", "lifecycle", "cancellation"):
             add(f"mcp-{suite}", python, f"tools/mo-mcp/check_{suite}.py", output / f"mcp-{suite}", binary)

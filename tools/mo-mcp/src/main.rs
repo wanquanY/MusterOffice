@@ -1,5 +1,5 @@
 use mo_mcp::{
-    bridge::HostBridge, config::OperatorConfig, resources::ResourceSpace, server::OfficeServer,
+    compute::{Bridge, ComputeServer, Config},
     transport::BoundedTransport,
 };
 use rmcp::ServiceExt;
@@ -7,35 +7,34 @@ use std::{path::PathBuf, sync::Arc};
 mod stdio;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut args = std::env::args().skip(1);
-    let path = PathBuf::from(args.next().ok_or("usage: mo-mcp <operator-config.json> [append <upload-id> <offset> | read-asset <asset-id> <offset> <length>]")?);
-    let config = OperatorConfig::read(&path)?;
-    let remaining: Vec<_> = args.collect();
-    if !remaining.is_empty() {
-        return mo_mcp::channel::run(&config, &remaining);
-    }
-    let resources = ResourceSpace::new(&config.context());
-    let bridge = Arc::new(HostBridge::new(
-        config.start()?,
-        config.control_slots,
-        config.computation_slots,
-    )?);
-    let server = OfficeServer::new(bridge.clone(), resources)?;
+    let args: Vec<_> = std::env::args_os().skip(1).collect();
+    let config = match args.as_slice() {
+        [path] => Config::read(&PathBuf::from(path))?,
+        [mode, package, caller] if mode == "--package" =>
+            Config::from_package(&PathBuf::from(package), &PathBuf::from(caller))?,
+        _ => return Err("usage: mo-mcp <local-file-config.json> | mo-mcp --package <runtime.json> <caller-file-config.json>".into()),
+    };
+    let bridge = Arc::new(Bridge::new(&config)?);
+    let server = ComputeServer::new(bridge.clone());
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .max_blocking_threads(
-            config.control_slots + config.computation_slots + stdio::BLOCKING_THREADS,
+            config.control_slots() + config.computation_slots() + stdio::BLOCKING_THREADS,
         )
         .build()?;
     let result: Result<(), Box<dyn std::error::Error>> = runtime.block_on(async {
         let (input, output) = stdio::open()?;
         let (transport, observer) = BoundedTransport::new(input, output);
         let result = match server.serve(transport).await {
-            Ok(service) => service
-                .waiting()
-                .await
-                .map(|_| ())
-                .map_err(|e| e.to_string()),
+            Ok(service) => {
+                let waiting = service.waiting();
+                tokio::pin!(waiting);
+                let done = tokio::select! {
+                    done=&mut waiting=>done,
+                    _=observer.disconnected()=>{bridge.stop();waiting.await},
+                };
+                done.map(|_| ()).map_err(|e| e.to_string())
+            }
             Err(error) => Err(error.to_string()),
         };
         if let Some(error) = observer.error() {
@@ -43,13 +42,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         result.map_err(Into::into)
     });
-    // Drain accepted blocking control calls outside the event loop before
-    // joining native scheduler workers. Queued jobs remain in the database.
+    // EOF, transport failure or shutdown cancels real work before draining the
+    // blocking pool. There are no accepted jobs or internal database to resume.
+    bridge.stop();
     drop(runtime);
-    let shutdown = Arc::try_unwrap(bridge)
-        .map_err(|_| "MCP service retained a host reference")?
-        .shutdown();
-    result?;
-    shutdown?;
-    Ok(())
+    result
 }

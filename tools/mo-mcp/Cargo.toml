@@ -6,14 +6,32 @@ version = "0.1.0"
 edition = "2024"
 rust-version = "1.92"
 publish = false
+default-run = "mo-mcp"
+
+[features]
+default = []
+legacy-host = ["dep:mo-opc", "dep:mo-operation-service", "dep:mo-standard-host", "dep:mo-native-render", "dep:rusqlite"]
+
+[[bin]]
+name = "mo-mcp"
+path = "src/main.rs"
+
+[[bin]]
+name = "mo-mcp-legacy"
+path = "src/legacy_main.rs"
+required-features = ["legacy-host"]
 
 [dependencies]
+mo-embedded-sdk = { path = "../../crates/mo-embedded-sdk" }
+mo-native-compute = { path = "../../crates/mo-native-compute" }
+schemars = "=1.2.2"
+rusqlite = { version = "=0.40.2", default-features = false, features = ["bundled"], optional = true }
 mo-common = { path = "../../crates/mo-common" }
-mo-opc = { path = "../../crates/mo-opc" }
-mo-operation-service = { path = "../../crates/mo-operation-service" }
-mo-standard-host = { path = "../../crates/mo-standard-host" }
-mo-native-render = { path = "../../crates/mo-native-render" }
-rmcp = { version = "=3.4.0", default-features = false, features = ["server", "transport-io"] }
+mo-opc = { path = "../../crates/mo-opc", optional = true }
+mo-operation-service = { path = "../../crates/mo-operation-service", optional = true }
+mo-standard-host = { path = "../../crates/mo-standard-host", optional = true }
+mo-native-render = { path = "../../crates/mo-native-render", optional = true }
+rmcp = { version = "=3.4.1", default-features = false, features = ["server", "transport-io"] }
 tokio = { version = "=1.53.1", features = ["rt", "macros", "io-util", "time", "sync"] }
 tokio-util = { version = "=0.7.19", features = ["codec"] }
 futures = "=0.3.34"
@@ -27,9 +45,6 @@ tokio = { version = "=1.53.1", features = ["net"] }
 
 [target.'cfg(not(unix))'.dependencies]
 tokio = { version = "=1.53.1", features = ["io-std"] }
-
-[dev-dependencies]
-rusqlite = { version = "=0.40.2", default-features = false, features = ["bundled"] }
 
 [lints.rust]
 unsafe_code = "forbid"

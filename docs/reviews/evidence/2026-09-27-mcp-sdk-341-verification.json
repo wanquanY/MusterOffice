@@ -1,0 +1,287 @@
+{
+  "format": "musteroffice.mcp-sdk-patch-verification/1",
+  "date": "2026-09-27",
+  "scope": "Official rmcp 3.4.0 to 3.4.1 patch; existing local stdio only. Does not complete remote HTTP, Plugin, full presentation or product acceptance.",
+  "officialProtocol": {
+    "checkedLatest": "2026-07-28",
+    "source": "https://modelcontextprotocol.io/specification/latest",
+    "supported": [
+      "2026-07-28",
+      "2025-11-25"
+    ]
+  },
+  "sdk": {
+    "previous": "3.4.0",
+    "current": "3.4.1",
+    "release": "https://github.com/modelcontextprotocol/rust-sdk/releases/tag/rmcp-v3.4.1",
+    "component": {
+      "path": "components/rmcp/versions/3.4.1/component.json",
+      "byteLength": 1577,
+      "sha256": "c705f76ec4b2453a19e148716e54b14da6d01ec954921f340ba6855c05d678c7"
+    },
+    "archive": {
+      "path": ".codex-work/mcp-sdk-341/rmcp-3.4.1.crate",
+      "byteLength": 577980,
+      "sha256": "5b6317cd8c13e3ec9033cf2aa5aa92cd743f0f4f8a93cddc42ea0ae6ce3b8898"
+    },
+    "onlyLockPackageChanged": "rmcp",
+    "upstreamProductionSourceChanges": [
+      "src/transport/common/reqwest/streamable_http_client.rs",
+      "src/transport/streamable_http_client.rs"
+    ],
+    "upstreamDiff": {
+      "path": ".codex-work/mcp-sdk-341/upstream.diff",
+      "byteLength": 9503,
+      "sha256": "14653d74eff8ce386460d3a87bc12665b407c74cd1f286d9ece3210f248bea17"
+    },
+    "activeServerAndStdioSourceUnchanged": true,
+    "licenseUnchanged": true,
+    "license": {
+      "path": "components/rmcp/LICENSE-UPSTREAM.txt",
+      "byteLength": 12227,
+      "sha256": "0382b0057770ca05e9c350a50aa3b1c1fea84da0bc81d723bf00b9aa841be58a"
+    },
+    "licenseApiObservation": {
+      "path": ".codex-work/mcp-sdk-341/license-api.json",
+      "byteLength": 17931,
+      "sha256": "abcd441991ad1eef256f0f0ab3c9e34aeb4db9736c6d0187002ad9bb444381dc"
+    }
+  },
+  "gates": {
+    "sourceSha256": "79a50e43e7ebc665d82bf5d2509d584c7ecb23a23c4fe9af7e88c275a29384de",
+    "unchanged": true,
+    "steps": [
+      {
+        "name": "mcp-format",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/mcp-sdk-341/gates-01/mcp-format.log",
+          "byteLength": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "mcp-clippy",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/mcp-sdk-341/gates-01/mcp-clippy.log",
+          "byteLength": 185,
+          "sha256": "f3c709b5aa3f517b3b3a7cdb493d41b5c1f7ba9c7514b26faba2f636206a4e34"
+        }
+      },
+      {
+        "name": "mcp-tests",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/mcp-sdk-341/gates-01/mcp-tests.log",
+          "byteLength": 2232,
+          "sha256": "ceddb3f735ffffb9c3d43bd107d11899964888f79b4cc308e4af25b3c1157a6c"
+        }
+      },
+      {
+        "name": "mcp-build",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/mcp-sdk-341/gates-01/mcp-build.log",
+          "byteLength": 160,
+          "sha256": "0793a7a5b3e4491344491c1966f8ac8389b27818ec8b285c3667f9d282ca65e0"
+        }
+      },
+      {
+        "name": "mcp-legacy-clippy",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/mcp-sdk-341/gates-01/mcp-legacy-clippy.log",
+          "byteLength": 160,
+          "sha256": "5ad6f9bd562fd5496a10834e13dcd8ee938c5d3767ce2f06188dda7bf8f95c49"
+        }
+      },
+      {
+        "name": "mcp-legacy-tests",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/mcp-sdk-341/gates-01/mcp-legacy-tests.log",
+          "byteLength": 2519,
+          "sha256": "bd7652a9bc301886a793618561c54ebef379b01419458476cd74947853437f28"
+        }
+      },
+      {
+        "name": "mcp-legacy-build",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/mcp-sdk-341/gates-01/mcp-legacy-build.log",
+          "byteLength": 160,
+          "sha256": "bf84d3645af08e39ab3ff7da5d86736f7b584ae847213c848026862c8b937fd1"
+        }
+      }
+    ],
+    "defaultMcpTests": 17,
+    "legacyFeatureTests": 18,
+    "sharedTests": 17,
+    "scope": "MCP-only groups; core/WASM/global regression not repeated because their source and dependencies are unchanged from prior thin-MCP stage."
+  },
+  "additionalChecks": [
+    {
+      "name": "protocol",
+      "record": {
+        "path": ".codex-work/mcp-sdk-341/protocol.json",
+        "byteLength": 229059,
+        "sha256": "98bb4a6956a4492bdba6ab201cbfd46d2f367780ec2f4731442ad566b775a70d"
+      },
+      "log": {
+        "path": ".codex-work/mcp-sdk-341/protocol.log",
+        "byteLength": 717,
+        "sha256": "83a6758fa2783871f07a2813904e5f94c2204ad0e85da8567b2b25f273056cf6"
+      },
+      "exitCode": 0,
+      "inputsUnchanged": true
+    },
+    {
+      "name": "lifecycle",
+      "record": {
+        "path": ".codex-work/mcp-sdk-341/lifecycle.json",
+        "byteLength": 191067,
+        "sha256": "6e7fadcdee16fdab9349ed9a3a3e568ce492ccd139b8ba0c7f0c5f8977f18ae2"
+      },
+      "log": {
+        "path": ".codex-work/mcp-sdk-341/lifecycle.log",
+        "byteLength": 544,
+        "sha256": "6a92267458b39c9b382d7366c3c69a40516ee1b2460008728478c6d75d6459e9"
+      },
+      "exitCode": 0,
+      "inputsUnchanged": true
+    }
+  ],
+  "protocol": {
+    "format": "musteroffice.thin-mcp-files-check/1",
+    "status": "passed",
+    "binarySha256": "54489c424fc76ef6173aecd35caaa0b328fff2757fe9250fa9b07c32b8577be2",
+    "workerSha256": "f46756532a3859f2ff4ea58e03e8e593f5c7e40c2f94e5f8fddaa6c74831b6a9",
+    "observations": [
+      {
+        "protocol": "2025-11-25",
+        "calls": 66,
+        "exports": [
+          {
+            "name": "exported",
+            "pptxSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+            "assets": 12
+          },
+          {
+            "name": "exported-edited",
+            "pptxSha256": "a1545fba01e0941fb2bcac04a8787dcc0709ad9f2c3b21d2af343ecbaa3d41b6",
+            "assets": 12
+          }
+        ],
+        "largeBytes": 1048576
+      },
+      {
+        "protocol": "2026-07-28",
+        "calls": 65,
+        "exports": [
+          {
+            "name": "exported",
+            "pptxSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+            "assets": 12
+          },
+          {
+            "name": "exported-edited",
+            "pptxSha256": "a1545fba01e0941fb2bcac04a8787dcc0709ad9f2c3b21d2af343ecbaa3d41b6",
+            "assets": 12
+          }
+        ],
+        "largeBytes": 1048576
+      },
+      {
+        "protocol": "2025-11-25",
+        "concurrentBatches": 4,
+        "concurrentExports": 8
+      }
+    ],
+    "protocolOutputsByteIdentical": true,
+    "productCommitted": false,
+    "scope": "Local caller-file bridge only; no remote gateway, Office/WPS or full presentation acceptance."
+  },
+  "lifecycle": {
+    "format": "musteroffice.thin-mcp-lifecycle/1",
+    "status": "passed",
+    "binarySha256": "54489c424fc76ef6173aecd35caaa0b328fff2757fe9250fa9b07c32b8577be2",
+    "observations": [
+      {
+        "protocol": "2025-11-25",
+        "mode": "cancel",
+        "childStopped": true,
+        "privateFilesReleased": true,
+        "elapsedSeconds": 0.03335558297112584
+      },
+      {
+        "protocol": "2025-11-25",
+        "mode": "eof",
+        "childStopped": true,
+        "privateFilesReleased": true,
+        "elapsedSeconds": 0.03367316699586809
+      },
+      {
+        "protocol": "2026-07-28",
+        "mode": "cancel",
+        "childStopped": true,
+        "privateFilesReleased": true,
+        "elapsedSeconds": 0.03214408294297755
+      },
+      {
+        "protocol": "2026-07-28",
+        "mode": "eof",
+        "childStopped": true,
+        "privateFilesReleased": true,
+        "elapsedSeconds": 0.018755124881863594
+      }
+    ],
+    "scope": "macOS/Unix stdio test with deliberately blocked private worker, not renderer performance."
+  },
+  "outputsUnchanged": [
+    {
+      "protocol": "2025-11-25",
+      "version": "exported",
+      "assets": 12,
+      "resultsAndIndexIdentical": true
+    },
+    {
+      "protocol": "2025-11-25",
+      "version": "exported-edited",
+      "assets": 12,
+      "resultsAndIndexIdentical": true
+    },
+    {
+      "protocol": "2026-07-28",
+      "version": "exported",
+      "assets": 12,
+      "resultsAndIndexIdentical": true
+    },
+    {
+      "protocol": "2026-07-28",
+      "version": "exported-edited",
+      "assets": 12,
+      "resultsAndIndexIdentical": true
+    }
+  ],
+  "baseline": {
+    "path": ".codex-work/mcp-sdk-341/baseline.json",
+    "byteLength": 265906,
+    "sha256": "efe487e7e324562daf5a21a46831d6d62aedd7444b372ad6a70cea84a6a50430"
+  },
+  "unchangedScope": [
+    "root Cargo.toml and Cargo.lock",
+    "all existing crates, contracts and TS packages",
+    "existing MCP Rust implementation",
+    "existing component pins",
+    "prior tests and evidence"
+  ],
+  "limitations": [
+    "Version status is observed on 2026-09-27, not a perpetual latest-version promise.",
+    "Local MCP integration checks are not complete conformance certification or all external-client acceptance.",
+    "Streamable HTTP and caller attachment bridge remain in development; no new remote endpoint in this patch.",
+    "Plugin remains a platform-specific design without an installed and accepted package.",
+    "MusterOffice domain computation contracts remain draft; latest MCP version does not freeze or validate the full product API.",
+    "No new Office/WPS, complete advanced-content, installer size, release performance or Musterwork replacement acceptance."
+  ]
+}

@@ -43,6 +43,11 @@ pub struct Observer {
     stopped: CancellationToken,
 }
 impl Observer {
+    /// Connection termination is an execution-lifetime signal for the thin
+    /// adapter. Legacy durable hosts deliberately keep their old job semantics.
+    pub async fn disconnected(&self) {
+        self.stopped.cancelled().await;
+    }
     fn fail(&self, message: &'static str) {
         self.accounting.lock().unwrap().error.get_or_insert(message);
         self.stopped.cancel();
@@ -183,7 +188,10 @@ where
             let line = tokio::select! {
                 biased;
                 _ = self.observer.stopped.cancelled() => return None,
-                line = self.read.next() => line?,
+                line = self.read.next() => match line {
+                    Some(line) => line,
+                    None => { self.observer.stopped.cancel(); return None; }
+                },
             };
             let line = match line {
                 Ok(line) => line,

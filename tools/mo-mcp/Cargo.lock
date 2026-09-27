@@ -466,6 +466,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "mo-embedded-sdk"
+version = "0.1.0"
+dependencies = [
+ "mo-common",
+ "mo-native-export",
+ "mo-native-io",
+ "mo-opc",
+ "mo-presentation-delivery",
+ "mo-presentation-edit",
+ "mo-presentation-model",
+ "mo-presentation-operations",
+ "sha2",
+]
+
+[[package]]
 name = "mo-font"
 version = "0.1.0"
 dependencies = [
@@ -509,17 +524,49 @@ dependencies = [
  "base64",
  "futures",
  "mo-common",
+ "mo-embedded-sdk",
+ "mo-native-compute",
  "mo-native-render",
  "mo-opc",
  "mo-operation-service",
  "mo-standard-host",
  "rmcp",
  "rusqlite",
+ "schemars",
  "serde",
  "serde_json",
  "sha2",
  "tokio",
  "tokio-util",
+]
+
+[[package]]
+name = "mo-native-compute"
+version = "0.1.0"
+dependencies = [
+ "mo-embedded-sdk",
+ "rawzip",
+ "rustix",
+ "schemars",
+ "serde",
+ "serde_json",
+ "sha2",
+]
+
+[[package]]
+name = "mo-native-export"
+version = "0.1.0"
+dependencies = [
+ "mo-common",
+ "mo-native-io",
+ "mo-native-worker",
+ "mo-opc",
+ "mo-presentation-delivery",
+ "mo-presentation-edit",
+ "mo-presentation-operations",
+ "serde",
+ "serde_json",
+ "sha2",
 ]
 
 [[package]]
@@ -910,9 +957,9 @@ dependencies = [
 
 [[package]]
 name = "rmcp"
-version = "3.4.0"
+version = "3.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b23c62fe489ac1d401ab32688cfacac3737a8978dc3343e5361464c7724fd3cb"
+checksum = "5b6317cd8c13e3ec9033cf2aa5aa92cd743f0f4f8a93cddc42ea0ae6ce3b8898"
 dependencies = [
  "chrono",
  "futures",

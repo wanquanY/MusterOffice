@@ -1,127 +1,143 @@
-# Native MCP development adapter
+# MusterOffice computation MCP — development adapter
 
-This standalone Rust workspace connects standard MCP tools/resources to the
-existing native `StandardHost`. It is an implementation of the current draft
-operation contract, not a released SDK or a complete presentation acceptance.
-No MCP/Tokio dependency enters the computational workspace or WASM kernel.
+The default `mo-mcp` is a thin local computation adapter. It shares SDK execution
+and caller-file I/O with the CLI. It has no account, business authorization model,
+database, durable task service, document library or UI. Existing persistent-host
+code is available only through the separate [legacy entry](LEGACY.md).
 
-Build from the repository root:
+This is a source development build, not a published installable release or full
+presentation/Office/WPS acceptance. Remote transports, gateway attachments,
+Skill/Plugin packaging and remaining presentation capabilities are still open.
+
+The current dependency pin is official Rust SDK `rmcp 3.4.1`. The adapter
+advertises and independently tests MCP `2026-07-28` and `2025-11-25` over stdio.
+A current protocol version does not imply all optional extensions or installable
+Plugin support; see [version and acceptance status](../../docs/implementation/mcp-protocol-status.md).
+
+## Configure the caller's file channel
 
 ```sh
-cargo build --manifest-path tools/mo-mcp/Cargo.toml --release --locked
+cargo build --manifest-path tools/mo-mcp/Cargo.toml --release --locked --offline
 ```
 
-Configure the MCP client's server command as `tools/mo-mcp/target/release/mo-mcp`
-with `/absolute/path/operator.json` as its argument.
-
-The installation supplies a protected configuration file. Paths must be
-absolute; permissions have no implicit all-access default. For example:
+Set the MCP client's command to the built `mo-mcp` and pass one protected local
+configuration file. The host creates and owns the three directories first:
 
 ```json
 {
-  "database": "/absolute/path/office.sqlite",
-  "principal": "agent:example",
-  "scope": "workspace:example",
-  "permissions": ["create", "edit", "export", "readDocument", "readJob", "cancelJob", "writeAssets", "readAssets"],
-  "workers": 2,
-  "controlSlots": 2,
+  "inputDirectory": "/absolute/caller/inputs",
+  "outputDirectory": "/absolute/caller/outputs",
+  "temporaryDirectory": "/absolute/caller/temporary",
   "computationSlots": 2,
-  "previewWorker": {
-    "path": "/absolute/path/mo-raster-worker",
-    "sha256": "REPLACE_WITH_ACTUAL_WORKER_SHA256"
+  "controlSlots": 2,
+  "exportWorker": {
+    "path": "/absolute/caller/mo-export-worker",
+    "sha256": "REPLACE_WITH_ACTUAL_MATCHING_WORKER_SHA256"
   }
 }
 ```
 
-Omit `previewWorker` to run without export previews. The capability catalogue
-then reports the corresponding operation unavailable. Configuration paths,
-principal, scope and grants are never taken from tool arguments or resource URIs.
-Filesystem permissions protecting this file/database remain installation duties.
-On Unix, the MCP client must launch the server with stdin and stdout connected
-to pipes. Checked nonblocking pipe I/O owns those streams; terminal/regular-file
-server streams are rejected. The binary data subcommands retain ordinary file
-redirection. Windows still uses the previous development I/O implementation;
-its cancellable I/O and native lifecycle acceptance remain unfinished.
+The optional export worker is the matching pinned **export** worker, not the old
+raster-worker interface. Without it, create/import/edit still work; capabilities
+report no export renderer, and export requests return an explicit failure.
+The temporary tree must be separate from input/output trees. These directories
+and their ancestors remain protected and stable by the host throughout a call;
+active outputs must not be externally renamed or mutated. This is a local file
+bridge, not a sandbox against a hostile process controlling those directories.
+No root path comes from an Agent tool argument. Symbolic links/reparse points,
+path traversal, absolute paths and Windows device names are rejected in the
+bridge. File names are ASCII portable leaf names, at most 128 bytes, without
+trailing dots; subdirectories are not accepted as input names. A client without
+access to the caller's file/attachment channel cannot use this local profile;
+MusterOffice does not start an upload server to compensate.
 
-## Tools and resources
+The host also owns retention and crash recovery of final files. Temporary
+execution leases allow bounded recovery during subsequent computations. They
+do not constitute a persistent document/job store or a background service.
 
-The adapter provides 13 named tools projected from the Rust `HostRequest`
-contract. Create/apply/export carry `request` with its `requestId`, profile and
-typed action; other tools use the corresponding generated request fields. Their
-schemas and structured results use the same definitions as native dispatch.
-Tools are sorted and filtered by configured permissions. A job remains in the
-same SQLite owner across disconnect/reconnect; only `mo_jobs_cancel` requests
-business cancellation. An identical retry must retain its original `requestId`.
+## Tools
 
-`musteroffice://adapter/limits` distinguishes protocol budgets from larger host
-budgets. `musteroffice://kernel/schemas/<schema-id>` exposes ten canonical schema
-documents. Successful authorized asset/export results include resource links.
-Asset namespaces bind scope/principal within the originating server; IDs and
-hashes do not confer access. Every read goes through the host authorization.
+- `mo_capabilities`: actual adapter limits, available export renderer identity,
+  shared schema identifiers and explicitly incomplete presentation acceptance.
+- `mo_schema`: the Rust-generated computation schema document and digest.
+- `mo_presentations_compute`: create, import, atomic edit or export from caller
+  files; it invokes the same `mo-embedded-sdk::execute` as the CLI.
 
-Assets up to 1 MiB are returned as standard MCP base64 blobs after byte digest
-verification. Larger resources return JSON transfer descriptors. The same
-binary supports an operator-invoked data channel with exactly the configured
-permissions and database; binary bytes do not pass through model arguments:
+Prepare an invocation JSON using `computation-invocation`, and an input manifest
+of `{ "info": AssetInfo, "file": "resource.bin" }` entries. Each manifest file
+name resolves only inside the configured input directory. Empty resources use
+`[]`. The resource set must exactly match the request, with actual file length
+and SHA-256 checked while staging immutable inputs. Nothing follows PPTX external
+links or silently resolves fonts from the host operating system.
 
-```sh
-mo-mcp /absolute/path/operator.json append UPLOAD_ID OFFSET < authorized-input-chunk
-mo-mcp /absolute/path/operator.json read-asset ASSET_ID OFFSET LENGTH > candidate-output
+```json
+{
+  "invocationFile": "operation.json",
+  "inputsFile": "resources.json",
+  "outputDirectory": "new-result"
+}
 ```
 
-Append chunks are at most 256 KiB. After upload, call `mo_assets_seal`; after
-download, check process exit status, full length and SHA256 before publishing a
-file. A failed download can leave partial stdout. The protocol does not execute
-these commands itself or authorize arbitrary input/output paths.
+The output child directory must not exist. Successful structured output has
+`outcome: "computed"` and a correlated result containing `requestId`,
+`requestDigest`, `resultFile`, `resultByteLength`, `resultSha256`, `assets` and
+`productCommitted: false`. Results also include a standard MCP resource link.
+The actual computation receipt is in `result.json`; export additionally writes
+`files.json`, the verified PPTX/PNG/resource bytes and `inspection.json`.
+A failed operation sets MCP `isError: true` and returns the shared structured
+failure. Ordinary failure removes this call's incomplete output; it never
+replaces a previous result. Process termination or a lost response may leave
+caller-owned files, which are not evidence of a business publication.
 
-## Execution boundaries
+The adapter does not advertise Jobs or MCP Tasks. Each call completes, fails or
+is cancelled within its execution lifetime. Persistent retries, document head
+CAS, task recovery, user authority and publication remain product responsibilities.
 
-The current stdio profile bounds input lines to 4 MiB, serialized responses to
-16 MiB (excluding newline), active/unwritten requests to eight, and active
-notifications separately to eight. Each bridge pool allows 1–8 blocking host
-calls; native document jobs have their separate 1–16 worker budget. Unix pipe
-I/O needs no blocking worker. Non-Unix development stdio retains two additional
-blocking slots. Response writes have a ten-second deadline.
-These are individual limits, not a proof of peak RSS or a global multiprocess
-CPU budget. The catalogue/resource response costs are included in these limits.
+## Resources, cancellation and bounds
 
-An output permit remains held through flush. A cancelled stdio request remains
-accounted for while its handler lives; its ID is then retained against stale
-response aliasing, with a bounded history. Cancellation after response dispatch
-does not release an unwritten response. A dropped async waiter does not free its
-native permit early or undo a durable operation. Service exit drains blocking
-control calls and joins native workers; queued jobs remain stored.
+`musteroffice://output/{directory}/{file}` reads caller output files, without a
+library index or recursive listing. JSON full reads return text; binary reads
+return blobs. Full reads are limited to 256 KiB. Larger files use the native file
+channel or `?offset=0&length=262144` ranges. Range content is base64 bytes and
+includes actual offset, returned length, current total length and chunk SHA-256.
+The receiver checks the complete assembled file against its computation index;
+a chunk hash does not prove an old whole-file digest or product authority.
 
-Malformed UTF-8/JSON and invalid request/parameter envelopes receive standard
-bounded errors; valid notification envelopes never receive a response. One
-additional protocol-error slot waits for its complete write before reading the
-next input frame, and survives interruption of the SDK receive future. Oversize
-or unterminated frames, unsolicited responses, aliases of active/cancelled IDs,
-admission exhaustion and output failures terminate the connection with nonzero
-exit. Both supported stdio versions use client request cancellation; it does not
-cancel durable business work. HTTP transport, MCP Tasks, extension negotiation,
-broader client interoperability, Windows lifecycle guarantees, total resource
-budgets and distribution remain required work. This profile does not claim
-complete MCP conformance or E0-6 acceptance.
+Metadata invocations allow 65 MiB, with request/snapshot separately bounded by
+the shared 32 MiB budgets. Inputs retain existing 128 MiB per asset, 512 MiB total,
+32 MiB font and 1024-asset limits. MCP framing stays 4 MiB input/16 MiB response;
+large documents stay in the explicit file channel. Capability discovery reports
+these bounds separately. No claim of peak RSS or aggregate multiprocess disk
+reservation follows from them.
+
+Computation and resource-read pools each allow 1–8 active calls, without an
+unbounded admission queue. Cancellation reaches computation and staged file I/O.
+The blocking task keeps its permit and request identity until it has stopped
+and attempted cleanup; dropping the async handler does not free its slot early.
+EOF or transport failure immediately signals cancellation before protocol drain.
+Transient spool registry contention waits cooperatively within 60 seconds;
+cleanup has a separate bounded release window even after cancellation. Ordinary
+OS file I/O is not claimed to have a hard real-time bound. Exhausted cleanup
+bounds can leave lease-free orphans for the caller's next recovery attempt.
+
+On Unix, stdio must be pipes and uses the existing nonblocking transport. The
+Windows development fallback still requires native cancellable-I/O/lifecycle
+acceptance. Both pinned protocol profiles are tested separately; protocol version
+metadata and resource-not-found errors retain their respective wire behavior.
 
 ## Verification
 
 ```sh
-cargo test --manifest-path tools/mo-mcp/Cargo.toml --locked
-cargo clippy --manifest-path tools/mo-mcp/Cargo.toml --all-targets --locked -- -D warnings
-python3 tools/mo-mcp/check.py NEW_OUTPUT_DIR MO_MCP_BINARY MO_RASTER_WORKER
-python3 tools/mo-mcp/check_transport.py NEW_TRANSPORT_OUTPUT_DIR MO_MCP_BINARY
-python3 tools/mo-mcp/check_lifecycle.py NEW_LIFECYCLE_OUTPUT_DIR MO_MCP_BINARY
-python3 tools/mo-mcp/check_cancellation.py NEW_CANCELLATION_OUTPUT_DIR MO_MCP_BINARY
+cargo test --manifest-path tools/mo-mcp/Cargo.toml --locked --offline
+cargo clippy --manifest-path tools/mo-mcp/Cargo.toml --all-targets --locked --offline -- -D warnings
+python3 tools/mo-mcp/compute_check.py NEW_OUTPUT_DIR MO_MCP_BINARY MO_EXPORT_WORKER
+python3 tools/mo-mcp/compute_lifecycle.py NEW_LIFECYCLE_DIR MO_MCP_BINARY
 ```
 
-`check.py` uses independent stdio framing, JSON Schema checks, the self-owned
-two-page fixture, actual worker exports, resource/binary byte equality, SQLite
-inspection, reconnect and denied-scope checks. It requires Python `jsonschema`.
-Unit tests cover bounded queues, slow output, cancellation ordering and a real
-SQLite-blocked call whose async waiter disappears. Historical failure artifacts
-remain separate from later successful runs. The lifecycle client keeps stdin
-open while waiting for failed processes, and cancellation checks use actual SDK
-notifications while a SQLite lock holds a native call. See the
-[original implementation](../../docs/implementation/mcp-stdio.md) and
-[recovery and lifecycle record](../../docs/implementation/mcp-recovery.md).
+The independent protocol client checks both 2025-11-25 and 2026-07-28, real
+create/edit/import/export, output and resource byte equality, shared schemas,
+concurrent exports, file-scope negatives, large ranges and restart without a
+service database. Lifecycle checks use a deliberately blocked private worker
+for actual cancellation, EOF, slot retention and temporary cleanup; positive
+rendering uses the real worker separately. Historical legacy tests remain under
+[LEGACY](LEGACY.md), not relabelled as tests of the new default entry.
