@@ -8,6 +8,8 @@ use std::{
     thread,
     time::{Duration, Instant},
 };
+mod session;
+pub use session::{Session, SessionError};
 pub const CHUNK_BYTES: usize = 64 * 1024;
 
 /// One isolated document computation with bounded input and output queues.

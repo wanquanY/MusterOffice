@@ -62,6 +62,7 @@ def plan(groups, output, bindgen, python):
         add("native-build", "cargo", "build", *cargo, "-p", "mo-cli", "-p", "mo-host", "-p", "mo-raster-worker", "-p", "mo-export-worker")
     if "native" in groups:
         add("native-render-tests", "cargo", "test", *cargo, "-p", "mo-native-render", "--test", "delivery", "--", "--ignored", worker=True)
+        add("native-playback-tests", "cargo", "test", *cargo, "-p", "mo-native-render", "--test", "playback", "--", "--ignored", worker=True)
         add("native-host-export-tests", "cargo", "test", *cargo, "-p", "mo-standard-host", "--test", "exports", "--", "--ignored", worker=True)
         add("native-export-tests", "cargo", "test", *cargo, "-p", "mo-export-worker", worker=True)
         add("native-computation-cli-tests", "cargo", "test", *cargo, "-p", "mo-cli", "--test", "computation", "--", "--ignored", worker=True)

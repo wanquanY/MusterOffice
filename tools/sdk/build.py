@@ -131,9 +131,10 @@ def build(destination):
         for path in sorted((ROOT / 'components' / name).rglob('*')):
             if path.is_file() and path.name != 'README.md':
                 copy(path)
-    for path in sorted((ROOT / 'tools/sdk/example').rglob('*')):
-        if path.is_file():
-            copy(path, Path('examples/native-export') / path.relative_to(ROOT / 'tools/sdk/example'))
+    for directory, name in [('example', 'native-export'), ('playback-example', 'playback')]:
+        for path in sorted((ROOT / 'tools/sdk' / directory).rglob('*')):
+            if path.is_file():
+                copy(path, Path('examples') / name / path.relative_to(ROOT / 'tools/sdk' / directory))
     copy(ROOT / 'tools/sdk/README.md', Path('README.md'))
     copy(ROOT / 'tools/sdk/verify.py', Path('verify.py'))
     inputs |= {ROOT / 'Cargo.toml', ROOT / 'Cargo.lock', Path(__file__).resolve()}

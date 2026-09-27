@@ -21,6 +21,7 @@ class CurrentVerificationTests(unittest.TestCase):
         for name in ("rust-tests", "mcp-tests", "client-tests", "schemas", "document-native-wasm-parity", "native-host-export-tests", "mcp-cancellation", "mcp-http-tests", "mcp-http-protocol", "mcp-http-lifecycle", "mcp-all-features-clippy", "agent-package-tests", "mcp-agent-package"):
             self.assertIn(name, names)
         self.assertTrue(next(s for s in steps if s.name == "native-render-tests").worker)
+        self.assertTrue(next(s for s in steps if s.name == "native-playback-tests").worker)
         self.assertIn("--ignored", next(s for s in steps if s.name == "native-render-tests").argv)
 
     def test_protocol_selection_declares_its_build_dependencies(self):

@@ -1,0 +1,1125 @@
+{
+  "format": "musteroffice.native-playback-sdk-verification/1",
+  "date": "2026-09-27",
+  "status": "passed-scoped-development",
+  "scope": "Typed native access to existing retained author/source playback profiles. Not complete PPT playback, Office/WPS, product replacement, real cross-platform execution, release size or performance acceptance.",
+  "environment": {
+    "os": "Darwin",
+    "machine": "arm64",
+    "osVersion": "26.2",
+    "rustc": "rustc 1.92.0 (ded5c06cf 2025-12-08)",
+    "python": "3.13.0"
+  },
+  "boundary": {
+    "owns": "Bounded computation owner, native worker and transport thread; decoded/compiled immutable page resources in worker.",
+    "hostOwns": "Input authorization, protected executable, clocks/events/display/media, persistent results, tasks and publication.",
+    "noMusterworkChanges": true,
+    "noUserInstallationOrPublication": true,
+    "unchangedImplementationScopes": {
+      "components/": 151,
+      "contracts/": 120,
+      "packages/": 138,
+      "fixtures/": 30,
+      "integrations/": 8,
+      "crates/mo-kernel-api/": 66,
+      "crates/mo-presentation-model/": 12,
+      "crates/mo-presentation-compile/": 89,
+      "crates/mo-presentation-source/": 102,
+      "crates/mo-timeline/": 21,
+      "crates/mo-wasm/": 6,
+      "tools/mo-raster-worker/": 5
+    }
+  },
+  "sources": {
+    "baseline": {
+      "path": ".codex-work/sdk-playback/baseline.json",
+      "byteLength": 264803,
+      "sha256": "499bc36802d38addcae96a95cef964cc96f96ca5799df0096501c9322f1599ae"
+    },
+    "baselineFiles": 2216,
+    "changed": [
+      {
+        "path": "Cargo.lock",
+        "byteLength": 29690,
+        "sha256": "1af8ae39bd57aa70f184e0a6efda9eca571314531a34eb8840fbe8cb0f0476e6",
+        "previousSha256": "29002c631bd2ea75767b13377db8b8106d8ff37c1c1c38394c3b878d0b648502"
+      },
+      {
+        "path": "README.md",
+        "byteLength": 22643,
+        "sha256": "cb12dec10bd58bc335fb5e6f9780445173a7d1b9feebf339b4a436b33ac24a50",
+        "previousSha256": "98296423ae17e45419deef1623779be418fe6bf05c168fbb9c1c63c3bc6e70aa"
+      },
+      {
+        "path": "crates/mo-embedded-sdk/Cargo.toml",
+        "byteLength": 564,
+        "sha256": "ac48493dca7d5c61e6076e974a8b9ea4e0bc1df3bc6d62af295a22924262452e",
+        "previousSha256": "9f12ae21bb31bdc7b3b23e95a65c123101afad037df5a5153577c0eb2c2cf3ab"
+      },
+      {
+        "path": "crates/mo-embedded-sdk/src/lib.rs",
+        "byteLength": 863,
+        "sha256": "d8e39bce01071c5534167f3f89476af484000f65ddf22d537204062c631ed949",
+        "previousSha256": "55570e8059833434fde8a57022e670ec79cf54df373f40c0241fd53bfee161d3"
+      },
+      {
+        "path": "crates/mo-embedded-sdk/src/presentation.rs",
+        "byteLength": 6646,
+        "sha256": "fbebcf8973a5318cb90a0acee6fec504a37dfcf62b4911d0ed64343cc0f1da4a",
+        "previousSha256": "86abcdd381b6b637e4d0a8c62bfb0e2b4b119cee8ff9d94154baae232236734b"
+      },
+      {
+        "path": "crates/mo-native-render/Cargo.toml",
+        "byteLength": 687,
+        "sha256": "d89fd920cd737ab933ffa3513e2711d4035ca0869ce9fd49fff55328ff2353ce",
+        "previousSha256": "42e0973ccc04210660e09caab8a6c761fd2bdceb8a73af3848b53020f6a17176"
+      },
+      {
+        "path": "crates/mo-native-render/src/lib.rs",
+        "byteLength": 11806,
+        "sha256": "725c13b243cbaa1d5a55054a3134d864982a47b893a7b4ced36c4dac35ec5022",
+        "previousSha256": "a0c210469accdd9d9ee154b016bd4ec98e8bc8b08858837a87d36a1e2cb73601"
+      },
+      {
+        "path": "crates/mo-native-render/src/playback.rs",
+        "byteLength": 3767,
+        "sha256": "7c45fd1ef599e80fe91e5d3da8c8bf64227b4abbbeca0dce0c5ae0fec30569d2",
+        "previousSha256": null
+      },
+      {
+        "path": "crates/mo-native-render/src/playback/author.rs",
+        "byteLength": 5445,
+        "sha256": "5b40de87a746e85775ffd1b01cbca04a7246ab9274fbe9b7a0728c1caa089bae",
+        "previousSha256": null
+      },
+      {
+        "path": "crates/mo-native-render/src/playback/pipe.rs",
+        "byteLength": 7372,
+        "sha256": "f3e36e65dc97539f2319c46d539af7fc76fe47ae4283c61397aa87f0f9b1210a",
+        "previousSha256": null
+      },
+      {
+        "path": "crates/mo-native-render/src/playback/pipe/tests.rs",
+        "byteLength": 4292,
+        "sha256": "f61c61a126148a4a3ca8b5d5055fdc2de97e185f59927272a7b09c3dc03a4752",
+        "previousSha256": null
+      },
+      {
+        "path": "crates/mo-native-render/src/playback/source.rs",
+        "byteLength": 5794,
+        "sha256": "367ac11774861f681d0121788cd24e5f349452760ec52508c4123216123b09f2",
+        "previousSha256": null
+      },
+      {
+        "path": "crates/mo-native-render/tests/playback.rs",
+        "byteLength": 10069,
+        "sha256": "65a395571cfc55d27723705f34ba136a3dc79c5879fb78fc4fbbc487cf796e20",
+        "previousSha256": null
+      },
+      {
+        "path": "crates/mo-native-worker/src/lib.rs",
+        "byteLength": 7576,
+        "sha256": "c152c06e44d3c4761ec89867e680d7c743d9bc3c1e774852f8d76d9618120ab1",
+        "previousSha256": "d18b280f2d12643247a9711d9d2f9a8f0d6b658af70bb1f4fbc028206f3f0fcd"
+      },
+      {
+        "path": "crates/mo-native-worker/src/session.rs",
+        "byteLength": 9319,
+        "sha256": "10e978bcedbec52973ea69576b4f5335e82a191627b85fb51e3b9684bd3a19d1",
+        "previousSha256": null
+      },
+      {
+        "path": "crates/mo-native-worker/tests/session.rs",
+        "byteLength": 3997,
+        "sha256": "2be72b9b7bc0e97fec5d838e2b1dacde4d483a02cb83a27f81b173bbe0214ad1",
+        "previousSha256": null
+      },
+      {
+        "path": "docs/README.md",
+        "byteLength": 25749,
+        "sha256": "bda8a0d56d7ceb17b478f67e7e92c6351bc4bc52305579c1d867c9f07a7c9b88",
+        "previousSha256": "b769ffe41e5a040ad02b436f54ea3e050d609706c1d2039de495ac3d8f47090f"
+      },
+      {
+        "path": "docs/implementation/kernel-boundary-roadmap.md",
+        "byteLength": 3140,
+        "sha256": "633f08f9db1c5f2670b02451ab45dda44d82470dac49cf2e799d9edcc83d7b3c",
+        "previousSha256": "45a8415bee22959b90f595e749ab9fd759e310573db9ee6fc1a56dd00893b7cd"
+      },
+      {
+        "path": "docs/implementation/native-playback-sdk.md",
+        "byteLength": 7601,
+        "sha256": "e134d0075771b3f378c85c4f0926fe9fde044fd6a914da85fb6f76d961311cb1",
+        "previousSha256": null
+      },
+      {
+        "path": "docs/implementation/progress.md",
+        "byteLength": 99237,
+        "sha256": "54aa7c1bab6fd6118d1e5126238881e8ba95a6d75ee51adbb72f297a3b7d8d75",
+        "previousSha256": "7ac9e9c8f1f0ce5e8b1069474f82ec58cb6349d210d7559447320f45497817e7"
+      },
+      {
+        "path": "tools/mo-mcp/Cargo.lock",
+        "byteLength": 39063,
+        "sha256": "98382bc2404e021c3be9946ba44955b4aa2f4e4444ae08bf25ea9322dd03776a",
+        "previousSha256": "90f2da7c941d2274299ba7124bb29e120ad05001f983bb8c51f58b9b13c352d9"
+      },
+      {
+        "path": "tools/sdk/README.md",
+        "byteLength": 7946,
+        "sha256": "b440d06d4edc7abde1258d147712b4d8d28ebe2d08c22b8236150d3fa7e9fdd0",
+        "previousSha256": "e7d501bf695e7dfee68173612562e5bdf580c66f1d6de9040514534f8501810c"
+      },
+      {
+        "path": "tools/sdk/build.py",
+        "byteLength": 9760,
+        "sha256": "412a2fddc1dc05dd36499d5b04e055dfaf43b27ad61a1d6ea51b5e2163107058",
+        "previousSha256": "b6a465d2139f2f3d66f49934f4f15fb65cb3b20bb6eff0c09a13251ccc667bf4"
+      },
+      {
+        "path": "tools/sdk/playback-example/Cargo.toml",
+        "byteLength": 213,
+        "sha256": "2ccca7c90399a5b35df966f96a36e45525a0c2bf6a7d37884548bfab53ab8d72",
+        "previousSha256": null
+      },
+      {
+        "path": "tools/sdk/playback-example/src/main.rs",
+        "byteLength": 6159,
+        "sha256": "11450eb362227a54bc825d63c8922b670e8611177242828978f30c360ecd20b6",
+        "previousSha256": null
+      },
+      {
+        "path": "tools/verification/current.py",
+        "byteLength": 12319,
+        "sha256": "684f1ec64a90efb02f58506f4cd149300595afa0684f4398917052d8e0f746e0",
+        "previousSha256": "359960f979c70ca477355dfcf693ab4733638855e29f6087cc2318f6afde80bb"
+      },
+      {
+        "path": "tools/verification/sdk-playback-reference.py",
+        "byteLength": 5894,
+        "sha256": "8dc81666ba7fbbab1c94ddb4c5eac2a0677ac324dd8ce8446721d54d2a2ae439",
+        "previousSha256": null
+      },
+      {
+        "path": "tools/verification/test_current.py",
+        "byteLength": 2802,
+        "sha256": "c0c376b9b04f4b1d13bf61758624d3875f8d905d069fcc842c50dd295b065015",
+        "previousSha256": "b79bcc6cdde39be2bb85201c1a51f6654d4ced23b2fdd43b28ea215830c232e8"
+      }
+    ],
+    "sourceLines": {
+      "crates/mo-embedded-sdk/src/lib.rs": 19,
+      "crates/mo-embedded-sdk/src/presentation.rs": 181,
+      "crates/mo-native-render/src/lib.rs": 292,
+      "crates/mo-native-render/src/playback.rs": 106,
+      "crates/mo-native-render/src/playback/author.rs": 149,
+      "crates/mo-native-render/src/playback/pipe.rs": 209,
+      "crates/mo-native-render/src/playback/pipe/tests.rs": 121,
+      "crates/mo-native-render/src/playback/source.rs": 163,
+      "crates/mo-native-render/tests/playback.rs": 272,
+      "crates/mo-native-worker/src/lib.rs": 209,
+      "crates/mo-native-worker/src/session.rs": 258,
+      "crates/mo-native-worker/tests/session.rs": 125,
+      "tools/sdk/build.py": 191,
+      "tools/sdk/playback-example/src/main.rs": 143,
+      "tools/verification/current.py": 219,
+      "tools/verification/sdk-playback-reference.py": 107,
+      "tools/verification/test_current.py": 50
+    },
+    "localLinksChecked": 475,
+    "gitDiffCheck": "passed",
+    "evidenceAssembler": {
+      "path": ".codex-work/sdk-playback/assemble_evidence.py",
+      "byteLength": 11709,
+      "sha256": "7baadb3b0ae4bcc8fe15ff7165f2df3b28b9d4e3efb3099f47d21bd961b8bc05"
+    }
+  },
+  "sdk": {
+    "manifest": {
+      "path": ".codex-work/sdk-playback/sdk-03/sdk-manifest.json",
+      "byteLength": 207414,
+      "sha256": "c207047cd4f50b085b005b704d3afda5c8c45a5b93922abea0fb89ac26dd6c9a"
+    },
+    "archive": {
+      "path": ".codex-work/sdk-playback/sdk-03.tar.gz",
+      "byteLength": 808857,
+      "sha256": "74aa17382a07538022048ec096ba2817d298b15ea0f020a77743e02dc6090727"
+    },
+    "repeatedArchive": {
+      "path": ".codex-work/sdk-playback/sdk-repeat-03.tar.gz",
+      "byteLength": 808857,
+      "sha256": "74aa17382a07538022048ec096ba2817d298b15ea0f020a77743e02dc6090727"
+    },
+    "byteIdentical": true,
+    "files": 538,
+    "libraries": [
+      "mo-color",
+      "mo-common",
+      "mo-embedded-sdk",
+      "mo-font",
+      "mo-geometry",
+      "mo-image",
+      "mo-kernel-api",
+      "mo-native-export",
+      "mo-native-io",
+      "mo-native-render",
+      "mo-native-worker",
+      "mo-opc",
+      "mo-pptx",
+      "mo-presentation-compile",
+      "mo-presentation-delivery",
+      "mo-presentation-edit",
+      "mo-presentation-model",
+      "mo-presentation-operations",
+      "mo-presentation-source",
+      "mo-raster",
+      "mo-render",
+      "mo-text",
+      "mo-timeline",
+      "mo-unicode",
+      "mo-xml"
+    ],
+    "previousLibraries": 23,
+    "previousManifest": {
+      "path": ".codex-work/thin-mcp/sdk/sdk-manifest.json",
+      "byteLength": 184008,
+      "sha256": "34d1cd1472dbef0f7fbb6cabedd82e8c90aae59edb601bf264da25bfaeda62b7"
+    },
+    "registryPackageCount": 54,
+    "registryPackageVersionsAndLicenseDeclarationsUnchanged": true,
+    "newLibraries": [
+      "mo-kernel-api",
+      "mo-native-render"
+    ],
+    "sourceSizeIsNotRuntimeOrProductSize": true
+  },
+  "runtime": {
+    "worker": {
+      "path": "target/debug/mo-raster-worker",
+      "byteLength": 38147104,
+      "sha256": "0beeac29e7b3cd934408206d99ceab3f4947ef1bf417689bae392083784637b0"
+    },
+    "consumer": {
+      "path": "target/sdk-playback-consumer/debug/musteroffice-playback-example",
+      "byteLength": 21599888,
+      "sha256": "9cf5a5193af1235740f7af24c4a770c564ce48abf7e8ea9818d1b5545f2e12e4"
+    },
+    "consumerSource": {
+      "path": ".codex-work/sdk-playback/consumer-03/src/main.rs",
+      "byteLength": 6159,
+      "sha256": "11450eb362227a54bc825d63c8922b670e8611177242828978f30c360ecd20b6"
+    },
+    "consumerManifest": {
+      "path": ".codex-work/sdk-playback/consumer-03/Cargo.toml",
+      "byteLength": 285,
+      "sha256": "48ddf682cd14da806d7784b4489658cd236c428e9f10b6eb6610a96c6ecded53"
+    },
+    "consumerLock": {
+      "path": ".codex-work/sdk-playback/consumer-03/Cargo.lock",
+      "byteLength": 17071,
+      "sha256": "b6877048a8ac5012a30a09736a5c2ddee9171ddfd01a07e55a6bcaf6cd5497ec"
+    },
+    "dynamicLibraries": [
+      "/usr/lib/libiconv.2.dylib",
+      "/usr/lib/libSystem.B.dylib"
+    ],
+    "linuxAndWindows": "cargo check only, no target-platform process execution."
+  },
+  "verification": {
+    "firstWorkspace": {
+      "report": {
+        "path": ".codex-work/sdk-playback/workspace-01/report.json",
+        "byteLength": 14459,
+        "sha256": "828e0041ddfc675ce4fae115119fe6a170bbf702188414f9c0fe2b39a556ebdf"
+      },
+      "sourceSha256": "0d27098041b1e45b24fe01e1fc633358654c1473d6bbbd7d423fa54eb95cb3ca",
+      "sourceUnchanged": true,
+      "selectedGroups": [
+        "contracts",
+        "lint",
+        "mcp",
+        "native",
+        "rust",
+        "typescript"
+      ],
+      "notSelected": [
+        "mcp-protocol",
+        "wasm"
+      ],
+      "steps": [
+        {
+          "name": "verification-driver-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/verification-driver-tests.log",
+            "byteLength": 625,
+            "sha256": "91a17e33cff241976447ee093bf6ea18cff8a855fcd4492e3bf30665bbcb15f4"
+          }
+        },
+        {
+          "name": "agent-package-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/agent-package-tests.log",
+            "byteLength": 783,
+            "sha256": "0cbee72edb9be63e08c37c528d94adcd8ebc38003d5f9789bd7ceda5ef3bc6d2"
+          }
+        },
+        {
+          "name": "format",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/format.log",
+            "byteLength": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "name": "clippy",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/clippy.log",
+            "byteLength": 1321,
+            "sha256": "c05dca1a52405ff9729803e3d41854af1397c6e424de784cbf5944b973c933ee"
+          }
+        },
+        {
+          "name": "rust-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/rust-tests.log",
+            "byteLength": 113745,
+            "sha256": "8a797730a4f680d9f2ecd5b0b7d494f95b56cb480b9978a3cdd6cfa1436d8a8a"
+          },
+          "tests": {
+            "passed": 938,
+            "ignored": 23
+          }
+        },
+        {
+          "name": "schemas",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/schemas.log",
+            "byteLength": 7207,
+            "sha256": "ec41d5e8d13d7cbdc0f9f7590448d207c5b395da318efa2ceb06d256047c7267"
+          }
+        },
+        {
+          "name": "types",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/types.log",
+            "byteLength": 3997,
+            "sha256": "393bd61093452fa8220b0b52a2fabe0a5e6e9efff2656f5d92bab19633b6e07d"
+          }
+        },
+        {
+          "name": "client-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/client-tests.log",
+            "byteLength": 1903,
+            "sha256": "f8f545474ccc25df139920a4f3edfb264353ec113d9daaeb63c2b58c6565b6de"
+          }
+        },
+        {
+          "name": "native-build",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/native-build.log",
+            "byteLength": 685,
+            "sha256": "1446c026718b6992cb0f59e734aaff8b22815994a2a8ad78907ee0fffaaf4823"
+          }
+        },
+        {
+          "name": "native-render-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/native-render-tests.log",
+            "byteLength": 733,
+            "sha256": "709161153e73623fb4124bc46a886ff825c740a9c1eb714a71bf4ca52410f775"
+          },
+          "tests": {
+            "passed": 4,
+            "ignored": 0
+          },
+          "workers": {
+            "mo-raster-worker": {
+              "path": "target/debug/mo-raster-worker",
+              "sha256": "0beeac29e7b3cd934408206d99ceab3f4947ef1bf417689bae392083784637b0"
+            },
+            "mo-export-worker": {
+              "path": "target/debug/mo-export-worker",
+              "sha256": "50ea34d94657db5b7e9aefa04c3cc4bce46086d9cd2b13c6e1ff69d5204a68c9"
+            }
+          }
+        },
+        {
+          "name": "native-playback-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/native-playback-tests.log",
+            "byteLength": 632,
+            "sha256": "196e889b469d8c329a6b6d1440703829b833b3205864d01046a879112003bfc2"
+          },
+          "tests": {
+            "passed": 3,
+            "ignored": 0
+          },
+          "workers": {
+            "mo-raster-worker": {
+              "path": "target/debug/mo-raster-worker",
+              "sha256": "0beeac29e7b3cd934408206d99ceab3f4947ef1bf417689bae392083784637b0"
+            },
+            "mo-export-worker": {
+              "path": "target/debug/mo-export-worker",
+              "sha256": "50ea34d94657db5b7e9aefa04c3cc4bce46086d9cd2b13c6e1ff69d5204a68c9"
+            }
+          }
+        },
+        {
+          "name": "native-host-export-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/native-host-export-tests.log",
+            "byteLength": 1133,
+            "sha256": "7c3b952a74660ad372e9b83e5bcbd142b26d97a351e5ba2f4ac512154a81f0db"
+          },
+          "tests": {
+            "passed": 9,
+            "ignored": 0
+          },
+          "workers": {
+            "mo-raster-worker": {
+              "path": "target/debug/mo-raster-worker",
+              "sha256": "0beeac29e7b3cd934408206d99ceab3f4947ef1bf417689bae392083784637b0"
+            },
+            "mo-export-worker": {
+              "path": "target/debug/mo-export-worker",
+              "sha256": "50ea34d94657db5b7e9aefa04c3cc4bce46086d9cd2b13c6e1ff69d5204a68c9"
+            }
+          }
+        },
+        {
+          "name": "native-export-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/native-export-tests.log",
+            "byteLength": 1665,
+            "sha256": "0eb3c107fb7bbfdc8c8de296336e63ac897fbc11bd484ff8e75b7fc4c98701b9"
+          },
+          "tests": {
+            "passed": 12,
+            "ignored": 1
+          },
+          "workers": {
+            "mo-raster-worker": {
+              "path": "target/debug/mo-raster-worker",
+              "sha256": "0beeac29e7b3cd934408206d99ceab3f4947ef1bf417689bae392083784637b0"
+            },
+            "mo-export-worker": {
+              "path": "target/debug/mo-export-worker",
+              "sha256": "50ea34d94657db5b7e9aefa04c3cc4bce46086d9cd2b13c6e1ff69d5204a68c9"
+            }
+          }
+        },
+        {
+          "name": "native-computation-cli-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/native-computation-cli-tests.log",
+            "byteLength": 432,
+            "sha256": "ba58cc0cf3d373db0ebc1c9ea77aae72f79bdee7fb579de82f27a025566045e3"
+          },
+          "tests": {
+            "passed": 1,
+            "ignored": 0
+          },
+          "workers": {
+            "mo-raster-worker": {
+              "path": "target/debug/mo-raster-worker",
+              "sha256": "0beeac29e7b3cd934408206d99ceab3f4947ef1bf417689bae392083784637b0"
+            },
+            "mo-export-worker": {
+              "path": "target/debug/mo-export-worker",
+              "sha256": "50ea34d94657db5b7e9aefa04c3cc4bce46086d9cd2b13c6e1ff69d5204a68c9"
+            }
+          }
+        },
+        {
+          "name": "mcp-format",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/mcp-format.log",
+            "byteLength": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "name": "mcp-clippy",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/mcp-clippy.log",
+            "byteLength": 808,
+            "sha256": "1cd3196da51dd20bb5065d497b87f581fb46022c2cc40db98fd3affee9edaf5d"
+          }
+        },
+        {
+          "name": "mcp-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/mcp-tests.log",
+            "byteLength": 2855,
+            "sha256": "b13445f7d14c0aec38ce7bf96733e6cdc4d336a31a5dcfd2abd40cd6f2747087"
+          },
+          "tests": {
+            "passed": 17,
+            "ignored": 0
+          }
+        },
+        {
+          "name": "mcp-build",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/mcp-build.log",
+            "byteLength": 160,
+            "sha256": "7544d94c5c6c99b5514e8f2108d5dedee43c932a03550f5281336b4818174f0d"
+          }
+        },
+        {
+          "name": "mcp-legacy-clippy",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/mcp-legacy-clippy.log",
+            "byteLength": 160,
+            "sha256": "91b604ba4fb57ea67adc29d20f3b81593248edaf16f3bc3c75df817279e2e519"
+          }
+        },
+        {
+          "name": "mcp-legacy-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/mcp-legacy-tests.log",
+            "byteLength": 2519,
+            "sha256": "df2e58bb463e8d9840e1d48d6986f732e4f8749e7ba1587cdb28dac2e5490924"
+          },
+          "tests": {
+            "passed": 18,
+            "ignored": 0
+          }
+        },
+        {
+          "name": "mcp-legacy-build",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/mcp-legacy-build.log",
+            "byteLength": 160,
+            "sha256": "bf84d3645af08e39ab3ff7da5d86736f7b584ae847213c848026862c8b937fd1"
+          }
+        },
+        {
+          "name": "mcp-http-clippy",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/mcp-http-clippy.log",
+            "byteLength": 699,
+            "sha256": "5b4fcfe0a983e0bc7976544800a5b55ed3f9b4a0fed07c2fe5a18511b5935892"
+          }
+        },
+        {
+          "name": "mcp-http-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/mcp-http-tests.log",
+            "byteLength": 3314,
+            "sha256": "cbda89a2ecd2706f1b7c69e7c42ce801fa3ddaff0fececbd84b7e724ff72ac00"
+          },
+          "tests": {
+            "passed": 22,
+            "ignored": 0
+          }
+        },
+        {
+          "name": "mcp-http-build",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/mcp-http-build.log",
+            "byteLength": 160,
+            "sha256": "2a064d9bc0f4d8f7d8e2c0f0b7cbff31866c10ae9bfc9c5da2f25b0167e763ff"
+          }
+        },
+        {
+          "name": "mcp-all-features-clippy",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-01/mcp-all-features-clippy.log",
+            "byteLength": 160,
+            "sha256": "e0339f2f9601683d606fb6ebdba6d8535d066c4e8e69b7262ea7fa475ea6764b"
+          }
+        }
+      ]
+    },
+    "finalAffectedWorkspace": {
+      "report": {
+        "path": ".codex-work/sdk-playback/workspace-02/report.json",
+        "byteLength": 7816,
+        "sha256": "c4e7e632f8713611a209b7cf666deb10d516bca115fb2c513eb6cabbb6e71a81"
+      },
+      "sourceSha256": "ee2453a935a9f9e2fa4bf5ac777abb8c9740ab05f80ae0cfcc06aa2955e65ba9",
+      "sourceUnchanged": true,
+      "selectedGroups": [
+        "lint",
+        "native"
+      ],
+      "notSelected": [
+        "contracts",
+        "mcp",
+        "mcp-protocol",
+        "rust",
+        "typescript",
+        "wasm"
+      ],
+      "steps": [
+        {
+          "name": "verification-driver-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-02/verification-driver-tests.log",
+            "byteLength": 625,
+            "sha256": "c81c57c94e34ac4768207722c9b40ba4939d333961db211234f41aaed6e531be"
+          }
+        },
+        {
+          "name": "agent-package-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-02/agent-package-tests.log",
+            "byteLength": 783,
+            "sha256": "5de6f703cd395eb99f7ba052f9490613bd330491d63a1daee8c00f4556530064"
+          }
+        },
+        {
+          "name": "format",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-02/format.log",
+            "byteLength": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "name": "clippy",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-02/clippy.log",
+            "byteLength": 1266,
+            "sha256": "45f080c08b8c9e3d174fd941a259fdc4f6dbde642e147d039322fdaef1a4fd6c"
+          }
+        },
+        {
+          "name": "native-build",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-02/native-build.log",
+            "byteLength": 361,
+            "sha256": "56e64199be7268491cabf2f6be515d7d4b75af3bab00b5af29339c4944fde430"
+          }
+        },
+        {
+          "name": "native-render-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-02/native-render-tests.log",
+            "byteLength": 624,
+            "sha256": "c422e238a89b8fedf468e23ce3f721a86b8e4db0b49c967200179e5482fc6297"
+          },
+          "tests": {
+            "passed": 4,
+            "ignored": 0
+          },
+          "workers": {
+            "mo-raster-worker": {
+              "path": "target/debug/mo-raster-worker",
+              "sha256": "0beeac29e7b3cd934408206d99ceab3f4947ef1bf417689bae392083784637b0"
+            },
+            "mo-export-worker": {
+              "path": "target/debug/mo-export-worker",
+              "sha256": "50ea34d94657db5b7e9aefa04c3cc4bce46086d9cd2b13c6e1ff69d5204a68c9"
+            }
+          }
+        },
+        {
+          "name": "native-playback-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-02/native-playback-tests.log",
+            "byteLength": 523,
+            "sha256": "ce91418a1059ab957991e42e4e2200dfe4991c5053793df874db1ef4fce6ef3f"
+          },
+          "tests": {
+            "passed": 3,
+            "ignored": 0
+          },
+          "workers": {
+            "mo-raster-worker": {
+              "path": "target/debug/mo-raster-worker",
+              "sha256": "0beeac29e7b3cd934408206d99ceab3f4947ef1bf417689bae392083784637b0"
+            },
+            "mo-export-worker": {
+              "path": "target/debug/mo-export-worker",
+              "sha256": "50ea34d94657db5b7e9aefa04c3cc4bce46086d9cd2b13c6e1ff69d5204a68c9"
+            }
+          }
+        },
+        {
+          "name": "native-host-export-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-02/native-host-export-tests.log",
+            "byteLength": 1133,
+            "sha256": "97f407cd23a409c07d1d6a1a930b626281cf6347d6153a2b472755ec36d45778"
+          },
+          "tests": {
+            "passed": 9,
+            "ignored": 0
+          },
+          "workers": {
+            "mo-raster-worker": {
+              "path": "target/debug/mo-raster-worker",
+              "sha256": "0beeac29e7b3cd934408206d99ceab3f4947ef1bf417689bae392083784637b0"
+            },
+            "mo-export-worker": {
+              "path": "target/debug/mo-export-worker",
+              "sha256": "50ea34d94657db5b7e9aefa04c3cc4bce46086d9cd2b13c6e1ff69d5204a68c9"
+            }
+          }
+        },
+        {
+          "name": "native-export-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-02/native-export-tests.log",
+            "byteLength": 1665,
+            "sha256": "f46c1b06464750807cbe08f7fda8970b74f8994c0c240557e264e5e473991b5f"
+          },
+          "tests": {
+            "passed": 12,
+            "ignored": 1
+          },
+          "workers": {
+            "mo-raster-worker": {
+              "path": "target/debug/mo-raster-worker",
+              "sha256": "0beeac29e7b3cd934408206d99ceab3f4947ef1bf417689bae392083784637b0"
+            },
+            "mo-export-worker": {
+              "path": "target/debug/mo-export-worker",
+              "sha256": "50ea34d94657db5b7e9aefa04c3cc4bce46086d9cd2b13c6e1ff69d5204a68c9"
+            }
+          }
+        },
+        {
+          "name": "native-computation-cli-tests",
+          "status": "passed",
+          "log": {
+            "path": ".codex-work/sdk-playback/workspace-02/native-computation-cli-tests.log",
+            "byteLength": 432,
+            "sha256": "7fb7137580eaec1c964c84158618f545bc120976c63e436b9cac34dc006484e2"
+          },
+          "tests": {
+            "passed": 1,
+            "ignored": 0
+          },
+          "workers": {
+            "mo-raster-worker": {
+              "path": "target/debug/mo-raster-worker",
+              "sha256": "0beeac29e7b3cd934408206d99ceab3f4947ef1bf417689bae392083784637b0"
+            },
+            "mo-export-worker": {
+              "path": "target/debug/mo-export-worker",
+              "sha256": "50ea34d94657db5b7e9aefa04c3cc4bce46086d9cd2b13c6e1ff69d5204a68c9"
+            }
+          }
+        }
+      ]
+    },
+    "finalCorrectionPaths": [
+      "crates/mo-native-render/src/playback/author.rs",
+      "crates/mo-native-render/src/playback/source.rs",
+      "crates/mo-native-render/tests/playback.rs"
+    ],
+    "correctionScope": "Only two SDK response-time comparisons and their real-worker test inputs differ from the first workspace source identity; verified by reconstructing that identity.",
+    "finalTargetedTests": {
+      "passed": 22,
+      "ignored": 7
+    },
+    "commands": [
+      {
+        "name": "sdk-tests-03",
+        "record": {
+          "path": ".codex-work/sdk-playback/sdk-tests-03.json",
+          "byteLength": 6261,
+          "sha256": "9b5e2ae3d834362fe4b203dadb1d10f61818c16f434b705011e4ef33c9b839ee"
+        },
+        "log": {
+          "path": ".codex-work/sdk-playback/sdk-tests-03.log",
+          "byteLength": 5211,
+          "sha256": "6657b0a3610239e66b86974156aa8a2f064c4edce2fc634c2d2d013d42c787d9"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      {
+        "name": "sdk-build-03",
+        "record": {
+          "path": ".codex-work/sdk-playback/sdk-build-03.json",
+          "byteLength": 187584,
+          "sha256": "16655460608033e93154b684a2624b865f4ce3f6f8da58fa71dcca1ff0f4d0af"
+        },
+        "log": {
+          "path": ".codex-work/sdk-playback/sdk-build-03.log",
+          "byteLength": 199,
+          "sha256": "f3903741de55d8bda5b773b5d6c3e4de5a87388932d7bdaf7873bd98b3857262"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      {
+        "name": "sdk-repeat-03",
+        "record": {
+          "path": ".codex-work/sdk-playback/sdk-repeat-03.json",
+          "byteLength": 187598,
+          "sha256": "0b784f6487c806d2296f30347881d221c0e7492eb21ae456638d43db144dbc78"
+        },
+        "log": {
+          "path": ".codex-work/sdk-playback/sdk-repeat-03.log",
+          "byteLength": 199,
+          "sha256": "f3903741de55d8bda5b773b5d6c3e4de5a87388932d7bdaf7873bd98b3857262"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      {
+        "name": "consumer-build-03",
+        "record": {
+          "path": ".codex-work/sdk-playback/consumer-build-03.json",
+          "byteLength": 163731,
+          "sha256": "7222b2e6d6b41040afaeb383630fc41b7b36f6ea5a185f63bc7c0904f6810c0a"
+        },
+        "log": {
+          "path": ".codex-work/sdk-playback/consumer-build-03.log",
+          "byteLength": 3597,
+          "sha256": "cde4258bafe418c12f4a4d8b515c8517234221f29ad3b4b92b78f9e78e364f4d"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      {
+        "name": "consumer-clippy-01",
+        "record": {
+          "path": ".codex-work/sdk-playback/consumer-clippy-01.json",
+          "byteLength": 163769,
+          "sha256": "49b7a17922e3037f07d1df7900a7b3188fc21f0324ce03ddbe9eebda5a4fdf19"
+        },
+        "log": {
+          "path": ".codex-work/sdk-playback/consumer-clippy-01.log",
+          "byteLength": 4768,
+          "sha256": "47fd948f79357b5478c302c59b90d8f0a629b3386fab3d2c60c5e2d743b42ffb"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      {
+        "name": "consumer-linux-01",
+        "record": {
+          "path": ".codex-work/sdk-playback/consumer-linux-01.json",
+          "byteLength": 163781,
+          "sha256": "2beca58e5fac7f971c05fe12985dee256b355694fc7fc1cc1aedae8840ac9384"
+        },
+        "log": {
+          "path": ".codex-work/sdk-playback/consumer-linux-01.log",
+          "byteLength": 5154,
+          "sha256": "43a7f50aed82b132584b1c4e81e8f715b86f7779e59081e79db9873618643bb9"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      {
+        "name": "consumer-windows-01",
+        "record": {
+          "path": ".codex-work/sdk-playback/consumer-windows-01.json",
+          "byteLength": 163777,
+          "sha256": "62ce15640cc2f0a92fa733903540d9e8cb4ff31140f4538e1b7ebd55d2e71515"
+        },
+        "log": {
+          "path": ".codex-work/sdk-playback/consumer-windows-01.log",
+          "byteLength": 4657,
+          "sha256": "1bb2ab87bee0abc3b26548f0c687dacd9296280f9be1f811198b99c15d9952c0"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      {
+        "name": "consumer-dynamic-libs-01",
+        "record": {
+          "path": ".codex-work/sdk-playback/consumer-dynamic-libs-01.json",
+          "byteLength": 708,
+          "sha256": "d9ded25eb737cd52c912bcb52d23387544f4891685fcf5cca94e71ebb0ea5a73"
+        },
+        "log": {
+          "path": ".codex-work/sdk-playback/consumer-dynamic-libs-01.log",
+          "byteLength": 230,
+          "sha256": "8b353b452144bdaaebf90b8eb32da1ecee5f1d43b1f6217ae3a7e5b7727ef78c"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      },
+      {
+        "name": "reference-02",
+        "record": {
+          "path": ".codex-work/sdk-playback/reference-02.json",
+          "byteLength": 165445,
+          "sha256": "f50295e5e53774b6c1a5a602270cd0df738a47a91ae6aca362243c04d0ff4ea2"
+        },
+        "log": {
+          "path": ".codex-work/sdk-playback/reference-02.log",
+          "byteLength": 49,
+          "sha256": "0bbd3c9d931fb6aad456db1e34b0810d79fce479022e9cded426341c54d05181"
+        },
+        "exitCode": 0,
+        "sourceUnchanged": true
+      }
+    ],
+    "historicalFrames": {
+      "report": {
+        "path": ".codex-work/sdk-playback/reference-02/report.json",
+        "byteLength": 43106,
+        "sha256": "7142ff272499bd0a8966e0004ff4ecf3994951c4b134505706e65e78a8f811f4"
+      },
+      "families": {
+        "author": {
+          "owners": 4,
+          "frames": 34
+        },
+        "source": {
+          "owners": 6,
+          "frames": 37
+        }
+      },
+      "totalFrames": 71,
+      "workerAndConsumerAndInputsUnchanged": true,
+      "fullPixelsIdentical": true,
+      "sourcePerSampleTextComponentCalls": 0,
+      "sourcePerSampleFontUploadBytes": 0,
+      "sourcePerSampleGatherCopyBytes": 0
+    },
+    "realWorkerCases": {
+      "authorOneShotComparisons": 9,
+      "sourceOneShotComparisons": 6,
+      "sourceReadersReleasedBeforeFirstFrame": true,
+      "semanticFailurePreservesOwner": true,
+      "generationAboveJsSafeInteger": true,
+      "cancellationPermanentlyStopsOwner": true
+    },
+    "ordinaryIgnored": [
+      "test direct_cli_exports_verified_pptx_and_previews_with_no_database ... ignored, requires a pinned actual export worker; explicitly run by native verification",
+      "test recovery::owner_helper ... ignored, subprocess owner; exercised by real-worker recovery test",
+      "test execution::tests::process_helper ... ignored, subprocess entry; invoked by crash-recovery tests",
+      "test actual_two_page_delivery_and_hidden_page_cover_every_bound_artifact ... ignored, requires MO_DELIVERY_WORKER and its explicitly verified SHA256",
+      "test batch::direct_author_batch_transfers_resources_once_and_matches_native_source_rendering ... ignored, requires pinned MO_DELIVERY_WORKER and SHA256",
+      "test batch::retained_revision_renders_directly_and_delivery_evidence_binds_original_and_output ... ignored, requires pinned MO_DELIVERY_WORKER and SHA256",
+      "test failed_or_mismatched_components_never_return_a_complete_candidate ... ignored, requires MO_DELIVERY_WORKER and its explicitly verified SHA256",
+      "test author_animation_matches_one_shot_and_generation_failures_do_not_damage_owner ... ignored, requires explicitly pinned MO_DELIVERY_WORKER",
+      "test cancellation_invalidates_the_owner_and_configuration_rejects_wrong_worker ... ignored, requires explicitly pinned MO_DELIVERY_WORKER",
+      "test source_resources_survive_input_release_and_match_actual_one_shot_pixels ... ignored, requires explicitly pinned MO_DELIVERY_WORKER",
+      "test process_worker ... ignored, invoked as a disposable child by killed_worker test",
+      "test cancellation_and_expiry_win_before_publication_and_revoke_private_readers ... ignored, requires pinned MO_DELIVERY_WORKER and SHA256",
+      "test historical_revision_and_repeat_exports_preserve_head_and_reuse_public_bytes ... ignored, requires pinned MO_DELIVERY_WORKER and SHA256",
+      "test invalid_bindings_and_real_page_failure_produce_no_public_assets ... ignored, requires pinned MO_DELIVERY_WORKER and SHA256",
+      "test publication_sql_failure_rolls_back_assets_state_and_receipt_together ... ignored, requires pinned MO_DELIVERY_WORKER and SHA256",
+      "test real_export_publishes_all_assets_atomically_and_reopens_without_renderer ... ignored, requires pinned MO_DELIVERY_WORKER and SHA256",
+      "test renewal_during_computation_preserves_outputs_without_reviving_cancelled_or_expired_work ... ignored, requires pinned MO_DELIVERY_WORKER and SHA256",
+      "test runtime::busy_real_renderer_keeps_control_available_and_sync_inside_worker_budget ... ignored, requires pinned MO_DELIVERY_WORKER and SHA256",
+      "test smaller_host_asset_budget_is_shared_by_discovery_and_actual_export ... ignored, requires pinned MO_DELIVERY_WORKER and SHA256",
+      "test wrong_request_candidate_and_changed_permission_never_publish ... ignored, requires pinned MO_DELIVERY_WORKER and SHA256",
+      "test verifier_child ... ignored, test-only subprocess entry, executed and killed by parent test",
+      "test result_child ... ignored, subprocess entry, executed and killed in both phases by parent test",
+      "test crash::scheduler_child ... ignored, subprocess entry, executed and killed by parent"
+    ],
+    "ignoreExplanation": "23 first-workspace ignored entries: 17 actual external-worker tests explicitly run in native gates (4 render, 3 playback, 9 host export, 1 CLI); six subprocess helpers invoked by parent tests. Native export 12 tests overlap ordinary workspace. Final targeted 7 ignores are the 4 render + 3 playback explicitly run in final native gates.",
+    "overlap": "4 new transport tests and 4 new frame checks are already included in ordinary Rust and targeted totals; three MCP feature totals overlap. No aggregate distinct-test total is claimed."
+  },
+  "preservedFailures": [
+    {
+      "name": "sdk-check-01",
+      "record": {
+        "path": ".codex-work/sdk-playback/sdk-check-01.json",
+        "byteLength": 5504,
+        "sha256": "cd6c3e0763e1768a917b176d97f7245d5e722b6c12447f84fd4a9933512c0357"
+      },
+      "log": {
+        "path": ".codex-work/sdk-playback/sdk-check-01.log",
+        "byteLength": 1103,
+        "sha256": "0fcc3087b781a27632fd1b95b53d412fc40442233c418a79e601f0ab82dc0187"
+      },
+      "exitCode": 101,
+      "reason": "Empty reader array did not implement ReaderAt; fixed to a borrowed empty slice."
+    },
+    {
+      "name": "actual-playback-01",
+      "record": {
+        "path": ".codex-work/sdk-playback/actual-playback-01.json",
+        "byteLength": 11581,
+        "sha256": "517b7a5456903c07604b469c5d0cfbc2063903f6e567e792ee97b85fbdf0ff9f"
+      },
+      "log": {
+        "path": ".codex-work/sdk-playback/actual-playback-01.log",
+        "byteLength": 1444,
+        "sha256": "e9ece64490342c94eeb9e6178a453970e3c7fbc9f6daae9c99f809a8ea214988"
+      },
+      "exitCode": 101,
+      "reason": "Source fixture viewport scale did not match its page; corrected fixture scale."
+    },
+    {
+      "name": "actual-playback-02",
+      "record": {
+        "path": ".codex-work/sdk-playback/actual-playback-02.json",
+        "byteLength": 11582,
+        "sha256": "d9282241465d00d3975015309804b3e460dec00c1966c71ab98483475b380f19"
+      },
+      "log": {
+        "path": ".codex-work/sdk-playback/actual-playback-02.log",
+        "byteLength": 1239,
+        "sha256": "800dd81a0ef3c75275c1c696c55f41c6cddd9007b87ab6ececfcf861466fa6d3"
+      },
+      "exitCode": 101,
+      "reason": "SDK accepted only base raster profile; corrected using core accepts_profile registry and resource mode."
+    },
+    {
+      "name": "reference-01",
+      "record": {
+        "path": ".codex-work/sdk-playback/reference-01.json",
+        "byteLength": 165444,
+        "sha256": "d5a59ddcffe5a4179b574237ea81acfea43b05da07f5d0e583a986f451ed79fa"
+      },
+      "log": {
+        "path": ".codex-work/sdk-playback/reference-01.log",
+        "byteLength": 534,
+        "sha256": "e05e5cdda108db48cffa9ed43c5a3b6bb30e810043d6e9f9840ae9d32a20de4b"
+      },
+      "exitCode": 1,
+      "reason": "SDK compared rational wire fields to normalized output; fixed both samplers using core normalized time and added alias samples."
+    }
+  ],
+  "notRerun": [
+    "WASM/core Native-WASM parity and C++ sanitizers: computation, binding sources and components unchanged.",
+    "External stdio/HTTP/installed-plugin lifecycle: no adapter/protocol implementation changed; relevant feature compile/test gates passed before only local response-time correction.",
+    "Full root Rust/MCP after final correction: verified three-file change scope, reran affected libraries, real native paths and global strict Clippy."
+  ],
+  "pending": [
+    "Full effects/containers/transitions/Morph/media/SmartArt/math and other committed presentation capabilities.",
+    "Complete high-level Node/WASM rendering and playback SDK.",
+    "Musterwork public SDK integration, product Viewer/Player and all replacement gates.",
+    "Office/WPS visual/editable roundtrip, real fonts/corpus, platform runtime, release license closure, size/RSS/performance evidence."
+  ]
+}

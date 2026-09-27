@@ -1,5 +1,5 @@
 use crate::{NativeExportCandidate, NativeExporter};
-use mo_common::{DocumentId, RequestId, ResourceId};
+use mo_common::{DocumentId, PlaybackSessionId, RequestId, ResourceId, SlideId};
 use mo_presentation_delivery::DeliverySettings;
 use mo_presentation_edit::{OperationEntry, Snapshot, SnapshotRecord};
 use mo_presentation_model::{Document, ValidationLimits};
@@ -21,6 +21,17 @@ pub struct ExportOptions {
     pub delivery: DeliverySettings,
     pub resources: Vec<AssetBinding>,
     pub font_asset_id: Option<AssetId>,
+}
+
+/// Author-page selection; the SDK binds this presentation's exact revision.
+/// Source/imported pages use `playback::NativePlayback::prepare_source` with
+/// explicit native source/font content instead of silently flattening them.
+pub struct PlaybackOptions {
+    pub session: PlaybackSessionId,
+    pub generation: crate::playback::PlaybackGeneration,
+    pub slide: SlideId,
+    pub viewport: crate::playback::RasterViewport,
+    pub defaults: crate::playback::PagePaintDefaults,
 }
 
 impl Presentation {
@@ -87,6 +98,28 @@ impl Presentation {
     }
     pub fn into_snapshot(self) -> SnapshotRecord {
         self.snapshot
+    }
+
+    pub fn prepare_author_playback(
+        &self,
+        runtime: &crate::playback::NativePlayback,
+        options: PlaybackOptions,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<crate::playback::AuthorPlayback, crate::playback::Error> {
+        runtime.prepare_author(
+            crate::playback::PlaybackPrepareRequest {
+                snapshot: self.snapshot.clone(),
+                slide: options.slide,
+                binding: crate::playback::PlaybackBinding {
+                    session: options.session,
+                    revision: self.snapshot.revision.clone(),
+                    generation: options.generation,
+                },
+                viewport: options.viewport,
+                defaults: options.defaults,
+            },
+            cancelled,
+        )
     }
 
     /// An all-or-nothing edit of this value. The caller owns retries and any

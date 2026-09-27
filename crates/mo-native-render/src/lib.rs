@@ -1,5 +1,6 @@
 //! Isolated native previews from explicit bytes. Only the trusted operator
 //! configures the worker executable; no path enters core or public arguments.
+pub mod playback;
 use mo_common::Digest;
 use mo_presentation_compile::source_resource_page::protocol::{
     self, AuthorResourceDocumentRequest, AuthorResourceRange, PptxResourceDocumentRequest,
@@ -261,16 +262,26 @@ fn response_image(
     }
 }
 fn executable_digest(path: &std::path::Path) -> Result<Digest, DeliveryError> {
+    const MAX: u64 = 128 * 1024 * 1024;
+    let metadata = std::fs::symlink_metadata(path)?;
+    if !metadata.is_file() || metadata.len() > MAX {
+        return Err(DeliveryError::Limit("preview executable size or type"));
+    }
     let mut file = std::fs::File::open(path)?;
-    if file.metadata()?.len() > 128 * 1024 * 1024 {
+    if !file.metadata()?.is_file() || file.metadata()?.len() > MAX {
         return Err(DeliveryError::Limit("preview executable bytes"));
     }
     let mut hash = Sha256::new();
     let mut buffer = [0; 65536];
+    let mut total = 0u64;
     loop {
         let n = file.read(&mut buffer)?;
         if n == 0 {
             break;
+        }
+        total += n as u64;
+        if total > MAX {
+            return Err(DeliveryError::Limit("preview executable bytes"));
         }
         hash.update(&buffer[..n]);
     }
