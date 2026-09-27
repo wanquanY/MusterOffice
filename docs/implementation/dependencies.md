@@ -2,6 +2,18 @@
 
 2026-09-24 · P00基础依赖。这里登记开发采用，不表示公开许可证已选定。所有workspace包暂为 `publish=false`，不复制Musterwork私有代码。
 
+[可选 HTTP](http-mcp.md)增加 26 个锁定 registry 包，既有包版本/归档摘要不变；完整根许可文本和开发采用见[HTTP 组件记录](../../components/http-runtime/component.json)。HTTP 依赖不进入默认 stdio 或嵌入 SDK，完整发行许可闭包另行验收。
+
+此前 [MCP 版本核查](mcp-protocol-status.md)将独立 MCP workspace 的官方 SDK 精确升级到 `rmcp 3.4.1`，该补丁阶段只改变这一个 registry 包；归档、固定提交、完整许可文本和开发验证见[新组件记录](../../components/rmcp/versions/3.4.1/component.json)。此前 3.4.0 选型及薄 MCP 证据保持其历史输入范围。
+
+[本地薄 MCP](thin-mcp.md)新增内部 `mo-native-compute` 文件桥接，复用现有 SDK 与锁定依赖；默认 MCP 的当前主机生产依赖图不含旧宿主、业务服务或 SQLite，旧路径由显式 feature 保留。未引入新的 registry 版本；独立 SDK 仍为 23 个内部库、54 个 registry 包，并排除文件桥接、MCP/异步运行时和数据库。生产图、源码包、开发构建与最终安装包的范围分别记录，不以包数推导体积。
+
+[计算合同与直接 SDK](computation-boundary.md)新增内部 `mo-presentation-operations` 与独立旧宿主 Schema WASM 兼容模块；Native SDK/worker 和主 WASM 不再依赖旧 `mo-operation-service`。本轮没有新增外部版本；最终 SDK 为 23 个内部库、54 个原锁定 registry 包，独立消费验证排除了旧宿主服务、SQLite、Tokio 和 MCP。worker 的图形/字体闭包另行交付，完整发行许可、体积和平台验收仍开放。以下数量与依赖说明保留各历史阶段含义。
+
+[Musterwork 原生宿主接入](product-execution-spool.md)通过正常准备流程消费新固定 SDK 和 worker。产品的 rustix 从 1.1.4 更新到 SDK 已锁定的 1.1.5，新增内部来源解析库；版本、许可、输入与实际回归见该阶段记录。MusterOffice 核心依赖版本没有因这次产品刷新再升级，旧产品阶段的依赖记录保留历史含义。
+
+[原生导出暂存恢复](execution-spool-recovery.md)将已锁定的 rustix 1.1.5 用于 Unix 宿主文件打开标志，关闭默认特性、启用 `fs/std`；锁使用 Rust 标准库，不增加 fs4。归档校验和、声明 `Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT`、开发选择 MIT 及四份许可/版权文本见[组件记录](../../components/rustix/component.json)。没有升级外部版本；SDK 现在保留平台条件生产依赖及对应 notices，不把该宿主依赖引入纯计算/WASM。完整发行闭包和平台实机验证仍独立验收。
+
 [产品内容文件恢复](product-content-lifecycle.md)复用既有 fs4 1.1.0（MIT OR Apache-2.0）、uuid 1.24.0（Apache-2.0 OR MIT）、rustix 1.1.4（Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT）和 Tokio。SQLite 的 tempfile 3.27.0 返回测试依赖；没有升级外部版本或改变计算内核。Windows 目录句柄分支使用 Rust 标准库，实际平台验收仍独立进行。下面流式阶段的依赖变更保留其历史含义。
 
 [产品内容流式存储](product-content-stream.md)复用产品现有 sha2 0.11.0，并将 SQLite 已有 tempfile 3.27.0（MIT OR Apache-2.0）改为生产依赖；产品锁文件仅增加内部库的 sha2 依赖边，外部版本未变。MusterOffice 自身锁文件和计算实现不变；该改动未构建新的发行包，不声明安装体积或整体性能收益。

@@ -1,5 +1,55 @@
 # MusterOffice 文档
 
+当前职责：[ADR 0007：纯内核与薄接入](decisions/0007-kernel-only-integration-boundary.md)及[内核与接入产品边界](design/implementation/kernel-host-boundary.md)。MusterOffice 目标是提供完整 PPT 计算、渲染/无界面播放及 SDK/MCP/CLI；接入方拥有权限、持久存储、业务任务和产品页面。计算拆分、薄 CLI 与默认本地 MCP 已进入实现；完整能力和替换验收仍在实施；以下文档保留各阶段事实，不将旧标准持久宿主当作新的交付要求。
+
+[MCP 版本与 Plugin 状态](implementation/mcp-protocol-status.md)：官方协议、实际支持版本、SDK 补丁和平台安装验收分开记录。
+
+[扫描任务内存复用](implementation/scan-task-storage.md)：消除万个对象的重复状态分配，跨端画质/取消验证通过；局部耗时改善约 20%，剩余吞吐回退及完整替换验收继续推进。
+
+[保留式填充扫描](implementation/scan-continuation.md)：保留边表和抗锯齿状态，填充内部可让出，跨端像素和中段取消通过；万级小对象开销回退及完整性能/替换门禁仍开放。
+
+[有界像素准备](implementation/pixel-preparation.md)：图片预乘、背景初始化和合成快照持有游标分步处理，原生/WASM 像素不变；单个路径的同步临界区与完整替换门禁仍开放。
+
+[TS/WASM 分步播放](implementation/wasm-stepped-playback.md)：同源待完成帧、显式生命周期、步骤间取消与真实浏览器验证；细粒度中断和完整替换门禁仍开放。
+
+[播放帧准备与完成](implementation/prepared-playback.md)：Rust 持有待完成帧及共享图片，重新检查实例和播放状态，复用同步路径的完整像素校验；TS/WASM 的分步播放接入继续推进。
+
+[可恢复绘图状态](implementation/stepped-raster.md)：在准备和完整绘制操作之间让出执行，原生/WASM 保持旧像素；单个 primitive 内部让出与高层播放 continuation 仍在推进。
+
+[浏览器 Worker 接入](implementation/browser-playback-sdk.md)：Chrome/Edge 已验证现有 71 帧、资源转移与错误隔离；实测揭示逻辑取消与延迟强制中断的差异，取消性能及产品替换门禁仍开放。
+
+[TS/WASM 播放 SDK](implementation/wasm-playback-sdk.md)：类型化播放 owner、离线运行时包与独立 Node Worker 消费；71 个实际动画帧、输入释放、线程终止和组件失效隔离已验证，完整产品替换验收继续实施。
+
+[Native 播放 SDK](implementation/native-playback-sdk.md)：已有作者/来源计划的一次准备、多帧采样、输入释放和明确进程生命周期；独立打包消费的 71 个历史帧保持像素，完整高级内容及产品播放接入仍在实施。
+
+[Skill/Plugin 开发包](implementation/agent-package.md)：唯一 Skill、便携/兼容清单、配套原生程序与可复现打包已实现；独立客户端搬迁后真实导出与配置复用通过，实际用户客户端安装/激活和完整发行继续实施。
+
+[可选 HTTP 计算入口](implementation/http-mcp.md)：`2026-07-28` 无会话 HTTP 共用 SDK 与调用方文件通道，真实导出、断线取消、并发隔离及资源预算已验证；HTTP 依赖不进入默认 stdio 或嵌入 SDK，附件桥接和产品网关验收继续实施。
+
+[本地薄 MCP 与共享文件计算](implementation/thin-mcp.md)：默认 MCP 直接消费共享 SDK，通过调用方文件桥接计算与读取结果；旧数据库宿主改为显式兼容入口。真实协议调用、并发、取消、断线及独立输出对比见阶段记录；远程/附件接入和完整替换继续实施。
+
+[计算合同与直接 SDK](implementation/computation-boundary.md)：独立纯计算库、Native SDK 与 worker、新计算合同/Schema、独立旧 WASM 兼容模块及实际外部打包消费。全量与专项证据分开记录，权限/存储/任务/UI 保持产品责任；后续次序见[实施目标](implementation/kernel-boundary-roadmap.md)。
+
+[直接计算入口](implementation/direct-computation.md)：SDK/CLI 共用调用与收据，调用方显式提供资源和接收输出；实际创建、导入、原子编辑、两版导出及独立 SDK 消费通过。包含文件锁生命周期修正与当时完整回归证据；本地 MCP 后续进展见上。
+
+[Musterwork 日志内容引用索引](implementation/product-ledger-content-roots.md)：原事务中的类型化引用、SQLite v187 有界迁移、历史升级修复、真实导出及日志正文回收验证。引用目录不等于永久保留指令；业务终态回收与完整替换验收继续实施。
+
+[Musterwork 原生宿主与暂存维护](implementation/product-execution-spool.md)：固定 SDK/worker 升级、Device 启动和原维护循环、取消后的名额保留、真实导出提交及存储回归。正式工具、业务终态回收和完整替换验收仍在实施。
+
+[原生导出暂存恢复](implementation/execution-spool-recovery.md)：父进程/worker 共享所有权、真实进程终止与有界恢复、私有启动协议和平台依赖 SDK。该库级阶段尚未刷新产品材料，产品接入见上方后续阶段。
+
+[Invocation 资源接入准备器](implementation/product-owned-preparation.md)：创建、编辑、导出、checkpoint 与 Tool result 强制预留，真实 Runtime/worker 回归及原事务引用保留。终态回收、暂存恢复与正式工具入口继续实施。
+
+[Invocation 预写额度与授权](implementation/product-invocation-content.md)：SQLite v186 原子预留、持久额度及写入前后权限校验。存储端已实现，准备器强制接入与完整回收仍待完成。
+
+[Musterwork 原生候选与 Artifact 提交](implementation/product-native-commit.md)：同一 Runtime 事务完成版本、任务与日志提交；候选 /3、恢复 /4、SQLite v185，以及实际重开、回滚和历史回归。Invocation 预写生命周期与生产工具仍待完成。
+
+以下按阶段列出文档，各阶段保留当时的验证范围和待办；当前状态见[实现进度](implementation/progress.md)。
+
+[Musterwork 原生导出准备](implementation/product-native-export.md)：实际 worker 计算、完整输出准入、最终存储检查、五类质量声明与取消后的资源保留；候选持久恢复和 Artifact 提交由上述后续阶段实现。
+
+[Musterwork 真实内核创建与编辑](implementation/product-native-mutations.md)：实际 SDK 计算、精确资源闭包与读取集进入原事务；新恢复封套 /3，最终原生专项 11 项、相关库 82 项通过，生产工具及 Artifact 导出继续实施。
+
 [Musterwork 原生草稿与同库提交](implementation/product-native-drafts.md)：明确区分原生与旧 HTML 状态，复用现有 SQLite Attempt、Tool、Ledger 和内容保留事务；新工具生产者与 Artifact 导出提交继续实施。
 
 [Musterwork SDK 构建与内容桥接](implementation/product-sdk-bridge.md)：可从源码构建的固定 SDK、产品输入范围读取、可取消输出流与最终存储检查；真实 SQLite/worker/SQLite 交付通过，Runtime 提交及产品界面继续实施。
@@ -16,7 +66,7 @@
 
 [Musterwork 原生产物读取](implementation/product-office-manifest.md)：实际产品 Rust/TS 版本化读取、精确依赖和五类质量声明；创作提交与 Viewer/Player 接入继续推进。
 
-[原生 MCP stdio 接入](implementation/mcp-stdio.md)：真实工具/资源、同权限二进制通道、取消与输出预算；两代 release 协议及实际 PPTX/PNG 下载验证。
+[原生 MCP stdio 接入（旧宿主兼容）](implementation/mcp-stdio.md)：历史持久宿主的工具/资源、二进制通道、取消与输出预算；保留当时协议及文件验证，当前默认入口见本地薄 MCP。
 
 [原生持久任务调度](implementation/native-scheduler.md)：有界执行池、同库任务领取、统一续租/取消、失败恢复与持久 CLI；有真实 worker、进程重启、旧库升级和跨端验证证据。
 

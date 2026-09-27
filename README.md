@@ -8,6 +8,30 @@ MusterOffice 为 Agent 提供结构化的创建、查询、编辑、渲染、导
 
 ## 当前状态
 
+最新 SDK 进展：[浏览器 Worker 接入](docs/implementation/browser-playback-sdk.md)、[TS/WASM 离线播放包](docs/implementation/wasm-playback-sdk.md)与[原生播放 SDK](docs/implementation/native-playback-sdk.md)已接通已有作者/来源采样；71 个历史动画帧保持像素。宿主控制 Worker、资源和展示，未增加第三方依赖、UI 或文稿存储。浏览器实测暴露延迟强制终止缺口；取消性能、完整高级内容、跨端高层接口、其余浏览器/实际 WebView 和产品替换验收继续实施。
+
+最新入口进展：[Skill/Plugin 开发包](docs/implementation/agent-package.md)已实现唯一 Skill、便携/兼容清单与匹配的原生 MCP/worker；官方清单验证、搬迁后两代协议的真实导出和宿主配置复用通过。[可选 Streamable HTTP](docs/implementation/http-mcp.md)继续共用该计算，网络依赖只在显式 feature 启用时进入。实际客户端激活、附件桥接和完整 PPT 替换验收继续实施。
+
+2026-09-27 职责修订：MusterOffice 专注完整 PPT 计算与薄 SDK/MCP/CLI，不提供账号权限、持久存储、业务任务平台或产品页面；这些由接入方负责。渲染和无界面播放能力保留，功能、质量与可编辑性要求不减。见 [ADR 0007](docs/decisions/0007-kernel-only-integration-boundary.md)与[内核/产品边界](docs/design/implementation/kernel-host-boundary.md)。计算合同、Native SDK/worker 与主 WASM 已开始实际拆分，见[计算合同与直接 SDK](docs/implementation/computation-boundary.md)。默认本地 MCP 已通过共享 SDK/文件桥接移除持久宿主依赖，旧路径隔离兼容，见[本地薄 MCP](docs/implementation/thin-mcp.md)，以下是历史阶段证据；当前验证与未完成改动以[实现进度](docs/implementation/progress.md)为准。
+
+最近完成：[Musterwork 日志内容引用索引](docs/implementation/product-ledger-content-roots.md)在原 Ledger 事务中保留精确内容引用，并完成 SQLite v187 历史升级与回滚验证。协议/SQLite 库 452 项、创作 62 项、真实导出提交 3 项及原日志回收 3 项通过，严格生产库检查和全工作区编译通过；跳过项与历史失败按阶段记录保留。业务终态回收、正式工具、Viewer/Player 和完整替换门禁仍在实施，未切换旧 PPT。
+
+最近完成：[Musterwork 原生宿主与暂存维护](docs/implementation/product-execution-spool.md)已刷新固定 SDK/worker，接入 Device 启动与原维护循环。宿主/Device/进程入口 15 项、10 项真实 worker、60 项创作和 41 项存储回归通过；两个生产库严格检查及全工作区编译通过。PPTX 和预览保持旧版字节，4 份元数据变化逐项核对。生产工具、业务终态回收与完整替换验收仍在实施，未切换旧 PPT。
+
+此前：[原生导出暂存恢复](docs/implementation/execution-spool-recovery.md)通过父进程/worker 共享锁和有界恢复保护真实输入与候选；23 项相关 Rust、11 项真实 worker 和 9 项 SDK 测试通过，独立 SDK 消费完成两页/12 资产导出。Linux/Windows 宿主库通过编译检查，实机验证仍独立进行。该阶段的产品刷新与维护接入由上述后续阶段实施。
+
+此前：[Invocation 资源接入准备器](docs/implementation/product-owned-preparation.md)已让创建、编辑、导出及恢复元数据强制使用受管存储，并在原事务中保留 Tool 结果。60 项创作回归、9 项显式真实 worker、71 项库单元及严格生产库检查通过，实际交付保持基准字节。终态回收、worker 暂存恢复、正式工具及完整替换验收继续实施；尚未切换旧 PPT。
+
+以下保留较早阶段记录，未完成项表示当时状态；当前接入情况以上述最新阶段及[实现进度](docs/implementation/progress.md)为准。
+
+此前：[Invocation 预写额度与授权](docs/implementation/product-invocation-content.md)已提供原 Runtime 持久额度与执行权绑定的存储端口，包含原子预留、取消/过期拒绝和重开恢复验证。准备器强制接入、正式引用转移、终态回收与 worker 暂存恢复仍在实施；尚未切换旧 PPT。
+
+[Musterwork 原生候选与 Artifact 提交](docs/implementation/product-native-commit.md)已让实际导出进入原 Runtime 原子事务，支持恢复、继续编辑和原请求幂等重试。三项真实提交、50 项创作回归、8 项迁移/守卫、71 项库单元及 11 项相关集成测试通过。Invocation 预写生命周期、生产工具、Viewer/Player 与完整替换验收仍待完成，尚未切换旧 PPT。
+
+此前：[Musterwork 原生导出准备](docs/implementation/product-native-export.md)已连接真实草稿、固定 worker、最终存储复验与产品清单，12 份交付文件保持基准字节。新增 5 项真实导出、11 项原生草稿、82 项相关库及原桥接导出测试通过；本段记录导出准备阶段，候选恢复和 Artifact 提交已由上述后续阶段实现。
+
+最近完成：[Musterwork 真实内核创建与编辑](docs/implementation/product-native-mutations.md)将实际 SDK 创建、页面文字/标题编辑与资源变化接入产品原有草稿事务。最终原生专项 11 项、相关库 82 项和严格生产库检查通过；新 Agent 工具入口、Artifact 导出提交、Viewer/Player 与完整替换验收继续实施。
+
 最近完成：[原生 MCP stdio 接入](docs/implementation/mcp-stdio.md)将 13 个工具、授权资源与二进制通道接入同一持久宿主。release 的两代协议完成 167 次实际请求、两次真实导出及 24 份资源回读；独立文件/像素检查、十项适配器测试和 61 项宿主回归通过。完整协议/生态接入、高级内容及 Musterwork 替换验收继续推进。
 
 最近完成：[原生持久任务调度](docs/implementation/native-scheduler.md)已将同库任务接入有界后台执行池，并统一创建/编辑/导出的续租和取消检查。837 项全仓回归、最终 61 项宿主回归及 11 项显式真实 worker 集成通过；实际 CLI 自动导出、进程终止重启、忙碌 renderer 下的控制、旧库升级和文件/页面回归已有阶段证据。正式 Agent 接入、完整高级内容和 Musterwork 替换验收仍未完成。
@@ -42,7 +66,7 @@ MusterOffice 为 Agent 提供结构化的创建、查询、编辑、渲染、导
 - 一期目标已确认：完整演示文稿内核，包含动画/转场、音视频、SmartArt、公式，并替换 Musterwork 的 PPT 能力；v0.4 已形成实施规格、104 项能力计划与设计合同校验，仍待实现与验收。
 - 技术方向已确认：Rust 主体、原生/WASM 目标、TS 薄接入，允许经验证的 C/C++ 底层组件；不为语言纯度牺牲质量和性能。
 - 基础实现依赖已锁定并登记；字体/绘制/媒体组件、实际兼容构建、公开许可证和正式发行方式仍需相应证据。
-- 接入目标已确认：Musterwork 与其他 AI 产品可以标准化接入；MCP/Skill/Plugin/SDK 的具体合同已形成设计稿，尚无可安装包。
+- 接入目标已确认：Musterwork 与其他 AI 产品通过公共 SDK/MCP/Skill/Plugin 接入；已有直接计算入口和离线开发包，尚无完成客户端及完整能力验收的发行包。
 - 未配置远程仓库或公开发布，也没有将 Musterwork 产品代码复制进来。
 
 ## 从这里开始
