@@ -2,10 +2,10 @@ use crate::*;
 use mo_common::RequestId;
 use mo_native_io::{FileSpool, SealedFile};
 use mo_opc::{ReaderAt, ResultSink};
-use mo_operation_service::{AssetId, AssetInfo, ExportAsset, ExportAssets};
 use mo_presentation_delivery::{
     Content, DeliveryAsset, DeliveryError, DeliveryLimits, DeliverySource, OutputStore,
 };
+use mo_presentation_operations::{AssetId, AssetInfo, ExportAsset, ExportAssets};
 use std::{
     collections::BTreeMap,
     io::{Read, Write},

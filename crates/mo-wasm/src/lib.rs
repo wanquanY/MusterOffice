@@ -4,18 +4,17 @@ use wasm_bindgen::prelude::*;
 mod raster;
 mod text;
 
+/// Pure calculation contracts; no permissions, jobs or storage capabilities.
+#[wasm_bindgen]
+pub fn computation_schema_json(id_json: &str) -> Result<String, String> {
+    mo_presentation_operations::computation_schema_json(id_json).map_err(|error| error.to_string())
+}
+
 /// Shared receipt/byte binding checks. This creates no browser job owner and
 /// does not authorize or commit an Artifact in the product.
 #[wasm_bindgen]
 pub fn inspect_delivery(request: &str, contents: &[u8]) -> String {
     mo_kernel_api::inspect_delivery_json(request, contents)
-}
-
-/// Schema discovery shares native operation types. This does not create a
-/// browser job owner or authorize access to any document/resource.
-#[wasm_bindgen]
-pub fn operation_schema_json(id_json: &str) -> Result<String, String> {
-    mo_operation_service::operation_schema_json(id_json).map_err(|error| error.to_string())
 }
 
 #[wasm_bindgen]

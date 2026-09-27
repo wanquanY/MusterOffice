@@ -15,6 +15,21 @@ const wasm = createRequire(import.meta.url)(modulePath);
 const { dispatch_json } = wasm;
 const document = JSON.parse(readFileSync(new URL('../../fixtures/presentations/basic-shape.json', import.meta.url), 'utf8'));
 const cases = [];
+const schemaPairs = [];
+
+// The production WASM exposes only computation discovery. The old host/job
+// discovery binding is built separately as mo-host-compat-wasm.
+assert.equal(wasm.operation_schema_json, undefined);
+for (const id of ['computation-request', 'computation-failure', 'computation-mutation-receipt', 'computation-export-receipt', 'computation-invocation', 'computation-receipt']) {
+  const discovered = JSON.parse(wasm.computation_schema_json(JSON.stringify(id)));
+  const generated = JSON.parse(readFileSync(new URL(`../../contracts/generated/${id}.schema.json`, import.meta.url), 'utf8'));
+  assert.equal(discovered.id, id);
+  assert.deepEqual(discovered.schema, generated, `${id}: native/WASM schema mismatch`);
+  const native = spawnSync(cli, ['compute-schema', id], { encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 });
+  assert.equal(native.status, 0, native.stderr);
+  assert.deepEqual(JSON.parse(native.stdout), discovered, `${id}: runtime schema mismatch`);
+  schemaPairs.push({ id, digest: discovered.digest });
+}
 
 function compare(name, input, expectedStatus, expectedCode) {
   const raw = typeof input === 'string' ? input : JSON.stringify(input);
@@ -106,5 +121,5 @@ console.log(JSON.stringify({
   scope: 'Author/retained Document computation and PPTX import binding. No rendering, Office/WPS, performance or product integration claims.',
   platform: process.platform, architecture: process.arch, node: process.version,
   nativeSha256: sha256(cli), wasmSha256: sha256(modulePath.replace(/\.js$/, '_bg.wasm')),
-  passed: cases.length, cases,
+  passed: cases.length, cases, schemaPairs,
 }, null, 2));

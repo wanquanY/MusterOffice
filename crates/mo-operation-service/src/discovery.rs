@@ -42,6 +42,15 @@ pub enum ServiceOperation {
     CancelJob,
 }
 impl ServiceOperation {
+    pub fn for_action(action: &DocumentAction) -> Self {
+        match action {
+            DocumentAction::Import { .. } => Self::Import,
+            DocumentAction::Create { .. } => Self::Create,
+            DocumentAction::Apply { .. } => Self::Apply,
+            DocumentAction::Export { .. } => Self::Export,
+        }
+    }
+
     pub const ALL: [Self; 16] = [
         Self::Capabilities,
         Self::Schema,

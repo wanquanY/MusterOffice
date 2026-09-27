@@ -95,7 +95,7 @@ def build(destination):
             inherited = dependency_table[key]
             if isinstance(inherited, dict) and 'path' in inherited:
                 pending.append(key)
-    forbidden = {'mo-standard-host', 'mo-skia-sys', 'mo-harfbuzz-sys', 'mo-wasm', 'rusqlite', 'tokio'}
+    forbidden = {'mo-operation-service', 'mo-standard-host', 'mo-skia-sys', 'mo-harfbuzz-sys', 'mo-wasm', 'rusqlite', 'tokio'}
     assert not forbidden.intersection(selected.keys() | required_dependencies)
     generated_workspace = {
         'workspace': {

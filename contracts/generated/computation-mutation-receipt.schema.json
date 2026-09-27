@@ -1,0 +1,308 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:computation-mutation-receipt",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MutationReceipt",
+  "type": "object",
+  "properties": {
+    "documentId": {
+      "$ref": "#/$defs/DocumentId"
+    },
+    "revision": {
+      "$ref": "#/$defs/Digest"
+    },
+    "semanticDigest": {
+      "$ref": "#/$defs/Digest"
+    },
+    "transaction": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TransactionReceipt"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "documentId",
+    "revision",
+    "semanticDigest"
+  ],
+  "$defs": {
+    "AnchorMap": {
+      "type": "object",
+      "properties": {
+        "deleted": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "inserted": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "paragraph": {
+          "$ref": "#/$defs/ParagraphId"
+        },
+        "start": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "paragraph",
+        "start",
+        "deleted",
+        "inserted"
+      ]
+    },
+    "ChangeSet": {
+      "type": "object",
+      "properties": {
+        "anchorMaps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AnchorMap"
+          }
+        },
+        "changedFonts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FontId"
+          }
+        },
+        "changedLayouts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LayoutId"
+          }
+        },
+        "changedMasters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MasterId"
+          }
+        },
+        "changedResources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ResourceId"
+          }
+        },
+        "changedThemes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ThemeId"
+          }
+        },
+        "changedTimelines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SlideId"
+          }
+        },
+        "createdObjects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectId"
+          }
+        },
+        "createdSlides": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SlideId"
+          }
+        },
+        "deletedObjects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectId"
+          }
+        },
+        "deletedSlides": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SlideId"
+          }
+        },
+        "invalidateAllLayout": {
+          "description": "Global page geometry changed. Otherwise use invalidated_slides; metadata\nand timeline edits have separate change fields and do not dirty layout.",
+          "type": "boolean"
+        },
+        "invalidatedSlides": {
+          "description": "Surviving/new pages whose static layout dependency closure changed.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SlideId"
+          }
+        },
+        "metadataChanged": {
+          "type": "boolean"
+        },
+        "slideOrderChanged": {
+          "type": "boolean"
+        },
+        "updatedObjects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectId"
+          }
+        },
+        "updatedSlides": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SlideId"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "createdObjects",
+        "updatedObjects",
+        "deletedObjects",
+        "createdSlides",
+        "updatedSlides",
+        "deletedSlides",
+        "changedThemes",
+        "changedMasters",
+        "changedLayouts",
+        "changedFonts",
+        "changedResources",
+        "slideOrderChanged",
+        "metadataChanged",
+        "invalidateAllLayout",
+        "anchorMaps"
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "DocumentId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "FontId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "LayoutId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "MasterId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ObjectId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ParagraphId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "RequestId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ResourceId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "SlideId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ThemeId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "TransactionReceipt": {
+      "type": "object",
+      "properties": {
+        "baseRevision": {
+          "$ref": "#/$defs/Digest"
+        },
+        "changes": {
+          "$ref": "#/$defs/ChangeSet"
+        },
+        "documentId": {
+          "$ref": "#/$defs/DocumentId"
+        },
+        "requestDigest": {
+          "$ref": "#/$defs/Digest"
+        },
+        "requestId": {
+          "$ref": "#/$defs/RequestId"
+        },
+        "revision": {
+          "$ref": "#/$defs/Digest"
+        },
+        "semanticDigest": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "documentId",
+        "requestId",
+        "requestDigest",
+        "baseRevision",
+        "revision",
+        "semanticDigest",
+        "changes"
+      ]
+    }
+  }
+}

@@ -1,14 +1,12 @@
 //! Local SDK consumer. Paths come from the operator, not an Agent request.
 use mo_embedded_sdk::{
-    NativeExporter,
+    ExportOptions, Inputs, NativeExporter, Presentation,
     common::{Digest, RequestId},
     delivery::{self, Content, DeliveryAsset, DeliveryError, DeliverySource},
     edit::SnapshotRecord,
-    native_io::{FileSpool, SealedFile},
+    native_io::FileSpool,
     opc::{ReaderAt, ResultSink},
-    operation::{
-        AssetId, AssetInfo, ExportAsset, ExportAssets, Failure, FailureCode, OperationRequest,
-    },
+    operation::{AssetInfo, DocumentAction, OperationRequest},
 };
 use std::{
     collections::BTreeMap,
@@ -19,15 +17,6 @@ use std::{
     time::Duration,
 };
 
-struct Inputs(BTreeMap<AssetId, (AssetInfo, SealedFile)>);
-impl ExportAssets for Inputs {
-    fn get(&self, id: &AssetId) -> Result<ExportAsset<'_>, Failure> {
-        let (info, reader) = self.0.get(id).ok_or_else(|| {
-            Failure::new(FailureCode::NotAuthorized, "asset not provided by host")
-        })?;
-        Ok(ExportAsset { info, reader })
-    }
-}
 struct StoredFile {
     file: Mutex<File>,
     length: u64,
@@ -71,7 +60,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let snapshot: SnapshotRecord =
         mo_embedded_sdk::common::from_json_str(&fs::read_to_string(input.join("snapshot.json"))?)?;
     let index: serde_json::Value = serde_json::from_slice(&fs::read(input.join("assets.json"))?)?;
-    let mut assets = Inputs(BTreeMap::new());
+    let mut sealed_inputs = Vec::new();
     for item in index.as_array().ok_or("asset list")? {
         let info: AssetInfo = serde_json::from_value(item["info"].clone())?;
         let name = item["file"].as_str().ok_or("asset file")?;
@@ -88,21 +77,46 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         if sealed.byte_length != info.descriptor.byte_length.get() {
             return Err("asset length differs".into());
         }
-        if assets
-            .0
-            .insert(info.id.clone(), (info, sealed.reader))
-            .is_some()
-        {
-            return Err("duplicate input asset".into());
-        }
+        sealed_inputs.push((info, sealed.reader));
     }
+    let mut assets = Inputs::new();
+    for (info, reader) in &sealed_inputs {
+        assets.insert_reader(info.clone(), reader)?;
+    }
+
     let exporter = NativeExporter::new(
         args[2].clone().into(),
         Digest::try_from(args[3].clone())?,
         spool.clone(),
         Duration::from_secs(60),
     )?;
-    let candidate = exporter.prepare(&request, snapshot, &assets, &|| false)?;
+    request.validate_profile()?;
+    let DocumentAction::Export {
+        document_id,
+        base_revision,
+        settings,
+    } = request.action
+    else {
+        return Err("expected export request".into());
+    };
+    if snapshot.document.id != document_id
+        || snapshot.revision != base_revision
+        || settings.renderer != exporter.renderer_identity()
+    {
+        return Err("export input pins differ".into());
+    }
+    let presentation = Presentation::from_snapshot(snapshot)?;
+    let candidate = presentation.export(
+        &exporter,
+        request.request_id,
+        ExportOptions {
+            delivery: settings.delivery,
+            resources: settings.resources,
+            font_asset_id: settings.font_asset_id,
+        },
+        &assets,
+        &|| false,
+    )?;
     let mut stored = Stored(BTreeMap::new());
     let mut files = Vec::new();
     for (i, asset) in candidate.assets().iter().enumerate() {
@@ -153,6 +167,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     )?;
     candidate.discard()?;
     drop(assets);
+    drop(sealed_inputs);
     let entries: Vec<_> = fs::read_dir(&spool)?
         .map(|entry| entry.map(|entry| entry.file_name()))
         .collect::<Result<_, _>>()?;

@@ -143,7 +143,7 @@ fn forged_pins_corrupted_or_truncated_bytes_and_failed_exit_are_rejected() {
             .err()
             .unwrap();
         let expected = match fault {
-            0 | 1 => FailureCode::StaleExecution,
+            0 | 1 => FailureCode::ResultMismatch,
             4 | 7 => FailureCode::ExecutionInterrupted,
             _ => FailureCode::InputInvalid,
         };

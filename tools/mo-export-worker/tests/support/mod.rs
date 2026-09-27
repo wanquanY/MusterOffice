@@ -1,9 +1,9 @@
 use mo_common::{ByteLength, Digest, RequestId, ResourceId};
 use mo_native_export::NativeExporter;
 use mo_opc::ReaderAt;
-use mo_operation_service::*;
 use mo_presentation_delivery::RendererIdentity;
 use mo_presentation_edit::{Snapshot, SnapshotRecord};
+use mo_presentation_operations::*;
 use sha2::{Digest as _, Sha256};
 use std::{
     cell::Cell,
@@ -89,7 +89,7 @@ impl ExportAssets for Assets {
             .0
             .iter()
             .find(|(info, _)| &info.id == id)
-            .ok_or_else(|| Failure::new(FailureCode::NotAuthorized, "asset not authorized"))?;
+            .ok_or_else(|| Failure::new(FailureCode::ResourceIncomplete, "asset not provided"))?;
         Ok(ExportAsset { info, reader })
     }
 }
@@ -139,7 +139,6 @@ pub fn input(renderer: RendererIdentity) -> (SnapshotRecord, OperationRequest, A
         contract_version: ContractVersion::V1,
         request_id: RequestId::new("export:embedded-test").unwrap(),
         profile_id: OperationProfile::ResourceDelivery,
-        output_mode: OutputMode::Job,
         action: DocumentAction::Export {
             document_id: snapshot.document.id.clone(),
             base_revision: snapshot.revision.clone(),

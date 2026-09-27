@@ -63,13 +63,15 @@ def plan(groups, output, bindgen, python):
         add("native-render-tests", "cargo", "test", *cargo, "-p", "mo-native-render", "--test", "delivery", "--", "--ignored", worker=True)
         add("native-host-export-tests", "cargo", "test", *cargo, "-p", "mo-standard-host", "--test", "exports", "--", "--ignored", worker=True)
         add("native-export-tests", "cargo", "test", *cargo, "-p", "mo-export-worker", worker=True)
+        add("native-computation-cli-tests", "cargo", "test", *cargo, "-p", "mo-cli", "--test", "computation", "--", "--ignored", worker=True)
     if "mcp" in groups:
         add("mcp-format", "cargo", "fmt", *mcp, "--", "--check")
         add("mcp-clippy", "cargo", "clippy", *mcp, "--all-targets", *cargo, "--", "-D", "warnings")
         add("mcp-tests", "cargo", "test", *mcp, *cargo)
         add("mcp-build", "cargo", "build", *mcp, *cargo)
     if "wasm" in groups:
-        add("pure-operation-wasm", "cargo", "check", *cargo, "-p", "mo-operation-service", "--target", "wasm32-unknown-unknown")
+        add("pure-operation-wasm", "cargo", "check", *cargo, "-p", "mo-presentation-operations", "--target", "wasm32-unknown-unknown")
+        add("legacy-host-wasm", "cargo", "check", *cargo, "-p", "mo-host-compat-wasm", "--target", "wasm32-unknown-unknown")
         add("wasm-build", "cargo", "build", *cargo, "--release", "-p", "mo-wasm", "--target", "wasm32-unknown-unknown")
         add("wasm-bindgen", bindgen, "target/wasm32-unknown-unknown/release/mo_wasm.wasm", "--target", "nodejs", "--out-dir", output / "wasm")
         add("document-native-wasm-parity", "node", "tools/verification/native-wasm-parity.mjs", "target/debug/mo-cli", output / "wasm/mo_wasm.js")

@@ -7,7 +7,7 @@ mod wire;
 mod worker;
 pub use client::{NativeExportCandidate, NativeExporter};
 use mo_common::Digest;
-use mo_operation_service::{Failure, FailureCode};
+use mo_presentation_operations::{Failure, FailureCode};
 use sha2::{Digest as _, Sha256};
 use std::{io::Read, path::Path};
 pub use worker::run_worker;
@@ -16,7 +16,7 @@ fn invalid(message: &'static str) -> Failure {
     Failure::new(FailureCode::InputInvalid, message)
 }
 fn storage_failure(_: std::io::Error) -> Failure {
-    Failure::new(FailureCode::StorageFailure, "private export storage failed")
+    Failure::new(FailureCode::IoFailure, "private export storage failed")
 }
 
 /// Host-configured executable bytes; no command or path comes from wire JSON.

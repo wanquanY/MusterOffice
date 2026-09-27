@@ -1,6 +1,6 @@
 use crate::{storage::*, wire::*, *};
-use mo_operation_service::compute_export;
 use mo_presentation_delivery::{DeliveryLimits, PreviewRenderer};
+use mo_presentation_operations::compute_export;
 use std::{
     collections::BTreeMap,
     io::{Read, Write},
@@ -39,7 +39,7 @@ pub fn run_worker(
             )?;
         }
         compute_export(
-            &request.request,
+            &request.request.computation(),
             request.snapshot,
             &assets,
             &mut Outputs {

@@ -287,12 +287,15 @@ name = "mo-cli"
 version = "0.1.0"
 dependencies = [
  "mo-common",
+ "mo-embedded-sdk",
  "mo-kernel-api",
+ "mo-native-compute",
  "mo-native-io",
  "mo-native-worker",
  "mo-opc",
  "mo-raster",
  "rawzip",
+ "serde",
  "serde_json",
  "sha2",
 ]
@@ -327,6 +330,7 @@ dependencies = [
  "mo-presentation-delivery",
  "mo-presentation-edit",
  "mo-presentation-model",
+ "mo-presentation-operations",
  "schemars",
  "serde_json",
 ]
@@ -339,10 +343,12 @@ dependencies = [
  "mo-native-export",
  "mo-native-io",
  "mo-opc",
- "mo-operation-service",
  "mo-presentation-delivery",
  "mo-presentation-edit",
  "mo-presentation-model",
+ "mo-presentation-operations",
+ "serde_json",
+ "sha2",
 ]
 
 [[package]]
@@ -350,16 +356,17 @@ name = "mo-export-worker"
 version = "0.1.0"
 dependencies = [
  "mo-common",
+ "mo-embedded-sdk",
  "mo-harfbuzz-sys",
  "mo-kernel-api",
  "mo-native-export",
  "mo-native-io",
  "mo-opc",
- "mo-operation-service",
  "mo-pptx",
  "mo-presentation-compile",
  "mo-presentation-delivery",
  "mo-presentation-edit",
+ "mo-presentation-operations",
  "mo-skia-sys",
  "mo-text",
  "serde_json",
@@ -423,6 +430,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "mo-host-compat-wasm"
+version = "0.1.0"
+dependencies = [
+ "mo-operation-service",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "mo-image"
 version = "0.1.0"
 dependencies = [
@@ -461,6 +476,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "mo-native-compute"
+version = "0.1.0"
+dependencies = [
+ "mo-embedded-sdk",
+ "rawzip",
+ "rustix",
+ "schemars",
+ "serde",
+ "serde_json",
+ "sha2",
+]
+
+[[package]]
 name = "mo-native-export"
 version = "0.1.0"
 dependencies = [
@@ -468,9 +496,9 @@ dependencies = [
  "mo-native-io",
  "mo-native-worker",
  "mo-opc",
- "mo-operation-service",
  "mo-presentation-delivery",
  "mo-presentation-edit",
+ "mo-presentation-operations",
  "serde",
  "serde_json",
  "sha2",
@@ -535,6 +563,7 @@ dependencies = [
  "mo-presentation-delivery",
  "mo-presentation-edit",
  "mo-presentation-model",
+ "mo-presentation-operations",
  "mo-xml",
  "schemars",
  "serde",
@@ -630,6 +659,25 @@ dependencies = [
  "schemars",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "mo-presentation-operations"
+version = "0.1.0"
+dependencies = [
+ "mo-common",
+ "mo-image",
+ "mo-opc",
+ "mo-pptx",
+ "mo-presentation-delivery",
+ "mo-presentation-edit",
+ "mo-presentation-model",
+ "mo-xml",
+ "schemars",
+ "serde",
+ "serde_json",
+ "sha2",
+ "thiserror",
 ]
 
 [[package]]
@@ -775,7 +823,7 @@ version = "0.1.0"
 dependencies = [
  "mo-image",
  "mo-kernel-api",
- "mo-operation-service",
+ "mo-presentation-operations",
  "mo-raster",
  "mo-text",
  "wasm-bindgen",

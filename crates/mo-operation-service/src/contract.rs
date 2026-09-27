@@ -1,7 +1,6 @@
 use crate::*;
 use mo_common::{Digest, DocumentId, RequestId};
-use mo_presentation_edit::{OperationEntry, SnapshotRecord, TransactionReceipt};
-use mo_presentation_model::Document;
+use mo_presentation_edit::SnapshotRecord;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
@@ -13,73 +12,11 @@ pub enum ContractVersion {
     V1,
 }
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
-pub enum OperationProfile {
-    /// Revisioned authored/retained documents. The historical wire profile name
-    /// is retained; it makes no full-slide quality claim.
-    #[serde(rename = "presentations-author-model-v01-draft")]
-    AuthorModel,
-    #[serde(rename = "presentations-pptx-resource-delivery-v1-draft")]
-    ResourceDelivery,
-}
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum OutputMode {
     Auto,
     Sync,
     Job,
-}
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
-#[serde(
-    tag = "kind",
-    rename_all = "camelCase",
-    rename_all_fields = "camelCase",
-    deny_unknown_fields
-)]
-pub enum DocumentAction {
-    Import {
-        document_id: DocumentId,
-        source: AssetBinding,
-    },
-    Create {
-        document: Box<Document>,
-    },
-    Apply {
-        document_id: DocumentId,
-        base_revision: Digest,
-        operations: Vec<OperationEntry>,
-    },
-    /// Export exactly this immutable revision; later edits do not replace it.
-    Export {
-        document_id: DocumentId,
-        base_revision: Digest,
-        settings: Box<ExportSettings>,
-    },
-}
-impl DocumentAction {
-    pub fn service_operation(&self) -> ServiceOperation {
-        match self {
-            Self::Import { .. } => ServiceOperation::Import,
-            Self::Create { .. } => ServiceOperation::Create,
-            Self::Apply { .. } => ServiceOperation::Apply,
-            Self::Export { .. } => ServiceOperation::Export,
-        }
-    }
-    pub fn name(&self) -> &'static str {
-        match self {
-            Self::Import { .. } => "presentations.import",
-            Self::Create { .. } => "presentations.create",
-            Self::Apply { .. } => "presentations.apply",
-            Self::Export { .. } => "presentations.export",
-        }
-    }
-    pub fn document_id(&self) -> &DocumentId {
-        match self {
-            Self::Create { document } => &document.id,
-            Self::Import { document_id, .. }
-            | Self::Apply { document_id, .. }
-            | Self::Export { document_id, .. } => document_id,
-        }
-    }
 }
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -92,7 +29,7 @@ pub struct OperationRequest {
 }
 impl OperationRequest {
     pub fn validate_profile(&self) -> Result<(), Failure> {
-        let valid = self.action.service_operation().profile() == Some(self.profile_id);
+        let valid = ServiceOperation::for_action(&self.action).profile() == Some(self.profile_id);
         if valid {
             Ok(())
         } else {
@@ -150,7 +87,7 @@ impl CallContext {
     }
     pub fn authorize(&self, request: &OperationRequest) -> Result<(), Failure> {
         request.validate_profile()?;
-        request.action.service_operation().authorize(self)
+        ServiceOperation::for_action(&request.action).authorize(self)
     }
 }
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
@@ -209,14 +146,6 @@ impl JobState {
     pub fn terminal(self) -> bool {
         matches!(self, Self::Succeeded | Self::Failed | Self::Cancelled)
     }
-}
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct MutationReceipt {
-    pub document_id: DocumentId,
-    pub revision: Digest,
-    pub semantic_digest: Digest,
-    pub transaction: Option<Box<TransactionReceipt>>,
 }
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "outcome", rename_all = "camelCase", deny_unknown_fields)]

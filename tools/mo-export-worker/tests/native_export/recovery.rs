@@ -87,7 +87,7 @@ fn actual_worker_survives_owner_death_without_losing_its_input_directory() {
     );
     let (snapshot, request, assets) = input(exporter.renderer_identity());
     let header = serde_json::to_vec(&serde_json::json!({
-        "version": "musteroffice.native-export/1-draft",
+        "version": "musteroffice.native-export/2-draft",
         "request": request, "snapshot": snapshot,
         "assets": assets.0.iter().map(|(info, _)| info).collect::<Vec<_>>()
     }))

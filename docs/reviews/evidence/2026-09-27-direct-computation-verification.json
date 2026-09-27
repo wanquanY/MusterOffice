@@ -1,0 +1,848 @@
+{
+  "format": "musteroffice.direct-computation-verification/1",
+  "date": "2026-09-27",
+  "scope": "Shared pure Invocation/ComputationReceipt, direct embedded dispatcher and caller-file CLI; deterministic execution-lock lifetime fix. Existing partial presentation scope; no product replacement or full presentation acceptance.",
+  "environment": {
+    "platform": "macOS arm64",
+    "rust": "1.92.0",
+    "buildProfile": "development",
+    "nativeComponents": [
+      {
+        "path": "components/skia/lock.json",
+        "byteLength": 1891,
+        "sha256": "ecbed91435d044cf353f5a30a549530717971c946ba3827b96e6e5dcd7148efc"
+      },
+      {
+        "path": "components/harfbuzz/lock.json",
+        "byteLength": 485,
+        "sha256": "09f7d48e187b4e03265cd8d9e9a89fdcc8dcfc373555ea66992d125d750fa363"
+      }
+    ],
+    "preparedNativeBuilds": [
+      {
+        "path": ".codex-work/gradient-coordinates/component/native-build.json",
+        "byteLength": 50757,
+        "sha256": "2aee7d9f123af77d0affff941efeb4b02efb3bafe469594346933e6bff0839b9"
+      },
+      {
+        "path": ".codex-work/harfbuzz/release/native-build.json",
+        "byteLength": 6306,
+        "sha256": "ecdfb40ef2f3461e7a2c3aabaf2b3b424b03c738d10c4b4a9b12e76ea7a3117d"
+      }
+    ]
+  },
+  "fullGates": {
+    "sourceSha256": "553c4bc58f1e27cdf7b8ac1d0261ec7694a9161217981d42476eb6863b06a322",
+    "unchanged": true,
+    "steps": [
+      {
+        "name": "verification-driver-tests",
+        "status": "passed",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/direct-computation/gates-02/verification-driver-tests.log",
+          "byteLength": 625,
+          "sha256": "f443695f300e32b7009ea094a5608d97f27b2146936849b86216b8a47ec0c661"
+        }
+      },
+      {
+        "name": "format",
+        "status": "passed",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/direct-computation/gates-02/format.log",
+          "byteLength": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "clippy",
+        "status": "passed",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/direct-computation/gates-02/clippy.log",
+          "byteLength": 893,
+          "sha256": "83cad9b7886c77b25be99cba1b8725c581df57d31478bed7d00d4a9e6e5bedbc"
+        }
+      },
+      {
+        "name": "rust-tests",
+        "status": "passed",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/direct-computation/gates-02/rust-tests.log",
+          "byteLength": 111338,
+          "sha256": "01d6395ae20d08f3b297eb30f69ed44d0c3b4d0e62ef6162ad9918a9c650baa7"
+        }
+      },
+      {
+        "name": "schemas",
+        "status": "passed",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/direct-computation/gates-02/schemas.log",
+          "byteLength": 7207,
+          "sha256": "ec41d5e8d13d7cbdc0f9f7590448d207c5b395da318efa2ceb06d256047c7267"
+        }
+      },
+      {
+        "name": "types",
+        "status": "passed",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/direct-computation/gates-02/types.log",
+          "byteLength": 3997,
+          "sha256": "393bd61093452fa8220b0b52a2fabe0a5e6e9efff2656f5d92bab19633b6e07d"
+        }
+      },
+      {
+        "name": "client-tests",
+        "status": "passed",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/direct-computation/gates-02/client-tests.log",
+          "byteLength": 1898,
+          "sha256": "4b9b236af9c5d04962de3886fe7b760850310cc0bf94805adf787f01f3d235ef"
+        }
+      },
+      {
+        "name": "native-build",
+        "status": "passed",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/direct-computation/gates-02/native-build.log",
+          "byteLength": 901,
+          "sha256": "926867a6a5f3485257ca866e310e5f7ebb2fbed2f932307ebf6cb8ee81cb8bfc"
+        }
+      },
+      {
+        "name": "native-render-tests",
+        "status": "passed",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/direct-computation/gates-02/native-render-tests.log",
+          "byteLength": 733,
+          "sha256": "63543073eccfcd8ee63bef04aa83ddde2376be878977ea153defeeac6cc591a3"
+        }
+      },
+      {
+        "name": "native-host-export-tests",
+        "status": "passed",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/direct-computation/gates-02/native-host-export-tests.log",
+          "byteLength": 1133,
+          "sha256": "8d1254340173346526fc0237106f5f30d927fd40f86d3a284bc03db649d49cbb"
+        }
+      },
+      {
+        "name": "native-export-tests",
+        "status": "passed",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/direct-computation/gates-02/native-export-tests.log",
+          "byteLength": 1665,
+          "sha256": "ea35d187fec7a07b13dc443278b3889f79bafcc2eb9275b3bdfc9cf0bfe33d53"
+        }
+      },
+      {
+        "name": "native-computation-cli-tests",
+        "status": "passed",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/direct-computation/gates-02/native-computation-cli-tests.log",
+          "byteLength": 431,
+          "sha256": "b058fd604cc98041aa4777940176ad3bcab7239b400b46a87e005c5d28547688"
+        }
+      },
+      {
+        "name": "mcp-format",
+        "status": "passed",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/direct-computation/gates-02/mcp-format.log",
+          "byteLength": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "mcp-clippy",
+        "status": "passed",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/direct-computation/gates-02/mcp-clippy.log",
+          "byteLength": 616,
+          "sha256": "55d8baadf0de320e7c3eb85700cadec85734d99f7772f3b223c7dfffba00598d"
+        }
+      },
+      {
+        "name": "mcp-tests",
+        "status": "passed",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/direct-computation/gates-02/mcp-tests.log",
+          "byteLength": 2756,
+          "sha256": "9901eb04862f3c44a3c83daa2a34e2911064968742f308525f1b0e4e24d7e598"
+        }
+      },
+      {
+        "name": "mcp-build",
+        "status": "passed",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/direct-computation/gates-02/mcp-build.log",
+          "byteLength": 160,
+          "sha256": "cef948bef8a5a4fb01bd2fb35e702eb9e1a8b19ac5fc901848528d33d4b1cdfa"
+        }
+      },
+      {
+        "name": "pure-operation-wasm",
+        "status": "passed",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/direct-computation/gates-02/pure-operation-wasm.log",
+          "byteLength": 255,
+          "sha256": "69fe921a0dbdb1b304f23dfeccc6e1c2b4b0c4212d80c903ebdf91581f5dc323"
+        }
+      },
+      {
+        "name": "legacy-host-wasm",
+        "status": "passed",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/direct-computation/gates-02/legacy-host-wasm.log",
+          "byteLength": 303,
+          "sha256": "3bcf952f9dd86640309d8e5fb1197d970c188da12cd7888f7585a6e9ff2e6460"
+        }
+      },
+      {
+        "name": "wasm-build",
+        "status": "passed",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/direct-computation/gates-02/wasm-build.log",
+          "byteLength": 283,
+          "sha256": "9de9e9212a4f67dc469495b1baaf944bff008413d6f4b67c2c68bf6adeda2033"
+        }
+      },
+      {
+        "name": "wasm-bindgen",
+        "status": "passed",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/direct-computation/gates-02/wasm-bindgen.log",
+          "byteLength": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "document-native-wasm-parity",
+        "status": "passed",
+        "exitCode": 0,
+        "log": {
+          "path": ".codex-work/direct-computation/gates-02/document-native-wasm-parity.log",
+          "byteLength": 336664,
+          "sha256": "0089ad8656637b991c193608dda6952922ac8c20df67f46670a00d53889a3d89"
+        }
+      }
+    ],
+    "tests": {
+      "rust-tests": {
+        "passed": 925,
+        "ignored": 20
+      },
+      "native-render-tests": {
+        "passed": 4,
+        "ignored": 0
+      },
+      "native-host-export-tests": {
+        "passed": 9,
+        "ignored": 0
+      },
+      "native-export-tests": {
+        "passed": 12,
+        "ignored": 1
+      },
+      "native-computation-cli-tests": {
+        "passed": 1,
+        "ignored": 0
+      },
+      "mcp-tests": {
+        "passed": 18,
+        "ignored": 0
+      }
+    },
+    "documentNativeWasmPairs": 27,
+    "computationSchemaPairs": [
+      {
+        "id": "computation-request",
+        "digest": "6484d8585c3dc8fa67f2586932ca4037a2e8300e9f3c50f1c2dd324890f9c8ea"
+      },
+      {
+        "id": "computation-failure",
+        "digest": "d25aa370ea8ed427930b8876451a95292d7cca85bfa250e6744933dbc9e4ecdb"
+      },
+      {
+        "id": "computation-mutation-receipt",
+        "digest": "2acc5d6d8cf6b6ebecf98be383833523e1e32fe703367b20b8bea6437ca484f0"
+      },
+      {
+        "id": "computation-export-receipt",
+        "digest": "daf466e34ef3c77e2401d71d14fbc896a6f59e2d04c4780c1ba53ff270ea413c"
+      },
+      {
+        "id": "computation-invocation",
+        "digest": "354c4136bd318d4c3545eff4c2d2b03d329fe5cd8b0583b8632e4dd9312d45dd"
+      },
+      {
+        "id": "computation-receipt",
+        "digest": "de362353acc544ff219b7a8675abb7a31bc83c22d0c6201bc246065d17879dfb"
+      }
+    ],
+    "ignoredExplanation": "20 workspace ignored entries: 14 actual-worker cases explicitly executed in dedicated gates, 6 helper entrypoints invoked by parent tests; native-export 12 overlaps workspace. Legacy MCP 18 tests cover compatibility, not the pending thin MCP."
+  },
+  "additionalChecks": [
+    {
+      "name": "consumer-check",
+      "args": [
+        "env",
+        "CARGO_TARGET_DIR=.codex-work/direct-computation/consumer-target",
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        ".codex-work/direct-computation/consumer/Cargo.toml",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "sourceUnchangedDuringCommand": true,
+      "laterDocumentationOnlyChanges": [],
+      "log": {
+        "path": ".codex-work/direct-computation/consumer-check.log",
+        "byteLength": 5108,
+        "sha256": "91917490a4f6b954784e7b3431e35f04127c78cb248dce2f931e702ade6e18c5"
+      }
+    },
+    {
+      "name": "consumer-run",
+      "args": [
+        "env",
+        "CARGO_TARGET_DIR=.codex-work/direct-computation/consumer-target",
+        "cargo",
+        "run",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        ".codex-work/direct-computation/consumer/Cargo.toml",
+        "--",
+        ".codex-work/direct-computation/consumer-input-03",
+        ".codex-work/direct-computation/consumer-output",
+        "ROOT:/target/debug/mo-export-worker",
+        "318f0be65d87333f4b8235b7061bfca1197b1c9589e3b13a5d130d24e4b987ea"
+      ],
+      "exitCode": 0,
+      "sourceUnchangedDuringCommand": true,
+      "laterDocumentationOnlyChanges": [],
+      "log": {
+        "path": ".codex-work/direct-computation/consumer-run.log",
+        "byteLength": 5081,
+        "sha256": "2d8f0152fe0ba1d9caf161dba3fc17729c905cd9af2b996b0a97382eced8b062"
+      }
+    },
+    {
+      "name": "independent-cli-03",
+      "args": [
+        "python3",
+        ".codex-work/direct-computation/independent_cli_03.py"
+      ],
+      "exitCode": 0,
+      "sourceUnchangedDuringCommand": true,
+      "laterDocumentationOnlyChanges": [],
+      "log": {
+        "path": ".codex-work/direct-computation/independent-cli-03.log",
+        "byteLength": 1739,
+        "sha256": "ae654dcf0bb40a879507df158ff3539f6646c37f1ed602b6c574ee4da9ad1e3a"
+      }
+    },
+    {
+      "name": "independent-reference-final",
+      "args": [
+        "python3",
+        "tools/verification/delivery-reference.py",
+        ".codex-work/direct-computation/reference-03"
+      ],
+      "exitCode": 0,
+      "sourceUnchangedDuringCommand": true,
+      "laterDocumentationOnlyChanges": [
+        "docs/contracts/README.md"
+      ],
+      "log": {
+        "path": ".codex-work/direct-computation/independent-reference-final.log",
+        "byteLength": 88,
+        "sha256": "ca13e051a020d42a0cdcde20ba1b006e46db6e8d1ba40c48b20ff7a5e2e8a087"
+      }
+    },
+    {
+      "name": "spool-linux-check",
+      "args": [
+        "cargo",
+        "clippy",
+        "-p",
+        "mo-native-io",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--target",
+        "aarch64-unknown-linux-musl",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "sourceUnchangedDuringCommand": true,
+      "laterDocumentationOnlyChanges": [],
+      "log": {
+        "path": ".codex-work/direct-computation/spool-linux-check.log",
+        "byteLength": 3278,
+        "sha256": "ed94693297749606db4d5aac2f63d00f9ce2d99f6b5efd27992b3bc1f786545e"
+      }
+    },
+    {
+      "name": "spool-windows-check",
+      "args": [
+        "cargo",
+        "clippy",
+        "-p",
+        "mo-native-io",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--target",
+        "x86_64-pc-windows-gnu",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "sourceUnchangedDuringCommand": true,
+      "laterDocumentationOnlyChanges": [],
+      "log": {
+        "path": ".codex-work/direct-computation/spool-windows-check.log",
+        "byteLength": 3159,
+        "sha256": "32253bd1c768e8a924e4eb4be1468111ccd8cbb440be003ef677913a189f1cdc"
+      }
+    }
+  ],
+  "files": {
+    "independentReference": {
+      "path": ".codex-work/direct-computation/reference-03/reference.json",
+      "byteLength": 4363,
+      "sha256": "1073cf79a6f03be6360e9e5b8cea8db49991849a165824831dfadfacd9948d4f"
+    },
+    "cliIndex": {
+      "path": ".codex-work/direct-computation/reference-03/files.json",
+      "byteLength": 4411,
+      "sha256": "aa07530324922772f01b8d6c7fef03e576b180be9c185267cc5f5609e550d826"
+    },
+    "cliCalls": {
+      "workerSha256": "318f0be65d87333f4b8235b7061bfca1197b1c9589e3b13a5d130d24e4b987ea",
+      "calls": [
+        {
+          "name": "created",
+          "exitCode": 0,
+          "resultSha256": "8498719ab87f17d03cca4c14e66a0687cc6cd65353e9d79cfe4b8492210284b4",
+          "assets": 0
+        },
+        {
+          "name": "exported",
+          "exitCode": 0,
+          "resultSha256": "b91432e30f2a43e796583eb496cc34754490c7caf7bebc25ccb1b713b0312b59",
+          "assets": 12
+        },
+        {
+          "name": "edited",
+          "exitCode": 0,
+          "resultSha256": "896cb7c30eda6610be7451faaeaf240b05b2e8e8331c57ec9f41ea15a79a96f4",
+          "assets": 0
+        },
+        {
+          "name": "exported-edited",
+          "exitCode": 0,
+          "resultSha256": "a5c6917095b053e262030396583c1f19207fa3920714d480a168d51af2006c1d",
+          "assets": 12
+        },
+        {
+          "name": "imported-exported",
+          "exitCode": 0,
+          "resultSha256": "ce784403dcb368c64dc3bc9385637f1cdaa54a3f8fffa8eb69d37548a0f4a146",
+          "assets": 0
+        },
+        {
+          "name": "imported-exported-edited",
+          "exitCode": 0,
+          "resultSha256": "be59c4dd15b3c9bcac50ce6f5ed07a89f3b5b087c5c74146e43eb1858af50b84",
+          "assets": 0
+        }
+      ],
+      "historicalUnchangedAssets": [
+        "model",
+        "resource:0",
+        "font-bundle",
+        "font-profile",
+        "feature-registry",
+        "preview:0",
+        "preview-evidence:0",
+        "preview:1",
+        "preview-evidence:1",
+        "presentation"
+      ],
+      "historicalChangedAssets": [
+        "delivery-context",
+        "quality"
+      ],
+      "actualTitleEditVerified": true,
+      "temporaryExecutionDirectoriesRemaining": 0,
+      "scope": "macOS arm64 development build; independent structure checks, no Office/WPS or quality/performance acceptance",
+      "unsupportedSyntheticFontDiagnostic": {
+        "errorSha256": "bf9b0b9c251a55947ad15255f0bea952ebad8412ad3e6e39f0481ea49fa4ca40",
+        "code": "RENDER_FAILURE",
+        "noOutputOrTemporaryExecution": true,
+        "scope": "The owned synthetic fixture font does not cover the attempted English replacement. The positive edit uses authored A glyphs; no fallback or validation bypass."
+      }
+    },
+    "worker": {
+      "path": "target/debug/mo-export-worker",
+      "byteLength": 38298336,
+      "sha256": "318f0be65d87333f4b8235b7061bfca1197b1c9589e3b13a5d130d24e4b987ea"
+    },
+    "consumerIndex": {
+      "path": ".codex-work/direct-computation/consumer-output/files.json",
+      "byteLength": 3991,
+      "sha256": "6e20be22028d64f7e3ff015931a6efd98765569d6d5f8dbe3f4c34aea107e02b"
+    },
+    "consumerReceiptAnd12AssetsByteIdenticalToCli": true,
+    "historicalMetadataDifferences": [
+      {
+        "asset": "delivery-context",
+        "changedJsonPointers": [
+          "/previewRenderer/implementationSha256",
+          "/settingsDigest"
+        ]
+      },
+      {
+        "asset": "quality",
+        "changedJsonPointers": [
+          "/contextAssetId"
+        ]
+      }
+    ]
+  },
+  "sdk": {
+    "manifest": {
+      "path": ".codex-work/direct-computation/sdk-final/sdk-manifest.json",
+      "byteLength": 183648,
+      "sha256": "cee6449b973cfacb270647ef0d509fbf1240d538d15f5bcfc248bea77aa041fa"
+    },
+    "archive": {
+      "path": ".codex-work/direct-computation/sdk-final.tar.gz",
+      "byteLength": 748798,
+      "sha256": "8015e19081945e10ba9787cac7564f60657feb770f5af53021d0a14af29b191f"
+    },
+    "libraries": 23,
+    "registryPackages": 54,
+    "files": 472,
+    "sourcesMatchCurrent": true,
+    "consumerDidNotMutateBundle": true,
+    "forbiddenDependenciesAbsent": [
+      "mo-harfbuzz-sys",
+      "mo-operation-service",
+      "mo-skia-sys",
+      "mo-standard-host",
+      "rmcp",
+      "rusqlite",
+      "tokio"
+    ],
+    "scope": "Development source inputs only. Excludes the separately pinned renderer worker, fonts and media; archive bytes are not installer/runtime measurements."
+  },
+  "schemas": {
+    "historicalSchemasByteUnchanged": 117,
+    "historicalGeneratedTypesByteUnchanged": 121,
+    "newSchemas": 2,
+    "newTypes": 2
+  },
+  "locks": {
+    "failingAliasReproducer": {
+      "path": ".codex-work/direct-computation/spool-alias-red.log",
+      "byteLength": 1063,
+      "sha256": "9bce13e37324140dee8bef5314b2f811449b0e2d977c9be426a55a6711bb0d93"
+    },
+    "priorParallelFailure": {
+      "path": ".codex-work/direct-computation/spool-reproduce-05.log",
+      "byteLength": 1840,
+      "sha256": "0da042919a6247dff32a5e88ed5b94c53902e355eea32054b287851fa3b37cd6"
+    },
+    "fixedRuns": [
+      {
+        "path": ".codex-work/direct-computation/spool-fixed-00.log",
+        "byteLength": 1460,
+        "sha256": "ccda324e5fec32f40071c470bb4f8625397ec73997a60d79dac35f2b457d8df2"
+      },
+      {
+        "path": ".codex-work/direct-computation/spool-fixed-01.log",
+        "byteLength": 1514,
+        "sha256": "a290ccc07d30978ee3d03e9b0720785e07625dca595fe3c48620761a65d4aed4"
+      },
+      {
+        "path": ".codex-work/direct-computation/spool-fixed-02.log",
+        "byteLength": 1514,
+        "sha256": "57de0c662b7022d669d65e9386f57f497e6623bd935749814f2e7dad7a851b8c"
+      },
+      {
+        "path": ".codex-work/direct-computation/spool-fixed-03.log",
+        "byteLength": 1460,
+        "sha256": "2f7a0438bf45b0c7ea84b7796623396d75641082adf4294375ea6f4f4739e577"
+      },
+      {
+        "path": ".codex-work/direct-computation/spool-fixed-04.log",
+        "byteLength": 1460,
+        "sha256": "3d0d19a08a7691132fa587a168228d6efb59c231c31561a91152d47f17b8e670"
+      },
+      {
+        "path": ".codex-work/direct-computation/spool-fixed-05.log",
+        "byteLength": 1460,
+        "sha256": "7903fcceebad9a6036f55109b9635e95892c7b61ad826a9793c60a88fe768675"
+      },
+      {
+        "path": ".codex-work/direct-computation/spool-fixed-06.log",
+        "byteLength": 1460,
+        "sha256": "203cb8b92af716bbd3d351a6b01e60994301d0f04ac7268739da3f1dc9155833"
+      },
+      {
+        "path": ".codex-work/direct-computation/spool-fixed-07.log",
+        "byteLength": 1460,
+        "sha256": "f10311890b45ea4c277c0cf35938e4da42332b26c8f71b20bc5d75b273cc5324"
+      },
+      {
+        "path": ".codex-work/direct-computation/spool-fixed-08.log",
+        "byteLength": 1460,
+        "sha256": "b708eb8fe59c2e4c80799c8ae71e0131029173371a6da15555ed09f9e21d34a1"
+      },
+      {
+        "path": ".codex-work/direct-computation/spool-fixed-09.log",
+        "byteLength": 1460,
+        "sha256": "56c40e5db7efd3c436ccaca95d7bd1c3877678a09d1234ec5f79c1735b83bba8"
+      },
+      {
+        "path": ".codex-work/direct-computation/spool-fixed-10.log",
+        "byteLength": 1460,
+        "sha256": "a871192ec6597bc1fce973fb6a0ea2a9adc2b16e28207f1dff8f7259c4fd9d2a"
+      },
+      {
+        "path": ".codex-work/direct-computation/spool-fixed-11.log",
+        "byteLength": 1460,
+        "sha256": "2d4ff7f3a0f2f09a116b5c99898d449f16e5403dd1b6c227a2131e61e2a557dc"
+      },
+      {
+        "path": ".codex-work/direct-computation/spool-fixed-12.log",
+        "byteLength": 1460,
+        "sha256": "bdf807df2b5431aac7a0730161a2b72288aec10da9e7c0a29a391f771f558dff"
+      },
+      {
+        "path": ".codex-work/direct-computation/spool-fixed-13.log",
+        "byteLength": 1460,
+        "sha256": "4ee0ea7df38194e3e4ce0d8522886c202826486b06ab9769f5ddbe22465e153d"
+      },
+      {
+        "path": ".codex-work/direct-computation/spool-fixed-14.log",
+        "byteLength": 1460,
+        "sha256": "49fd27048d903613f73f3974a269f63955c80280144997de2a69214a43e1d6c4"
+      },
+      {
+        "path": ".codex-work/direct-computation/spool-fixed-15.log",
+        "byteLength": 1460,
+        "sha256": "7e432d974654de2adfbec591ab0865a1762385947dce91576ac5ab9e3cb75cd4"
+      }
+    ],
+    "testsPerRun": 12,
+    "helperEntryIgnoredPerRun": 1,
+    "crossPlatform": "Linux aarch64 and Windows x64 all-targets strict compile only; runtime evidence macOS only."
+  },
+  "sourceFiles": [
+    {
+      "path": "Cargo.lock",
+      "byteLength": 29433,
+      "sha256": "35198231a00be80cac5c01bff9276429c56e89e61e545cb18c406acf48e2ab38"
+    },
+    {
+      "path": "contracts/generated/computation-invocation.schema.json",
+      "byteLength": 94134,
+      "sha256": "111b76f9c74b6de821af21c68518eac82c3c5474e9c6456a3872a8f1f7052d74"
+    },
+    {
+      "path": "contracts/generated/computation-receipt.schema.json",
+      "byteLength": 70247,
+      "sha256": "34c0b5e2c837c750af2e5dc798a3146daaba428111854ccb8a4283e1129b2a83"
+    },
+    {
+      "path": "crates/mo-embedded-sdk/src/execute.rs",
+      "byteLength": 3394,
+      "sha256": "6ba0e9486c4291920fd86de6b682c119b92c0f5d1d64818295125c342c983fa9"
+    },
+    {
+      "path": "crates/mo-embedded-sdk/src/lib.rs",
+      "byteLength": 810,
+      "sha256": "55570e8059833434fde8a57022e670ec79cf54df373f40c0241fd53bfee161d3"
+    },
+    {
+      "path": "crates/mo-embedded-sdk/tests/execution.rs",
+      "byteLength": 4197,
+      "sha256": "56cd107d3e98d90f35137a07126ce92422e8782e71751aca05dfc1b53a4004bf"
+    },
+    {
+      "path": "crates/mo-native-io/src/execution.rs",
+      "byteLength": 10598,
+      "sha256": "cf476c602a0ab4350510b2f680ac2c1b980c7c87ac420f1352210f572baa2274"
+    },
+    {
+      "path": "crates/mo-native-io/src/execution/locks.rs",
+      "byteLength": 1378,
+      "sha256": "1a921859213b0236f49f232144231763a26fff212896ab2b0bca4d34a440e535"
+    },
+    {
+      "path": "crates/mo-native-io/src/execution/tests.rs",
+      "byteLength": 14115,
+      "sha256": "b12a9846af38fe4516f7e4fd753b1c61a540b8ba75f2ec71edd51d4ae4bc75a3"
+    },
+    {
+      "path": "crates/mo-presentation-operations/src/budget.rs",
+      "byteLength": 2010,
+      "sha256": "5009ed0852a85aa2f25c1fe67f03ed0fcd36355b4f99f9a26ee9a4b5b9b7275f"
+    },
+    {
+      "path": "crates/mo-presentation-operations/src/compute.rs",
+      "byteLength": 7140,
+      "sha256": "3d4f6cae026aff3ab78a7e20b119eebb8fa02b4a407d848929ec54b26a7d8e22"
+    },
+    {
+      "path": "crates/mo-presentation-operations/src/invocation.rs",
+      "byteLength": 3150,
+      "sha256": "ce87e04b379057ee4f56370ebb166a85378b2820470ddbc0f29e6382fbdf7ce0"
+    },
+    {
+      "path": "crates/mo-presentation-operations/src/lib.rs",
+      "byteLength": 405,
+      "sha256": "05e7f498833f88291dea2b514dae5548fa337cc01f08390e398764086938792a"
+    },
+    {
+      "path": "crates/mo-presentation-operations/src/schemas.rs",
+      "byteLength": 3324,
+      "sha256": "3386734e130f457d383d18d3365258bfb02d0f0587437bc6948f3033dd64fc17"
+    },
+    {
+      "path": "packages/contracts/src/generated/computation-invocation.ts",
+      "byteLength": 39040,
+      "sha256": "666f10740a6e58cc1e7b6e072410100d6739ca8f60ccdbcc07f248ef15caddfd"
+    },
+    {
+      "path": "packages/contracts/src/generated/computation-receipt.ts",
+      "byteLength": 32532,
+      "sha256": "96d3710845b2bce3615b975bee518f4df974b849ae821a4c351b61e03c30dbc1"
+    },
+    {
+      "path": "tools/mo-cli/Cargo.toml",
+      "byteLength": 476,
+      "sha256": "14018dc3193f00372eaa755f455e0bf7d9c32c6e4ae65e3d5abb2c6859fb0870"
+    },
+    {
+      "path": "tools/mo-cli/src/computation.rs",
+      "byteLength": 3049,
+      "sha256": "8ad3017c83f47b49bd6bbbc62e02f62a651ce6fbf00e2f814792715740413b53"
+    },
+    {
+      "path": "tools/mo-cli/src/computation/inputs.rs",
+      "byteLength": 5084,
+      "sha256": "460cec66fb8223d30ecb6ff90551cd6c97575b64eab52535bb8b6e2427ce47af"
+    },
+    {
+      "path": "tools/mo-cli/src/computation/output.rs",
+      "byteLength": 6283,
+      "sha256": "3c75208a1488fcbefb056eaf42cc66958aad9897ba046da5de220b1162425749"
+    },
+    {
+      "path": "tools/mo-cli/src/main.rs",
+      "byteLength": 13537,
+      "sha256": "7e2946857180c2170b0799e65b3e8b58a982a5ff8ee2f633176983ead5cd6499"
+    },
+    {
+      "path": "tools/mo-cli/tests/computation.rs",
+      "byteLength": 11861,
+      "sha256": "cf64781091bb65b75a9d0f1d499f5db0b84f16f68911c2592fbdec71fdd5fb2d"
+    },
+    {
+      "path": "tools/mo-contract-codegen/src/main.rs",
+      "byteLength": 13877,
+      "sha256": "9ba284cc6d1bfd96d5f1dba42d7dea4d882312a4f457bf4c9cc2ac9b4bebe227"
+    },
+    {
+      "path": "tools/sdk/README.md",
+      "byteLength": 5020,
+      "sha256": "9283b24966ca979646ea7ead44ffd5b4dd8fc7e9321d62e827bb0c5fe1f6ca77"
+    },
+    {
+      "path": "tools/verification/current.py",
+      "byteLength": 10423,
+      "sha256": "2a84bdc4a3ce6e8db4f92ceffd86718213466dc6f0d70e624603b384f0515ef1"
+    },
+    {
+      "path": "tools/verification/native-wasm-parity.mjs",
+      "byteLength": 8857,
+      "sha256": "4f7e4b3da94972c536d2888f1e2a049c96b4ba8241d69b7f471ab818e5aa7a6f"
+    }
+  ],
+  "retainedFailures": [
+    {
+      "kind": "workspace-gate-before-lock-fix",
+      "report": {
+        "path": ".codex-work/direct-computation/gates-01/report.json",
+        "byteLength": 6883,
+        "sha256": "89de7e562ba699484650fabf6b42288f38faf51cc96355d972c3f4f76263acc5"
+      }
+    },
+    {
+      "kind": "independent-check-assumed-spool-exists-for-no-input-create",
+      "report": {
+        "path": ".codex-work/direct-computation/independent-cli.json",
+        "byteLength": 185281,
+        "sha256": "9c573a4e3388c3b75300e8b76cd4b5390512204c3a28f958fcf354bedb12f363"
+      }
+    },
+    {
+      "kind": "synthetic-font-cannot-cover-new-English-text",
+      "report": {
+        "path": ".codex-work/direct-computation/independent-cli-02.json",
+        "byteLength": 185292,
+        "sha256": "0ec6df93d9383e4dc6146ab975877eb55a61698a8154e0a2f24686e3080af22d"
+      }
+    },
+    {
+      "kind": "checker-included-own-output-in-input-inventory",
+      "report": {
+        "path": ".codex-work/direct-computation/independent-reference.json",
+        "byteLength": 35660,
+        "sha256": "dcd5b4f9df805ebb860aea8d3abc6770cab10b91fc141a79dd3aaf838a28b4d8"
+      }
+    }
+  ],
+  "limitations": [
+    "No Musterwork source, database or PPT routing was changed in this stage. Its pending v188 work and actual product integration are not verified here.",
+    "Thin MCP/Skill/Plugin migration remains pending; legacy MCP protocol client probes were not selected.",
+    "High-level playback and complete advanced contents, Office/WPS editing, full Native/WASM rendering equality, I01-I20/MW and replacement acceptance remain open.",
+    "Only the owned two-page fixture structure/content was independently checked; claims for full layout, native editability, playback and target applications remain not_proven.",
+    "No desktop installer size, release binary performance, throughput or general multilingual-font coverage benefit is asserted."
+  ],
+  "checkedDocumentationLinks": 391
+}

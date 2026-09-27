@@ -2,11 +2,13 @@
 members = [
   "crates/mo-common",
   "crates/mo-operation-service",
+  "crates/mo-presentation-operations",
   "crates/mo-standard-host",
   "crates/mo-native-io",
   "crates/mo-native-worker",
   "crates/mo-native-render",
   "crates/mo-native-export",
+  "crates/mo-native-compute",
   "crates/mo-embedded-sdk",
   "crates/mo-timeline",
   "crates/mo-geometry",
@@ -31,6 +33,7 @@ members = [
   "crates/mo-presentation-source",
   "tools/mo-cli",
   "tools/mo-host",
+  "tools/mo-host-compat-wasm",
   "tools/mo-text-worker",
   "tools/mo-raster-worker",
   "tools/mo-export-worker",
@@ -47,11 +50,13 @@ publish = false
 [workspace.dependencies]
 mo-common = { path = "crates/mo-common" }
 mo-operation-service = { path = "crates/mo-operation-service" }
+mo-presentation-operations = { path = "crates/mo-presentation-operations" }
 mo-standard-host = { path = "crates/mo-standard-host" }
 mo-native-io = { path = "crates/mo-native-io" }
 mo-native-worker = { path = "crates/mo-native-worker" }
 mo-native-render = { path = "crates/mo-native-render" }
 mo-native-export = { path = "crates/mo-native-export" }
+mo-native-compute = { path = "crates/mo-native-compute" }
 rustix = { version = "=1.1.5", default-features = false, features = ["fs", "std"] }
 mo-embedded-sdk = { path = "crates/mo-embedded-sdk" }
 rusqlite = { version = "=0.40.2", default-features = false, features = ["bundled"] }

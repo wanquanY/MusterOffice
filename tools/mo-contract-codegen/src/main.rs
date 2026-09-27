@@ -59,6 +59,30 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
     let schemas = [
         (
+            "computation-invocation",
+            schema::<mo_presentation_operations::Invocation>(),
+        ),
+        (
+            "computation-receipt",
+            schema::<mo_presentation_operations::ComputationReceipt>(),
+        ),
+        (
+            "computation-request",
+            schema::<mo_presentation_operations::OperationRequest>(),
+        ),
+        (
+            "computation-failure",
+            schema::<mo_presentation_operations::Failure>(),
+        ),
+        (
+            "computation-mutation-receipt",
+            schema::<mo_presentation_operations::MutationReceipt>(),
+        ),
+        (
+            "computation-export-receipt",
+            schema::<mo_presentation_operations::ExportReceipt>(),
+        ),
+        (
             "delivery-inspect-request",
             schema::<mo_kernel_api::DeliveryInspectRequest>(),
         ),

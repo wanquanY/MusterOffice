@@ -2,12 +2,12 @@ use crate::execution::RetainedSpool;
 use crate::{storage::*, wire::*, *};
 use mo_common::RequestId;
 use mo_native_io::{ExecutionSpoolRoot, SpoolRecovery};
-use mo_operation_service::{DocumentAction, ExportAssets, ExportReceipt, OperationRequest};
 use mo_presentation_delivery::{
     Content, DeliveryAsset, DeliveryError, DeliverySource, ReceiptInspection, ReceivedDelivery,
     RendererIdentity,
 };
 use mo_presentation_edit::SnapshotRecord;
+use mo_presentation_operations::{DocumentAction, ExportAssets, ExportReceipt, OperationRequest};
 use std::{
     collections::{BTreeMap, BTreeSet},
     path::PathBuf,
@@ -269,7 +269,7 @@ impl NativeExporter {
             || receipt.semantic_digest != expected.semantic_digest
         {
             return Err(Failure::new(
-                FailureCode::StaleExecution,
+                FailureCode::ResultMismatch,
                 "export response input binding differs",
             ));
         }
@@ -280,7 +280,7 @@ impl NativeExporter {
             Default::default(),
             check,
         )
-        .map_err(mo_operation_service::delivery_failure)?;
+        .map_err(mo_presentation_operations::delivery_failure)?;
         if check() {
             return Err(cancel());
         }

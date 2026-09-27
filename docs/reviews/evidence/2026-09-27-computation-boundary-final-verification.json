@@ -1,0 +1,119 @@
+{
+  "format": "musteroffice.computation-boundary-final/1",
+  "date": "2026-09-27",
+  "priorEvidence": {
+    "path": "docs/reviews/evidence/2026-09-27-computation-boundary-verification.json",
+    "byteLength": 38472,
+    "sha256": "1ec51f554fd7d35257cf1491a589404e3b47c527223469e957198498c4c63d85"
+  },
+  "change": "Preserve a final cancellation checkpoint after legacy snapshot JSON/receipt binding; pure computation, SDK, worker and schema bytes remain at the previously tested stage.",
+  "sourceFiles": [
+    {
+      "path": "crates/mo-operation-service/src/compute.rs",
+      "byteLength": 2552,
+      "sha256": "5938523de20c34f4add66ae41e407432eee168f93666610cb9a2285b117f9e34"
+    },
+    {
+      "path": "crates/mo-operation-service/src/export.rs",
+      "byteLength": 3401,
+      "sha256": "d162810f7500b326e40069b55f80f49d34e57d4fe6337e76aba518f0657b3e6b"
+    }
+  ],
+  "otherCheckedSourceFilesUnchanged": true,
+  "currentSourceSha256": "468720eac72647b69f740a50e166573e63461244ca764178851951e405f3f84c",
+  "checks": [
+    {
+      "name": "legacy-final-cancellation",
+      "args": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-operation-service",
+        "-p",
+        "mo-standard-host"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "log": {
+        "path": ".codex-work/compute-boundary/legacy-final-cancellation.log",
+        "byteLength": 10543,
+        "sha256": "57f112e1888733f2b5d2c4f7742bef7d12e4baac8a3552986c9cd5114e7d0916"
+      }
+    },
+    {
+      "name": "legacy-final-clippy",
+      "args": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-operation-service",
+        "-p",
+        "mo-standard-host",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "log": {
+        "path": ".codex-work/compute-boundary/legacy-final-clippy.log",
+        "byteLength": 2180,
+        "sha256": "9fb6353bdc2822734a7fb31101c0cc578be307f13f9a240778d05fdce261179a"
+      }
+    },
+    {
+      "name": "legacy-final-native",
+      "args": [
+        "env",
+        "MO_DELIVERY_WORKER=ROOT:/target/debug/mo-raster-worker",
+        "MO_DELIVERY_WORKER_SHA256=0beeac29e7b3cd934408206d99ceab3f4947ef1bf417689bae392083784637b0",
+        "MO_SKIA_LIB_DIR=ROOT:/.codex-work/gradient-coordinates/component",
+        "MO_HARFBUZZ_LIB_DIR=ROOT:/.codex-work/harfbuzz/release",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-standard-host",
+        "--test",
+        "exports",
+        "--",
+        "--ignored"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "log": {
+        "path": ".codex-work/compute-boundary/legacy-final-native.log",
+        "byteLength": 1024,
+        "sha256": "160c63a8fada113a6095c50adeba1510629b422dfff885b1c7382474ea49e565"
+      }
+    }
+  ],
+  "serviceAndHostTests": {
+    "passed": 75,
+    "ignored": 13
+  },
+  "realLegacyExportTests": {
+    "passed": 9,
+    "ignored": 0
+  },
+  "sdkManifest": {
+    "path": ".codex-work/compute-boundary/sdk-final/sdk-manifest.json",
+    "byteLength": 182174,
+    "sha256": "f8fe67b909edc95e1203de8262d7ffe0b5ca3bdddaa5fd2ef3a827ff3b7a44ac"
+  },
+  "sdkInputsStillMatch": true,
+  "scope": "Scoped final cancellation follow-up. Reuses prior full gates only for unchanged inputs; does not claim the complete workspace or MCP protocol suite was rerun after this follow-up.",
+  "limitations": [
+    "All reported worker/SDK executions are macOS arm64 development builds; no release-size or throughput benefit is asserted.",
+    "This turn did not change Musterwork sources or migrate any application database; its pending v188 work is not verified here.",
+    "Legacy MCP/standard host still require migration out of the normal Agent delivery path. MCP client protocol probes were not selected in this gate run.",
+    "Standalone SDK currently exposes existing create/import/edit/export computation; complete high-level playback, advanced content, Office/WPS and I01-I20 remain open.",
+    "Output claims retain only structure passed; layout, native-editability, playback and target-application remain not_proven for the full delivery profile."
+  ]
+}

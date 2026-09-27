@@ -14,7 +14,7 @@ macro_rules! identity {
         impl fmt::Display for $name {fn fmt(&self,f:&mut fmt::Formatter<'_>)->fmt::Result{self.0.fmt(f)}}
     )+};
 }
-identity!(PrincipalId, ScopeId, JobId, UploadId, AssetId);
+identity!(PrincipalId, ScopeId, JobId, UploadId);
 macro_rules! counter {
     ($($name:ident),+) => {$(
         #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]

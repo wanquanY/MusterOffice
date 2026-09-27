@@ -94,7 +94,7 @@ impl HostRequest {
             Self::SealUpload { .. } => ServiceOperation::SealUpload,
             Self::CancelUpload { .. } => ServiceOperation::CancelUpload,
             Self::ReadAsset { .. } => ServiceOperation::ReadAsset,
-            Self::Submit { request } => request.action.service_operation(),
+            Self::Submit { request } => ServiceOperation::for_action(&request.action),
             Self::GetJob { .. } => ServiceOperation::GetJob,
             Self::CancelJob { .. } => ServiceOperation::CancelJob,
             Self::ReadDocument { .. } => ServiceOperation::ReadDocument,

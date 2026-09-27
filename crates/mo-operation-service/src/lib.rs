@@ -1,5 +1,5 @@
-//! Model-independent operation authority is injected by the host. This crate has
-//! no persistence, paths, network, process spawning or implicit credentials.
+//! Legacy persistent-host contract and compatibility adapters. Pure consumers
+//! use mo-presentation-operations; domain algorithms are not implemented here.
 mod assets;
 mod compute;
 mod contract;
@@ -16,3 +16,9 @@ pub use export::*;
 pub use host::*;
 pub use identity::*;
 pub use schemas::*;
+
+pub use mo_presentation_operations::{
+    AssetBinding, AssetDescriptor, AssetId, AssetInfo, AssetVerification, DocumentAction,
+    ExportAsset, ExportReceipt, ExportSettings, MutationReceipt, OperationProfile,
+};
+mod compatibility;

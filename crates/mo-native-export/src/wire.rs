@@ -1,16 +1,18 @@
 use crate::*;
 #[cfg(test)]
 mod tests;
-use mo_operation_service::{AssetId, AssetInfo, DocumentAction, ExportReceipt, OperationRequest};
 use mo_presentation_delivery::{DeliveryExpectation, DeliveryLimits, RendererIdentity};
 use mo_presentation_edit::SnapshotRecord;
+use mo_presentation_operations::{
+    AssetId, AssetInfo, DocumentAction, ExportReceipt, OperationRequest,
+};
 use serde::{Deserialize, Serialize};
 use std::{
     collections::BTreeSet,
     io::{Read, Write},
 };
 
-pub(crate) const VERSION: &str = "musteroffice.native-export/1-draft";
+pub(crate) const VERSION: &str = "musteroffice.native-export/2-draft";
 // Snapshot + operation + bounded asset descriptors; no resource bytes in JSON.
 pub(crate) const MAX_METADATA: usize = 65 * 1024 * 1024;
 pub(crate) const MAX_INPUT_BYTES: u64 = 512 * 1024 * 1024;

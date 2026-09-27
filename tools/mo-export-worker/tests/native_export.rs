@@ -3,11 +3,13 @@
 mod faults;
 #[path = "native_export/recovery.rs"]
 mod recovery;
+#[path = "native_export/sdk.rs"]
+mod sdk;
 mod support;
 use mo_common::Digest;
 use mo_native_export::NativeExportCandidate;
-use mo_operation_service::{DocumentAction, FailureCode};
 use mo_presentation_delivery::{AssetRole, ClaimStatus};
+use mo_presentation_operations::{DocumentAction, FailureCode};
 use std::{cell::Cell, fs, path::Path};
 use support::*;
 
@@ -147,7 +149,7 @@ fn cancellation_before_start_and_during_output_removes_all_execution_files() {
 }
 
 #[test]
-fn input_authorization_and_reader_failures_never_become_candidates() {
+fn missing_inputs_and_reader_failures_never_become_candidates() {
     let root = Root::new();
     let exporter = exporter(&root);
     for failure in [false, true] {
@@ -166,7 +168,7 @@ fn input_authorization_and_reader_failures_never_become_candidates() {
             if failure {
                 FailureCode::ExecutionInterrupted
             } else {
-                FailureCode::NotAuthorized
+                FailureCode::ResourceIncomplete
             }
         );
         root.clean();
@@ -197,7 +199,7 @@ fn native_font_failure_keeps_shared_structured_diagnostic() {
 fn retain_evidence(
     path: &Path,
     candidate: &NativeExportCandidate,
-    request: &mo_operation_service::OperationRequest,
+    request: &mo_presentation_operations::OperationRequest,
     renderer: &mo_presentation_delivery::RendererIdentity,
 ) {
     fs::create_dir(path).unwrap();

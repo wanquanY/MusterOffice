@@ -1,7 +1,7 @@
 use super::*;
 use mo_common::RequestId;
-use mo_operation_service::{ContractVersion, OperationProfile, OutputMode};
 use mo_presentation_edit::Snapshot;
+use mo_presentation_operations::{ContractVersion, OperationProfile};
 use serde_json::{Value, json};
 
 fn request() -> (Request, RendererIdentity) {
@@ -23,11 +23,10 @@ fn request() -> (Request, RendererIdentity) {
         contract_version: ContractVersion::V1,
         request_id: RequestId::new("export:wire-test").unwrap(),
         profile_id: OperationProfile::ResourceDelivery,
-        output_mode: OutputMode::Job,
         action: DocumentAction::Export {
             document_id: snapshot.document.id.clone(),
             base_revision: snapshot.revision.clone(),
-            settings: Box::new(mo_operation_service::ExportSettings {
+            settings: Box::new(mo_presentation_operations::ExportSettings {
                 delivery: serde_json::from_value(input["settings"].clone()).unwrap(),
                 resources: vec![],
                 font_asset_id: None,
@@ -81,11 +80,13 @@ fn typed_frames_reject_paths_wrong_version_action_and_revision() {
     let mut json = serde_json::to_value(&value).unwrap();
     json["spoolDirectory"] = "some/path".into();
     assert!(read::<Request>(&mut encode(&json).unwrap().as_slice()).is_err());
-    value.version = "unknown".into();
-    assert_eq!(
-        value.validate(&renderer).unwrap_err().code,
-        FailureCode::ExecutorMismatch
-    );
+    for version in ["unknown", "musteroffice.native-export/1-draft"] {
+        value.version = version.into();
+        assert_eq!(
+            value.validate(&renderer).unwrap_err().code,
+            FailureCode::ExecutorMismatch
+        );
+    }
     value.version = VERSION.into();
     value.snapshot.revision = Digest::from_sha256([0; 32]);
     assert_eq!(
@@ -101,7 +102,7 @@ fn typed_frames_reject_paths_wrong_version_action_and_revision() {
 #[test]
 fn exact_asset_coverage_duplicate_ids_and_budgets_are_required() {
     use mo_common::ByteLength;
-    use mo_operation_service::{AssetDescriptor, AssetVerification};
+    use mo_presentation_operations::{AssetDescriptor, AssetVerification};
     let (mut value, renderer) = request();
     let asset = AssetInfo {
         id: AssetId::new("font:1").unwrap(),
