@@ -4,6 +4,9 @@ mod clip;
 #[cfg(test)]
 mod clip_tests;
 mod compile;
+mod completion;
+#[cfg(test)]
+mod completion_tests;
 mod composite;
 #[cfg(test)]
 mod composite_tests;
@@ -44,9 +47,7 @@ mod tests;
 mod types;
 pub use brush::*;
 pub use compile::{CompiledRaster, compile};
-use mo_common::{ByteLength, Digest};
 pub use profiles::{accepts_profile, profile_for_frame};
-use sha2::{Digest as _, Sha256};
 use thiserror::Error;
 pub use types::*;
 
@@ -87,9 +88,32 @@ pub enum RasterError {
     #[error("raster host failure: {0}")]
     Host(&'static str),
 }
+impl RasterError {
+    /// A failed/ambiguous component invocation cannot be reused. A caller that
+    /// cancels before invoking the component can simply drop the compiled batch.
+    pub fn invalidates_backend(&self) -> bool {
+        matches!(
+            self,
+            Self::Host(_) | Self::Cancelled | Self::ComponentInvalid(_) | Self::Component(2 | 4)
+        )
+    }
+}
 pub struct BackendReply {
     pub status: u32,
     pub pixels: Vec<u8>,
+}
+impl BackendReply {
+    /// Cheap status validation is also useful when discarding a stale frame:
+    /// observed component faults must not be hidden by an owner conflict.
+    pub fn check_status(&self) -> Result<(), RasterError> {
+        if self.status > 4 || (self.status != 0 && !self.pixels.is_empty()) {
+            return Err(RasterError::ComponentInvalid("status or failure bytes"));
+        }
+        if self.status != 0 {
+            return Err(RasterError::Component(self.status));
+        }
+        Ok(())
+    }
 }
 pub trait RasterBackend {
     fn raster(&mut self, frame: &[u32]) -> Result<BackendReply, RasterError>;
@@ -140,58 +164,12 @@ fn execute(
             Some(images) => backend.raster_images(compiled.frame(), images.bytes())?,
             None => backend.raster(compiled.frame())?,
         };
-        cancel(check)?;
-        if reply.status > 4 || (reply.status != 0 && !reply.pixels.is_empty()) {
-            return Err(RasterError::ComponentInvalid("status or failure bytes"));
-        }
-        if reply.status != 0 {
-            return Err(RasterError::Component(reply.status));
-        }
-        if reply.pixels.len() != compiled.pixel_bytes() {
-            return Err(RasterError::ComponentInvalid("pixel length"));
-        }
-        let mut hash = Sha256::new();
-        for chunk in reply.pixels.chunks(16384) {
-            cancel(check)?;
-            if chunk
-                .chunks_exact(4)
-                .any(|p| p[..3].iter().any(|v| *v > p[3]))
-            {
-                return Err(RasterError::ComponentInvalid("premultiplied channels"));
-            }
-            hash.update(chunk);
-        }
-        cancel(check)?;
-        let mut frame_hash = Sha256::new();
-        for words in compiled.frame().chunks(4096) {
-            cancel(check)?;
-            for word in words {
-                frame_hash.update(word.to_le_bytes());
-            }
-        }
-        cancel(check)?;
-        Ok(RasterImage {
-            info: RasterInfo {
-                profile: profile_for_frame(compiled.frame()[1])
-                    .ok_or(RasterError::ComponentInvalid("compiled frame version"))?
-                    .into(),
-                width: compiled.width(),
-                height: compiled.height(),
-                byte_length: ByteLength::new(reply.pixels.len() as u64),
-                sha256: Digest::from_sha256(hash.finalize().into()),
-                frame_sha256: Digest::from_sha256(frame_hash.finalize().into()),
-                work: compiled.work,
-            },
-            pixels: reply.pixels,
-        })
+        compiled.complete(reply, check)
     })();
-    if matches!(
-        &result,
-        Err(RasterError::Host(_)
-            | RasterError::Cancelled
-            | RasterError::ComponentInvalid(_)
-            | RasterError::Component(2 | 4))
-    ) {
+    if result
+        .as_ref()
+        .is_err_and(|error| error.invalidates_backend())
+    {
         backend.invalidate();
     }
     result

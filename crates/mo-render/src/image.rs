@@ -4,6 +4,7 @@ use mo_common::Digest;
 use mo_raster::{CompiledImageRaster, ImageWork, PreparedImages, RasterBackend, RasterError};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 
 pub struct CompiledImageScene<'a> {
     raster: CompiledImageRaster<'a>,
@@ -15,6 +16,14 @@ impl CompiledImageScene<'_> {
     }
     pub fn work(&self) -> &SceneWork {
         &self.work
+    }
+    pub fn complete(
+        self,
+        reply: mo_raster::BackendReply,
+        check: &dyn Fn() -> bool,
+    ) -> Result<ImageSceneRaster, RasterError> {
+        let image = self.raster.complete(reply, check)?;
+        Ok(scene_image(image, self.work))
     }
 }
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
@@ -49,22 +58,37 @@ pub fn render_images(
 ) -> Result<ImageSceneRaster, RasterError> {
     render_compiled_images(compile_images(request, images, check)?, backend, check)
 }
+pub fn compile_shared_images(
+    request: &SceneRasterRequest,
+    images: Arc<PreparedImages<'static>>,
+    check: &dyn Fn() -> bool,
+) -> Result<CompiledImageScene<'static>, RasterError> {
+    let (raster, work) = compile_with(request, check, &|paths, check| {
+        let raster = mo_raster::compile_shared_images(paths, Arc::clone(&images), check)?;
+        let bound = raster.raster_work().coordinate_error_bound;
+        Ok((raster, bound))
+    })?;
+    Ok(CompiledImageScene { raster, work })
+}
 pub fn render_compiled_images(
     compiled: CompiledImageScene<'_>,
     backend: &mut dyn RasterBackend,
     check: &dyn Fn() -> bool,
 ) -> Result<ImageSceneRaster, RasterError> {
     let image = mo_raster::render_compiled_images(compiled.raster, backend, check)?;
-    Ok(ImageSceneRaster {
+    Ok(scene_image(image, compiled.work))
+}
+fn scene_image(image: mo_raster::ImageRasterImage, work: SceneWork) -> ImageSceneRaster {
+    ImageSceneRaster {
         info: ImageSceneRasterInfo {
             scene: SceneRasterInfo {
                 profile: crate::PROFILE.into(),
                 raster: image.raster.info,
-                work: compiled.work,
+                work,
             },
             images: image.work,
             resources_sha256: image.resources_sha256,
         },
         pixels: image.raster.pixels,
-    })
+    }
 }

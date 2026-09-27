@@ -1,4 +1,6 @@
 //! One bounded, explicitly owned page sampler. No clock, event queue or global handles.
+mod prepared;
+pub use crate::playback_owner::PlaybackCompletionFailure;
 use crate::{PlaybackBinding, PlaybackCompiledFrame, PlaybackFailure, PlaybackRasterInfo};
 use mo_common::{Digest, RationalTime, SlideId, from_json_str};
 use mo_presentation_compile::playback::{GenerationError, PlaybackPagePlan};
@@ -6,8 +8,10 @@ use mo_presentation_compile::{PagePaintDefaults, PagePlacementRequest, PageRende
 use mo_presentation_edit::SnapshotRecord;
 use mo_raster::{RasterBackend, RasterViewport};
 use mo_timeline::{EventHistory, PlaybackGeneration, TimelineLimits, TimelineSamplerInfo};
+pub use prepared::PreparedPlaybackRender;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 
 pub const PLAYBACK_SESSION_PROFILE: &str = "author-page-sampler-session-v1-draft";
 
@@ -161,6 +165,8 @@ impl From<crate::playback_owner::Failure> for PlaybackSessionFailure {
 /// Drop releases it. A disposed owner cannot be prepared again (no handle ABA).
 #[derive(Default)]
 pub struct PlaybackSession {
+    identity: Arc<()>,
+
     state: State,
 }
 impl PlaybackSession {

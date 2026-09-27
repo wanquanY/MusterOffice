@@ -1,5 +1,7 @@
 use super::*;
+use mo_common::Digest;
 use mo_geometry::{Fixed, PathCommand, Point};
+use sha2::{Digest as _, Sha256};
 use std::cell::Cell;
 fn p(x: i128, y: i128) -> Point {
     Point {

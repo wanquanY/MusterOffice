@@ -1,5 +1,13 @@
 //! Shared single-plan lifecycle for author and imported-source samplers.
 use crate::{PlaybackBinding, PlaybackSessionFailureCode as Code};
+/// Local execution disposition, separate from the unchanged wire diagnostic.
+/// A stale owner does not poison a healthy component. Malformed pixels or a
+/// component fault require the host to discard that component's isolation unit.
+#[derive(Debug)]
+pub struct PlaybackCompletionFailure<E> {
+    pub error: E,
+    pub invalidate_backend: bool,
+}
 pub(crate) struct Failure {
     pub code: Code,
     pub message: &'static str,

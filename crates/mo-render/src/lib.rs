@@ -18,6 +18,27 @@ pub struct SceneImage {
     pub info: SceneRasterInfo,
     pub pixels: Vec<u8>,
 }
+impl CompiledScene {
+    /// Complete the exact prepared scene without rerunning geometry lowering.
+    pub fn complete(
+        self,
+        reply: mo_raster::BackendReply,
+        check: &dyn Fn() -> bool,
+    ) -> Result<SceneImage, RasterError> {
+        let image = self.raster.complete(reply, check)?;
+        Ok(scene_image(image, self.work))
+    }
+}
+fn scene_image(image: mo_raster::RasterImage, work: SceneWork) -> SceneImage {
+    SceneImage {
+        info: SceneRasterInfo {
+            profile: PROFILE.into(),
+            raster: image.info,
+            work,
+        },
+        pixels: image.pixels,
+    }
+}
 pub fn render(
     request: &SceneRasterRequest,
     backend: &mut dyn RasterBackend,
@@ -33,14 +54,7 @@ pub fn render_compiled(
     check: &dyn Fn() -> bool,
 ) -> Result<SceneImage, RasterError> {
     let image = mo_raster::render_compiled(compiled.raster, backend, check)?;
-    Ok(SceneImage {
-        info: SceneRasterInfo {
-            profile: PROFILE.into(),
-            raster: image.info,
-            work: compiled.work,
-        },
-        pixels: image.pixels,
-    })
+    Ok(scene_image(image, compiled.work))
 }
 fn cancel(check: &dyn Fn() -> bool) -> Result<(), RasterError> {
     if check() {

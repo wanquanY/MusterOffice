@@ -9,7 +9,7 @@ use mo_common::Digest;
 use mo_presentation_source::source::fill::resolve::FillOwner;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use std::collections::BTreeMap;
+use std::{collections::BTreeMap, sync::Arc};
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -33,7 +33,7 @@ pub struct ResourcePagePlan {
     index: SourceIndex,
     text_enabled: bool,
     text: Option<RetainedText>,
-    images: PreparedImages<'static>,
+    images: Arc<PreparedImages<'static>>,
     uses: BTreeMap<FillOwner, ImageUse>,
     decoded: Vec<mo_image::DecodedImageInfo>,
     sampling: mo_raster::ImageSampling,
@@ -111,7 +111,7 @@ impl ResourcePagePlan {
             index,
             text_enabled,
             text,
-            images,
+            images: Arc::new(images),
             uses,
             decoded: info.decoded,
             sampling: options.sampling,
@@ -121,12 +121,11 @@ impl ResourcePagePlan {
     pub fn info(&self) -> &ResourcePreparationInfo {
         &self.info
     }
-    pub(crate) fn render_sampled(
+    pub(crate) fn prepare_sampled(
         &self,
         rotations: &SourceRotations,
-        backend: &mut dyn RasterBackend,
         check: &dyn Fn() -> bool,
-    ) -> Result<SourceResourcePageImage, SourcePageError> {
+    ) -> Result<PreparedResourceFrame, SourcePageError> {
         let prepared = source_page::preflight_sampled(
             &self.index,
             &self.request,
@@ -176,7 +175,8 @@ impl ResourcePagePlan {
         if let Some(text) = text {
             text.finish()?;
         }
-        let compiled = mo_render::compile_images(&built.raster, &self.images, check)?;
+        let compiled =
+            mo_render::compile_shared_images(&built.raster, Arc::clone(&self.images), check)?;
         let (info, downstream) = {
             let page = built.finish(
                 compiled.work().clone(),
@@ -185,28 +185,18 @@ impl ResourcePagePlan {
             (page.info, page.downstream_coordinate_error_bound)
         };
         drop(paints);
-        let image = mo_render::render_compiled_images(compiled, backend, check)?;
-        Ok(SourceResourcePageImage {
-            info: SourceResourcePageRasterInfo {
-                profile: PROFILE.into(),
-                page: SourcePageRasterInfo {
-                    page: info,
-                    scene: image.info.scene,
-                    downstream_coordinate_error_bound: downstream,
-                },
-                text_frames: self.info.text_frames,
-                text_work: self
-                    .text
-                    .as_ref()
-                    .map(RetainedText::sample_work)
-                    .unwrap_or_default(),
-                images: image.info.images,
-                resources_sha256: image.info.resources_sha256,
-                decoded_images: self.decoded.clone(),
-                encoded_bytes: self.info.encoded_bytes,
-                gather_copy_bytes: 0,
-            },
-            pixels: image.pixels,
+        Ok(PreparedResourceFrame {
+            compiled,
+            page: info,
+            downstream,
+            text_frames: self.info.text_frames,
+            text_work: self
+                .text
+                .as_ref()
+                .map(RetainedText::sample_work)
+                .unwrap_or_default(),
+            decoded: self.decoded.clone(),
+            encoded_bytes: self.info.encoded_bytes,
         })
     }
 }

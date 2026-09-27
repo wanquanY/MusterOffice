@@ -251,10 +251,17 @@ impl RetainedSourcePlaybackPlan {
         backend: &mut dyn mo_raster::RasterBackend,
         check: &dyn Fn() -> bool,
     ) -> Result<(SourcePlaybackFrame, SourceResourcePageImage), SourcePlaybackError> {
+        let (frame, page) = self.prepare_frame(at, history, check)?;
+        Ok((frame, page.render(backend, check)?))
+    }
+    pub fn prepare_frame(
+        &mut self,
+        at: RationalTime,
+        history: Option<&EventHistory>,
+        check: &dyn Fn() -> bool,
+    ) -> Result<(SourcePlaybackFrame, PreparedResourceFrame), SourcePlaybackError> {
         let sample = self.timing.sample(at, history, check)?;
-        let page = self
-            .page
-            .render_sampled(&sample.rotations, backend, check)?;
+        let page = self.page.prepare_sampled(&sample.rotations, check)?;
         Ok((sample.frame, page))
     }
 }

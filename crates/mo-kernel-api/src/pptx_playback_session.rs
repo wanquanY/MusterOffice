@@ -1,4 +1,5 @@
 //! Explicit owner for imported source timing and immutable local resources.
+mod prepared;
 use crate::playback_owner::{Bound, Owner};
 use crate::*;
 use mo_common::{Digest, from_json_str};
@@ -9,8 +10,10 @@ use mo_presentation_compile::{
 };
 use mo_raster::RasterBackend;
 use mo_timeline::{PlaybackGeneration, TimelineLimits};
+pub use prepared::PreparedPptxPlaybackRender;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 pub const PPTX_PLAYBACK_SESSION_PROFILE: &str = "source-resource-sampler-session-v1-draft";
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -120,6 +123,8 @@ impl Ready {
 }
 #[derive(Default)]
 pub struct PptxPlaybackSession {
+    identity: Arc<()>,
+
     state: Owner<Ready>,
 }
 impl PptxPlaybackSession {

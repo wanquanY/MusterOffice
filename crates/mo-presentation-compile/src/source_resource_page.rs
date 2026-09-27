@@ -4,6 +4,8 @@
 pub mod protocol;
 mod resources;
 mod retained;
+mod retained_frame;
+pub use retained_frame::PreparedResourceFrame;
 mod types;
 use crate::{
     source_page::{self, *},

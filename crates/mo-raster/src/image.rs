@@ -10,6 +10,7 @@ use mo_geometry::{Fixed, Point};
 pub use resources::PreparedImages;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 
 pub const MAX_IMAGE_FRAME_WORDS: usize = crate::MAX_FRAME_WORDS + 2 + 4096 * 18;
 pub const IMAGE_PROFILE: &str = "skia-8d6d37b-q32-image-brushes-srgb-premul-rgba8-v5-draft";
@@ -98,8 +99,20 @@ pub struct ImageWork {
 }
 pub struct CompiledImageRaster<'a> {
     raster: CompiledRaster,
-    images: &'a PreparedImages<'a>,
+    images: ImageResources<'a>,
     work: ImageWork,
+}
+enum ImageResources<'a> {
+    Borrowed(&'a PreparedImages<'a>),
+    Shared(Arc<PreparedImages<'static>>),
+}
+impl ImageResources<'_> {
+    fn get(&self) -> &PreparedImages<'_> {
+        match self {
+            Self::Borrowed(value) => value,
+            Self::Shared(value) => value,
+        }
+    }
 }
 impl CompiledImageRaster<'_> {
     pub fn frame(&self) -> &[u32] {
@@ -112,6 +125,20 @@ impl CompiledImageRaster<'_> {
     /// executable batch that could lose the bound image bundle.
     pub fn raster_work(&self) -> &crate::RasterWork {
         self.raster.work()
+    }
+    pub fn images(&self) -> &[u8] {
+        self.images.get().bytes()
+    }
+    pub fn complete(
+        self,
+        reply: crate::BackendReply,
+        check: &dyn Fn() -> bool,
+    ) -> Result<ImageRasterImage, RasterError> {
+        Ok(ImageRasterImage {
+            raster: self.raster.complete(reply, check)?,
+            work: self.work,
+            resources_sha256: self.images.get().sha256().clone(),
+        })
     }
 }
 pub struct ImageRasterImage {
@@ -130,7 +157,22 @@ pub fn compile_images<'a>(
     let (raster, work) = crate::compile::compile_inner(request, Some(images), check)?;
     Ok(CompiledImageRaster {
         raster,
-        images,
+        images: ImageResources::Borrowed(images),
+        work,
+    })
+}
+/// Retain verified immutable resources without copying or rehashing their pixels.
+/// The batch remains valid if the page plan that supplied the resources is dropped.
+pub fn compile_shared_images(
+    request: &PathRasterRequest,
+    images: Arc<PreparedImages<'static>>,
+    check: &dyn Fn() -> bool,
+) -> Result<CompiledImageRaster<'static>, RasterError> {
+    cancel(check)?;
+    let (raster, work) = crate::compile::compile_inner(request, Some(&images), check)?;
+    Ok(CompiledImageRaster {
+        raster,
+        images: ImageResources::Shared(images),
         work,
     })
 }
@@ -147,10 +189,10 @@ pub fn render_compiled_images(
     backend: &mut dyn RasterBackend,
     check: &dyn Fn() -> bool,
 ) -> Result<ImageRasterImage, RasterError> {
-    let raster = crate::execute(compiled.raster, backend, Some(compiled.images), check)?;
+    let raster = crate::execute(compiled.raster, backend, Some(compiled.images.get()), check)?;
     Ok(ImageRasterImage {
         raster,
         work: compiled.work,
-        resources_sha256: compiled.images.sha256().clone(),
+        resources_sha256: compiled.images.get().sha256().clone(),
     })
 }

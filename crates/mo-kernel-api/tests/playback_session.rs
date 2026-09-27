@@ -335,3 +335,122 @@ fn plan_identity_changes_with_presentation_settings_but_not_owner_generation() {
     assert_eq!(changed["status"], "prepared");
     assert_ne!(first["info"]["planId"], changed["info"]["planId"]);
 }
+
+#[test]
+fn prepared_frames_are_bound_to_owner_generation_and_disposal() {
+    let q = prepare();
+    let binding = q["request"]["binding"].clone();
+    let sample: PlaybackSampleRequest = serde_json::from_value(
+        json!({"binding":binding,"at":{"ticks":"1","timescale":3},"history":null}),
+    )
+    .unwrap();
+    let mut owner = PlaybackSession::default();
+    let mut other = PlaybackSession::default();
+    send(&mut owner, &q);
+    send(&mut other, &q);
+    let reply = || mo_raster::BackendReply {
+        status: 0,
+        pixels: vec![],
+    };
+    // Fault disposition is preserved even if an obsolete/wrong owner rejects the frame.
+    let fault = owner.prepare_render(sample.clone(), &|| false).unwrap();
+    let error = other
+        .complete_render(
+            fault,
+            mo_raster::BackendReply {
+                status: 2,
+                pixels: vec![],
+            },
+            &|| false,
+        )
+        .err()
+        .unwrap();
+    assert!(error.invalidate_backend);
+    for status in 0..=5 {
+        let pending = owner.prepare_render(sample.clone(), &|| false).unwrap();
+        let error = owner
+            .complete_render(
+                pending,
+                mo_raster::BackendReply {
+                    status,
+                    pixels: vec![],
+                },
+                &|| false,
+            )
+            .err()
+            .unwrap();
+        assert_eq!(error.invalidate_backend, !matches!(status, 1 | 3));
+    }
+    let pending = owner.prepare_render(sample.clone(), &|| false).unwrap();
+    let result = other.complete_render(pending, reply(), &|| false);
+    let result = result.map_err(|e| {
+        assert!(!e.invalidate_backend);
+        e.error
+    });
+    assert!(matches!(
+        result,
+        Err(PlaybackSessionFailure::Session {
+            code: PlaybackSessionFailureCode::BindingConflict,
+            ..
+        })
+    ));
+    let pending = owner.prepare_render(sample.clone(), &|| false).unwrap();
+    let next = (binding["generation"]
+        .as_str()
+        .unwrap()
+        .parse::<u64>()
+        .unwrap()
+        + 1)
+    .to_string();
+    send(
+        &mut owner,
+        &json!({"operation":"advance","binding":binding,"generation":next}),
+    );
+    let result = owner.complete_render(pending, reply(), &|| false);
+    let result = result.map_err(|e| {
+        assert!(!e.invalidate_backend);
+        e.error
+    });
+    assert!(matches!(
+        result,
+        Err(PlaybackSessionFailure::Session {
+            code: PlaybackSessionFailureCode::BindingConflict,
+            ..
+        })
+    ));
+    let mut sample = sample;
+    sample.binding.generation = serde_json::from_value(json!(next)).unwrap();
+    let abandoned = owner.prepare_render(sample.clone(), &|| false).unwrap();
+    drop(abandoned);
+    let pending = owner.prepare_render(sample.clone(), &|| false).unwrap();
+    let result = owner.complete_render(pending, reply(), &|| true);
+    let result = result.map_err(|e| {
+        assert!(!e.invalidate_backend);
+        e.error
+    });
+    assert!(matches!(
+        result,
+        Err(PlaybackSessionFailure::Session {
+            code: PlaybackSessionFailureCode::Cancelled,
+            ..
+        })
+    ));
+    let pending = owner.prepare_render(sample.clone(), &|| false).unwrap();
+    send(
+        &mut owner,
+        &json!({"operation":"dispose","binding":sample.binding}),
+    );
+    assert!(!pending.words().is_empty());
+    let result = owner.complete_render(pending, reply(), &|| false);
+    let result = result.map_err(|e| {
+        assert!(!e.invalidate_backend);
+        e.error
+    });
+    assert!(matches!(
+        result,
+        Err(PlaybackSessionFailure::Session {
+            code: PlaybackSessionFailureCode::Disposed,
+            ..
+        })
+    ));
+}
