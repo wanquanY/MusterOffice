@@ -141,6 +141,7 @@ fn empty(
         }
     });
     Ok(SourceSurface {
+        header_footer: None,
         text: Default::default(),
         show_master_shapes: None,
         visual_issues: vec![],

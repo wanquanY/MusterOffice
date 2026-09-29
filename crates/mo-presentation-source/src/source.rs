@@ -9,6 +9,7 @@ mod edit;
 pub mod effects;
 pub mod fill;
 pub mod geometry;
+mod header_footer;
 pub mod images;
 mod inheritance;
 pub mod line;
@@ -28,6 +29,7 @@ pub use color_mapping::{SourceColorMap, SourceColorMapRef, SourceColorMapping};
 pub use compatibility::{
     SourceCompatibility, SourceCompatibilityBranch, SourceCompatibilitySelection,
 };
+pub use header_footer::SourceHeaderFooter;
 pub use inheritance::{
     PlaceholderKind, PlaceholderMatchRule, PlaceholderOrientation, PlaceholderSize,
     SourceObjectRef, SourceObjectResolution, SourcePlaceholder, SourcePlaceholderMatch,
@@ -141,6 +143,9 @@ pub struct SourceSurface {
     pub text: text::SourceTextCatalog,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_master_shapes: Option<bool>,
+    /// Header/footer availability on this master/layout; source bytes remain intact.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub header_footer: Option<SourceHeaderFooter>,
     /// Visual declarations not yet projected by a semantic source reader.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub visual_issues: Vec<SourceVisualIssue>,

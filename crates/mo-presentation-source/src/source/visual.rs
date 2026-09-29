@@ -97,6 +97,9 @@ impl Reader {
                     "accent5", "accent6", "hlink", "folHlink",
                 ]),
                 "clrMapOvr" => Some(&[]),
+                "hf" if matches!(surface.kind, SurfaceKind::Master | SurfaceKind::Layout) => {
+                    Some(&["dt", "ftr", "hdr", "sldNum"])
+                }
                 "timing" | "transition" | "sldLayoutIdLst" | "txStyles" => {
                     skip = true;
                     Some(&[])

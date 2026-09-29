@@ -36,6 +36,14 @@ pub(super) fn node(
     }
     let mut allowed: &[&str] = &[];
     let value = match element {
+        N::T => {
+            // ContentReader retains the complete decoded text, including leading,
+            // trailing and repeated spaces. This implements explicit preservation;
+            // xml:space="default" remains unresolved until its application rules
+            // are implemented. Other namespaces/attributes remain retained.
+            allowed = &["xml:space"];
+            SourceTextValue::Container {}
+        }
         N::BodyPr => {
             allowed = SourceTextBodyAttributes::NAMES;
             SourceTextValue::Body {
@@ -188,6 +196,9 @@ pub(super) fn retain_attributes(
             return !allowed
                 .iter()
                 .any(|n| n.strip_prefix("r:") == Some(a.name.local.as_str()));
+        }
+        if a.name.is("http://www.w3.org/XML/1998/namespace", "space") {
+            return !(allowed.contains(&"xml:space") && a.value == "preserve");
         }
         !a.name.namespace.is_empty() || !allowed.contains(&a.name.local.as_str())
     }) {

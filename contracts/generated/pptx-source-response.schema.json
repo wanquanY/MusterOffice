@@ -4726,6 +4726,36 @@
         "formula"
       ]
     },
+    "SourceHeaderFooter": {
+      "type": "object",
+      "properties": {
+        "dateTime": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "footer": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "header": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "slideNumber": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
     "SourceImageFillMode": {
       "oneOf": [
         {
@@ -6010,6 +6040,17 @@
         },
         "effectiveTheme": {
           "$ref": "#/$defs/SourceThemeStack"
+        },
+        "headerFooter": {
+          "description": "Header/footer availability on this master/layout; source bytes remain intact.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceHeaderFooter"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "hidden": {
           "type": "boolean"

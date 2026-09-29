@@ -2,6 +2,8 @@
 
 [最新进度](implementation/progress.md)区分内核实现、产品固定版本和仍未完成的替换验收。以下阶段记录保留当时的验证范围。
 
+[现有模板兼容与本地原生启用](implementation/existing-template-compatibility.md)：修复母版声明与显式空白保留，单页中文模板完成原生／WASM 像素对照；两个平台原件存在结构问题，完整迁移和新材料激活继续处理。
+
 [本地源码提交与验证检查点](implementation/source-checkpoint.md)：本次提交边界、完整工作区回归、MCP 锁文件修正及仍未完成的验收项。
 
 [原生表格图片填充](implementation/table-images.md)：共享布局与保留播放覆盖合并格、RTL、裁剪、平铺、显隐和透明度，跨端验证及历史回归通过；尚未升级产品材料。

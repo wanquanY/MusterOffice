@@ -47,6 +47,7 @@ pub(super) fn read(
     let mut surface = SourceSurface {
         text: text::SourceTextCatalog::default(),
         show_master_shapes: None,
+        header_footer: None,
         visual_issues: Vec::new(),
         color_mapping: None,
         resolved_color_mapping: None,
@@ -246,6 +247,16 @@ pub(super) fn read(
                         if let Some(show) = element.attribute("show") {
                             surface.hidden = !boolean(show)?;
                         }
+                    }
+                    if depth == 1
+                        && element.name.is(P, "hf")
+                        && !extension
+                        && matches!(kind, SurfaceKind::Master | SurfaceKind::Layout)
+                    {
+                        if surface.header_footer.is_some() {
+                            return Err(malformed("duplicate header/footer declaration"));
+                        }
+                        surface.header_footer = Some(super::SourceHeaderFooter::read(element)?);
                     }
                     if depth == 1 && element.name.is(P, "cSld") {
                         if common {

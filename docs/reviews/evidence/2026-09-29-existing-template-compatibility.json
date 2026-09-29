@@ -1,0 +1,111 @@
+{
+  "format": "musteroffice.existing-template-compatibility-evidence/1",
+  "date": "2026-09-29",
+  "sourceBase": "19e55faf70aa80fa0a2903aa3d0ce1c8bc7846d3",
+  "sourceFiles": [
+    {
+      "path": "crates/mo-pptx/tests/text_cascade.rs",
+      "sha256": "ac84620670158983ab1b16866620cc68493d3f48464ee57734ada48dfd2c855a"
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_page/layers.rs",
+      "sha256": "63e6af9c0f088eab0f3b29d7eb5f5455da6cd41a182881c4c6f607fa31d1ba7e"
+    },
+    {
+      "path": "crates/mo-presentation-compile/tests/source_header_footer.rs",
+      "sha256": "28b9c4a6be6124a34aa95afd3b91380f169c85bf01d19e50b5518de2ab1959db"
+    },
+    {
+      "path": "crates/mo-presentation-source/src/author/surface.rs",
+      "sha256": "516cf80187c83cae5a3bb2eb330cdac51a42373f8743712930017764f905bfd4"
+    },
+    {
+      "path": "crates/mo-presentation-source/src/source.rs",
+      "sha256": "febe410a5e6ed232f4c2921ca9728de6e35f755c250dde69902eeacf561b36e6"
+    },
+    {
+      "path": "crates/mo-presentation-source/src/source/header_footer.rs",
+      "sha256": "7c2fe643a7623e763f1e2be8aa8784b325d23ef565bba54a20f9289b8fc36694"
+    },
+    {
+      "path": "crates/mo-presentation-source/src/source/surface.rs",
+      "sha256": "6836a8b5ecf3b81c807e3f0d29ef90b7af76b16d0bfbb2dac0f0474a2282111f"
+    },
+    {
+      "path": "crates/mo-presentation-source/src/source/text/cascade.rs",
+      "sha256": "202adb5540b090b762ed873427870171fdf40d4ffb5a6be1a8fab1a575194119"
+    },
+    {
+      "path": "crates/mo-presentation-source/src/source/text/grammar.rs",
+      "sha256": "6a24e7033077e4a36399af54c8405e55d01e977bfbad1452c02a9a78d85da1d0"
+    },
+    {
+      "path": "crates/mo-presentation-source/src/source/visual.rs",
+      "sha256": "e82257f5ff0b1424419fd8a85d81e159c5e97ae11fede0ffae03ef6914f57bb4"
+    },
+    {
+      "path": "contracts/generated/pptx-source-response.schema.json",
+      "sha256": "2e67c7e6c003739dcce9d4cda1e82fe2a575d0226cb2e77bcea2e98e7d6b45af"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-source-response.ts",
+      "sha256": "633fd8c547427def34dd0254a734f2705e3ae889e95d001d2e2bdb8a8050abec"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-source-response/part-002.ts",
+      "sha256": "45a95f470592aff9b622311548306ebbabe431b0741367c8b60b8e71140db106"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-source-response/part-003.ts",
+      "sha256": "6c5c20e35a77d55b46f65f34201b14f60785573ee64c7e4e6a5361d2c0d20faf"
+    }
+  ],
+  "candidateArtifacts": {
+    "sdkManifestSha256": "99bdc0263de0c20f6b55a93812e3d039fed2a09ff1f92be1b28f59d461b8c28c",
+    "worker": {
+      "target": "darwin-arm64",
+      "profile": "release",
+      "sha256": "69a98a7d84221d9d691b7b4e025197a36fc3d239cc3f855d5024210539261103",
+      "byteLength": 12371920
+    },
+    "playbackManifestSha256": "80a465680ed43a5d2218f9db428533c1c3bb3c8356acd20af50442045a68b461",
+    "activatedInProduct": false
+  },
+  "validation": {
+    "sourceTextAndHeaderFooterTests": 39,
+    "existingLayerResourcePlaybackTests": 14,
+    "clippy": "passed: mo-presentation-source and mo-presentation-compile libraries, -D warnings",
+    "format": "passed: cargo fmt --all --check",
+    "contracts": "passed: mo-contract-codegen check and npm run check:types",
+    "realTemplate": {
+      "pages": 1,
+      "viewport": [
+        1280,
+        720
+      ],
+      "rgbaBytes": 3686400,
+      "nativeWasmBytesEqual": true,
+      "pptxExport": "original source, no edit claimed"
+    },
+    "platformSources": {
+      "templates": 2,
+      "pagesEach": 14,
+      "orphanContentTypeOverridesEach": 13,
+      "result": "rejected by unchanged OPC structural validation"
+    },
+    "product": {
+      "backendTemplateTests": 88,
+      "templateUiTests": 39,
+      "startupComponentTests": 20,
+      "desktopTypes": "passed",
+      "frontendBoundaries": "passed"
+    }
+  },
+  "notProven": [
+    "Real template Define/Stress/Verify and v3 catalog publication.",
+    "Application restart and activation of these candidate artifacts.",
+    "Office/WPS visual equivalence or edited file roundtrip.",
+    "All advanced PPT capabilities, performance thresholds and installer size."
+  ],
+  "scope": "Private input files and host paths remain outside the repository. Artifact byte length is not an installer size or runtime-memory estimate."
+}

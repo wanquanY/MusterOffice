@@ -211,7 +211,8 @@ fn breaks_fields_and_empty_paragraphs_keep_separate_source_bindings() {
 fn unknown_content_is_not_silently_promoted_to_a_resolved_style() {
     for ps in [
         r#"<a:p><a:pPr mystery="1"/><a:r><a:t>T</a:t></a:r></a:p>"#,
-        r#"<a:p><a:r><a:t xml:space="preserve"> T </a:t></a:r></a:p>"#,
+        r#"<a:p><a:r><a:t xml:space="default"> T </a:t></a:r></a:p>"#,
+        r#"<a:p><a:r><a:t xml:space="unknown"> T </a:t></a:r></a:p>"#,
         r#"<a:p><a:pPr><a:buBlip/></a:pPr><a:r><a:t>T</a:t></a:r></a:p>"#,
     ] {
         let i = index(&base("", ps));
@@ -234,6 +235,29 @@ fn unknown_content_is_not_silently_promoted_to_a_resolved_style() {
             reason: TextCascadeUnresolved::FieldParagraph { .. }
         }
     ));
+}
+#[test]
+fn explicit_space_preservation_keeps_exact_text_and_source_edit_binding() {
+    let i = index(&base(
+        "",
+        r#"<a:p><a:r><a:t xml:space="preserve">  中 &amp; A  </a:t></a:r></a:p>"#,
+    ));
+    let before = i.clone();
+    assert!(matches!(outcome(&i), TextCascadeOutcome::Cascaded { .. }));
+    let object = i
+        .surfaces
+        .values()
+        .flat_map(|surface| &surface.objects)
+        .find(|object| {
+            object
+                .paragraphs
+                .iter()
+                .flatten()
+                .any(|run| run.text == "  中 & A  ")
+        })
+        .unwrap();
+    assert!(object.paragraphs[0][0].editable);
+    assert_eq!(i, before);
 }
 #[test]
 fn ambiguous_placeholders_and_template_levels_require_resolution() {

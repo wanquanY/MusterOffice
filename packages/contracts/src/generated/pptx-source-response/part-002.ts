@@ -1,6 +1,6 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
 import type { ByteLength, ColorSlot, Digest, Emu, NativeBlackWhiteMode, NativeBlipCompression, NativeCompoundLine, NativeCoordinate, NativeLineCap, NativeLineEnd, NativeLineEndSize, NativePathFill, NativePattern, NativePenAlignment, NativePercentage, NativeTileFlip, PlaceholderKind, PlaceholderOrientation, PlaceholderSize, SourceAdjustHandle, SourceBackgroundDefinition, SourceColorMapping, SourceColorTransform, SourceColorValue, SourceEffectDefinition, SourceEffectPropertiesDefinition, SourceFillDefinition, SourceGeometryCommand, SourceGeometryDefinition, SourceGradientShade, SourceLineDash, SourceLineFill, SourceLineJoin, SourceObjectKind, SourceRunKind, SourceTextConstraint, SurfaceKind } from './part-001.js';
-import type { SourceColorScheme, SourceFontScheme, SourceFormatScheme, SourceThemeTextDefaults } from './part-003.js';
+import type { SourceThemePart } from './part-003.js';
 
 export type SourcePlaceholderMatch =
   | {
@@ -331,6 +331,10 @@ export interface SourceSurface {
     [k: string]: SourceEffectNode | undefined;
   };
   effectiveTheme: SourceThemeStack;
+  /**
+   * Header/footer availability on this master/layout; source bytes remain intact.
+   */
+  headerFooter?: SourceHeaderFooter | null;
   hidden: boolean;
   kind: SurfaceKind;
   links: SourceSurfaceLinks;
@@ -488,6 +492,13 @@ export interface SourceThemeStack {
 export interface SourcePartRef {
   part: string;
   sha256: Digest;
+}
+
+export interface SourceHeaderFooter {
+  dateTime?: boolean | null;
+  footer?: boolean | null;
+  header?: boolean | null;
+  slideNumber?: boolean | null;
 }
 
 export interface SourceSurfaceLinks {
@@ -1177,19 +1188,4 @@ export interface SourceTableStylePart {
   styles: {
     [k: string]: SourceTableStyle | undefined;
   };
-}
-
-export interface SourceThemePart {
-  colorScheme?: SourceColorScheme | null;
-  compatibility: SourceCompatibility;
-  effectNodes?: {
-    [k: string]: SourceEffectNode | undefined;
-  };
-  fontScheme?: SourceFontScheme | null;
-  formatScheme?: SourceFormatScheme | null;
-  kind: SourceThemeKind;
-  name?: string | null;
-  notices: string[];
-  sha256: Digest;
-  textDefaults?: SourceThemeTextDefaults | null;
 }

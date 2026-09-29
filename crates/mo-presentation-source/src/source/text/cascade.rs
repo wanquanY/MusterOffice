@@ -371,8 +371,8 @@ fn paragraph<'a>(
         if let Some(at) = c.child(NativeTextElement::PPr, budget)? {
             return Err(TextCascadeUnresolved::FieldParagraph { origin: at.origin }.into());
         }
-        // Check the text leaf's retained attributes (including unimplemented
-        // xml:space semantics) before advertising a usable source binding.
+        // Check unresolved text-leaf attributes before advertising a usable
+        // source binding. Explicit xml:space preservation retains every scalar.
         if let Some(t) = c.child(NativeTextElement::T, budget)? {
             t.checked(budget)?;
         }

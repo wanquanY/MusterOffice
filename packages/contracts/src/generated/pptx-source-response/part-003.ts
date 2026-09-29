@@ -1,5 +1,21 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { PptxFailureCode, SourceColor, SourceEffectProperties, SourceFill, SourceFontCollection, SourceLine, SourceTextCatalog } from './part-002.js';
+import type { Digest } from './part-001.js';
+import type { PptxFailureCode, SourceColor, SourceCompatibility, SourceEffectNode, SourceEffectProperties, SourceFill, SourceFontCollection, SourceLine, SourceTextCatalog, SourceThemeKind } from './part-002.js';
+
+export interface SourceThemePart {
+  colorScheme?: SourceColorScheme | null;
+  compatibility: SourceCompatibility;
+  effectNodes?: {
+    [k: string]: SourceEffectNode | undefined;
+  };
+  fontScheme?: SourceFontScheme | null;
+  formatScheme?: SourceFormatScheme | null;
+  kind: SourceThemeKind;
+  name?: string | null;
+  notices: string[];
+  sha256: Digest;
+  textDefaults?: SourceThemeTextDefaults | null;
+}
 
 export interface SourceColorScheme {
   colors: {

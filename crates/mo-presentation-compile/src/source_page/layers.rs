@@ -44,6 +44,15 @@ pub(super) fn select(
         chain.push((part, slide.show_master_shapes != Some(false)));
     }
     chain.push((&q.slide, true));
+    // A layout declaration is nearer than the master. Once a declaration is
+    // present, omitted attributes use CT_HeaderFooter's enabled default rather
+    // than inheriting a disabled attribute from a more distant declaration.
+    let header_footer = chain.iter().rev().find_map(|(part, _)| {
+        index
+            .surfaces
+            .get(part.as_str())
+            .and_then(|s| s.header_footer.as_ref())
+    });
     let mut layers = vec![];
     let mut count = 0usize;
     for (part, visible) in chain {
@@ -118,6 +127,10 @@ pub(super) fn select(
                 if s.kind != SurfaceKind::Slide
                     && let Some(ph) = &o.placeholder
                 {
+                    if header_footer.is_some_and(|hf| hf.disables(ph.effective_kind())) {
+                        layer.hidden_objects.push(o.native_id);
+                        continue;
+                    }
                     if matches!(
                         ph.effective_kind(),
                         PlaceholderKind::Date
