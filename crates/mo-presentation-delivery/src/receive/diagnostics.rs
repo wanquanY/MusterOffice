@@ -7,6 +7,7 @@ use mo_pptx::{PresentationPlan, source::SourceObjectRef};
 use mo_presentation_compile::source_frame::capacity::FrameCapacity;
 
 const MAX_FINDINGS: usize = 32;
+const MAX_FINDING_BYTES: usize = 24 * 1024;
 type ObjectBindings = BTreeMap<(String, u32), ObjectId>;
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
@@ -17,7 +18,8 @@ pub struct LayoutDiagnostics {
     pub unmeasured_pages: usize,
     pub measured_frames: usize,
     pub affected_frames: usize,
-    /// First 32 affected frames in page/paint order. Counts cover all frames.
+    /// At most 32 affected frames and 24 KiB of finding JSON in page/paint order.
+    /// Once either budget is exhausted the remaining findings are counted only.
     pub findings: Vec<TextLayoutFinding>,
     pub omitted_findings: usize,
 }
@@ -110,6 +112,8 @@ pub(super) fn summarize(
         findings: vec![],
         omitted_findings: 0,
     };
+    let mut finding_bytes = 0usize;
+    let mut exhausted = false;
     for (page_number, page) in pages.iter().enumerate() {
         cancel(check)?;
         let Some(capacity) = &page.text_capacity else {
@@ -131,11 +135,11 @@ pub(super) fn summarize(
                 continue;
             }
             report.affected_frames += 1;
-            if report.findings.len() == MAX_FINDINGS {
+            if exhausted || report.findings.len() == MAX_FINDINGS {
                 report.omitted_findings += 1;
                 continue;
             }
-            report.findings.push(TextLayoutFinding {
+            let finding = TextLayoutFinding {
                 page_id: page.page_id.clone(),
                 page_number: page_number + 1,
                 evidence_asset_id: page.evidence_asset_id.clone(),
@@ -152,7 +156,15 @@ pub(super) fn summarize(
                 line_count: frame.line_count,
                 horizontal_overflow_lines: frame.horizontal_overflow_lines,
                 emergency_lines: frame.emergency_lines,
-            });
+            };
+            let bytes = serde_json::to_vec(&finding).map_err(|_| DeliveryError::Serialization)?;
+            if finding_bytes + bytes.len() > MAX_FINDING_BYTES {
+                exhausted = true;
+                report.omitted_findings += 1;
+            } else {
+                finding_bytes += bytes.len();
+                report.findings.push(finding);
+            }
         }
     }
     Ok(report)

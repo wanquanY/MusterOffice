@@ -123,3 +123,14 @@ fn sub_emu_excess_survives_projection_and_extremes_fail_closed() {
     assert!(ceil(Fixed::from_raw(i128::MAX)).is_err());
     assert!(difference(Fixed::from_raw(i128::MAX), Fixed::from_raw(-1)).is_err());
 }
+
+#[test]
+fn long_native_addresses_cannot_expand_the_agent_summary_without_bound() {
+    let mut long = frame();
+    long.object.part = format!("/ppt/{}.xml", "s".repeat(MAX_FINDING_BYTES));
+    let report = summarize(&[page(vec![long, frame()])], &BTreeMap::new(), &|| false).unwrap();
+    assert_eq!(report.affected_frames, 2);
+    assert!(report.findings.is_empty());
+    assert_eq!(report.omitted_findings, 2);
+    assert!(serde_json::to_vec(&report).unwrap().len() < 1024);
+}

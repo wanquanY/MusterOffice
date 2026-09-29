@@ -68,7 +68,8 @@ export interface Claim {
 export interface LayoutDiagnostics {
   affectedFrames: number;
   /**
-   * First 32 affected frames in page/paint order. Counts cover all frames.
+   * At most 32 affected frames and 24 KiB of finding JSON in page/paint order.
+   * Once either budget is exhausted the remaining findings are counted only.
    */
   findings: TextLayoutFinding[];
   measuredFrames: number;
