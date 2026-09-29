@@ -103,6 +103,7 @@ fn merged_cell_uses_the_grid_extent_and_real_cell_margins() {
     assert_eq!(single.text.paragraph_start, 6);
     assert_eq!(single.paragraphs.len(), 1);
     let capacity = TextCapacity {
+        page_ink: None,
         profile: capacity::PROFILE.into(),
         frames: vec![
             measure(&merged, &|| false).unwrap(),

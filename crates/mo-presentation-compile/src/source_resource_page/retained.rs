@@ -244,6 +244,7 @@ impl ResourcePagePlan {
                 crate::source_frame::capacity::TextCapacity {
                     profile: crate::source_frame::capacity::PROFILE.into(),
                     frames: vec![],
+                    page_ink: Some(vec![]),
                 },
             ),
         };

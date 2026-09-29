@@ -2,10 +2,10 @@ use super::*;
 use mo_geometry::{Point, Rect};
 use mo_presentation_compile::source_frame::capacity::{PROFILE, TextCapacity};
 
-fn f(emu: i64) -> Fixed {
+pub(super) fn f(emu: i64) -> Fixed {
     Fixed::emu(Emu::new(emu))
 }
-fn rect(x: i64, y: i64, width: i64, height: i64) -> Rect {
+pub(super) fn rect(x: i64, y: i64, width: i64, height: i64) -> Rect {
     Rect {
         min: Point { x: f(x), y: f(y) },
         max: Point {
@@ -14,7 +14,7 @@ fn rect(x: i64, y: i64, width: i64, height: i64) -> Rect {
         },
     }
 }
-fn frame() -> FrameCapacity {
+pub(super) fn frame() -> FrameCapacity {
     FrameCapacity {
         object: SourceObjectRef {
             part: "/ppt/slides/slide1.xml".into(),
@@ -33,13 +33,14 @@ fn frame() -> FrameCapacity {
         first_horizontal_overflow: None,
     }
 }
-fn page(frames: Vec<FrameCapacity>) -> PreviewMeasurements {
+pub(super) fn page(frames: Vec<FrameCapacity>) -> PreviewMeasurements {
     PreviewMeasurements {
         page_id: SlideId::new("slide:one").unwrap(),
         evidence_asset_id: RequestId::new("evidence:one").unwrap(),
         text_capacity: Some(TextCapacity {
             profile: PROFILE.into(),
             frames,
+            page_ink: None,
         }),
     }
 }

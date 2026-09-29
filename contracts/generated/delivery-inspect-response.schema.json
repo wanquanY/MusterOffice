@@ -202,6 +202,16 @@
         "profile": {
           "type": "string"
         },
+        "textOverlaps": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TextOverlapObservations"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "unmeasuredPages": {
           "type": "integer",
           "format": "uint",
@@ -377,6 +387,46 @@
         "nativeId"
       ]
     },
+    "TextInkReference": {
+      "type": "object",
+      "properties": {
+        "cell": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "clippingApplied": {
+          "type": "boolean"
+        },
+        "coordinateErrorEmu": {
+          "$ref": "#/$defs/Emu"
+        },
+        "objectId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObjectId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source": {
+          "$ref": "#/$defs/SourceObjectRef"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "clippingApplied",
+        "coordinateErrorEmu"
+      ]
+    },
     "TextLayoutFinding": {
       "type": "object",
       "properties": {
@@ -464,6 +514,101 @@
         "lineCount",
         "horizontalOverflowLines",
         "emergencyLines"
+      ]
+    },
+    "TextOverlapFinding": {
+      "type": "object",
+      "properties": {
+        "evidenceAssetId": {
+          "$ref": "#/$defs/RequestId"
+        },
+        "first": {
+          "$ref": "#/$defs/TextInkReference"
+        },
+        "intersectionHeightEmu": {
+          "$ref": "#/$defs/Emu"
+        },
+        "intersectionWidthEmu": {
+          "$ref": "#/$defs/Emu"
+        },
+        "pageId": {
+          "$ref": "#/$defs/SlideId"
+        },
+        "pageNumber": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "second": {
+          "$ref": "#/$defs/TextInkReference"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "pageId",
+        "pageNumber",
+        "evidenceAssetId",
+        "first",
+        "second",
+        "intersectionWidthEmu",
+        "intersectionHeightEmu"
+      ]
+    },
+    "TextOverlapObservations": {
+      "type": "object",
+      "properties": {
+        "checkedPairs": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "findings": {
+          "description": "At most 16 candidate pairs and 12 KiB of candidate JSON, in paint order.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TextOverlapFinding"
+          }
+        },
+        "intersectingPairs": {
+          "description": "Positive-area intersections of page-space text ink envelopes. Bounds\nprecede clipping/compositing and may include whitespace between glyphs.",
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "measuredPages": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "omittedFindings": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "profile": {
+          "type": "string"
+        },
+        "uncheckedPairs": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "unmeasuredPages": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "measuredPages",
+        "unmeasuredPages",
+        "checkedPairs",
+        "uncheckedPairs",
+        "intersectingPairs",
+        "findings",
+        "omittedFindings"
       ]
     }
   }

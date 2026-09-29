@@ -1579,6 +1579,11 @@ export interface TextCapacity {
    * Complete frame coverage in paint order, including empty text frames.
    */
   frames: FrameCapacity[];
+  /**
+   * Page-space painted text envelopes, absent from historical measurements.
+   * These are before clipping/compositing; intersections are only candidates.
+   */
+  pageInk?: PageTextInk[] | null;
   profile: string;
 }
 export interface FrameCapacity {
@@ -1633,6 +1638,20 @@ export interface Rect1 {
 export interface SourceObjectRef {
   nativeId: number;
   part: string;
+}
+export interface PageTextInk {
+  /**
+   * Page-space Q32 EMU, including the recorded coordinate uncertainty.
+   * None means no nontransparent glyph outline was painted by this frame.
+   */
+  bounds?: Rect | null;
+  cell?: SourceCellAddress | null;
+  /**
+   * Observations precede the native clip and later layer compositing.
+   */
+  clippingApplied: boolean;
+  coordinateErrorBound: FixedQ32;
+  object: SourceObjectRef;
 }
 export interface FrameWork {
   componentCalls: number;

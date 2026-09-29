@@ -120,6 +120,7 @@ fn emergency_wrap_reports_each_overwide_cluster_and_anchor_keeps_capacity_invari
 fn capacity_arithmetic_coverage_and_cancellation_are_checked_without_quality_claims() {
     let frame = measured("A", 1_000_000, 2_000_000, "t", false);
     let report = capacity::TextCapacity {
+        page_ink: None,
         profile: capacity::PROFILE.into(),
         frames: vec![frame],
     };

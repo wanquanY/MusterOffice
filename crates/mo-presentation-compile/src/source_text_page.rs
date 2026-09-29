@@ -4,6 +4,7 @@
 mod clip;
 mod decorations;
 mod glyphs;
+mod observations;
 mod placement;
 mod precision;
 mod prepare;
@@ -206,6 +207,7 @@ impl<'a, 'm, 'font> Compiler<'a, 'm, 'font> {
             geometry_error = geometry_error.max(geometry);
             Ok(instance)
         };
+        let mut painted_ink = None;
         for (i, (g, cluster)) in frame.glyphs.iter().zip(owners).enumerate() {
             cancel(check)?;
             let Some(rgba) = clusters[cluster as usize].rgba else {
@@ -222,6 +224,7 @@ impl<'a, 'm, 'font> Compiler<'a, 'm, 'font> {
             if path.commands.is_empty() {
                 continue;
             }
+            observations::add_ink(&mut painted_ink, path.bounds, g.origin, rgba)?;
             let instance = paint_path(&path.commands, g.origin, rgba, uncertainty)?;
             self.sources.push(TextPagePaintSource {
                 instance,
@@ -254,6 +257,16 @@ impl<'a, 'm, 'font> Compiler<'a, 'm, 'font> {
         };
         self.bindings.push(TextPageBinding {
             binding,
+            page_ink: observations::place(
+                painted_ink,
+                uncertainty,
+                frame.text.cell,
+                frame.clip.is_some(),
+                object,
+                viewport,
+                check,
+            )?,
+            painted_ink,
             frame,
             paints: pending.paints,
             clusters,

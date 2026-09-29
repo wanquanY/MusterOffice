@@ -16,7 +16,8 @@ pub use playback::{DeliveryPlaybackInputs, DeliveryPlaybackPage};
 pub use preview::{PreviewFonts, PreviewInput, PreviewRenderer, PreviewRequest};
 pub use receive::{
     DeliveryExpectation, DeliverySource, InkExcess, LayoutDiagnostics, PreviewMeasurements,
-    ReceiptInspection, ReceivedDelivery, TextLayoutFinding, inspect,
+    ReceiptInspection, ReceivedDelivery, TextInkReference, TextLayoutFinding, TextOverlapFinding,
+    TextOverlapObservations, inspect,
 };
 
 #[derive(Debug, thiserror::Error)]

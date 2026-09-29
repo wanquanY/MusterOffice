@@ -15,6 +15,9 @@ struct Frame {
     draws: Vec<Draw>,
     work: FrameWork,
     clip: Option<clip::LocalClip>,
+    painted_ink: Option<mo_geometry::Rect>,
+    ink_uncertainty: Fixed,
+    cell: Option<mo_presentation_source::source::table::SourceCellAddress>,
 }
 pub(crate) struct RetainedText {
     objects: BTreeMap<(String, u32), std::ops::Range<usize>>,
@@ -86,6 +89,9 @@ impl RetainedText {
                 objects.insert(key, i..i + 1);
             }
             let mut object = Frame {
+                painted_ink: text.painted_ink,
+                ink_uncertainty: precision::frame_bound(&text.frame)?,
+                cell,
                 paths: vec![],
                 draws: vec![],
                 work: text.frame.work.clone(),
@@ -166,6 +172,7 @@ impl RetainedText {
             text: self,
             seen: BTreeSet::new(),
             failed: false,
+            page_ink: vec![],
             expected: self
                 .objects
                 .keys()
@@ -181,6 +188,7 @@ pub(crate) struct RetainedPainter<'a> {
     expected: BTreeSet<(String, u32)>,
     // Failure invalidates this painter, not the immutable retained plan.
     failed: bool,
+    page_ink: Vec<source_frame::capacity::PageTextInk>,
 }
 impl RetainedPainter<'_> {
     pub fn finish(
@@ -207,6 +215,7 @@ impl RetainedPainter<'_> {
             self.seen
                 .contains(&(f.object.part.clone(), f.object.native_id))
         });
+        capacity.page_ink = Some(self.page_ink);
         Ok((work, capacity))
     }
 }
@@ -251,6 +260,15 @@ impl RetainedPainter<'_> {
         let mut geometry = Fixed::ZERO;
         for local in &self.text.frames[range.clone()] {
             cancel(check)?;
+            self.page_ink.push(observations::place(
+                local.painted_ink,
+                local.ink_uncertainty,
+                local.cell,
+                local.clip.is_some(),
+                object,
+                viewport,
+                check,
+            )?);
             let (clip, p, g) = clip::append(local.clip, object, builder, viewport, check)?;
             position = position.max(p);
             geometry = geometry.max(g);

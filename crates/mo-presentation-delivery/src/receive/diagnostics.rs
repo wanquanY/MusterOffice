@@ -5,6 +5,8 @@ use mo_common::{Emu, ObjectId, SlideId};
 use mo_geometry::Fixed;
 use mo_pptx::{PresentationPlan, source::SourceObjectRef};
 use mo_presentation_compile::source_frame::capacity::FrameCapacity;
+mod overlaps;
+pub use overlaps::{TextInkReference, TextOverlapFinding, TextOverlapObservations};
 
 const MAX_FINDINGS: usize = 32;
 const MAX_FINDING_BYTES: usize = 24 * 1024;
@@ -22,6 +24,8 @@ pub struct LayoutDiagnostics {
     /// Once either budget is exhausted the remaining findings are counted only.
     pub findings: Vec<TextLayoutFinding>,
     pub omitted_findings: usize,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub text_overlaps: Option<TextOverlapObservations>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
@@ -111,6 +115,7 @@ pub(super) fn summarize(
         affected_frames: 0,
         findings: vec![],
         omitted_findings: 0,
+        text_overlaps: Some(overlaps::summarize(pages, objects, check)?),
     };
     let mut finding_bytes = 0usize;
     let mut exhausted = false;

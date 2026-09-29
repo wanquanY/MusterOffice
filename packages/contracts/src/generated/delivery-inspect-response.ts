@@ -76,6 +76,7 @@ export interface LayoutDiagnostics {
   measuredPages: number;
   omittedFindings: number;
   profile: string;
+  textOverlaps?: TextOverlapObservations | null;
   unmeasuredPages: number;
 }
 export interface TextLayoutFinding {
@@ -123,6 +124,39 @@ export interface InkExcess {
 export interface SourceObjectRef {
   nativeId: number;
   part: string;
+}
+export interface TextOverlapObservations {
+  checkedPairs: number;
+  /**
+   * At most 16 candidate pairs and 12 KiB of candidate JSON, in paint order.
+   */
+  findings: TextOverlapFinding[];
+  /**
+   * Positive-area intersections of page-space text ink envelopes. Bounds
+   * precede clipping/compositing and may include whitespace between glyphs.
+   */
+  intersectingPairs: number;
+  measuredPages: number;
+  omittedFindings: number;
+  profile: string;
+  uncheckedPairs: number;
+  unmeasuredPages: number;
+}
+export interface TextOverlapFinding {
+  evidenceAssetId: RequestId;
+  first: TextInkReference;
+  intersectionHeightEmu: Emu;
+  intersectionWidthEmu: Emu;
+  pageId: SlideId;
+  pageNumber: number;
+  second: TextInkReference;
+}
+export interface TextInkReference {
+  cell?: SourceCellAddress | null;
+  clippingApplied: boolean;
+  coordinateErrorEmu: Emu;
+  objectId?: ObjectId | null;
+  source: SourceObjectRef;
 }
 export interface PptxFailure {
   code: PptxFailureCode;

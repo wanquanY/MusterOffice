@@ -45,6 +45,9 @@ pub struct TextPageBinding {
     /// Object entry in the shared page plan; geometry and text paint at the same
     /// position in source order, text following this object's shape paths.
     pub binding: u32,
+    /// Local envelope of actually painted, nontransparent glyph outlines.
+    pub painted_ink: Option<mo_geometry::Rect>,
+    pub page_ink: crate::source_frame::capacity::PageTextInk,
     pub frame: SourceFramePlan,
     pub paints: Vec<Vec<TextRunPaint>>,
     pub clusters: Vec<GlyphClusterPaint>,
@@ -142,5 +145,6 @@ pub(crate) fn capacity(
     Ok(capacity::TextCapacity {
         profile: capacity::PROFILE.into(),
         frames,
+        page_ink: Some(texts.iter().map(|text| text.page_ink.clone()).collect()),
     })
 }

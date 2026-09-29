@@ -64,6 +64,14 @@ fn image(b: &[u8]) -> ProbeImage {
     )
     .unwrap();
     assert_eq!(rendered.info.text_frames as usize, plan.texts.len());
+    let capacity = rendered.info.text_capacity.as_ref().unwrap();
+    capacity
+        .validate(rendered.info.text_frames, &|| false)
+        .unwrap();
+    assert_eq!(
+        serde_json::to_value(capacity.page_ink.as_ref().unwrap()).unwrap(),
+        serde_json::to_value(plan.texts.iter().map(|t| &t.page_ink).collect::<Vec<_>>()).unwrap(),
+    );
     assert_eq!(
         rendered.info.text_work.component_calls,
         plan.text_work.component_calls
@@ -422,4 +430,61 @@ fn page_cancellation_and_legacy_entry_remain_explicit() {
         .is_err()
     );
     assert_eq!((text.calls, raster.calls), (3, 1));
+}
+
+#[test]
+fn page_ink_envelopes_cover_actual_glyph_pixels_after_placement_and_exclude_transparency() {
+    if isolate(
+        "page_ink_envelopes_cover_actual_glyph_pixels_after_placement_and_exclude_transparency",
+    ) {
+        return;
+    }
+    for extra in [
+        "",
+        "rot=\"1800000\"",
+        "flipH=\"1\"",
+        "rot=\"-2700001\" flipV=\"1\"",
+    ] {
+        let child = shape(42, 200000, 200000, extra, &colored("AA", "804020"));
+        let group = format!(
+            "<p:grpSp><p:nvGrpSpPr><p:cNvPr id=\"2\" name=\"Group\"/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm rot=\"600000\"><a:off x=\"150000\" y=\"100000\"/><a:ext cx=\"1100000\" cy=\"800000\"/><a:chOff x=\"0\" y=\"0\"/><a:chExt cx=\"1600000\" cy=\"1200000\"/></a:xfrm></p:grpSpPr>{child}</p:grpSp>"
+        );
+        for content in [&child, &group] {
+            let result = image(&fixture(content));
+            let ink = &result.plan.texts[0].page_ink;
+            assert_eq!(ink.object.native_id, 42);
+            assert!(!ink.clipping_applied);
+            let bounds = ink.bounds.unwrap();
+            let mut count = 0;
+            for (i, pixel) in result.pixels.chunks_exact(4).enumerate() {
+                if pixel != [128, 64, 32, 255] {
+                    continue;
+                }
+                // Independent viewport: fixture maps 4000 EMU to one pixel.
+                let x = Fixed::emu(mo_common::Emu::new((i % 400) as i64 * 4000 + 2000));
+                let y = Fixed::emu(mo_common::Emu::new((i / 400) as i64 * 4000 + 2000));
+                assert!(bounds.min.x <= x && x <= bounds.max.x);
+                assert!(bounds.min.y <= y && y <= bounds.max.y);
+                count += 1;
+            }
+            assert!(count > 100);
+        }
+    }
+    for runs in [
+        "<a:r><a:rPr><a:noFill/></a:rPr><a:t>A</a:t></a:r>".to_owned(),
+        colored("A", "804020").replace(
+            "<a:srgbClr val=\"804020\"/>",
+            "<a:srgbClr val=\"804020\"><a:alpha val=\"0\"/></a:srgbClr>",
+        ),
+    ] {
+        let result = image(&fixture(&shape(42, 100000, 100000, "", &runs)));
+        assert!(result.plan.texts[0].page_ink.bounds.is_none());
+        assert!(result.plan.texts[0].painted_ink.is_none());
+        assert_eq!(result.plan.texts[0].frame.glyphs.len(), 1);
+    }
+    let clipped = shape(42, 100000, 100000, "", &colored("AA", "804020"))
+        .replace("<a:bodyPr ", "<a:bodyPr horzOverflow=\"clip\" ");
+    let result = image(&fixture(&clipped));
+    assert!(result.plan.texts[0].page_ink.clipping_applied);
+    assert!(result.plan.texts[0].page_ink.bounds.is_some());
 }

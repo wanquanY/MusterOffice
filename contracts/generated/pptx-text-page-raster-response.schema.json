@@ -2054,6 +2054,48 @@
         "pixelWork"
       ]
     },
+    "PageTextInk": {
+      "type": "object",
+      "properties": {
+        "bounds": {
+          "description": "Page-space Q32 EMU, including the recorded coordinate uncertainty.\nNone means no nontransparent glyph outline was painted by this frame.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Rect"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cell": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "clippingApplied": {
+          "description": "Observations precede the native clip and later layer compositing.",
+          "type": "boolean"
+        },
+        "coordinateErrorBound": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "object": {
+          "$ref": "#/$defs/SourceObjectRef"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "object",
+        "clippingApplied",
+        "coordinateErrorBound"
+      ]
+    },
     "ParagraphProperty": {
       "type": "string",
       "enum": [
@@ -4607,6 +4649,16 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/FrameCapacity"
+          }
+        },
+        "pageInk": {
+          "description": "Page-space painted text envelopes, absent from historical measurements.\nThese are before clipping/compositing; intersections are only candidates.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/$defs/PageTextInk"
           }
         },
         "profile": {

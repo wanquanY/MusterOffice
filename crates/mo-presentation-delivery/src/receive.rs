@@ -7,7 +7,10 @@ mod png;
 #[cfg(test)]
 mod tests;
 use crate::*;
-pub use diagnostics::{InkExcess, LayoutDiagnostics, TextLayoutFinding};
+pub use diagnostics::{
+    InkExcess, LayoutDiagnostics, TextInkReference, TextLayoutFinding, TextOverlapFinding,
+    TextOverlapObservations,
+};
 use mo_common::{ByteLength, Digest, DocumentId, RequestId};
 use mo_opc::Package;
 use mo_presentation_edit::{Snapshot, SnapshotRecord};

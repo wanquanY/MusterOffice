@@ -13,6 +13,24 @@ pub struct TextCapacity {
     pub profile: String,
     /// Complete frame coverage in paint order, including empty text frames.
     pub frames: Vec<FrameCapacity>,
+    /// Page-space painted text envelopes, absent from historical measurements.
+    /// These are before clipping/compositing; intersections are only candidates.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub page_ink: Option<Vec<PageTextInk>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct PageTextInk {
+    pub object: SourceObjectRef,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cell: Option<mo_presentation_source::source::table::SourceCellAddress>,
+    /// Page-space Q32 EMU, including the recorded coordinate uncertainty.
+    /// None means no nontransparent glyph outline was painted by this frame.
+    pub bounds: Option<Rect>,
+    /// Observations precede the native clip and later layer compositing.
+    pub clipping_applied: bool,
+    pub coordinate_error_bound: Fixed,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
@@ -171,6 +189,25 @@ impl TextCapacity {
                     .is_some_and(|b| b.min.x > b.max.x || b.min.y > b.max.y)
             {
                 return Err(mo_text::TextError::Invalid("text capacity measurements").into());
+            }
+        }
+        if let Some(ink) = &self.page_ink {
+            if ink.len() != self.frames.len() {
+                return Err(mo_text::TextError::Invalid("page text ink coverage").into());
+            }
+            let mut measured = std::collections::BTreeSet::new();
+            for item in ink {
+                cancel(check)?;
+                let key = (&item.object.part, item.object.native_id, item.cell);
+                if !seen.contains(&key)
+                    || !measured.insert(key)
+                    || item.coordinate_error_bound < Fixed::ZERO
+                    || item
+                        .bounds
+                        .is_some_and(|b| b.min.x > b.max.x || b.min.y > b.max.y)
+                {
+                    return Err(mo_text::TextError::Invalid("page text ink measurements").into());
+                }
             }
         }
         Ok(())
