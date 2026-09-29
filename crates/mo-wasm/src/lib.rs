@@ -40,6 +40,11 @@ pub fn prepare_delivery_playback(request: &str, contents: &[u8]) -> String {
 }
 
 #[wasm_bindgen]
+pub fn inspect_pptx_charts(request: &str, source: &[u8]) -> String {
+    mo_kernel_api::inspect_pptx_charts_json(request, source)
+}
+
+#[wasm_bindgen]
 pub fn inspect_pptx_images(request: &str, source: &[u8]) -> String {
     mo_kernel_api::inspect_pptx_images_json(request, source)
 }

@@ -1,0 +1,590 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:pptx-chart-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PptxChartsResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "charts": {
+          "$ref": "#/$defs/SourceCharts"
+        },
+        "status": {
+          "type": "string",
+          "const": "inspected"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "charts"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/PptxFailure"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "error"
+      ]
+    }
+  ],
+  "$defs": {
+    "ByteLength": {
+      "description": "Canonical uint64 byte length. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9]"
+      },
+      "pattern": "^(0|[1-9][0-9]{0,19})$",
+      "x-integer-maximum": "18446744073709551615",
+      "x-integer-minimum": "0"
+    },
+    "ChartCacheKind": {
+      "type": "string",
+      "enum": [
+        "number",
+        "string",
+        "multiLevelString"
+      ]
+    },
+    "ChartChannelRole": {
+      "type": "string",
+      "enum": [
+        "title",
+        "categories",
+        "values",
+        "xValues",
+        "yValues",
+        "bubbleSize"
+      ]
+    },
+    "ChartDataAuthority": {
+      "type": "string",
+      "enum": [
+        "sourceCacheSnapshot"
+      ]
+    },
+    "ChartWorkbookTarget": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "byteLength": {
+              "$ref": "#/$defs/ByteLength"
+            },
+            "contentType": {
+              "type": "string"
+            },
+            "kind": {
+              "type": "string",
+              "const": "embedded"
+            },
+            "part": {
+              "type": "string"
+            },
+            "sha256": {
+              "$ref": "#/$defs/Digest"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part",
+            "contentType",
+            "sha256",
+            "byteLength"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "external"
+            },
+            "uri": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "uri"
+          ]
+        }
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "PptxFailure": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/PptxFailureCode"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "PptxFailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "SOURCE_CONFLICT",
+        "PRESERVATION_CONFLICT",
+        "MAPPING_NOT_IMPLEMENTED",
+        "RESOURCE_REQUIRED",
+        "LIMIT_EXCEEDED",
+        "CANCELLED",
+        "READ_FAILED"
+      ]
+    },
+    "SourceChartBinding": {
+      "type": "object",
+      "properties": {
+        "chart": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "object": {
+          "$ref": "#/$defs/SourceObjectRef"
+        },
+        "relationshipId": {
+          "type": "string"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "object",
+        "sourceOrdinal",
+        "relationshipId",
+        "chart"
+      ]
+    },
+    "SourceChartCache": {
+      "type": "object",
+      "properties": {
+        "declaredPointCount": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "formatCode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "kind": {
+          "$ref": "#/$defs/ChartCacheKind"
+        },
+        "levels": {
+          "description": "Source level order; no expansion of sparse point indices or missing values.",
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/SourceChartPoint"
+            }
+          }
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "kind",
+        "levels"
+      ]
+    },
+    "SourceChartChannel": {
+      "type": "object",
+      "properties": {
+        "cache": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceChartCache"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "formula": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "literalText": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "nativeKind": {
+          "description": "Native container name; distinguishes reference, literal and title text.",
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/$defs/ChartChannelRole"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "role",
+        "nativeKind"
+      ]
+    },
+    "SourceChartExternalData": {
+      "type": "object",
+      "properties": {
+        "autoUpdate": {
+          "description": "None means omitted; no eager refresh is performed by inspection.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "relationshipId": {
+          "type": "string"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "target": {
+          "$ref": "#/$defs/ChartWorkbookTarget"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "relationshipId",
+        "target"
+      ]
+    },
+    "SourceChartPart": {
+      "type": "object",
+      "properties": {
+        "byteLength": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "compatibility": {
+          "$ref": "#/$defs/SourceCompatibility"
+        },
+        "dataAuthority": {
+          "description": "Cache declarations are snapshots, not recalculated workbook values.",
+          "$ref": "#/$defs/ChartDataAuthority"
+        },
+        "externalData": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceChartExternalData"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "part": {
+          "type": "string"
+        },
+        "plots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceChartPlot"
+          }
+        },
+        "sha256": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "sha256",
+        "byteLength",
+        "compatibility",
+        "plots",
+        "dataAuthority"
+      ]
+    },
+    "SourceChartPlot": {
+      "type": "object",
+      "properties": {
+        "axisIds": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "nativeKind": {
+          "description": "Native local name (barChart, doughnutChart, ...), not a rendering capability.",
+          "type": "string"
+        },
+        "series": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceChartSeries"
+          }
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "nativeKind",
+        "axisIds",
+        "series"
+      ]
+    },
+    "SourceChartPoint": {
+      "type": "object",
+      "properties": {
+        "formatCode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "index": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "value": {
+          "description": "Exact lexical value. Missing v, empty v, zero and errors remain distinct.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "index"
+      ]
+    },
+    "SourceChartSeries": {
+      "type": "object",
+      "properties": {
+        "channels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceChartChannel"
+          }
+        },
+        "index": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "order": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "index",
+        "order",
+        "channels"
+      ]
+    },
+    "SourceCharts": {
+      "type": "object",
+      "properties": {
+        "bindings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceChartBinding"
+          }
+        },
+        "charts": {
+          "description": "Shared native chart parts are inspected once, indexed by bindings.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceChartPart"
+          }
+        },
+        "sourceSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "surface": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceSha256",
+        "surface",
+        "bindings",
+        "charts"
+      ]
+    },
+    "SourceCompatibility": {
+      "type": "object",
+      "properties": {
+        "ignoredAttributes": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "ignoredElements": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "selections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceCompatibilitySelection"
+          }
+        },
+        "unwrappedElements": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "selections",
+        "ignoredElements",
+        "ignoredAttributes",
+        "unwrappedElements"
+      ]
+    },
+    "SourceCompatibilityBranch": {
+      "type": "object",
+      "properties": {
+        "fallback": {
+          "type": "boolean"
+        },
+        "requires": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "selected": {
+          "type": "boolean"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "requires",
+        "fallback",
+        "selected"
+      ]
+    },
+    "SourceCompatibilitySelection": {
+      "type": "object",
+      "properties": {
+        "branches": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceCompatibilityBranch"
+          }
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "branches"
+      ]
+    },
+    "SourceObjectRef": {
+      "type": "object",
+      "properties": {
+        "nativeId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "part": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "nativeId"
+      ]
+    }
+  }
+}

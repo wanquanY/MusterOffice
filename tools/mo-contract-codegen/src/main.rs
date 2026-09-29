@@ -21,11 +21,11 @@ use mo_kernel_api::{PagePlacementRequest, PagePlacementResponse};
 use mo_kernel_api::{ParagraphLayoutRequest, ParagraphLayoutResponse};
 use mo_kernel_api::{ParagraphPathsRequest, ParagraphPathsResponse};
 use mo_kernel_api::{PathRasterRequest, PathRasterResponse};
+use mo_kernel_api::{PptxChartsResponse, PptxImagesResponse, SourceChartQuery, SourceImageQuery};
 use mo_kernel_api::{
     PptxFillColorResponse, PptxFillResponse, SourceFillColorQuery, SourceFillQuery,
 };
 use mo_kernel_api::{PptxGeometryResponse, SourceGeometryQuery};
-use mo_kernel_api::{PptxImagesResponse, SourceImageQuery};
 use mo_kernel_api::{
     PptxLineColorResponse, PptxLineResponse, SourceLineColorQuery, SourceLineQuery,
 };
@@ -217,6 +217,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         ("image-decode-response", schema::<ImageDecodeResponse>()),
         ("image-scene-request", schema::<ImageSceneRasterRequest>()),
         ("image-scene-response", schema::<ImageSceneRasterResponse>()),
+        ("pptx-chart-query", schema::<SourceChartQuery>()),
+        ("pptx-chart-response", schema::<PptxChartsResponse>()),
         ("pptx-image-query", schema::<SourceImageQuery>()),
         ("pptx-image-response", schema::<PptxImagesResponse>()),
         ("image-raster-request", schema::<ImageRasterRequest>()),

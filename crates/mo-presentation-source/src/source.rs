@@ -1,5 +1,6 @@
 //! Source-bound projection of native PresentationML. This is not a resolved
 //! layout/model importer: opaque content stays in the immutable OPC source.
+pub mod charts;
 pub mod color;
 mod color_mapping;
 mod compatibility;

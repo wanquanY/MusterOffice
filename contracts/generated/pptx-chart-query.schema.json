@@ -1,0 +1,31 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:pptx-chart-query",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SourceChartQuery",
+  "type": "object",
+  "properties": {
+    "expectedSourceSha256": {
+      "$ref": "#/$defs/Digest"
+    },
+    "surface": {
+      "description": "Exact physical surface; inherited chart placement is a separate calculation.",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "expectedSourceSha256",
+    "surface"
+  ],
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}
