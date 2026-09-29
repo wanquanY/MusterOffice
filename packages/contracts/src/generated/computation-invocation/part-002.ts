@@ -1,6 +1,6 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { Alignment, ByteLength, CellId, Color, ColumnId, ContainerDuration, ContainerId, ContainerKind, Digest, DocumentId, Effect, Emu, Fill, FillMode, FontDelivery, FontId, FontManifestProfile, ImageSampling, ImageSourceSelection, Inherited, InlineContent, LayoutId, MasterId, ModelVersion, MotionCoordinate, MotionSegment, NativeEditConstraint, NextAction, ObjectContent, ObjectId, Operation, OperationId, OverflowPolicy, ParagraphId, ParameterTarget, PresentationRole, PreviousAction, RepeatCount, RepeatDuration, RequestId, ResourceId, ResourceKind, RestartMode, RetainedRunKind, RowId, RunId, SlideId, SourceBindingProfile, StartCondition, Stroke, TableVerticalAlignment, TemplateVersion, TextDirection, ThemeId, Ticks, TimeCondition, TimelineVersion, Timescale, TimingNodeId } from './part-001.js';
-import type { ManifestTypeface, RendererIdentity } from './part-003.js';
+import type { Alignment, CellId, Color, ColumnId, ContainerDuration, ContainerId, ContainerKind, Digest, DocumentId, Effect, Emu, Fill, FillMode, FontDelivery, FontId, FontManifestProfile, ImageSampling, ImageSourceSelection, Inherited, InlineContent, LayoutId, MasterId, ModelVersion, MotionCoordinate, MotionSegment, NativeEditConstraint, NextAction, ObjectContent, ObjectId, Operation, OperationId, OverflowPolicy, ParagraphId, ParameterTarget, PresentationRole, PreviousAction, RepeatCount, RepeatDuration, RequestId, ResourceId, ResourceKind, RestartMode, RetainedRunKind, RowId, RunId, SlideId, SourceBindingProfile, StartCondition, Stroke, TableVerticalAlignment, TemplateVersion, TextDirection, ThemeId, Ticks, TimeCondition, TimelineVersion, Timescale, TimingNodeId } from './part-001.js';
+import type { CascadeFont, ManifestTypeface, RendererIdentity } from './part-003.js';
 
 /**
  * This interface was referenced by `Invocation`'s JSON-Schema
@@ -14,6 +14,12 @@ export interface AssetBinding {
 /**
  * Document declarations and immutable source provenance. Revisions, compilation
  * caches, clocks and decoder state live outside this model.
+ * The example is a complete editable 16:9 slide with a text shape. Coordinates
+ * and sizes are decimal EMU strings (12700 EMU per point). Empty theme, master,
+ * layout, font and resource maps are valid; inherited text uses the caller's
+ * explicit delivery defaults. Copy slides/objects with distinct IDs to expand
+ * the deck. Inspect optional feature definitions only when those features are
+ * needed; the example requires no system font discovery or external resources.
  *
  * This interface was referenced by `Invocation`'s JSON-Schema
  * via the `definition` "Document".
@@ -1182,17 +1188,4 @@ export interface FontNameBinding {
    * Exact index in VerifiedFont metadata.names, preserving original record order.
    */
   record: number;
-}
-
-/**
- * Explicit resource bundle bindings, not system font names or legal permissions.
- *
- * This interface was referenced by `Invocation`'s JSON-Schema
- * via the `definition` "CascadeFont".
- */
-export interface CascadeFont {
-  byteLength: ByteLength;
-  expectedSha256: Digest;
-  faceIndex: number;
-  offset: ByteLength;
 }

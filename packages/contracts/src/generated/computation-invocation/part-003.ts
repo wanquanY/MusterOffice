@@ -1,6 +1,19 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { Digest, Stroke, TypefaceMappingPolicy } from './part-001.js';
+import type { ByteLength, Digest, Stroke, TypefaceMappingPolicy } from './part-001.js';
 import type { Document } from './part-002.js';
+
+/**
+ * Explicit resource bundle bindings, not system font names or legal permissions.
+ *
+ * This interface was referenced by `Invocation`'s JSON-Schema
+ * via the `definition` "CascadeFont".
+ */
+export interface CascadeFont {
+  byteLength: ByteLength;
+  expectedSha256: Digest;
+  faceIndex: number;
+  offset: ByteLength;
+}
 
 /**
  * This interface was referenced by `Invocation`'s JSON-Schema

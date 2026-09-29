@@ -923,7 +923,7 @@
       "pattern": "^[0-9a-f]{64}$"
     },
     "Document": {
-      "description": "Document declarations and immutable source provenance. Revisions, compilation\ncaches, clocks and decoder state live outside this model.",
+      "description": "Document declarations and immutable source provenance. Revisions, compilation\ncaches, clocks and decoder state live outside this model.\nThe example is a complete editable 16:9 slide with a text shape. Coordinates\nand sizes are decimal EMU strings (12700 EMU per point). Empty theme, master,\nlayout, font and resource maps are valid; inherited text uses the caller's\nexplicit delivery defaults. Copy slides/objects with distinct IDs to expand\nthe deck. Inspect optional feature definitions only when those features are\nneeded; the example requires no system font discovery or external resources.",
       "type": "object",
       "properties": {
         "fonts": {
@@ -1030,6 +1030,143 @@
         }
       },
       "additionalProperties": false,
+      "examples": [
+        {
+          "fonts": {},
+          "format": "musteroffice.presentation/0.1-draft",
+          "id": "document:example",
+          "layouts": {},
+          "masters": {},
+          "objects": {
+            "object:title": {
+              "accessibility": {
+                "decorative": false,
+                "description": "Editable text",
+                "title": "Title"
+              },
+              "appearance": {
+                "fill": {
+                  "kind": "value",
+                  "value": {
+                    "kind": "none"
+                  }
+                },
+                "stroke": {
+                  "kind": "value",
+                  "value": {
+                    "kind": "none"
+                  }
+                }
+              },
+              "content": {
+                "geometry": {
+                  "kind": "rectangle"
+                },
+                "kind": "shape",
+                "text": {
+                  "insets": {
+                    "bottom": "0",
+                    "left": "0",
+                    "right": "0",
+                    "top": "0"
+                  },
+                  "overflow": "report",
+                  "paragraphs": [
+                    {
+                      "defaultRunStyle": {},
+                      "id": "paragraph:title",
+                      "runs": [
+                        {
+                          "content": {
+                            "kind": "text",
+                            "text": "Your title"
+                          },
+                          "id": "run:title",
+                          "style": {}
+                        }
+                      ],
+                      "style": {}
+                    }
+                  ],
+                  "style": {
+                    "color": {
+                      "kind": "value",
+                      "value": {
+                        "kind": "srgb",
+                        "rgba": {
+                          "alpha": 255,
+                          "blue": 56,
+                          "green": 34,
+                          "red": 22
+                        }
+                      }
+                    },
+                    "size": {
+                      "kind": "value",
+                      "value": "457200"
+                    }
+                  },
+                  "wrap": true
+                }
+              },
+              "id": "object:title",
+              "parent": {
+                "id": "slide:1",
+                "kind": "slide"
+              },
+              "transform": {
+                "flipHorizontal": false,
+                "flipVertical": false,
+                "origin": {
+                  "x": "914400",
+                  "y": "914400"
+                },
+                "rotation": 0,
+                "size": {
+                  "height": "914400",
+                  "width": "10363200"
+                }
+              }
+            }
+          },
+          "pageSize": {
+            "height": "6858000",
+            "width": "12192000"
+          },
+          "resources": {},
+          "slideOrder": [
+            "slide:1"
+          ],
+          "slides": {
+            "slide:1": {
+              "background": {
+                "kind": "value",
+                "value": {
+                  "color": {
+                    "kind": "srgb",
+                    "rgba": {
+                      "alpha": 255,
+                      "blue": 255,
+                      "green": 255,
+                      "red": 255
+                    }
+                  },
+                  "kind": "solid"
+                }
+              },
+              "hidden": false,
+              "id": "slide:1",
+              "layout": null,
+              "name": "Introduction",
+              "objects": [
+                "object:title"
+              ]
+            }
+          },
+          "themes": {},
+          "title": "Editable presentation"
+        }
+      ],
       "required": [
         "format",
         "id",

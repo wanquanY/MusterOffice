@@ -934,6 +934,12 @@ export interface SnapshotRecord {
 /**
  * Document declarations and immutable source provenance. Revisions, compilation
  * caches, clocks and decoder state live outside this model.
+ * The example is a complete editable 16:9 slide with a text shape. Coordinates
+ * and sizes are decimal EMU strings (12700 EMU per point). Empty theme, master,
+ * layout, font and resource maps are valid; inherited text uses the caller's
+ * explicit delivery defaults. Copy slides/objects with distinct IDs to expand
+ * the deck. Inspect optional feature definitions only when those features are
+ * needed; the example requires no system font discovery or external resources.
  *
  * This interface was referenced by `TemplateRequest`'s JSON-Schema
  * via the `definition` "Document".

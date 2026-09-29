@@ -1,6 +1,7 @@
 //! Presentation authoring semantics, independent of rendering and host storage.
 mod dependencies;
 mod document;
+mod examples;
 mod geometry;
 mod source;
 mod source_validation;
