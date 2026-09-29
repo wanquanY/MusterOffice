@@ -499,7 +499,6 @@ fn selected_cancellation_and_unsupported_native_properties_fail_explicitly() {
         "numCol=\"2\"",
         "vert=\"vert\"",
         "anchorCtr=\"1\"",
-        "wrap=\"none\"",
         "vertOverflow=\"ellipsis\"",
     ] {
         let i = read(&fixture("<a:p><a:r><a:t>A</a:t></a:r></a:p>", attrs));
@@ -517,7 +516,7 @@ fn selected_cancellation_and_unsupported_native_properties_fail_explicitly() {
         ));
         assert_eq!(backend.calls, 0);
     }
-    // End punctuation now has dedicated real-shaper coverage in source_hanging.
+    // Wrapping and end punctuation have dedicated positive real-shaper coverage.
     // Justification is still a preflight prerequisite, before component work.
     let i = read(&fixture(
         "<a:p><a:pPr algn=\"just\"/><a:r><a:t>A</a:t></a:r></a:p>",
@@ -552,4 +551,104 @@ fn selected_cancellation_and_unsupported_native_properties_fail_explicitly() {
     assert!(
         matches!(*issue, SourceFrameIssue::IncompleteParagraph { paragraph: 0, ref flow, .. } if !flow.is_empty())
     );
+}
+
+#[test]
+fn no_wrap_keeps_native_text_and_actual_alignment_with_explicit_breaks() {
+    if isolate("no_wrap_keeps_native_text_and_actual_alignment_with_explicit_breaks") {
+        return;
+    }
+    for (align, rtl) in [
+        ("l", false),
+        ("ctr", false),
+        ("r", false),
+        ("l", true),
+        ("ctr", true),
+        ("r", true),
+    ] {
+        let paragraphs = format!(
+            "<a:p><a:pPr algn=\"{align}\" rtl=\"{}\" latinLnBrk=\"1\"/><a:r><a:rPr sz=\"1800\"/><a:t>AAAAA AAAAA</a:t></a:r><a:br/><a:r><a:rPr sz=\"1800\"/><a:t>A</a:t></a:r><a:br/></a:p>",
+            u8::from(rtl)
+        );
+        let b = rewrite(&fixture(&paragraphs, "wrap=\"none\""), SLIDE, |s| {
+            let mut s = s.replacen("<p:sld ", "<p:sld showMasterSp=\"0\" ", 1);
+            let from = s.find("</p:sp>").unwrap() + "</p:sp>".len();
+            let to = s.find("</p:spTree>").unwrap();
+            s.replace_range(from..to, "");
+            s
+        });
+        let original = read(&b);
+        let plan = frame(&b);
+        assert_eq!(read(&b), original);
+        assert_eq!(plan.inputs[0].text, "AAAAA AAAAA\u{2028}A\u{2028}");
+        let p = &plan.paragraphs[0];
+        assert_eq!(p.spec.wrapping, mo_text::flow::LineWrapping::NoWrap);
+        let layout = &p.computed.geometry.paths.layout;
+        assert_eq!(layout.decisions.len(), 3);
+        assert_eq!(layout.work.evaluated_candidates, 3);
+        assert!(layout.decisions[0].overflows);
+        assert!(layout.decisions.iter().all(|d| !d.emergency));
+        let wide = frame(&rewrite(&b, SLIDE, |s| {
+            s.replace("cx=\"1000000\"", "cx=\"6000000\"")
+        }));
+        let lines = &p.computed.geometry.precise.as_ref().unwrap().lines;
+        let wide_lines = &wide.paragraphs[0]
+            .computed
+            .geometry
+            .precise
+            .as_ref()
+            .unwrap()
+            .lines;
+        assert_eq!(lines.len(), wide_lines.len());
+        assert_eq!(lines[0].advance, wide_lines[0].advance);
+        assert_eq!(plan.glyphs.len(), wide.glyphs.len());
+        let width = p.spec.widths.first;
+        let line = &lines[0];
+        let expected = match align {
+            "l" => Fixed::ZERO,
+            "r" => width.checked_sub(line.pen_max).unwrap(),
+            "ctr" => width
+                .checked_sub(line.pen_max)
+                .unwrap()
+                .checked_sub(line.pen_min)
+                .unwrap()
+                .half()
+                .unwrap(),
+            _ => unreachable!(),
+        };
+        let base = plan.region.inner.min.x.checked_add(p.spec.left).unwrap();
+        assert_eq!(p.line_offsets[0].x.checked_sub(base).unwrap(), expected);
+        let capacity = capacity::measure(&plan, &|| false).unwrap();
+        assert_eq!(capacity.line_count, 3);
+        assert_eq!(capacity.horizontal_overflow_lines, 1);
+        assert_eq!(capacity.emergency_lines, 0);
+        assert!(
+            capacity.maximum_left_excess > Fixed::ZERO
+                || capacity.maximum_right_excess > Fixed::ZERO
+        );
+        if let Some(root) = std::env::var_os("MO_NOWRAP_OUTPUT") {
+            let root = std::path::PathBuf::from(root);
+            std::fs::create_dir_all(&root).unwrap();
+            let stem = original.source_sha256.as_str();
+            std::fs::write(root.join(format!("{stem}.pptx")), &b).unwrap();
+            std::fs::write(
+                root.join(format!("{stem}.json")),
+                serde_json::to_vec_pretty(&capacity).unwrap(),
+            )
+            .unwrap();
+        }
+        let wrapping = frame(&rewrite(&b, SLIDE, |s| {
+            s.replace("wrap=\"none\"", "wrap=\"square\"")
+        }));
+        assert!(
+            wrapping.paragraphs[0]
+                .computed
+                .geometry
+                .paths
+                .layout
+                .decisions
+                .len()
+                > 3
+        );
+    }
 }

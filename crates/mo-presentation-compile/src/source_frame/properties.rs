@@ -12,7 +12,10 @@ pub(super) fn body(body: &EffectiveTextBody) -> Result<(), SourceFrameError> {
     let checks = [
         (Rotation, a.rotation == Some(0)),
         (Vertical, a.vertical == Some(NativeTextVertical::Horz)),
-        (Wrap, a.wrap == Some(NativeTextWrap::Square)),
+        (
+            Wrap,
+            matches!(a.wrap, Some(NativeTextWrap::Square | NativeTextWrap::None)),
+        ),
         (Columns, a.columns == Some(1)),
         (FromWordArt, a.from_word_art == Some(false)),
         (CenterAnchor, a.center_anchor == Some(false)),
@@ -65,6 +68,7 @@ pub(super) fn paragraph(
     p: &CascadedParagraph,
     input: &SourceParagraphPlan,
     region: &SourceFrameRegion,
+    wrapping: NativeTextWrap,
     check: &dyn Fn() -> bool,
 ) -> Result<FrameParagraphSpec, SourceFrameError> {
     let a = &p.attributes;
@@ -116,6 +120,10 @@ pub(super) fn paragraph(
         after: ParagraphSpacing::Fixed(Fixed::ZERO),
         spacing_conversion_error: Fixed::ZERO,
         alignment: a.alignment.expect("validated alignment"),
+        wrapping: match wrapping {
+            NativeTextWrap::Square => mo_text::flow::LineWrapping::Wrap,
+            NativeTextWrap::None => mo_text::flow::LineWrapping::NoWrap,
+        },
         hanging_punctuation: if a.hanging_punctuation == Some(true) {
             mo_text::flow::HangingPunctuation::End
         } else {

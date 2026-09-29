@@ -129,6 +129,8 @@ pub struct FrameParagraphSpec {
     pub alignment: NativeTextAlign,
     pub overflow: OverflowPolicy,
     #[serde(default)]
+    pub wrapping: mo_text::flow::LineWrapping,
+    #[serde(default)]
     pub hanging_punctuation: mo_text::flow::HangingPunctuation,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]

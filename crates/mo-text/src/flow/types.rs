@@ -14,6 +14,16 @@ pub enum OverflowPolicy {
     EmergencyGrapheme,
 }
 
+/// Whether available width creates line breaks. Explicit mandatory breaks are
+/// preserved in both modes; NoWrap still measures against the actual width.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum LineWrapping {
+    #[default]
+    Wrap,
+    NoWrap,
+}
+
 /// Permit one terminal punctuation grapheme to extend beyond the line edge
 /// when its preceding text fits. This does not remove or rescale any glyph.
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
@@ -53,6 +63,7 @@ pub struct FlowInput<'a> {
     pub spacing: LineSpacing,
     pub widths: LineWidths,
     pub overflow: OverflowPolicy,
+    pub wrapping: LineWrapping,
     pub hanging_punctuation: HangingPunctuation,
 }
 impl<'a> From<&'a ParagraphLayoutRequest> for FlowInput<'a> {
@@ -64,6 +75,7 @@ impl<'a> From<&'a ParagraphLayoutRequest> for FlowInput<'a> {
             spacing: q.spacing.clone(),
             widths: LineWidths::uniform(Fixed::emu(q.width)),
             overflow: q.overflow,
+            wrapping: q.wrapping,
             hanging_punctuation: q.hanging_punctuation,
         }
     }
@@ -77,6 +89,8 @@ pub struct ParagraphLayoutRequest {
     pub spacing: LineSpacing,
     pub width: Emu,
     pub overflow: OverflowPolicy,
+    #[serde(default)]
+    pub wrapping: LineWrapping,
     #[serde(default)]
     pub hanging_punctuation: HangingPunctuation,
 }

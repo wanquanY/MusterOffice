@@ -73,6 +73,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     width: Emu::new(width),
                     overflow: OverflowPolicy::EmergencyGrapheme,
                     hanging_punctuation: mo_text::flow::HangingPunctuation::None,
+                    wrapping: mo_text::flow::LineWrapping::Wrap,
                 },
                 bounds_tolerance: Fixed::from_raw(1 << 26),
             };

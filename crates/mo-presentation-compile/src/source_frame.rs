@@ -170,6 +170,7 @@ pub(crate) fn prepare_bound(
             native,
             p,
             &region,
+            body.attributes.wrap.expect("validated wrap mode"),
             check,
         )?);
         manifest
@@ -217,6 +218,7 @@ pub(crate) fn compute(
                     spacing: spec.spacing.clone(),
                     widths: spec.widths,
                     overflow: spec.overflow,
+                    wrapping: spec.wrapping,
                     hanging_punctuation: spec.hanging_punctuation,
                 },
                 bounds_tolerance,

@@ -76,6 +76,14 @@ export type BaselineShift =
  * via the `definition` "HangingPunctuation".
  */
 export type HangingPunctuation = "none" | "end";
+/**
+ * Whether available width creates line breaks. Explicit mandatory breaks are
+ * preserved in both modes; NoWrap still measures against the actual width.
+ *
+ * This interface was referenced by `ParagraphLayoutRequest`'s JSON-Schema
+ * via the `definition` "LineWrapping".
+ */
+export type LineWrapping = "wrap" | "noWrap";
 
 export interface ParagraphLayoutRequest {
   /**
@@ -89,6 +97,11 @@ export interface ParagraphLayoutRequest {
   strutStyle: number;
   styles: GeometryStyle[];
   width: Emu;
+  /**
+   * Whether available width creates line breaks. Explicit mandatory breaks are
+   * preserved in both modes; NoWrap still measures against the actual width.
+   */
+  wrapping?: "wrap" | "noWrap";
 }
 /**
  * This interface was referenced by `ParagraphLayoutRequest`'s JSON-Schema

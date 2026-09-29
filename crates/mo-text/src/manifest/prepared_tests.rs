@@ -101,6 +101,7 @@ fn precise_line_metrics_are_retained_without_changing_legacy_glyph_paths() {
                 spacing: LineSpacing::Natural,
                 widths: flow::LineWidths::uniform(Fixed::emu(Emu::new(202))),
                 hanging_punctuation: flow::HangingPunctuation::None,
+                wrapping: flow::LineWrapping::Wrap,
                 overflow: OverflowPolicy::EmergencyGrapheme,
             },
             Fixed::from_raw(1 << 26),

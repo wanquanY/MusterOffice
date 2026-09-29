@@ -226,6 +226,14 @@
         }
       ]
     },
+    "LineWrapping": {
+      "description": "Whether available width creates line breaks. Explicit mandatory breaks are\npreserved in both modes; NoWrap still measures against the actual width.",
+      "type": "string",
+      "enum": [
+        "wrap",
+        "noWrap"
+      ]
+    },
     "OverflowPolicy": {
       "type": "string",
       "enum": [
@@ -270,6 +278,10 @@
         },
         "width": {
           "$ref": "#/$defs/Emu"
+        },
+        "wrapping": {
+          "$ref": "#/$defs/LineWrapping",
+          "default": "wrap"
         }
       },
       "additionalProperties": false,

@@ -16,6 +16,7 @@ pub(super) fn q(text: &str, width: i64, overflow: OverflowPolicy) -> ParagraphLa
         width: Emu::new(width),
         overflow,
         hanging_punctuation: HangingPunctuation::None,
+        wrapping: LineWrapping::Wrap,
     }
 }
 fn ends(r: &ParagraphLayoutResult) -> Vec<u32> {

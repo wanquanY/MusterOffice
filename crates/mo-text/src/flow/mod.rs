@@ -6,6 +6,8 @@ mod hanging_tests;
 #[cfg(test)]
 mod tests;
 mod types;
+#[cfg(test)]
+mod wrapping_tests;
 use crate::{
     cascade::{context::Context, *},
     fallback::*,
@@ -362,6 +364,9 @@ pub(crate) fn layout_flow(
     let mut opportunities = Vec::new();
     for b in &result.breaks.opportunities {
         cancelled(check)?;
+        if q.wrapping == LineWrapping::NoWrap && b.kind != BreakKind::Mandatory {
+            continue;
+        }
         if search
             .context
             .boundaries
@@ -413,7 +418,10 @@ pub(crate) fn layout_flow(
                 earliest = Some(c);
             }
         }
-        if chosen.is_none() && matches!(q.overflow, OverflowPolicy::EmergencyGrapheme) {
+        if chosen.is_none()
+            && q.wrapping == LineWrapping::Wrap
+            && matches!(q.overflow, OverflowPolicy::EmergencyGrapheme)
+        {
             let lo = segmentation
                 .boundaries
                 .partition_point(|b| b.scalar_offset <= start);
