@@ -2,6 +2,7 @@
 //! durable jobs, database, product UI, network or implicit resource discovery.
 mod assets;
 mod budget;
+pub mod compose;
 mod compute;
 mod contract;
 mod export;

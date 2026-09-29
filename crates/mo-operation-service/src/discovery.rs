@@ -48,11 +48,12 @@ impl ServiceOperation {
             DocumentAction::Create { .. } => Self::Create,
             DocumentAction::Apply { .. } => Self::Apply,
             DocumentAction::Export { .. } => Self::Export,
-            DocumentAction::InstantiateTemplate { .. }
+            DocumentAction::Compose { .. }
+            | DocumentAction::InstantiateTemplate { .. }
             | DocumentAction::DescribeTemplate { .. } => {
                 return Err(Failure::new(
                     FailureCode::InputInvalid,
-                    "template computation requires the computation-only interface",
+                    "this computation requires the computation-only interface",
                 ));
             }
         })

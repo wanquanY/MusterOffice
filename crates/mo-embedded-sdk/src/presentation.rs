@@ -35,6 +35,30 @@ pub struct PlaybackOptions {
 }
 
 impl Presentation {
+    /// Compact ordered pages and text/shape declarations. The resulting value
+    /// is the same revisioned native document used by create/apply/export.
+    pub fn compose(
+        content: crate::operation::compose::PresentationContent,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, Failure> {
+        let action = DocumentAction::Compose {
+            presentation: Box::new(content),
+        };
+        let request_id = RequestId::new("sdk:compose").expect("static request identifier");
+        let result = compute_mutation(
+            &Computation {
+                request_id: &request_id,
+                profile_id: OperationProfile::AuthorModel,
+                action: &action,
+            },
+            None,
+            cancelled,
+        )?;
+        Ok(Self {
+            snapshot: result.into_parts().0,
+        })
+    }
+
     pub fn create(document: Document, cancelled: &dyn Fn() -> bool) -> Result<Self, Failure> {
         let action = DocumentAction::Create {
             document: Box::new(document),

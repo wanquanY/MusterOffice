@@ -157,6 +157,21 @@ pub fn compute_mutation(
                 None,
             )
         }
+        DocumentAction::Compose { presentation } => {
+            if base.is_some() {
+                return Err(Failure::new(
+                    FailureCode::DocumentExists,
+                    "document already exists",
+                ));
+            }
+            let document = presentation.to_document(check)?;
+            (
+                Snapshot::new(document, limits)?.into_record(),
+                None,
+                None,
+                None,
+            )
+        }
         DocumentAction::InstantiateTemplate {
             document_id,
             definition,

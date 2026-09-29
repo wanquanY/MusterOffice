@@ -1,0 +1,209 @@
+{
+  "format": "musteroffice.compact-authoring-verification/1",
+  "date": "2026-09-30",
+  "status": "verified-local-computation",
+  "scope": "Ordered editable text/shape creation into the same Document and existing transactions; no visual quality or Office/WPS claim",
+  "checks": {
+    "relatedRustPassed": 100,
+    "relatedRustFailed": 0,
+    "additionalLegacyBoundaryPassed": 2,
+    "strictClippy": "passed",
+    "generatedSchemas": "passed",
+    "typescript": "passed",
+    "nativeWasm": {
+      "format": "musteroffice.compose-parity/1",
+      "status": "passed",
+      "cliSha256": "54049e8d823e00a3b16eb990795e85c2b0f5c9e749d7b2f83b27027c384ca7bb",
+      "wasmSha256": "5fda6b681e8ad5f157dbf03e17482649dd066bb3c41aaa6963346a51243f4090",
+      "cases": [
+        {
+          "name": "three-slides",
+          "semanticDigest": "8878e8d1236066d399c70334432769e7d26f718ceb06c6bf84e7e1a7d827d1d7"
+        },
+        {
+          "name": "equivalent-native-document",
+          "semanticDigest": "8878e8d1236066d399c70334432769e7d26f718ceb06c6bf84e7e1a7d827d1d7"
+        },
+        {
+          "name": "empty-deck",
+          "failure": "INPUT_INVALID"
+        },
+        {
+          "name": "duplicate-slide",
+          "failure": "INPUT_INVALID"
+        },
+        {
+          "name": "duplicate-object",
+          "failure": "INPUT_INVALID"
+        },
+        {
+          "name": "negative-size",
+          "failure": "INPUT_INVALID"
+        },
+        {
+          "name": "unknown-author-field",
+          "failure": "INPUT_INVALID"
+        },
+        {
+          "name": "tabs-and-paragraphs",
+          "semanticDigest": "0f7ea3526fd96614f2a1cb8793d7c0e7ed5d7d420ed7f11a8a1d39e54891678b"
+        },
+        {
+          "name": "empty-editable-text",
+          "semanticDigest": "56d87e2a691184a2921405a6adb499c6aa9fed091a95776aebc511d5b51f8328"
+        },
+        {
+          "name": "expanded-text-budget",
+          "failure": "LIMIT_EXCEEDED"
+        },
+        {
+          "name": "edit-composed-document",
+          "semanticDigest": "0b0e957e6ed7acba7453591f62ced0fbe3e67fbff4e3d583ee4f4f29fa8897cf"
+        },
+        {
+          "name": "stale-edit-rejected",
+          "failure": "REVISION_CONFLICT"
+        },
+        {
+          "name": "create-with-base-rejected",
+          "failure": "INPUT_INVALID"
+        }
+      ]
+    },
+    "mcp": {
+      "format": "musteroffice.compose-mcp/1",
+      "status": "passed",
+      "binarySha256": "ff023223ab9f9a23d60a3ebc05475db6851e72bae41be20b661440616c1102aa",
+      "observations": [
+        {
+          "protocol": "2025-11-25",
+          "computations": 4,
+          "created": "8878e8d1236066d399c70334432769e7d26f718ceb06c6bf84e7e1a7d827d1d7",
+          "edited": "fc151c459e5636bd2ac5d6d970ab15b8ebcc19ce1d2065099e6e905d4c5d4f7c"
+        },
+        {
+          "protocol": "2026-07-28",
+          "computations": 4,
+          "created": "8878e8d1236066d399c70334432769e7d26f718ceb06c6bf84e7e1a7d827d1d7",
+          "edited": "fc151c459e5636bd2ac5d6d970ab15b8ebcc19ce1d2065099e6e905d4c5d4f7c"
+        }
+      ]
+    },
+    "mcpStrictClippy": "passed",
+    "schemaSameSourceCheck": "passed"
+  },
+  "logs": {
+    ".codex-work/night-acceptance-20260930/compose-related-tests-final.log": {
+      "sha256": "4dfe458a1cb453a72970be775e5f028e600ba8336b0a0e9abd4592ad89497c79",
+      "bytes": 15662
+    },
+    ".codex-work/night-acceptance-20260930/compose-clippy.log": {
+      "sha256": "a09622be7f0d7bcc4851bd7f509fd3370497facc2bca5dff1812c70ce80de990",
+      "bytes": 2077
+    },
+    ".codex-work/night-acceptance-20260930/compose-types.log": {
+      "sha256": "980e314d9651081cb1921ee9500dc4909391d3336f75d58b9915a99c5dd24e77",
+      "bytes": 3832
+    },
+    ".codex-work/night-acceptance-20260930/compose-schema.log": {
+      "sha256": "09e9fcc219774e39ebe28ae9fbcde8d293e441632eb69d948795c97067abe99b",
+      "bytes": 11824
+    },
+    ".codex-work/night-acceptance-20260930/compose-legacy-boundary.log": {
+      "sha256": "f933e0ff181c8bb53422a23ca6a7a5719dba1fac6e41c6bbbbf447fbfba2c816",
+      "bytes": 2569
+    },
+    ".codex-work/night-acceptance-20260930/compose-parity.log": {
+      "sha256": "ed12c7fe23d845c110322aa2c2f70ff78a960323e45b92440f53a9337aa488dd",
+      "bytes": 153
+    },
+    ".codex-work/night-acceptance-20260930/compose-mcp-check-final.log": {
+      "sha256": "f750988028c8c8a14dcb8b076273207fb693ee6a5a68f1f12bf582131c89fc80",
+      "bytes": 571
+    },
+    ".codex-work/night-acceptance-20260930/compose-mcp-clippy.log": {
+      "sha256": "e93ee042afb413b0d5447fed29266d20927d38554674048da2c59f8d8d819082",
+      "bytes": 5489
+    },
+    ".codex-work/night-acceptance-20260930/compose-schema-check.log": {
+      "sha256": "22acd6382bb27f6d9f6a6ef933a5f8c55a89c72383434fdc2f8ba6576ed61a6d",
+      "bytes": 7632
+    },
+    ".codex-work/night-acceptance-20260930/compose-format.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "limitations": [
+    "Musterwork integration of compose pending",
+    "Actual model efficiency retest pending",
+    "Office/WPS and full presentation quality pending"
+  ],
+  "sources": [
+    {
+      "path": "crates/mo-presentation-operations/src/compose.rs",
+      "sha256": "5277cabd2c4e84d9345b93d872a210b922b6a8f71bb1d4d12e9a3416064667c9",
+      "bytes": 4802
+    },
+    {
+      "path": "crates/mo-presentation-operations/src/compose/lower.rs",
+      "sha256": "bfbf137f7024582675a7dbc28088159e75d631f923882e93963fb631f25380bc",
+      "bytes": 9224
+    },
+    {
+      "path": "crates/mo-presentation-operations/src/compose/tests.rs",
+      "sha256": "4d6dea8676e9cd2ab1003fedebaca899be5bf8edadf7b99142489952513ffc7e",
+      "bytes": 6834
+    },
+    {
+      "path": "crates/mo-presentation-operations/src/contract.rs",
+      "sha256": "48e92d82895c0185faea7a1b7d8417a24e19ff063bb8fbcd9622dce4791f359c",
+      "bytes": 6443
+    },
+    {
+      "path": "crates/mo-presentation-operations/src/compute.rs",
+      "sha256": "1dd088ef6c7501680cc6d7d99478262df2845fcc0d5a0e876b0baa3f1c1eb9d3",
+      "bytes": 11629
+    },
+    {
+      "path": "crates/mo-presentation-operations/src/invocation.rs",
+      "sha256": "5b672c1ff394e2855d03ff6c0fa727aededf8ece11cd67458907ca1a3af00e5c",
+      "bytes": 3546
+    },
+    {
+      "path": "crates/mo-embedded-sdk/src/presentation.rs",
+      "sha256": "9b467618bb9b10a8f4913d2fa1723777c0221fb157285539a8f368bd03dab033",
+      "bytes": 8918
+    },
+    {
+      "path": "tools/mo-mcp/src/compute/server.rs",
+      "sha256": "4c648ef100a435dcdad0fd3113d21cad0233e846a3db58c5e7a2b244c8526332",
+      "bytes": 12983
+    },
+    {
+      "path": "tools/mo-mcp/compose_check.py",
+      "sha256": "aa33c70dd043fd60096ef0e9560949582de9f8b3f43771af494a6fc565569fcb",
+      "bytes": 3181
+    },
+    {
+      "path": "tools/verification/compose-parity.mjs",
+      "sha256": "592a81c45d22508bddfef32c73e281a2d21cd4c870b8c69aa4e3ed6a4c1b6592",
+      "bytes": 4516
+    },
+    {
+      "path": "fixtures/presentations/compose/invocation.json",
+      "sha256": "5128bee1f030e3db0db0aa81433148894d0104eec9d0c87570fc205210a20ffc",
+      "bytes": 1326
+    },
+    {
+      "path": "contracts/generated/computation-request.schema.json",
+      "sha256": "6b0b2348494a7349835b7bd2a25506130379ac6607653911ba253b7d5f4152d8",
+      "bytes": 148104
+    },
+    {
+      "path": "contracts/generated/computation-invocation.schema.json",
+      "sha256": "3a68591a7f10f9c260e7850ef12d07badd21eb64c22e4fe5448a93990c5f34ea",
+      "bytes": 149255
+    }
+  ]
+}

@@ -23,12 +23,15 @@ impl Invocation {
     pub fn validate_cancellable(&self, cancelled: &dyn Fn() -> bool) -> Result<(), Failure> {
         self.request.validate_profile()?;
         match (&self.request.action, &self.snapshot) {
-            (DocumentAction::Create { .. } | DocumentAction::Import { .. }, Some(_)) => {
-                Err(Failure::new(
-                    FailureCode::InputInvalid,
-                    "new document has no base snapshot",
-                ))
-            }
+            (
+                DocumentAction::Create { .. }
+                | DocumentAction::Compose { .. }
+                | DocumentAction::Import { .. },
+                Some(_),
+            ) => Err(Failure::new(
+                FailureCode::InputInvalid,
+                "new document has no base snapshot",
+            )),
             (
                 DocumentAction::Apply { .. }
                 | DocumentAction::Export { .. }

@@ -265,11 +265,12 @@ impl StandardHost {
         let request = db::request(&self.connection, context, &info)?;
         // Immutable revisions can be decoded/validated outside the write lock.
         let snapshot = match &request.action {
-            DocumentAction::InstantiateTemplate { .. }
+            DocumentAction::Compose { .. }
+            | DocumentAction::InstantiateTemplate { .. }
             | DocumentAction::DescribeTemplate { .. } => {
                 return Err(Failure::new(
                     FailureCode::InputInvalid,
-                    "template computation is outside the legacy host",
+                    "this computation is outside the legacy host",
                 ));
             }
             DocumentAction::Import { .. } | DocumentAction::Create { .. } => None,

@@ -1,5 +1,5 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { Accessibility, Appearance, Crop, Document, ExportSettings, FontFace, Layout, Master, MotionPath, MotionPoint, Object, OperationEntry, Point, PresentationSequence, RationalTime, Resource, RetainedParagraph, Rgba, ScaleValue, Size, Slide, Table, TableCell, TableCellStyle1, TableColumn, TableRow, TemplateDefinition, TextBody, Theme, Timeline, Transform } from './part-002.js';
+import type { Accessibility, Appearance, Crop, Document, ExportSettings, FontFace, Layout, Master, MotionPath, MotionPoint, Object, OperationEntry, Point, PresentationContent, PresentationSequence, RationalTime, Resource, RetainedParagraph, Rgba, ScaleValue, Size, Slide, Table, TableCell, TableCellStyle1, TableColumn, TableRow, TemplateDefinition, TextBody, Theme, Timeline, Transform } from './part-002.js';
 
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
 
@@ -16,6 +16,10 @@ export type DocumentAction =
   | {
       document: Document;
       kind: "create";
+    }
+  | {
+      kind: "compose";
+      presentation: PresentationContent;
     }
   | {
       definition: TemplateDefinition;

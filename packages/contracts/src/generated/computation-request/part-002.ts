@@ -1,6 +1,6 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { Alignment, AssetBinding, ByteLength, CellId, Color, ColumnId, ContainerDuration, ContainerId, ContainerKind, Digest, DocumentId, Effect, Emu, Fill, FillMode, FontDelivery, FontId, FontManifestProfile, ImageSampling, ImageSourceSelection, Inherited, InlineContent, LayoutId, MasterId, ModelVersion, MotionCoordinate, MotionSegment, NativeEditConstraint, NextAction, ObjectContent, ObjectId, Operation, OperationId, OverflowPolicy, ParagraphId, ParameterTarget, PresentationRole, PreviousAction, RepeatCount, RepeatDuration, RequestId, ResourceId, ResourceKind, RestartMode, RetainedRunKind, RowId, RunId, SlideId, SourceBindingProfile, StartCondition, Stroke, TableVerticalAlignment, TemplateVersion, TextDirection, ThemeId, Ticks, TimeCondition, TimelineVersion, Timescale, TimingNodeId } from './part-001.js';
-import type { ManifestTypeface, RendererIdentity } from './part-003.js';
+import type { Alignment, AssetBinding, CellId, Color, ColumnId, ContainerDuration, ContainerId, ContainerKind, Digest, DocumentId, Effect, Emu, Fill, FillMode, FontId, ImageSampling, ImageSourceSelection, Inherited, InlineContent, LayoutId, MasterId, ModelVersion, MotionCoordinate, MotionSegment, NativeEditConstraint, NextAction, ObjectContent, ObjectId, Operation, OperationId, OverflowPolicy, ParagraphId, ParameterTarget, PathCommand, PresentationRole, PreviousAction, RepeatCount, RepeatDuration, RequestId, ResourceId, ResourceKind, RestartMode, RetainedRunKind, RowId, RunId, SlideId, SourceBindingProfile, StartCondition, Stroke, TableVerticalAlignment, TemplateVersion, TextDirection, ThemeId, Ticks, TimeCondition, TimelineVersion, Timescale, TimingNodeId } from './part-001.js';
+import type { ColorContext, ExportDefaults, FontManifest, RendererIdentity } from './part-003.js';
 
 /**
  * Document declarations and immutable source provenance. Revisions, compilation
@@ -789,6 +789,140 @@ export interface SequenceNavigation {
 }
 
 /**
+ * Compact creation input for native editable text and shapes. Coordinates and
+ * font sizes are decimal EMU strings (12700 EMU per point). This is expanded
+ * once into Document; all subsequent editing, rendering and export use that
+ * same document. Use `create` with Document for other object kinds/resources.
+ *
+ * This interface was referenced by `OperationRequest`'s JSON-Schema
+ * via the `definition` "PresentationContent".
+ */
+export interface PresentationContent {
+  id: DocumentId;
+  pageSize: Size;
+  /**
+   * Array order is slide order. IDs must be unique across this presentation.
+   */
+  slides: SlideContent[];
+  title: string;
+}
+
+/**
+ * This interface was referenced by `OperationRequest`'s JSON-Schema
+ * via the `definition` "SlideContent".
+ */
+export interface SlideContent {
+  /**
+   * Omitted background inherits the same caller delivery defaults as Document.
+   */
+  background?: Fill | null;
+  /**
+   * Array order is paint order, back to front.
+   */
+  elements: ShapeContent[];
+  id: SlideId;
+  name?: string;
+}
+
+/**
+ * This interface was referenced by `OperationRequest`'s JSON-Schema
+ * via the `definition` "ShapeContent".
+ */
+export interface ShapeContent {
+  accessibility?: Accessibility1;
+  /**
+   * Omitted fill/stroke mean explicit none, not implicit theme paint.
+   */
+  fill?: Fill | null;
+  frame: ShapeFrame;
+  /**
+   * Omitted geometry is a rectangle; text remains native editable text.
+   */
+  geometry?:
+    | {
+        kind: "rectangle";
+      }
+    | {
+        kind: "ellipse";
+      }
+    | {
+        kind: "roundRectangle";
+        radius: Emu;
+      }
+    | {
+        commands: PathCommand[];
+        kind: "path";
+        viewport: Size;
+      };
+  id: ObjectId;
+  stroke?: Stroke | null;
+  text?: PlainText | null;
+}
+
+export interface Accessibility1 {
+  decorative: boolean;
+  description: string;
+  title: string;
+}
+
+/**
+ * This interface was referenced by `OperationRequest`'s JSON-Schema
+ * via the `definition` "ShapeFrame".
+ */
+export interface ShapeFrame {
+  flipHorizontal?: boolean;
+  flipVertical?: boolean;
+  height: Emu;
+  /**
+   * DrawingML units: 60000 per degree, just as the native model.
+   */
+  rotation?: number;
+  width: Emu;
+  x: Emu;
+  y: Emu;
+}
+
+/**
+ * This interface was referenced by `OperationRequest`'s JSON-Schema
+ * via the `definition` "PlainText".
+ */
+export interface PlainText {
+  insets?: Insets1;
+  style?: PlainTextStyle;
+  /**
+   * LF, CRLF and CR each separate paragraphs; tabs become native tab runs.
+   * Empty paragraphs and a trailing paragraph separator are preserved.
+   */
+  text: string;
+  wrap?: boolean;
+}
+
+export interface Insets1 {
+  bottom: Emu;
+  left: Emu;
+  right: Emu;
+  top: Emu;
+}
+
+/**
+ * Omitted properties inherit explicit delivery defaults. Font selection
+ * uses the host's explicit default; use full Document creation for custom
+ * font resources. This operation never searches installed system fonts.
+ */
+export interface PlainTextStyle {
+  alignment?: Alignment | null;
+  bold?: boolean | null;
+  color?: Color | null;
+  direction?: TextDirection | null;
+  italic?: boolean | null;
+  language?: string | null;
+  size?: Emu | null;
+  spaceAfter?: Emu | null;
+  spaceBefore?: Emu | null;
+  underline?: boolean | null;
+}
+
+/**
  * A template is an exact document revision plus typed editable parameters.
  * Catalog identity, ownership, storage and inference are outside this contract.
  *
@@ -947,249 +1081,4 @@ export interface DeliverySettings {
   imageSource: ImageSourceSelection;
   previewWidth: number;
   sampling: ImageSampling;
-}
-
-/**
- * This interface was referenced by `OperationRequest`'s JSON-Schema
- * via the `definition` "ColorContext".
- */
-export interface ColorContext {
-  /**
-   * Explicit unassociated sRGB and alpha, supplied by the owning style.
-   *
-   * @minItems 4
-   * @maxItems 4
-   */
-  placeholder?: [number, number, number, number] | null;
-  systemColors: {
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    "3dDkShadow"?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    "3dLight"?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    activeBorder?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    activeCaption?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    appWorkspace?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    background?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    btnFace?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    btnHighlight?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    btnShadow?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    btnText?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    captionText?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    gradientActiveCaption?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    gradientInactiveCaption?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    grayText?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    highlight?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    highlightText?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    hotLight?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    inactiveBorder?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    inactiveCaption?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    inactiveCaptionText?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    infoBk?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    infoText?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    menu?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    menuBar?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    menuHighlight?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    menuText?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    scrollBar?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    window?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    windowFrame?: [number, number, number];
-    /**
-     * @minItems 3
-     * @maxItems 3
-     */
-    windowText?: [number, number, number];
-  };
-}
-
-/**
- * This interface was referenced by `OperationRequest`'s JSON-Schema
- * via the `definition` "ExportDefaults".
- */
-export interface ExportDefaults {
-  fontDelivery: FontDelivery;
-  /**
-   * Explicit host choice. Export alone does not resolve, load or embed system fonts.
-   */
-  fontFamily: string;
-  pageBackground: Rgba;
-  textColor: Rgba;
-  textSize: Emu;
-  /**
-   * All 12 native theme color slots are required for generated fallback definitions.
-   */
-  themeColors: {
-    accent1?: Rgba;
-    accent2?: Rgba;
-    accent3?: Rgba;
-    accent4?: Rgba;
-    accent5?: Rgba;
-    accent6?: Rgba;
-    dark1?: Rgba;
-    dark2?: Rgba;
-    followedHyperlink?: Rgba;
-    hyperlink?: Rgba;
-    light1?: Rgba;
-    light2?: Rgba;
-  };
-}
-
-/**
- * This interface was referenced by `OperationRequest`'s JSON-Schema
- * via the `definition` "FontManifest".
- */
-export interface FontManifest {
-  faces: ManifestFace[];
-  fonts: CascadeFont[];
-  profile: FontManifestProfile;
-  typefaces: ManifestTypeface[];
-}
-
-/**
- * This interface was referenced by `OperationRequest`'s JSON-Schema
- * via the `definition` "ManifestFace".
- */
-export interface ManifestFace {
-  family: FontNameBinding;
-  font: number;
-  postscript?: FontNameBinding | null;
-  subfamily: FontNameBinding;
-}
-
-/**
- * This interface was referenced by `OperationRequest`'s JSON-Schema
- * via the `definition` "FontNameBinding".
- */
-export interface FontNameBinding {
-  expected: string;
-  /**
-   * Exact index in VerifiedFont metadata.names, preserving original record order.
-   */
-  record: number;
-}
-
-/**
- * Explicit resource bundle bindings, not system font names or legal permissions.
- *
- * This interface was referenced by `OperationRequest`'s JSON-Schema
- * via the `definition` "CascadeFont".
- */
-export interface CascadeFont {
-  byteLength: ByteLength;
-  expectedSha256: Digest;
-  faceIndex: number;
-  offset: ByteLength;
 }

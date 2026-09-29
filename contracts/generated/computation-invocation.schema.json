@@ -1221,6 +1221,24 @@
           ]
         },
         {
+          "description": "Ordered pages and editable text/shapes expand into the ordinary native\ndocument. This is a creation input, never a second mutable authority.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "compose"
+            },
+            "presentation": {
+              "$ref": "#/$defs/PresentationContent"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "presentation"
+          ]
+        },
+        {
           "description": "Validates the caller's pinned source and parameter targets. The result\ncontains real source values and a digest, without creating a document.",
           "type": "object",
           "properties": {
@@ -3796,6 +3814,148 @@
         }
       ]
     },
+    "PlainText": {
+      "type": "object",
+      "properties": {
+        "insets": {
+          "$ref": "#/$defs/Insets",
+          "default": {
+            "bottom": "0",
+            "left": "0",
+            "right": "0",
+            "top": "0"
+          }
+        },
+        "style": {
+          "description": "Omitted properties inherit explicit delivery defaults. Font selection\nuses the host's explicit default; use full Document creation for custom\nfont resources. This operation never searches installed system fonts.",
+          "$ref": "#/$defs/PlainTextStyle",
+          "default": {
+            "alignment": null,
+            "bold": null,
+            "color": null,
+            "direction": null,
+            "italic": null,
+            "language": null,
+            "size": null,
+            "spaceAfter": null,
+            "spaceBefore": null,
+            "underline": null
+          }
+        },
+        "text": {
+          "description": "LF, CRLF and CR each separate paragraphs; tabs become native tab runs.\nEmpty paragraphs and a trailing paragraph separator are preserved.",
+          "type": "string"
+        },
+        "wrap": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "text"
+      ]
+    },
+    "PlainTextStyle": {
+      "type": "object",
+      "properties": {
+        "alignment": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Alignment"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "bold": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": null
+        },
+        "color": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Color"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "direction": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TextDirection"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "italic": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": null
+        },
+        "language": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "size": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Emu"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "spaceAfter": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Emu"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "spaceBefore": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Emu"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "underline": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "additionalProperties": false
+    },
     "Point": {
       "type": "object",
       "properties": {
@@ -3830,6 +3990,69 @@
       "required": [
         "delay",
         "effects"
+      ]
+    },
+    "PresentationContent": {
+      "description": "Compact creation input for native editable text and shapes. Coordinates and\nfont sizes are decimal EMU strings (12700 EMU per point). This is expanded\nonce into Document; all subsequent editing, rendering and export use that\nsame document. Use `create` with Document for other object kinds/resources.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/DocumentId"
+        },
+        "pageSize": {
+          "$ref": "#/$defs/Size"
+        },
+        "slides": {
+          "description": "Array order is slide order. IDs must be unique across this presentation.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SlideContent"
+          }
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "examples": [
+        {
+          "id": "document:example",
+          "pageSize": {
+            "height": "6858000",
+            "width": "12192000"
+          },
+          "slides": [
+            {
+              "elements": [
+                {
+                  "frame": {
+                    "height": "914400",
+                    "width": "10363200",
+                    "x": "914400",
+                    "y": "914400"
+                  },
+                  "id": "object:title",
+                  "text": {
+                    "style": {
+                      "bold": true,
+                      "size": "457200"
+                    },
+                    "text": "Your title"
+                  }
+                }
+              ],
+              "id": "slide:1",
+              "name": "Introduction"
+            }
+          ],
+          "title": "Editable presentation"
+        }
+      ],
+      "required": [
+        "id",
+        "title",
+        "pageSize",
+        "slides"
       ]
     },
     "PresentationEffect": {
@@ -4290,6 +4513,109 @@
         "previousConditions"
       ]
     },
+    "ShapeContent": {
+      "type": "object",
+      "properties": {
+        "accessibility": {
+          "$ref": "#/$defs/Accessibility",
+          "default": {
+            "decorative": false,
+            "description": "",
+            "title": ""
+          }
+        },
+        "fill": {
+          "description": "Omitted fill/stroke mean explicit none, not implicit theme paint.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Fill"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "frame": {
+          "$ref": "#/$defs/ShapeFrame"
+        },
+        "geometry": {
+          "description": "Omitted geometry is a rectangle; text remains native editable text.",
+          "$ref": "#/$defs/Geometry",
+          "default": {
+            "kind": "rectangle"
+          }
+        },
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "stroke": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Stroke"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "text": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PlainText"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "frame"
+      ]
+    },
+    "ShapeFrame": {
+      "type": "object",
+      "properties": {
+        "flipHorizontal": {
+          "type": "boolean",
+          "default": false
+        },
+        "flipVertical": {
+          "type": "boolean",
+          "default": false
+        },
+        "height": {
+          "$ref": "#/$defs/Emu"
+        },
+        "rotation": {
+          "description": "DrawingML units: 60000 per degree, just as the native model.",
+          "type": "integer",
+          "format": "int32",
+          "default": 0
+        },
+        "width": {
+          "$ref": "#/$defs/Emu"
+        },
+        "x": {
+          "$ref": "#/$defs/Emu"
+        },
+        "y": {
+          "$ref": "#/$defs/Emu"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y",
+        "width",
+        "height"
+      ]
+    },
     "ShapeVariation": {
       "type": "object",
       "properties": {
@@ -4363,6 +4689,42 @@
         "objects",
         "background",
         "hidden"
+      ]
+    },
+    "SlideContent": {
+      "type": "object",
+      "properties": {
+        "background": {
+          "description": "Omitted background inherits the same caller delivery defaults as Document.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Fill"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "elements": {
+          "description": "Array order is paint order, back to front.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ShapeContent"
+          }
+        },
+        "id": {
+          "$ref": "#/$defs/SlideId"
+        },
+        "name": {
+          "type": "string",
+          "default": ""
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "elements"
       ]
     },
     "SlideId": {

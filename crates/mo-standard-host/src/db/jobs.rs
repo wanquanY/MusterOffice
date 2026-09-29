@@ -14,6 +14,7 @@ fn base_revision(request: &OperationRequest) -> Option<&Digest> {
     match &request.action {
         DocumentAction::Import { .. }
         | DocumentAction::Create { .. }
+        | DocumentAction::Compose { .. }
         | DocumentAction::DescribeTemplate { .. }
         | DocumentAction::InstantiateTemplate { .. } => None,
         DocumentAction::Apply { base_revision, .. }

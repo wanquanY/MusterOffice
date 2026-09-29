@@ -38,6 +38,11 @@ pub enum DocumentAction {
     Create {
         document: Box<Document>,
     },
+    /// Ordered pages and editable text/shapes expand into the ordinary native
+    /// document. This is a creation input, never a second mutable authority.
+    Compose {
+        presentation: Box<crate::compose::PresentationContent>,
+    },
     /// Validates the caller's pinned source and parameter targets. The result
     /// contains real source values and a digest, without creating a document.
     DescribeTemplate {
@@ -68,6 +73,7 @@ impl DocumentAction {
         match self {
             Self::Import { .. }
             | Self::Create { .. }
+            | Self::Compose { .. }
             | Self::Apply { .. }
             | Self::DescribeTemplate { .. }
             | Self::InstantiateTemplate { .. } => OperationProfile::AuthorModel,
@@ -78,6 +84,7 @@ impl DocumentAction {
         match self {
             Self::Import { .. } => "presentations.import",
             Self::Create { .. } => "presentations.create",
+            Self::Compose { .. } => "presentations.compose",
             Self::DescribeTemplate { .. } => "templates.describe",
             Self::InstantiateTemplate { .. } => "templates.instantiate",
             Self::Apply { .. } => "presentations.apply",
@@ -87,6 +94,7 @@ impl DocumentAction {
     pub fn document_id(&self) -> &DocumentId {
         match self {
             Self::Create { document } => &document.id,
+            Self::Compose { presentation } => &presentation.id,
             Self::DescribeTemplate { definition } => &definition.source.document_id,
             Self::Import { document_id, .. }
             | Self::InstantiateTemplate { document_id, .. }

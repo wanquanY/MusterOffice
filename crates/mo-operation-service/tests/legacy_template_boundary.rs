@@ -56,3 +56,22 @@ fn new_template_computation_does_not_expand_the_retired_persistent_host_contract
             .contains("instantiateTemplate")
     );
 }
+
+#[test]
+fn compact_creation_does_not_expand_the_frozen_persistent_host_contract() {
+    let invocation: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../fixtures/presentations/compose/invocation.json"
+    ))
+    .unwrap();
+    let action: DocumentAction =
+        serde_json::from_value(invocation["request"]["action"].clone()).unwrap();
+    assert!(ServiceOperation::for_action(&action).is_err());
+    let mut request = invocation["request"].clone();
+    request["outputMode"] = serde_json::json!("auto");
+    assert!(serde_json::from_value::<OperationRequest>(request).is_err());
+    assert!(
+        !serde_json::to_string(&SchemaId::OperationRequest.schema())
+            .unwrap()
+            .contains("PresentationContent")
+    );
+}
