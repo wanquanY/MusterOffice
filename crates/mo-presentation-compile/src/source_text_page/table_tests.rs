@@ -391,4 +391,5 @@ mod cases;
 mod context;
 mod page;
 
+mod images;
 mod retention;

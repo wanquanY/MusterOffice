@@ -274,29 +274,10 @@ pub(super) fn prepare(
     let index = source.index();
     let grid = geometry.grid();
     let table = grid.table();
-    let columns = geometry.columns();
-    let rows = geometry.rows();
-    let x0 = columns.first().expect("table columns");
-    let x1 = columns.last().expect("table columns");
-    let y0 = rows.first().expect("table rows");
-    let y1 = rows.last().expect("table rows");
-    let error = [x0, x1, y0, y1]
-        .iter()
-        .map(|v| v.conversion_error_bound)
-        .max()
-        .unwrap();
+    let (table_bounds, coordinate_error_bound) = geometry.bounds();
     binding.region = Some(SourcePaintRegion {
-        bounds: Rect {
-            min: Point {
-                x: x0.value.min(x1.value),
-                y: y0.value,
-            },
-            max: Point {
-                x: x0.value.max(x1.value),
-                y: y1.value,
-            },
-        },
-        coordinate_error_bound: error,
+        bounds: table_bounds,
+        coordinate_error_bound,
     });
     let size = index
         .page_size

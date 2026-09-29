@@ -47,7 +47,11 @@ pub fn compile(
     let (affine, uncertainty, anchor) = match (&plan.target, &plan.placement) {
         (FillTarget::Background {}, None) => (Affine::IDENTITY, &zero, ZERO),
         (
-            FillTarget::Object { .. } | FillTarget::Picture { .. } | FillTarget::Line { .. },
+            FillTarget::Object { .. }
+            | FillTarget::Picture { .. }
+            | FillTarget::Line { .. }
+            | FillTarget::TableCell { .. }
+            | FillTarget::TableBackground { .. },
             Some(p),
         ) => {
             if !l.rotate_with_shape {

@@ -291,6 +291,30 @@ impl<'a> DeclaredTableGeometry<'a> {
     pub fn right_to_left(&self) -> bool {
         self.layout.right_to_left
     }
+    /// The declared whole-table receiver, in the same local space as cells.
+    pub fn bounds(&self) -> (Rect, Fixed) {
+        let x0 = self.columns().first().expect("compiled table columns");
+        let x1 = self.columns().last().expect("compiled table columns");
+        let y0 = self.rows().first().expect("compiled table rows");
+        let y1 = self.rows().last().expect("compiled table rows");
+        (
+            Rect {
+                min: Point {
+                    x: x0.value.min(x1.value),
+                    y: y0.value,
+                },
+                max: Point {
+                    x: x0.value.max(x1.value),
+                    y: y1.value,
+                },
+            },
+            [x0, x1, y0, y1]
+                .iter()
+                .map(|v| v.conversion_error_bound)
+                .max()
+                .unwrap(),
+        )
+    }
     pub fn body(
         &self,
         at: SourceCellAddress,

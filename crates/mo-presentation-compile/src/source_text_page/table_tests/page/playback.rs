@@ -19,7 +19,7 @@ fn options() -> ResourcePageOptions {
         text_limits: Default::default(),
     }
 }
-fn motion(base: &[u8]) -> Vec<u8> {
+pub(in crate::source_text_page::table_tests) fn motion(base: &[u8]) -> Vec<u8> {
     let xml = timing(2, 0, 0, "freeze")
         .replace(
             "<p:animRot from=\"0\" to=\"0\">",
@@ -34,7 +34,7 @@ fn motion(base: &[u8]) -> Vec<u8> {
         s.replace("</p:sld>", &format!("{xml}</p:sld>"))
     })
 }
-fn fade(base: &[u8]) -> Vec<u8> {
+pub(in crate::source_text_page::table_tests) fn fade(base: &[u8]) -> Vec<u8> {
     let xml = timing(2, 0, 0, "freeze")
         .replace(
             "<p:animRot from=\"0\" to=\"0\">",

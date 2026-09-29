@@ -192,12 +192,18 @@ pub(super) fn prepare(
             .map(|p| p.source_size)
             .or(index.page_size)
             .ok_or(SourcePageError::Invalid("page image source size"))?;
-        let layout = source_image_layout::layout(
-            &item.source.image,
-            &decoded[item.resource as usize],
-            size,
-            check,
-        )
+        let image = &decoded[item.resource as usize];
+        let layout = if let Some(region) = &item.owner.region {
+            source_image_layout::layout_region(
+                &item.source.image,
+                image,
+                region.bounds,
+                region.coordinate_error_bound,
+                check,
+            )
+        } else {
+            source_image_layout::layout(&item.source.image, image, size, check)
+        }
         .map_err(|e| SourcePageError::from(e).at(at))?;
         let layout = ImageSourceLayoutPlan {
             target: item.target.clone(),

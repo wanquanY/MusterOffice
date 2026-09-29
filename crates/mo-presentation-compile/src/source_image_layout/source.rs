@@ -40,6 +40,8 @@ pub enum ImageSourceLayoutError {
     Placement(#[from] SourcePlacementError),
     #[error(transparent)]
     Layout(#[from] ImageLayoutError),
+    #[error(transparent)]
+    Table(#[from] crate::source_table::TableGeometryError),
 }
 /// `catalog` and `index` are computed native source records from the same
 /// package, not untrusted deserialized host replacements. DecodedImage can only
@@ -87,16 +89,16 @@ pub fn layout_source(
         match item.target {
             FillTarget::Object { native_id }
             | FillTarget::Picture { native_id }
-            | FillTarget::Line { native_id } => {
+            | FillTarget::Line { native_id }
+            | FillTarget::TableCell { native_id, .. }
+            | FillTarget::TableBackground { native_id } => {
                 ids.insert(native_id);
             }
             FillTarget::Background {} => (),
             FillTarget::RootGroup {} => {
                 return Err(E::Invalid("root group has no standalone image paint box"));
             }
-            FillTarget::TableCell { .. }
-            | FillTarget::TableCellBorder { .. }
-            | FillTarget::TableBackground { .. }
+            FillTarget::TableCellBorder { .. }
             | FillTarget::TableStyleFill { .. }
             | FillTarget::TableStyleBorder { .. } => {
                 return Err(E::Invalid(
@@ -105,6 +107,7 @@ pub fn layout_source(
             }
         }
     }
+    let regions = super::regions::prepare(index, catalog, check)?;
     let placements = if ids.is_empty() {
         BTreeMap::new()
     } else {
@@ -143,7 +146,9 @@ pub fn layout_source(
             let placement = match item.target {
                 FillTarget::Object { native_id }
                 | FillTarget::Picture { native_id }
-                | FillTarget::Line { native_id } => {
+                | FillTarget::Line { native_id }
+                | FillTarget::TableCell { native_id, .. }
+                | FillTarget::TableBackground { native_id } => {
                     match placements
                         .get(&native_id)
                         .ok_or(E::Invalid("placement identity"))?
@@ -158,9 +163,7 @@ pub fn layout_source(
                 }
                 FillTarget::Background {} => None,
                 FillTarget::RootGroup {}
-                | FillTarget::TableCell { .. }
                 | FillTarget::TableCellBorder { .. }
-                | FillTarget::TableBackground { .. }
                 | FillTarget::TableStyleFill { .. }
                 | FillTarget::TableStyleBorder { .. } => unreachable!("paint box preflight"),
             };
@@ -168,7 +171,11 @@ pub fn layout_source(
                 Some(p) => p.source_size,
                 None => index.page_size.ok_or(E::Invalid("background page size"))?,
             };
-            let layout = layout(&binding.image, image.info(), size, check)?;
+            let layout = if let Some((bounds, error)) = regions.get(&item.target) {
+                super::layout_region(&binding.image, image.info(), *bounds, *error, check)?
+            } else {
+                layout(&binding.image, image.info(), size, check)?
+            };
             Ok(ImageSourceLayoutPlan {
                 target: item.target.clone(),
                 resource: *resource,

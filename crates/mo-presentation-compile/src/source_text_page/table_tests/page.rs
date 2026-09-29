@@ -275,7 +275,7 @@ fn public_page_preflight_and_table_order_are_transactional() {
     assert_eq!(shaper.calls, 0);
 }
 
-mod playback;
+pub(super) mod playback;
 
 #[test]
 fn aggregate_table_query_budget_precedes_grid_allocation_and_host_calls() {

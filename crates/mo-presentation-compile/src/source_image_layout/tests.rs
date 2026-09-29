@@ -3,6 +3,7 @@ use mo_common::{Digest, Emu};
 use mo_image::{ImageFormat, ImageResolution, SourceColor};
 use mo_presentation_source::source::fill::{NativeBlipCompression, resolve::*};
 use std::cell::Cell;
+mod regions;
 
 fn value<T>(value: T) -> FillValue<T> {
     FillValue {

@@ -26,6 +26,7 @@ pub struct ResourcePreparationInfo {
 }
 struct ImageUse {
     object: Option<u32>,
+    region: Option<crate::source_page::SourcePaintRegion>,
     layout: ImageSourceLayoutPlan,
 }
 pub struct ResourcePagePlan {
@@ -120,6 +121,7 @@ impl ResourcePagePlan {
                     key,
                     ImageUse {
                         object: built.bindings[b.binding as usize].location.object,
+                        region: built.bindings[b.binding as usize].region,
                         layout: b.layout,
                     },
                 )
@@ -194,6 +196,8 @@ impl ResourcePagePlan {
             let mut layout = usage.layout.clone();
             if layout.placement.as_ref().map(|p| p.source_size)
                 != owner.placement.as_ref().map(|p| p.source_size)
+                || usage.region.map(|r| (r.bounds, r.coordinate_error_bound))
+                    != owner.region.map(|r| (r.bounds, r.coordinate_error_bound))
             {
                 return Err(SourcePageError::Invalid(
                     "retained image dimensions changed",

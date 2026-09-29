@@ -49,9 +49,7 @@ pub(super) fn fill(
                     .map_err(|e| e.at(at))?;
             Ok(Some(FillPaint::Gradient(Box::new(gradient))))
         }
-        FillPaintColors::ImageResourcesRequired {} if images_enabled && region.is_none() => {
-            Ok(Some(FillPaint::Image))
-        }
+        FillPaintColors::ImageResourcesRequired {} if images_enabled => Ok(Some(FillPaint::Image)),
         _ => Err(mapping(at, SourcePageIssue::Fill {})),
     }
 }

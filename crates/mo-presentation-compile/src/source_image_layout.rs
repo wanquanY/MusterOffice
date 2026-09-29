@@ -2,6 +2,7 @@
 //! Exact source decimals enter outward Q96 arithmetic; only final plan values
 //! are quantized to Q32. No resource loading, pixel copies or host DPI defaults.
 mod number;
+mod regions;
 mod source;
 mod types;
 use crate::interval::Interval as I;
@@ -27,8 +28,7 @@ fn cancel(check: &dyn Fn() -> bool) -> Result<(), ImageLayoutError> {
 }
 fn rectangle(
     r: &EffectiveFillRect,
-    w: i64,
-    h: i64,
+    size: &[I; 2],
     check: &dyn Fn() -> bool,
 ) -> Result<[I; 4], ImageLayoutError> {
     let mut values = Vec::with_capacity(4);
@@ -40,7 +40,7 @@ fn rectangle(
         } else {
             I::integer(1).sub(&value)
         };
-        values.push(value.mul(&I::integer(if i % 2 == 0 { w } else { h })));
+        values.push(value.mul(&size[i % 2]));
     }
     let values: [I; 4] = values.try_into().expect("four rectangle edges");
     positive(&values[2].sub(&values[0]))?;
@@ -100,23 +100,70 @@ pub fn layout(
     check: &dyn Fn() -> bool,
 ) -> Result<NativeImageLayout, ImageLayoutError> {
     cancel(check)?;
-    if image.width == 0 || image.height == 0 || image.width > 8192 || image.height > 8192 {
-        return Err(ImageLayoutError::Invalid("normalized image dimensions"));
-    }
     let (w, h) = (size.width.get(), size.height.get());
     if w <= 0 || h <= 0 {
         return Err(ImageLayoutError::Invalid("shape dimensions"));
     }
+    layout_box(
+        fill,
+        image,
+        [I::integer(0), I::integer(0)],
+        [I::integer(w), I::integer(h)],
+        check,
+    )
+}
+/// A native receiver inside the real object's coordinate system. Keep its
+/// offset and uncertainty through the same crop/stretch/tile calculation;
+/// neither truncate dimensions to integer EMU nor synthesize a placement.
+pub(crate) fn layout_region(
+    fill: &EffectiveImageFill,
+    image: &DecodedImageInfo,
+    bounds: mo_geometry::Rect,
+    error: Fixed,
+    check: &dyn Fn() -> bool,
+) -> Result<NativeImageLayout, ImageLayoutError> {
+    cancel(check)?;
+    if error.raw() < 0 {
+        return Err(ImageLayoutError::Invalid("negative receiver uncertainty"));
+    }
+    let enclose = |v| {
+        let value = I::fixed(v);
+        let error = I::fixed(error);
+        I::raw(value.lo - error.lo, value.hi + error.hi)
+    };
+    let origin = [enclose(bounds.min.x), enclose(bounds.min.y)];
+    let size = [
+        enclose(bounds.max.x).sub(&origin[0]),
+        enclose(bounds.max.y).sub(&origin[1]),
+    ];
+    layout_box(fill, image, origin, size, check)
+}
+fn layout_box(
+    fill: &EffectiveImageFill,
+    image: &DecodedImageInfo,
+    origin: [I; 2],
+    size: [I; 2],
+    check: &dyn Fn() -> bool,
+) -> Result<NativeImageLayout, ImageLayoutError> {
+    cancel(check)?;
+    if image.width == 0 || image.height == 0 || image.width > 8192 || image.height > 8192 {
+        return Err(ImageLayoutError::Invalid("normalized image dimensions"));
+    }
+    for dimension in &size {
+        positive(dimension)?;
+    }
     let source = rectangle(
         &fill.source_rect,
-        image.width.into(),
-        image.height.into(),
+        &[
+            I::integer(image.width.into()),
+            I::integer(image.height.into()),
+        ],
         check,
     )?;
     let extent = [source[2].sub(&source[0]), source[3].sub(&source[1])];
     let (target, step, tiles, clip, selected_density) = match &fill.mode {
         EffectiveImageMode::Stretch { fill_rect, .. } => {
-            let r = rectangle(fill_rect, w, h, check)?;
+            let r = rectangle(fill_rect, &size, check)?;
             let step = [
                 r[2].sub(&r[0]).div_positive(&extent[0]),
                 r[3].sub(&r[1]).div_positive(&extent[1]),
@@ -147,7 +194,7 @@ pub fn layout(
                 let step = pixel[i].mul(&scale);
                 let tile_extent = extent[i].mul(&step);
                 let offset = number::coordinate(offsets[i])?;
-                let lo = I::integer(if i == 0 { w } else { h })
+                let lo = size[i]
                     .sub(&tile_extent)
                     .mul(&I::ratio(align[i], 2))
                     .add(&offset);
@@ -179,6 +226,7 @@ pub fn layout(
             )
         }
     };
+    let target: [I; 4] = std::array::from_fn(|i| target[i].add(&origin[i % 2]));
     cancel(check)?;
     let origin_x = q32(&target[0].sub(&source[0].mul(&step[0])))?;
     let origin_y = q32(&target[1].sub(&source[1].mul(&step[1])))?;
