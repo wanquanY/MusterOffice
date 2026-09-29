@@ -4,7 +4,7 @@ v0.4 设计基线。目标是完整演示文稿内核和 Musterwork 全链路替
 
 ## 1. 能力记录和判定
 
-机器清单见 [capabilities.json](../../contracts/capabilities.json)。每项记录稳定 ID、所属 F01–F16、适用维度、至少一组回归、实现状态。维度为 `read/create/edit/render/play/write/preserve`；N/A 只用于语义上没有该动作的项目，附理由，不能用于隐藏未实现功能。当前所有适用维度均为 `not_started`。
+机器清单见 [capabilities.json](../../contracts/capabilities.json)。每项记录稳定 ID、所属 F01–F16、适用维度、至少一组回归、实现状态。维度为 `read/create/edit/render/play/write/preserve`；N/A 只用于语义上没有该动作的项目，附理由，不能用于隐藏未实现功能。该清单保留原始 `design_only` 基线，所有适用维度为 `not_started`，尚未逐项同步实现进展，不能作为当前完成率。实际实现与验证范围见[进度](../../implementation/progress.md)及其阶段证据，例如 [F04 原生表格基础](../../implementation/native-tables.md)；局部实现不能据此将整项标为 verified。
 
 `read` 是理解可查询语义；`preserve` 是保留原包内容；`edit` 是保有原生身份进行修改；`write` 是写出对应原生格式。三者互不替代。播放包含时间及交互行为，静态预览不是播放通过。
 

@@ -10,9 +10,13 @@ v0.4 设计基线。源码核对基线：Musterwork commit `eb0eefcd6d1783789e4f
 
 SDK 可以直接调用；不为统一入口强制增加 MCP 网络往返。文件引用、账号/权限、业务任务、generation/fence、持久存储、路由和提交事务由 Musterwork 持有。MusterOffice 提供渲染和无界面播放接口，不提供 Viewer/Player 产品 UI；其他接入方同样不必安装自有标准持久宿主。
 
-适配改动须按责任核对：PPT 语义与计算在内核；资源句柄、原任务与结果保存属于产品薄桥接；共享存储/日志/全局回收治理属于产品工程。直接影响该链路的安全缺陷仍需修复，但全产品治理不是所有 Agent 接入的共同前提。SQLite v188 快照引用代码仍在开发、未完成库级验证；不能沿用 v187 的通过记录，也不因边界调整删除现有数据或迁移。
+2026-09-28 后端阶段进展：显式原生模板策略已沿原协调器、日志和内容桥接推进定义与压力计算，整份来源页序由实际快照和交付回执确定；跨库传递保留文件字节及原有任务所有权。107 项相关测试通过，见[实现与边界](../../implementation/product-template-coordinator.md)。实际质量验证、目录发布与自动上传默认环境选择尚未完成，不能据此声明完整模板链路已替换。
+
+适配改动须按责任核对：PPT 语义与计算在内核；资源句柄、原任务与结果保存属于产品薄桥接；共享存储/日志/全局回收治理属于产品工程。直接影响该链路的安全缺陷仍需修复，但全产品治理不是所有 Agent 接入的共同前提。SQLite v188 快照引用代码已于 2026-09-28 补齐迁移与库级验证，见[实际接入记录](../../implementation/product-sdk-preview.md)；这不是终态回收授权，也不因边界调整删除现有数据或迁移。
 
 ## 2. 已观察合同和必须升级的地方
+
+2026-09-28，固定 SDK/worker 已增加实际文字容量证据并在独立 worktree 的真实模板任务中传递，见[实现与验证](../../implementation/text-capacity.md)。产品后续验收消费原计算结果；字段缺失不计作装得下，有限容量检查不提升为完整布局/外部应用质量。
 
 | 来源与现有行为 | 新适配要求 | 测试 |
 | --- | --- | --- |
@@ -122,6 +126,32 @@ ResourceProvider 用授权 ContentRef 转换出的 scoped handle；内核可 rea
 | MW15 | 干净安装/离线/旧依赖移除 | 不启动旧 DOM/Chromium/PptxGenJS/商业转换/Office/PDF 运行链；共享依赖先查其他用途 |
 | MW16 | Skill/MCP/CLI 与第三方宿主 | 共用合同，无 MW 私有源码依赖，实际文件及摘要一致 |
 
-本页最初冻结适配责任和测试要求；当前已开始修改 Musterwork 的原生 Artifact 读取合同，尚未切换产品生产者和用户入口。实施必须继续同步服务端 validator、持久状态 encoder/decoder、共享产品 parser、客户端收集/Viewer、工具/Skill 和发行清单；只改读取侧不构成替换。
+本页最初冻结适配责任和测试要求；当前已接通原生候选事务及产品静态预览读取，见[2026-09-28 实现](../../implementation/product-sdk-preview.md)。后续已有独立 `author@4` 与 Device 原子处理器的[真实调用验证](../../implementation/product-native-agent.md)，活动工具目录和默认 PPT 引擎尚未切换。实施必须继续同步服务端 validator、持久状态 encoder/decoder、共享产品 parser、客户端收集/Viewer、工具/Skill 和发行清单；只改读取侧不构成替换。
+
+原生计算的稳定逻辑时间与实际 Tool/Ledger/Artifact 发布观察已由产品原事务分离，并验证了提交前超时和真实 executor 的丢响应重放，见[时间与恢复](../../implementation/product-native-recovery.md)。checkpoint 保持原字节，重复调用不得刷新完成时间；完整产品进程故障与接入验收继续开放。
 
 来源索引：`MW:apps/agent-runtime/crates/runtime/artifact/src/presentation_tool.rs`、`presentation_authoring.rs`、`presentation_commit_protocol.rs`、`presentation_prepared.rs`、`presentation_state.rs`；`MW:packages/agent-runtime-product-client/src/presentation-html-artifact.ts`；`MW:packages/presentation-client/src/delivery-proof.mjs`。这里只记录观察和接口设计，没有复制私有实现。
+
+## 2026-09-28 导出环境接入进展
+
+待验收 `author@5 / device.v52` 将 renderer、字体 bundle 和 SDK `DeliverySettings` 收敛为产品进程配置，模型通过 `environment` 读取不可变引用，`export` 只提供草稿、版本条件和环境 ID。实际环境进入原计算读取集，候选与环境设置匹配，原提交者最终复核依赖有效性。SDK 没有新增文件、权限或持久化责任。实现证据、配置边界和未完成的 Skill/模板/发行工作见[原生导出环境](../../implementation/product-native-environment.md)；活动目录仍为 v50。
+
+后续已增加仅用于 Device private 验收的共用发行声明，将 v52 与原生 Skill v8 一起选择，Rust 构建与 Python Authority/Skill loader 使用同一份配置，见[原生 Skill 与隔离发行](../../implementation/product-native-release.md)。默认 stable 不变；发行配置不能授予权限，仍需原精确 Execution Grant。实际包审计和快照准入通过不等于真实模型、后端部署或完整替换通过。
+
+已发布原生文稿的恢复必须读取实际 Artifact 版本关联的不可变候选，不能读取原草稿最新 head 或将导出 PPTX 重新导入后覆盖原历史。产品端口与最终事务复核已实现，见[原生版本恢复](../../implementation/product-native-reopen.md)。恢复保留内核快照与资源，建立新产品草稿身份；发布新版本继续使用原 Artifact 的最新版本条件。对应 Agent 动作和旧 HTML 迁移仍需独立实现。
+
+后续 [Agent 原生打开动作](../../implementation/product-native-open-agent.md)已通过独立 `author@6 / device.v53` 和 Skill v9 接入。`open` 只接受 Artifact ID 与规范版本字符串，不接受替换快照、任意资源或宿主路径；恢复使用原事务与 checkpoint /5。隔离发行配置共同选择新工具与 Skill，正式 stable 和旧不可变合同保持。实际恢复后原生文字编辑与第二版导出已验证，模板和 HTML 历史迁移仍未完成；不能将本项计为全部 MW14 或替换验收通过。
+
+后续[原生模板调用](../../implementation/product-native-templates.md)以 `author@7 / device.v54 / Skill v10` 继任候选。`template` 通过产品原目录读取固定包与公共 SDK 定义；`instantiate_template` 要求包摘要和模板摘要，复用原内容预算、读取集和草稿提交事务。真实模板文字绑定、标题修改与原生导出已验证。模板生产/上传流程、页面组装、HTML 历史与完整替换仍继续实施。
+
+模板生产端已补齐[公共 SDK 导入与包生成入口](../../implementation/product-template-source.md)，与 Agent 消费共享完整材料校验。它使用现有 `OfficeHost` 计算额度，显式提供参数定义，保留原始 PPTX；没有另建模板任务或存储。自动上传的继任档案、原维护 Runtime 接线、压力/渲染验证及原目录提交尚未完成，不能据此切换 stable。
+
+后续[来源渲染入口](../../implementation/product-template-render.md)已经使用 SDK 自身的设置摘要固定 renderer 与实际字体，生成来源 PPTX、全部页面预览及未提升范围的交付声明。真实 worker 字节回归通过；自动维护 Agent 的参数压力、完成验证和目录提交接线仍在实施。
+
+[原 Runtime 计算端口](../../implementation/product-template-engine.md)现通过独立 `presentation.office-template@1` 档案及 Device 原组合调用这些能力，保留完整资产映射并按内容去重。它仍是候选计算，不拥有维护阶段完成或目录提交权限；旧 HTML 版本不改变，新档案失败不回退。原维护 policy 和 Tool 阶段必须显式接入，不能将引擎结果的 completed 当作原任务完成证明。
+
+后续[原维护 Agent 定义阶段](../../implementation/product-template-maintenance.md)已实现独立 policy /3 与 `native_define`，沿原模型循环和日志调用实际计算，独立重建来源/参数证明后完成原 Run。`native_stress` 已接通有限计算验证；[最终检查点](../../implementation/product-native-final-verification.md)已将真实 SDK 检查、容量条件和原生复核绑定到 `native_verify` 的独立提交证明及后端事务。自动上传入口、原生目录版本提交和完整质量验收仍未完成，不能据此认定 MW13 或模板替换完成。
+
+随后[原生模板实例计算](../../implementation/product-template-instances.md)通过原计算端口执行 SDK 原子绑定及实际渲染导出。显式 `source_resources` 允许原内容在不同阶段持有新的内容 ID，必须保持完整资源集合及精确摘要、长度、媒体类型；模板包不被改写。真实字符数边界实例和来源保持检查已通过，后续已接通 `native_stress` 的有限计算证明，完整质量判定仍未实现。
+
+后续[固定压力计划](../../implementation/product-template-stress-plan.md)由产品策略生成必需案例，明确绑定模板、字体和设置，计划中的资源只使用字节身份；实际执行全部 8 个文字案例。计划与实例计算已有真实证据。后续[原维护压力任务](../../implementation/product-template-stress-maintenance.md)已按案例 ID 执行并独立核对完整覆盖，重试不增加覆盖数，实际参数/输出必须对应同一模板和环境。批量调度、进程恢复、完整质量和目录事务仍待实现。

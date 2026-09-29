@@ -1,0 +1,442 @@
+{
+  "format": "musteroffice.template-protocol-verification/1",
+  "status": "passed-scoped-template-protocol-and-product-computation",
+  "source": {
+    "coreHead": "9e86c84b9cbd3f0af7d98cad5d2b69f599718075",
+    "productHead": "8280b9837b7ed7fae5a502e97d6967b128772c11",
+    "productBranch": "codex/musteroffice-integration",
+    "sourceUnchangedInAllSuccessfulCommands": true
+  },
+  "kernel": {
+    "initialGateReport": {
+      "path": ".codex-work/template-integration/workspace-01/report.json",
+      "byteLength": 23962,
+      "sha256": "fb276ccf3fde0bad2ba3aaae8e2dec1c8f06704ad57eb1db98aa33c902e1221f"
+    },
+    "initialFailedGate": "mcp-templates",
+    "passedInitialGates": [
+      "verification-driver-tests",
+      "agent-package-tests",
+      "playback-sdk-package-tests",
+      "format",
+      "clippy",
+      "rust-tests",
+      "schemas",
+      "types",
+      "client-tests",
+      "playback-client-tests",
+      "native-build",
+      "native-render-tests",
+      "native-playback-tests",
+      "native-host-export-tests",
+      "native-export-tests",
+      "native-computation-cli-tests",
+      "mcp-format",
+      "mcp-clippy",
+      "mcp-tests",
+      "mcp-build",
+      "mcp-legacy-clippy",
+      "mcp-legacy-tests",
+      "mcp-legacy-build",
+      "mcp-http-clippy",
+      "mcp-http-tests",
+      "mcp-http-build",
+      "mcp-all-features-clippy",
+      "pure-operation-wasm",
+      "legacy-host-wasm",
+      "wasm-build",
+      "wasm-bindgen",
+      "document-native-wasm-parity",
+      "mcp-agent-package",
+      "mcp-computation"
+    ],
+    "rustTests": {
+      "passed": 1041,
+      "ignored": 25
+    },
+    "finalProtocolReport": {
+      "path": ".codex-work/template-integration/protocol-final/report.json",
+      "byteLength": 21422,
+      "sha256": "af1af0db7a467440b0fe273e2e557556e65ad9458356f48a013ebcd845470395"
+    },
+    "finalProtocolGates": 33,
+    "mcpTemplates": {
+      "path": ".codex-work/template-integration/protocol-final/mcp-templates/report.json",
+      "byteLength": 1400,
+      "sha256": "9708c8d7ae2900a9a16f3df252670d3adbc176794b6aabcd0f128de6e6b14a30",
+      "observations": [
+        {
+          "protocol": "2025-11-25",
+          "calls": 20,
+          "inlineSuccesses": 7,
+          "failures": 5,
+          "pptxParts": 21,
+          "retainedParts": 20,
+          "changedParts": [
+            "ppt/slides/slide1.xml"
+          ],
+          "exports": [
+            "a1545fba01e0941fb2bcac04a8787dcc0709ad9f2c3b21d2af343ecbaa3d41b6",
+            "b9b6c99e2a328c43bfca26aebbec6541325b9439d54e42c3d2f5d80853518db8",
+            "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5"
+          ]
+        },
+        {
+          "protocol": "2026-07-28",
+          "calls": 19,
+          "inlineSuccesses": 7,
+          "failures": 5,
+          "pptxParts": 21,
+          "retainedParts": 20,
+          "changedParts": [
+            "ppt/slides/slide1.xml"
+          ],
+          "exports": [
+            "a1545fba01e0941fb2bcac04a8787dcc0709ad9f2c3b21d2af343ecbaa3d41b6",
+            "b9b6c99e2a328c43bfca26aebbec6541325b9439d54e42c3d2f5d80853518db8",
+            "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5"
+          ]
+        }
+      ]
+    },
+    "fullResponseParity": {
+      "path": ".codex-work/template-integration/protocol-final/template-protocol-parity/report.json",
+      "byteLength": 1676,
+      "sha256": "a1a386bafa58fe3f03b56d063708813886d7e66c119de6e0905041d3e2299f06",
+      "cases": 12,
+      "failures": 5
+    }
+  },
+  "sdk": {
+    "build": {
+      "path": ".codex-work/template-integration/sdk-build-01.json",
+      "byteLength": 204827,
+      "sha256": "dbede539e8507080f5252267380c480e0a9b01fe5058546b3f36eca6aca887de",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "args": [
+        "python3",
+        "tools/sdk/build.py",
+        "--output",
+        ".codex-work/template-integration/sdk",
+        "--archive",
+        ".codex-work/template-integration/sdk.tar.gz"
+      ],
+      "logSha256": "a12b9f90f6e6fe60865c6b0c1befcc04487aa7ae4583a9c6099170309bb7e3df"
+    },
+    "verification": {
+      "path": ".codex-work/template-integration/packaged-sdk-verify-01.json",
+      "byteLength": 177038,
+      "sha256": "e598ba39ab7147b09887fd8267339021733259703ead3e17f714436a885c4939",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "args": [
+        "python3",
+        "tools/sdk/verify.py",
+        ".codex-work/template-integration/sdk",
+        "--sha256",
+        "eb14262d63026f405afff9fb70a67035abd929d07bae76242556f5d4127403bc"
+      ],
+      "logSha256": "f1225fc1f0bb8a47f184748efa1cc9f36232b15b7de932a146e80dae86ee0c8e"
+    },
+    "manifest": {
+      "path": ".codex-work/template-integration/sdk/sdk-manifest.json",
+      "byteLength": 217290,
+      "sha256": "eb14262d63026f405afff9fb70a67035abd929d07bae76242556f5d4127403bc"
+    },
+    "archive": {
+      "path": ".codex-work/template-integration/sdk.tar.gz",
+      "byteLength": 843868,
+      "sha256": "b37d92cf8ff35660ebe9aa7fb5b6159d03a35add2ba76bfbc7fadc6a59406af3"
+    },
+    "libraries": 26,
+    "registryPackages": 54,
+    "files": 564,
+    "newRegistryDependencies": false,
+    "worker": {
+      "path": "components/musteroffice/generated/workers/darwin-arm64/3307e2513ac122b7340329a927cb057c898a1ebb17705f44b8eeab99136b9a25/mo-export-worker",
+      "byteLength": 42346384,
+      "sha256": "3307e2513ac122b7340329a927cb057c898a1ebb17705f44b8eeab99136b9a25"
+    },
+    "workerProfile": "macOS ARM64 development debug executable; not release or desktop bundle size"
+  },
+  "product": {
+    "commands": {
+      "mutations-02": {
+        "path": ".codex-work/integration/template-protocol/mutations-02.json",
+        "byteLength": 267144,
+        "sha256": "2a9bd502abbe9ff4065677c751573c49f13d7da2a89795914e5c5e3f97957356",
+        "exitCode": 0,
+        "sourceUnchanged": true,
+        "args": [
+          "cargo",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "musterwork-agent-conformance",
+          "--test",
+          "sqlite_agent_loop",
+          "office_drafts::computed"
+        ],
+        "logSha256": "1052cd78ad3635e72277661f9279a94ba684aa373419d65bc84efc086d3980fa"
+      },
+      "strict-libraries-01": {
+        "path": ".codex-work/integration/template-protocol/strict-libraries-01.json",
+        "byteLength": 1220615,
+        "sha256": "68ffb8acfc462a3f8649ebbaee90617d47bac2eaafb9fa3817ce70b908bd78c5",
+        "exitCode": 0,
+        "sourceUnchanged": true,
+        "args": [
+          "cargo",
+          "clippy",
+          "--locked",
+          "--offline",
+          "-p",
+          "musterwork-agent-musteroffice",
+          "-p",
+          "musterwork-agent-runtime-artifact",
+          "--lib",
+          "--no-deps",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "logSha256": "7a5e3574e92dbb3b654b37ee138e4904b2d6322798d05421c54cccc8606d1908"
+      },
+      "workspace-check-01": {
+        "path": ".codex-work/integration/template-protocol/workspace-check-01.json",
+        "byteLength": 1220489,
+        "sha256": "539a71954bcb425402f1ca2c521da630b7ae5b93ffe365a558ea37a2add88699",
+        "exitCode": 0,
+        "sourceUnchanged": true,
+        "args": [
+          "cargo",
+          "check",
+          "--workspace",
+          "--all-targets",
+          "--locked",
+          "--offline"
+        ],
+        "logSha256": "7637ac5458ad9e8c24744b2ac9446cf4006279b42c7d30fe571740b43c8ec089"
+      },
+      "libraries-01": {
+        "path": ".codex-work/integration/template-protocol/libraries-01.json",
+        "byteLength": 1220559,
+        "sha256": "e5803f138cf71565747f6c96867ba773ffc56fcc77df31bef528bde76473ebc9",
+        "exitCode": 0,
+        "sourceUnchanged": true,
+        "args": [
+          "cargo",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "musterwork-agent-musteroffice",
+          "-p",
+          "musterwork-agent-runtime-artifact",
+          "--lib"
+        ],
+        "logSha256": "acb3fc51c973492b9eff21cdd1979b29d3597a866999743d18dfa60da83ab372"
+      },
+      "agent-regression-02": {
+        "path": ".codex-work/integration/template-protocol/agent-regression-02.json",
+        "byteLength": 1221441,
+        "sha256": "0af599fa5710fa09f0422e1c2cf650a8d8f12a7b5cb7daec2eb71acb61b7680e",
+        "exitCode": 0,
+        "sourceUnchanged": true,
+        "args": [
+          "env",
+          "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+          "MUSTERWORK_OFFICE_TEST_INPUT=${MUSTERWORK_ROOT}/.codex-work/integration/template-protocol/input",
+          "MUSTERWORK_OFFICE_TEST_WORKER=${MUSTERWORK_ROOT}/components/musteroffice/generated/workers/darwin-arm64/3307e2513ac122b7340329a927cb057c898a1ebb17705f44b8eeab99136b9a25/mo-export-worker",
+          "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=3307e2513ac122b7340329a927cb057c898a1ebb17705f44b8eeab99136b9a25",
+          "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=${MUSTERWORK_ROOT}/.codex-work/integration/template-protocol/actual-agent-02",
+          "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=${MUSTERWORK_ROOT}/.codex-work/integration/template-protocol/actual-open-02",
+          "cargo",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "musterwork-agent-conformance",
+          "--test",
+          "sqlite_agent_loop",
+          "presentation_authoring::office_agent::",
+          "--",
+          "--include-ignored",
+          "--test-threads=1"
+        ],
+        "logSha256": "deaaeefa73bf0812a0713c7faa5d46be10e623c6e7c534128d33f0fa0c654d3a"
+      },
+      "installed-materials-01": {
+        "path": ".codex-work/integration/template-protocol/installed-materials-01.json",
+        "byteLength": 254003,
+        "sha256": "948be9d31f420eca6c9f1b887bed9e2d4644de28aa377aef46b91eca67dd3ee1",
+        "exitCode": 0,
+        "sourceUnchanged": true,
+        "args": [
+          "node",
+          "scripts/prepare-musteroffice-development.mjs"
+        ],
+        "logSha256": "e92f34275db4af81c75a21800a75a58b1279e0c5747e086f59b969520132ee68"
+      }
+    },
+    "mutationTests": 10,
+    "templateSpecificTests": 3,
+    "artifactLibraryTests": 46,
+    "existingAgentTests": 15,
+    "installedLock": {
+      "path": "components/musteroffice/lock.json",
+      "byteLength": 333,
+      "sha256": "3d1a5a00a9af734e75c0c9a5c7ee1f5b75c5d594ad59e37a5c0fc2c420c88ce6"
+    },
+    "outputComparison": {
+      "path": ".codex-work/integration/template-protocol/actual-output-comparison.json",
+      "byteLength": 2669,
+      "sha256": "496b217f34bcf08a01c9a4ab26c0c672f0ff81fb35988eb131469598fe28b09b",
+      "observations": {
+        "format": "musteroffice.product-template-sdk-regression/1",
+        "outputs": [
+          {
+            "file": ".codex-work/integration/template-protocol/actual-agent-02/version-1.pptx",
+            "sha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+            "byteLength": 10735,
+            "matchesPreviousStageBytes": true,
+            "parts": 21,
+            "xmlParts": 20
+          },
+          {
+            "file": ".codex-work/integration/template-protocol/actual-agent-02/version-2.pptx",
+            "sha256": "0d28df97204dab351fc0b85d6853f9d28edfb4dc111fc18d8a22f733a4e4264e",
+            "byteLength": 10729,
+            "matchesPreviousStageBytes": true,
+            "parts": 21,
+            "xmlParts": 20
+          },
+          {
+            "file": ".codex-work/integration/template-protocol/actual-agent-02-environment/version-1.pptx",
+            "sha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+            "byteLength": 10735,
+            "matchesPreviousStageBytes": true,
+            "parts": 21,
+            "xmlParts": 20
+          },
+          {
+            "file": ".codex-work/integration/template-protocol/actual-agent-02-environment/version-2.pptx",
+            "sha256": "0d28df97204dab351fc0b85d6853f9d28edfb4dc111fc18d8a22f733a4e4264e",
+            "byteLength": 10729,
+            "matchesPreviousStageBytes": true,
+            "parts": 21,
+            "xmlParts": 20
+          },
+          {
+            "file": ".codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+            "sha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+            "byteLength": 10735,
+            "matchesPreviousStageBytes": true,
+            "parts": 21,
+            "xmlParts": 20
+          },
+          {
+            "file": ".codex-work/integration/template-protocol/actual-open-02/version-2.pptx",
+            "sha256": "60a31201f0ee0e79aee30d1595738622c28f8e22239067687e45316bc9e0bf9f",
+            "byteLength": 10742,
+            "matchesPreviousStageBytes": true,
+            "parts": 21,
+            "xmlParts": 20
+          },
+          {
+            "file": ".codex-work/integration/template-protocol/actual-open-02/version-1.png",
+            "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d",
+            "byteLength": 14915,
+            "matchesPreviousStageBytes": true,
+            "dimensions": [
+              640,
+              360
+            ]
+          },
+          {
+            "file": ".codex-work/integration/template-protocol/actual-open-02/version-2.png",
+            "sha256": "2888395fb8d3330df2e860f9972f3e9517dbab37c357a260dba23897cf515df8",
+            "byteLength": 15146,
+            "matchesPreviousStageBytes": true,
+            "dimensions": [
+              640,
+              360
+            ]
+          }
+        ],
+        "nativeReopenChangedParts": [
+          "ppt/slides/slide1.xml"
+        ],
+        "scope": "Owned two-page synthetic-font fixture; byte regression, not Office/WPS or full visual acceptance."
+      }
+    },
+    "inputProvenance": {
+      "path": ".codex-work/integration/template-protocol/input-provenance.json",
+      "byteLength": 1662,
+      "sha256": "5d48b2328d61a984add0128f1e0e6029ab6f27a2ae1d0603c658d6602eb1d767"
+    },
+    "workspaceWarnings": "10 unused-import warnings in sqlite_device/delegation_control.rs and postgres_admission.rs; selected production libraries pass strict Clippy.",
+    "catalogTemplateAgentRouteImplemented": false,
+    "stableReleaseChanged": false,
+    "mainWorkspaceWritten": false
+  },
+  "retainedFailures": [
+    {
+      "report": {
+        "path": ".codex-work/template-integration/mcp-templates-exploratory-01.json",
+        "byteLength": 34308,
+        "sha256": "c8bead0ae186910a4e0ff88e01d19c862e5d38738d7c177ffb0910da5c6535c5"
+      },
+      "reason": "Test read retained-source paragraphs as author-model text; corrected test traversal only."
+    },
+    {
+      "report": {
+        "path": ".codex-work/template-integration/shared-parity-01.json",
+        "byteLength": 2873,
+        "sha256": "964b8dc3c1d954425042d05e214a5f036c75d71bfadba7759a4317ae9ce023dd"
+      },
+      "reason": "Test read CLI diagnostics from stdout; existing compute CLI emits structured failures to stderr. Corrected test only."
+    },
+    {
+      "report": {
+        "path": ".codex-work/integration/template-protocol/mutations-01.json",
+        "byteLength": 267149,
+        "sha256": "61c4f6bcc24fb0e4642ad9827d6940a9adea1bae8d32b8b24a47da4b8620b72a"
+      },
+      "reason": "Zero tests selected by filename filter; not counted. Actual module path ran ten tests."
+    },
+    {
+      "report": {
+        "path": ".codex-work/integration/template-protocol/agent-regression-01.json",
+        "byteLength": 1221484,
+        "sha256": "0297c2070c68258434ecafcda374a5394ff892bcc75e85e5f0d2cbea24edab39"
+      },
+      "reason": "One of fifteen tests supplied the previous renderer pin and correctly failed EXECUTOR_MISMATCH. A separately saved owned fixture changes only the explicit renderer from actual current MCP discovery; all fifteen then pass."
+    },
+    {
+      "report": {
+        "path": ".codex-work/integration/template-protocol/exploratory-notes.json",
+        "byteLength": 702,
+        "sha256": "566075edc477769e9e5ec3b127ddce8caeefaaa5f0d76247558d2d89383bc9ee"
+      },
+      "reason": "New test initially confused product RunId with text RunId; explicit import fixes test compilation."
+    }
+  ],
+  "scope": {
+    "completeTemplateAcceptance": false,
+    "partialPageAssembly": false,
+    "advancedParameterCoverage": false,
+    "officeWpsValidated": false,
+    "fullVisualParity": false,
+    "performanceOrDesktopSizeMeasured": false,
+    "replacementReady": false,
+    "completeV04Goal": false,
+    "next": "Connect the existing product template owner to the staged Agent contract. Continue page closure/remapping, advanced parameters, layout stress, HTML history, native timing/navigation and all v0.4/P00/E0-E3 replacement gates."
+  },
+  "pathNormalization": {
+    "productRoot": "${MUSTERWORK_ROOT}",
+    "note": "Four machine-local command argument prefixes are normalized for repository publication. Original command records and their hashes are unchanged; the pre-normalization report is retained in the local commit-preparation snapshot."
+  }
+}

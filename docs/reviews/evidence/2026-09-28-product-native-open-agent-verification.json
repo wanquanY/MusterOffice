@@ -1,0 +1,1134 @@
+{
+  "format": "musteroffice.product-native-open-agent-verification/1",
+  "date": "2026-09-28",
+  "status": "scoped-Agent-native-publication-open-and-edit-verified; full-replacement-incomplete",
+  "productBranch": "codex/musteroffice-integration",
+  "productBaseCommit": "8280b9837b7ed7fae5a502e97d6967b128772c11",
+  "sdkManifestSha256": "550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+  "worker": {
+    "sha256": "b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0",
+    "target": "darwin-arm64",
+    "profile": "development; no performance or package size claim"
+  },
+  "defaultEngineReplaced": false,
+  "newDatabaseSchema": false,
+  "newKernelSdkContract": false,
+  "productTool": "artifact.presentation.author@6",
+  "candidateRelease": {
+    "profile": "native-office-preview",
+    "tools": "device.v53",
+    "skillRelease": "v27",
+    "skill": "musterwork-presentation-authoring@9",
+    "surfaces": [
+      "desktop"
+    ]
+  },
+  "stableRelease": {
+    "tools": "device.v50",
+    "skill": "musterwork-presentation-authoring@7"
+  },
+  "runs": [
+    {
+      "name": "python-release-01",
+      "command": [
+        "env",
+        "PYTHONPATH=../..",
+        "python3",
+        "-m",
+        "unittest",
+        "backend.tests.unit.test_builtin_release_profile",
+        "-v"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.45079791685566306,
+      "sourceUnchanged": true,
+      "sourceFiles": 4191,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills",
+        "../../backend/agent_runtime/authority_catalog_manifest.py",
+        "../../backend/agent_runtime/official_skill_release.py",
+        "../../backend/agent_runtime/builtin_release_profile.py",
+        "../../backend/tests/unit/test_builtin_release_profile.py",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "a92193c1ac4f97364b8e06a3fa4c9858371696c9d4f8da0937f967e19d23df3f",
+      "report": {
+        "path": ".codex-work/product-native-open-agent/python-release-01.json",
+        "sha256": "dfa639703f2805b9fb923e77e5937853066baaee0bbace9f9bdca52e5d8b61df"
+      },
+      "log": {
+        "path": ".codex-work/product-native-open-agent/python-release-01.log",
+        "sha256": "3c3e2d6e2efe9ac765daca9e577d89904e1746d3af2b77004a50feac95ebf386"
+      },
+      "rustTestSummaries": []
+    },
+    {
+      "name": "skill-release-01",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-runtime-skill",
+        "--lib",
+        "runtime_release_tests::"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 15.654949167044833,
+      "sourceUnchanged": true,
+      "sourceFiles": 4191,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills",
+        "../../backend/agent_runtime/authority_catalog_manifest.py",
+        "../../backend/agent_runtime/official_skill_release.py",
+        "../../backend/agent_runtime/builtin_release_profile.py",
+        "../../backend/tests/unit/test_builtin_release_profile.py",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "a92193c1ac4f97364b8e06a3fa4c9858371696c9d4f8da0937f967e19d23df3f",
+      "report": {
+        "path": ".codex-work/product-native-open-agent/skill-release-01.json",
+        "sha256": "7fafa090476e864abe38209d4020fc2760ad8be949a503401553fbfd25c1d4bd"
+      },
+      "log": {
+        "path": ".codex-work/product-native-open-agent/skill-release-01.log",
+        "sha256": "5c7f2e575ea49583a08639a21d894364ed177885513298f951917775052b0bf7"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "agent-open-01",
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=<core-workspace>/.codex-work/product-native-open-agent/actual-open-01",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=<core-workspace>/.codex-work/product-sdk-refresh/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=<product-worktree>/components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0",
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::office_agent::open::",
+        "--",
+        "--include-ignored",
+        "--test-threads=1"
+      ],
+      "exitCode": 101,
+      "elapsedSeconds": 65.43150887498632,
+      "sourceUnchanged": true,
+      "sourceFiles": 4191,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills",
+        "../../backend/agent_runtime/authority_catalog_manifest.py",
+        "../../backend/agent_runtime/official_skill_release.py",
+        "../../backend/agent_runtime/builtin_release_profile.py",
+        "../../backend/tests/unit/test_builtin_release_profile.py",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "a92193c1ac4f97364b8e06a3fa4c9858371696c9d4f8da0937f967e19d23df3f",
+      "report": {
+        "path": ".codex-work/product-native-open-agent/agent-open-01.json",
+        "sha256": "48ee642c4ff469fd240788fb2f6129c2214d2db9e7f2aef1191256525f5372fe"
+      },
+      "log": {
+        "path": ".codex-work/product-native-open-agent/agent-open-01.log",
+        "sha256": "5b084ca7f623886aeced771aa85f4bb222d376b84b4c9472c0e074ab8742e895"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 2,
+          "failed": 1,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "agent-open-diagnostic-02",
+      "command": [
+        "env",
+        "RUST_BACKTRACE=1",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=<core-workspace>/.codex-work/product-native-open-agent/actual-open-01",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=<core-workspace>/.codex-work/product-sdk-refresh/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=<product-worktree>/components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0",
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::office_agent::open::",
+        "--",
+        "--include-ignored",
+        "--test-threads=1"
+      ],
+      "exitCode": 101,
+      "elapsedSeconds": 12.555549750104547,
+      "sourceUnchanged": true,
+      "sourceFiles": 4191,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills",
+        "../../backend/agent_runtime/authority_catalog_manifest.py",
+        "../../backend/agent_runtime/official_skill_release.py",
+        "../../backend/agent_runtime/builtin_release_profile.py",
+        "../../backend/tests/unit/test_builtin_release_profile.py",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "a92193c1ac4f97364b8e06a3fa4c9858371696c9d4f8da0937f967e19d23df3f",
+      "report": {
+        "path": ".codex-work/product-native-open-agent/agent-open-diagnostic-02.json",
+        "sha256": "9d66a5880bfcd60bf5662d1d51ea6fb2db0f4e1533e6c993b6ec46c6b2bfb3b6"
+      },
+      "log": {
+        "path": ".codex-work/product-native-open-agent/agent-open-diagnostic-02.log",
+        "sha256": "95803eb07da02889fce8405bc3f44df331507ce62ff97020b4bdcfa1bc57e4d5"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 2,
+          "failed": 1,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "agent-open-diagnostic-03",
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=<core-workspace>/.codex-work/product-native-open-agent/actual-open-01",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=<core-workspace>/.codex-work/product-sdk-refresh/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=<product-worktree>/components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0",
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::office_agent::open::agent_opens_abandoned_publication",
+        "--",
+        "--include-ignored",
+        "--test-threads=1"
+      ],
+      "exitCode": 101,
+      "elapsedSeconds": 17.89585516694933,
+      "sourceUnchanged": true,
+      "sourceFiles": 4191,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills",
+        "../../backend/agent_runtime/authority_catalog_manifest.py",
+        "../../backend/agent_runtime/official_skill_release.py",
+        "../../backend/agent_runtime/builtin_release_profile.py",
+        "../../backend/tests/unit/test_builtin_release_profile.py",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "29334d163a41f01dd2058c32e9e5653e869149247f3b709b33cfe5e2d68dbaba",
+      "report": {
+        "path": ".codex-work/product-native-open-agent/agent-open-diagnostic-03.json",
+        "sha256": "725fa62044122b6f415c216d8cb6d12a1d6fc27ec23b586ee9ee327b503b965a"
+      },
+      "log": {
+        "path": ".codex-work/product-native-open-agent/agent-open-diagnostic-03.log",
+        "sha256": "a90cd30c6ad7abd733c856a53c92873e19d1868a27b40ef0477e18516b112428"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 0,
+          "failed": 1,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "agent-all-04",
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=<core-workspace>/.codex-work/product-native-open-agent/actual-agent-04",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=<core-workspace>/.codex-work/product-native-open-agent/actual-open-04",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=<core-workspace>/.codex-work/product-sdk-refresh/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=<product-worktree>/components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0",
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::office_agent::",
+        "--",
+        "--include-ignored",
+        "--test-threads=1"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 133.6692444998771,
+      "sourceUnchanged": true,
+      "sourceFiles": 4191,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills",
+        "../../backend/agent_runtime/authority_catalog_manifest.py",
+        "../../backend/agent_runtime/official_skill_release.py",
+        "../../backend/agent_runtime/builtin_release_profile.py",
+        "../../backend/tests/unit/test_builtin_release_profile.py",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "49a1053dd0db4be128b3f559a56e9119a0aef76cb44a300565ecc64ba2c239a0",
+      "report": {
+        "path": ".codex-work/product-native-open-agent/agent-all-04.json",
+        "sha256": "1c03807fa5043fbf67f83972b2f4f223da87ffac5cc8c0cf02f5db01d833a00f"
+      },
+      "log": {
+        "path": ".codex-work/product-native-open-agent/agent-all-04.log",
+        "sha256": "9d67ae2b52ea26ed6e44821182fe05799a600655aeb28cfafe7093a94c92c1e4"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 15,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "python-release-final",
+      "command": [
+        "env",
+        "PYTHONPATH=../..",
+        "python3",
+        "-m",
+        "unittest",
+        "backend.tests.unit.test_builtin_release_profile",
+        "-v"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.38144645909778774,
+      "sourceUnchanged": true,
+      "sourceFiles": 4191,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills",
+        "../../backend/agent_runtime/authority_catalog_manifest.py",
+        "../../backend/agent_runtime/official_skill_release.py",
+        "../../backend/agent_runtime/builtin_release_profile.py",
+        "../../backend/tests/unit/test_builtin_release_profile.py",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "49a1053dd0db4be128b3f559a56e9119a0aef76cb44a300565ecc64ba2c239a0",
+      "report": {
+        "path": ".codex-work/product-native-open-agent/python-release-final.json",
+        "sha256": "60d0563b6975c1f2d17354061584d4c3ebbaa4a7b087e948de68a4c6d3c9d015"
+      },
+      "log": {
+        "path": ".codex-work/product-native-open-agent/python-release-final.log",
+        "sha256": "3c3e2d6e2efe9ac765daca9e577d89904e1746d3af2b77004a50feac95ebf386"
+      },
+      "rustTestSummaries": []
+    },
+    {
+      "name": "catalog-native-final",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-tool",
+        "-p",
+        "musterwork-agent-skill",
+        "-p",
+        "musterwork-agent-skill-release",
+        "--lib"
+      ],
+      "exitCode": 101,
+      "elapsedSeconds": 13.912484917091206,
+      "sourceUnchanged": true,
+      "sourceFiles": 4191,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills",
+        "../../backend/agent_runtime/authority_catalog_manifest.py",
+        "../../backend/agent_runtime/official_skill_release.py",
+        "../../backend/agent_runtime/builtin_release_profile.py",
+        "../../backend/tests/unit/test_builtin_release_profile.py",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "49a1053dd0db4be128b3f559a56e9119a0aef76cb44a300565ecc64ba2c239a0",
+      "report": {
+        "path": ".codex-work/product-native-open-agent/catalog-native-final.json",
+        "sha256": "88bc1eb0234e5a7b23e0d3a12e543c8d4be8d2326979afdf6547d62abdb4d9d7"
+      },
+      "log": {
+        "path": ".codex-work/product-native-open-agent/catalog-native-final.log",
+        "sha256": "8d4eaa4df88a22e9c6d8a6e730bd15a276fe625dcfae1a908f073d4f4e18a02b"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 8,
+          "failed": 2,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "catalog-native-final-02",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-tool",
+        "-p",
+        "musterwork-agent-skill",
+        "-p",
+        "musterwork-agent-skill-release",
+        "--lib"
+      ],
+      "exitCode": 101,
+      "elapsedSeconds": 2.5197038748301566,
+      "sourceUnchanged": true,
+      "sourceFiles": 4192,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills",
+        "../../backend/agent_runtime/authority_catalog_manifest.py",
+        "../../backend/agent_runtime/official_skill_release.py",
+        "../../backend/agent_runtime/builtin_release_profile.py",
+        "../../backend/tests/unit/test_builtin_release_profile.py",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "5d3c5f11f00c36aea53f47566634808518c33f0a3e17aaa5cda6da4f82dfb293",
+      "report": {
+        "path": ".codex-work/product-native-open-agent/catalog-native-final-02.json",
+        "sha256": "16c6a8cd25a4a44043fce866c96b101a55d6fe657b9ab82505f7896067c42dda"
+      },
+      "log": {
+        "path": ".codex-work/product-native-open-agent/catalog-native-final-02.log",
+        "sha256": "094e561c88dcd8e9a4f71c02fd76b2a1ffcc94ecd01ed6b6f1e463fb0b27691c"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 10,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 4,
+          "failed": 1,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "catalog-native-final-03",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-tool",
+        "-p",
+        "musterwork-agent-skill",
+        "-p",
+        "musterwork-agent-skill-release",
+        "--lib"
+      ],
+      "exitCode": 101,
+      "elapsedSeconds": 2.5720819579437375,
+      "sourceUnchanged": true,
+      "sourceFiles": 4192,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills",
+        "../../backend/agent_runtime/authority_catalog_manifest.py",
+        "../../backend/agent_runtime/official_skill_release.py",
+        "../../backend/agent_runtime/builtin_release_profile.py",
+        "../../backend/tests/unit/test_builtin_release_profile.py",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "5fd0721b819fb7ddc72287bb1a0b9cac69724d9431d47dabf82c3357e2087b25",
+      "report": {
+        "path": ".codex-work/product-native-open-agent/catalog-native-final-03.json",
+        "sha256": "30c54fe4e6a17a324916fba2baf3dc6f72608cb64f9a71a7b8e27540cc27fd23"
+      },
+      "log": {
+        "path": ".codex-work/product-native-open-agent/catalog-native-final-03.log",
+        "sha256": "58e7b1ce114eec85ca628099b224eeb5258f5792703497e7c961897e1e27ec1b"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 10,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 5,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 54,
+          "failed": 1,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "catalog-native-final-04",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-tool",
+        "-p",
+        "musterwork-agent-skill",
+        "-p",
+        "musterwork-agent-skill-release",
+        "--lib"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 12.776844167150557,
+      "sourceUnchanged": true,
+      "sourceFiles": 4192,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills",
+        "../../backend/agent_runtime/authority_catalog_manifest.py",
+        "../../backend/agent_runtime/official_skill_release.py",
+        "../../backend/agent_runtime/builtin_release_profile.py",
+        "../../backend/tests/unit/test_builtin_release_profile.py",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "7f7607aef19d54a9d923660e738e621948baeff46ec4a47e8f941905fd5fcf31",
+      "report": {
+        "path": ".codex-work/product-native-open-agent/catalog-native-final-04.json",
+        "sha256": "5ca7294c3669f842b19263df30d46efdf84786551666d1e02eae55469d11168e"
+      },
+      "log": {
+        "path": ".codex-work/product-native-open-agent/catalog-native-final-04.log",
+        "sha256": "8292287412df59e7952873cb5b5f1c29c3ea7a86782f2b4b61f7d0fa031f7931"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 10,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 5,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 55,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "skill-package-final",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-runtime-skill",
+        "--lib",
+        "runtime_release_tests::"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 14.112853416008875,
+      "sourceUnchanged": true,
+      "sourceFiles": 4192,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills",
+        "../../backend/agent_runtime/authority_catalog_manifest.py",
+        "../../backend/agent_runtime/official_skill_release.py",
+        "../../backend/agent_runtime/builtin_release_profile.py",
+        "../../backend/tests/unit/test_builtin_release_profile.py",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "7f7607aef19d54a9d923660e738e621948baeff46ec4a47e8f941905fd5fcf31",
+      "report": {
+        "path": ".codex-work/product-native-open-agent/skill-package-final.json",
+        "sha256": "7d20457134fee21fb5b15298fd09a45a6f70019e79965dbd38da3d7ef8c68c23"
+      },
+      "log": {
+        "path": ".codex-work/product-native-open-agent/skill-package-final.log",
+        "sha256": "21f6c7b894ccbaacb99f73471c0ce99931035be6eb4e5ddcde171f3d3cfd3f9d"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "device-native-final",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-device-runtime",
+        "--lib",
+        "capability::tests::"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 53.12073450000025,
+      "sourceUnchanged": true,
+      "sourceFiles": 4192,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills",
+        "../../backend/agent_runtime/authority_catalog_manifest.py",
+        "../../backend/agent_runtime/official_skill_release.py",
+        "../../backend/agent_runtime/builtin_release_profile.py",
+        "../../backend/tests/unit/test_builtin_release_profile.py",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "7f7607aef19d54a9d923660e738e621948baeff46ec4a47e8f941905fd5fcf31",
+      "report": {
+        "path": ".codex-work/product-native-open-agent/device-native-final.json",
+        "sha256": "cbc7f849da684f96ea589e618ca2900b9fe0bd923853adc625fde92086cc76a6"
+      },
+      "log": {
+        "path": ".codex-work/product-native-open-agent/device-native-final.log",
+        "sha256": "31981ab0b43590fd205f07988b901a08e3b4fafc0423a4f3109228c787bda65e"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "admission-native-final",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-runtime-application",
+        "--test",
+        "product_snapshot",
+        "device_skill_selection::"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 13.71942829200998,
+      "sourceUnchanged": true,
+      "sourceFiles": 4192,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills",
+        "../../backend/agent_runtime/authority_catalog_manifest.py",
+        "../../backend/agent_runtime/official_skill_release.py",
+        "../../backend/agent_runtime/builtin_release_profile.py",
+        "../../backend/tests/unit/test_builtin_release_profile.py",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "7f7607aef19d54a9d923660e738e621948baeff46ec4a47e8f941905fd5fcf31",
+      "report": {
+        "path": ".codex-work/product-native-open-agent/admission-native-final.json",
+        "sha256": "b343894f28d7bb76577fb4a7930429c2b855770ca8f8ce3dc4e0b17e9d7cde6d"
+      },
+      "log": {
+        "path": ".codex-work/product-native-open-agent/admission-native-final.log",
+        "sha256": "6e98f4420ee681ac01c1be8fedef7077b083dc52445ddac7ce56dacac98aa190"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "clippy-native-final",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "cargo",
+        "clippy",
+        "-p",
+        "musterwork-agent-tool",
+        "-p",
+        "musterwork-agent-skill",
+        "-p",
+        "musterwork-agent-skill-release",
+        "-p",
+        "musterwork-agent-device-runtime",
+        "-p",
+        "musterwork-agent-musteroffice",
+        "-p",
+        "musterwork-agent-tool-executor",
+        "--lib",
+        "--no-deps",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 36.34092429187149,
+      "sourceUnchanged": true,
+      "sourceFiles": 4192,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills",
+        "../../backend/agent_runtime/authority_catalog_manifest.py",
+        "../../backend/agent_runtime/official_skill_release.py",
+        "../../backend/agent_runtime/builtin_release_profile.py",
+        "../../backend/tests/unit/test_builtin_release_profile.py",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "7f7607aef19d54a9d923660e738e621948baeff46ec4a47e8f941905fd5fcf31",
+      "report": {
+        "path": ".codex-work/product-native-open-agent/clippy-native-final.json",
+        "sha256": "39aa2fb81deec25d22435aa49477ac9a78998ec025f2001994364ca92dcf2368"
+      },
+      "log": {
+        "path": ".codex-work/product-native-open-agent/clippy-native-final.log",
+        "sha256": "7157b17b667115cb776ea4779d09a3155685d000bcdb49a7aa478527a67c5aa6"
+      },
+      "rustTestSummaries": []
+    },
+    {
+      "name": "catalog-stable-final",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=stable",
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-tool",
+        "-p",
+        "musterwork-agent-skill",
+        "-p",
+        "musterwork-agent-skill-release",
+        "--lib"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 14.271157457958907,
+      "sourceUnchanged": true,
+      "sourceFiles": 4192,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills",
+        "../../backend/agent_runtime/authority_catalog_manifest.py",
+        "../../backend/agent_runtime/official_skill_release.py",
+        "../../backend/agent_runtime/builtin_release_profile.py",
+        "../../backend/tests/unit/test_builtin_release_profile.py",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "7f7607aef19d54a9d923660e738e621948baeff46ec4a47e8f941905fd5fcf31",
+      "report": {
+        "path": ".codex-work/product-native-open-agent/catalog-stable-final.json",
+        "sha256": "18048395f5552808acf69aa658bf8347d6bd3037b38502dcf9d1f8e1bf70ef8a"
+      },
+      "log": {
+        "path": ".codex-work/product-native-open-agent/catalog-stable-final.log",
+        "sha256": "efb9c4386e8145bcb3331a0bfc7fcb1e6e4c085895be3f6ae95700852cd7174f"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 10,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 5,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 55,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "admission-stable-final",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=stable",
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-runtime-application",
+        "--test",
+        "product_snapshot",
+        "device_skill_selection::"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 13.933515625074506,
+      "sourceUnchanged": true,
+      "sourceFiles": 4192,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills",
+        "../../backend/agent_runtime/authority_catalog_manifest.py",
+        "../../backend/agent_runtime/official_skill_release.py",
+        "../../backend/agent_runtime/builtin_release_profile.py",
+        "../../backend/tests/unit/test_builtin_release_profile.py",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "7f7607aef19d54a9d923660e738e621948baeff46ec4a47e8f941905fd5fcf31",
+      "report": {
+        "path": ".codex-work/product-native-open-agent/admission-stable-final.json",
+        "sha256": "7327315b907b51951e779bed15c95a44f74e69bf0cc3755c3edaf56a3f4249b4"
+      },
+      "log": {
+        "path": ".codex-work/product-native-open-agent/admission-stable-final.log",
+        "sha256": "5d4204be704b1bb61f07ea55c65f82d3fe0ac32f0100bc84eb8d174a733c4b43"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    }
+  ],
+  "finalVerificationRuns": [
+    "agent-all-04",
+    "python-release-final",
+    "catalog-native-final-04",
+    "skill-package-final",
+    "device-native-final",
+    "admission-native-final",
+    "clippy-native-final",
+    "catalog-stable-final",
+    "admission-stable-final"
+  ],
+  "passedDistinctTests": 99,
+  "passedFinalTestExecutions": 172,
+  "sourceScopeNotes": [
+    "15 Agent tests include 3 new open tests and the previous 12. They use controlled calls, real SQLite/handlers/SDK/worker, not an external model session.",
+    "70 catalog/library tests execute in each of the two release profiles. Three admission tests also execute in both profiles. Shared test names are not counted twice in the distinct total.",
+    "Three package audit tests, three Device composition tests and five Python release-loader tests also pass.",
+    "The final Agent run preceded test-only extraction and profile-aware assertions in the four listed files. Production Agent and kernel behavior did not change afterward; the remaining final Rust commands share an identical source map.",
+    "Strict Clippy covers six selected production libraries with --no-deps, not workspace-wide lint.",
+    "Elapsed command time includes builds and tests and is not a kernel performance measurement."
+  ],
+  "testOnlyChangesAfterAgentRun": [
+    "crates/domains/skill/src/lib.rs",
+    "crates/domains/skill/src/tests.rs",
+    "crates/domains/tool/src/catalog_tests.rs",
+    "crates/runtime/skill-release/src/lib.rs"
+  ],
+  "earlierFailures": [
+    {
+      "runs": [
+        "agent-open-01",
+        "agent-open-diagnostic-02",
+        "agent-open-diagnostic-03"
+      ],
+      "reason": "The test re-entered the preparation handler with a terminal invocation. Corrected the test to use the original journal observation and duplicate transaction receipt. No production authorization check was weakened."
+    },
+    {
+      "runs": [
+        "catalog-native-final",
+        "catalog-native-final-02",
+        "catalog-native-final-03"
+      ],
+      "reason": "Four pre-existing stable-only test assumptions pinned Skill 7, all surfaces and author@3/compile. Tests now validate both configured releases and reject preview Skill authorization outside Desktop. Production release policy unchanged."
+    }
+  ],
+  "outputs": {
+    "outputs": [
+      {
+        "file": "version-1.pptx",
+        "sha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+        "bytes": 10735,
+        "parts": 21,
+        "xmlParts": 20,
+        "texts": {
+          "ppt/slides/slide1.xml": [
+            "A A",
+            "A A",
+            "A A",
+            "A A"
+          ],
+          "ppt/slides/slide2.xml": [
+            "A A",
+            "A A",
+            "A A"
+          ]
+        },
+        "previewSha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d",
+        "previewDimensions": [
+          640,
+          360
+        ]
+      },
+      {
+        "file": "version-2.pptx",
+        "sha256": "60a31201f0ee0e79aee30d1595738622c28f8e22239067687e45316bc9e0bf9f",
+        "bytes": 10742,
+        "parts": 21,
+        "xmlParts": 20,
+        "texts": {
+          "ppt/slides/slide1.xml": [
+            "AA A",
+            "A A",
+            "A A",
+            "A A"
+          ],
+          "ppt/slides/slide2.xml": [
+            "A A",
+            "A A",
+            "A A"
+          ]
+        },
+        "previewSha256": "2888395fb8d3330df2e860f9972f3e9517dbab37c357a260dba23897cf515df8",
+        "previewDimensions": [
+          640,
+          360
+        ]
+      }
+    ],
+    "changedParts": [
+      "ppt/slides/slide1.xml"
+    ],
+    "assertions": [
+      "ZIP CRC valid",
+      "all XML/relationship parts parse",
+      "edited title remains DrawingML text",
+      "only first slide XML changed",
+      "second slide XML unchanged"
+    ],
+    "scope": "Owned synthetic font and input. Not Office/WPS parity or comprehensive visual/editability acceptance."
+  },
+  "agentByteComparison": [
+    {
+      "path": ".codex-work/product-native-open-agent/actual-agent-04/version-1.pptx",
+      "sha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+      "matchesPreviousStageBytes": true
+    },
+    {
+      "path": ".codex-work/product-native-open-agent/actual-agent-04/version-2.pptx",
+      "sha256": "0d28df97204dab351fc0b85d6853f9d28edfb4dc111fc18d8a22f733a4e4264e",
+      "matchesPreviousStageBytes": true
+    },
+    {
+      "path": ".codex-work/product-native-open-agent/actual-agent-04-environment/version-1.pptx",
+      "sha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+      "matchesPreviousStageBytes": true
+    },
+    {
+      "path": ".codex-work/product-native-open-agent/actual-agent-04-environment/version-2.pptx",
+      "sha256": "0d28df97204dab351fc0b85d6853f9d28edfb4dc111fc18d8a22f733a4e4264e",
+      "matchesPreviousStageBytes": true
+    }
+  ],
+  "unverified": [
+    "native templates and selected-template product workflow",
+    "legacy HTML conversion and historical fork/restore policy",
+    "real external-model desktop session and Shared Home/Cloud generation",
+    "full advanced content, Office/WPS, Native/WASM, font distribution, performance/size and P00/E0-E3"
+  ],
+  "qualityClaim": "Native text editing and exact publication continuation for the owned fixture; not complete visual, font, playback or round-trip parity."
+}

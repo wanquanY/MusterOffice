@@ -1,8 +1,103 @@
 # MusterOffice 文档
 
+[最新进度](implementation/progress.md)区分内核实现、产品固定版本和仍未完成的替换验收。以下阶段记录保留当时的验证范围。
+
+[本地源码提交与验证检查点](implementation/source-checkpoint.md)：本次提交边界、完整工作区回归、MCP 锁文件修正及仍未完成的验收项。
+
+[原生表格图片填充](implementation/table-images.md)：共享布局与保留播放覆盖合并格、RTL、裁剪、平铺、显隐和透明度，跨端验证及历史回归通过；尚未升级产品材料。
+
+[原生表格产品同步](implementation/product-native-tables.md)：独立 Musterwork worktree 的 SDK、导出 Worker 和播放包已接入此前完成的表格能力；164 项功能测试与 97 次 Worker 帧对照通过，完整替换仍待验收。
+
+[表格跨帧复用](implementation/table-retention.md)、[表格公共页面](implementation/table-page.md)和[表格文字](implementation/table-text-page.md)分别记录来源结构复用、整页绘制与多个文字框的实现边界。
+
+[原生表格模型、编辑与写出基础](implementation/native-tables.md)：合并网格、事务编辑及原生表格导出已进入实现；读取、渲染、外部编辑往返和产品接入仍在继续，尚未提升产品固定 SDK。
+
+
+[多段与曲线路径动画](implementation/motion-paths.md)：有界路径编译、原生可编辑控制点、双模式 WASM 和独立产品包已验证；WPS 作者序列观察与通用时间图互操作缺口分别记录。完整替换继续实施。
+
+[有限同步子树的容器自动往返](implementation/container-autoreverse.md)：两程真实激活、嵌套、缓动、截断和导航已贯通原生、WASM 及独立产品 Worker。WPS 已观察直接导出文件终点；一般时钟与完整替换仍继续实施。
+[有限同步子树的容器反向时钟](implementation/container-reversal.md)：容器级联方向、重复边界、缓动、截断和导航已验证，独立产品升级通过。WPS 负速度差异、一般反向区间、自动往返和完整替换门禁仍开放。
+
+[容器正向变速与激活时钟](implementation/container-rate.md)：不同长度、错峰、顺序与事件子树使用同一精确时钟；原生／WASM、历史帧和独立产品升级通过。一般非线性时钟与完整替换验收仍开放。
+
+[旋转基准与叠加](implementation/rotation-composition.md)：修复非零原始角度的播放和原生导出差异，WPS 校准、精确计算、原生／WASM 与独立产品 Worker 对照通过；完整高级内容和全部替换门禁继续推进。
+
+[对象整体透明合成](implementation/opacity-groups.md)：原生与 WASM 共享隔离组语义、资源上限与分步执行；淡入淡出预设及产品材料升级继续实施。
+
+[Agent 动画序列与原生编辑分组](implementation/presentation-sequence.md)：新增原子作者操作，内核计算点击组、顺序批次和并行效果；WPS 实际修改时长后自动重排后继组并可重新读取。任意时间图的外部编辑和完整替换验收仍开放。
+
+[原生节点事件与产品升级](implementation/native-node-events.md)：显式 begin/end 和缺省延迟已实现，三类产品材料同步升级；350 项相关 Rust 测试、80 个新增原生采样、397 个既有跨端采样和 158 项产品测试通过。WPS 三组回存仍丢失事件引用，兼容性缺口与完整替换验收继续开放。
+
+[原生出现／消失与产品升级](implementation/appearance-native.md)：前一阶段的预设初始状态、主序列撤销与自有 WPS 实际播放对照。
+
+[固定可见性与保留资源播放](implementation/visibility-set.md)：上一阶段完成通用显隐赋值、原生读写、缓存资源和 CLI 验证；547 项 Rust 测试、54 个新采样跨端对照、449 个旧帧回归通过。其后续预设与产品升级见上方新阶段。
+
+[产品导航与计算组件统一升级](implementation/product-navigation.md)：独立 worktree 已统一升级 Rust SDK、导出 Worker 和 WASM 包，接通前后动画输入；187 项功能测试、103 次真实产品 Worker 帧对照及完整桌面前端构建通过。完整高级内容和替换验收继续实施，默认引擎未切换。
+
+[序列自然结束跳转与局部时钟](implementation/scoped-natural-end-seek.md)：`nextAc=seek` 已进入实际计算及可编辑 PPTX 读写，130 个新帧跨独立 SDK/原生/WASM 一致，319 个旧帧回归通过；独立应用校准、产品固定材料统一升级和完整替换验收继续推进。
+
+[原生导航与 WPS 回存页面边界](implementation/native-sequence-navigation.md)：共享内核已打通非 seek 序列导航读写，并修复非整数像素页面被拒绝的问题；真实回存来源与公开 SDK 跨端验证范围、剩余缺口分别记录，产品固定材料尚未升级。
+
 当前职责：[ADR 0007：纯内核与薄接入](decisions/0007-kernel-only-integration-boundary.md)及[内核与接入产品边界](design/implementation/kernel-host-boundary.md)。MusterOffice 目标是提供完整 PPT 计算、渲染/无界面播放及 SDK/MCP/CLI；接入方拥有权限、持久存储、业务任务和产品页面。计算拆分、薄 CLI 与默认本地 MCP 已进入实现；完整能力和替换验收仍在实施；以下文档保留各阶段事实，不将旧标准持久宿主当作新的交付要求。
 
+[产品查看器接入公共播放 SDK](implementation/product-playback.md)：独立 worktree 的原查看器已加入候选播放入口，实际 Worker 复用文稿和字体；136 项测试、8 帧原生像素对照、完整桌面前端构建及原桌面 CSP 下的浏览器验证通过。完整 Electron、动态内容、Office/WPS 和替换验收继续实施，stable 未切换。
+
+[已交付文稿的公共播放输入](implementation/delivery-playback.md)：内核从已检查的材料提供页面与字体输入，产品两版实际 PPTX 经公共 SDK 在独立 Worker 采样；保留该阶段 12 帧 Native/WASM 同步与分步像素一致的证据。产品接入后续见上。
+
+[原 Agent Loop 与产品版本预览](implementation/product-native-model-flow.md)：同次上传后经实际 Device Loop 完成 12 次工具调用、两版导出及重新导入，原产品查询和前端读取消费实际版本与字节；113 项功能检查通过。模型输出为确定性测试输入，产品播放和完整替换验收继续实施。
+
+[同次上传至桌面原生版本](implementation/product-native-device-flow.md)：上一阶段正式 Device 准入和工具执行器消费新模板，完成创建、导出、重开编辑、第二版导出和重导入；保留该阶段 103 项功能测试的独立范围。
+
+[原生上传至模板入库](implementation/product-native-catalog-flow.md)：同一次上传经真实 SDK、18 个签名审查子任务和 9 次父任务恢复，完成最终验证及模板版本提交；当前签名接口读取来源与完整资源一致。下游 Agent 连续创作、视觉质量和完整替换继续实施。
+
+[原生上传策略与宿主环境描述](implementation/product-native-upload.md)：候选上传已消费实际 SDK 环境描述，沿原队列进入原生维护阶段；125 项相关测试通过。此记录保留该阶段验证范围，连续执行进展见上。
+
+[产品云端原生宿主与执行路由](implementation/product-native-cloud.md)：原云端维护执行器已接入固定 SDK/worker，原生路由和旧数据升级在本机通过验证，31 项相关测试通过；此记录保留该阶段验证范围。
+
+[原生模板目录提交与读取](implementation/product-native-catalog.md)：原最终检查点已接通目录版本事务和带签名的 Agent 读取，147 项相关测试通过。自动上传环境选择、真实完整会话及完整替换继续实施。
+
+[原生模板最终检查点](implementation/product-native-final-verification.md)：来源与全部压力案例的真实检查、独立复核证明和后端事务已接通；溢出不会被复核通过覆盖。本记录保留该阶段的独立验证范围。
+
+[原生复核任务接入](implementation/product-native-review-run.md)：明确的原生复核身份已接入产品原快照、Loop、恢复与取消；本记录保留该阶段的独立验证范围。
+
+[原生视觉复核绑定](implementation/product-native-review-binding.md)：实际交付图片和报告绑定到独立原生对象，共用现有模型证据校验；本记录保留该阶段的验证范围。
+
+[原生交付复核计算](implementation/product-delivery-inspection.md)：产品复用 SDK 核对保存的实际交付与逐页测量，区分容量溢出、未测量和装得下；维护阶段、原生视觉复核与完整替换继续实施。
+
+[文字容量测量与产品传递](implementation/text-capacity.md)：真实排版测量进入渲染与交付，12 组 Native/WASM 对照通过；独立 worktree 的真实模板任务已接收 72 个文字框测量并检出一处横向溢出。最终质量验收和完整替换继续实施。
+
+[原生模板后端阶段编排](implementation/product-template-coordinator.md)：显式原生策略已连接原协调器、跨内容库传递及 PostgreSQL 阶段约束，107 项相关测试通过。自动上传默认选择、实际质量和目录发布仍待完成。
+
+[原维护任务的原生压力计算](implementation/product-template-stress-maintenance.md)：原任务执行固定计划、真实实例与独立提交验证，17 项相关测试通过；实际文件检查不提升视觉或 Office/WPS 质量声明。后续编排进展见上，最终质量和目录事务继续实施。
+
+[原生模板固定压力计划](implementation/product-template-stress-plan.md)：从已验证模板生成版本化必需案例，实际执行全部 8 个文字案例并核对原生文件；23 项相关测试通过。原维护阶段提交证明已由后续实现接通，完整质量验证继续实施。
+
+[原生模板参数实例](implementation/product-template-instances.md)：原计算端口已连接 SDK 原子绑定、同源渲染和实际导出，允许跨阶段按精确字节重新绑定来源引用；16 项相关测试及 ZIP/XML 检查通过。完整压力阶段和质量判定继续实施。
+
+[原维护 Agent 的原生模板定义](implementation/product-template-maintenance.md)：整份来源策略 /3 已通过实际 worker、原模型循环、工具日志和任务完成验证；89 项相关测试通过。压力、最终质量、自动上传与目录提交继续实施。
+
+[原生模板 Runtime 计算端口](implementation/product-template-engine.md)：显式原生档案与 Device 分派已经接通来源渲染、定义和实际文件传输，重复材料共用字节。自动上传维护、参数压力和目录提交继续接入。
+
+[产品原生模板来源渲染](implementation/product-template-render.md)：使用 SDK 固定设置、渲染器和实际字体，实际来源 PPTX、逐页预览与下游模板实例通过字节校验。
+
+[产品原生模板生产入口](implementation/product-template-source.md)：复用固定 SDK 完成来源导入、显式参数校验和包生成；Agent 消费共用校验器，实际实例导出通过。
+
+[产品原生模板调用](implementation/product-native-templates.md)：独立 worktree 的候选 Agent 已连接原目录读取和整份模板实例化，真实原生导出及产品回归通过。后续生产入口进度见上；页面组装、历史迁移和完整替换继续实施。
+
+[原生标题语义](implementation/native-titles.md)：导入读取实际标题、原子编辑和保留式 OPC 写回；旧来源快照继续使用原投影语义。
+
+[模板共享协议与产品计算来源](implementation/template-protocol.md)：同一调用覆盖查询与实例化，真实 MCP/CLI/WASM 结果对比和产品原提交链验证。该阶段之后的目录接入进度见上。
+
+[原生模板参数计算](implementation/template-computation.md)：固定来源版本、类型参数和整份文稿独立实例；SDK/CLI/WASM 共享计算。页面组装、高级参数、布局压力验证和产品模板流程继续实施。
+
+[重复激活与父级区间](implementation/restart-intervals.md)：restart、事件分发和区间生命周期已实现，41 项门禁与三端各 481 帧验证通过；主序列导航和真实 WPS 回存继续实施。
+
+[开始条件列表](implementation/start-conditions.md)：前一阶段的候选开始、indefinite、原生条件读写与完整引用校验。
+
 [MCP 版本与 Plugin 状态](implementation/mcp-protocol-status.md)：官方协议、实际支持版本、SDK 补丁和平台安装验收分开记录。
+
+[扫描分派与保留状态](implementation/scan-dispatch.md)：无需保留局部资源的分支直接分派，新增 144 份边界输入跨端保持旧像素；状态减少，吞吐改善有限，完整替换门禁仍开放。
+- [播放帧分步像素校验](implementation/pixel-validation.md)：共享校验游标、私有字段的完成证明、实际 SDK 分段成本与完整像素回归。
 
 [扫描任务内存复用](implementation/scan-task-storage.md)：消除万个对象的重复状态分配，跨端画质/取消验证通过；局部耗时改善约 20%，剩余吞吐回退及完整替换验收继续推进。
 
@@ -245,3 +340,31 @@
 真实 PPTX 的图片关系继承、嵌入/外链选择及原始资源提取见[来源图片](implementation/source-images.md)。
 
 图片与共享场景的变换、资源复用、精度恢复及统一绘制见[场景图片](implementation/image-scene.md)。
+
+原生二维缩放、共享时间与坐标计算、可编辑 PPTX 映射和验证边界见[缩放动画](implementation/scale-animation.md)。
+
+原生 by/to-only 的精确输入投影、WPS 实测暴露的主序列/效果结构缺口及后续实现约束见[缩放输入与目标应用校准](implementation/scale-inputs.md)。
+
+平面变换图的原生效果组织、严格无导航来源投影及内核直接导出的 WPS 观察见[原生演示效果组织](implementation/native-timing-envelope.md)。
+
+真实对象编辑、回存重开暴露的主序列缺口，以及原尺寸起点缩放的原生参数修正见[WPS 回存校准](implementation/wps-timing-roundtrip.md)。
+
+组合显式无描边、子对象声明保留与导出前后曲线预算收敛见[组合导出及播放一致性](implementation/group-export.md)。
+
+作者播放计划按双重容量保留局部轮廓，每帧继续验证精度和放置，见[有界轮廓复用与实际成本](implementation/playback-geometry.md)。
+
+[产品纯计算 SDK 与原生预览接入](implementation/product-sdk-preview.md)：独立 worktree、v188 验证、固定 SDK、真实导出提交与按页预览。
+
+[产品原生 Agent 工具接入](implementation/product-native-agent.md)：独立 author@4、Device 组合、实际 Invocation/SDK/Artifact 调用及两版导出再导入；活动目录尚未切换，完整能力与替换验收继续推进。
+
+[产品原生提交时间与恢复](implementation/product-native-recovery.md)：逻辑计算时间与事务观察分离、最后期限检查、真实 Tool executor 丢响应后重开数据库的原回执重放；完整会话与替换验收继续推进。
+
+[产品原生导出环境](implementation/product-native-environment.md)：宿主固定 renderer/字体/SDK 设置，Agent 引用不可变环境，原读取集与事务复核；待验收 v52 和 Skill 草案不代表默认替换完成。
+
+[产品原生 Skill 与隔离发行](implementation/product-native-release.md)：共用发行声明选择原生工具和 Skill，实际包审计、快照准入及历史合同验证通过；默认 stable 保持，完整模型会话与替换尚未验收。
+
+[产品已发布原生版本恢复](implementation/product-native-reopen.md)：原生发布记录到新草稿的精确恢复、原事务来源复核及实际继续导出；Agent 打开动作、模板和旧 HTML 迁移继续实施。
+
+[Agent 打开原生历史版本](implementation/product-native-open-agent.md)：author@6、匹配 Skill v9、原生已发布文稿恢复及实际页面文字编辑后再次导出；默认引擎不变，模板、HTML 迁移和完整替换门禁继续推进。
+
+[产品原生环境派发与恢复](implementation/product-native-dispatch.md)：签名输入派生环境约束、原调度事务复核、取消独立恢复和历史投影补建；完整产品会话与替换验收继续推进。

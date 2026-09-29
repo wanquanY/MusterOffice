@@ -8,6 +8,14 @@ MusterOffice 为 Agent 提供结构化的创建、查询、编辑、渲染、导
 
 ## 当前状态
 
+本次[源码提交检查点](docs/implementation/source-checkpoint.md)记录了已整理的实现和最终回归范围。提交完成不代表完整 PPT 替换验收通过，也没有切换 Musterwork 默认引擎。
+
+2026-09-29 最新内核实现：[原生表格图片填充](docs/implementation/table-images.md)已复用共享布局和保留式播放，2 次静态请求与 24 帧播放跨 Native/WASM 一致，既有表格结果保持。产品固定材料仍为此前的[原生表格接入版本](docs/implementation/product-native-tables.md)：164 项产品功能测试、97 次 Worker 帧对照、类型检查和桌面前端构建通过。本轮图片能力尚未同步产品；完整高级功能、Office/WPS 编辑往返及全部替换验收仍未完成。
+
+此前：[平面路径原生效果身份](docs/implementation/flat-motion-presets.md)修复了底层时间图在 WPS 不播放的已定位缺口，并更新独立 Musterwork worktree 的 SDK／Worker／播放包。416 项相关 Rust 测试、64 帧双模式跨端、159 项产品测试及前端构建通过，记录保留该阶段范围。
+
+此前：[原生淡入淡出](docs/implementation/fade-native.md)已贯通精确时间图、可编辑 PPTX 和对象整体透明合成。独立 Musterwork worktree 已升级固定 SDK／导出 Worker／播放包，实际产品播放 Worker、查看器和前端构建通过；原主工作区留给用户。完整高级内容、外部应用与全部替换验收仍在推进，当前不能宣称完整 PPT 替换完成。以下保留历史阶段记录，最新范围以[实现进度](docs/implementation/progress.md)为准。
+
 最新 SDK 进展：[浏览器 Worker 接入](docs/implementation/browser-playback-sdk.md)、[TS/WASM 离线播放包](docs/implementation/wasm-playback-sdk.md)与[原生播放 SDK](docs/implementation/native-playback-sdk.md)已接通已有作者/来源采样；71 个历史动画帧保持像素。宿主控制 Worker、资源和展示，未增加第三方依赖、UI 或文稿存储。浏览器实测暴露延迟强制终止缺口；取消性能、完整高级内容、跨端高层接口、其余浏览器/实际 WebView 和产品替换验收继续实施。
 
 最新入口进展：[Skill/Plugin 开发包](docs/implementation/agent-package.md)已实现唯一 Skill、便携/兼容清单与匹配的原生 MCP/worker；官方清单验证、搬迁后两代协议的真实导出和宿主配置复用通过。[可选 Streamable HTTP](docs/implementation/http-mcp.md)继续共用该计算，网络依赖只在显式 feature 启用时进入。实际客户端激活、附件桥接和完整 PPT 替换验收继续实施。

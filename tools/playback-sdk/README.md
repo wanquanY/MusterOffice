@@ -80,6 +80,12 @@ consumers may instead drive `beginSample` inside the Worker and supply their own
 yield/cancel handling, avoiding per-step IPC. An in-progress synchronous primitive
 still cannot observe a queued cancel; the full cancellation gate remains open.
 
+Before creating a playback owner, the example accepts `prepareDeliveryInputs`
+with the public `DeliveryPlaybackRequest` and an explicit `contents` byte array.
+It returns the SDK's checked input identities and page requests; it neither
+loads them nor keeps a delivery session. Product readers own authorization and
+asset lifetime. This operation does not perform visual or timing acceptance.
+
 Build dependencies remain the repository's fixed Python/Node/TypeScript tools.
 Runtime is JavaScript/WebAssembly and platform Worker facilities only. Fonts and
 documents are caller inputs and are never included automatically. The preserved

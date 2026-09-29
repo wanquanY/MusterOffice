@@ -1,0 +1,369 @@
+{
+  "stage": "product-template-engine",
+  "date": "2026-09-28",
+  "status": "verified-implementation-segment-with-unrelated-broad-lint-failure",
+  "scope": {
+    "implemented": [
+      "Native profile and separately versioned result over original Runtime NativePresentationEngine.",
+      "Device profile selection uses the existing OfficeHost and original legacy handler; native failures never delegate to legacy or remote.",
+      "Actual source render, delivery transfer, explicit SDK template definition, source material deduplication and rejection checks."
+    ],
+    "notCompleted": [
+      "Automatic upload, original maintained Agent policy/stages, parameter stress and fenced directory transaction are not yet wired.",
+      "No full model/desktop/cloud/web/Office/WPS or complete PPT replacement acceptance."
+    ]
+  },
+  "environment": {
+    "system": "Darwin",
+    "release": "25.2.0",
+    "machine": "arm64",
+    "productBranch": "codex/musteroffice-integration",
+    "buildProfile": "debug tests, not distribution size or performance evidence"
+  },
+  "materials": {
+    "sdkManifestSha256": "c2a893bc0a9cbac1bee5242ef8acbc26ea2657feb4f66f6c64db906a2c30f3b6",
+    "worker": {
+      "sha256": "9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+      "byteLength": 42660544
+    },
+    "sameRegistryLockAndSdkMaterialsAsPreviousStage": true,
+    "newBinaries": 0,
+    "newRegistryDependencies": 0
+  },
+  "checks": [
+    {
+      "run": "unit-01",
+      "report": ".codex-work/integration/template-engine/unit-01.json",
+      "reportSha256": "cc98fa8eac476fb6989d6ede1be3b7b8611d4e18526b5b5ff059902004b8f1f4",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-engine/unit-01-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-engine/unit-01-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-engine/unit-01-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-musteroffice",
+        "--lib",
+        "template::"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "elapsedSeconds": 28.175573165994138,
+      "logSha256": "e3306a8b90f4eb0b3f1fc8a2a5ba3401d16271f58f1a6f1fbe3a9e024e984608"
+    },
+    {
+      "run": "engine-contract-01",
+      "report": ".codex-work/integration/template-engine/engine-contract-01.json",
+      "reportSha256": "a417d95aee209cfa0e32751bb5beb8cc7484f54a09910851d1889ff7206e61a2",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-engine/engine-contract-01-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-engine/engine-contract-01-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-engine/engine-contract-01-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-runtime-artifact",
+        "--lib",
+        "presentation_engine::"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "elapsedSeconds": 37.62702466594055,
+      "logSha256": "2545a91670206d9bde79e655e42317e860e5cf3f9221998431fe7c251903e941"
+    },
+    {
+      "run": "native-03",
+      "report": ".codex-work/integration/template-engine/native-03.json",
+      "reportSha256": "afcfac543afcb633ea47bd76e9a62af480c65512f03e2b92b5a418032d96a26c",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-engine/native-03-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-engine/native-03-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-engine/native-03-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::office_agent::template_engine::",
+        "--",
+        "--include-ignored",
+        "--test-threads=1"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "elapsedSeconds": 30.37398520903662,
+      "logSha256": "b53612a8d0459385ab0e837cb74b71344cf6854053a018aaad497c0c3092ecca"
+    },
+    {
+      "run": "adapter-targets-02",
+      "report": ".codex-work/integration/template-engine/adapter-targets-02.json",
+      "reportSha256": "629d001645304f0b6ac577097b417c0cdeb7d2f9117f1c302ec9e27f77def817",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-engine/adapter-targets-02-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-engine/adapter-targets-02-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-engine/adapter-targets-02-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "clippy",
+        "--no-deps",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-musteroffice",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "elapsedSeconds": 50.58972562500276,
+      "logSha256": "8e2a51cc057629b388148f870985ee96788bfd1959dac82c8b01f46149e3d79c"
+    },
+    {
+      "run": "artifact-lib-01",
+      "report": ".codex-work/integration/template-engine/artifact-lib-01.json",
+      "reportSha256": "f094b4663234fe04c5af942757863779caa77e4012a4ec3cb015643113e8a218",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-engine/artifact-lib-01-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-engine/artifact-lib-01-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-engine/artifact-lib-01-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "clippy",
+        "--no-deps",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-runtime-artifact",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "elapsedSeconds": 60.675434082979336,
+      "logSha256": "dc2edb82813bb6acf0371636743d067ac7d2dc6f282e011c0b0758cf58d393de"
+    },
+    {
+      "run": "device-02",
+      "report": ".codex-work/integration/template-engine/device-02.json",
+      "reportSha256": "e11e4861ebceae7bf4212d6ea025bee36e0f4985289cb36beb9917a94b6896e1",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-engine/device-02-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-engine/device-02-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-engine/device-02-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-device-runtime",
+        "--all-targets"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "elapsedSeconds": 35.44832225004211,
+      "logSha256": "b342168a760e29a9398030304901aed332c408827a87a85aea847a741c3fd6d5"
+    }
+  ],
+  "counts": {
+    "templateUnitTests": 10,
+    "profileContractTests": 1,
+    "actualEngineConformanceTests": 1
+  },
+  "lintScopes": {
+    "adapter": "--all-targets --no-deps -D warnings passed",
+    "runtimeArtifactLibrary": "--lib --no-deps -D warnings passed",
+    "runtimeArtifactAllTargets": "failed on pre-existing tests; not claimed passed"
+  },
+  "preExistingLintFile": {
+    "path": "apps/agent-runtime/crates/runtime/artifact/tests/projected_application.rs",
+    "sha256": "9041eb6c50b22d67c15ec00f1a0ff369c88986f947e8a1c8d289be442e0af2f1",
+    "sameAsWorktreeHead": true
+  },
+  "actualOutputVerification": {
+    "status": "passed",
+    "sourcePptxSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+    "sourceBytes": 10735,
+    "sourceParts": 21,
+    "logicalSdkAssets": 12,
+    "transferredUniqueAssets": 11,
+    "allSdkAssetBytesAndDescriptorsMatchPreviousStage": true,
+    "allReceiptClaimsUnchanged": true,
+    "snapshotAndTemplateSourceEqual": true,
+    "packageSha256": "29b7b9f3dcca542f540f9cbc38a078937aad7fc1c8da2b6c8fc293bb16641c5b",
+    "templateOutputs": 2,
+    "priorTransferBytes": 100344,
+    "actualTransferBytes": 69730,
+    "duplicateTransferBytesAvoided": 30614,
+    "scope": "Actual original Runtime compute port and Device composition. No automatic upload/model/stage completion/catalog publish or independent Office/WPS quality acceptance."
+  },
+  "actualOutputReportSha256": "9c7f72a0f173d467d0a2a38a6b71a8aa5c7aaf6d616a6ea9c92b7ddda2b56f2c",
+  "sourceDelta": {
+    "changed": [
+      "applications/device-runtime/src/presentation.rs",
+      "applications/device-runtime/src/private_runtime.rs",
+      "crates/infrastructure/musteroffice/src/lib.rs",
+      "crates/infrastructure/musteroffice/src/template.rs",
+      "crates/infrastructure/musteroffice/src/template/render.rs",
+      "crates/runtime/artifact/src/lib.rs",
+      "crates/runtime/artifact/src/presentation_engine.rs",
+      "tests/conformance/tests/sqlite_agent_loop/presentation_office_agent.rs"
+    ],
+    "added": [
+      "crates/infrastructure/musteroffice/src/template/engine.rs",
+      "crates/infrastructure/musteroffice/src/template/engine/output.rs",
+      "crates/infrastructure/musteroffice/src/template/engine/route.rs",
+      "crates/runtime/artifact/src/presentation_engine/office_template.rs",
+      "tests/conformance/tests/sqlite_agent_loop/presentation_office_agent/template_engine.rs"
+    ],
+    "removed": [],
+    "dependencyAndSdkInputsUnchanged": true,
+    "contractTestArtifactSourcesEqualFinal": false
+  },
+  "sourceFiles": [
+    {
+      "path": "apps/agent-runtime/applications/device-runtime/src/presentation.rs",
+      "sha256": "94938ec07f23ff56a72b58fbed1a0044c276458cb5419407efaaaea551b8ce45",
+      "lines": 239
+    },
+    {
+      "path": "apps/agent-runtime/applications/device-runtime/src/private_runtime.rs",
+      "sha256": "b96264bc2e27f021e76b3fd59ae330cef71a72764e3de2e6369793bcddbfe71b",
+      "lines": 942
+    },
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/lib.rs",
+      "sha256": "23f9169270d6fa8dfb0a3148d921cd3f0798c38615372c21b4f37ce42b4639dd",
+      "lines": 44
+    },
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/template.rs",
+      "sha256": "0452ca3c30b81a3f05b215e0078ba78cdb8358379227cabd1a9a068eeaa61d01",
+      "lines": 170
+    },
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/template/render.rs",
+      "sha256": "ec36ad60f535a1c4d0ac197436700381803d28c097b943ee25ee90d50212cac8",
+      "lines": 287
+    },
+    {
+      "path": "apps/agent-runtime/crates/runtime/artifact/src/lib.rs",
+      "sha256": "bd36dc7fc5fbfdd90271db42ca8e1803eb99ab9a0c039db974fe4350f34f5fdc",
+      "lines": 896
+    },
+    {
+      "path": "apps/agent-runtime/crates/runtime/artifact/src/presentation_engine.rs",
+      "sha256": "e23f3b8f1696b90b4a1b609318ef35ef93e7b65474f51424e354ab8e44eea1a6",
+      "lines": 269
+    },
+    {
+      "path": "apps/agent-runtime/tests/conformance/tests/sqlite_agent_loop/presentation_office_agent.rs",
+      "sha256": "a744092c1581bbd86ea40b1cbabed60b779efbfbc6cd8b7cd5211ea50414ed31",
+      "lines": 387
+    },
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/template/engine.rs",
+      "sha256": "61991af54dcc2d71b3580adb4144472418287547dd450db6cf1b2b0d06a814c6",
+      "lines": 319
+    },
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/template/engine/output.rs",
+      "sha256": "7bcbcc605f39f0cab68137556865aafeffdaff64cd361cac788da05578bea787",
+      "lines": 99
+    },
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/template/engine/route.rs",
+      "sha256": "c905ac81209d21790422b32de490f7303ca97b0269e13265a4fce2d18288a9b7",
+      "lines": 54
+    },
+    {
+      "path": "apps/agent-runtime/crates/runtime/artifact/src/presentation_engine/office_template.rs",
+      "sha256": "ad7f9ed5c9a08e59d31057d3f09208603f542a1de2ec06f34ac3eaa71138c96e",
+      "lines": 66
+    },
+    {
+      "path": "apps/agent-runtime/tests/conformance/tests/sqlite_agent_loop/presentation_office_agent/template_engine.rs",
+      "sha256": "3f8778c85c62494810e9162acf437170eb3bb27ad633f02a4c2af620bf9ea177",
+      "lines": 304
+    }
+  ],
+  "retainedFailures": [
+    {
+      "run": "libraries-01",
+      "reportSha256": "a3dcd7c21c79ab16c42ed899f823bd0f400c83b13823d0b7c3427155142ba2b2",
+      "logSha256": "16b89a23b8edd744933476c24af40b4e6efe30c0abfd3ba530c66dec8ebc4649",
+      "exitCode": 101,
+      "sourceUnchanged": true,
+      "reason": "Broader Artifact --all-targets Clippy failed 30 pre-existing unwrap/unimplemented test diagnostics in projected_application.rs; this file is byte-identical to worktree HEAD. The broad gate remains failed. Separate adapter all-target and Artifact library strict checks passed; no lint allow added."
+    },
+    {
+      "run": "native-02",
+      "reportSha256": "737c953c2bfccae88397f74b048ec6e3d578fac9a2446e473a4d4b6dc0d02b20",
+      "logSha256": "415f58f3d598933dd181a879674e6b0f78a0a974e1f1c2af751d9fab44b5aa64",
+      "exitCode": 101,
+      "sourceUnchanged": true,
+      "reason": "Deduplication test exposed generic application/json metadata on the explicit snapshot. Corrected to the existing public Office document media type; actual source and snapshot now share verified transfer material."
+    }
+  ],
+  "performanceClaim": false,
+  "distributionSizeClaim": false,
+  "finalFormatting": {
+    "files": [
+      {
+        "path": "apps/agent-runtime/crates/runtime/artifact/src/lib.rs",
+        "testedSha256": "9cd0df8dfeda536cca3afb80b51ba399da7a9bdb483a4efd48f851e9292de4b0",
+        "finalSha256": "bd36dc7fc5fbfdd90271db42ca8e1803eb99ab9a0c039db974fe4350f34f5fdc"
+      },
+      {
+        "path": "apps/agent-runtime/tests/conformance/tests/sqlite_agent_loop/presentation_office_agent.rs",
+        "testedSha256": "a0673917a114ec9bba5527b6cac4f62ade6c638f5246211591dc618a8efe7cbf",
+        "finalSha256": "a744092c1581bbd86ea40b1cbabed60b779efbfbc6cd8b7cd5211ea50414ed31"
+      }
+    ],
+    "reason": "rustfmt reordered module declarations and a public re-export; no computation, type, test or Device routing statements changed. Raw gate inventories retain their exact tested bytes."
+  }
+}

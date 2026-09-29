@@ -1,0 +1,603 @@
+{
+  "stage": "product-template-stress-plan",
+  "date": "2026-09-28",
+  "status": "verified-plan-and-owned-text-cases-not-maintained-stress-stage",
+  "scope": {
+    "implemented": [
+      "Product-owned deterministic required case policy over SDK-validated templates. Shared bounded immutable package loader.",
+      "Common baseline plus case deltas/omissions; explicit resource bytes for every declared media type; CAS-independent plan bytes.",
+      "Actual eight text cases through original native engine/SDK/worker; independent ZIP/XML/snapshot/asset checks."
+    ],
+    "notCompleted": [
+      "Original NativeStress maintained Tool dispatch, mandatory-case submission proof, recovery and scheduling.",
+      "Actual worker coverage for resource/color/transform/joint cases; typography and full visual quality acceptance.",
+      "NativeVerify, automatic upload/coordinator/catalog transaction, complete advanced PPT and full Musterwork replacement."
+    ]
+  },
+  "environment": {
+    "system": "Darwin",
+    "release": "25.2.0",
+    "machine": "arm64",
+    "branch": "codex/musteroffice-integration",
+    "profile": "debug tests; no benchmark"
+  },
+  "materials": {
+    "sdkManifestSha256": "c2a893bc0a9cbac1bee5242ef8acbc26ea2657feb4f66f6c64db906a2c30f3b6",
+    "workerSha256": "9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+    "workerBytes": 42660544,
+    "sdkAndWorkerUnchanged": true,
+    "registryDependenciesAdded": 0
+  },
+  "testCount": 23,
+  "checks": [
+    {
+      "run": "unit-02",
+      "report": ".codex-work/integration/template-stress-plan/unit-02.json",
+      "reportSha256": "c123b2800d79635083c4267352258d387af27272a64f1b90e297836a46638354",
+      "passedTests": 18,
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_STRESS_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/input-02",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/unit-02-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/unit-02-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/unit-02-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-musteroffice",
+        "--lib",
+        "template::"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "elapsedSeconds": 5.158647249918431,
+      "logSha256": "ca9df5b9d6514ade680c2d6ae728596aa8ba46972fbb2005372e0ae67f3df274"
+    },
+    {
+      "run": "native-02",
+      "report": ".codex-work/integration/template-stress-plan/native-02.json",
+      "reportSha256": "6233651f2d93f2121833b7c6c333165f367f649798fa2d27049e170194bc668a",
+      "passedTests": 2,
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_STRESS_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/input-02",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/native-02-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/native-02-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/native-02-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::office_agent::template_engine::",
+        "--",
+        "--include-ignored",
+        "--test-threads=1"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "elapsedSeconds": 68.39747083303519,
+      "logSha256": "a330933c2f70464227712be22e8ae83bad2552e0d5ccfd4f06df6aeee65c5b61"
+    },
+    {
+      "run": "engine-contract-01",
+      "report": ".codex-work/integration/template-stress-plan/engine-contract-01.json",
+      "reportSha256": "0d3bbee7a76a474080c54cfe947607ca5a4ad113e9b31bef50108d1b9b360a70",
+      "passedTests": 2,
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_STRESS_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/input-02",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/engine-contract-01-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/engine-contract-01-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/engine-contract-01-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-runtime-artifact",
+        "--lib",
+        "presentation_engine::"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "elapsedSeconds": 3.701061125146225,
+      "logSha256": "2a8fb78ddb8923f16ae94a5d05e22cc5a315e9addb043b394a05a9dd5e2bd788"
+    },
+    {
+      "run": "native-maintenance-01",
+      "report": ".codex-work/integration/template-stress-plan/native-maintenance-01.json",
+      "reportSha256": "ae0d32adeb189f4b983ca667103a74264a831204ecfc794b748e3c29fd85b014",
+      "passedTests": 1,
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_STRESS_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/input-02",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/native-maintenance-01-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/native-maintenance-01-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/native-maintenance-01-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::office_agent::template_maintenance::",
+        "--",
+        "--include-ignored",
+        "--test-threads=1"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "elapsedSeconds": 11.127431374974549,
+      "logSha256": "62acfbbd789e6017f4d5c70270cef261517bbc147e784c40541e8e6e34c10132"
+    },
+    {
+      "run": "adapter-targets-01",
+      "report": ".codex-work/integration/template-stress-plan/adapter-targets-01.json",
+      "reportSha256": "8b458a03b536c59b4559ac687e31c33c107788bb2c5677cba6ef57e6e579af6b",
+      "passedTests": null,
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_STRESS_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/input-02",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/adapter-targets-01-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/adapter-targets-01-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/adapter-targets-01-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "clippy",
+        "--no-deps",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-musteroffice",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "elapsedSeconds": 29.053030916955322,
+      "logSha256": "bcf4c82acdd97075824052842073f5b5dfcdce44d9b3683123bd94b042d81531"
+    },
+    {
+      "run": "artifact-lib-01",
+      "report": ".codex-work/integration/template-stress-plan/artifact-lib-01.json",
+      "reportSha256": "f1704ed373aa90a23304b98dcfa0e4b5adf98bad8c7199c9ea03ad393836cddf",
+      "passedTests": null,
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_STRESS_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/input-02",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/artifact-lib-01-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/artifact-lib-01-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/artifact-lib-01-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "clippy",
+        "--no-deps",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-runtime-artifact",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "elapsedSeconds": 11.062462375033647,
+      "logSha256": "e4b79b93fe0f7b7376ad00cc14c2b332d4a3d749c8d3a7b391081be7b3775745"
+    }
+  ],
+  "actualOutputs": {
+    "planSha256": "b536263e9cb52fee7e24d6d7751cadf39eea1cf12e90ce47586c6c5f12f13af9",
+    "planBytes": 1656,
+    "fontSha256": "f2ffc5c85964790d2760fa70df6913c08f7cd719c5b6f8b9a2d3c37ec4b83973",
+    "sourceSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+    "cases": [
+      {
+        "caseId": 0,
+        "dimension": "source-values",
+        "scalars": 3,
+        "pptxSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+        "pptxBytes": 10735,
+        "changedParts": [],
+        "preservedCompressedParts": 21,
+        "actualAssets": 12,
+        "previews": [
+          {
+            "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d",
+            "byteLength": 14915
+          },
+          {
+            "sha256": "b347f37576dff5268f77cc7666066568d50e993ee690d3941c27693734acd0c9",
+            "byteLength": 11174
+          }
+        ],
+        "claims": {
+          "structure": "passed",
+          "layout": "not_proven",
+          "native-editability": "not_proven",
+          "playback": "not_proven",
+          "target-application": "not_proven"
+        }
+      },
+      {
+        "caseId": 1,
+        "dimension": "text-minimum",
+        "scalars": 1,
+        "pptxSha256": "9c95ea85797fab0ce6b066fe17b74d9decabdeb87213915ed140cc68efcb665a",
+        "pptxBytes": 10738,
+        "changedParts": [
+          "ppt/slides/slide2.xml"
+        ],
+        "preservedCompressedParts": 20,
+        "actualAssets": 12,
+        "previews": [
+          {
+            "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d",
+            "byteLength": 14915
+          },
+          {
+            "sha256": "6bca62ee0198ed874d859ef99a05d793f31a8647f8d6aa69d92c7267ef9cf6c4",
+            "byteLength": 11115
+          }
+        ],
+        "claims": {
+          "structure": "passed",
+          "layout": "not_proven",
+          "native-editability": "not_proven",
+          "playback": "not_proven",
+          "target-application": "not_proven"
+        }
+      },
+      {
+        "caseId": 2,
+        "dimension": "text-maximum-latin-wide",
+        "scalars": 16,
+        "pptxSha256": "725de0885b4abe67b267b1cc63ecdd1ffdaf64383021f283a72a74a2e2afa4ce",
+        "pptxBytes": 10741,
+        "changedParts": [
+          "ppt/slides/slide2.xml"
+        ],
+        "preservedCompressedParts": 20,
+        "actualAssets": 12,
+        "previews": [
+          {
+            "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d",
+            "byteLength": 14915
+          },
+          {
+            "sha256": "21cd74908168bef0aefe88eb788c02bd0b84aa377b56e91b1baa3b3b8cf1383b",
+            "byteLength": 11229
+          }
+        ],
+        "claims": {
+          "structure": "passed",
+          "layout": "not_proven",
+          "native-editability": "not_proven",
+          "playback": "not_proven",
+          "target-application": "not_proven"
+        }
+      },
+      {
+        "caseId": 3,
+        "dimension": "text-maximum-latin-narrow",
+        "scalars": 16,
+        "pptxSha256": "aa6b3044ea99d15c7a129c102e0c117dcd17ba80223225484c4350dc938e7fef",
+        "pptxBytes": 10741,
+        "changedParts": [
+          "ppt/slides/slide2.xml"
+        ],
+        "preservedCompressedParts": 20,
+        "actualAssets": 12,
+        "previews": [
+          {
+            "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d",
+            "byteLength": 14915
+          },
+          {
+            "sha256": "2628ca9365764893ccf93aa01fd2daeb9d6ae8919b6111280854d22856b780c8",
+            "byteLength": 12273
+          }
+        ],
+        "claims": {
+          "structure": "passed",
+          "layout": "not_proven",
+          "native-editability": "not_proven",
+          "playback": "not_proven",
+          "target-application": "not_proven"
+        }
+      },
+      {
+        "caseId": 4,
+        "dimension": "text-maximum-cjk",
+        "scalars": 16,
+        "pptxSha256": "0198e545f0530f1d0d28a4ff358f13a393a8be5fc540777da6b0f3ea085d4b1b",
+        "pptxBytes": 10770,
+        "changedParts": [
+          "ppt/slides/slide2.xml"
+        ],
+        "preservedCompressedParts": 20,
+        "actualAssets": 12,
+        "previews": [
+          {
+            "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d",
+            "byteLength": 14915
+          },
+          {
+            "sha256": "6d01374f8917ceb4624abbfcc12ecd4999c105f0e2d3f7f9d450759f71c55676",
+            "byteLength": 11465
+          }
+        ],
+        "claims": {
+          "structure": "passed",
+          "layout": "not_proven",
+          "native-editability": "not_proven",
+          "playback": "not_proven",
+          "target-application": "not_proven"
+        }
+      },
+      {
+        "caseId": 5,
+        "dimension": "text-maximum-rtl",
+        "scalars": 16,
+        "pptxSha256": "df44dec139ccd4be31ab50d10b80083617840a0db0a3fbb258aa740d2742cd16",
+        "pptxBytes": 10762,
+        "changedParts": [
+          "ppt/slides/slide2.xml"
+        ],
+        "preservedCompressedParts": 20,
+        "actualAssets": 12,
+        "previews": [
+          {
+            "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d",
+            "byteLength": 14915
+          },
+          {
+            "sha256": "3f1b429a235ccfb15d93bfebb31c266aa165eee9f7b50e5294c96090a1a17c6d",
+            "byteLength": 11579
+          }
+        ],
+        "claims": {
+          "structure": "passed",
+          "layout": "not_proven",
+          "native-editability": "not_proven",
+          "playback": "not_proven",
+          "target-application": "not_proven"
+        }
+      },
+      {
+        "caseId": 6,
+        "dimension": "text-maximum-combining",
+        "scalars": 16,
+        "pptxSha256": "18b0c1ae2beea175fc650866230a01f58417ff8eda8dc31c22a88083b8da4290",
+        "pptxBytes": 10746,
+        "changedParts": [
+          "ppt/slides/slide2.xml"
+        ],
+        "preservedCompressedParts": 20,
+        "actualAssets": 12,
+        "previews": [
+          {
+            "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d",
+            "byteLength": 14915
+          },
+          {
+            "sha256": "790c36f72f784f6d15a2810948f80ae027c7cfa8ac6550de11082da83944387e",
+            "byteLength": 11395
+          }
+        ],
+        "claims": {
+          "structure": "passed",
+          "layout": "not_proven",
+          "native-editability": "not_proven",
+          "playback": "not_proven",
+          "target-application": "not_proven"
+        }
+      },
+      {
+        "caseId": 7,
+        "dimension": "text-maximum-word-breaks",
+        "scalars": 16,
+        "pptxSha256": "48c555b6a6403915df720550ab9b648c414d112243ec7c2fa9dbe3d78ee3d062",
+        "pptxBytes": 10741,
+        "changedParts": [
+          "ppt/slides/slide2.xml"
+        ],
+        "preservedCompressedParts": 20,
+        "actualAssets": 12,
+        "previews": [
+          {
+            "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d",
+            "byteLength": 14915
+          },
+          {
+            "sha256": "f195d4d248fc18cadb746319625647a9be60cbc84c7df45d05be898de1b44b01",
+            "byteLength": 11183
+          }
+        ],
+        "claims": {
+          "structure": "passed",
+          "layout": "not_proven",
+          "native-editability": "not_proven",
+          "playback": "not_proven",
+          "target-application": "not_proven"
+        }
+      }
+    ],
+    "allRequiredTextCasesExecuted": true,
+    "maintainedStressStageCompleted": false,
+    "qualityProven": false,
+    "scope": "Eight owned text cases via real SDK/worker; no multilingual typography acceptance"
+  },
+  "actualOutputReport": {
+    "path": ".codex-work/integration/template-stress-plan/actual-output-01.json",
+    "sha256": "720af708095aa8bd0238534ea371acda68d57e282674e93fe570544c133411ee",
+    "command": [
+      "env",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "python3",
+      "tools/verification/product-template-stress-evidence.py",
+      "--prefix",
+      "$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/native-02-native",
+      "--report",
+      "$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/actual-output-01.json"
+    ]
+  },
+  "ownedFont": {
+    "generator": "FontTools 4.61.1",
+    "parentSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+    "sha256": "f2ffc5c85964790d2760fa70df6913c08f7cd719c5b6f8b9a2d3c37ec4b83973",
+    "byteLength": 2636,
+    "addedCodePoints": [
+      87,
+      105,
+      1575,
+      1576,
+      1581,
+      1585,
+      1605,
+      25991,
+      28436,
+      31034,
+      31295
+    ],
+    "provenance": "Original MusterOffice synthetic triangles and metadata; no external font material",
+    "scope": "Computation fixture only; not language shaping or typography acceptance",
+    "reproducibleIndependentGeneration": true,
+    "generatorScript": "tools/verification/template-stress-font-fixture.py"
+  },
+  "sourceFiles": [
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/template/engine.rs",
+      "sha256": "14c163890263f20bd4bcd8b3313ec29e5365d780718e520d615e3f7087214796",
+      "lines": 340
+    },
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/template/engine/input.rs",
+      "sha256": "504980a677d2ad8ee647ed3ba507f698e6499111889ea18ae81d6d1ed38805f0",
+      "lines": 64
+    },
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/template/engine/instance.rs",
+      "sha256": "eee38d6dfbe5eed6d80d348d761de37d00dc54bdb242a6cb3346d02311735c0a",
+      "lines": 149
+    },
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/template/engine/stress.rs",
+      "sha256": "5010797549ac64d10b945e670374621e5af5e851934b728d07b860e32b7db579",
+      "lines": 55
+    },
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/template/engine/stress/plan.rs",
+      "sha256": "201cb0bec27512b5eb0fec2f3cec6d7527a3547ecee997ac1b0772237bddd190",
+      "lines": 349
+    },
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/template/engine/stress/plan/tests.rs",
+      "sha256": "26116adca1334483388f0e1812865d4d4149f96d48124ea7d974f4afd7d800e7",
+      "lines": 282
+    },
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/template/tests.rs",
+      "sha256": "e71e85484e7c9181713efbec0da0d1026b2bc809c93858e07649d953558c08e2",
+      "lines": 512
+    },
+    {
+      "path": "apps/agent-runtime/crates/runtime/artifact/src/presentation_engine/office_template.rs",
+      "sha256": "2ce8ea9ea3ae785de8ab3aef1300368f1f1a0ad06a06a4d602837eb0580b1774",
+      "lines": 119
+    },
+    {
+      "path": "apps/agent-runtime/tests/conformance/tests/sqlite_agent_loop/presentation_office_agent/environment.rs",
+      "sha256": "14a0213c9765738112e910ef487053269dffe13a0ddc5d45d72b0a493b9aa586",
+      "lines": 436
+    },
+    {
+      "path": "apps/agent-runtime/tests/conformance/tests/sqlite_agent_loop/presentation_office_agent/template_engine.rs",
+      "sha256": "7d30d1ff28c72036bc8cb066891f3438347f98ccc9df8f23c361a19396f11369",
+      "lines": 445
+    },
+    {
+      "path": "apps/agent-runtime/tests/conformance/tests/sqlite_agent_loop/presentation_office_agent/template_engine/stress.rs",
+      "sha256": "701f64424d61ef7523e2c7573a01c957984810f9241117031a6fb0ae6ac6c2c1",
+      "lines": 235
+    }
+  ],
+  "verificationFiles": [
+    {
+      "path": "tools/verification/product-template-stress-evidence.py",
+      "sha256": "cc97f84cc8f5d33af0cdc9ce21025954d6d8058d29e01930fd62e14ae3b813c6"
+    },
+    {
+      "path": "tools/verification/template-stress-font-fixture.py",
+      "sha256": "967a64656045fcd658ab27691eeae4ffc18fa9629cd87211339ee6e09275d96b"
+    },
+    {
+      "path": "tools/verification/product-template-instances-evidence.py",
+      "sha256": "fe8db7c5fdf2da77d42d307e001181d2f9ea7dcc2c9b3cbc59646ccbfa33b7b4"
+    }
+  ],
+  "retainedFailures": [
+    {
+      "run": "native-01",
+      "reportSha256": "2d781be68e0ff350c3fb22be178b0fd922772c9b54753014b8a497aea1f0e0af",
+      "reason": "Path-attributed parent module requires explicit child path. Fixed the test module path; no production validation bypass.",
+      "exitCode": 101,
+      "sourceUnchanged": true,
+      "logSha256": "a68ba5ac255816b6c23d3f4328d82c3d24e314bb71b94591c33d718d12295c41"
+    },
+    {
+      "step": "owned font fixture initial generation",
+      "reason": "FontTools glyf insertion also updates glyph order; generator now takes an independent order copy. No partial font was used; two corrected generations match exactly."
+    },
+    {
+      "step": "independent output verifier initial run",
+      "reason": "Verifier assumed changed text was on the first page. It now locates actual affected page by source binding. Fixture targets slide2; unaffected page1 bytes are unchanged."
+    }
+  ],
+  "testingSequence": "Only a color-policy unit test and byte-tamper assertion were added after native-02; all production and conformance source hashes used by native-02 remain current. Final unit/lint/maintenance runs cover final test sources.",
+  "historicalBroadLintStatus": "Earlier Artifact all-target test lint failures remain documented in template-engine evidence. This turn passed adapter all targets and Artifact library, not full Artifact all targets.",
+  "performanceClaim": false,
+  "distributionSizeClaim": false,
+  "qualityClaimsPromoted": false,
+  "stableCutover": false,
+  "goalComplete": false
+}

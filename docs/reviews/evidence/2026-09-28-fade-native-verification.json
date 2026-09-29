@@ -1,0 +1,4478 @@
+{
+  "format": "musteroffice.fade-native-verification/1",
+  "date": "2026-09-28",
+  "status": "passed-bounded-stage",
+  "goal": "Full v0.4 remains ACTIVE; no full PPT replacement acceptance",
+  "previousEvidence": {
+    "path": "docs/reviews/evidence/2026-09-28-opacity-groups-verification.json",
+    "sha256": "7aa251ac123fd5c024776d46c9d5d745997b7f501f7d0f51c89f750b0ff0f4fe",
+    "byteLength": 81323
+  },
+  "implementation": {
+    "effect": "Fade in/out exact opacity",
+    "presets": "FadeIn/Out with separate visibility helper behavior",
+    "operation": "setPresentationSequence",
+    "native": "p:animEffect filter=fade with entr/exit presetID=10",
+    "rendering": "whole-object nested opacity groups",
+    "scope": "ordinary object fills/outlines/text/images; nonconstant slide-background snapshot ownership remains open"
+  },
+  "source": [
+    {
+      "path": "Cargo.lock",
+      "sha256": "c5459a2763435c6407a994125db5916b7556b567c839ca75615bb167b6d9f1a0",
+      "byteLength": 30105
+    },
+    {
+      "path": "contracts/generated/asset-binding.schema.json",
+      "sha256": "044781e021527d533ad27dc2ec4453e119c19a3c2bc717d01596a90699887f3a",
+      "byteLength": 800
+    },
+    {
+      "path": "contracts/generated/asset-info.schema.json",
+      "sha256": "780fa7c4f78e91d45d021e38b649fe7c40e82595aa6e05d9b2100ff84ff4ab2a",
+      "byteLength": 1802
+    },
+    {
+      "path": "contracts/generated/bidi-analysis-request.schema.json",
+      "sha256": "6a78ed9088562383a063afbd7fff8c012265ff444cad76b8ab8301c6da7525ef",
+      "byteLength": 1443
+    },
+    {
+      "path": "contracts/generated/bidi-analysis-response.schema.json",
+      "sha256": "66aa5f64509116ea8f3c48ea4c6a50ea927f2120ce17d269112470a3e69e81cb",
+      "byteLength": 6088
+    },
+    {
+      "path": "contracts/generated/cascade-request.schema.json",
+      "sha256": "076a03bf5b87cf40fa61475a4627dfab2b80b265088199c18df2b2e7e868cbc7",
+      "byteLength": 5023
+    },
+    {
+      "path": "contracts/generated/cascade-response.schema.json",
+      "sha256": "2d1a5ccf9e4ff825fca17033b1b7851d4dc263be083523ab67d6c49ca7a93c1b",
+      "byteLength": 12399
+    },
+    {
+      "path": "contracts/generated/computation-export-receipt.schema.json",
+      "sha256": "573b1889244a1d3a2d601232692955a3b275f2cd01098567fcc51cdfd131c79c",
+      "byteLength": 7101
+    },
+    {
+      "path": "contracts/generated/computation-failure.schema.json",
+      "sha256": "01b94d9117bcde09a96f70fc21a3d04fb0fc87b4af5b57702d06d8901db7bc18",
+      "byteLength": 931
+    },
+    {
+      "path": "contracts/generated/computation-invocation.schema.json",
+      "sha256": "54e4399dfa516e2cbae0168df875aecffea9e2f31bac0182919f837459c5af93",
+      "byteLength": 114366
+    },
+    {
+      "path": "contracts/generated/computation-mutation-receipt.schema.json",
+      "sha256": "f0a8a6f4bd7b90b729f29cde88978051064409b6541a613958de5da9cbf5e7df",
+      "byteLength": 10433
+    },
+    {
+      "path": "contracts/generated/computation-receipt.schema.json",
+      "sha256": "6c6822e4c40193c1fbefae16620fdc05433d817123f3456e4d3eb518a049e7c9",
+      "byteLength": 89451
+    },
+    {
+      "path": "contracts/generated/computation-request.schema.json",
+      "sha256": "74932e7d4b2567e3deea1327524469a4087322f8a7fa0669ea0678344e81780e",
+      "byteLength": 113215
+    },
+    {
+      "path": "contracts/generated/delivery-inspect-request.schema.json",
+      "sha256": "337eda3d67ba68833a5a186e4460812625e1e3e6fff7b0759cb2566c79416b5a",
+      "byteLength": 8682
+    },
+    {
+      "path": "contracts/generated/delivery-inspect-response.schema.json",
+      "sha256": "eb0f5f619764daab65c3f90a4216bf50eb0aed9a178bf8f09385788f97f2ea9a",
+      "byteLength": 5142
+    },
+    {
+      "path": "contracts/generated/delivery-playback-request.schema.json",
+      "sha256": "35d83ef965e32a8342d12d7cf417efa81d087965ea76a4dbd90023d23168ffe4",
+      "byteLength": 9188
+    },
+    {
+      "path": "contracts/generated/delivery-playback-response.schema.json",
+      "sha256": "de0ea40ca8c97a97e651f7ad1cc15674b0ce7665225a305a8366e3da44d866c1",
+      "byteLength": 25389
+    },
+    {
+      "path": "contracts/generated/document.schema.json",
+      "sha256": "5498d966c77984e41135df3306f84daf996eef99ce968823c143b0b6fab197ea",
+      "byteLength": 65339
+    },
+    {
+      "path": "contracts/generated/font-metrics-request.schema.json",
+      "sha256": "d353b95d789254b078cb22234506d0c8fb46b9e3881a9681beeab51a822ee1d9",
+      "byteLength": 2541
+    },
+    {
+      "path": "contracts/generated/font-metrics-response.schema.json",
+      "sha256": "e846e6df297b9d34481c2ed8bc9975df4e69ff8a2cc3e696c9859ff25e227045",
+      "byteLength": 6211
+    },
+    {
+      "path": "contracts/generated/font-outlines-request.schema.json",
+      "sha256": "ac16ae4ac6a61df075e1f1e444873cf48079fe9d791f870aed579f667163af1f",
+      "byteLength": 2201
+    },
+    {
+      "path": "contracts/generated/font-outlines-response.schema.json",
+      "sha256": "322b03f11e843ec67670d75cca1c2a3c7f629f74df05496ec2fac4752866aacc",
+      "byteLength": 8212
+    },
+    {
+      "path": "contracts/generated/font-request.schema.json",
+      "sha256": "104a42aa97c778fe1aea98e88c0f9aaef1f6d39ce935bbf8770d4861fbf53766",
+      "byteLength": 1229
+    },
+    {
+      "path": "contracts/generated/font-response.schema.json",
+      "sha256": "3425f7707b284575e519717379fa8e2973340cef05dd372bbc7d8e1da1972f49",
+      "byteLength": 14831
+    },
+    {
+      "path": "contracts/generated/host-capabilities.schema.json",
+      "sha256": "93da0b1903ce0a0373e1abb5b0c8eb58687d71c2c36c4e621dd4847281d7d15e",
+      "byteLength": 8499
+    },
+    {
+      "path": "contracts/generated/host-request.schema.json",
+      "sha256": "eb4ed2b69bb4a0e8a7db5cd65f5bb98f4a052fc885e37474f41a52433e83e44d",
+      "byteLength": 110468
+    },
+    {
+      "path": "contracts/generated/host-response.schema.json",
+      "sha256": "452d3fec4ff6d913e739ab323a2750a79cbef25fc53fd4fb43aaad78fa226080",
+      "byteLength": 101002
+    },
+    {
+      "path": "contracts/generated/image-decode-request.schema.json",
+      "sha256": "2085961e2e9ca195d2e5e07ec14a1639b9306f41f10e95b97e382bf8870309ac",
+      "byteLength": 539
+    },
+    {
+      "path": "contracts/generated/image-decode-response.schema.json",
+      "sha256": "376cb55f49af81a39b6f1a861571acbaf9fa7ce833cd3e82f81ed08d75a335f7",
+      "byteLength": 8593
+    },
+    {
+      "path": "contracts/generated/image-raster-request.schema.json",
+      "sha256": "56f3363fbede850e0b2715e88b2a23be2020c350b17eb0175f0b5af4e08bb1b8",
+      "byteLength": 27484
+    },
+    {
+      "path": "contracts/generated/image-raster-response.schema.json",
+      "sha256": "c9fb6a38a01140d21895d0a64794d41e66f85bc5c831b525862622e9228c7271",
+      "byteLength": 12333
+    },
+    {
+      "path": "contracts/generated/image-scene-request.schema.json",
+      "sha256": "359a05a97c0bfcef91b7ff1c962f12e05bb21a90f50967d292742eec76f58797",
+      "byteLength": 29206
+    },
+    {
+      "path": "contracts/generated/image-scene-response.schema.json",
+      "sha256": "24dd085ac133e37755b0209c427b82af49449cb593182442a9d8f0e58fa2e84c",
+      "byteLength": 15628
+    },
+    {
+      "path": "contracts/generated/itemization-request.schema.json",
+      "sha256": "ee9efed903a60130b62a8fdd3ec60321a96c8d8963efa3f73aa779d1ebc6df0e",
+      "byteLength": 1259
+    },
+    {
+      "path": "contracts/generated/itemization-response.schema.json",
+      "sha256": "18b3e39de57caff11b9d7eb93eed829b11814b995e3797ac75863f487df8b365",
+      "byteLength": 10514
+    },
+    {
+      "path": "contracts/generated/kernel-request.schema.json",
+      "sha256": "47aeae5cb90dd89f34aea251d8ab205b7ff8b1bf4f3b6c119a40a4d4c8168ef1",
+      "byteLength": 82898
+    },
+    {
+      "path": "contracts/generated/kernel-response.schema.json",
+      "sha256": "5b050d69b4dc2032e692863a2d037fc5055a2975f0cf287e08a5ebcddccedd04",
+      "byteLength": 74758
+    },
+    {
+      "path": "contracts/generated/line-break-request.schema.json",
+      "sha256": "60aea3a77c443279f97abcc844491e9296e37384fcf12ac9db80a4525185140d",
+      "byteLength": 533
+    },
+    {
+      "path": "contracts/generated/line-break-response.schema.json",
+      "sha256": "895cf441d96afa60460536ad93aabcbe9e24a8d28ad820821896bacf69a239e7",
+      "byteLength": 5449
+    },
+    {
+      "path": "contracts/generated/line-geometry-request.schema.json",
+      "sha256": "b9a2477db8ea149596788f58e5de8acda6c6be7582fe488150ea5139f68f0163",
+      "byteLength": 10146
+    },
+    {
+      "path": "contracts/generated/line-geometry-response.schema.json",
+      "sha256": "f5bf73744a417b7637fac1634d81d7a2e646dc5f0e2f0db76dec31a459fc0b50",
+      "byteLength": 34022
+    },
+    {
+      "path": "contracts/generated/line-shape-request.schema.json",
+      "sha256": "a219dc1cbe23692a0efcbbb2942204856253060edf2bfc33a6bd2670472fdbf9",
+      "byteLength": 5552
+    },
+    {
+      "path": "contracts/generated/line-shape-response.schema.json",
+      "sha256": "5ddd93d282d499d7c8e0efda9044843d63681920682cc1506ae1e38391ada21f",
+      "byteLength": 24270
+    },
+    {
+      "path": "contracts/generated/operation-job.schema.json",
+      "sha256": "50a9287ba2fce63940a07747ccc382c62417db0df33cd92417e876e865150d01",
+      "byteLength": 21502
+    },
+    {
+      "path": "contracts/generated/operation-request.schema.json",
+      "sha256": "edc9bfa6e97c0b58cca80bc95290480104f8532ef89ef7633c97b1c925e84776",
+      "byteLength": 105364
+    },
+    {
+      "path": "contracts/generated/package-inspection.schema.json",
+      "sha256": "9b2484a0439ff591c8b5f5f34d46f08399baa0ece75fe5df597ff37226df1063",
+      "byteLength": 6031
+    },
+    {
+      "path": "contracts/generated/page-compile-response.schema.json",
+      "sha256": "6ae29600ab3c675252339af67a84bd375eefb694e3bf2028f7db19d72cd60fb4",
+      "byteLength": 39882
+    },
+    {
+      "path": "contracts/generated/page-placement-request.schema.json",
+      "sha256": "4f75b5cbb18c73d61537a8a3c7916e1a6411610efaa21ed80d9c5e8a788bfe0f",
+      "byteLength": 66109
+    },
+    {
+      "path": "contracts/generated/page-placement-response.schema.json",
+      "sha256": "5034c2747a38d8c073ca612fa98b7b2ebb77a831953516c2e2b96cb73ac95b30",
+      "byteLength": 10682
+    },
+    {
+      "path": "contracts/generated/page-raster-response.schema.json",
+      "sha256": "0550e8dadaa874bb2074a1824d9fa769c37d5995033cded96162034562b33c97",
+      "byteLength": 18681
+    },
+    {
+      "path": "contracts/generated/page-render-request.schema.json",
+      "sha256": "889868dda1d4f146975e78f61d29415acd9245158113625f30148cec46c4e200",
+      "byteLength": 70501
+    },
+    {
+      "path": "contracts/generated/paragraph-layout-request.schema.json",
+      "sha256": "b952257d05f27d9fe418602e32e08813bb61537fa9e7d78abe589247c53fb950",
+      "byteLength": 9635
+    },
+    {
+      "path": "contracts/generated/paragraph-layout-response.schema.json",
+      "sha256": "0116453e7ac31eafd9233615f0d694764ae24d96999d95928b399704fd0926a9",
+      "byteLength": 40873
+    },
+    {
+      "path": "contracts/generated/paragraph-paths-request.schema.json",
+      "sha256": "75250f6769b7978766acb518b27b4b473001747fd62c7c273c6e9dd0869c478f",
+      "byteLength": 10153
+    },
+    {
+      "path": "contracts/generated/paragraph-paths-response.schema.json",
+      "sha256": "dc851a196c1fe03833e9862ba89c230d5f9037d7aa45870649b34bed0d661e2f",
+      "byteLength": 50367
+    },
+    {
+      "path": "contracts/generated/paragraph-shape-request.schema.json",
+      "sha256": "1f26f5a43b0b5353ef928c5dfc37ad7cdb0c557ac9c1218f4965e395f84df113",
+      "byteLength": 4868
+    },
+    {
+      "path": "contracts/generated/paragraph-shape-response.schema.json",
+      "sha256": "af2842006f984b72a7025f943a06520b76de22267e3218a9301ab6d23fd327ff",
+      "byteLength": 23503
+    },
+    {
+      "path": "contracts/generated/path-raster-request.schema.json",
+      "sha256": "3118c3f084479b5b4f294f5c0f803439ab6ecbdb4a04ea314e86f2ea631f507d",
+      "byteLength": 25936
+    },
+    {
+      "path": "contracts/generated/path-raster-response.schema.json",
+      "sha256": "7a76b46a540677dfe6ae856bfd7c40eb19f4c7ba64762b609038dcee2ffbae74",
+      "byteLength": 10855
+    },
+    {
+      "path": "contracts/generated/playback-compile-response.schema.json",
+      "sha256": "fc2d1dff0471bff68a7eb7c8c572c02ebaeecfe0922aa4ceb0b8f01beb4370f2",
+      "byteLength": 53239
+    },
+    {
+      "path": "contracts/generated/playback-page-request.schema.json",
+      "sha256": "b0bd7275509f763bff121b15809992f234077a5847a8618e14a4bbee311aefb3",
+      "byteLength": 74598
+    },
+    {
+      "path": "contracts/generated/playback-raster-response.schema.json",
+      "sha256": "687610cee1025bcec2c96455b25a485de0873184ca0e8d29961d6fc7ef3d7e8b",
+      "byteLength": 27798
+    },
+    {
+      "path": "contracts/generated/playback-session-request.schema.json",
+      "sha256": "5435f59b0e36fdbb0e93858f4544365fa8699a602ab40d1614506cfde9226fd8",
+      "byteLength": 77209
+    },
+    {
+      "path": "contracts/generated/playback-session-response.schema.json",
+      "sha256": "9ac03329d1ff937fe34b2b24d71d9ec9c0449ba43c80c72ee512d4a9a32aa0e6",
+      "byteLength": 69225
+    },
+    {
+      "path": "contracts/generated/pptx-color-query.schema.json",
+      "sha256": "1c103246b220921eb901bf87bb8bd7386ae17517b5a8b12167e806bf03f596d7",
+      "byteLength": 11319
+    },
+    {
+      "path": "contracts/generated/pptx-color-response.schema.json",
+      "sha256": "65e3a3494b70c2b05422c2df8ac50d8d7e4957f5facb0ce23dc4a034a9111099",
+      "byteLength": 12336
+    },
+    {
+      "path": "contracts/generated/pptx-export-request.schema.json",
+      "sha256": "8dd3fbb302b7c3a1873515ab88fb7f69d6f2edfaab84d83e6103211e388b40f8",
+      "byteLength": 69290
+    },
+    {
+      "path": "contracts/generated/pptx-fill-color-query.schema.json",
+      "sha256": "bef23c4f1af2b62b22987ec4b167fb47df7128536821aeb51639f8163af7bbc8",
+      "byteLength": 13228
+    },
+    {
+      "path": "contracts/generated/pptx-fill-color-response.schema.json",
+      "sha256": "86bf37ddb50e21d75ecadb9192f66b03d6ca36b9eb915123735695d96f03ea47",
+      "byteLength": 64964
+    },
+    {
+      "path": "contracts/generated/pptx-fill-query.schema.json",
+      "sha256": "3279380b0fd38fdd6fce2bb736dd9897ca48925fd57d00b4d098dca84406f89d",
+      "byteLength": 2977
+    },
+    {
+      "path": "contracts/generated/pptx-fill-response.schema.json",
+      "sha256": "2832da6698a95703c7361e5f4f2217707c5b3979c291957787841bfe510abf0c",
+      "byteLength": 50907
+    },
+    {
+      "path": "contracts/generated/pptx-geometry-query.schema.json",
+      "sha256": "3dab5195be3333ed732b05f3208f73d9cf11ca6ecff883f67e48e97f29d3d874",
+      "byteLength": 982
+    },
+    {
+      "path": "contracts/generated/pptx-geometry-response.schema.json",
+      "sha256": "5de3e2192d94a543b4b86e87290b24795423039398724f26bd109a5beef17396",
+      "byteLength": 29215
+    },
+    {
+      "path": "contracts/generated/pptx-image-query.schema.json",
+      "sha256": "9b2f9464ac4aba70a20db7baa2a2a8740d075dc1f13854dd27bbec4c05ba443d",
+      "byteLength": 3678
+    },
+    {
+      "path": "contracts/generated/pptx-image-response.schema.json",
+      "sha256": "42130fcaa477c410c46eb9e576a84fc69a79372b589d63e5b7a1ac9ff8dfc75b",
+      "byteLength": 29982
+    },
+    {
+      "path": "contracts/generated/pptx-import-request.schema.json",
+      "sha256": "29db0c22c5d946a81322f889fd955bdcbe4f8378614f43af3ecf51da10e43a99",
+      "byteLength": 1097
+    },
+    {
+      "path": "contracts/generated/pptx-import-response.schema.json",
+      "sha256": "173950763f5490fbd280c544c5ddb6cce8eb45eead1c205802cb6594dbf79c99",
+      "byteLength": 67683
+    },
+    {
+      "path": "contracts/generated/pptx-line-color-query.schema.json",
+      "sha256": "d4e443531e3c4d102989d98b0aa0ad223e7c307f637de3e647fceeca9736e1c0",
+      "byteLength": 11554
+    },
+    {
+      "path": "contracts/generated/pptx-line-color-response.schema.json",
+      "sha256": "20d1ab6d4142b566047929e319ccfac03c454e4648f048306815c89ca23bfc89",
+      "byteLength": 52373
+    },
+    {
+      "path": "contracts/generated/pptx-line-query.schema.json",
+      "sha256": "496d6a718f1b38858bf8fc4664b986559d6bd55cd24102a49d84efc8da3a7a93",
+      "byteLength": 1134
+    },
+    {
+      "path": "contracts/generated/pptx-line-response.schema.json",
+      "sha256": "4a1a08012bbfe3fe52807f01329089a71240aeccdd576d11a55a0f921372a29e",
+      "byteLength": 41971
+    },
+    {
+      "path": "contracts/generated/pptx-page-compile-response.schema.json",
+      "sha256": "73ce9e774971a830b1e7252114decee707507147b72188c86ce81f9706808304",
+      "byteLength": 144522
+    },
+    {
+      "path": "contracts/generated/pptx-page-raster-response.schema.json",
+      "sha256": "a5de5019128f12e4f10b1be97e6a2b3e76a4650b23b4217da2d6576f16f97e5e",
+      "byteLength": 45890
+    },
+    {
+      "path": "contracts/generated/pptx-page-request.schema.json",
+      "sha256": "2133cc72d979ba8f9d33e022fb5254dd982e7b166c20ab738f4328b2a726825b",
+      "byteLength": 13304
+    },
+    {
+      "path": "contracts/generated/pptx-paths-query.schema.json",
+      "sha256": "952f7acae9333f6544113e344767a781cec0eec80caf93ebcc0ec4df17b28dfa",
+      "byteLength": 2498
+    },
+    {
+      "path": "contracts/generated/pptx-paths-response.schema.json",
+      "sha256": "8b191048a715628c5b62c1868ef9acb41e5dd9a3145942a95713105997e01c21",
+      "byteLength": 22677
+    },
+    {
+      "path": "contracts/generated/pptx-placement-query.schema.json",
+      "sha256": "a6322984b5440ba9680258c7dd6faa5b5d519e687b1cd3175eb3040cb0983a64",
+      "byteLength": 1008
+    },
+    {
+      "path": "contracts/generated/pptx-placement-response.schema.json",
+      "sha256": "9c72197b0a7c9974d1a4c8b9c146bc09378f4307d24907b6458cff554b2a93fe",
+      "byteLength": 17672
+    },
+    {
+      "path": "contracts/generated/pptx-playback-page-request.schema.json",
+      "sha256": "c6174afee9cbdff73ca2728fed20f969d8b1ebd4a4bf39cf8bd9f764ccc6e6a5",
+      "byteLength": 26658
+    },
+    {
+      "path": "contracts/generated/pptx-playback-raster-response.schema.json",
+      "sha256": "2819dee93620232e7b9001f5d455c6535fdefd257a19d804b735263e46edb756",
+      "byteLength": 142254
+    },
+    {
+      "path": "contracts/generated/pptx-playback-session-request.schema.json",
+      "sha256": "fa162cffcb2783b3d7d2f786b9e8e39dc34c4a889634e2cf4dffb63f6303aa05",
+      "byteLength": 28761
+    },
+    {
+      "path": "contracts/generated/pptx-playback-session-response.schema.json",
+      "sha256": "b035d5b2c526505aa7c2908944cb234a87fad32016615717f2c9093bdf7085e7",
+      "byteLength": 149154
+    },
+    {
+      "path": "contracts/generated/pptx-radial-layout-request.schema.json",
+      "sha256": "04b5883abc2b8d7cddb3cd0da6051dd9d4feebe8ccd72f485cdd84a064cc6a38",
+      "byteLength": 4558
+    },
+    {
+      "path": "contracts/generated/pptx-radial-layout-response.schema.json",
+      "sha256": "43c7e106fb8258a13c3ac30a509259fe719f6b7bcccc0992dc7a5d10baa92952",
+      "byteLength": 62672
+    },
+    {
+      "path": "contracts/generated/pptx-resource-page-raster-response.schema.json",
+      "sha256": "a57fd92f6c4346173e208857bd375ff8c9776871e7244a891fb144a87b603e95",
+      "byteLength": 132151
+    },
+    {
+      "path": "contracts/generated/pptx-resource-page-request.schema.json",
+      "sha256": "aa9174afbcc6ce24d383841da05d378a6b2122120ee507df1e4675ba12d1e63b",
+      "byteLength": 21031
+    },
+    {
+      "path": "contracts/generated/pptx-source-response.schema.json",
+      "sha256": "2d2cb32b2b999825621af615ab003c34ce597afa68871653067c966522d3c44e",
+      "byteLength": 167073
+    },
+    {
+      "path": "contracts/generated/pptx-text-body-query.schema.json",
+      "sha256": "d5301b6822009b73a2c9e091885f13968768ba782ba1d77d94ea268f8ff452d6",
+      "byteLength": 986
+    },
+    {
+      "path": "contracts/generated/pptx-text-body-response.schema.json",
+      "sha256": "e01ec83726fd769e91cebf16632323ea62fece2c425a13a8a89ed96f9099df5c",
+      "byteLength": 18811
+    },
+    {
+      "path": "contracts/generated/pptx-text-edits.schema.json",
+      "sha256": "ef2542ed9e24f8986d3a3f980efddb0a4c8c15ff02f6e2e5a185de37ed4e7734",
+      "byteLength": 1708
+    },
+    {
+      "path": "contracts/generated/pptx-text-page-raster-response.schema.json",
+      "sha256": "540ba71942c5d3fd072139b68204a105c67c7a496840250419ddd89ea098e56a",
+      "byteLength": 104139
+    },
+    {
+      "path": "contracts/generated/pptx-text-page-request.schema.json",
+      "sha256": "e8a8dc15ad8eb006ca0e24b3a5ca95f3965120fc6bfb19af5fa4818c457a52e0",
+      "byteLength": 20367
+    },
+    {
+      "path": "contracts/generated/pptx-timing-query.schema.json",
+      "sha256": "da59fe618ef6cf0988eb514217ef2dbf94145aee31683a7bfb1d272f62be24da",
+      "byteLength": 609
+    },
+    {
+      "path": "contracts/generated/pptx-timing-response.schema.json",
+      "sha256": "b57de3e8d87530b6b781a5859ecd39b172ffcc8fd98c9e973587fb13846abc40",
+      "byteLength": 22318
+    },
+    {
+      "path": "contracts/generated/pptx-transform-edits.schema.json",
+      "sha256": "4ba7e01d6267e21cae71dd2b809dc6f95346f3e68a8b84b41f2190725c327f8e",
+      "byteLength": 3947
+    },
+    {
+      "path": "contracts/generated/presentation-delivery-bundle.schema.json",
+      "sha256": "f65026520d59660f7b6214a0a3535b95cd0f9bad0f646381b4529ce4cc19cd68",
+      "byteLength": 6479
+    },
+    {
+      "path": "contracts/generated/presentation-delivery-settings.schema.json",
+      "sha256": "e7e1647fa15ec4539993b9317589b7b956ac23b1145fc472f0f48292a40f6425",
+      "byteLength": 21044
+    },
+    {
+      "path": "contracts/generated/presentation-renderer-identity.schema.json",
+      "sha256": "90b5cabbd97a87cb2da92f01ce08c67a6e73da8730b7575b99c10c71658a3b54",
+      "byteLength": 625
+    },
+    {
+      "path": "contracts/generated/scene-raster-request.schema.json",
+      "sha256": "c7ecca113032680e208a1e409c9c38b05f4a96f17d1f31c63628e2e526bd27bf",
+      "byteLength": 27840
+    },
+    {
+      "path": "contracts/generated/scene-raster-response.schema.json",
+      "sha256": "0bea93af24bd6ac1258fc8a46bce72c556cdd5cb88693ea33c63ea70c5b93a76",
+      "byteLength": 14040
+    },
+    {
+      "path": "contracts/generated/schema-document.schema.json",
+      "sha256": "9d568a66321146f502bb6a79d351002a3b50bb17ef81a2a9c7775c08e000679c",
+      "byteLength": 1033
+    },
+    {
+      "path": "contracts/generated/shape-request.schema.json",
+      "sha256": "adcd4f02ce7134cb5248f8bcfa510550dec4379827cd55ece52cf3177b35da59",
+      "byteLength": 4600
+    },
+    {
+      "path": "contracts/generated/shape-response.schema.json",
+      "sha256": "026bb66a6d98a52d521311a6da7127077b4087deb2101bc695d2d586689dfdc8",
+      "byteLength": 6775
+    },
+    {
+      "path": "contracts/generated/template-definition.schema.json",
+      "sha256": "8e4c23a4cb5a8b8dde0e3c0dbf87663ef0b44d6ca71e2cad6f95506faab5d0b2",
+      "byteLength": 6228
+    },
+    {
+      "path": "contracts/generated/template-request.schema.json",
+      "sha256": "b704a7f9934f16f329ba9eeb31c5bc4b5751563562d5b6893988f7564c8feed8",
+      "byteLength": 74742
+    },
+    {
+      "path": "contracts/generated/template-response.schema.json",
+      "sha256": "6d1027242ffbe0c54f1871877704ed0d780259bab5de267326281c79dd2aed66",
+      "byteLength": 85201
+    },
+    {
+      "path": "contracts/generated/text-analysis-request.schema.json",
+      "sha256": "cfb44331895f7ba3e22d8cb11a11faa9622a40172506c54cc80518924e7c2a65",
+      "byteLength": 539
+    },
+    {
+      "path": "contracts/generated/text-analysis-response.schema.json",
+      "sha256": "e6745e95da384e3aa116ca3a6975d84b05b99167d8abb5ed7de7ce2f4c90df76",
+      "byteLength": 4419
+    },
+    {
+      "path": "contracts/generated/timeline-evaluate-request.schema.json",
+      "sha256": "a824db973110bd78ff892ce545ecdd9f477a0297796d291a15e9a095982ad290",
+      "byteLength": 70285
+    },
+    {
+      "path": "contracts/generated/timeline-evaluate-response.schema.json",
+      "sha256": "bd85da544a93a92d28fa0f3e0f7884ba4cfceaf9852bda9da7bb7fc902966a57",
+      "byteLength": 8906
+    },
+    {
+      "path": "contracts/generated/transaction-receipt.schema.json",
+      "sha256": "4e4beead9ee2f67c81e74e2599a63e3212bb78a9e3feef46ee722238fa607ac5",
+      "byteLength": 6485
+    },
+    {
+      "path": "contracts/generated/transaction.schema.json",
+      "sha256": "0969bdea4e1d3652dd5f147180b0238764f7d8293c0d114a2935bdc5531eae60",
+      "byteLength": 73071
+    },
+    {
+      "path": "contracts/generated/upload-info.schema.json",
+      "sha256": "c1c101a790a4cab0bd965da268d7908df1416b086f3db89ed474b7f4b8aa5c0f",
+      "byteLength": 4724
+    },
+    {
+      "path": "contracts/generated/upload-request.schema.json",
+      "sha256": "4e69c4a7c2bff1f9c3b8a250e079c9fe720aae32e6b0772ef63e99d9f7a00793",
+      "byteLength": 1629
+    },
+    {
+      "path": "contracts/generated/validation-report.schema.json",
+      "sha256": "8e49dd078ea8259cf8181cf8ebe4238299e525b683c99739355ed3efdade2dbf",
+      "byteLength": 1128
+    },
+    {
+      "path": "crates/mo-pptx/src/definitions.rs",
+      "sha256": "0986c0fe26ed93f631650523369c62a046a7bf2ae23a131d08361609f6ecaad8",
+      "byteLength": 5845
+    },
+    {
+      "path": "crates/mo-pptx/src/drawing.rs",
+      "sha256": "b32bd84ad52bcf81865961d1b03be4bb206d69d44de471309c0e6a147fa023d8",
+      "byteLength": 6809
+    },
+    {
+      "path": "crates/mo-pptx/src/lib.rs",
+      "sha256": "d86a06f50beb68c458db35cf2002f024c853809f3c237b0da4d15b3c10bc98d7",
+      "byteLength": 1344
+    },
+    {
+      "path": "crates/mo-pptx/src/native/geometry.rs",
+      "sha256": "2903ab1f10ebd09d5751b7a7a4f1e855fc38f30d79a83348c5fa4c3fdb413b75",
+      "byteLength": 4754
+    },
+    {
+      "path": "crates/mo-pptx/src/native/paint.rs",
+      "sha256": "3e2e62398466c8941479b3a39df61b60e5e002a03afdb63c1528d7f6bfd46cff",
+      "byteLength": 3242
+    },
+    {
+      "path": "crates/mo-pptx/src/native/text.rs",
+      "sha256": "f935263767046978798bbf867f22097a83efa85a0b08dac7210fdb6f7da47c2b",
+      "byteLength": 3676
+    },
+    {
+      "path": "crates/mo-pptx/src/native.rs",
+      "sha256": "08b5d609be57eecdc2c055ea095621ebf7723b7066f796f3ac51006509a458e8",
+      "byteLength": 1139
+    },
+    {
+      "path": "crates/mo-pptx/src/timing/write_flat.rs",
+      "sha256": "90de3a8a7f878aa98e956f0b56134f7cbd45ef1a92765a80329a2b803aadb393",
+      "byteLength": 2515
+    },
+    {
+      "path": "crates/mo-pptx/src/timing/write_tree.rs",
+      "sha256": "73a9a032b1c62d3b088260f113454dffe4468904230e667f5b0fe48a7728af17",
+      "byteLength": 5616
+    },
+    {
+      "path": "crates/mo-pptx/src/timing.rs",
+      "sha256": "1a8f0d75fac321dd374b00aaf011553323cda80155bbf89cff218b628f64b9fd",
+      "byteLength": 8269
+    },
+    {
+      "path": "crates/mo-pptx/src/write.rs",
+      "sha256": "4e441d8e38f8baf7a067640e5a360be5cb8f0e90c257b6375780600f2dc51009",
+      "byteLength": 9578
+    },
+    {
+      "path": "crates/mo-pptx/src/xml.rs",
+      "sha256": "ccb472b5a7a4f6192bbac1291e98339c69c437b5320993878fdfce36041ead0e",
+      "byteLength": 2020
+    },
+    {
+      "path": "crates/mo-pptx/tests/author_plan.rs",
+      "sha256": "380edbe5f4b62e54fedd6084ae2b028fbe7b388952e8823bd5dc1d759c0e8411",
+      "byteLength": 8774
+    },
+    {
+      "path": "crates/mo-pptx/tests/export.rs",
+      "sha256": "07cc26ca32008fbdfe5c09b3ca633753486aa20d063384ff74d9840250bf0257",
+      "byteLength": 6407
+    },
+    {
+      "path": "crates/mo-pptx/tests/export_text.rs",
+      "sha256": "b3c938908be031be31c9ad27d667ab03b485bc0f1c122eb17981f28abd7592c1",
+      "byteLength": 5374
+    },
+    {
+      "path": "crates/mo-pptx/tests/fill_colors.rs",
+      "sha256": "e0bbaba36d25646d251d946d63688fd4670e845a503e14c991de473553efdc05",
+      "byteLength": 14653
+    },
+    {
+      "path": "crates/mo-pptx/tests/fill_resolution.rs",
+      "sha256": "6eb35d7a1ef0a0ba74827410e0f027f235dd67f832116742f017498d855b4507",
+      "byteLength": 20864
+    },
+    {
+      "path": "crates/mo-pptx/tests/fixtures/appear-slide.xml",
+      "sha256": "294a6623dc2913fafe2b4e1b988867fb1d9aac1e611d930c86d3dde650650a24",
+      "byteLength": 3232
+    },
+    {
+      "path": "crates/mo-pptx/tests/fixtures/fade-slide.xml",
+      "sha256": "c735732a705aad57573a3a5116a033765070315287ade482e7aa7bf506dd67a2",
+      "byteLength": 6352
+    },
+    {
+      "path": "crates/mo-pptx/tests/fixtures/wps-by-only-timing.xml",
+      "sha256": "b9cb3e6bb10752652dcf81d75c9c15f55850bdc8fe46bc3be4e0c2c92ca6b53d",
+      "byteLength": 3515
+    },
+    {
+      "path": "crates/mo-pptx/tests/geometry_evaluation.rs",
+      "sha256": "3d9750546ee03a7f436a08221800eced4f37a9dde78f9dbe178e809e03e6f647",
+      "byteLength": 13313
+    },
+    {
+      "path": "crates/mo-pptx/tests/line_colors.rs",
+      "sha256": "0221a4f8876e9070af75317a1cd7e5742b5f840127d1ef3b36c763914ef586a2",
+      "byteLength": 8535
+    },
+    {
+      "path": "crates/mo-pptx/tests/line_resolution.rs",
+      "sha256": "33ae4034476880d22051da0b79b0e16b562f8f7884a85ad50a86a9ff0d8fdc97",
+      "byteLength": 10811
+    },
+    {
+      "path": "crates/mo-pptx/tests/presentation_sequence.rs",
+      "sha256": "5a5fbc04c673de18899286b3238baa48ec8119897f20f9466dfc80a3ba22778d",
+      "byteLength": 4607
+    },
+    {
+      "path": "crates/mo-pptx/tests/source.rs",
+      "sha256": "9f4419c571930b30934919ef1f4acdeacfc4fc0a233cfbe56d3b14ccbe78ea9e",
+      "byteLength": 32619
+    },
+    {
+      "path": "crates/mo-pptx/tests/source_colors.rs",
+      "sha256": "f66da3920a7a38d846da0066f2a7e047e8ef0a1b02e9a68ccde9183b97d73ea2",
+      "byteLength": 6848
+    },
+    {
+      "path": "crates/mo-pptx/tests/source_document.rs",
+      "sha256": "3a9191faf5b8073a71918abd01777e4401132f01428fa7fec95fc47ef1d001a4",
+      "byteLength": 12498
+    },
+    {
+      "path": "crates/mo-pptx/tests/source_effects.rs",
+      "sha256": "610a1e1262ad73005b23fd056302da07f97ca09ad51ceef1e32490597dd9f970",
+      "byteLength": 15891
+    },
+    {
+      "path": "crates/mo-pptx/tests/source_fills.rs",
+      "sha256": "ba30719e24bf13b886fc0a87cd6a652015588d432c90b141f6273c06961770c8",
+      "byteLength": 18439
+    },
+    {
+      "path": "crates/mo-pptx/tests/source_geometry.rs",
+      "sha256": "bc23fa0d9f05308abd1b5ca1d37ceb5588c03b670ef52f38ce36c47f8d445967",
+      "byteLength": 10633
+    },
+    {
+      "path": "crates/mo-pptx/tests/source_images.rs",
+      "sha256": "c5baf1be7965ee7d9a05e5a500f7302cf63f1cf125905a90dcb9c49e302dde07",
+      "byteLength": 16237
+    },
+    {
+      "path": "crates/mo-pptx/tests/source_lines.rs",
+      "sha256": "1eed0d622f00d26476c4b7ac23f5091bcd84473b36b8cf3ab76df460d7fc2802",
+      "byteLength": 7848
+    },
+    {
+      "path": "crates/mo-pptx/tests/source_text.rs",
+      "sha256": "844a6cc99d40e482ca463d290e946384e1ca1e9fce0a765c6df41250ad1a9e11",
+      "byteLength": 13296
+    },
+    {
+      "path": "crates/mo-pptx/tests/source_transform_edit.rs",
+      "sha256": "2479ea7549178099ec066907c0eb0d79407b096362623226c4250a603409e4d6",
+      "byteLength": 12720
+    },
+    {
+      "path": "crates/mo-pptx/tests/stream_export.rs",
+      "sha256": "9f010aa8a2decca1d654f39b89a2d09135fd34ff003e492664c5c2c7b44eb313",
+      "byteLength": 3863
+    },
+    {
+      "path": "crates/mo-pptx/tests/strokes.rs",
+      "sha256": "531fc585a86f8b80e99a1b0f8c38ff88f92be2f10a5cbc6d114d69d090f6e7ea",
+      "byteLength": 3689
+    },
+    {
+      "path": "crates/mo-pptx/tests/support/images.rs",
+      "sha256": "80b1d185ae5ad7cee9100ad23163783e9e2290320fdc3b68593e98d6c889f982",
+      "byteLength": 6927
+    },
+    {
+      "path": "crates/mo-pptx/tests/support/mod.rs",
+      "sha256": "646501d7163b93c2e67de75f9d4ebc028e05672071a43d084c0d1436a1533cac",
+      "byteLength": 964
+    },
+    {
+      "path": "crates/mo-pptx/tests/support/text.rs",
+      "sha256": "846d4497133debd9f856cb2030bcc78e21e33a94401b97de7fce75620c0ef5e5",
+      "byteLength": 5640
+    },
+    {
+      "path": "crates/mo-pptx/tests/text_body_styles.rs",
+      "sha256": "78a00cfb7a4bdffab060b698db887c414a034808c33a1c87082e47030c5c1d41",
+      "byteLength": 13310
+    },
+    {
+      "path": "crates/mo-pptx/tests/text_cascade.rs",
+      "sha256": "1a90105b0076ccbd1713db7ff5ebb8b44576e48a94c0b7dc88044a554f6da06d",
+      "byteLength": 16608
+    },
+    {
+      "path": "crates/mo-pptx/tests/text_fonts.rs",
+      "sha256": "1f297f2d22ed6bd4ee53f2f01aa74210eff6808ea180e42a089a32516f122e27",
+      "byteLength": 17691
+    },
+    {
+      "path": "crates/mo-pptx/tests/text_paint.rs",
+      "sha256": "51eb9c230bd3ee05d35d316971c44098fa3e9f33668509f47b0a1042728fd556",
+      "byteLength": 5137
+    },
+    {
+      "path": "crates/mo-pptx/tests/timing.rs",
+      "sha256": "61502c8c8278a5ca59f0a2638e323a669848ddb4189ab49392a14072bd7acb96",
+      "byteLength": 39943
+    },
+    {
+      "path": "crates/mo-pptx/tests/timing_appearance.rs",
+      "sha256": "8279893d17131f656af650e76f517cce8050cc233f8f4c57eb45ade1b07bbecb",
+      "byteLength": 7043
+    },
+    {
+      "path": "crates/mo-pptx/tests/timing_conditions.rs",
+      "sha256": "5fe74e16ddb596b9447926648f52c92f7b03cfa92df8b3ab1aacaede005a882f",
+      "byteLength": 10466
+    },
+    {
+      "path": "crates/mo-pptx/tests/timing_envelope.rs",
+      "sha256": "07dc41dc923aa618a8b73cdb32c055d0a89a0ad6b40d3a132b81cf43432bce23",
+      "byteLength": 15230
+    },
+    {
+      "path": "crates/mo-pptx/tests/timing_fade.rs",
+      "sha256": "a5ce2c6ff6f7ac82699cef417b3db1fa65c2a306db2495b88438e1728a4df682",
+      "byteLength": 7950
+    },
+    {
+      "path": "crates/mo-pptx/tests/timing_navigation.rs",
+      "sha256": "8f033e0a4271be9be33456cf76300c8870efa1c81db4ec10794b5fc7fcd1a6c4",
+      "byteLength": 12760
+    },
+    {
+      "path": "crates/mo-pptx/tests/timing_node_events.rs",
+      "sha256": "d505ff0619419220fad3089c0684bde1c9e4d666d5b4adaac8308c6f4147db29",
+      "byteLength": 7031
+    },
+    {
+      "path": "crates/mo-pptx/tests/timing_restart.rs",
+      "sha256": "109cfb6286bbd829b4ced10ea425578eaaafb8515050673b2a7f8317fd379a10",
+      "byteLength": 6049
+    },
+    {
+      "path": "crates/mo-pptx/tests/timing_scale.rs",
+      "sha256": "86a4859b0e6b5240c20ea62ab10b573d2fbde93a45aa621eb2da052e1d2c0859",
+      "byteLength": 13298
+    },
+    {
+      "path": "crates/mo-pptx/tests/timing_visibility.rs",
+      "sha256": "3ae50b17db240cfec2a24eaff505eddbba09fd8988e782bd3a8b0c8e67cb5e8e",
+      "byteLength": 7416
+    },
+    {
+      "path": "crates/mo-presentation-compile/Cargo.toml",
+      "sha256": "679e627da265680fc567cc1858e9e5941f50959da95b1e6d9103ec7263f383aa",
+      "byteLength": 707
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/angle.rs",
+      "sha256": "b111281799c839ee08719cb44fd88a6b4bad54ddb0b6d6f151df5a7b1a834887",
+      "byteLength": 6428
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/coordinate_budget.rs",
+      "sha256": "a5b1b72925f6931d3f3aa63fd34dd11306906e7730e27921da756126325a6650",
+      "byteLength": 4274
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/incremental.rs",
+      "sha256": "0c7a8456ed91aed2637fe26155a49ead7037ddc646a9a03669f0bb74776104c2",
+      "byteLength": 4496
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/interval.rs",
+      "sha256": "f51e09bcad094318db6247c33639b650559bf70d438871c9176b8cb13a3f4360",
+      "byteLength": 3168
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/interval_extended.rs",
+      "sha256": "0e1a17a991ece8610a4aff7b80766f562c4b092ff0b19dd9ff1164e747408701",
+      "byteLength": 4063
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/lib.rs",
+      "sha256": "9f91cb32cfc4ed7fb5c74135e080e4c60f0b0f2262a7bfa5f587e125af2ed07f",
+      "byteLength": 1640
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/native_paths/math.rs",
+      "sha256": "6611a047c674dc50748b70c8b6b98ed3f33e08ed88b471591768880e23aabbd1",
+      "byteLength": 4944
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/native_paths/path.rs",
+      "sha256": "a44d7085b7ddefb2a3eebe6462947847faa7d063bd6fac818ac992502173011f",
+      "byteLength": 10236
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/native_paths/tests.rs",
+      "sha256": "3f7d18911381fadd050aef64d52c6033d05db8d319a8d70eae89155e3a4c2599",
+      "byteLength": 9787
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/native_paths/types.rs",
+      "sha256": "f20ca3997973fc8ab1227b169f952eecb998b78567381eb01f62d58fef27ee5a",
+      "byteLength": 2719
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/native_paths.rs",
+      "sha256": "c7977bd480aabdeb474662a4785dc5a10624bc5da6e39c31296268819714cba4",
+      "byteLength": 4660
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/opacity_scopes.rs",
+      "sha256": "3c30a594f9ae93c70569abaa7b66bb5db3aea0735e5ad3e0bb751f932cc694ef",
+      "byteLength": 3385
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/page.rs",
+      "sha256": "22bcaaefc0a64565f4079e93e87d1071cd26f6018d645ed157bfc27e21714391",
+      "byteLength": 12909
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/page_boundary.rs",
+      "sha256": "4a6a491332aff9df08cbd8cf6c0bd566d046cc50ef34a22b9249f94976a5b886",
+      "byteLength": 3124
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/page_geometry/tests.rs",
+      "sha256": "cb1d3a6701e074239f11be34613f3bba2dff8e8e902dd78fae2f19bc86bb00e0",
+      "byteLength": 4792
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/page_geometry.rs",
+      "sha256": "b0fcc16760536de986c4c75858c35a7551edee4f779eb934071fe172c9ff2a09",
+      "byteLength": 3419
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/page_paint.rs",
+      "sha256": "51cc04616d5001f8bd52b721ec39fc4273e5d00e829e57fff08b3b048dad8bbb",
+      "byteLength": 3472
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/page_tests.rs",
+      "sha256": "860cca441b5dd794d2e5416fb3038921967468c321745dbecc585b354af87c49",
+      "byteLength": 13858
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/page_types.rs",
+      "sha256": "565caed7df9d1aa9d1d56b3c26bcac6aa5f50fe5fb1b6b9e95d511bd4a89506f",
+      "byteLength": 4046
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/path_scene.rs",
+      "sha256": "0194443f3bec4acdef6b4964f58fb9feb7c047eab57c65cc9b5831a3472a6396",
+      "byteLength": 6657
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/path_scene_tests.rs",
+      "sha256": "c6a3a604c3a2bcc275b136dc0a93cc726857361f4f4c2fb95316a4ec027ed30c",
+      "byteLength": 5143
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/placement.rs",
+      "sha256": "7349928eee0d5e45bf2986cef5caf9aed3a7cd2139a7a9ec922fb90197387d02",
+      "byteLength": 5265
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/placement_core.rs",
+      "sha256": "29dab9fad3453a4c32a974847b2c2b346a91a39e216be4b3aed47d43b04e33f9",
+      "byteLength": 6594
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/playback.rs",
+      "sha256": "6d3c73af6c0193e9b806e653153a630e6c1f256f5d2bd54ac3a5908ff37dfe97",
+      "byteLength": 9163
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/radial_layout/bounds.rs",
+      "sha256": "ff952128894c996ee456d389ec868ab8adccea21808f5b4015c12c8dcea4290c",
+      "byteLength": 2875
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/radial_layout/source.rs",
+      "sha256": "99479411427d7f837b6228bbc3b7d149df2259104bcd206cc7b8fed51b7656d3",
+      "byteLength": 9978
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/radial_layout/tests.rs",
+      "sha256": "2d2afb84b1cb5b3235917c75d84a2bcdc2e5448d5bae36640bdf90553f0b2f7f",
+      "byteLength": 2426
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/radial_layout/types.rs",
+      "sha256": "f634cf3b2fcdb674bec5a872f686f56dbcef5b2ac82d4f015e26dfb89dff6eaf",
+      "byteLength": 3063
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/radial_layout.rs",
+      "sha256": "eb4820602c4bcf2c6459f679365e257d77875d011a20f06d4a555db5668d747b",
+      "byteLength": 8782
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/sampled_properties.rs",
+      "sha256": "ffa1faafea3a034112c998ebb01bfdd053f410eccbf86e75c87603fa2ec1e146",
+      "byteLength": 5391
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/shape_paths.rs",
+      "sha256": "863845d827d207090acbafe7a8cf1c84e3bada2238adf81518036a6c314c4b83",
+      "byteLength": 7867
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_frame/backend.rs",
+      "sha256": "8ef78396de578bf0430160765a8ef0edc29bb8f68949f3e8f203b3d30ab06889",
+      "byteLength": 1747
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_frame/capacity.rs",
+      "sha256": "b918e1851764d8c560b8049d6e2146630e218ec106ab5402daf1e02e7b5d5854",
+      "byteLength": 6409
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_frame/number.rs",
+      "sha256": "a710dec808090b968039355de9a4901f3a818a4527b97034385e1bb6c7c8df3c",
+      "byteLength": 2956
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_frame/properties.rs",
+      "sha256": "a9ca24bcb50c3e3a200e63be2ce6086432b3b592e7384e4613d4c25e89089c00",
+      "byteLength": 7040
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_frame/spacing.rs",
+      "sha256": "0912447e567d19fb7c5bebad2212e171546cadc4ebeadc7fd04a70857542ccd4",
+      "byteLength": 2606
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_frame/types.rs",
+      "sha256": "199e0a9c4efeda5e7991efedfede1766907b7774f8a7219ef5a78c6b1dcd2734",
+      "byteLength": 6084
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_frame.rs",
+      "sha256": "ce0bfc34111a9c9bf4795a207bcb1bfea0e773bbf503a7fa862c676a0cc2b44d",
+      "byteLength": 11835
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_image_layout/number.rs",
+      "sha256": "a91846256f8e707d4a037dc1c96453e251153f2730e4cb485a3206d10f531f36",
+      "byteLength": 2049
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_image_layout/source.rs",
+      "sha256": "bd873697b54ad5ee111cbdea10dab8ffbf8aace6c51f8e85b3c585b78719d138",
+      "byteLength": 6567
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_image_layout/tests.rs",
+      "sha256": "8a4f21bae8f04e3e8d88dd1e610a7d7655ca4f02013980af40dbd604fc72916b",
+      "byteLength": 11541
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_image_layout/types.rs",
+      "sha256": "cd7d74283418ab14c9933591b6463598f0ae755bd4ee4e9ca397673d6b2f39e5",
+      "byteLength": 3026
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_image_layout.rs",
+      "sha256": "cc9002ce3c3aa0425762dba23b35535575d10ea524c2e8ef0354c13323a0cb9a",
+      "byteLength": 7697
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_image_paint/number.rs",
+      "sha256": "f7dd52a368216b0b28fa81b888b304a94e52e43c7860faa9d30bccda58dc7acc",
+      "byteLength": 1401
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_image_paint/tests.rs",
+      "sha256": "7887504a5dddb82d273448bb45460e13d303301511c42eb9197cb2535f8ee4c5",
+      "byteLength": 7827
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_image_paint/types.rs",
+      "sha256": "30339904a7f1522ab0e5d7f8e9fc08ce271bf554d538610e4e2a15f700fc2883",
+      "byteLength": 1687
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_image_paint.rs",
+      "sha256": "d86c1087d1badbba7d00e18c7825e19d6aea7e1d8b300e4736953401e880c124",
+      "byteLength": 6859
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_number.rs",
+      "sha256": "4ad955b99539f66a510c8b0a757c27e489867b26644990cda72c7fff3f87f204",
+      "byteLength": 2879
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_page/emit.rs",
+      "sha256": "e2cd7e623c45bf2de3ac60ba6735c0adba9d4909ca42c86432961a1c17e44ded",
+      "byteLength": 9581
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_page/gradient.rs",
+      "sha256": "8351a313edfba4ce01cc18928916966e7cc4b6cf4a52d7def82cf029b1a63b2c",
+      "byteLength": 10561
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_page/gradient_circle.rs",
+      "sha256": "64cfca354545dfac541de7bafbd935e21c9650c91aa16b22f856e847329ae762",
+      "byteLength": 4342
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_page/gradient_rect.rs",
+      "sha256": "c81922973fe7b120d75082f8fc5cc1f636ec3acda28849abdd7a9e306bad6bc3",
+      "byteLength": 2468
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_page/layers.rs",
+      "sha256": "6db53f17e20d42a2c71dade0039bca64f715a4acdec8c8156b90d4224a753fe1",
+      "byteLength": 9886
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_page/objects.rs",
+      "sha256": "4d17adecfc865ffcc823386fd4b07b4bbcaf503238fc547cde285b4a8d8d174f",
+      "byteLength": 6764
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_page/opacity.rs",
+      "sha256": "a5282cbe796b72b2cb3dc59b6bd3daf1936a9dc765cde66bbf16840a1db86334",
+      "byteLength": 1744
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_page/paint.rs",
+      "sha256": "f5cf06206005fbce7effd147b66aeb1cca545c1c13937ca3814f61fc79791429",
+      "byteLength": 3913
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_page/prepared.rs",
+      "sha256": "4b27b9789c6abd7703a7d19c01bfdc7938399d6e25fa8ec26753a447fda8fa75",
+      "byteLength": 12796
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_page/types.rs",
+      "sha256": "9cd3b5be1ff4eae053c78568adcf24e9653ae60710b5e0aa0b2dab62ac6f4f30",
+      "byteLength": 7746
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_page.rs",
+      "sha256": "57ef7467200ad62ece2572d353160a2459d616a8cafafa9621d157119bb28af2",
+      "byteLength": 4540
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_placement/resolve.rs",
+      "sha256": "ca9311858f7c84ad8e3842a2362941d911a7bc1466d821f074170dd944b0a55a",
+      "byteLength": 6086
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_placement/types.rs",
+      "sha256": "28adc1a90a287434c4a0446076c8ef1361a89f14161e8df627e32ba0f674fa67",
+      "byteLength": 4987
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_placement.rs",
+      "sha256": "7ed26c8f96413824fca0091604dd19da525bae180f52965d3c1c0513745d1c22",
+      "byteLength": 11595
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_playback.rs",
+      "sha256": "25fd9032400f5472517ef8d903d3e9ebc0f4e78540ddbb77f221994038f4dc78",
+      "byteLength": 12195
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_resource_page/protocol.rs",
+      "sha256": "f10b995d823519cfc7ff7cb1a1d9b10bbdff01a4c061fb122014ea7b6194d8c5",
+      "byteLength": 3231
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_resource_page/resources.rs",
+      "sha256": "290c61dab8bc1b7ec7d25a8b46c3a55ff728b58d8af2093e52e596097fca5a77",
+      "byteLength": 10366
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_resource_page/retained.rs",
+      "sha256": "21a214c1d793dc8f5c1c8faf11852c1178b427d5a3d1ea63d16deaa8f456fb92",
+      "byteLength": 9262
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_resource_page/retained_frame.rs",
+      "sha256": "fcaaef4cc2c3f8f05a6104abfe339ba01f371d5b8cf7f1a817363e659bf3c9c8",
+      "byteLength": 2914
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_resource_page/types.rs",
+      "sha256": "c204337b753b2afe39cf551a92f35225a0e2a6411b6eecfb2df45a05076e558e",
+      "byteLength": 3010
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_resource_page.rs",
+      "sha256": "409a0dd549176efcbc4c42807a681a52687dcde706525e1198032c721ccec9fd",
+      "byteLength": 7278
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_text/assemble.rs",
+      "sha256": "02915c7c1999700908a0fa168c292629be65f54fe5278543fe967de9b260b1d0",
+      "byteLength": 10267
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_text/budget.rs",
+      "sha256": "f59f54e122a79ade3e12978083e1b2812972121f7bafe6c30408d4c9b7c3e9b8",
+      "byteLength": 2045
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_text/number.rs",
+      "sha256": "d0a3a3089b904471d5c84862099954ef0b71f24d7f7aeff815f727bac4b4a7b8",
+      "byteLength": 5984
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_text/script.rs",
+      "sha256": "4c65210f4c4c3b80a8d18069c7d5f0d77e641c36cdbe9652c92d28e9d3dcc1fe",
+      "byteLength": 4242
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_text/style.rs",
+      "sha256": "556d40f71eca84cc04c8128eaee618ba0594ac3d681577b7a251141d895dc7ed",
+      "byteLength": 4145
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_text/types.rs",
+      "sha256": "736467b48d21c6c33f46e5eaf7624ac307178364867189f6d5029a48c18a22b1",
+      "byteLength": 5889
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_text.rs",
+      "sha256": "0dc0f756dd0d2c284a2cb495489c5f85a54940773a0ecfc3992d5fe56cf2b161",
+      "byteLength": 7566
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_text_page/decorations.rs",
+      "sha256": "b3d2e18f7bb3964b5453daf765257ee2186952172189b556984b89cfc46c7436",
+      "byteLength": 11248
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_text_page/glyphs.rs",
+      "sha256": "8fc283df71f847c73a1b2d233e83dc5e1ac41ed48c769f558df68f23a8215fbd",
+      "byteLength": 6411
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_text_page/placement.rs",
+      "sha256": "946616d34f4bda63b428922adf432eefb69df3f244218a9ef8128ce1fc2fa671",
+      "byteLength": 2873
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_text_page/precision.rs",
+      "sha256": "b8e1f4417ebcd9e0440e4d02d2dea00e99a08b02a26862de8f05b6f6fa3c6aba",
+      "byteLength": 3010
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_text_page/retained.rs",
+      "sha256": "2a5a663b914d7c428f431879b4abbeb3cd177b68c48a8f9ad0310d807a64e13e",
+      "byteLength": 7249
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_text_page/types.rs",
+      "sha256": "974c1305e897fe74a62234d1874e75af3abdb4ad1428054a393e1774c7ae1f9c",
+      "byteLength": 4767
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_text_page.rs",
+      "sha256": "ada712b62c41dbcb4e6edcbef1f758d0056a85f5cf1217dfb2a430a275f2ee5f",
+      "byteLength": 13863
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/tests.rs",
+      "sha256": "c0428847ac3d63b88453fd67e752dfb15b13f261ce3130007c387eb84da01380",
+      "byteLength": 7927
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/trig.rs",
+      "sha256": "ad4dee09d25f34f61f0a18a6f8d3378e9c85965c55f894a790bc50466cc4135b",
+      "byteLength": 3756
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/types.rs",
+      "sha256": "557f22b7d3baef89f4ea133ddb44e1a79e5a10adae3bd76e574573c7fdff04ba",
+      "byteLength": 2330
+    },
+    {
+      "path": "crates/mo-presentation-compile/tests/author_resource_page.rs",
+      "sha256": "ec78b98ceba44c6e7c0f6bae5059754c518d5831b93deced6b9b93327ca502fb",
+      "byteLength": 5636
+    },
+    {
+      "path": "crates/mo-presentation-compile/tests/elliptic_page.rs",
+      "sha256": "7a6fd4593ad2eb092c2286d77ccbcedc9134f6945e4395c6432767062b4c3d54",
+      "byteLength": 2663
+    },
+    {
+      "path": "crates/mo-presentation-compile/tests/group_export_playback.rs",
+      "sha256": "de9d0f017fb550f228c486a47eb617131d82d34276dff60e109922c72e1e69d7",
+      "byteLength": 6439
+    },
+    {
+      "path": "crates/mo-presentation-compile/tests/paint_admission.rs",
+      "sha256": "1f7f327a2f663f0c2fead14c3d9971718d3bfd1001fc5fe5d453295eba543a4a",
+      "byteLength": 3485
+    },
+    {
+      "path": "crates/mo-presentation-compile/tests/playback.rs",
+      "sha256": "7f92ff4b4bf1c961aa6460b337dd3ef83517588a6cc70a53299e6a12f36387fa",
+      "byteLength": 5827
+    },
+    {
+      "path": "crates/mo-presentation-compile/tests/playback_fade.rs",
+      "sha256": "39262a49d8d319b2bf5720396eaf6c54d80b6f706f34f99dcd691ab7a04508c3",
+      "byteLength": 2784
+    },
+    {
+      "path": "crates/mo-presentation-compile/tests/playback_geometry.rs",
+      "sha256": "a70939700ed97995356eccdb0395db5b7c69e0dde7d171353772237da8c7e628",
+      "byteLength": 2472
+    },
+    {
+      "path": "crates/mo-presentation-compile/tests/playback_scale.rs",
+      "sha256": "29ac37ddce5c87fcca3a8374e1e054b13dac24e3c6318af51676958aa59ec127",
+      "byteLength": 4439
+    },
+    {
+      "path": "crates/mo-presentation-compile/tests/playback_visibility.rs",
+      "sha256": "61c189fd3b05a372deee17fd8c4e1026b4a541682d6ad3f58d496f88052360b5",
+      "byteLength": 2393
+    },
+    {
+      "path": "crates/mo-presentation-compile/tests/radial_anchor.rs",
+      "sha256": "0c69591380e87f4384fa774c2df884843a45ee34aed4c46b1f0e96f1ecbeb5b2",
+      "byteLength": 4478
+    },
+    {
+      "path": "crates/mo-presentation-compile/tests/radial_layout.rs",
+      "sha256": "b7143a6f35c9e15f3c17494738a81585707de48adc0c9d1ea04e43ea0ff666a6",
+      "byteLength": 7988
+    },
+    {
+      "path": "crates/mo-presentation-compile/tests/source_fade.rs",
+      "sha256": "59df45d5e183818585507db0006bbf05ff39e73d4ba8cb93fd92fc3f8d999e6f",
+      "byteLength": 3978
+    },
+    {
+      "path": "crates/mo-presentation-compile/tests/source_glyphs.rs",
+      "sha256": "420c4726751cc55f899955c974f96db48a4de68813fe002ffa2902b76d0c03e2",
+      "byteLength": 12135
+    },
+    {
+      "path": "crates/mo-presentation-compile/tests/source_group_images.rs",
+      "sha256": "d09455f3cde06153b6e74e097a180654a7b36028dc2b5462ad354fe167e3527c",
+      "byteLength": 3625
+    },
+    {
+      "path": "crates/mo-presentation-compile/tests/source_playback.rs",
+      "sha256": "569417ce562da99f2c9908e3e04bc7b85e45e6753e273d19a83a1a09cd4ac72f",
+      "byteLength": 6719
+    },
+    {
+      "path": "crates/mo-presentation-compile/tests/source_resource_page.rs",
+      "sha256": "6cd59442e937f10adff4840d5b49d72121ac79f1edad7f62d1ba3b892637ef9d",
+      "byteLength": 8980
+    },
+    {
+      "path": "crates/mo-presentation-compile/tests/source_scale.rs",
+      "sha256": "829196834b7098912505d2c15d5053f0e7b46d32dfe576b959ea6cd8d7452928",
+      "byteLength": 5805
+    },
+    {
+      "path": "crates/mo-presentation-compile/tests/source_visibility.rs",
+      "sha256": "af1bce2c27589539cbbce19fb4fe667af35a315e4a824d0c1dd375e8c4d7a2af",
+      "byteLength": 7671
+    },
+    {
+      "path": "crates/mo-presentation-source/src/timing/preset.rs",
+      "sha256": "f98c572b1d01a9ad312e48fdfa3d98911cb3524fec4971f924bc5bce266f26c1",
+      "byteLength": 1925
+    },
+    {
+      "path": "crates/mo-presentation-source/src/timing/read/behavior/scale.rs",
+      "sha256": "32c8ded02816177f9681a3bd72c96c52e37bd3a2de594ad122bf848cfc697c4f",
+      "byteLength": 3579
+    },
+    {
+      "path": "crates/mo-presentation-source/src/timing/read/behavior.rs",
+      "sha256": "23f28d0f8e250aa4ea21cb4a98380cffb4291e523f6b507c79dced153c5b9630",
+      "byteLength": 3455
+    },
+    {
+      "path": "crates/mo-presentation-source/src/timing/read/condition.rs",
+      "sha256": "e6ac155d237eed9e796c620da12196f2eac7e3d9e913e6bd0e87b99cb1263598",
+      "byteLength": 2969
+    },
+    {
+      "path": "crates/mo-presentation-source/src/timing/read/envelope.rs",
+      "sha256": "11b58808e82922c48b66c575c8a2ff67113c87c02923ce7dc140e5a3a3ebf62b",
+      "byteLength": 6140
+    },
+    {
+      "path": "crates/mo-presentation-source/src/timing/read/presentation.rs",
+      "sha256": "82edbc82f1674391d48fff933e9dcfb82199f3e0bac7ca05a8721b10b6f29c7a",
+      "byteLength": 2198
+    },
+    {
+      "path": "crates/mo-presentation-source/src/timing/read/sequence.rs",
+      "sha256": "4bc8b5db4bdbb19543a89f58ef71ebf3d43c700cd442d71e2c85e7a259d56ce9",
+      "byteLength": 2026
+    },
+    {
+      "path": "crates/mo-presentation-source/src/timing/read/time_transform.rs",
+      "sha256": "78e333d31394bddccf5d3242e1e536a404f3c8871e1c0cb8d86aa4156d4432e1",
+      "byteLength": 1570
+    },
+    {
+      "path": "crates/mo-presentation-source/src/timing/read/tree.rs",
+      "sha256": "0983c9a941efbdb7115834563eb68d5781a1ef372d2cd2182963c4c60f4d4983",
+      "byteLength": 7715
+    },
+    {
+      "path": "crates/mo-presentation-source/src/timing/read.rs",
+      "sha256": "fa57650d0a4d7339bcf0ac180b5f009850751773699bb7f51198c0b8556fa7fc",
+      "byteLength": 16838
+    },
+    {
+      "path": "crates/mo-presentation-source/src/timing/source.rs",
+      "sha256": "a3503d7a142db17e0d1742afade2c51e74b29d611ef0d3c1dc576d850c278980",
+      "byteLength": 2600
+    },
+    {
+      "path": "crates/mo-timeline/Cargo.toml",
+      "sha256": "9704450e5152b4c9fb55985cfa6e5d3ae4df23d5c1a333ca7ef5c3231d556237",
+      "byteLength": 357
+    },
+    {
+      "path": "crates/mo-timeline/src/authoring/compile.rs",
+      "sha256": "b13434fb71a7e6042c309af5442e9acc0007d271f4595420f98fff2a8ada6c2c",
+      "byteLength": 13985
+    },
+    {
+      "path": "crates/mo-timeline/src/authoring.rs",
+      "sha256": "9dcb6973760ddd6fcde03db8e941cb83b7d472c4dbb55fca2abeaab403260157",
+      "byteLength": 2253
+    },
+    {
+      "path": "crates/mo-timeline/src/clock.rs",
+      "sha256": "bb87fd3152fa4a62f8d308e7decf67a895835a4cd3b4b276ca22c11fb32a8037",
+      "byteLength": 7230
+    },
+    {
+      "path": "crates/mo-timeline/src/evaluate.rs",
+      "sha256": "8bcf01eef648724320d6151de829cd198131e85bbf0fb68272c29ef60c86f890",
+      "byteLength": 4918
+    },
+    {
+      "path": "crates/mo-timeline/src/events.rs",
+      "sha256": "069da8cc1204449cf23338e001e3d0e0b2eea52ed7d703e6c9db8a95a4f213bc",
+      "byteLength": 3902
+    },
+    {
+      "path": "crates/mo-timeline/src/exact.rs",
+      "sha256": "ff20f2dc7c8942a4c1b0a5d7b2bde27e01fe2e0fb00fa7c371b4a0825c3e76fb",
+      "byteLength": 2512
+    },
+    {
+      "path": "crates/mo-timeline/src/generation.rs",
+      "sha256": "2fff72c3bc5ce6d537e0873868730a69a4a40bc8aded4591a4b02b71aef8f6d5",
+      "byteLength": 1518
+    },
+    {
+      "path": "crates/mo-timeline/src/lib.rs",
+      "sha256": "03fceebc5623c57783d5d1770ceef2e893ddd829e18bbeab1d676e7fe44bba95",
+      "byteLength": 1339
+    },
+    {
+      "path": "crates/mo-timeline/src/model.rs",
+      "sha256": "71987a61658bc6d3a9b2829bc152e3f6f19adc20c8734174af3d8c75699973aa",
+      "byteLength": 12866
+    },
+    {
+      "path": "crates/mo-timeline/src/plan.rs",
+      "sha256": "4b929a824a93b05676f90e3a53dca42a39c9b78e49eb0b8531dc1b9556a54439",
+      "byteLength": 3848
+    },
+    {
+      "path": "crates/mo-timeline/src/sampler.rs",
+      "sha256": "35f5b80265f680554f47bf1269abcb18f6f19c92546f9448fcde3eb421a4c25d",
+      "byteLength": 6980
+    },
+    {
+      "path": "crates/mo-timeline/src/tree/causality.rs",
+      "sha256": "a2cfaa92b5ef680a31c9a51575708b984fb1437d2f778fc037c0db3df5f2439b",
+      "byteLength": 1976
+    },
+    {
+      "path": "crates/mo-timeline/src/tree/presentation.rs",
+      "sha256": "4b3fd0ef1150a33fe13cd6c0098778d1a7db11689693b2a3138b008eee8f4719",
+      "byteLength": 4787
+    },
+    {
+      "path": "crates/mo-timeline/src/tree/sample/clocks.rs",
+      "sha256": "1b0708150463469a362164c897bb56b6efdfb3ff59f7697e35f20f4c8e600623",
+      "byteLength": 3134
+    },
+    {
+      "path": "crates/mo-timeline/src/tree/sample/intervals.rs",
+      "sha256": "f2aae51bf536157ef80dd75214c4bb47969e759a92c7bdc72a91671c976021e9",
+      "byteLength": 6218
+    },
+    {
+      "path": "crates/mo-timeline/src/tree/sample/properties.rs",
+      "sha256": "8218fcc36436685ed2f29e80b6455015f14be55a13aeb8774acfd5ec33ec0346",
+      "byteLength": 3270
+    },
+    {
+      "path": "crates/mo-timeline/src/tree/sample/schedule/condition.rs",
+      "sha256": "1fed2c6af9b14c4f7ff69c6113c1ae2e7d7f6b6e6a9a64b8b97fe06099bd62f9",
+      "byteLength": 8867
+    },
+    {
+      "path": "crates/mo-timeline/src/tree/sample/schedule/lifecycle.rs",
+      "sha256": "c3ed7e34f8f57a4c6c31cf7ed131a875326d6665374c18f9bd7df39ed0da24f7",
+      "byteLength": 6456
+    },
+    {
+      "path": "crates/mo-timeline/src/tree/sample/schedule/navigation.rs",
+      "sha256": "77e90080481243758485f752f73da9c6e5acaee7265a82a35356f055be864888",
+      "byteLength": 9643
+    },
+    {
+      "path": "crates/mo-timeline/src/tree/sample/schedule/seek.rs",
+      "sha256": "9c18c50b7039f7a5558e8b3b10692c8085e37acec52fa884903ab7cc0b929ba1",
+      "byteLength": 8014
+    },
+    {
+      "path": "crates/mo-timeline/src/tree/sample/schedule.rs",
+      "sha256": "f11b8ad9f18fabcdc08331cb7eddc85012ce7a217453840479cde6c617098f63",
+      "byteLength": 14941
+    },
+    {
+      "path": "crates/mo-timeline/src/tree/sample.rs",
+      "sha256": "17850f019bd44a3f625969661c7e4d2c193daa658462c0d517df45e8697d4947",
+      "byteLength": 9478
+    },
+    {
+      "path": "crates/mo-timeline/src/tree.rs",
+      "sha256": "bbca2ff2a81b0c8d25a713a09b938dcb492f557df0a09fbdcfdde14e8a631c3b",
+      "byteLength": 12386
+    },
+    {
+      "path": "crates/mo-timeline/tests/authoring.rs",
+      "sha256": "696c191cf755dbae656c2f704223e6e7b3af119e11ca87ebfde6e50864ab945d",
+      "byteLength": 9066
+    },
+    {
+      "path": "crates/mo-timeline/tests/container_lifecycle.rs",
+      "sha256": "7fb018afbe267cf36f5ed2e0325f7024f459c5068345dc8a5e730d5877aaae92",
+      "byteLength": 10851
+    },
+    {
+      "path": "crates/mo-timeline/tests/end_conditions.rs",
+      "sha256": "50553c46d13f9987a1d093a43fb9605ca28bf528d7aacc75e5cae24b4d36367c",
+      "byteLength": 10807
+    },
+    {
+      "path": "crates/mo-timeline/tests/fade.rs",
+      "sha256": "7f263afcfd1491b1b8a4e99f44f724689fd6ef1b5e013e023eb3296e87e47fd1",
+      "byteLength": 4830
+    },
+    {
+      "path": "crates/mo-timeline/tests/navigation.rs",
+      "sha256": "ac0d78118c018a8c3a9b1af78487390c9bcb23ab683b1ebb394dd9e673df76e8",
+      "byteLength": 23019
+    },
+    {
+      "path": "crates/mo-timeline/tests/repeat_bounds.rs",
+      "sha256": "815d2add0d88d054e3c17b979f396a958756183b6bf34b39412a5a7f9ce1df6d",
+      "byteLength": 9774
+    },
+    {
+      "path": "crates/mo-timeline/tests/restart.rs",
+      "sha256": "8ec252807323a9cc3e70f206f2d3ce1941fd572360595183cb8e04f8aeb85b6e",
+      "byteLength": 17107
+    },
+    {
+      "path": "crates/mo-timeline/tests/retained.rs",
+      "sha256": "e98892d1e6157117f4ebbf04115dd74aa7a4e6451638815f08e4b3ca8d4a0c38",
+      "byteLength": 9250
+    },
+    {
+      "path": "crates/mo-timeline/tests/scale.rs",
+      "sha256": "dfd8e029d7b2e9693dd6fbbc1a76a03c973b19a7814ba0a6c893faee2ad49409",
+      "byteLength": 5498
+    },
+    {
+      "path": "crates/mo-timeline/tests/start_conditions.rs",
+      "sha256": "5e150c0bca10dd29f1ddf2c73453ad5dc18764910473cf24a235fe08cf029e9f",
+      "byteLength": 11934
+    },
+    {
+      "path": "crates/mo-timeline/tests/time_transform.rs",
+      "sha256": "3a2ecb2571d6c66d730585bd971bd35e1a884a0dce0ae335aed0fb47c92fd135",
+      "byteLength": 8723
+    },
+    {
+      "path": "crates/mo-timeline/tests/timeline.rs",
+      "sha256": "d07fe57a7f12b1712fb40b18b3dc8488a8c984bb823aa511a4f4e0edfd583b45",
+      "byteLength": 12977
+    },
+    {
+      "path": "crates/mo-timeline/tests/tree.rs",
+      "sha256": "0642efeaf0dec00b1b6e86ae45730d3f6dea9518498a8627579b85ba05292aaa",
+      "byteLength": 14123
+    },
+    {
+      "path": "crates/mo-timeline/tests/visibility.rs",
+      "sha256": "e09ccc5472b8eb67d23cbfd1c3d6b9b76d6bea7e77b65c21488f8d87a4ac03f9",
+      "byteLength": 10796
+    },
+    {
+      "path": "integrations/skills/musteroffice-presentations/references/advanced-content.md",
+      "sha256": "be01640f2a1eadbdfe2b077f6ee793b6f976f1fed10887a4203b7ef6d1a6e9b3",
+      "byteLength": 3310
+    },
+    {
+      "path": "packages/contracts/src/generated/asset-binding.ts",
+      "sha256": "7e015a58f44c05ff357279a2b9a9f0d80275fe0433f967ea6add6f4b1c850010",
+      "byteLength": 475
+    },
+    {
+      "path": "packages/contracts/src/generated/asset-info.ts",
+      "sha256": "e03cf046495d9b341981d4f236ba8f2496cd6cfd38537393456b32481738d834",
+      "byteLength": 1170
+    },
+    {
+      "path": "packages/contracts/src/generated/bidi-analysis-request.ts",
+      "sha256": "1966e3c4115685b5cefcaf466a0d2b863d55c9fe3ae4b34a7cccbffaba2ac3f0",
+      "byteLength": 824
+    },
+    {
+      "path": "packages/contracts/src/generated/bidi-analysis-response.ts",
+      "sha256": "e87ac55dd796a151a8046de059504f3f3930cd8760971dcd17870d18d0de3cff",
+      "byteLength": 1849
+    },
+    {
+      "path": "packages/contracts/src/generated/cascade-request.ts",
+      "sha256": "6f69e06560bb1d7252228a99d5f384498efe9d818febb52ff63b4b713611fdab",
+      "byteLength": 2401
+    },
+    {
+      "path": "packages/contracts/src/generated/cascade-response.ts",
+      "sha256": "cd39239633342212a36ae23e84a4da1532d8cc108008b919962a511dda6815f3",
+      "byteLength": 3103
+    },
+    {
+      "path": "packages/contracts/src/generated/computation-export-receipt.ts",
+      "sha256": "12fe539c266d97ecfb6bbec2e03938f60880415f69c339c3f88af1d17c2dcdc0",
+      "byteLength": 3766
+    },
+    {
+      "path": "packages/contracts/src/generated/computation-failure.ts",
+      "sha256": "da20d4b0090bcc9ee8e44d0e7b07661e4de4d035540bcdc7efa9e9f27f64b0f7",
+      "byteLength": 690
+    },
+    {
+      "path": "packages/contracts/src/generated/computation-invocation.ts",
+      "sha256": "53a3f19b039ec931f9278223310ea93d79b0ce076803579eb9021fca5be2f280",
+      "byteLength": 47395
+    },
+    {
+      "path": "packages/contracts/src/generated/computation-mutation-receipt.ts",
+      "sha256": "7e50f1d6d679a16debd0eac11d233d6864d9f80fefdde8d9e06f0036e168df66",
+      "byteLength": 5212
+    },
+    {
+      "path": "packages/contracts/src/generated/computation-receipt.ts",
+      "sha256": "1d4846b35edfecb40776868b43582eb12afef736d3c6015354fa8992ef3ff6f7",
+      "byteLength": 41085
+    },
+    {
+      "path": "packages/contracts/src/generated/computation-request.ts",
+      "sha256": "6e6063fd6887a16e7dfa57ecf5597f30b6eae36e259587d8ea4463abde090599",
+      "byteLength": 47543
+    },
+    {
+      "path": "packages/contracts/src/generated/delivery-inspect-request.ts",
+      "sha256": "6ca5e09b5824bf6790a5d25a7052f677e8e76b1da462db30c415364d29b2eea8",
+      "byteLength": 4838
+    },
+    {
+      "path": "packages/contracts/src/generated/delivery-inspect-response.ts",
+      "sha256": "d4abcefa9a00aa5548420feb47b892e65b0e3b3d3a333d01eed05d7d4897061b",
+      "byteLength": 1682
+    },
+    {
+      "path": "packages/contracts/src/generated/delivery-playback-request.ts",
+      "sha256": "702f9591eea274074b44b8722118ff8462b04af7cf2c43226ef2c88cc794eb26",
+      "byteLength": 5176
+    },
+    {
+      "path": "packages/contracts/src/generated/delivery-playback-response.ts",
+      "sha256": "fe5f7f182f21382095919f4c3949492a39c243edc4efe86e73875f62b627cf04",
+      "byteLength": 8307
+    },
+    {
+      "path": "packages/contracts/src/generated/document.ts",
+      "sha256": "89b9c9b47d6600d0ec101ecd408a770451232190160d585ad1d6eac4b9e25eb8",
+      "byteLength": 29554
+    },
+    {
+      "path": "packages/contracts/src/generated/font-metrics-request.ts",
+      "sha256": "1b67beec8ac4bdce546a07b739fde674d44f4ae5768a7db31ed35fa9ac68f684",
+      "byteLength": 1656
+    },
+    {
+      "path": "packages/contracts/src/generated/font-metrics-response.ts",
+      "sha256": "23992588d88cae67188e04a106537c644d1e3c15b9141b1c1fd921e8494c8704",
+      "byteLength": 2387
+    },
+    {
+      "path": "packages/contracts/src/generated/font-outlines-request.ts",
+      "sha256": "f0f777d8afd37cff02229427f994d97c18914a477ecb2e288292117c6ec7ca02",
+      "byteLength": 1073
+    },
+    {
+      "path": "packages/contracts/src/generated/font-outlines-response.ts",
+      "sha256": "707ce374abe441cfc3f40f3297aef4d47e6ba5f3b581a6d22f9efccaad229c10",
+      "byteLength": 2265
+    },
+    {
+      "path": "packages/contracts/src/generated/font-request.ts",
+      "sha256": "52131b9043ad89a21e7bca1f1e8139eca20be5d2ec5ec9e84d20e88d4af1301a",
+      "byteLength": 559
+    },
+    {
+      "path": "packages/contracts/src/generated/font-response.ts",
+      "sha256": "673efa9ffaf59df5ced570c50254a5b6cb3c7c239f2801dac6fd2632da43f017",
+      "byteLength": 3128
+    },
+    {
+      "path": "packages/contracts/src/generated/host-capabilities.ts",
+      "sha256": "ba8b574d5eb77e4acbdac4b8bf8afa08c0fa676c1904376511a9f6813b3a65ad",
+      "byteLength": 4887
+    },
+    {
+      "path": "packages/contracts/src/generated/host-request.ts",
+      "sha256": "396347f399a8ec823f32b53998f1e5841a8a944f597026d14a0fea74ddc96560",
+      "byteLength": 30128
+    },
+    {
+      "path": "packages/contracts/src/generated/host-response.ts",
+      "sha256": "295123bdc76b1e50e00a992cd179371a8d5cfa427d39ba9a8baecad0b21e310b",
+      "byteLength": 28723
+    },
+    {
+      "path": "packages/contracts/src/generated/image-decode-request.ts",
+      "sha256": "4f800adc71b04a1bbeb3ac3bb9de42bad68a72b01170a87e09f52fee4cb597d9",
+      "byteLength": 313
+    },
+    {
+      "path": "packages/contracts/src/generated/image-decode-response.ts",
+      "sha256": "78939b4084cc89babbb71ab94adbbe5e7e8bfce79925844a98ad2d5545388441",
+      "byteLength": 2415
+    },
+    {
+      "path": "packages/contracts/src/generated/image-raster-request.ts",
+      "sha256": "49cef4d2556cff0803135105788864e5c3a70168f9db42da27f07c0fac427a40",
+      "byteLength": 13248
+    },
+    {
+      "path": "packages/contracts/src/generated/image-raster-response.ts",
+      "sha256": "4aa723767f96266b5b1ad58694761d0074d736cad4804cbd89821e2b4eef175f",
+      "byteLength": 4663
+    },
+    {
+      "path": "packages/contracts/src/generated/image-scene-request.ts",
+      "sha256": "202dfa962245a1c20d4ee96fe66e9944074c4cd4370775bc06d0c77957f15f79",
+      "byteLength": 14809
+    },
+    {
+      "path": "packages/contracts/src/generated/image-scene-response.ts",
+      "sha256": "cfd949d6ed8609861c72da8c6b81d4fd62d2d70d7344cd30c1da5c533223b75c",
+      "byteLength": 5860
+    },
+    {
+      "path": "packages/contracts/src/generated/itemization-request.ts",
+      "sha256": "94dd32c880561fd7eebcb9d51340e0542e1d8c87719eb6bf501398058bae8f90",
+      "byteLength": 772
+    },
+    {
+      "path": "packages/contracts/src/generated/itemization-response.ts",
+      "sha256": "a783f096947d2eac1eb791c07176558dd47b597a0a5475b8155a3369d3368d76",
+      "byteLength": 4382
+    },
+    {
+      "path": "packages/contracts/src/generated/kernel-request.ts",
+      "sha256": "641bc79ba7357af1c665f9e8ea2fc7004a50c3b62f649dc584384579e6f7c916",
+      "byteLength": 22009
+    },
+    {
+      "path": "packages/contracts/src/generated/kernel-response.ts",
+      "sha256": "be818e21b0e0b95f92f7d7312f02ed49dd6e99646dae24c966a5bbb64be59f93",
+      "byteLength": 20504
+    },
+    {
+      "path": "packages/contracts/src/generated/line-break-request.ts",
+      "sha256": "dac767d62267af2d1cc5b65e78bae4417bc09f9d0641fcc077e9cf5c5a10a410",
+      "byteLength": 187
+    },
+    {
+      "path": "packages/contracts/src/generated/line-break-response.ts",
+      "sha256": "4d62d2756b1ec1fd910cf621f1dd03f907ff052954e85a0bfc16b233ecaa8c87",
+      "byteLength": 2025
+    },
+    {
+      "path": "packages/contracts/src/generated/line-geometry-request.ts",
+      "sha256": "34d05e7c905bfb8ed94cf41040159fc980561df3779c4db5b35e1292197f5169",
+      "byteLength": 4959
+    },
+    {
+      "path": "packages/contracts/src/generated/line-geometry-response.ts",
+      "sha256": "c6d01fe235e4444d89f3b9ed951d77b415796d762baa103904b99deae9c737ef",
+      "byteLength": 10231
+    },
+    {
+      "path": "packages/contracts/src/generated/line-shape-request.ts",
+      "sha256": "16e1ebbcfa037152e0e15c7ab7725fab476509b4aed9bd1d1992a65297578cb4",
+      "byteLength": 2785
+    },
+    {
+      "path": "packages/contracts/src/generated/line-shape-response.ts",
+      "sha256": "ef90e87b03b6718e6a4e22ee48943890e0197db75b63c9215942e6e9c9f6d163",
+      "byteLength": 7562
+    },
+    {
+      "path": "packages/contracts/src/generated/operation-job.ts",
+      "sha256": "f5e22796181e6cc1a7c5082a6980629f26c216f428c7ad59e338e8b6575e49d3",
+      "byteLength": 10954
+    },
+    {
+      "path": "packages/contracts/src/generated/operation-request.ts",
+      "sha256": "67dbd2bd48cbaf755ed0a54a46ffd1f3310324b9306d3721bae25ee297dc04ef",
+      "byteLength": 45062
+    },
+    {
+      "path": "packages/contracts/src/generated/package-inspection.ts",
+      "sha256": "a24e02f0dd751526794216e3e4bffdab048e7efbdffebb08e1cb616ecdb8ee3e",
+      "byteLength": 1653
+    },
+    {
+      "path": "packages/contracts/src/generated/page-compile-response.ts",
+      "sha256": "b83be62101c4cb7a630d009caae5e1326bdefabe36e6c5b4bebdbb867d3600d1",
+      "byteLength": 13390
+    },
+    {
+      "path": "packages/contracts/src/generated/page-placement-request.ts",
+      "sha256": "a03af164bc0401d3e175a3edc756cc9be0baf407b6412b64a7e8dcbcf7cee287",
+      "byteLength": 30912
+    },
+    {
+      "path": "packages/contracts/src/generated/page-placement-response.ts",
+      "sha256": "e1d395f38a59f9b96e883d84de5b21a190008e69c4e986a990a6d1f6e8691fa1",
+      "byteLength": 3594
+    },
+    {
+      "path": "packages/contracts/src/generated/page-raster-response.ts",
+      "sha256": "5bd033120707692c4a9362f0387538ff26f74a9f3cd4208a834577c8373b1bb5",
+      "byteLength": 6895
+    },
+    {
+      "path": "packages/contracts/src/generated/page-render-request.ts",
+      "sha256": "3f5444dc3521d41e6b3e2a96bc09d1c17fa30782e5dc024b7bbea985f96245e7",
+      "byteLength": 33169
+    },
+    {
+      "path": "packages/contracts/src/generated/paragraph-layout-request.ts",
+      "sha256": "e65ad18b888e13b8d193d5940de8dcbc98d26833320c3f6a706179b0ebce00e6",
+      "byteLength": 4706
+    },
+    {
+      "path": "packages/contracts/src/generated/paragraph-layout-response.ts",
+      "sha256": "44fee2942867d29ddfbe860ca1c1008e9733550d7586cf81674421b5cae95ccf",
+      "byteLength": 11864
+    },
+    {
+      "path": "packages/contracts/src/generated/paragraph-paths-request.ts",
+      "sha256": "370716d46bc2bdf44cf8ffece5ef2f6a205311f9c7b45ee21471485d3920a201",
+      "byteLength": 4994
+    },
+    {
+      "path": "packages/contracts/src/generated/paragraph-paths-response.ts",
+      "sha256": "81d49848fe444fa66b4f900e5eeff495874304293484d9a33d053d08f9283139",
+      "byteLength": 13803
+    },
+    {
+      "path": "packages/contracts/src/generated/paragraph-shape-request.ts",
+      "sha256": "fcdc7c67243c2bbb36207317823a80348fc4ceec65badbee1cc4bcc2c4655298",
+      "byteLength": 2443
+    },
+    {
+      "path": "packages/contracts/src/generated/paragraph-shape-response.ts",
+      "sha256": "0a7436ff2a0516644a7b16328aff6d0213f3a8296218129675260880dccb7499",
+      "byteLength": 7407
+    },
+    {
+      "path": "packages/contracts/src/generated/path-raster-request.ts",
+      "sha256": "55f4b78012a3f04bbd6aaa461443a95e9b2edd9c9888b7c810e5ac280e207800",
+      "byteLength": 12286
+    },
+    {
+      "path": "packages/contracts/src/generated/path-raster-response.ts",
+      "sha256": "900f2a787f40da9e1bfa720d8162eeace2c4f006d4cafbd756ef2f3dcd6d2e0e",
+      "byteLength": 4166
+    },
+    {
+      "path": "packages/contracts/src/generated/playback-compile-response.ts",
+      "sha256": "adada646a5c77ff77d1efba5442cd3e8febab798a92235afb0b36372314910ae",
+      "byteLength": 18664
+    },
+    {
+      "path": "packages/contracts/src/generated/playback-page-request.ts",
+      "sha256": "ee8b19342a342029d4c52370caa984ffb0ab5ed3a5163ed840d7dfcc007edec4",
+      "byteLength": 34869
+    },
+    {
+      "path": "packages/contracts/src/generated/playback-raster-response.ts",
+      "sha256": "42977438b9785e9acc638cdd0ab93a6d66a625a0f71ec078a79f4f33aa06d466",
+      "byteLength": 10103
+    },
+    {
+      "path": "packages/contracts/src/generated/playback-session-request.ts",
+      "sha256": "38f98dd324a5185312803b7083c953102cd393df06ccb0d492947ee80cb9d9f4",
+      "byteLength": 21180
+    },
+    {
+      "path": "packages/contracts/src/generated/playback-session-response.ts",
+      "sha256": "232b854dce79ae39d195a0f49927ee63c98c8cbc2e627bbdf2f5a8f4bfa58c1f",
+      "byteLength": 24399
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-color-query.ts",
+      "sha256": "67151379429f01eb89bf6cae7c2899a56c4137a62da2b313d17681a153262805",
+      "byteLength": 4301
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-color-response.ts",
+      "sha256": "29cee292d2d4e127a7c1629d428483e2d04df550e2ef9ac7dbacc981e51cf666",
+      "byteLength": 3690
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-export-request.ts",
+      "sha256": "f7e26903bc9d51a665760935c462089dec6e01dda720bcd691aea81b33ead551",
+      "byteLength": 32121
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-fill-color-query.ts",
+      "sha256": "48e4bd1bd66fa21276df0f95aebc16185516c7424463254dc4a8a3f534b762e6",
+      "byteLength": 4657
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-fill-color-response.ts",
+      "sha256": "0d8735465e871d1c0d132d87bdaffde54cabf204091cc15dbc023507d38f0304",
+      "byteLength": 17786
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-fill-query.ts",
+      "sha256": "272d6cb631390310ec2f458dba2105a919e60920b4dee3cfbd5cc0da58252022",
+      "byteLength": 1026
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-fill-response.ts",
+      "sha256": "95a2d85711b6b4c1b879f1c1c681a02341cb81d06a11cb6ceacca0f42bf1c80c",
+      "byteLength": 14324
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-geometry-query.ts",
+      "sha256": "abd56a63ecf3d046b05f627a44974cb5fc336a68eaa3b953e2814f98228a5f6c",
+      "byteLength": 580
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-geometry-response.ts",
+      "sha256": "faff51a040256ba18d96bc8eff3bed0839da9a44ab00f846739f3089cef39c6d",
+      "byteLength": 9403
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-image-query.ts",
+      "sha256": "4a4b51e2c0abaec85239c5f3f2b23b6cc2715dff06f3661bd3396ad8214d1140",
+      "byteLength": 1604
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-image-response.ts",
+      "sha256": "f8774fc461da48f8fa874810dfa1683ffe46793516dad3e4552c2e2c56a5b0fc",
+      "byteLength": 7128
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-import-request.ts",
+      "sha256": "52d1d585bfafd9e99c848369c4241d61568c3308b715c11fff5739b5f30a7f1c",
+      "byteLength": 669
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-import-response.ts",
+      "sha256": "d43ae410ec5db4cf5ff35484f48450c3b74ef0c82dca7b6760da5fe1d69ebbc8",
+      "byteLength": 18715
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-line-color-query.ts",
+      "sha256": "57dc1016f207d7bac734863936a2a6ead6a74d8eeaf87406896b4219be6099c2",
+      "byteLength": 7667
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-line-color-response.ts",
+      "sha256": "662e2da65dcd8a5eb5af9670b54302595b04e913b120a0d50483322b9d0e4b8a",
+      "byteLength": 14497
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-line-query.ts",
+      "sha256": "5bfb14a96c42bba0f0fbf78ca77ed482baab5cf994b7c87709754725c08ecfc0",
+      "byteLength": 708
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-line-response.ts",
+      "sha256": "0f616f10cb272f99f1b57541e1955886368e2f32bf1064efc2b64956dc6d0d59",
+      "byteLength": 12009
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-page-compile-response/part-001.ts",
+      "sha256": "762996061a729c5418a31cea0c158f1fbc8776778da09f2db956ad66fe7cda33",
+      "byteLength": 21568
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-page-compile-response/part-002.ts",
+      "sha256": "2481963ca906086660dc5a8027bc14fe5b618e80752028c185a3996be4c91095",
+      "byteLength": 23165
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-page-compile-response.ts",
+      "sha256": "d7f812b278a06e29136607d9eb38d35c2c353b93c18ecf5127c006351a178044",
+      "byteLength": 2803
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-page-raster-response.ts",
+      "sha256": "e25df317ee21e2162064ca0f721bc41410f5ca36f1cc0f63f526186bd1a2881f",
+      "byteLength": 14701
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-page-request.ts",
+      "sha256": "0c493c928c768903fcf6631a85ecfcb29a80272858e4b32b17c8a4537ae859fa",
+      "byteLength": 5239
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-paths-query.ts",
+      "sha256": "cf0c60af9e01c866c7e2ad1fe168af13555d3102265093ba35b785208e91a1dc",
+      "byteLength": 1711
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-paths-response.ts",
+      "sha256": "f09abd062e2cf0858b0940447ddbf529fbf087809739dda6b012279da38cf611",
+      "byteLength": 8241
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-placement-query.ts",
+      "sha256": "0dd0e52fd7672ee4c433cef3da530ad3e9856ab76fd2abf4fd89902cda006a7b",
+      "byteLength": 614
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-placement-response.ts",
+      "sha256": "4a8b2fbd3fcc8d7bf4b27149e6e4b7eacc89d4e38ffee11c1bed610bcd503865",
+      "byteLength": 4985
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-playback-page-request.ts",
+      "sha256": "7cb8d1606d2a914bfebee771c29fe96b09c8c7952010a3ff1a8037e00c80a016",
+      "byteLength": 12852
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-playback-raster-response.ts",
+      "sha256": "8a157ec28d347dfd10f2330d41d88ce74be88d5665e6c1fd5b9e4bd3749db052",
+      "byteLength": 40694
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-playback-session-request.ts",
+      "sha256": "704415ea463daea528448ed03e0424a57c262e284083e71263070707313d3c0d",
+      "byteLength": 8804
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-playback-session-response.ts",
+      "sha256": "4a6bd491b18bc5c94cd7653864e159480f683422b507e0c862305334e1eb2592",
+      "byteLength": 42816
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-radial-layout-request.ts",
+      "sha256": "acfaa6b9243c80f8c90cfadfbb3bbfeeb7d3fc700f7c228f57b0b55ded8d235e",
+      "byteLength": 2252
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-radial-layout-response.ts",
+      "sha256": "c44b2b62b51789e45d174be146cfd8cc59ec77f70e4243518613455b81be5ca6",
+      "byteLength": 18567
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-resource-page-raster-response.ts",
+      "sha256": "5c1e02b821dbc3b27016b43e7414c580e36c608c4804088bf480b2d7adbead73",
+      "byteLength": 36958
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-resource-page-request.ts",
+      "sha256": "19428506a121c4902ca26d7d9a1cfa218eeec660735e00004632cee0edeacf49",
+      "byteLength": 9462
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-source-response/part-001.ts",
+      "sha256": "c56e9e89cc5c4f2021bae67113a685cfa3ee22f62a8a44d0547f7d3b181bc170",
+      "byteLength": 23086
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-source-response/part-002.ts",
+      "sha256": "fdabe51c99750bfe10d376a05609ab530cac1dc3f7bafb74da8631b76a5dd6d1",
+      "byteLength": 24748
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-source-response.ts",
+      "sha256": "e37d7a7875ed257e1376ab3901c0e38c09c064c62142d52c9aad7f8388272ebf",
+      "byteLength": 2947
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-text-body-query.ts",
+      "sha256": "53f29fb7bcd3a6313fc379e820d5349ba5ef45f1d3a12c82243a26956817ac1f",
+      "byteLength": 583
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-text-body-response.ts",
+      "sha256": "be07b6fc85c670dacbf19ecd83f4961e0d02ba8976eb58ee50da79f9975e52f0",
+      "byteLength": 5077
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-text-edits.ts",
+      "sha256": "0226877cda0170ffd2ecba5a8cc302c12b8b34115ea72a0beeae7a5425771246",
+      "byteLength": 801
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-text-page-raster-response.ts",
+      "sha256": "525b13a50eb1c0b168eb1349a043cdb3cf22de519fe4f3a1db4950ee9dab4d77",
+      "byteLength": 29936
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-text-page-request.ts",
+      "sha256": "0a8003344ef13576b34d3f17ae1793f3def050ed97ed1306d6d6f89900117585",
+      "byteLength": 9093
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-timing-query.ts",
+      "sha256": "3b0b63be0324ce09a745aacf39565992e892c7ab91562833f282a673987fdc67",
+      "byteLength": 336
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-timing-response.ts",
+      "sha256": "9cd5a187dbad6edbad236f3e3a77c5f81add447e9c2fbd3a2d04f2610bb1f517",
+      "byteLength": 6355
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-transform-edits.ts",
+      "sha256": "77ba75a04f9097fe87958a62bc8559131eca84a47889872c66056a25506cca88",
+      "byteLength": 2064
+    },
+    {
+      "path": "packages/contracts/src/generated/presentation-delivery-bundle.ts",
+      "sha256": "bd23ccf52dbec0899d7f5aeacb6586690ab3c78f85ead3555439d7e94b1d224b",
+      "byteLength": 3532
+    },
+    {
+      "path": "packages/contracts/src/generated/presentation-delivery-settings.ts",
+      "sha256": "20b43d71bbd4e66f7c11228eed7703eedf93acf838b5d6d130ab3f0f43a962a6",
+      "byteLength": 8606
+    },
+    {
+      "path": "packages/contracts/src/generated/presentation-renderer-identity.ts",
+      "sha256": "070a63aca57e80ab1cb21739e6462cef6ca458e6d2ba8d1a6ebd4b52432f0877",
+      "byteLength": 336
+    },
+    {
+      "path": "packages/contracts/src/generated/scene-raster-request.ts",
+      "sha256": "6cfef582491324618db140299e84d66dddd124f20f94801c250384b15531198d",
+      "byteLength": 13772
+    },
+    {
+      "path": "packages/contracts/src/generated/scene-raster-response.ts",
+      "sha256": "be9631b3712103a76ca116b04d6472ee9faf74d50835e5b4ea406cfc07e92278",
+      "byteLength": 5267
+    },
+    {
+      "path": "packages/contracts/src/generated/schema-document.ts",
+      "sha256": "eeed252cee682d01ab0995120a1a004ca096ad4280d6e8409950e11dd7879def",
+      "byteLength": 759
+    },
+    {
+      "path": "packages/contracts/src/generated/shape-request.ts",
+      "sha256": "9d897013e28abd6e96a52584b9f9feab9a6250fe7156a151577ba908246db0df",
+      "byteLength": 2323
+    },
+    {
+      "path": "packages/contracts/src/generated/shape-response.ts",
+      "sha256": "5aadae8f1e4ca11e8534ad3ddfff0da327e77334904380e7655f6fcc0cab340c",
+      "byteLength": 1980
+    },
+    {
+      "path": "packages/contracts/src/generated/template-definition.ts",
+      "sha256": "d2a84952d1b3a3e1ae86157610f647bedd64d2516256b2c41e5f2657620560f2",
+      "byteLength": 3099
+    },
+    {
+      "path": "packages/contracts/src/generated/template-request.ts",
+      "sha256": "0622097ac60ad1fd18115361eb8b8066001ab0acdaba4a8f45c8c8b062974a6c",
+      "byteLength": 33997
+    },
+    {
+      "path": "packages/contracts/src/generated/template-response.ts",
+      "sha256": "c70509db0cbc606e8480fa27956b1195f129190fdf0f08556fa829b2c786119f",
+      "byteLength": 23670
+    },
+    {
+      "path": "packages/contracts/src/generated/text-analysis-request.ts",
+      "sha256": "278876c46d7c530945a34a561f2b11e19165532c633b46bfaed3352eb95d2c16",
+      "byteLength": 190
+    },
+    {
+      "path": "packages/contracts/src/generated/text-analysis-response.ts",
+      "sha256": "d716e958d9e81cbd3aa8db0a56e588c795139d8eaf452a62b02715135ff37158",
+      "byteLength": 1344
+    },
+    {
+      "path": "packages/contracts/src/generated/timeline-evaluate-request.ts",
+      "sha256": "ed611bdcc8fbe0311487aba2dae0d47fc67dcbad58b09ef0588b977071b29ad1",
+      "byteLength": 33225
+    },
+    {
+      "path": "packages/contracts/src/generated/timeline-evaluate-response.ts",
+      "sha256": "ba03c1b5493008b948a2d2481ba0d4aae45db7fe98034f7825b917bcb767ceea",
+      "byteLength": 3242
+    },
+    {
+      "path": "packages/contracts/src/generated/transaction-receipt.ts",
+      "sha256": "8be1fbbe8a653da0c4e84e55d14f9979e8fe6cf7b197cd39344de80b59ade2c3",
+      "byteLength": 3056
+    },
+    {
+      "path": "packages/contracts/src/generated/transaction.ts",
+      "sha256": "6894f40982b0587191bc6fc08199fe858a3f55f3a6e8f585641b750edb1640d4",
+      "byteLength": 29045
+    },
+    {
+      "path": "packages/contracts/src/generated/upload-info.ts",
+      "sha256": "14c4e3b6561b369118e4d442158532a560dd6533ddfef71222ca2c7bb297ea58",
+      "byteLength": 2806
+    },
+    {
+      "path": "packages/contracts/src/generated/upload-request.ts",
+      "sha256": "6b832fc542f9f05f7683167a4f396192e9abd7ceafb8c35a3ddf62423039c67e",
+      "byteLength": 1000
+    },
+    {
+      "path": "packages/contracts/src/generated/validation-report.ts",
+      "sha256": "eca1b9f9a2b84352469ab0841cf4e6842928f09beccc7222e32c6e3ed63cfb04",
+      "byteLength": 722
+    },
+    {
+      "path": "tools/verification/fade-playback-fixtures.py",
+      "sha256": "65fe888eb0b25ecb9f624e925ec0fefe6827ebc16c99b84ef88fd32353bddc50",
+      "byteLength": 12772
+    }
+  ],
+  "commands": [
+    {
+      "report": {
+        "path": ".codex-work/fade-animation/format-final.json",
+        "sha256": "bee5f4910ab2f485724f12e9904eb762e035a13d8413e7f6c3ac55fe1471dbde",
+        "byteLength": 213112
+      },
+      "log": {
+        "path": ".codex-work/fade-animation/format-final.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byteLength": 0
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true
+    },
+    {
+      "report": {
+        "path": ".codex-work/fade-animation/native-final.json",
+        "sha256": "fdb055df329982ea68b1e56d1781482fa3d4a8c028dabe4197dc623cb2c32566",
+        "byteLength": 213327
+      },
+      "log": {
+        "path": ".codex-work/fade-animation/native-final.log",
+        "sha256": "c7548afaa5b7370c42bea783b6e3aa557cfe467a44ae455e23972b3d680e6916",
+        "byteLength": 1293
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true
+    },
+    {
+      "report": {
+        "path": ".codex-work/fade-animation/wasm-final.json",
+        "sha256": "2653cffd593f0ae37da8bd8c4f111a23e5098c51fb279d71c3d2ab7ed720f97c",
+        "byteLength": 213206
+      },
+      "log": {
+        "path": ".codex-work/fade-animation/wasm-final.log",
+        "sha256": "9b7b2094aa1ca351b3ad9b64e7d09ed0039302cce429d84107525c451cf91119",
+        "byteLength": 634
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true
+    },
+    {
+      "report": {
+        "path": ".codex-work/fade-animation/bindgen-final.json",
+        "sha256": "f7d8a32084ff5ce3f38aa172f7346f356253c59d35b53e3a5b61f189169ad74a",
+        "byteLength": 767
+      },
+      "log": {
+        "path": ".codex-work/fade-animation/bindgen-final.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byteLength": 0
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true
+    },
+    {
+      "report": {
+        "path": ".codex-work/fade-animation/bundle-final.json",
+        "sha256": "943000791598aeecf47824fe545909096a0473c95385a127e3fccaea1fe835da",
+        "byteLength": 38837
+      },
+      "log": {
+        "path": ".codex-work/fade-animation/bundle-final.log",
+        "sha256": "c16e8d3dad50e6ffa1d17ddcd6b9593ba386127be17e0648ac70f200eb9cf9cb",
+        "byteLength": 100
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true
+    },
+    {
+      "report": {
+        "path": ".codex-work/fade-animation/clippy-01.json",
+        "sha256": "2971f3272bbd548bc097936bbc2a5e34996ba8327a0c1d9186b41917eb79e886",
+        "byteLength": 213271
+      },
+      "log": {
+        "path": ".codex-work/fade-animation/clippy-01.log",
+        "sha256": "73eeb103d305e436594bb684bf1a1951b4cc2c1f1c8ccfb59d45765f3ae8efd8",
+        "byteLength": 933
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true
+    },
+    {
+      "report": {
+        "path": ".codex-work/fade-animation/types-check.json",
+        "sha256": "bdff027c854b8739c814885ca6ae2aec66014ed85d5e8a3e8125a495180b6c86",
+        "byteLength": 71360
+      },
+      "log": {
+        "path": ".codex-work/fade-animation/types-check.log",
+        "sha256": "cad290968d57526e0a6958210b4070c7fcf229a49e86089c62affb6a210ff36c",
+        "byteLength": 4215
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true
+    },
+    {
+      "report": {
+        "path": "product-worktree/.codex-work/integration/fade-animation/prepare-sdk-final.json",
+        "sha256": "e18d7130f25264e80744877c3059f9b294728bac25b970cc943d2d911825fe48",
+        "byteLength": 1568
+      },
+      "log": {
+        "path": "product-worktree/.codex-work/integration/fade-animation/prepare-sdk-final.log",
+        "sha256": "34eef329777b6e8b4e51b8f0b71ecd7ecb256424bd039a49d7ef7f920dee5d0c",
+        "byteLength": 647
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true
+    },
+    {
+      "report": {
+        "path": "product-worktree/.codex-work/integration/fade-animation/prepare-playback.json",
+        "sha256": "b29191963d4fe9ca65a2cd3f3be12aa79627c476243a1ecd7418bb741bc51d6f",
+        "byteLength": 1240
+      },
+      "log": {
+        "path": "product-worktree/.codex-work/integration/fade-animation/prepare-playback.log",
+        "sha256": "4814694dd48a1eaf671977af580cc10295e2599c2d0bbd5440e946c13eea0fb8",
+        "byteLength": 9686
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true
+    },
+    {
+      "report": {
+        "path": "product-worktree/.codex-work/integration/fade-animation/consumer-build-02.json",
+        "sha256": "0780ce59603f9011e7def5b8547d425816469f07bcb53affed5b9f0611bba683",
+        "byteLength": 2279
+      },
+      "log": {
+        "path": "product-worktree/.codex-work/integration/fade-animation/consumer-build-02.log",
+        "sha256": "119cd317fde4bffd7290d54d7f80cf9923442ae096a1b1881f4b39e2368ab03c",
+        "byteLength": 5942
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true
+    },
+    {
+      "report": {
+        "path": "product-worktree/.codex-work/integration/fade-animation/consumer-sequence-02.json",
+        "sha256": "8ad7ba9bf0b9cb810e38605c1d6f5121498818a9c3324c1dfb4a38d3592f28ec",
+        "byteLength": 2308
+      },
+      "log": {
+        "path": "product-worktree/.codex-work/integration/fade-animation/consumer-sequence-02.log",
+        "sha256": "93ebbbdff350b3b19c406a9cb0deb982472220403f446cb6dd29933f35fd3d26",
+        "byteLength": 566
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true
+    },
+    {
+      "report": {
+        "path": "product-worktree/.codex-work/integration/fade-animation/adapter-02.json",
+        "sha256": "85deed53dba39a423ae55833a0edf4de0948c595fd0ae1bf892d1b777deb7fde",
+        "byteLength": 15483
+      },
+      "log": {
+        "path": "product-worktree/.codex-work/integration/fade-animation/adapter-02.log",
+        "sha256": "9cd0e70b201bdbfff705e42388b1235794cec688fcf34e88adbf3d60c5c3a843",
+        "byteLength": 8199
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true
+    },
+    {
+      "report": {
+        "path": "product-worktree/.codex-work/integration/fade-animation/preparation.json",
+        "sha256": "3586ba05ba9ba617f3f06b4e31438da753f459246874f271e127adae85bb82b9",
+        "byteLength": 1824
+      },
+      "log": {
+        "path": "product-worktree/.codex-work/integration/fade-animation/preparation.log",
+        "sha256": "b1881605f781ced5a8fce165c2386609a03d621cc33be30deae74661d79b73e1",
+        "byteLength": 1468
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true
+    },
+    {
+      "report": {
+        "path": "product-worktree/.codex-work/integration/fade-animation/client-final.json",
+        "sha256": "14c235eb7a33aa3d10ff4df435c9d3bd131e323a3c51050338ada18dcf85b340",
+        "byteLength": 91115
+      },
+      "log": {
+        "path": "product-worktree/.codex-work/integration/fade-animation/client-final.log",
+        "sha256": "a41334f3124e4079e875590fa891248a22ed4db4354a4db029befb301d51a9bc",
+        "byteLength": 1025
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true
+    },
+    {
+      "report": {
+        "path": "product-worktree/.codex-work/integration/fade-animation/viewer.json",
+        "sha256": "295de8f63bdd656fd22d8a7912a000f75467e7f293e6802ac0ae98e3d2998b93",
+        "byteLength": 75324
+      },
+      "log": {
+        "path": "product-worktree/.codex-work/integration/fade-animation/viewer.log",
+        "sha256": "def7cb23bf65f352d10653e7e596703122b5852d78ea8ea1cb23a8b53b227105",
+        "byteLength": 444
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true
+    },
+    {
+      "report": {
+        "path": "product-worktree/.codex-work/integration/fade-animation/types.json",
+        "sha256": "5ea3b8c9bd92fb6d600078501aa35b8d41dd017ab441a43df459e8f649f83069",
+        "byteLength": 75590
+      },
+      "log": {
+        "path": "product-worktree/.codex-work/integration/fade-animation/types.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byteLength": 0
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true
+    },
+    {
+      "report": {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build.json",
+        "sha256": "b16b3cb4037d32f35a4baf0b9c7857117453aa7d043eb7836e47d0d88ed39438",
+        "byteLength": 505606
+      },
+      "log": {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build.log",
+        "sha256": "08c0cadd75bca3c0bc160d8da69db3ac8a865b72a1bc47e9b8b4173bec674e3c",
+        "byteLength": 72552
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true
+    }
+  ],
+  "checks": {
+    "rustTests": 503,
+    "newRustTests": 9,
+    "clippy": true,
+    "format": true,
+    "types": true,
+    "nativeFrames": 57,
+    "wasmSyncFrames": 57,
+    "wasmSteppedFrames": 57,
+    "xsdPresentationParts": 27,
+    "wpsEditedExactSamples": 11,
+    "productNativeFrames": 12,
+    "productWorkerFrames": 19,
+    "productTests": 158,
+    "desktopFrontendBuild": true,
+    "fullAgentElectronAcceptance": false,
+    "stableSwitched": false,
+    "productionCommit": false
+  },
+  "materials": {
+    "sdkManifest": {
+      "path": ".codex-work/fade-animation/sdk-02/sdk-manifest.json",
+      "sha256": "3a834eef8ed4efd1e84066e8a55e6edc3256cdba6cddb1b95b834188f4fdfc98",
+      "byteLength": 224380
+    },
+    "playbackManifest": {
+      "path": ".codex-work/fade-animation/bundle-final/bundle-manifest.json",
+      "sha256": "d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8",
+      "byteLength": 11855
+    },
+    "exportWorker": {
+      "path": "target/debug/mo-export-worker",
+      "sha256": "c3f8ef0c5e63b3648501dadaa01bfe3fe2d2762eb27ae04a1df0a7bc01c43560",
+      "byteLength": 43787104
+    },
+    "rasterWorker": {
+      "path": "target/debug/mo-raster-worker",
+      "sha256": "a050d24693266f406b5f90468a0af50a59a2491c1ab5704fa00008879d74c798",
+      "byteLength": 40824864
+    },
+    "cli": {
+      "path": "target/debug/mo-cli",
+      "sha256": "15414206163644fc8305c78888fc2a4cd2d6945579228778fdbba2fbf0130562",
+      "byteLength": 69046712
+    },
+    "productLocks": [
+      {
+        "path": "product-worktree/components/musteroffice/lock.json",
+        "sha256": "b9e06c7086bd229f4829627e0ebb0456d00f67302ac2c4ee25c10521215e51fe",
+        "byteLength": 333
+      },
+      {
+        "path": "product-worktree/components/musteroffice/playback-lock.json",
+        "sha256": "777a623bc66f9e7711940c2b0e14c0173fb513e2b00f1d35f8a26382753aab6f",
+        "byteLength": 153
+      }
+    ],
+    "verifiedSdkBundleVendorFiles": 1232,
+    "desktopPlayback": [
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/index.mjs",
+        "sha256": "4c7c5e74d2bb6d6b81594bb5f2eb9f2a70d75c0c4c6111828e8131a13fc7a18b",
+        "byteLength": 1459
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/lib/contracts/src/generated/delivery-playback-request.js",
+        "sha256": "95b054fbca318a613300e918b9aa261694df474fe52a653c1c79b09952b22cc9",
+        "byteLength": 116
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/lib/contracts/src/generated/delivery-playback-response.js",
+        "sha256": "95b054fbca318a613300e918b9aa261694df474fe52a653c1c79b09952b22cc9",
+        "byteLength": 116
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/lib/contracts/src/generated/playback-session-request.js",
+        "sha256": "95b054fbca318a613300e918b9aa261694df474fe52a653c1c79b09952b22cc9",
+        "byteLength": 116
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/lib/contracts/src/generated/playback-session-response.js",
+        "sha256": "95b054fbca318a613300e918b9aa261694df474fe52a653c1c79b09952b22cc9",
+        "byteLength": 116
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/lib/contracts/src/generated/pptx-playback-session-request.js",
+        "sha256": "95b054fbca318a613300e918b9aa261694df474fe52a653c1c79b09952b22cc9",
+        "byteLength": 116
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/lib/contracts/src/generated/pptx-playback-session-response.js",
+        "sha256": "95b054fbca318a613300e918b9aa261694df474fe52a653c1c79b09952b22cc9",
+        "byteLength": 116
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/lib/playback-client/src/author.js",
+        "sha256": "b640bdac1356400d5737dcfe7e1bd84b7afd2a05283087d33a21ae1be0183039",
+        "byteLength": 4251
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/lib/playback-client/src/delivery.js",
+        "sha256": "c0eba39e27490cac128d4ed8a22d9c29dddefa2ebb97bbafb265ff0b0a30e378",
+        "byteLength": 1526
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/lib/playback-client/src/execution.js",
+        "sha256": "600dbe24d1e8ebad92683f05a0207ad9f5b83c33776e413fc8f5673074533055",
+        "byteLength": 7027
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/lib/playback-client/src/index.js",
+        "sha256": "0726cc1cb328a3e97b17d9f8569844680d7b84a367eeb3f3d33603f848483085",
+        "byteLength": 1114
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/lib/playback-client/src/owner.js",
+        "sha256": "49b210e52f5b32a4b5105a096578cc16b1a4fb383b4e5a0892a9e8702177b420",
+        "byteLength": 6255
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/lib/playback-client/src/ports.js",
+        "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881",
+        "byteLength": 11
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/lib/playback-client/src/source.js",
+        "sha256": "e64d50e73f2da6117e678715e035f915cc3342b6aebe0b3aa03744ce75d903ab",
+        "byteLength": 4567
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/lib/raster-component/src/execution.js",
+        "sha256": "0cd7985492149064de750b0260f5bc6e45d2b2667685304900b9949700a2a859",
+        "byteLength": 5908
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/lib/raster-component/src/index.js",
+        "sha256": "83c34d3b22b3040ac12884eab299b67d99acf844b1e13598b8e474796459df86",
+        "byteLength": 16281
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/lib/text-component/src/index.js",
+        "sha256": "12450a5ddca869b7f59aaf36df21fd41c3001fa856f65c2eaf257f582d5cd551",
+        "byteLength": 7193
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/notices/drawingml-presets/COPYRIGHT.txt",
+        "sha256": "0897d6b9fc76d7a454e86e1c3aff3d7afb088b27ddafc1373502abc2fba26854",
+        "byteLength": 2335
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/notices/harfbuzz/lock.json",
+        "sha256": "09f7d48e187b4e03265cd8d9e9a89fdcc8dcfc373555ea66992d125d750fa363",
+        "byteLength": 485
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/notices/image-codec/licenses/libjpeg-turbo/LICENSE.md",
+        "sha256": "ba6bceebcba0fdd35488477c2cca8c4632ce82c74dbfbc87d886ce6fc4433579",
+        "byteLength": 6077
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/notices/image-codec/licenses/libpng/LICENSE",
+        "sha256": "bdb0a645ea18c60507d0368379b1ac5474b92255fcc2d115e07486a7672ba526",
+        "byteLength": 5345
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/notices/image-codec/licenses/zlib/LICENSE",
+        "sha256": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2",
+        "byteLength": 1002
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/notices/image-codec/lock.json",
+        "sha256": "36a09c926e8eff5a9c54dc65db24023c9fa911b03dbff8ab340cab21301d39c3",
+        "byteLength": 2218
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/notices/rust-numeric/component.json",
+        "sha256": "aa011181fc359e73174190542a3ae8f93ddccedcd51c00c55d5eea53b39c0ebd",
+        "byteLength": 2858
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/notices/rust-numeric/num-bigint-LICENSE-APACHE.txt",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+        "byteLength": 10847
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/notices/rust-numeric/num-bigint-LICENSE-MIT.txt",
+        "sha256": "6485b8ed310d3f0340bf1ad1f47645069ce4069dcc6bb46c7d5c6faf41de1fdb",
+        "byteLength": 1071
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/notices/rust-numeric/num-integer-LICENSE-APACHE.txt",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+        "byteLength": 10847
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/notices/rust-numeric/num-integer-LICENSE-MIT.txt",
+        "sha256": "6485b8ed310d3f0340bf1ad1f47645069ce4069dcc6bb46c7d5c6faf41de1fdb",
+        "byteLength": 1071
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/notices/rust-numeric/num-traits-LICENSE-APACHE.txt",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+        "byteLength": 10847
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/notices/rust-numeric/num-traits-LICENSE-MIT.txt",
+        "sha256": "6485b8ed310d3f0340bf1ad1f47645069ce4069dcc6bb46c7d5c6faf41de1fdb",
+        "byteLength": 1071
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/notices/skia/THIRD-PARTY-NOTICES.txt",
+        "sha256": "ffd859c1f50b3305ff66656bec2b8ef19856446e2e210ee89a2d3338bc635c6c",
+        "byteLength": 4615
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/notices/skia/lock.json",
+        "sha256": "ecbed91435d044cf353f5a30a549530717971c946ba3827b96e6e5dcd7148efc",
+        "byteLength": 1891
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/notices/unicode-bidi/AUTHORS",
+        "sha256": "1ff3a7c8519b29544bb28ba9b1e7502df0cb764051fb9a1172e60006aa2b8dcc",
+        "byteLength": 121
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/notices/unicode-bidi/COPYRIGHT",
+        "sha256": "edb20b474f6cbd4f4db066b54a9e0f687d0009d309412a63431189b59b8e2a07",
+        "byteLength": 412
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/notices/unicode-bidi/LICENSE-MIT",
+        "sha256": "7b63ecd5f1902af1b63729947373683c32745c16a10e8e6292e2e2dcd7e90ae0",
+        "byteLength": 1071
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/notices/unicode-bidi/component.json",
+        "sha256": "85f237648bd743ff937631121a7471cfd28ee1f78b4a2a3c7fac5e820f836de9",
+        "byteLength": 675
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/runtime/mo-hb.mjs",
+        "sha256": "20631aec90cf765e43e93dca03a6acb9cb024ca936ed8b1f190b09cb300f206d",
+        "byteLength": 9465
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/runtime/mo-hb.wasm",
+        "sha256": "a9ee660dba755e41959a190db1e05522211234c2ee38215cb55dea8907a4302f",
+        "byteLength": 841468
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/runtime/mo-skia.mjs",
+        "sha256": "6eff78c1b0469bbc7941d849aa8bd85f1a3f41490053de6e9bd45766df450a2d",
+        "byteLength": 14090
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/runtime/mo-skia.wasm",
+        "sha256": "f29aa1108c597c13dcd31cdb8311d91e86a0a63046e70d5b1682ab7e9928bde0",
+        "byteLength": 2388105
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/runtime/mo_wasm.js",
+        "sha256": "761fbbed72bfac54c3f904474b69c05baacf7f8b2967bf0754cfd18733c52670",
+        "byteLength": 68470
+      },
+      {
+        "path": "product-worktree/.codex-work/integration/fade-animation/desktop-build/musteroffice/d5aa4b3e4ef0b3730886d47131fb31b12d69b156ef35f71d0e47995c4266a0d8/runtime/mo_wasm_bg.wasm",
+        "sha256": "d999b1d7db0649707cae6a98b6e7574381e6400a637045e4a2a222b702f123d9",
+        "byteLength": 14967872
+      }
+    ]
+  },
+  "corpus": {
+    "report": {
+      "path": ".codex-work/fade-animation/corpus-final-02/report.json",
+      "sha256": "11f5b8ef506d69fc6d5c4e659557a2c9510c174f4de934942573a2d9f0e514c6",
+      "byteLength": 11006
+    },
+    "inputs": [
+      {
+        "path": "target/debug/mo-raster-worker",
+        "sha256": "a050d24693266f406b5f90468a0af50a59a2491c1ab5704fa00008879d74c798",
+        "byteLength": 40824864
+      },
+      {
+        "path": "target/debug/mo-cli",
+        "sha256": "15414206163644fc8305c78888fc2a4cd2d6945579228778fdbba2fbf0130562",
+        "byteLength": 69046712
+      },
+      {
+        "path": ".codex-work/native-grouping/corpus-03/native-original.export.json",
+        "sha256": "f550860106474e7b3d6e96cf79cf0b629c43a43914c4b3eefd09e8a5a36e1d04",
+        "byteLength": 9414
+      },
+      {
+        "path": ".codex-work/ecma376/xsd/pml.xsd",
+        "sha256": "39c6396b7b1f096885c3ceba5dab30e3ee14291c45a1d6fa6038ec4db69d88d0",
+        "byteLength": 85288
+      },
+      {
+        "path": ".codex-work/fade-animation/wps-entrance-exit.pptx",
+        "sha256": "e0080a9ffcea808714a4f8c49e8c8b6f8200fc5268fe65b7a5abed2167cb0617",
+        "byteLength": 9697
+      },
+      {
+        "path": ".codex-work/source-playback/product.json",
+        "sha256": "ab84a8801081ba78f6e738f107b285e2a42407f26f3dea202ce33487cb18785e",
+        "byteLength": 86982
+      },
+      {
+        "path": "tools/verification/fade-playback-fixtures.py",
+        "sha256": "65fe888eb0b25ecb9f624e925ec0fefe6827ebc16c99b84ef88fd32353bddc50",
+        "byteLength": 12772
+      },
+      {
+        "path": ".codex-work/source-playback/fixtures/image-text.pptx",
+        "sha256": "9c889dd803aec31cb190fb0580b51e0c529643e62db0bc0cba7a2e4edc17c564",
+        "byteLength": 11481
+      },
+      {
+        "path": ".codex-work/elliptic-source/source-runtime/prior-prior-prior-prior-prior-prior-previous-image-text.fonts.bin",
+        "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+        "byteLength": 1920
+      },
+      {
+        "path": ".codex-work/source-playback/fixtures/group-image.pptx",
+        "sha256": "b9594aeb0ae178c5e64eeeb6d52b082e028e7d28a05838909bbbede51ba770c9",
+        "byteLength": 11375
+      },
+      {
+        "path": ".codex-work/elliptic-source/source-runtime/prior-prior-prior-prior-prior-prior-previous-group-direct-image.fonts.bin",
+        "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+        "byteLength": 1920
+      }
+    ],
+    "frames": {
+      "author": [
+        {
+          "name": "author-0",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-0.request.json",
+            "sha256": "329cd32388ad6e3eb6dedb895e890946645dc68328876f26b175231a60f781c9",
+            "byteLength": 8004
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-0.response.json",
+            "sha256": "98b41a8c693f0ae7a5fd2ad9a1924f52733bf6bf84f07562e06996e8536d5f61",
+            "byteLength": 3157
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-0.rgba",
+            "sha256": "8e65bee7d81ba689972875fa7faef60dedba4c424065d6f3813edfcb707c6e86",
+            "byteLength": 1440000
+          }
+        },
+        {
+          "name": "author-1",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-1.request.json",
+            "sha256": "a71eb4b93e51937084aad80e901b2dc2ca9c637fe7143f71ef002f0eb535ed75",
+            "byteLength": 8005
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-1.response.json",
+            "sha256": "2289beeebda65ba01b091fc6dfd9d44936bf78d2df9b16bb584ed46b432b491f",
+            "byteLength": 3161
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-1.rgba",
+            "sha256": "8e65bee7d81ba689972875fa7faef60dedba4c424065d6f3813edfcb707c6e86",
+            "byteLength": 1440000
+          }
+        },
+        {
+          "name": "author-2",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-2.request.json",
+            "sha256": "5df667beee775a3a086c0a37f2fc1da8ef3b6415afd342683035a5be554f8846",
+            "byteLength": 8006
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-2.response.json",
+            "sha256": "badc8c9dddb8e27729bf80911177c6b6cf96b7c90b8db41cd19b70fd5b7daca6",
+            "byteLength": 3589
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-2.rgba",
+            "sha256": "8e65bee7d81ba689972875fa7faef60dedba4c424065d6f3813edfcb707c6e86",
+            "byteLength": 1440000
+          }
+        },
+        {
+          "name": "author-3",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-3.request.json",
+            "sha256": "5cb14a90cb65bebf6a13b9477e0bc21b9e43dee324ca8197f4cd92307429ff7b",
+            "byteLength": 8006
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-3.response.json",
+            "sha256": "4da212aecd9c926a3d5160429faa10733b26323e46b1160fb9f428700692a8f4",
+            "byteLength": 3589
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-3.rgba",
+            "sha256": "9c500e7b02a01377f124413b454ae22c90b55e4bcbba78d82cffb5c9baac9e88",
+            "byteLength": 1440000
+          }
+        },
+        {
+          "name": "author-4",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-4.request.json",
+            "sha256": "7305e3787ae4274c630d33de4568da97a38d8432762b9e78ef461f2a23602a4e",
+            "byteLength": 8006
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-4.response.json",
+            "sha256": "86311ec9ea2145b2719a631684f113d67ba5d392ec7a79400a3a3eeec67e93bc",
+            "byteLength": 3589
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-4.rgba",
+            "sha256": "6429344fe8e58895cb266d0221fb68edd9311842693704983ea48278781fbf3e",
+            "byteLength": 1440000
+          }
+        },
+        {
+          "name": "author-5",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-5.request.json",
+            "sha256": "28e973f364228a7d7827ecfc8a3a6bc08f433d7123a06e587776b9a0fc188b3b",
+            "byteLength": 8006
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-5.response.json",
+            "sha256": "df65be54c096e44ce84e1c11bc683d18a046a6d3e69410c601a00aad228d4bf3",
+            "byteLength": 3601
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-5.rgba",
+            "sha256": "09c402ab51e5c9fc54c2d78be7df0b09e962035a4780f37fc781f0a102ffe503",
+            "byteLength": 1440000
+          }
+        },
+        {
+          "name": "author-6",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-6.request.json",
+            "sha256": "ea55d8e20ccb1f1bb0c41d8a7103c9787616477a5e6a891d921ef82d73666fec",
+            "byteLength": 8006
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-6.response.json",
+            "sha256": "a8b2bcd18861f44de4f8eb5a37734b754f373981e4b578f00dc096a7d7eef6fb",
+            "byteLength": 3505
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-6.rgba",
+            "sha256": "b94def4c81aae764c84de5331823d230aaf5744acfea8044cf34c9333daa124b",
+            "byteLength": 1440000
+          }
+        },
+        {
+          "name": "author-7",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-7.request.json",
+            "sha256": "e16a6c7323c86c5654a38edeedac4c7a4d8a6c365fb8053fbce6b49d54f90f46",
+            "byteLength": 8007
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-7.response.json",
+            "sha256": "9e97ac47acf50a74c85b39e6f095c3fc4d09c48320fc738ff3948b1cbb6c843c",
+            "byteLength": 3904
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-7.rgba",
+            "sha256": "b94def4c81aae764c84de5331823d230aaf5744acfea8044cf34c9333daa124b",
+            "byteLength": 1440000
+          }
+        },
+        {
+          "name": "author-8",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-8.request.json",
+            "sha256": "2d0d563e9539e3c9105ac8aa51840296ced63617d67942c4b99e004a2b0f13b1",
+            "byteLength": 8007
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-8.response.json",
+            "sha256": "66020bd6bf49e92d61e19c62f2087ea5236c79bfdfad63b55ad8e87de16b5979",
+            "byteLength": 3904
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-8.rgba",
+            "sha256": "8f4e0d813403b9241c1ccd468f63f28fd2969d3a1d381da4aa6eac37a9308918",
+            "byteLength": 1440000
+          }
+        },
+        {
+          "name": "author-9",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-9.request.json",
+            "sha256": "226dac71e5581d2fd418223e6288b8cca4e3c892ec68d23196b22613d7cc50dd",
+            "byteLength": 8007
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-9.response.json",
+            "sha256": "987f1a6c641d8b9d15431f7e481415be38372b601f5b5e53c85e95f807514348",
+            "byteLength": 3904
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-9.rgba",
+            "sha256": "1ca5891b4016a45de4ef15dfe765e15057ff3af51bba5b96080e2f71757dd1cb",
+            "byteLength": 1440000
+          }
+        },
+        {
+          "name": "author-10",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-10.request.json",
+            "sha256": "7bb572863c17b8c7236d5df505e089b5368954a5143ec89f2077ef24b02c5f4b",
+            "byteLength": 8007
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-10.response.json",
+            "sha256": "2d202e63699ec6d37dd5d6b04f98f828ade6ea55454f521c0a6e52dfa9416f83",
+            "byteLength": 3914
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-10.rgba",
+            "sha256": "fec59eddee7b14f9668023ef069ed07a24088f22767811eaa5befecf7635ffc1",
+            "byteLength": 1440000
+          }
+        },
+        {
+          "name": "author-11",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-11.request.json",
+            "sha256": "c776130c5e0fcc784492f9a6d7f4167f991bbfd0abe32ba962cc5c66fa631c5d",
+            "byteLength": 8007
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-11.response.json",
+            "sha256": "f5d792af1d84eb9b912b83c4556a3c78e24195f0a21467820e4e8001a7b4b91a",
+            "byteLength": 3872
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-11.rgba",
+            "sha256": "6ea5366206e56fcd672d2b8b6255d55a551c7d1c37040dafde5677c434c71e7a",
+            "byteLength": 1440000
+          }
+        },
+        {
+          "name": "author-12",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-12.request.json",
+            "sha256": "b669b17a76b4e5d76ffd08b22e571a9bd10df40265e91570c6b8cc5389c463c3",
+            "byteLength": 8007
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-12.response.json",
+            "sha256": "33ed1de3ef92050aa0e4ecf947a0cd04cc34a73eaa6247d6a8fb8410a790369f",
+            "byteLength": 3852
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-12.rgba",
+            "sha256": "6ea5366206e56fcd672d2b8b6255d55a551c7d1c37040dafde5677c434c71e7a",
+            "byteLength": 1440000
+          }
+        },
+        {
+          "name": "author-13",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-13.request.json",
+            "sha256": "5d4b0ec07138ac0f09af4e8fab345465405eff38c5abf33134d06ccf2acedbfe",
+            "byteLength": 8007
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-13.response.json",
+            "sha256": "52981126e8fb4fcb6e9fa04674a7d9b2690c174be3e5dd72bf3d48a96b5252e4",
+            "byteLength": 3505
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-13.rgba",
+            "sha256": "b94def4c81aae764c84de5331823d230aaf5744acfea8044cf34c9333daa124b",
+            "byteLength": 1440000
+          }
+        },
+        {
+          "name": "author-14",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-14.request.json",
+            "sha256": "7305e3787ae4274c630d33de4568da97a38d8432762b9e78ef461f2a23602a4e",
+            "byteLength": 8006
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-14.response.json",
+            "sha256": "86311ec9ea2145b2719a631684f113d67ba5d392ec7a79400a3a3eeec67e93bc",
+            "byteLength": 3589
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/author-14.rgba",
+            "sha256": "6429344fe8e58895cb266d0221fb68edd9311842693704983ea48278781fbf3e",
+            "byteLength": 1440000
+          }
+        }
+      ],
+      "source": [
+        {
+          "name": "source-0-0",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-0.request.json",
+            "sha256": "3018dc2fb20824905c5a9427b768316b91241215833c0898b617e2066e8b56fa",
+            "byteLength": 1295
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-0.response.json",
+            "sha256": "bf62fc927949c3e53d01924f1035e786c434740f0b98a38df7dd020053204840",
+            "byteLength": 4122
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-0.rgba",
+            "sha256": "8e65bee7d81ba689972875fa7faef60dedba4c424065d6f3813edfcb707c6e86",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/fade.pptx",
+            "sha256": "d61bd56538b3613da6a25cd8aa47de58b5fa38dc71fa81c7c04d53cb3ecc9f31",
+            "byteLength": 6187
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-1-0",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-0.request.json",
+            "sha256": "466efcf6669ac1dc9a314eba2e210147bea375c0d68cd42b4048b0dce4bd88a9",
+            "byteLength": 1295
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-0.response.json",
+            "sha256": "d34742611b52f40bb1cf24b5c40ae2e314300427a6cb5c1f540140b89a677533",
+            "byteLength": 4276
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-0.rgba",
+            "sha256": "8e65bee7d81ba689972875fa7faef60dedba4c424065d6f3813edfcb707c6e86",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/wps-entrance-exit.pptx",
+            "sha256": "e0080a9ffcea808714a4f8c49e8c8b6f8200fc5268fe65b7a5abed2167cb0617",
+            "byteLength": 9697
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-0-1",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-1.request.json",
+            "sha256": "c63e19645f542c75f22487525e041146d5f6df007a1653d0bf1ec53ac806df89",
+            "byteLength": 1296
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-1.response.json",
+            "sha256": "88a22748fdc73774c1693d8a0ac54aff423e8b429a928744d38f8096e0b4f317",
+            "byteLength": 4126
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-1.rgba",
+            "sha256": "8e65bee7d81ba689972875fa7faef60dedba4c424065d6f3813edfcb707c6e86",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/fade.pptx",
+            "sha256": "d61bd56538b3613da6a25cd8aa47de58b5fa38dc71fa81c7c04d53cb3ecc9f31",
+            "byteLength": 6187
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-1-1",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-1.request.json",
+            "sha256": "dea56d185447197729b6ecb5d9fb82b49d4b290edc7860a5cc3dac85a0def457",
+            "byteLength": 1296
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-1.response.json",
+            "sha256": "3d61fc01de1dfecf4e9147b51ef54905586fff6fcaf45ca9bf628ebd54929472",
+            "byteLength": 4280
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-1.rgba",
+            "sha256": "8e65bee7d81ba689972875fa7faef60dedba4c424065d6f3813edfcb707c6e86",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/wps-entrance-exit.pptx",
+            "sha256": "e0080a9ffcea808714a4f8c49e8c8b6f8200fc5268fe65b7a5abed2167cb0617",
+            "byteLength": 9697
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-0-2",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-2.request.json",
+            "sha256": "39fd0ecf84a37b68428e4e5b8e34bbed4cc70cc9d118a4de1aa31030e0f57fa4",
+            "byteLength": 1297
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-2.response.json",
+            "sha256": "ae4ccc886f67e5cffd7c669092fc5e889347b0d06992d9e0e23ef2916e3b7ebd",
+            "byteLength": 4552
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-2.rgba",
+            "sha256": "8e65bee7d81ba689972875fa7faef60dedba4c424065d6f3813edfcb707c6e86",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/fade.pptx",
+            "sha256": "d61bd56538b3613da6a25cd8aa47de58b5fa38dc71fa81c7c04d53cb3ecc9f31",
+            "byteLength": 6187
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-1-2",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-2.request.json",
+            "sha256": "81a3d8da24747907083c24147b738fbfb3b44ce5b223a14a6c1804782b926dc2",
+            "byteLength": 1297
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-2.response.json",
+            "sha256": "40b217c650c465be2cc5eabd4ef2166a3318e39a7ec7142f2ed14d77cc55f4c2",
+            "byteLength": 4707
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-2.rgba",
+            "sha256": "8e65bee7d81ba689972875fa7faef60dedba4c424065d6f3813edfcb707c6e86",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/wps-entrance-exit.pptx",
+            "sha256": "e0080a9ffcea808714a4f8c49e8c8b6f8200fc5268fe65b7a5abed2167cb0617",
+            "byteLength": 9697
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-0-3",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-3.request.json",
+            "sha256": "0315e7730d082b7affdc5ad40c1a272879d1597f8ca1d8f3c1ccdffee49cf710",
+            "byteLength": 1297
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-3.response.json",
+            "sha256": "8ec41ce0b26ccd04aebc0c8a750331357ed75f3cf96dd62b127cfe477e8e949c",
+            "byteLength": 4552
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-3.rgba",
+            "sha256": "9c500e7b02a01377f124413b454ae22c90b55e4bcbba78d82cffb5c9baac9e88",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/fade.pptx",
+            "sha256": "d61bd56538b3613da6a25cd8aa47de58b5fa38dc71fa81c7c04d53cb3ecc9f31",
+            "byteLength": 6187
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-1-3",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-3.request.json",
+            "sha256": "664c76daeb74c345073d27ad0b1f425d3848b32abb2649607fb216f4209147e1",
+            "byteLength": 1297
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-3.response.json",
+            "sha256": "06f59b5644b655b4d7e3b3e910b32739d6e5cb2816f05aac42aa7531f0143ea4",
+            "byteLength": 4707
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-3.rgba",
+            "sha256": "9c500e7b02a01377f124413b454ae22c90b55e4bcbba78d82cffb5c9baac9e88",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/wps-entrance-exit.pptx",
+            "sha256": "e0080a9ffcea808714a4f8c49e8c8b6f8200fc5268fe65b7a5abed2167cb0617",
+            "byteLength": 9697
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-0-4",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-4.request.json",
+            "sha256": "063de83662321370aad75bfc8c00a7ce3c0b6c61653467982cc74eab725bf641",
+            "byteLength": 1297
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-4.response.json",
+            "sha256": "9cf1798afcc7a7f50fa174e84db332d3c8d16ee1d475b3587cefde9fc43a9556",
+            "byteLength": 4552
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-4.rgba",
+            "sha256": "6429344fe8e58895cb266d0221fb68edd9311842693704983ea48278781fbf3e",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/fade.pptx",
+            "sha256": "d61bd56538b3613da6a25cd8aa47de58b5fa38dc71fa81c7c04d53cb3ecc9f31",
+            "byteLength": 6187
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-1-4",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-4.request.json",
+            "sha256": "14dcb129e697c6c160f3917c41bdaab632be38a561dad1c0b10a3e743a6b5c0d",
+            "byteLength": 1297
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-4.response.json",
+            "sha256": "33e61ac41d443304c18c39714c71484f5916a4bf3e71ba5af24628e77942da5d",
+            "byteLength": 4707
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-4.rgba",
+            "sha256": "6429344fe8e58895cb266d0221fb68edd9311842693704983ea48278781fbf3e",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/wps-entrance-exit.pptx",
+            "sha256": "e0080a9ffcea808714a4f8c49e8c8b6f8200fc5268fe65b7a5abed2167cb0617",
+            "byteLength": 9697
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-0-5",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-5.request.json",
+            "sha256": "293cbb6787274bc1eac3d340dae98a3366842c0bd7b7c3802329a9dbafc727ff",
+            "byteLength": 1297
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-5.response.json",
+            "sha256": "6c239c9d79125221b8819bbf866b8c6d16682d22b8ff9d9099c808cf5dad8418",
+            "byteLength": 4564
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-5.rgba",
+            "sha256": "09c402ab51e5c9fc54c2d78be7df0b09e962035a4780f37fc781f0a102ffe503",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/fade.pptx",
+            "sha256": "d61bd56538b3613da6a25cd8aa47de58b5fa38dc71fa81c7c04d53cb3ecc9f31",
+            "byteLength": 6187
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-1-5",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-5.request.json",
+            "sha256": "36afc13687a1e8185dfa861cf93d8ed59cda6a8488ee7975e0fe985de3e020ff",
+            "byteLength": 1297
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-5.response.json",
+            "sha256": "ac2f59e17c4f91a9c4bfc287d3951b9edc66fc128ee72d00988cee038a9409b9",
+            "byteLength": 4719
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-5.rgba",
+            "sha256": "09c402ab51e5c9fc54c2d78be7df0b09e962035a4780f37fc781f0a102ffe503",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/wps-entrance-exit.pptx",
+            "sha256": "e0080a9ffcea808714a4f8c49e8c8b6f8200fc5268fe65b7a5abed2167cb0617",
+            "byteLength": 9697
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-0-6",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-6.request.json",
+            "sha256": "f796f3f84ca003f4491ede00f009d0b877464c64f243d5908294180784e21fed",
+            "byteLength": 1297
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-6.response.json",
+            "sha256": "ce26a29cbe93144c5185c9b2ea0e524587ad221bd5aef9bbfb2618dd70a01030",
+            "byteLength": 4472
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-6.rgba",
+            "sha256": "b94def4c81aae764c84de5331823d230aaf5744acfea8044cf34c9333daa124b",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/fade.pptx",
+            "sha256": "d61bd56538b3613da6a25cd8aa47de58b5fa38dc71fa81c7c04d53cb3ecc9f31",
+            "byteLength": 6187
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-1-6",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-6.request.json",
+            "sha256": "3e6789a7a82821cac85289f0ba8a7bb0f53b2d85afcbe46d15b46a31559b0fa4",
+            "byteLength": 1297
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-6.response.json",
+            "sha256": "1596e4b4628cb0cfed6622d01955876523f695f1ec8fcccc269d2c79cbb20b3d",
+            "byteLength": 4625
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-6.rgba",
+            "sha256": "b94def4c81aae764c84de5331823d230aaf5744acfea8044cf34c9333daa124b",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/wps-entrance-exit.pptx",
+            "sha256": "e0080a9ffcea808714a4f8c49e8c8b6f8200fc5268fe65b7a5abed2167cb0617",
+            "byteLength": 9697
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-0-7",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-7.request.json",
+            "sha256": "f02134d62c93e9b35bfca91814cde2d392fd74c3594421c54572c2edcf73048c",
+            "byteLength": 1298
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-7.response.json",
+            "sha256": "b17d0453844db265b8b83d3578a5c25d4fb036a3b4703a2de81f68d348c1a871",
+            "byteLength": 4868
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-7.rgba",
+            "sha256": "b94def4c81aae764c84de5331823d230aaf5744acfea8044cf34c9333daa124b",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/fade.pptx",
+            "sha256": "d61bd56538b3613da6a25cd8aa47de58b5fa38dc71fa81c7c04d53cb3ecc9f31",
+            "byteLength": 6187
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-1-7",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-7.request.json",
+            "sha256": "ef937f63242e084c75efc4f7ef81d4acf896ee86605095ee029cb15af17d3ada",
+            "byteLength": 1298
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-7.response.json",
+            "sha256": "835d8b36c01886dfe104148cff079c49bc2b95d4764f3ae6e105ceda782ed50e",
+            "byteLength": 5022
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-7.rgba",
+            "sha256": "b94def4c81aae764c84de5331823d230aaf5744acfea8044cf34c9333daa124b",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/wps-entrance-exit.pptx",
+            "sha256": "e0080a9ffcea808714a4f8c49e8c8b6f8200fc5268fe65b7a5abed2167cb0617",
+            "byteLength": 9697
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-0-8",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-8.request.json",
+            "sha256": "8ca3abd20ad8c6ff699f4faab0cebd8e88cc03a02e0181e4e8bb831a99f3afd9",
+            "byteLength": 1298
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-8.response.json",
+            "sha256": "55d60a7241499be15e86b81d07b3ba10df30142dda54c29bd448cb58d7a23eb1",
+            "byteLength": 4868
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-8.rgba",
+            "sha256": "8f4e0d813403b9241c1ccd468f63f28fd2969d3a1d381da4aa6eac37a9308918",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/fade.pptx",
+            "sha256": "d61bd56538b3613da6a25cd8aa47de58b5fa38dc71fa81c7c04d53cb3ecc9f31",
+            "byteLength": 6187
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-1-8",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-8.request.json",
+            "sha256": "603d3eb38be76f510c1d54f08b480407ab10c3bf3e6a0b644fe38d311c1e6590",
+            "byteLength": 1298
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-8.response.json",
+            "sha256": "7e0c71248154f9f88071cc897adc1d596c6f385aae07f7f411f64a75c23b5b14",
+            "byteLength": 5022
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-8.rgba",
+            "sha256": "8f4e0d813403b9241c1ccd468f63f28fd2969d3a1d381da4aa6eac37a9308918",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/wps-entrance-exit.pptx",
+            "sha256": "e0080a9ffcea808714a4f8c49e8c8b6f8200fc5268fe65b7a5abed2167cb0617",
+            "byteLength": 9697
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-0-9",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-9.request.json",
+            "sha256": "210f931c5f4d5cbcb7f05ac69ea77f8d8e5a7bc1521cf954b3062c526a13008c",
+            "byteLength": 1298
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-9.response.json",
+            "sha256": "e1afcafff35da55acc375f8fc36881152dc249b6945037e1a2907b5ad26f33b8",
+            "byteLength": 4868
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-9.rgba",
+            "sha256": "1ca5891b4016a45de4ef15dfe765e15057ff3af51bba5b96080e2f71757dd1cb",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/fade.pptx",
+            "sha256": "d61bd56538b3613da6a25cd8aa47de58b5fa38dc71fa81c7c04d53cb3ecc9f31",
+            "byteLength": 6187
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-1-9",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-9.request.json",
+            "sha256": "5482650c5469be8748c8186c5028e507c85618695d485d5628ba767467049884",
+            "byteLength": 1298
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-9.response.json",
+            "sha256": "33717dfe13944e26bc387742aba2fd60638d5e5be96404a258196f067e7edeea",
+            "byteLength": 5022
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-9.rgba",
+            "sha256": "1ca5891b4016a45de4ef15dfe765e15057ff3af51bba5b96080e2f71757dd1cb",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/wps-entrance-exit.pptx",
+            "sha256": "e0080a9ffcea808714a4f8c49e8c8b6f8200fc5268fe65b7a5abed2167cb0617",
+            "byteLength": 9697
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-0-10",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-10.request.json",
+            "sha256": "8eabe2e8975a164f038e20aca293d0584d244abc42439ec28332529bc0c41e99",
+            "byteLength": 1298
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-10.response.json",
+            "sha256": "7d56faf874bfd49b63c07aad3cf85c4a5240e4d20e8a1d86e4bb4ece7757cf02",
+            "byteLength": 4878
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-10.rgba",
+            "sha256": "fec59eddee7b14f9668023ef069ed07a24088f22767811eaa5befecf7635ffc1",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/fade.pptx",
+            "sha256": "d61bd56538b3613da6a25cd8aa47de58b5fa38dc71fa81c7c04d53cb3ecc9f31",
+            "byteLength": 6187
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-1-10",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-10.request.json",
+            "sha256": "2d1372e7673e0856697b5b56eee57d3da532dd230aee3cf3c596ebbe8efca006",
+            "byteLength": 1298
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-10.response.json",
+            "sha256": "db941ff90ddf6e7827bfb8a0df2ad1bbeac89d2b91e3a9439391b225b8ce0869",
+            "byteLength": 5032
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-10.rgba",
+            "sha256": "fec59eddee7b14f9668023ef069ed07a24088f22767811eaa5befecf7635ffc1",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/wps-entrance-exit.pptx",
+            "sha256": "e0080a9ffcea808714a4f8c49e8c8b6f8200fc5268fe65b7a5abed2167cb0617",
+            "byteLength": 9697
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-0-11",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-11.request.json",
+            "sha256": "f4d35f8de53d844ce5e672a13e92955e6a478ee62fc2793a5916f6a05b84b707",
+            "byteLength": 1298
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-11.response.json",
+            "sha256": "cb9bd76074b3307c1f9193d52a15f852cc9b9abdd75bf3baf1ab815a11376866",
+            "byteLength": 4832
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-11.rgba",
+            "sha256": "6ea5366206e56fcd672d2b8b6255d55a551c7d1c37040dafde5677c434c71e7a",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/fade.pptx",
+            "sha256": "d61bd56538b3613da6a25cd8aa47de58b5fa38dc71fa81c7c04d53cb3ecc9f31",
+            "byteLength": 6187
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-1-11",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-11.request.json",
+            "sha256": "fa4de65d9a5ae28fbb8cd7d89ad2d4c8a6a4c14d2a18db88c4ee33d6d0db85ba",
+            "byteLength": 1298
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-11.response.json",
+            "sha256": "1ca0e1cff49497255ddc8160152b8cf85b9e3d4dc64ad53e234028a4da348728",
+            "byteLength": 4985
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-11.rgba",
+            "sha256": "6ea5366206e56fcd672d2b8b6255d55a551c7d1c37040dafde5677c434c71e7a",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/wps-entrance-exit.pptx",
+            "sha256": "e0080a9ffcea808714a4f8c49e8c8b6f8200fc5268fe65b7a5abed2167cb0617",
+            "byteLength": 9697
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-0-12",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-12.request.json",
+            "sha256": "3094958d02b888c1b75ac92e6784f3a7deba4875310566a6f4001636332de638",
+            "byteLength": 1298
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-12.response.json",
+            "sha256": "64165eb0c5207158ba70fd2edb24baa142f7f7d8538bf5e1880b88c329c8e94a",
+            "byteLength": 4827
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-12.rgba",
+            "sha256": "6ea5366206e56fcd672d2b8b6255d55a551c7d1c37040dafde5677c434c71e7a",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/fade.pptx",
+            "sha256": "d61bd56538b3613da6a25cd8aa47de58b5fa38dc71fa81c7c04d53cb3ecc9f31",
+            "byteLength": 6187
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-1-12",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-12.request.json",
+            "sha256": "f99bc22d1ea44516e16b61dabbf0fc97e0a19db9d9215e7a0a0362544cd9336c",
+            "byteLength": 1298
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-12.response.json",
+            "sha256": "d4e0f75a8c34c1206cbc515300be17f26e859c0b96b0e952f65f74b87e9856c7",
+            "byteLength": 4981
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-12.rgba",
+            "sha256": "6ea5366206e56fcd672d2b8b6255d55a551c7d1c37040dafde5677c434c71e7a",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/wps-entrance-exit.pptx",
+            "sha256": "e0080a9ffcea808714a4f8c49e8c8b6f8200fc5268fe65b7a5abed2167cb0617",
+            "byteLength": 9697
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-0-13",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-13.request.json",
+            "sha256": "0e166cee4d91fda3272e106c06d4074d3e5b1579074305f601ae77765dc114e8",
+            "byteLength": 1298
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-13.response.json",
+            "sha256": "2710c42e2856eeac0408d4a826bd6a76af589c1d654b7e6d81023d75b11a7eea",
+            "byteLength": 4472
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-13.rgba",
+            "sha256": "b94def4c81aae764c84de5331823d230aaf5744acfea8044cf34c9333daa124b",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/fade.pptx",
+            "sha256": "d61bd56538b3613da6a25cd8aa47de58b5fa38dc71fa81c7c04d53cb3ecc9f31",
+            "byteLength": 6187
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-1-13",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-13.request.json",
+            "sha256": "c59f21b85cff70422117b8853d98f24ec861b3461c5dcb13b99274f8831f2d5c",
+            "byteLength": 1298
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-13.response.json",
+            "sha256": "039f35affee965fb1c9956eb6bb02dd2d1675e2793ef7193c673be9f2ed11c84",
+            "byteLength": 4625
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-13.rgba",
+            "sha256": "b94def4c81aae764c84de5331823d230aaf5744acfea8044cf34c9333daa124b",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/wps-entrance-exit.pptx",
+            "sha256": "e0080a9ffcea808714a4f8c49e8c8b6f8200fc5268fe65b7a5abed2167cb0617",
+            "byteLength": 9697
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-0-14",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-14.request.json",
+            "sha256": "063de83662321370aad75bfc8c00a7ce3c0b6c61653467982cc74eab725bf641",
+            "byteLength": 1297
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-14.response.json",
+            "sha256": "9cf1798afcc7a7f50fa174e84db332d3c8d16ee1d475b3587cefde9fc43a9556",
+            "byteLength": 4552
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-0-14.rgba",
+            "sha256": "6429344fe8e58895cb266d0221fb68edd9311842693704983ea48278781fbf3e",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/fade.pptx",
+            "sha256": "d61bd56538b3613da6a25cd8aa47de58b5fa38dc71fa81c7c04d53cb3ecc9f31",
+            "byteLength": 6187
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "source-1-14",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-14.request.json",
+            "sha256": "14dcb129e697c6c160f3917c41bdaab632be38a561dad1c0b10a3e743a6b5c0d",
+            "byteLength": 1297
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-14.response.json",
+            "sha256": "33e61ac41d443304c18c39714c71484f5916a4bf3e71ba5af24628e77942da5d",
+            "byteLength": 4707
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/source-1-14.rgba",
+            "sha256": "6429344fe8e58895cb266d0221fb68edd9311842693704983ea48278781fbf3e",
+            "byteLength": 1440000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/wps-entrance-exit.pptx",
+            "sha256": "e0080a9ffcea808714a4f8c49e8c8b6f8200fc5268fe65b7a5abed2167cb0617",
+            "byteLength": 9697
+          },
+          "fonts": {
+            "path": ".codex-work/fade-animation/corpus-final-02/empty.bin",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "byteLength": 0
+          }
+        },
+        {
+          "name": "image-text-30",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/image-text-30.request.json",
+            "sha256": "50c0d67303f669b17327ee4918048b3fd6eda8a6831c19f07a11fe7ee739d816",
+            "byteLength": 1270
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/image-text-30.response.json",
+            "sha256": "44fa57eb7685ff8f80e1a66e81b7e952162f8da0bc0db7678d3f518dac27687c",
+            "byteLength": 4617
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/image-text-30.rgba",
+            "sha256": "fd3df91fd84ccf152312658b574cb0215e3bca334105a24ecc48f7f4f0a92261",
+            "byteLength": 480000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/image-text.pptx",
+            "sha256": "7137cfabcceb77397fd5b2e0ed27be973dd1d52c08ad7af6129058e1d5ae1081",
+            "byteLength": 11444
+          },
+          "fonts": {
+            "path": ".codex-work/elliptic-source/source-runtime/prior-prior-prior-prior-prior-prior-previous-image-text.fonts.bin",
+            "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+            "byteLength": 1920
+          }
+        },
+        {
+          "name": "image-text-31",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/image-text-31.request.json",
+            "sha256": "32a76288d681e3180c6888315cf9692dca0d2228508202e64d42f2168f44d651",
+            "byteLength": 1272
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/image-text-31.response.json",
+            "sha256": "841698c203e28489d9e65ec8af5ab633873b27f152f9d928463bfdeee9bceb9f",
+            "byteLength": 4617
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/image-text-31.rgba",
+            "sha256": "1c922b7dd4c20db0109c3d7ddb6000afad56f8f5cc78e6f1f0744126b10b6f1d",
+            "byteLength": 480000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/image-text.pptx",
+            "sha256": "7137cfabcceb77397fd5b2e0ed27be973dd1d52c08ad7af6129058e1d5ae1081",
+            "byteLength": 11444
+          },
+          "fonts": {
+            "path": ".codex-work/elliptic-source/source-runtime/prior-prior-prior-prior-prior-prior-previous-image-text.fonts.bin",
+            "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+            "byteLength": 1920
+          }
+        },
+        {
+          "name": "image-text-32",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/image-text-32.request.json",
+            "sha256": "846b9f0ad2f4d9066b79128804d6f1a9ea751cd4bb12f3c0db9e6b5efb5be43d",
+            "byteLength": 1272
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/image-text-32.response.json",
+            "sha256": "add5f2e353b72663a7b6f6df335f39774d6347cbf90ac7ac5111f80ded4828fe",
+            "byteLength": 4617
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/image-text-32.rgba",
+            "sha256": "0194b8845393b1da6bc98368c5f32813d3920c3696f5139f93309e19915ea833",
+            "byteLength": 480000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/image-text.pptx",
+            "sha256": "7137cfabcceb77397fd5b2e0ed27be973dd1d52c08ad7af6129058e1d5ae1081",
+            "byteLength": 11444
+          },
+          "fonts": {
+            "path": ".codex-work/elliptic-source/source-runtime/prior-prior-prior-prior-prior-prior-previous-image-text.fonts.bin",
+            "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+            "byteLength": 1920
+          }
+        },
+        {
+          "name": "image-text-33",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/image-text-33.request.json",
+            "sha256": "985c003c15c48ad523dbae06c4bf276ef65ec48373c4c91dde11e2f00e5b5349",
+            "byteLength": 1272
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/image-text-33.response.json",
+            "sha256": "6128ff9ed5be147a56cf4592cbde5ab72c255fa97fea34f67105161179728abc",
+            "byteLength": 4642
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/image-text-33.rgba",
+            "sha256": "048b5ec3f3418e55926581c269561c99f1798cf8b11891ba15fbf03dfe310e6b",
+            "byteLength": 480000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/image-text.pptx",
+            "sha256": "7137cfabcceb77397fd5b2e0ed27be973dd1d52c08ad7af6129058e1d5ae1081",
+            "byteLength": 11444
+          },
+          "fonts": {
+            "path": ".codex-work/elliptic-source/source-runtime/prior-prior-prior-prior-prior-prior-previous-image-text.fonts.bin",
+            "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+            "byteLength": 1920
+          }
+        },
+        {
+          "name": "image-text-34",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/image-text-34.request.json",
+            "sha256": "d37f8710fb729ffc53047ff9f9fb98cdf8d5785869d658ead6d048c6afa3c261",
+            "byteLength": 1273
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/image-text-34.response.json",
+            "sha256": "0d2ac8b43d41af134b4d4fde5e572ab470eb6f737105fd515d02750b1dca5504",
+            "byteLength": 4372
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/image-text-34.rgba",
+            "sha256": "048b5ec3f3418e55926581c269561c99f1798cf8b11891ba15fbf03dfe310e6b",
+            "byteLength": 480000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/image-text.pptx",
+            "sha256": "7137cfabcceb77397fd5b2e0ed27be973dd1d52c08ad7af6129058e1d5ae1081",
+            "byteLength": 11444
+          },
+          "fonts": {
+            "path": ".codex-work/elliptic-source/source-runtime/prior-prior-prior-prior-prior-prior-previous-image-text.fonts.bin",
+            "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+            "byteLength": 1920
+          }
+        },
+        {
+          "name": "image-text-35",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/image-text-35.request.json",
+            "sha256": "846b9f0ad2f4d9066b79128804d6f1a9ea751cd4bb12f3c0db9e6b5efb5be43d",
+            "byteLength": 1272
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/image-text-35.response.json",
+            "sha256": "add5f2e353b72663a7b6f6df335f39774d6347cbf90ac7ac5111f80ded4828fe",
+            "byteLength": 4617
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/image-text-35.rgba",
+            "sha256": "0194b8845393b1da6bc98368c5f32813d3920c3696f5139f93309e19915ea833",
+            "byteLength": 480000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/image-text.pptx",
+            "sha256": "7137cfabcceb77397fd5b2e0ed27be973dd1d52c08ad7af6129058e1d5ae1081",
+            "byteLength": 11444
+          },
+          "fonts": {
+            "path": ".codex-work/elliptic-source/source-runtime/prior-prior-prior-prior-prior-prior-previous-image-text.fonts.bin",
+            "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+            "byteLength": 1920
+          }
+        },
+        {
+          "name": "group-image-36",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/group-image-36.request.json",
+            "sha256": "e64bd750b318f6796659588719a263dd6f58eb48bde87929f418c311a85e5259",
+            "byteLength": 1271
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/group-image-36.response.json",
+            "sha256": "2b16c0fe1a20435deb99a95b0a67e0edc5086f03468934ead9fe45b5e33d3995",
+            "byteLength": 3922
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/group-image-36.rgba",
+            "sha256": "fd3df91fd84ccf152312658b574cb0215e3bca334105a24ecc48f7f4f0a92261",
+            "byteLength": 480000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/group-image.pptx",
+            "sha256": "27afb766480b12574e8647c8ef252f11bd213600aafdf7cfba129dcd2887351e",
+            "byteLength": 11314
+          },
+          "fonts": {
+            "path": ".codex-work/elliptic-source/source-runtime/prior-prior-prior-prior-prior-prior-previous-group-direct-image.fonts.bin",
+            "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+            "byteLength": 1920
+          }
+        },
+        {
+          "name": "group-image-37",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/group-image-37.request.json",
+            "sha256": "9a6319a64133883d8d46956008644c18c87e02160563abb61ceb9c873e7ad0f1",
+            "byteLength": 1273
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/group-image-37.response.json",
+            "sha256": "a6b61e19b172a597a99d34419545b147403952d8f625a6f868915cdd3b930948",
+            "byteLength": 3922
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/group-image-37.rgba",
+            "sha256": "5d1b2260803188fc47d46d69ab9205e5a42e7af2c07b589c5778c097bc216c0c",
+            "byteLength": 480000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/group-image.pptx",
+            "sha256": "27afb766480b12574e8647c8ef252f11bd213600aafdf7cfba129dcd2887351e",
+            "byteLength": 11314
+          },
+          "fonts": {
+            "path": ".codex-work/elliptic-source/source-runtime/prior-prior-prior-prior-prior-prior-previous-group-direct-image.fonts.bin",
+            "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+            "byteLength": 1920
+          }
+        },
+        {
+          "name": "group-image-38",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/group-image-38.request.json",
+            "sha256": "9380b4f1daf141ddf1eba6ae7f09c8ecfcf23c3f174d668a1559ffbad3995dd4",
+            "byteLength": 1273
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/group-image-38.response.json",
+            "sha256": "3b7e7ee6d576aadbe608cde0bf9d45bf45a4e021827374390fbeceb490f42636",
+            "byteLength": 3922
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/group-image-38.rgba",
+            "sha256": "77c08af0a41efce5ab66388e54c7fd2e682e18eb2e6e199007bdb6f07cd3c73d",
+            "byteLength": 480000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/group-image.pptx",
+            "sha256": "27afb766480b12574e8647c8ef252f11bd213600aafdf7cfba129dcd2887351e",
+            "byteLength": 11314
+          },
+          "fonts": {
+            "path": ".codex-work/elliptic-source/source-runtime/prior-prior-prior-prior-prior-prior-previous-group-direct-image.fonts.bin",
+            "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+            "byteLength": 1920
+          }
+        },
+        {
+          "name": "group-image-39",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/group-image-39.request.json",
+            "sha256": "0c6ad7e156686a44a7990aaae06fa8bdf1ac5b1ecefbbcdade0f5caf33f2d259",
+            "byteLength": 1273
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/group-image-39.response.json",
+            "sha256": "342b4fc322a5535ac09a1f2aded5c3d64089caa47a4386afd701e33bd101bf8e",
+            "byteLength": 3937
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/group-image-39.rgba",
+            "sha256": "5e9db7c6c2a940421dd1bc13e7513c16917c77e80a85dc44def6d72a21d23731",
+            "byteLength": 480000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/group-image.pptx",
+            "sha256": "27afb766480b12574e8647c8ef252f11bd213600aafdf7cfba129dcd2887351e",
+            "byteLength": 11314
+          },
+          "fonts": {
+            "path": ".codex-work/elliptic-source/source-runtime/prior-prior-prior-prior-prior-prior-previous-group-direct-image.fonts.bin",
+            "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+            "byteLength": 1920
+          }
+        },
+        {
+          "name": "group-image-40",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/group-image-40.request.json",
+            "sha256": "a6fa8105de42ca6e5d9871cd16654308698dd107969701a516800b69cd1b09cd",
+            "byteLength": 1274
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/group-image-40.response.json",
+            "sha256": "689b9f62718f5253a17c8cabc714bb67fe8e6dbdb64361d251f647de288c8ea6",
+            "byteLength": 3749
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/group-image-40.rgba",
+            "sha256": "18f624b5da562ea052077546ed60dd4265f2e82f44b70a8086e3e011f6926d71",
+            "byteLength": 480000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/group-image.pptx",
+            "sha256": "27afb766480b12574e8647c8ef252f11bd213600aafdf7cfba129dcd2887351e",
+            "byteLength": 11314
+          },
+          "fonts": {
+            "path": ".codex-work/elliptic-source/source-runtime/prior-prior-prior-prior-prior-prior-previous-group-direct-image.fonts.bin",
+            "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+            "byteLength": 1920
+          }
+        },
+        {
+          "name": "group-image-41",
+          "request": {
+            "path": ".codex-work/fade-animation/corpus-final-02/group-image-41.request.json",
+            "sha256": "9380b4f1daf141ddf1eba6ae7f09c8ecfcf23c3f174d668a1559ffbad3995dd4",
+            "byteLength": 1273
+          },
+          "response": {
+            "path": ".codex-work/fade-animation/corpus-final-02/group-image-41.response.json",
+            "sha256": "3b7e7ee6d576aadbe608cde0bf9d45bf45a4e021827374390fbeceb490f42636",
+            "byteLength": 3922
+          },
+          "pixels": {
+            "path": ".codex-work/fade-animation/corpus-final-02/group-image-41.rgba",
+            "sha256": "77c08af0a41efce5ab66388e54c7fd2e682e18eb2e6e199007bdb6f07cd3c73d",
+            "byteLength": 480000
+          },
+          "source": {
+            "path": ".codex-work/fade-animation/corpus-final-02/group-image.pptx",
+            "sha256": "27afb766480b12574e8647c8ef252f11bd213600aafdf7cfba129dcd2887351e",
+            "byteLength": 11314
+          },
+          "fonts": {
+            "path": ".codex-work/elliptic-source/source-runtime/prior-prior-prior-prior-prior-prior-previous-group-direct-image.fonts.bin",
+            "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+            "byteLength": 1920
+          }
+        }
+      ]
+    }
+  },
+  "reports": [
+    {
+      "path": ".codex-work/fade-animation/core-tests-02.log",
+      "sha256": "303f61e329ffd51c523422c309283ae3a224b128bcefa8f377ac8a950a10bfb8",
+      "byteLength": 56862
+    },
+    {
+      "path": ".codex-work/fade-animation/clippy-final.log",
+      "sha256": "38dd26cc1bb0aa003804885eabdc7d2ff9c85e6b33097580314e96a4c5b1da02",
+      "byteLength": 195
+    },
+    {
+      "path": ".codex-work/fade-animation/schema-write.log",
+      "sha256": "fbc9717a8597118241cd410a265559fe7bd1a6275efdb2a1a21d91e764d0a8f8",
+      "byteLength": 8342
+    },
+    {
+      "path": ".codex-work/fade-animation/types-check.log",
+      "sha256": "cad290968d57526e0a6958210b4070c7fcf229a49e86089c62affb6a210ff36c",
+      "byteLength": 4215
+    },
+    {
+      "path": ".codex-work/fade-animation/wasm-sync-final/report.json",
+      "sha256": "77cc0d693eaf0309dfbcee58ab4cdbd879e90dba0af775e51e969033070ef1b4",
+      "byteLength": 44789
+    },
+    {
+      "path": ".codex-work/fade-animation/wasm-stepped-final/report.json",
+      "sha256": "f8080247228c5cc5948a83a716ad234154528859fe23d249fab5f09590aaafbe",
+      "byteLength": 44792
+    },
+    {
+      "path": ".codex-work/fade-animation/wps-edit-report-final.json",
+      "sha256": "4a5bd6f18e8899418c3631c4fdb9c8132788930019df714598b60d7169fb4d94",
+      "byteLength": 6374
+    },
+    {
+      "path": "product-worktree/.codex-work/integration/fade-animation/fixtures-final/report.json",
+      "sha256": "1d475e82f92beca0f53277164bbd94c97422081756c17bf15585a223d31473fc",
+      "byteLength": 2240
+    },
+    {
+      "path": "product-worktree/.codex-work/integration/fade-animation/actual-worker-final.json",
+      "sha256": "5b023e2e66ed4bd3ce16741aea923031e451bfcd4f72f4e307be883413e28179",
+      "byteLength": 1721
+    }
+  ],
+  "externalEvidence": {
+    "app": "WPS Office 12.1.22553 macOS ARM64",
+    "files": [
+      {
+        "path": ".codex-work/fade-animation/wps-entrance.pptx",
+        "sha256": "51e1177721f340c6763715061bc26d12a24e52c1383d050f5df5497ec3ee026b",
+        "byteLength": 9585
+      },
+      {
+        "path": ".codex-work/fade-animation/wps-entrance-exit.pptx",
+        "sha256": "e0080a9ffcea808714a4f8c49e8c8b6f8200fc5268fe65b7a5abed2167cb0617",
+        "byteLength": 9697
+      },
+      {
+        "path": ".codex-work/fade-animation/wps-edited.pptx",
+        "sha256": "b30b289ffedf99ec6c448a75ab65fd3cccc7340ecfd3888839c13230d448b0f3",
+        "byteLength": 9714
+      },
+      {
+        "path": ".codex-work/fade-animation/wps-entrance.png",
+        "sha256": "6dabd79aa2cedeaca9ad36bf5301c72a36584043edd4853eb349307dbefe21ff",
+        "byteLength": 372438
+      },
+      {
+        "path": ".codex-work/fade-animation/wps-edited.png",
+        "sha256": "f4b120663a6ce050aad9a0d4d14c8e270b8ab86abc4e7a0a1f19c876327167a1",
+        "byteLength": 366160
+      }
+    ],
+    "observations": [
+      "Owned WPS entrance/exit use animEffect fade plus visibility set.",
+      "Kernel export exposes two editable WPS presets. WPS changed entrance 500ms to 1000ms; reimported exact values checked at 11 times. Exit remains 500ms."
+    ],
+    "foregroundRestored": true,
+    "scope": "Editable native preset and duration roundtrip; no frame-exact WPS screenshot or PowerPoint acceptance claim"
+  },
+  "sizes": {
+    "platform": "macOS-26.2-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "desktopPlaybackFiles": 42,
+    "desktopPlaybackUncompressedBytes": 18410617,
+    "previousPlaybackUncompressedBytes": 18289269,
+    "increaseBytes": 121348,
+    "exportWorkerDebugBytes": 43787104,
+    "installerOrRuntimePerformanceClaim": false
+  },
+  "product": {
+    "branch": "codex/musteroffice-integration",
+    "writeScope": "Independent product worktree only; main workspace belongs to user",
+    "formalChangedPaths": [
+      "components/musteroffice/lock.json",
+      "components/musteroffice/playback-lock.json",
+      "apps/agent-runtime/Cargo.toml"
+    ]
+  },
+  "retainedIssues": [
+    "Initial implementation edit hit wrong match arm; corrected before successful compilation.",
+    "New test first interpreted frame magic as ABI version; corrected version offset and existing static ABI expectation.",
+    "Test attempted unavailable work().opacity_groups field; switched to the public frame ABI observation.",
+    "Fixture Fraction initially received string arguments; corrected its exact integer conversion.",
+    "First product client run raced fixture generation; rerun sequentially with unchanged source.",
+    "Final native recheck exposed ZIP timestamps in two owned source fixtures. Generator now fixes member order and timestamp; final Native/WASM checks use regenerated inputs.",
+    "Ad hoc final comparison initially confused frame counts with manifest entries; corrected harness and reran final material checks.",
+    "Final debug worker bytes changed after source formatting; updated pin and prepared copy, regenerated native/product reference. Playback bundle bytes unchanged.",
+    "python3 did not provide Ruff module; used the already-installed product-worktree Ruff executable."
+  ],
+  "limitations": [
+    "Nonconstant slide-background fills need explicit snapshot capture scope at opacity boundaries; excluded from this fade stage.",
+    "No arbitrary native animation filters or custom progress payloads.",
+    "Arbitrary timing-edge WPS save fidelity remains open; no universal Office/WPS claim.",
+    "Full viewport group intermediates need workload, ROI precision and resource/performance measurement.",
+    "Full transitions/media/SmartArt/formulas, Agent/Electron/cross-platform/history, packaging and E0-E3 gates remain required."
+  ]
+}

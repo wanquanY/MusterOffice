@@ -1,0 +1,310 @@
+{
+  "stage": "product-template-source",
+  "date": "2026-09-28",
+  "status": "verified-implementation-segment",
+  "scope": {
+    "implemented": [
+      "Original Runtime OfficeHost shared compute permits for native source import and explicit definition preparation.",
+      "Product template package producer and registered Agent consumer use the same typed validator.",
+      "Actual native PPTX import, parameterized package, Agent instance, title edit and export."
+    ],
+    "notCompleted": [
+      "Automatic upload still uses the legacy HTML coordinator.",
+      "Native maintenance policy, parameter stress/render quality and original fenced catalog publication wiring.",
+      "Full PPT quality, advanced features, page assembly, HTML history, desktop/model/Office/WPS and replacement acceptance."
+    ],
+    "claim": "No storage, permissions, user pages or task owner added to MusterOffice."
+  },
+  "environment": {
+    "system": "Darwin",
+    "release": "25.2.0",
+    "machine": "arm64",
+    "productBranch": "codex/musteroffice-integration",
+    "buildProfile": "debug tests, not distribution size or performance evidence"
+  },
+  "materials": {
+    "sdkManifestSha256": "c2a893bc0a9cbac1bee5242ef8acbc26ea2657feb4f66f6c64db906a2c30f3b6",
+    "worker": {
+      "sha256": "9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+      "byteLength": 42660544
+    },
+    "sameRegistryLockAndSdkMaterialsAsPreviousStage": true,
+    "newBinaries": 0,
+    "newRegistryDependencies": 0
+  },
+  "checks": [
+    {
+      "run": "unit-03",
+      "report": ".codex-work/integration/template-source/unit-03.json",
+      "reportSha256": "cc16bb1e1828120db32f5f457af9681e42727ef990964da3605d2ed72bde19d0",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-source/unit-03-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-source/unit-03-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-source/unit-03-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-musteroffice",
+        "--lib",
+        "template::"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "elapsedSeconds": 15.921318625099957,
+      "logSha256": "40f40fb65690f023021ded4e7815400c18cc167a46f179ef462bb93bf4c7b2a4"
+    },
+    {
+      "run": "agent-01",
+      "report": ".codex-work/integration/template-source/agent-01.json",
+      "reportSha256": "64baf5c4deb1a9b8f79852b14c227884ea04a53b4e002f49a760cc01f31dcf21",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-source/agent-01-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-source/agent-01-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-source/agent-01-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::office_agent::",
+        "--",
+        "--include-ignored",
+        "--test-threads=1"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "elapsedSeconds": 120.4841454999987,
+      "logSha256": "5380782c5f58696911e9353cc371da2e6925760f233d5dca6f2c956daaf7fc49"
+    },
+    {
+      "run": "libraries-02",
+      "report": ".codex-work/integration/template-source/libraries-02.json",
+      "reportSha256": "09f7d8ded272a1e25ebd670fb7ce50fcf0d97b889ebca0e4432948d3694f3c5e",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-source/libraries-02-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-source/libraries-02-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-source/libraries-02-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "clippy",
+        "--no-deps",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-musteroffice",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "elapsedSeconds": 28.696855874964967,
+      "logSha256": "3e59e37e75bfd24b006d4706e748a29f8e7406b2243b557d2a3f17263a6cf732"
+    },
+    {
+      "run": "backend-01",
+      "report": ".codex-work/integration/template-source/backend-01.json",
+      "reportSha256": "9b4f12f047c5c407c4c9269da1dde8cd99beb68c7010f71f22e9b05e663431bf",
+      "command": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONPATH=$MUSTERWORK_WORKTREE/apps/agent-runtime/clients/python/src:$MUSTERWORK_WORKTREE",
+        "SECRET_KEY=isolated-native-template-test-not-a-production-secret",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_NATIVE_TEMPLATE_BUNDLE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-source/agent-01-native",
+        "$ORIGINAL_MUSTERWORK/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "backend/tests/unit/test_presentation_template_source.py",
+        "backend/tests/unit/test_native_presentation_template_source.py",
+        "backend/tests/unit/test_builtin_release_profile.py",
+        "backend/tests/unit/test_presentation_templates.py",
+        "backend/tests/unit/test_presentation_template_upgrade.py",
+        "backend/tests/unit/test_editable_presentation_runtime_authority.py"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "elapsedSeconds": 3.8362358750309795,
+      "logSha256": "457bb48d2f3c8e7b6452e15ea0f29f3401008c5f8a4f2a779e793ee72bd5712c"
+    }
+  ],
+  "counts": {
+    "newUnitTests": 7,
+    "agentTests": 19,
+    "backendTests": 57,
+    "backendSubtests": 7,
+    "backendExistingDeprecationWarnings": 294
+  },
+  "lintScope": "musterwork-agent-musteroffice --all-targets --no-deps -- -D warnings; not a full product lint claim",
+  "byteComparison": {
+    "status": "passed",
+    "nativeTemplate": {
+      "sourceSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+      "instanceSha256": "86f741759a6a746f4bd2fa5a3d0097939b2f14ddfeeb622fb8c65ea8237a801a",
+      "parts": 21,
+      "changedParts": [
+        "docProps/core.xml",
+        "ppt/slides/slide1.xml"
+      ],
+      "retainedParts": 19,
+      "sourceBytes": 10735,
+      "instanceBytes": 10730,
+      "instanceEqualToPreviousStage": true
+    },
+    "regression": [
+      {
+        "file": "agent-01-agent/version-1.pptx",
+        "sha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+        "bytes": 10735,
+        "equalToPreviousStage": true
+      },
+      {
+        "file": "agent-01-agent/version-2.pptx",
+        "sha256": "0d28df97204dab351fc0b85d6853f9d28edfb4dc111fc18d8a22f733a4e4264e",
+        "bytes": 10729,
+        "equalToPreviousStage": true
+      },
+      {
+        "file": "agent-01-agent-environment/version-1.pptx",
+        "sha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+        "bytes": 10735,
+        "equalToPreviousStage": true
+      },
+      {
+        "file": "agent-01-agent-environment/version-2.pptx",
+        "sha256": "0d28df97204dab351fc0b85d6853f9d28edfb4dc111fc18d8a22f733a4e4264e",
+        "bytes": 10729,
+        "equalToPreviousStage": true
+      },
+      {
+        "file": "agent-01-open/version-1.png",
+        "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d",
+        "bytes": 14915,
+        "equalToPreviousStage": true
+      },
+      {
+        "file": "agent-01-open/version-1.pptx",
+        "sha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+        "bytes": 10735,
+        "equalToPreviousStage": true
+      },
+      {
+        "file": "agent-01-open/version-2.png",
+        "sha256": "2888395fb8d3330df2e860f9972f3e9517dbab37c357a260dba23897cf515df8",
+        "bytes": 15146,
+        "equalToPreviousStage": true
+      },
+      {
+        "file": "agent-01-open/version-2.pptx",
+        "sha256": "60a31201f0ee0e79aee30d1595738622c28f8e22239067687e45316bc9e0bf9f",
+        "bytes": 10742,
+        "equalToPreviousStage": true
+      }
+    ],
+    "scope": "Owned native source produced through the actual embedded SDK template computer and consumed by registered Agent tools. Byte/part checks do not establish Office/WPS visual, full quality or automatic upload acceptance."
+  },
+  "sourceDelta": {
+    "changed": [
+      "crates/infrastructure/musteroffice/src/agent/template/package.rs",
+      "crates/infrastructure/musteroffice/src/host.rs",
+      "crates/infrastructure/musteroffice/src/lib.rs",
+      "tests/conformance/tests/sqlite_agent_loop/presentation_office_agent/templates.rs"
+    ],
+    "added": [
+      "crates/infrastructure/musteroffice/src/template.rs",
+      "crates/infrastructure/musteroffice/src/template/package.rs",
+      "crates/infrastructure/musteroffice/src/template/source.rs",
+      "crates/infrastructure/musteroffice/src/template/tests.rs"
+    ],
+    "dependencyAndSdkInputsUnchanged": true,
+    "agentToFinalUnitDelta": [
+      "crates/infrastructure/musteroffice/src/template/tests.rs"
+    ],
+    "deltaReason": "New unit tests now use meaningful expect messages instead of unwrap; production and conformance sources are byte-identical."
+  },
+  "sourceFiles": [
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/template.rs",
+      "sha256": "bb267bd6c142a04b1c4b33c97c98959477b378d67b64ef555ab901e629632521",
+      "lines": 166
+    },
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/template/package.rs",
+      "sha256": "8819fbbca0679c9f114d3de9a5252e873f8fd5351bc30d604a2f4a1f285fedfb",
+      "lines": 247
+    },
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/template/source.rs",
+      "sha256": "02580a0277bc1e2bd646d406dc08797a921badbe65120c6dabe7bad68a5aa7d2",
+      "lines": 72
+    },
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/template/tests.rs",
+      "sha256": "b1a851caf0d115f38eb9393bfbe3bf6ccaa26c53395fe3979a9c6dfad16b8de7",
+      "lines": 435
+    },
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/agent/template/package.rs",
+      "sha256": "e2986ca9361509553b873bb0e667bb2704a01e86142c0125a072718af6c59164",
+      "lines": 130
+    },
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/host.rs",
+      "sha256": "859aa6414bcfee12f56a18d48c52248ea13a84bf6327f55408a35557528b75f0",
+      "lines": 144
+    },
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/lib.rs",
+      "sha256": "514aefb76e1da7f736264ed62acf3bb98843eb01f08dd96808a77ca8946ced9c",
+      "lines": 43
+    },
+    {
+      "path": "apps/agent-runtime/tests/conformance/tests/sqlite_agent_loop/presentation_office_agent/templates.rs",
+      "sha256": "c2246243a196e8604feb77a5f012a4aed0f2b1c7cf1baad3397f05b98ad4daff",
+      "lines": 409
+    }
+  ],
+  "retainedFailures": [
+    {
+      "run": "unit-01",
+      "reportSha256": "9ab25046bb06dd3b50342beac052abd7239d4c929f8b3a95deb26cfe3be17592",
+      "exitCode": 101,
+      "sourceUnchanged": true,
+      "reason": "Two test compilation errors: shadowed helper name and explicit cancellation trait-object coercion. Fixed before unit-02 and unit-03."
+    },
+    {
+      "run": "libraries-01",
+      "reportSha256": "e9c17b4d758176bcb5fe3a49ccd446664c556090a07e7dac48b6ddedbf9ba930",
+      "exitCode": 101,
+      "sourceUnchanged": true,
+      "reason": "Strict test-target Clippy rejected unwrap in new tests. Changed to meaningful expect messages; no lint allow or scope reduction."
+    }
+  ],
+  "backendScope": "Production SQL ownership, signatures and gRPC with an in-memory hash-checked blob provider, receiving the exact newly produced native bundle. Not an online upload or real model session."
+}

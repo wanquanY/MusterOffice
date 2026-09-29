@@ -1,0 +1,301 @@
+{
+  "version": 1,
+  "stage": "delivery-playback-inputs",
+  "date": "2026-09-28",
+  "status": "Implemented and verified; product viewer integration and full replacement incomplete",
+  "checks": [
+    {
+      "name": "native-tests-03",
+      "reportSha256": "c26b209e7637b8a664cd89bbd96919d015004067dbaefeb62e037234415bdf0a",
+      "logSha256": "9a2245a85c2649163f50d8e9c41e9a5a12260ba59cdc86151cf47e792ab9c923",
+      "exitCode": 0,
+      "currentInventoryMatches": true
+    },
+    {
+      "name": "native-build-01",
+      "reportSha256": "5e8f23bd16c434424b59d79b1aa4191538ab5753f054845a573b4faabe8fc5fe",
+      "logSha256": "ab20a57ca246e46fb2dcd7d2a26e0e45dde24c0beb3a9d0a45ca46071c20fa1a",
+      "exitCode": 0,
+      "currentInventoryMatches": true
+    },
+    {
+      "name": "wasm-build-02",
+      "reportSha256": "3413cf5f76c2540b1174e52f6a7a7ffe2008b7fd8d26dcfc748f5ce239370d56",
+      "logSha256": "a57f53ef45f82ae1ddd70a9d00c6bd003fea8bfeb8b3652adb56f9714a6adfd1",
+      "exitCode": 0,
+      "currentInventoryMatches": true
+    },
+    {
+      "name": "lint-01",
+      "reportSha256": "45e034a61ba8bd33746f3812d801d2d5d520e1af0a59ee56e84f238803d7481a",
+      "logSha256": "62a912e5d8892f12c09c40555b7040a98bab7e8f00d4853aa28fb8882119950b",
+      "exitCode": 0,
+      "currentInventoryMatches": true
+    },
+    {
+      "name": "client-check-01",
+      "reportSha256": "1d66a59d31a34355b9f7a8b353deb84fa3936c5a6c6bfebbffa767fe9e0137f8",
+      "logSha256": "73da38398f1dd5b3bb37a4e08122aa3ade1ba784481ba47b45fe9906770c6707",
+      "exitCode": 0,
+      "currentInventoryMatches": true
+    },
+    {
+      "name": "parity-01",
+      "reportSha256": "e8359879dbf943d258f72e88ae880e30eae9d24d67176321e8b1bc10d58b307a",
+      "logSha256": "eac6386234a6755a2bc1acc5040c5bdd86af1b62e8c342d62b406b266817498e",
+      "exitCode": 0,
+      "currentInventoryMatches": true
+    },
+    {
+      "name": "receive-regression-01",
+      "reportSha256": "0be9cd19fe694c77122d14cfcfa98b77c0f6d21fceeb4582b237361a81afe2fc",
+      "logSha256": "70d4c482adad4e82121438d541660e5e8c40e096575895b87f249e15737bac73",
+      "exitCode": 0,
+      "currentInventoryMatches": true
+    }
+  ],
+  "scope": {
+    "native": "ReceivedDelivery::playback_inputs reuses verified material with no resource reads or rendering",
+    "portable": "New bounded Rust/WASM computation and TS facade; no network, fonts, storage or session implicitly selected",
+    "product": "Exact two PPTX versions from the original product Device AgentLoop; no product production files or fixed SDK pins changed in this stage",
+    "mainWorkspaceWritten": false
+  },
+  "tests": {
+    "rust": 28,
+    "existingPlaybackClient": 21,
+    "deliveryPlaybackNativeWasmCases": 10,
+    "frames": 12,
+    "frameComparisons": "Native one-shot, WASM retained sync, WASM retained stepped; all pixels equal; retained sampling font upload/component calls zero",
+    "existingDeliveryNativeWasmCases": 36,
+    "strictClippy": "delivery and kernel API all targets passed",
+    "typesAndSchemas": "generated schemas and TypeScript checks passed"
+  },
+  "package": {
+    "manifestSha256": "721fc6cd584cce15a1b0ce266adf861712fbac1fc137adc7040f80e049cb45e1",
+    "files": 66,
+    "uncompressedBytes": 18077546,
+    "releaseCleared": false,
+    "workerRuntime": "Actual Node Worker; three pinned code modules; current rebuilt WASM matches tested package byte for byte",
+    "distributionSizeAccepted": false
+  },
+  "productInputs": [
+    {
+      "version": 1,
+      "manifestSha256": "1fb63863ab47520d346214546eba32d3b5b6c0797c0bd4e3bf5942d258493a3b",
+      "receiptSha256": "032cfe12418d9b34a07779398b46ab57d6568c9576ce4676600581f834687572",
+      "bundleSha256": "ab777412be17cfb63289970d61a138bd8381c71397baba29a55bcd84b2c56999",
+      "pptxSha256": "a6662c17dad668a466a3d46836d4fac8dce1738078802c9c5d543f6ee5b1438d"
+    },
+    {
+      "version": 2,
+      "manifestSha256": "34295e5ef07810d84b353fdc66476ed597c7f8127ed1cf8cd09c1c70ca00897e",
+      "receiptSha256": "4f5f66b1cb0b493acddd72ce9d65497b9bf46dfc3def1f62688fb444d5fe8779",
+      "bundleSha256": "18f23ee28d20eb13beb6b0fbff8e47e5b2ec9af2a33ede70c959c81245d5bb0c",
+      "pptxSha256": "4c39a220febc731696868177dfe28ab9e7d9deb6ca4e8bab969f2d1a8590bcf1"
+    }
+  ],
+  "parity": [
+    {
+      "name": "fixture",
+      "status": "prepared",
+      "requestSha256": "46e8a622eb9246fd4ea535042e6c28181e2349f0e811952cf9835e10d7d4fb9a",
+      "contentsSha256": "4b3034977549f28ea517e25adf6b4137c190f1b1915bfffc91204d9916df304b",
+      "responseSha256": "f258fe24f13df7fe44ea163adf01e21f86540c693e70cf1b3698b52f9c7d03c2",
+      "frames": [
+        {
+          "pageId": "slide:1",
+          "at": {
+            "ticks": "0",
+            "timescale": 1000
+          },
+          "pixelsSha256": "49e193516dd7d1fc9013942d6cc8dd4457f0c2c0ee7cc38950e2ade1091784ed",
+          "bytes": 57600
+        },
+        {
+          "pageId": "slide:1",
+          "at": {
+            "ticks": "500",
+            "timescale": 1000
+          },
+          "pixelsSha256": "49e193516dd7d1fc9013942d6cc8dd4457f0c2c0ee7cc38950e2ade1091784ed",
+          "bytes": 57600
+        },
+        {
+          "pageId": "slide:2",
+          "at": {
+            "ticks": "0",
+            "timescale": 1000
+          },
+          "pixelsSha256": "04fa8a1d03c9d781ce7bd2af6e8ae86ddeeba240bfba2b3dd31bd62df2710f70",
+          "bytes": 57600
+        },
+        {
+          "pageId": "slide:2",
+          "at": {
+            "ticks": "500",
+            "timescale": 1000
+          },
+          "pixelsSha256": "04fa8a1d03c9d781ce7bd2af6e8ae86ddeeba240bfba2b3dd31bd62df2710f70",
+          "bytes": 57600
+        }
+      ]
+    },
+    {
+      "name": "product-v1",
+      "status": "prepared",
+      "requestSha256": "f316319286d0e53811414beeae16b561d05530e9df1765bba306a84271130309",
+      "contentsSha256": "e684fd542282ccd95c50e671120559a3b871c2117b82f665b8c9a198e5d7cbae",
+      "responseSha256": "8bfc48a22303a546486a0b58c725af8a3860bfb256d7f067964f1dc1fb4f2dfc",
+      "frames": [
+        {
+          "pageId": "ee2894f33457dcac1155ecdb9564b9f95a77ee659143e4c6108968d555894700",
+          "at": {
+            "ticks": "0",
+            "timescale": 1000
+          },
+          "pixelsSha256": "49e193516dd7d1fc9013942d6cc8dd4457f0c2c0ee7cc38950e2ade1091784ed",
+          "bytes": 57600
+        },
+        {
+          "pageId": "ee2894f33457dcac1155ecdb9564b9f95a77ee659143e4c6108968d555894700",
+          "at": {
+            "ticks": "500",
+            "timescale": 1000
+          },
+          "pixelsSha256": "49e193516dd7d1fc9013942d6cc8dd4457f0c2c0ee7cc38950e2ade1091784ed",
+          "bytes": 57600
+        },
+        {
+          "pageId": "a635fa6007cc5b255bbec314ddcf1a30b893004dc0e3c9d00c6fb8a96df7c2d3",
+          "at": {
+            "ticks": "0",
+            "timescale": 1000
+          },
+          "pixelsSha256": "2f520bec4762d5371253dac5a5b2b1a2fd5ed1bc51c3f058166b381b81e03e1a",
+          "bytes": 57600
+        },
+        {
+          "pageId": "a635fa6007cc5b255bbec314ddcf1a30b893004dc0e3c9d00c6fb8a96df7c2d3",
+          "at": {
+            "ticks": "500",
+            "timescale": 1000
+          },
+          "pixelsSha256": "2f520bec4762d5371253dac5a5b2b1a2fd5ed1bc51c3f058166b381b81e03e1a",
+          "bytes": 57600
+        }
+      ]
+    },
+    {
+      "name": "product-v2",
+      "status": "prepared",
+      "requestSha256": "f5eb8104cd0b1438a3b9297157dfbc3b09749305d6dfdabd387d79de4329248f",
+      "contentsSha256": "3faf82dd17de60371c59c4262f0ef14d391927c7a975e489a36d4b58da712ea1",
+      "responseSha256": "57bb7d5a0c1b3bd84e2a8417d8c8e4f6448a24f523a34487198c643d4aea6e76",
+      "frames": [
+        {
+          "pageId": "ee2894f33457dcac1155ecdb9564b9f95a77ee659143e4c6108968d555894700",
+          "at": {
+            "ticks": "0",
+            "timescale": 1000
+          },
+          "pixelsSha256": "49e193516dd7d1fc9013942d6cc8dd4457f0c2c0ee7cc38950e2ade1091784ed",
+          "bytes": 57600
+        },
+        {
+          "pageId": "ee2894f33457dcac1155ecdb9564b9f95a77ee659143e4c6108968d555894700",
+          "at": {
+            "ticks": "500",
+            "timescale": 1000
+          },
+          "pixelsSha256": "49e193516dd7d1fc9013942d6cc8dd4457f0c2c0ee7cc38950e2ade1091784ed",
+          "bytes": 57600
+        },
+        {
+          "pageId": "a635fa6007cc5b255bbec314ddcf1a30b893004dc0e3c9d00c6fb8a96df7c2d3",
+          "at": {
+            "ticks": "0",
+            "timescale": 1000
+          },
+          "pixelsSha256": "2f520bec4762d5371253dac5a5b2b1a2fd5ed1bc51c3f058166b381b81e03e1a",
+          "bytes": 57600
+        },
+        {
+          "pageId": "a635fa6007cc5b255bbec314ddcf1a30b893004dc0e3c9d00c6fb8a96df7c2d3",
+          "at": {
+            "ticks": "500",
+            "timescale": 1000
+          },
+          "pixelsSha256": "2f520bec4762d5371253dac5a5b2b1a2fd5ed1bc51c3f058166b381b81e03e1a",
+          "bytes": 57600
+        }
+      ]
+    },
+    {
+      "name": "width-zero",
+      "status": "error",
+      "requestSha256": "193b503c63ea9c8b316a783cb355becfc1ca7b36468d2662dce494799e9f9b63",
+      "contentsSha256": "4b3034977549f28ea517e25adf6b4137c190f1b1915bfffc91204d9916df304b",
+      "responseSha256": "7d283c15ccf6d4d34d7ec8fe9d6d94320633befc8249f6a6e6ac36d72f6890e8",
+      "frames": []
+    },
+    {
+      "name": "width-budget",
+      "status": "error",
+      "requestSha256": "fe0bb5dd815fe88f813cfbad6169fff89acf9b8e454e56adee572fde0dcd9d3c",
+      "contentsSha256": "4b3034977549f28ea517e25adf6b4137c190f1b1915bfffc91204d9916df304b",
+      "responseSha256": "7d283c15ccf6d4d34d7ec8fe9d6d94320633befc8249f6a6e6ac36d72f6890e8",
+      "frames": []
+    },
+    {
+      "name": "wrong-revision",
+      "status": "error",
+      "requestSha256": "d9fe8e0dc24aae839e472e97d718a01dc090dae763113e3c9a18eaced5c23c3c",
+      "contentsSha256": "4b3034977549f28ea517e25adf6b4137c190f1b1915bfffc91204d9916df304b",
+      "responseSha256": "9e3b3ce4f985393e7b88159e04fd8e129739b1ba6feeb475f323c405225e931f",
+      "frames": []
+    },
+    {
+      "name": "missing-range",
+      "status": "error",
+      "requestSha256": "ac5cd8b05dcafd0f54ea0d248368d751e46d839657b7c2d9615f95b33f32bb5b",
+      "contentsSha256": "4b3034977549f28ea517e25adf6b4137c190f1b1915bfffc91204d9916df304b",
+      "responseSha256": "eb22df902aba205b623b36c96238549843a69bc6f7deeceff7f4cb7d4c6986b2",
+      "frames": []
+    },
+    {
+      "name": "swapped-pages",
+      "status": "error",
+      "requestSha256": "07cae34d0e2dbbf378293666f11daed31d8ce7523bdb687e39e21abaaf2b07b3",
+      "contentsSha256": "4b3034977549f28ea517e25adf6b4137c190f1b1915bfffc91204d9916df304b",
+      "responseSha256": "bf6ad76f8df69962d9afc8a7cc03dc0cfcab500da451ce837b2c5dcdb74610ec",
+      "frames": []
+    },
+    {
+      "name": "corrupt-bytes",
+      "status": "error",
+      "requestSha256": "46e8a622eb9246fd4ea535042e6c28181e2349f0e811952cf9835e10d7d4fb9a",
+      "contentsSha256": "1d3db145d7bda9c41feb72f6bc643930ea2c2c999d30af72344565b8798a9749",
+      "responseSha256": "b90511a630fef91cefc8a18b8212dde25bbe6bfb530139b2a917edaa5c487428",
+      "frames": []
+    },
+    {
+      "name": "reuse-after-rejection",
+      "status": "prepared",
+      "requestSha256": "46e8a622eb9246fd4ea535042e6c28181e2349f0e811952cf9835e10d7d4fb9a",
+      "contentsSha256": "4b3034977549f28ea517e25adf6b4137c190f1b1915bfffc91204d9916df304b",
+      "responseSha256": "f258fe24f13df7fe44ea163adf01e21f86540c693e70cf1b3698b52f9c7d03c2",
+      "frames": []
+    }
+  ],
+  "limitations": [
+    "Owned small static documents; sampler parity does not prove full animation/media/SmartArt/math/Office-WPS quality",
+    "No browser player, complete desktop UX, actual model provider, history migration, performance or distribution-size acceptance",
+    "Portable derivation packs at most 128 MiB once; native receivers reuse already inspected readers; neither is per-frame work",
+    "Full goal remains ACTIVE and stable product release unchanged"
+  ],
+  "developmentFailures": [
+    "Test compile used equality on a diagnostic enum without PartialEq; corrected assertion pattern",
+    "Fixture expected a part path without its leading slash; test corrected to actual inspected OPC part",
+    "Initial codegen invocation omitted the required output directory; corrected command passed"
+  ]
+}

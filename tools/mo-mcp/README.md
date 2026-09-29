@@ -61,7 +61,7 @@ do not constitute a persistent document/job store or a background service.
 - `mo_capabilities`: actual adapter limits, available export renderer identity,
   shared schema identifiers and explicitly incomplete presentation acceptance.
 - `mo_schema`: the Rust-generated computation schema document and digest.
-- `mo_presentations_compute`: create, import, atomic edit or export from caller
+- `mo_presentations_compute`: create, import, describe/instantiate a template, atomic edit or export from caller
   files; it invokes the same `mo-embedded-sdk::execute` as the CLI.
 
 Prepare an invocation JSON using `computation-invocation`, and an input manifest
@@ -70,6 +70,17 @@ name resolves only inside the configured input directory. Empty resources use
 `[]`. The resource set must exactly match the request, with actual file length
 and SHA-256 checked while staging immutable inputs. Nothing follows PPTX external
 links or silently resolves fonts from the host operating system.
+
+For `describeTemplate` and `instantiateTemplate`, `Invocation.snapshot` is the
+immutable source and the input manifest is `[]`. Description validates the
+source and typed targets, returning a template digest and real examples in
+`describedTemplate.description`. Instantiation supplies that digest, definition,
+bindings and a new document ID, returning `mutated.snapshot`. Its optional
+`receipt.template` records source evidence; `receipt.transaction` is empty
+because this is the new document's first revision. The source is unchanged.
+The caller owns template selection, and actual resources are verified when
+rendering/exporting. This whole-document operation does not assemble selected
+pages into another deck or certify the full template/visual feature set.
 
 ```json
 {

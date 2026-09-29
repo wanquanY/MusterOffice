@@ -1,0 +1,1059 @@
+{
+  "format": "musteroffice.container-reversal-verification/1",
+  "date": "2026-09-29",
+  "status": "passed-bounded-stage-with-interop-gap",
+  "goal": "ACTIVE; full first-phase implementation and replacement gates remain open",
+  "scope": "Finite coincident container reversal with nested direction, repeat boundaries, easing, clipping, restart and scoped navigation. Native source, packaged WASM and isolated product upgrade. General reversed intervals and container autoReverse remain unimplemented.",
+  "sources": [
+    {
+      "repository": "MusterOffice",
+      "path": "README.md",
+      "sha256": "fadae383765fcd3840d3ea638cac94a1fad4c32c7ffc51f398ce7f3bd668a29c",
+      "byteLength": 23904
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/clock.rs",
+      "sha256": "851d770b908009f8f47d833c18bf39f6298a235c33046685256493a5f010c8f5",
+      "byteLength": 7495
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/tree/container_clock.rs",
+      "sha256": "b2178fc3ae04439402befa71f68544f9bd47bdeac7d68dfba48dac49fc707c7b",
+      "byteLength": 4832
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/tree/sample.rs",
+      "sha256": "1f465e984e69ef469f6a8aabc3eb2a849f1499fb3abfbc097656e0b9bcc301b4",
+      "byteLength": 11686
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/tree/sample/clocks.rs",
+      "sha256": "20e7de1653f219ee37b7978b5fab2aa56910201e88df41253d15913903b06d92",
+      "byteLength": 4827
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/tree/sample/intervals.rs",
+      "sha256": "2035bb30d70c7b610b1ff8e0b50e01c0fcc2ce3312966c5ba5d94d48c1aa2ccc",
+      "byteLength": 7350
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/tests/container_rate.rs",
+      "sha256": "48d6899ddcb262f341c2dea29339522afb9c131ffec33c018495fe98f4a00391",
+      "byteLength": 11125
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/tests/container_reversal.rs",
+      "sha256": "e7074f39a3cbd903d5c081a0866c21f0b02d141cc04b4f37bfd5b7c4fac43a76",
+      "byteLength": 9886
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "docs/README.md",
+      "sha256": "942842898f8172ed664803a72d05f75d3bdfe6e1ed122e9e794a9548f4e53c75",
+      "byteLength": 41042
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "docs/design/presentations/timeline-media.md",
+      "sha256": "e5739d64a8f4be160b4a437012e42c063ee5f54884bf367866e8e4f511546c0b",
+      "byteLength": 14348
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "docs/implementation/container-rate.md",
+      "sha256": "93f9742d55ebd0e1d49a0c658f09a21c79b10f2a88016e4655bb3ee07e9fae13",
+      "byteLength": 6072
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "docs/implementation/container-reversal.md",
+      "sha256": "6a25d087a77f07346c90f94be419b51e4a10aa9f5ae8b6f464ac3bf4e4650d7b",
+      "byteLength": 5979
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "docs/implementation/progress.md",
+      "sha256": "335f57af3363cf079a173745322fd3e77a8af1f519a3da00d9b03641f50c5e45",
+      "byteLength": 138874
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "tools/verification/container-rate-fixtures.py",
+      "sha256": "eb19cc35a2cfd58f7d3dcaeab28d7b448c04571fd97196c4b838cf29062cf617",
+      "byteLength": 8815
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "tools/verification/container-reversal-fixtures.py",
+      "sha256": "27dbf6aa72124f4ca5dca030c94a948ee9b6dc553341156cf6cd4d1aba6584e8",
+      "byteLength": 2833
+    }
+  ],
+  "coreCommands": [
+    {
+      "name": "rust",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/rust.json",
+        "sha256": "b89f46fef47aee4e880c0e2e2ba5fbb13c3775d581cb3061fa86fa2f5c1fbe5f",
+        "byteLength": 110514
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/rust.log",
+        "sha256": "c76f10df9a338952d1a93d1aa518cb02a947bdcc03006956de64e8fb71e9b8a1",
+        "byteLength": 63910
+      },
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-timeline",
+        "-p",
+        "mo-presentation-model",
+        "-p",
+        "mo-presentation-source",
+        "-p",
+        "mo-pptx",
+        "-p",
+        "mo-presentation-compile",
+        "-p",
+        "mo-presentation-edit"
+      ],
+      "sourceFiles": 424,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "clippy",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/clippy.json",
+        "sha256": "8f2a3229c8662495412210dcf78abb418b6d3b26a144d76e452d3714d94add21",
+        "byteLength": 110573
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/clippy.log",
+        "sha256": "1df3be21a68907d441a31437e0934e7fd9b0dd300a2c7fb42cf362f93daf8648",
+        "byteLength": 743
+      },
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-timeline",
+        "-p",
+        "mo-presentation-model",
+        "-p",
+        "mo-presentation-source",
+        "-p",
+        "mo-pptx",
+        "-p",
+        "mo-presentation-compile",
+        "-p",
+        "mo-presentation-edit",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "sourceFiles": 424,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "native-build",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/native-build.json",
+        "sha256": "4bad775d8a1bd796534f67eefda32a04c0383c19c70edf509f25e59f1bb4465e",
+        "byteLength": 216994
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/native-build.log",
+        "sha256": "35206d31cee4c062789557d4e8dd1160026360783b781630a5e0f5dc0a851f1f",
+        "byteLength": 1964
+      },
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-cli",
+        "-p",
+        "mo-raster-worker",
+        "-p",
+        "mo-export-worker"
+      ],
+      "sourceFiles": 892,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "wasm-build",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/wasm-build.json",
+        "sha256": "54b7e42483d250dafab572b466d410ade458adc6fa02d66c5c327b6beda43cb8",
+        "byteLength": 211520
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/wasm-build.log",
+        "sha256": "ba7537bcda25f547c66806fde6abd82941d829ab155b5d2b7a46e302216c713d",
+        "byteLength": 1306
+      },
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--release",
+        "-p",
+        "mo-wasm",
+        "--target",
+        "wasm32-unknown-unknown"
+      ],
+      "sourceFiles": 868,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "wasm-web",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/wasm-web.json",
+        "sha256": "dc1e45bc04b0aa2481003b9787108b7479e8fdaa94ad693cdf9c2e989a41e8c7",
+        "byteLength": 1109
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/wasm-web.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byteLength": 0
+      },
+      "command": [
+        ".codex-work/toolchain/bin/wasm-bindgen",
+        "--target",
+        "web",
+        "--out-dir",
+        "${MUSTEROFFICE}/.codex-work/container-reversal/wasm-web",
+        "target/wasm32-unknown-unknown/release/mo_wasm.wasm"
+      ],
+      "sourceFiles": 2,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "sdk",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/sdk.json",
+        "sha256": "da2d06c9375c4018e740d6cea7630062643c544a77e713929b4dd0c879a7ed6c",
+        "byteLength": 213185
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/sdk.log",
+        "sha256": "a46d428bf1948faeab1d79ef84fd10cb92f35f2e6ec7ff56945c570ec7766da4",
+        "byteLength": 199
+      },
+      "command": [
+        "python3",
+        "tools/sdk/build.py",
+        "--output",
+        "${MUSTEROFFICE}/.codex-work/container-reversal/sdk"
+      ],
+      "sourceFiles": 876,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "bundle",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/bundle.json",
+        "sha256": "b4a307086222da4cd7861807599b7b5a77c8e389df68e83dcc8e30e0729d69bc",
+        "byteLength": 42732
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/bundle.log",
+        "sha256": "cf23a5e87cec4cf3a35c390a1ef15dcc4bb01b8d402b2a644e9fbdb5f7e95059",
+        "byteLength": 100
+      },
+      "command": [
+        "python3",
+        "tools/playback-sdk/build.py",
+        "--output",
+        "${MUSTEROFFICE}/.codex-work/container-reversal/bundle",
+        "--wasm-dir",
+        "${MUSTEROFFICE}/.codex-work/container-reversal/wasm-web",
+        "--raster-dir",
+        "${MUSTEROFFICE}/.codex-work/snapshot-scopes/wasm",
+        "--text-dir",
+        "${MUSTEROFFICE}/.codex-work/harfbuzz/release"
+      ],
+      "sourceFiles": 163,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "corpus-02",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/corpus-02.json",
+        "sha256": "40d1d39b3a334a783e942a51f5592e144a2c2ae7b6b7ed74e9bc94a05c19be67",
+        "byteLength": 9831
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/corpus-02.log",
+        "sha256": "d20c67c7f0336d86b02cba312c901b26ae9ef7fed12e3fe8a66b055c604494d4",
+        "byteLength": 73
+      },
+      "command": [
+        "python3",
+        "tools/verification/container-reversal-fixtures.py",
+        "--output",
+        "${MUSTEROFFICE}/.codex-work/container-reversal/corpus-02",
+        "--export-template",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/manual/control.export.json",
+        "--page-template",
+        "${MUSTEROFFICE}/.codex-work/automatic-sequence/corpus/native-original-0-0.request.json",
+        "--worker",
+        "${MUSTEROFFICE}/target/debug/mo-raster-worker",
+        "--cli",
+        "${MUSTEROFFICE}/target/debug/mo-cli",
+        "--schema",
+        "${MUSTEROFFICE}/.codex-work/ecma376/xsd/pml.xsd"
+      ],
+      "sourceFiles": 34,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "playback-sync",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/playback-sync.json",
+        "sha256": "523b5aac68b101ea05f9354809895765d3696c591436a1217b9edd5c60f2378f",
+        "byteLength": 129403
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/playback-sync.log",
+        "sha256": "8b1b0a1518f3e0318b2bc9fe6b1d07787ac85fbebad1692f6d61d05be06888b2",
+        "byteLength": 43
+      },
+      "command": [
+        "node",
+        "tools/verification/wasm-playback-reference.mjs",
+        "${MUSTEROFFICE}/.codex-work/container-reversal/playback-sync",
+        "${MUSTEROFFICE}/.codex-work/container-reversal/bundle",
+        "922a5945b1d876576745cc216675f9539c411f41a46f16903322c72a101767ed",
+        "${MUSTEROFFICE}/.codex-work/container-reversal/corpus-02/author.json",
+        "${MUSTEROFFICE}/.codex-work/container-reversal/corpus-02/source.json",
+        "sync"
+      ],
+      "sourceFiles": 438,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "playback-stepped",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/playback-stepped.json",
+        "sha256": "edb11fd339af89365d0fe515dd118c99285816b3383e48e6ad09cc698a36b441",
+        "byteLength": 129410
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/playback-stepped.log",
+        "sha256": "8b1b0a1518f3e0318b2bc9fe6b1d07787ac85fbebad1692f6d61d05be06888b2",
+        "byteLength": 43
+      },
+      "command": [
+        "node",
+        "tools/verification/wasm-playback-reference.mjs",
+        "${MUSTEROFFICE}/.codex-work/container-reversal/playback-stepped",
+        "${MUSTEROFFICE}/.codex-work/container-reversal/bundle",
+        "922a5945b1d876576745cc216675f9539c411f41a46f16903322c72a101767ed",
+        "${MUSTEROFFICE}/.codex-work/container-reversal/corpus-02/author.json",
+        "${MUSTEROFFICE}/.codex-work/container-reversal/corpus-02/source.json",
+        "stepped"
+      ],
+      "sourceFiles": 438,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "rotation-regression",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/rotation-regression.json",
+        "sha256": "f3228d74eef6ae2565fff530021ccade0f3ff349fcaf939f68a4de3444ed9bc3",
+        "byteLength": 125341
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/rotation-regression.log",
+        "sha256": "8b1b0a1518f3e0318b2bc9fe6b1d07787ac85fbebad1692f6d61d05be06888b2",
+        "byteLength": 43
+      },
+      "command": [
+        "node",
+        "tools/verification/wasm-playback-reference.mjs",
+        "${MUSTEROFFICE}/.codex-work/container-reversal/rotation-regression",
+        "${MUSTEROFFICE}/.codex-work/container-reversal/bundle",
+        "922a5945b1d876576745cc216675f9539c411f41a46f16903322c72a101767ed",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/corpus/author.json",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/corpus/source.json",
+        "stepped"
+      ],
+      "sourceFiles": 428,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "easing-regression",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/easing-regression.json",
+        "sha256": "244478b8a3dd4d867bbd079e9c713dd43264cf795ed385531188809e412e5618",
+        "byteLength": 66291
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/easing-regression.log",
+        "sha256": "aac4052a3b49c26c583ef2e356260a9050a9d801baadf927720ed91b262fa101",
+        "byteLength": 43
+      },
+      "command": [
+        "node",
+        "tools/verification/wasm-playback-reference.mjs",
+        "${MUSTEROFFICE}/.codex-work/container-reversal/easing-regression",
+        "${MUSTEROFFICE}/.codex-work/container-reversal/bundle",
+        "922a5945b1d876576745cc216675f9539c411f41a46f16903322c72a101767ed",
+        "${MUSTEROFFICE}/.codex-work/container-easing/corpus/author.json",
+        "${MUSTEROFFICE}/.codex-work/container-easing/corpus/source.json",
+        "stepped"
+      ],
+      "sourceFiles": 234,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "rate-regression",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/rate-regression.json",
+        "sha256": "8577bcab075b6ba1e9a67682a9605131d29aee662a2c173074e11cb1d2d6f3a6",
+        "byteLength": 116338
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/rate-regression.log",
+        "sha256": "8b1b0a1518f3e0318b2bc9fe6b1d07787ac85fbebad1692f6d61d05be06888b2",
+        "byteLength": 43
+      },
+      "command": [
+        "node",
+        "tools/verification/wasm-playback-reference.mjs",
+        "${MUSTEROFFICE}/.codex-work/container-reversal/rate-regression",
+        "${MUSTEROFFICE}/.codex-work/container-reversal/bundle",
+        "922a5945b1d876576745cc216675f9539c411f41a46f16903322c72a101767ed",
+        "${MUSTEROFFICE}/.codex-work/container-rate/corpus/author.json",
+        "${MUSTEROFFICE}/.codex-work/container-rate/corpus/source.json",
+        "stepped"
+      ],
+      "sourceFiles": 418,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    }
+  ],
+  "productCommands": [
+    {
+      "name": "prepare-sdk",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-reversal/prepare-sdk.json",
+        "sha256": "962d692b71b2233b8bb397e4946624a57a1a5df51e59dd5ca0ab9740fb07f492",
+        "byteLength": 1569
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-reversal/prepare-sdk.log",
+        "sha256": "0873a3c84d22184c875cd50c7092c350b66b02c7865551578ca9bdcad4dc0f55",
+        "byteLength": 648
+      },
+      "command": [
+        "node",
+        "scripts/prepare-musteroffice-development.mjs",
+        "--sdk",
+        "${MUSTEROFFICE}/.codex-work/container-reversal/sdk",
+        "--worker",
+        "${MUSTEROFFICE}/target/debug/mo-export-worker"
+      ],
+      "sourceFiles": 4,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "prepare-playback",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-reversal/prepare-playback.json",
+        "sha256": "558b9aadb389ceb8b68a9c61cc429a3eb49203b9bd415ac8f1bb23f56f19c235",
+        "byteLength": 1244
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-reversal/prepare-playback.log",
+        "sha256": "23e0a65205605ebbaa55dba4e9d9f135d9413bc38cf9d1b9b805d750cc060c00",
+        "byteLength": 9686
+      },
+      "command": [
+        "node",
+        "scripts/prepare-musteroffice-playback.mjs",
+        "--source",
+        "${MUSTEROFFICE}/.codex-work/container-reversal/bundle"
+      ],
+      "sourceFiles": 3,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "consumer-build",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-reversal/consumer-build.json",
+        "sha256": "3666ec0501eac4f04696af22c67e67be939a9e750c355d6bcf51b57c7c57e7dc",
+        "byteLength": 2342
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-reversal/consumer-build.log",
+        "sha256": "33c088f50aa02792ea779aa696faf6775f94b87b3736e9a4ae1ab7c83c1466bd",
+        "byteLength": 7522
+      },
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "${MUSTERWORK_WORKTREE}/.codex-work/integration/container-reversal/export-consumer/Cargo.toml"
+      ],
+      "sourceFiles": 5,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "consumer-sequence",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-reversal/consumer-sequence.json",
+        "sha256": "1f154c5f9e3fd3d1d3757d16c08c37415ac6b23813bc59f5b01bd7f2a016a009",
+        "byteLength": 2372
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-reversal/consumer-sequence.log",
+        "sha256": "e2fdc95f55f0601e08d218b66f8bf8ccae6e47d19eae316521a3b0ff20bdfeea",
+        "byteLength": 574
+      },
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "${MUSTERWORK_WORKTREE}/.codex-work/integration/container-reversal/export-consumer/Cargo.toml",
+        "--test",
+        "sequence"
+      ],
+      "sourceFiles": 5,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "adapter",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-reversal/adapter.json",
+        "sha256": "723bb95b745254a944fe8970f9baaebcacc0b79d539b6923cd08b429ea5e52f7",
+        "byteLength": 15483
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-reversal/adapter.log",
+        "sha256": "32bbeb8e783168ee0a8a8a23c09ef0d86ecfbf9615e9f2592b778de1e2cff927",
+        "byteLength": 8199
+      },
+      "command": [
+        "cargo",
+        "test",
+        "--manifest-path",
+        "apps/agent-runtime/Cargo.toml",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-musteroffice",
+        "--lib"
+      ],
+      "sourceFiles": 50,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "client",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-reversal/client.json",
+        "sha256": "deda6a4d4c8fc40bff71b0f41d017f17179266cb8d997e9d20a34e80dec46d2f",
+        "byteLength": 151161
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-reversal/client.log",
+        "sha256": "6beec5ffdec3867077f98f9e7e33249e1983595bf84034dad1c739d373b5c20d",
+        "byteLength": 1459
+      },
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_NAVIGATION_ROOT=${MUSTERWORK_WORKTREE}/.codex-work/integration/container-reversal/fixtures",
+        "MUSTERWORK_OFFICE_NAVIGATION_REPORT=${MUSTERWORK_WORKTREE}/.codex-work/integration/container-reversal/actual-worker.json",
+        "MUSTERWORK_OFFICE_CATALOG_FLOW_ROOT=${MUSTERWORK_WORKTREE}/.codex-work/integration/native-model-flow/loop-02-actual.json.catalog-device-assets",
+        "MUSTERWORK_OFFICE_NATIVE_FRAMES=${MUSTEROFFICE}/.codex-work/delivery-playback/parity-01",
+        "pnpm",
+        "--filter",
+        "@musterwork/agent-runtime-product-client",
+        "exec",
+        "vitest",
+        "run",
+        "tests/office-playback.integration.spec.ts",
+        "tests/office-navigation.integration.spec.ts",
+        "tests/office-playback-worker-client.spec.ts",
+        "tests/office-presentation-preview.spec.ts",
+        "tests/office-presentation-artifact.spec.ts",
+        "--environment",
+        "node"
+      ],
+      "sourceFiles": 494,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "viewer",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-reversal/viewer.json",
+        "sha256": "df02c7a881f32be513fc295977923c0681f9027f839324efa02634bd02aab20a",
+        "byteLength": 75324
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-reversal/viewer.log",
+        "sha256": "262ad3da6f0077b0f71a09d7055818af0c35671029ff1cb26016e2663e64fe73",
+        "byteLength": 444
+      },
+      "command": [
+        "pnpm",
+        "--filter",
+        "@musterwork/desktop",
+        "exec",
+        "vitest",
+        "run",
+        "src/components/artifacts/__tests__/MusterworkOfficePlayer.spec.ts",
+        "src/components/artifacts/__tests__/MusterworkOfficePreview.spec.ts"
+      ],
+      "sourceFiles": 256,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "types",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-reversal/types.json",
+        "sha256": "f8bdd89b04a6482dd335a4d73108ffe73fc8a1bb25a14db004c42aa2cc242127",
+        "byteLength": 75590
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-reversal/types.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byteLength": 0
+      },
+      "command": [
+        "pnpm",
+        "--filter",
+        "@musterwork/desktop",
+        "exec",
+        "vue-tsc",
+        "--project",
+        "../../.codex-work/integration/product-playback/tsconfig.json",
+        "--noEmit"
+      ],
+      "sourceFiles": 257,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "preparation",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-reversal/preparation.json",
+        "sha256": "e73b599d292958ce9fe7965c07296bd0b9d6e22486a9663f7fdd7a6198cdc675",
+        "byteLength": 1825
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-reversal/preparation.log",
+        "sha256": "4db45ec74869d4d93ed146af4ec52afabee6027f0ab9d0c5ed7d2febd5241e46",
+        "byteLength": 1471
+      },
+      "command": [
+        "node",
+        "--test",
+        "scripts/prepare-musteroffice-development.test.mjs",
+        "scripts/prepare-musteroffice-playback.test.mjs"
+      ],
+      "sourceFiles": 5,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "desktop-build",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-reversal/desktop-build.json",
+        "sha256": "7c21f83a314d48e609705f7df2ed5fd9c1e10f588f212347671cc7a3cc5f08a3",
+        "byteLength": 505610
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-reversal/desktop-build.log",
+        "sha256": "a2b7d38f696845b009c3cbb8819002244c5bf4e47b09ddbbf119864ebc6777c6",
+        "byteLength": 73764
+      },
+      "command": [
+        "env",
+        "MUSTERWORK_MUSTEROFFICE_PLAYBACK=1",
+        "pnpm",
+        "--filter",
+        "@musterwork/desktop",
+        "exec",
+        "vite",
+        "build",
+        "--outDir",
+        "../../.codex-work/integration/container-reversal/desktop-build"
+      ],
+      "sourceFiles": 1737,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    }
+  ],
+  "results": {
+    "rustTestsPassed": 543,
+    "newTests": 6,
+    "nativeFrames": 72,
+    "independentClockChecks": 72,
+    "staticPixelControls": 69,
+    "xsdParts": 20,
+    "wasmSyncFrames": 72,
+    "wasmSteppedFrames": 72,
+    "previousRotationFrames": 72,
+    "previousMixedContentEasingFrames": 40,
+    "previousRateFrames": 72,
+    "productTestsPassed": 161,
+    "productNativeFrames": 48,
+    "productWorkerFrames": 76,
+    "desktopFrontendBuild": "passed",
+    "installerBuilt": false
+  },
+  "materials": {
+    "sdk": "85e1bb6b496b26a791fba1c980aa8b0c65d1ece836112896624483673857099f",
+    "playback": "922a5945b1d876576745cc216675f9539c411f41a46f16903322c72a101767ed",
+    "worker": "1e3f300562c61318d802d8345899e4e6c7c92704b2019017f48ad43173e6f29e",
+    "workerBytes": 44058016,
+    "checkedPackageFiles": 1282,
+    "desktopCopiedFiles": 42,
+    "desktopCopiedUncompressedBytes": 18668740,
+    "desktopBytesDeltaFromContainerRate": 1212,
+    "workerBytesDeltaFromContainerRate": 368
+  },
+  "materialReceipts": [
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/container-reversal/sdk/sdk-manifest.json",
+      "sha256": "85e1bb6b496b26a791fba1c980aa8b0c65d1ece836112896624483673857099f",
+      "byteLength": 225920
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/container-reversal/bundle/bundle-manifest.json",
+      "sha256": "922a5945b1d876576745cc216675f9539c411f41a46f16903322c72a101767ed",
+      "byteLength": 11855
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": ".codex-work/integration/container-reversal/materials.json",
+      "sha256": "d0c80f9e29d395f07edacc488f0d18f34bea2c11ddb67d8c581694de801eb212",
+      "byteLength": 269
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": "components/musteroffice/lock.json",
+      "sha256": "84db03a45a44206b4b990f61ef9974dd136c155cd2c8e1b9dc7d88c7b875ef0b",
+      "byteLength": 333
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": "components/musteroffice/playback-lock.json",
+      "sha256": "a16f08c8daa103c708b66f818ab1b3d08a62731447642455419e4d2193ed76e1",
+      "byteLength": 153
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": "apps/agent-runtime/Cargo.toml",
+      "sha256": "262f4081efff6ddeb86c363cc3e5943336df6cbb110a1ce8787920efc963bc93",
+      "byteLength": 16645
+    }
+  ],
+  "computationalEvidence": [
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/container-reversal/corpus-02/report.json",
+      "sha256": "9e8f5c656f772d8493d39191b24314c112dbce105eb4b459a3c94f5a97049042",
+      "byteLength": 79690
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/container-reversal/playback-sync/report.json",
+      "sha256": "7830f71090c2a8abeaf4d681d5d5b989950fb473b0c3c38be6bf2edeb68e878d",
+      "byteLength": 57115
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/container-reversal/playback-stepped/report.json",
+      "sha256": "620b1d7eafa7ef90e5dd3306112d66084c1c21df564ed8dfd906b834ab95332e",
+      "byteLength": 57118
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/container-reversal/rotation-regression/report.json",
+      "sha256": "a5f6ee0ad6e5cc5c3b1cea5796ee3043daa81df91bb66f942abf11ad88f4485a",
+      "byteLength": 56749
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/container-reversal/easing-regression/report.json",
+      "sha256": "281decf2918c0a44051f90451d4791a1f21ac1f63f6dd639ed0428c4715c222c",
+      "byteLength": 31648
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/container-reversal/rate-regression/report.json",
+      "sha256": "5ae2ced342b53e23397c3952394866e9243db20b4623f1f9e54c7a246b7d3c94",
+      "byteLength": 54608
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": ".codex-work/integration/container-reversal/fixtures/report.json",
+      "sha256": "e8aee580672cada5010c8973781c742fcbd1ee3c9032d53627d5525de341e78a",
+      "byteLength": 2971
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": ".codex-work/integration/container-reversal/actual-worker.json",
+      "sha256": "11050177160c8246d5539b633e02715dab0c48a841d60b1f973dcbd0b463dbd5",
+      "byteLength": 6821
+    }
+  ],
+  "sourcePreservation": [
+    {
+      "name": "reverse-coincident",
+      "original": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/product-sources/reverse-coincident.pptx",
+        "sha256": "3a6f052fe791c966b759459def889eaec710fb39658182824f155b28459efde7",
+        "byteLength": 6018
+      },
+      "exported": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-reversal/fixtures/reverse-coincident/export/009.pptx",
+        "sha256": "3a6f052fe791c966b759459def889eaec710fb39658182824f155b28459efde7",
+        "byteLength": 6018
+      },
+      "byteIdentical": true,
+      "parts": 13
+    },
+    {
+      "name": "reverse-nested",
+      "original": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/product-sources/reverse-nested.pptx",
+        "sha256": "fb4486b7635c0ba2d265fb0bb2498a9cb078e2bb64e437b51caa3a70561b2855",
+        "byteLength": 6030
+      },
+      "exported": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-reversal/fixtures/reverse-nested/export/009.pptx",
+        "sha256": "fb4486b7635c0ba2d265fb0bb2498a9cb078e2bb64e437b51caa3a70561b2855",
+        "byteLength": 6030
+      },
+      "byteIdentical": true,
+      "parts": 13
+    },
+    {
+      "name": "reverse-clipped",
+      "original": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/product-sources/reverse-clipped.pptx",
+        "sha256": "167cb40a61b244ba24615f67666411d1603bd45fe6b1e7acbf62ebcf94d95fd4",
+        "byteLength": 6035
+      },
+      "exported": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-reversal/fixtures/reverse-clipped/export/009.pptx",
+        "sha256": "167cb40a61b244ba24615f67666411d1603bd45fe6b1e7acbf62ebcf94d95fd4",
+        "byteLength": 6035
+      },
+      "byteIdentical": true,
+      "parts": 13
+    },
+    {
+      "name": "reverse-easing",
+      "original": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/product-sources/reverse-easing.pptx",
+        "sha256": "e44f2a2b5c2ca7169a4336f61f8b6d8c46ce107179126231afa71bd5bd3992ea",
+        "byteLength": 6022
+      },
+      "exported": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-reversal/fixtures/reverse-easing/export/009.pptx",
+        "sha256": "e44f2a2b5c2ca7169a4336f61f8b6d8c46ce107179126231afa71bd5bd3992ea",
+        "byteLength": 6022
+      },
+      "byteIdentical": true,
+      "parts": 13
+    }
+  ],
+  "wpsObservation": {
+    "version": "12.1.22553",
+    "status": "observed-difference",
+    "report": {
+      "repository": "MusterOffice",
+      "path": ".codex-work/container-reversal/wps-observation.json",
+      "sha256": "7ac58b529208faae2b4b8e31dc0132580666a6a92595e98868a57cf1cd24d504",
+      "byteLength": 2280
+    },
+    "source": {
+      "repository": "MusterOffice",
+      "path": ".codex-work/scale-inputs/container-reversal-control.pptx",
+      "sha256": "1d540a2827cdbfeaa6c5f73584f2fd46831030b64bbbb0c1c3bb4e80415fb826",
+      "byteLength": 5897
+    },
+    "screenshots": [
+      {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/wps-control-early.png",
+        "sha256": "9c4d8a08925fbbe8d4d0ec46125ab8574a1e56048b3fc447585ee6b27dfac9f4",
+        "byteLength": 152924
+      },
+      {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/wps-control-final.png",
+        "sha256": "36b1bd39b9b6f4aa7f25aae027c70f61915d100f992f7f431e4b819d90f3cd3d",
+        "byteLength": 144668
+      },
+      {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/wps-control-final-again.png",
+        "sha256": "34906f73c234a84ef8dc5836086bf40c2b359ba15f3846230e0e7227eed5a2be",
+        "byteLength": 144676
+      }
+    ],
+    "analysis": {
+      "repository": "MusterOffice",
+      "path": ".codex-work/container-reversal/observe.py",
+      "sha256": "55e3a5e845667bedae5df4a8de6cf7b1ecb3d5726fea0fc55d68672ad7be4dc3",
+      "byteLength": 2493
+    },
+    "scope": "Owned native single-child six-row calibration. Negative spd acts forward in this WPS run, including leaf negative. autoRev returns to initial angle. Does not certify PowerPoint or general nested reversed lifecycles.",
+    "restoredWindow": "rotation-absolute-fixed.pptx",
+    "frontmostChanged": false
+  },
+  "earlierFailures": [
+    {
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/unit-01.log",
+        "sha256": "61ec61a8c4bf83708836709461c8c399b4ec9c555c21223ac4c689823e88cae7",
+        "byteLength": 1957
+      },
+      "reason": "New fixture omitted explicit restart policy and expected an unreduced rational endpoint; corrected fixture only."
+    },
+    {
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/timeline-02.log",
+        "sha256": "e6e863ef4442f7d78c26527cb5fd988967ddc097e71fab0f1159b722c71442b6",
+        "byteLength": 4025
+      },
+      "reason": "Historical test rejected every negative container. It now rejects delayed reverse intervals, while new tests cover admitted coincident reversal."
+    },
+    {
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-reversal/corpus.log",
+        "sha256": "77fcb6901f80e45d7c9f19ee2540f8618fc148531b14699e48553e21691b8e8b",
+        "byteLength": 861
+      },
+      "reason": "Independent Python reference used integer division at a clamped endpoint, producing float. Fixed with explicit Fraction; failed corpus retained."
+    }
+  ],
+  "nativeLink": {
+    "library": {
+      "repository": "MusterOffice",
+      "path": ".codex-work/snapshot-scopes/native/libmo_skia_adapter.a",
+      "sha256": "52fa4ed0fd818c6423c557baa3e4abd2ae63bdcf1d96a154179c05f430e54815",
+      "byteLength": 111760
+    },
+    "environment": {
+      "MO_SKIA_LIB_DIR": "${MUSTEROFFICE}/.codex-work/snapshot-scopes/native"
+    },
+    "newDependencies": false,
+    "newCppChanges": false,
+    "publicJsonContractChanged": false
+  },
+  "references": [
+    "https://www.w3.org/TR/SMIL3/smil-timemanip.html",
+    "https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.presentation.commontimenode?view=openxml-3.0.1"
+  ],
+  "limitations": [
+    "General unequal/delayed reverse intervals, container autoReverse and nonlinear deadline projection remain open. Unsupported graphs are diagnosed instead of flattening leaf declarations.",
+    "WPS 12.1.22553 runs negative speed forward in the owned six-row control, including negative leaf speed. Native autoRev returned to initial angle. This is not PowerPoint or full native-editing acceptance.",
+    "Complete advanced PPT, real Agent/Electron, multiple platforms, historical migration, performance/resources/installer and all replacement gates remain open.",
+    "Sizes measure uncompressed desktop playback files and a macOS ARM64 debug export Worker, not a release installer. No FPS, RSS, startup or throughput claim. Existing frontend large-chunk warning remains.",
+    "Product work and verification are confined to the independent worktree. No default-engine switch, commits, publication, deployment or production database use."
+  ]
+}

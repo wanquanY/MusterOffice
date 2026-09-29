@@ -1,0 +1,548 @@
+{
+  "format": "musteroffice.product-native-release-verification/1",
+  "date": "2026-09-28",
+  "status": "scoped-release-selection-and-admission-verified; replacement-incomplete",
+  "productBranch": "codex/musteroffice-integration",
+  "productBaseCommit": "8280b9837b7ed7fae5a502e97d6967b128772c11",
+  "profile": {
+    "variable": "MUSTERWORK_BUILTIN_RELEASE_PROFILE",
+    "candidate": "native-office-preview",
+    "scope": "device-private-acceptance",
+    "tool": "artifact.presentation.author@5",
+    "catalog": "device.v52",
+    "skill": "musterwork-presentation-authoring@8",
+    "skillRelease": "v26",
+    "skillSurface": [
+      "desktop"
+    ]
+  },
+  "stable": {
+    "catalog": "device.v50",
+    "skillVersion": 7
+  },
+  "defaultEngineReplaced": false,
+  "sdkManifestSha256": "550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+  "worker": {
+    "sha256": "b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0",
+    "target": "darwin-arm64",
+    "profile": "development; no performance or package size claim"
+  },
+  "runs": [
+    {
+      "name": "admission-native-01",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-runtime-application",
+        "--test",
+        "product_snapshot",
+        "device_skill_selection::"
+      ],
+      "exitCode": 0,
+      "expectedExitCode": 0,
+      "expectedDiagnostic": null,
+      "sourceUnchanged": true,
+      "sourceFiles": 4164,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills",
+        "../../backend/agent_runtime/authority_catalog_manifest.py",
+        "../../backend/agent_runtime/official_skill_release.py",
+        "../../backend/agent_runtime/builtin_release_profile.py",
+        "../../backend/tests/unit/test_builtin_release_profile.py",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker"
+      ],
+      "sourceMapSha256": "bd3ff09cbf27511d8db35533fbecbee78bf84b7fd6a3e9c2155790ae6829ff7a",
+      "report": {
+        "path": ".codex-work/product-native-release/admission-native-01.json",
+        "sha256": "b0c6f4b5ce68f63aed7a93afb25a4b5701e21df16b9653b873d513c1d6e6d262"
+      },
+      "log": {
+        "path": ".codex-work/product-native-release/admission-native-01.log",
+        "sha256": "f0c2c201d03108361d16e7c324d16516c027294662bd11b1cccab791c7f8ae9e"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "pythonTests": 0,
+      "elapsedSeconds": 13.625458666821942
+    },
+    {
+      "name": "admission-stable-01",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=stable",
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-runtime-application",
+        "--test",
+        "product_snapshot",
+        "device_skill_selection::"
+      ],
+      "exitCode": 0,
+      "expectedExitCode": 0,
+      "expectedDiagnostic": null,
+      "sourceUnchanged": true,
+      "sourceFiles": 3295,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills"
+      ],
+      "sourceMapSha256": "466dc3f305cd71bba0e3670e0eae7c4f5e57597ef6e63830e8217ec22a395d13",
+      "report": {
+        "path": ".codex-work/product-native-release/admission-stable-01.json",
+        "sha256": "906ec56081ad2dc614aef51ee98421ca5c28ec81b3d82de1a56276f5b0a49e13"
+      },
+      "log": {
+        "path": ".codex-work/product-native-release/admission-stable-01.log",
+        "sha256": "73d3bf70c7e737bfa1255c9b8d0256454b64563d9b746d985da516534ac4e3b9"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "pythonTests": 0,
+      "elapsedSeconds": 13.484341082861647
+    },
+    {
+      "name": "agent-native-01",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=<core-workspace>/.codex-work/product-sdk-refresh/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=<product-worktree>/components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=<core-workspace>/.codex-work/product-native-release/actual-native-01",
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::office_agent::",
+        "--",
+        "--include-ignored",
+        "--test-threads=1"
+      ],
+      "exitCode": 0,
+      "expectedExitCode": 0,
+      "expectedDiagnostic": null,
+      "sourceUnchanged": true,
+      "sourceFiles": 4164,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills",
+        "../../backend/agent_runtime/authority_catalog_manifest.py",
+        "../../backend/agent_runtime/official_skill_release.py",
+        "../../backend/agent_runtime/builtin_release_profile.py",
+        "../../backend/tests/unit/test_builtin_release_profile.py",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker"
+      ],
+      "sourceMapSha256": "bd3ff09cbf27511d8db35533fbecbee78bf84b7fd6a3e9c2155790ae6829ff7a",
+      "report": {
+        "path": ".codex-work/product-native-release/agent-native-01.json",
+        "sha256": "92bf7f455850f4ee42946dce085a03429f2667f5d4adc828b9077361a8d09803"
+      },
+      "log": {
+        "path": ".codex-work/product-native-release/agent-native-01.log",
+        "sha256": "609e62211836e70652e81ed71a79856d0e3652aa1226e21d8141b9993b710c6e"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 12,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "pythonTests": 0,
+      "elapsedSeconds": 119.54426441597752
+    },
+    {
+      "name": "clippy-native-01",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "cargo",
+        "clippy",
+        "-p",
+        "musterwork-agent-tool",
+        "-p",
+        "musterwork-agent-skill",
+        "-p",
+        "musterwork-agent-skill-release",
+        "-p",
+        "musterwork-agent-device-runtime",
+        "--lib",
+        "--no-deps",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "expectedExitCode": 0,
+      "expectedDiagnostic": null,
+      "sourceUnchanged": true,
+      "sourceFiles": 3295,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills"
+      ],
+      "sourceMapSha256": "466dc3f305cd71bba0e3670e0eae7c4f5e57597ef6e63830e8217ec22a395d13",
+      "report": {
+        "path": ".codex-work/product-native-release/clippy-native-01.json",
+        "sha256": "3818aee0eb786742d8e05b0faa261b235b71dcc523b51b5c3fa60a29123b0202"
+      },
+      "log": {
+        "path": ".codex-work/product-native-release/clippy-native-01.log",
+        "sha256": "87fd92013aa11359781ccde6dfd8102a0a3ccacf31168d57efa1d97f33656512"
+      },
+      "rustTestSummaries": [],
+      "pythonTests": 0,
+      "elapsedSeconds": 36.8062028340064
+    },
+    {
+      "name": "device-native-01",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-device-runtime",
+        "--lib",
+        "capability::tests::"
+      ],
+      "exitCode": 0,
+      "expectedExitCode": 0,
+      "expectedDiagnostic": null,
+      "sourceUnchanged": true,
+      "sourceFiles": 3295,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills"
+      ],
+      "sourceMapSha256": "466dc3f305cd71bba0e3670e0eae7c4f5e57597ef6e63830e8217ec22a395d13",
+      "report": {
+        "path": ".codex-work/product-native-release/device-native-01.json",
+        "sha256": "6ef31ece14c7c99b8fd0b71f4491580ce278fecce3f26bde575f3d1c22e64934"
+      },
+      "log": {
+        "path": ".codex-work/product-native-release/device-native-01.log",
+        "sha256": "425021e30076abc8f618aab09891012f57815e4c64b71b647751c2588230095b"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "pythonTests": 0,
+      "elapsedSeconds": 53.17689320887439
+    },
+    {
+      "name": "invalid-profile-01",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=unknown",
+        "cargo",
+        "check",
+        "-p",
+        "musterwork-agent-tool"
+      ],
+      "exitCode": 101,
+      "expectedExitCode": 101,
+      "expectedDiagnostic": "unknown builtin release profile: unknown",
+      "sourceUnchanged": true,
+      "sourceFiles": 3295,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills"
+      ],
+      "sourceMapSha256": "466dc3f305cd71bba0e3670e0eae7c4f5e57597ef6e63830e8217ec22a395d13",
+      "report": {
+        "path": ".codex-work/product-native-release/invalid-profile-01.json",
+        "sha256": "44111dfc224e2cdc05e93e3d06962e03fb749e44c84efd288a7ac366a61ed254"
+      },
+      "log": {
+        "path": ".codex-work/product-native-release/invalid-profile-01.log",
+        "sha256": "369df5d9b08c747f32806b334ec46f88f94bd2d2699aa0d7f134940d277d8d4d"
+      },
+      "rustTestSummaries": [],
+      "pythonTests": 0,
+      "elapsedSeconds": 1.2208956661634147
+    },
+    {
+      "name": "python-profile-01",
+      "command": [
+        "env",
+        "PYTHONPATH=../..",
+        "python3",
+        "-m",
+        "unittest",
+        "backend.tests.unit.test_builtin_release_profile",
+        "-v"
+      ],
+      "exitCode": 0,
+      "expectedExitCode": 0,
+      "expectedDiagnostic": null,
+      "sourceUnchanged": true,
+      "sourceFiles": 4164,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills",
+        "../../backend/agent_runtime/authority_catalog_manifest.py",
+        "../../backend/agent_runtime/official_skill_release.py",
+        "../../backend/agent_runtime/builtin_release_profile.py",
+        "../../backend/tests/unit/test_builtin_release_profile.py",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker"
+      ],
+      "sourceMapSha256": "bd3ff09cbf27511d8db35533fbecbee78bf84b7fd6a3e9c2155790ae6829ff7a",
+      "report": {
+        "path": ".codex-work/product-native-release/python-profile-01.json",
+        "sha256": "02b2cc0a3c367e94800cf5fa09e94b248a3121203880241a62a400b5a3e0a4f5"
+      },
+      "log": {
+        "path": ".codex-work/product-native-release/python-profile-01.log",
+        "sha256": "d81776242dd89ce5421d7fa87f1c8e6360ae3d9f7a3229ed5d674c3529a97ea6"
+      },
+      "rustTestSummaries": [],
+      "pythonTests": 5,
+      "elapsedSeconds": 0.3846654579974711
+    },
+    {
+      "name": "skill-native-01",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-runtime-skill",
+        "--lib",
+        "runtime_release_tests::"
+      ],
+      "exitCode": 0,
+      "expectedExitCode": 0,
+      "expectedDiagnostic": null,
+      "sourceUnchanged": true,
+      "sourceFiles": 4164,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills",
+        "../../backend/agent_runtime/authority_catalog_manifest.py",
+        "../../backend/agent_runtime/official_skill_release.py",
+        "../../backend/agent_runtime/builtin_release_profile.py",
+        "../../backend/tests/unit/test_builtin_release_profile.py",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker"
+      ],
+      "sourceMapSha256": "bd3ff09cbf27511d8db35533fbecbee78bf84b7fd6a3e9c2155790ae6829ff7a",
+      "report": {
+        "path": ".codex-work/product-native-release/skill-native-01.json",
+        "sha256": "e210764dc6822c55e677e84d8d5d878c6a5dddc968056b8cc2501069bab9a7eb"
+      },
+      "log": {
+        "path": ".codex-work/product-native-release/skill-native-01.log",
+        "sha256": "4ade947b3626d246a348dc135008c6982b5089a0d27b594fac95326f42573361"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "pythonTests": 0,
+      "elapsedSeconds": 16.843995374860242
+    },
+    {
+      "name": "stable-catalog-01",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=stable",
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-tool",
+        "-p",
+        "musterwork-agent-skill",
+        "-p",
+        "musterwork-agent-skill-release",
+        "--lib"
+      ],
+      "exitCode": 0,
+      "expectedExitCode": 0,
+      "expectedDiagnostic": null,
+      "sourceUnchanged": true,
+      "sourceFiles": 3295,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills"
+      ],
+      "sourceMapSha256": "466dc3f305cd71bba0e3670e0eae7c4f5e57597ef6e63830e8217ec22a395d13",
+      "report": {
+        "path": ".codex-work/product-native-release/stable-catalog-01.json",
+        "sha256": "84dde5e91a1bc0193f8a02e5a973a0dbd80323d210d4c2ac79332ca7851d1a55"
+      },
+      "log": {
+        "path": ".codex-work/product-native-release/stable-catalog-01.log",
+        "sha256": "b266bb439e986b0366dab0a85c933eaee7dd2b4f6a827a07cdd9ddb60b6a2d15"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 10,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 5,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 55,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "pythonTests": 0,
+      "elapsedSeconds": 14.663158082868904
+    }
+  ],
+  "outputs": [
+    {
+      "path": ".codex-work/product-native-release/actual-native-01/version-1.pptx",
+      "version": 1,
+      "bytes": 10735,
+      "sha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+      "sameBytesAsPreviousEnvironmentStage": true,
+      "zipParts": 21,
+      "xmlPartsParsed": 20,
+      "crc": "passed"
+    },
+    {
+      "path": ".codex-work/product-native-release/actual-native-01/version-2.pptx",
+      "version": 2,
+      "bytes": 10729,
+      "sha256": "0d28df97204dab351fc0b85d6853f9d28edfb4dc111fc18d8a22f733a4e4264e",
+      "sameBytesAsPreviousEnvironmentStage": true,
+      "zipParts": 21,
+      "xmlPartsParsed": 20,
+      "crc": "passed"
+    },
+    {
+      "path": ".codex-work/product-native-release/actual-native-01-environment/version-1.pptx",
+      "version": 1,
+      "bytes": 10735,
+      "sha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+      "sameBytesAsPreviousEnvironmentStage": true,
+      "zipParts": 21,
+      "xmlPartsParsed": 20,
+      "crc": "passed"
+    },
+    {
+      "path": ".codex-work/product-native-release/actual-native-01-environment/version-2.pptx",
+      "version": 2,
+      "bytes": 10729,
+      "sha256": "0d28df97204dab351fc0b85d6853f9d28edfb4dc111fc18d8a22f733a4e4264e",
+      "sameBytesAsPreviousEnvironmentStage": true,
+      "zipParts": 21,
+      "xmlPartsParsed": 20,
+      "crc": "passed"
+    }
+  ],
+  "sourceScopeNotes": [
+    "Python profile, Skill package, candidate admission and actual SDK runs precede only addition of the final Device contract test. Later Device and Clippy runs include that test; production source did not change between those runs.",
+    "Candidate and stable admission execute the same three test functions with distinct compiled release selections; counts are not summed as unique tests.",
+    "Stable catalog covers domain Skill, Skill release and Tool libraries (10, 5, 55 tests). Native Skill package audit covers runtime Skill (3 tests), a separate crate.",
+    "Clippy is scoped to four production libraries with --no-deps; it is not workspace-wide lint.",
+    "Command wall time includes builds and is not a rendering performance measurement."
+  ],
+  "unverified": [
+    "external model using the registered Skill in a full desktop session",
+    "backend Authority policy publication and real grant signing",
+    "production deployment or default switch",
+    "candidate database downgrade with stable binary",
+    "native templates and existing Artifact reopening",
+    "Cloud and Shared Home native generation",
+    "full advanced content, fonts, Office/WPS, Native/WASM, performance and size, P00/E0-E3"
+  ],
+  "qualityClaim": "Structural and product control-plane checks only; no full replacement or visual/editability/playback parity claim."
+}

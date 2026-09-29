@@ -1,0 +1,557 @@
+{
+  "format": "musteroffice.native-table-foundation-verification/1-draft",
+  "date": "2026-09-29",
+  "status": "partial_implementation",
+  "capabilityIds": [
+    "F04.01",
+    "F04.02",
+    "F04.03",
+    "F04.04",
+    "F04.05"
+  ],
+  "scope": [
+    "authored table grid and physical cells",
+    "atomic table edits and Unicode anchors",
+    "native editable table export structure",
+    "native/WASM computation and export parity"
+  ],
+  "tests": {
+    "rustPassed": 416,
+    "newTableTests": 12,
+    "insertDeleteCombinations": 504,
+    "nativeWasmDispatchCases": 14,
+    "byteIdenticalExports": 11,
+    "independentPhysicalCellChecks": 119,
+    "xsdChecks": 66
+  },
+  "checks": [
+    {
+      "name": "fmt",
+      "args": [
+        "cargo",
+        "fmt",
+        "--all"
+      ],
+      "exitCode": 0,
+      "seconds": 1.0961616251152009,
+      "log": ".codex-work/native-tables/checks-final/fmt.log"
+    },
+    {
+      "name": "tests",
+      "args": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-presentation-model",
+        "-p",
+        "mo-presentation-edit",
+        "-p",
+        "mo-presentation-source",
+        "-p",
+        "mo-pptx",
+        "-p",
+        "mo-presentation-compile"
+      ],
+      "exitCode": 0,
+      "seconds": 181.60920583386905,
+      "log": ".codex-work/native-tables/checks-final/tests.log"
+    },
+    {
+      "name": "clippy",
+      "args": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-presentation-model",
+        "-p",
+        "mo-presentation-edit",
+        "-p",
+        "mo-presentation-source",
+        "-p",
+        "mo-pptx",
+        "-p",
+        "mo-presentation-compile",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "seconds": 14.768679083092138,
+      "log": ".codex-work/native-tables/checks-final/clippy.log"
+    },
+    {
+      "name": "schema-write",
+      "args": [
+        "cargo",
+        "run",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-contract-codegen",
+        "--",
+        "write",
+        "contracts/generated"
+      ],
+      "exitCode": 0,
+      "seconds": 18.44136808416806,
+      "log": ".codex-work/native-tables/checks-final/schema-write.log"
+    },
+    {
+      "name": "schema-check",
+      "args": [
+        "cargo",
+        "run",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-contract-codegen",
+        "--",
+        "check",
+        "contracts/generated"
+      ],
+      "exitCode": 0,
+      "seconds": 0.6915119169279933,
+      "log": ".codex-work/native-tables/checks-final/schema-check.log"
+    },
+    {
+      "name": "types-write",
+      "args": [
+        "pnpm",
+        "generate:types"
+      ],
+      "exitCode": 0,
+      "seconds": 1.6236973330378532,
+      "log": ".codex-work/native-tables/checks-final/types-write.log"
+    },
+    {
+      "name": "types-check",
+      "args": [
+        "pnpm",
+        "check:types"
+      ],
+      "exitCode": 0,
+      "seconds": 2.394924624823034,
+      "log": ".codex-work/native-tables/checks-final/types-check.log"
+    },
+    {
+      "name": "workspace-check",
+      "args": [
+        "cargo",
+        "check",
+        "--workspace",
+        "--locked",
+        "--offline"
+      ],
+      "exitCode": 0,
+      "seconds": 18.40491829183884,
+      "log": ".codex-work/native-tables/checks-final/workspace-check.log"
+    }
+  ],
+  "nativeExport": {
+    "scope": "native table export structure only",
+    "inputSha256": "654d44fdd40313970955d884d65c6e3fa32676a37815cd73a8d4be4e489ddab7",
+    "cliSha256": "491a49374aadf6273b0656fea4e08c5a3c3f42762f664fd1da1fc7003f64ae32",
+    "scriptSha256": "51b7727b0b545911ec9019ccd8a31e0a5422fd4bf05b9d7c31cbc56027c5e040",
+    "dependencies": {
+      "lxml": "6.0.2",
+      "python-pptx": "1.0.2"
+    },
+    "schemaSha256": {
+      "dml-chart.xsd": "4de4390a26e7e44e682ed98b39872cce2620f807f5b0de421567a43f74526388",
+      "dml-chartDrawing.xsd": "3fd0586f2637b98bb9886f0e0b67d89e1cc987c2d158cc7deb5f5b9890ced412",
+      "dml-diagram.xsd": "809f77f658f71e10f5cfbf99e25c895a23a4e62c81210b59a2fe8c7fb24849d2",
+      "dml-lockedCanvas.xsd": "5cb76dabd8b97d1e9308a1700b90c20139be4d50792d21a7f09789f5cccd6026",
+      "dml-main.xsd": "6978ba7e889070b0c3cb5b546b23e5a6c3516134afc53b87a21f482ca33f3858",
+      "dml-picture.xsd": "5d389d42befbebd91945d620242347caecd3367f9a3a7cf8d97949507ae1f53c",
+      "dml-spreadsheetDrawing.xsd": "b4532b6d258832953fbb3ee4c711f4fe25d3faf46a10644b2505f17010d01e88",
+      "dml-wordprocessingDrawing.xsd": "2dbfd4719505bf39b568005994a433997cbeac59cebc9d4867d564c94e9ba03a",
+      "pml.xsd": "39c6396b7b1f096885c3ceba5dab30e3ee14291c45a1d6fa6038ec4db69d88d0",
+      "shared-additionalCharacteristics.xsd": "3c6709101c6aaa82888df5d8795c33f9e857196790eb320d9194e64be2b6bdd8",
+      "shared-bibliography.xsd": "0b364451dc36a48dd6dae0f3b6ada05fd9b71e5208211f8ee5537d7e51a587e2",
+      "shared-commonSimpleTypes.xsd": "48675c4f82f6b097434d4b7e313635b790257cca58fa90dd0e8f19c9affa18ed",
+      "shared-customXmlDataProperties.xsd": "0ef4bb354ff44b923564c4ddbdda5987919d220225129ec94614a618ceafc281",
+      "shared-customXmlSchemaProperties.xsd": "0d103b99a4a8652f8871552a69d42d2a3760ac6a5e3ef02d979c4273257ff6a4",
+      "shared-documentPropertiesCustom.xsd": "9c085407751b9061c1f996f6c39ce58451be22a8d334f09175f0e89e42736285",
+      "shared-documentPropertiesExtended.xsd": "bc92e36ccd233722d4c5869bec71ddc7b12e2df56059942cce5a39065cc9c368",
+      "shared-documentPropertiesVariantTypes.xsd": "7b5b7413e2c895b1e148e82e292a117d53c7ec65b0696c992edca57b61b4a74b",
+      "shared-math.xsd": "132e44dc10f2959e3f585584e5d82e7b2e329691e3010646e497710bd9774152",
+      "shared-relationshipReference.xsd": "12264f3c03d738311cd9237d212f1c07479e70f0cbe1ae725d29b36539aef637",
+      "sml.xsd": "495debc8fa967b77ed37799747b049832f2c95b2ecdb9f19ddcd68f8c9f96ab9",
+      "vml-main.xsd": "335e9ecd40bb594ec4b916ac8c7b9eead4e16fe1b79f9d4105fdb1c43b66bb1c",
+      "vml-officeDrawing.xsd": "585bedc1313b40888dcc544cb74cd939a105ee674f3b1d3aa1cc6d34f70ff155",
+      "vml-presentationDrawing.xsd": "133c9f64a5c5d573b78d0a474122b22506d8eadb5e063f67cdbbb8fa2f161d0e",
+      "vml-spreadsheetDrawing.xsd": "6bdeb169c3717eb01108853bd9fc5a3750fb1fa5b82abbdd854d49855a40f519",
+      "vml-wordprocessingDrawing.xsd": "475dcae1e7d1ea46232db6f8481040c15e53a52a3c256831d3df204212b0e831",
+      "wml.xsd": "0f7784b36ddc42950e5ff354cd608b83b60e4de39325d5568913f1225365029b"
+    },
+    "xsdParts": [
+      "ppt/presentation.xml",
+      "ppt/presProps.xml",
+      "ppt/slideLayouts/slideLayout1.xml",
+      "ppt/slideMasters/slideMaster1.xml",
+      "ppt/slides/slide1.xml",
+      "ppt/slides/slide1.xml#table"
+    ],
+    "pythonPptxReadback": {
+      "slides": 1,
+      "tables": 1,
+      "physicalCells": 9,
+      "mergedRectangle": [
+        0,
+        0,
+        2,
+        2
+      ],
+      "textCells": 8
+    },
+    "sha256": "05416429f732b67cff5706dd53fb0c5061cf25f50c7aaf86eddc1cbaf2a70081",
+    "bytes": 5998,
+    "notVerified": [
+      "table reader",
+      "table rendering",
+      "WPS",
+      "PowerPoint",
+      "WASM",
+      "product integration",
+      "performance",
+      "installer size"
+    ]
+  },
+  "parity": {
+    "scope": "table model, transactions and native export parity; no rendering or application acceptance",
+    "cliSha256": "491a49374aadf6273b0656fea4e08c5a3c3f42762f664fd1da1fc7003f64ae32",
+    "wasmJsSha256": "5b9e837584d6201157b26a31fd3656b5b44efbe2bddc9729d0a027fff4a82e02",
+    "wasmSha256": "222e5ed51ba7be19d21cdacf369349eec8a948e2e8b1fc90dcf4f89c7781795e",
+    "inputSha256": "654d44fdd40313970955d884d65c6e3fa32676a37815cd73a8d4be4e489ddab7",
+    "node": "v23.5.0",
+    "dispatchCases": 14,
+    "exports": [
+      {
+        "name": "original",
+        "bytes": 5998,
+        "sha256": "05416429f732b67cff5706dd53fb0c5061cf25f50c7aaf86eddc1cbaf2a70081"
+      },
+      {
+        "name": "edit-0",
+        "bytes": 6019,
+        "sha256": "88e4f8814be123829220766f5bc67071ce3ab50f535a76456e3f641da0117146"
+      },
+      {
+        "name": "edit-1",
+        "bytes": 5980,
+        "sha256": "86f933390eab4996172fbe0670a350644dbf7196cd2ef5ab43aba8942e38ed43"
+      },
+      {
+        "name": "edit-2",
+        "bytes": 6004,
+        "sha256": "dc0a2d2453628e2c41dfd6f1bcf1fc8359f2be458134a055e8ec4eec9a4156cc"
+      },
+      {
+        "name": "edit-3",
+        "bytes": 6011,
+        "sha256": "234afca8ae5bd510dddc3a8f6415cef97190a89bc58ffa4d982afb531d1d1c46"
+      },
+      {
+        "name": "edit-4",
+        "bytes": 6063,
+        "sha256": "6b99a556526a3d17dd19a2cf7539af061b96805d378d970f217b2627266c6480"
+      },
+      {
+        "name": "edit-5",
+        "bytes": 6003,
+        "sha256": "9277b8fbc8a7d4f793906ff7333afabbb2f0a3961b9dbd06a33b2f082bac971f"
+      },
+      {
+        "name": "edit-6",
+        "bytes": 5967,
+        "sha256": "17b59a8e1eb4500c8c151a411fbe19f91698fb9819e13153ec4117eae73fd93f"
+      },
+      {
+        "name": "edit-7",
+        "bytes": 5979,
+        "sha256": "13fdc168e4e6fa703518fcb86915c6147f6f0489f1b20f8c5f3f40b440384631"
+      },
+      {
+        "name": "edit-8",
+        "bytes": 5973,
+        "sha256": "52070d32345415fbc5d52a90e88554a4858d09b9176a1b64751ea43cc2687108"
+      },
+      {
+        "name": "edit-9",
+        "bytes": 5981,
+        "sha256": "ac91d492122bf397a87637617cd776ec8557b3c467c7ceaff280c39720753dff"
+      }
+    ]
+  },
+  "structuralReadback": {
+    "scope": "independent structural readback after transactions; not application editing or rendering",
+    "presentations": 11,
+    "physicalCells": 119,
+    "xsdChecks": 66,
+    "cases": [
+      {
+        "name": "original",
+        "physicalCells": 9,
+        "xsdChecks": 6,
+        "sha256": "05416429f732b67cff5706dd53fb0c5061cf25f50c7aaf86eddc1cbaf2a70081"
+      },
+      {
+        "name": "edit-0",
+        "physicalCells": 9,
+        "xsdChecks": 6,
+        "sha256": "88e4f8814be123829220766f5bc67071ce3ab50f535a76456e3f641da0117146"
+      },
+      {
+        "name": "edit-1",
+        "physicalCells": 9,
+        "xsdChecks": 6,
+        "sha256": "86f933390eab4996172fbe0670a350644dbf7196cd2ef5ab43aba8942e38ed43"
+      },
+      {
+        "name": "edit-2",
+        "physicalCells": 12,
+        "xsdChecks": 6,
+        "sha256": "dc0a2d2453628e2c41dfd6f1bcf1fc8359f2be458134a055e8ec4eec9a4156cc"
+      },
+      {
+        "name": "edit-3",
+        "physicalCells": 16,
+        "xsdChecks": 6,
+        "sha256": "234afca8ae5bd510dddc3a8f6415cef97190a89bc58ffa4d982afb531d1d1c46"
+      },
+      {
+        "name": "edit-4",
+        "physicalCells": 16,
+        "xsdChecks": 6,
+        "sha256": "6b99a556526a3d17dd19a2cf7539af061b96805d378d970f217b2627266c6480"
+      },
+      {
+        "name": "edit-5",
+        "physicalCells": 12,
+        "xsdChecks": 6,
+        "sha256": "9277b8fbc8a7d4f793906ff7333afabbb2f0a3961b9dbd06a33b2f082bac971f"
+      },
+      {
+        "name": "edit-6",
+        "physicalCells": 9,
+        "xsdChecks": 6,
+        "sha256": "17b59a8e1eb4500c8c151a411fbe19f91698fb9819e13153ec4117eae73fd93f"
+      },
+      {
+        "name": "edit-7",
+        "physicalCells": 9,
+        "xsdChecks": 6,
+        "sha256": "13fdc168e4e6fa703518fcb86915c6147f6f0489f1b20f8c5f3f40b440384631"
+      },
+      {
+        "name": "edit-8",
+        "physicalCells": 9,
+        "xsdChecks": 6,
+        "sha256": "52070d32345415fbc5d52a90e88554a4858d09b9176a1b64751ea43cc2687108"
+      },
+      {
+        "name": "edit-9",
+        "physicalCells": 9,
+        "xsdChecks": 6,
+        "sha256": "ac91d492122bf397a87637617cd776ec8557b3c467c7ceaff280c39720753dff"
+      }
+    ],
+    "inputSha256": "43551b240e1093b4e3c3531b9cd242ca2b85d021ba421c4c3f3f38f1bc30affe",
+    "scriptSha256": "24bc159ab866fea06e74bbbd70c02b22ad3201c976bdcc62045aac294e5296ac"
+  },
+  "generatedFiles": [
+    "contracts/generated/computation-invocation.schema.json",
+    "contracts/generated/computation-receipt.schema.json",
+    "contracts/generated/computation-request.schema.json",
+    "contracts/generated/document.schema.json",
+    "contracts/generated/host-request.schema.json",
+    "contracts/generated/host-response.schema.json",
+    "contracts/generated/kernel-request.schema.json",
+    "contracts/generated/kernel-response.schema.json",
+    "contracts/generated/operation-request.schema.json",
+    "contracts/generated/page-compile-response.schema.json",
+    "contracts/generated/page-placement-request.schema.json",
+    "contracts/generated/page-raster-response.schema.json",
+    "contracts/generated/page-render-request.schema.json",
+    "contracts/generated/playback-compile-response.schema.json",
+    "contracts/generated/playback-page-request.schema.json",
+    "contracts/generated/playback-raster-response.schema.json",
+    "contracts/generated/playback-session-request.schema.json",
+    "contracts/generated/playback-session-response.schema.json",
+    "contracts/generated/pptx-export-request.schema.json",
+    "contracts/generated/pptx-import-response.schema.json",
+    "contracts/generated/pptx-source-response.schema.json",
+    "contracts/generated/template-request.schema.json",
+    "contracts/generated/template-response.schema.json",
+    "contracts/generated/timeline-evaluate-request.schema.json",
+    "contracts/generated/transaction.schema.json",
+    "packages/contracts/src/generated/computation-invocation/part-001.ts",
+    "packages/contracts/src/generated/computation-invocation/part-002.ts",
+    "packages/contracts/src/generated/computation-invocation/part-003.ts",
+    "packages/contracts/src/generated/computation-invocation.ts",
+    "packages/contracts/src/generated/computation-receipt.ts",
+    "packages/contracts/src/generated/computation-request/part-001.ts",
+    "packages/contracts/src/generated/computation-request/part-002.ts",
+    "packages/contracts/src/generated/computation-request/part-003.ts",
+    "packages/contracts/src/generated/computation-request.ts",
+    "packages/contracts/src/generated/document.ts",
+    "packages/contracts/src/generated/host-request.ts",
+    "packages/contracts/src/generated/host-response.ts",
+    "packages/contracts/src/generated/kernel-request.ts",
+    "packages/contracts/src/generated/kernel-response.ts",
+    "packages/contracts/src/generated/operation-request/part-001.ts",
+    "packages/contracts/src/generated/operation-request/part-002.ts",
+    "packages/contracts/src/generated/operation-request.ts",
+    "packages/contracts/src/generated/page-compile-response.ts",
+    "packages/contracts/src/generated/page-placement-request.ts",
+    "packages/contracts/src/generated/page-raster-response.ts",
+    "packages/contracts/src/generated/page-render-request.ts",
+    "packages/contracts/src/generated/playback-compile-response.ts",
+    "packages/contracts/src/generated/playback-page-request.ts",
+    "packages/contracts/src/generated/playback-raster-response.ts",
+    "packages/contracts/src/generated/playback-session-request.ts",
+    "packages/contracts/src/generated/playback-session-response.ts",
+    "packages/contracts/src/generated/pptx-export-request.ts",
+    "packages/contracts/src/generated/pptx-import-response.ts",
+    "packages/contracts/src/generated/pptx-source-response/part-002.ts",
+    "packages/contracts/src/generated/pptx-source-response.ts",
+    "packages/contracts/src/generated/template-request.ts",
+    "packages/contracts/src/generated/template-response.ts",
+    "packages/contracts/src/generated/timeline-evaluate-request.ts",
+    "packages/contracts/src/generated/transaction.ts"
+  ],
+  "sourceSha256": {
+    "Cargo.lock": "ff21d71517433255b3c08731c9bf7df704d0dab42fe5c60f2b8199e0d11dd06f",
+    "crates/mo-presentation-model/Cargo.toml": "aa9ace2d672f2d436b562cf88b018631488ba94c464a7f61da4bef2a9231cfbf",
+    "crates/mo-presentation-model/src/lib.rs": "a93f44646f161cb7d84a1b39b47ad5f675adf11c9e80fc95c678ddddbc6a896d",
+    "crates/mo-presentation-model/src/document.rs": "d2ce8b467882a0586ff098c4dfebdb13fc05788966db70b51f8fbc61fb426810",
+    "crates/mo-presentation-model/src/table.rs": "d16741aeee53b8aa7e97cd14e10ddbffba49854ffc15f9ee1509061d36150289",
+    "crates/mo-presentation-model/src/table/grid.rs": "cf2a05afe417e700beef8a6be5207b7d18bb23840453b614d65917d7ce44c783",
+    "crates/mo-presentation-model/src/dependencies.rs": "8fd633d61f1950a6479e6b4ba39df4b11e39f817a3be354226e74aef460adb0a",
+    "crates/mo-presentation-model/src/validation.rs": "2cfda2e5c61a00f04267ca578e267723837a90fccf5b7db5f28aaea87db68583",
+    "crates/mo-presentation-model/tests/tables.rs": "b77fa480ec6d884c7eaf709f226d32f8dcc034932e91c30d66b72a39ac826afb",
+    "crates/mo-presentation-edit/src/lib.rs": "8de4ecf919698782f84f71ac48e5ed23907921211935084707a6ee76ca76fd0d",
+    "crates/mo-presentation-edit/src/operations.rs": "ca640084727e4f1c7479e925b3a6d159319e5254bbc44b8371462c9404d96db2",
+    "crates/mo-presentation-edit/src/apply.rs": "e16c9068d509743480053cf97c4a80921bbed1fe3eca825b23e3cc751ebc5335",
+    "crates/mo-presentation-edit/src/table.rs": "524445b86561af9f2ec0467545cb37c39730aabc3f1bdd8b947ea106aa6afe5c",
+    "crates/mo-presentation-edit/src/table/structure.rs": "b46d220f063d913e1f7d68fe9a6eeec128d52f97dbb4f8cf2fcafe482df5e20d",
+    "crates/mo-presentation-edit/tests/tables.rs": "fcc8cef49244b3b63b172bd99fa1dfb27feb8c2a830d348179c479fff09c5aee",
+    "crates/mo-presentation-source/src/author.rs": "a8685c616d4cb04397c3836469b15ea155bfb9e630f8cbdf5f311df5dfb4541d",
+    "crates/mo-presentation-source/src/source.rs": "9e6e6a47cccb14be6a9a53419757c3bd50cfd57b46b8d11e711bdcf8b94909c9",
+    "crates/mo-presentation-source/src/source/table.rs": "d59ac9e058c3ee6a920b2529a553a582a412446d433efcb0c43304a49be24b33",
+    "crates/mo-presentation-source/src/source/surface.rs": "d740c46348810702eeaca12fe3dee20bec126d0f47ff6300b44dc542376776ab",
+    "crates/mo-presentation-source/src/author/table.rs": "5d2e7ff29be9e9290e505ab429341faf26d6a9f60be5b62ff07d98f8545fb77d",
+    "crates/mo-presentation-source/src/author/paint.rs": "61dcba3a6b38b5fa35f454d7a328db1a8b8cf907712bc4d540421ea53145fcb9",
+    "crates/mo-presentation-source/src/author/surface.rs": "581bb0725d8b54bd1dac438faa24150d5cfbe8129ed610bdb6e248b72e5354fa",
+    "crates/mo-presentation-source/src/author/text.rs": "c8a6e5c938bf39ccbce5a1b31dfa895243ffd6eb22347fac414480de06b31467",
+    "crates/mo-pptx/src/drawing.rs": "0749b9bf8bfceaaa9427ed95bcd16244e2f59126151fb57767049feba9064808",
+    "crates/mo-pptx/src/native.rs": "710a5369e29012388f329c8006d9b0579c32312d2c2b8dd9e4a8b99b706320e7",
+    "crates/mo-pptx/src/native/table.rs": "3f2203b870e642ff5c477ff6b08e4301703e4d0ea124a92cd2f84bedcf7fa842",
+    "crates/mo-pptx/src/native/geometry.rs": "dbad529f773c67c8119d54c0a71cd4be5f4ba92bfff2cad472596cb31eac2f3a",
+    "crates/mo-pptx/src/native/paint.rs": "98fa5c7918df348d32ac9ea5e3d90b695247f6dd4a4327ac077ba0ea44068160",
+    "crates/mo-pptx/src/native/text.rs": "3a0f0c5c2e31b174fb7d316431a54598ec2ad03433f0e36cf97e0505de5a8d2c",
+    "crates/mo-pptx/tests/native_tables.rs": "ffaed7ac5aa05a4db0acddca07d69c72dcd1829a12b787339fb6d4a67af32a50",
+    "crates/mo-presentation-compile/src/page.rs": "024821584571402bf21da7d80cc16457cdc01cf86a2877044c6429fafa9896f3",
+    "crates/mo-presentation-compile/src/page_types.rs": "bb488f058a4ba72ce83c20427a933e68fae909f0ed4eb45bbc55495428af3de5",
+    "fixtures/presentations/native-tables/request.json": "654d44fdd40313970955d884d65c6e3fa32676a37815cd73a8d4be4e489ddab7",
+    "tools/verification/native-table-export.py": "51b7727b0b545911ec9019ccd8a31e0a5422fd4bf05b9d7c31cbc56027c5e040",
+    "tools/verification/native-table-parity.mjs": "f85cef5a3dde744953bf30dc04867053a6b93ba1cfbbba2647042fca108d771c",
+    "tools/verification/native-table-readback.py": "24bc159ab866fea06e74bbbd70c02b22ad3201c976bdcc62045aac294e5296ac",
+    "contracts/generated/computation-invocation.schema.json": "e431aff4373d9a6a478c2c12107da9384c408e18b1ebeff42b782271f3d58a49",
+    "contracts/generated/computation-receipt.schema.json": "0c9a8f269dd057e2ca30db9cdb81bb1a80cba49bcef399171d6ac7e8ba626824",
+    "contracts/generated/computation-request.schema.json": "cc4ef83855e10bb2d0d0724cd18a3b009f6063ae7a82f66826c6de7d922b2176",
+    "contracts/generated/document.schema.json": "649521229796a9b591ad37900752f0958a7a9caf1a4116790a42a1340298a5ff",
+    "contracts/generated/host-request.schema.json": "70bae440e60c85ca4c2a8bc046e3b6ed07dbc5abe2d94b91fb07a9fa50dcbad0",
+    "contracts/generated/host-response.schema.json": "7a183c58c9009418ae50eba8125c77150602b18354d51283b4c6aac7e5ad479e",
+    "contracts/generated/kernel-request.schema.json": "389c19981b6b6ef7e83375bf83e238efe09ae6ad451d259674d64d98b2cf8439",
+    "contracts/generated/kernel-response.schema.json": "4fb77e683e7a165cb67e68b0ab9d808e1ae6902dfc72dc994491f6c9a27928f0",
+    "contracts/generated/operation-request.schema.json": "9c765a65b70bfbb6dc3ee4e519d237ad5492f5499bc458a12ed3c9c5876ce880",
+    "contracts/generated/page-compile-response.schema.json": "f8a474e39b84e763bd262f2c0b1aaa65546c3f5faee8a5928f58dee9830f7457",
+    "contracts/generated/page-placement-request.schema.json": "1bea5c0dd4a076a306e1b688d9d064d67303da4b7a96af4e20bbf70dd46b2a69",
+    "contracts/generated/page-raster-response.schema.json": "6ca520e4fe99fc2807537fded8de7e689e0fba27b92ea68356359236f5625b9d",
+    "contracts/generated/page-render-request.schema.json": "dc3938d56c8c473c5e8f0bda9b9f8d5590eeda8d053faf64deca5550a380ab68",
+    "contracts/generated/playback-compile-response.schema.json": "09b1a29409c59ecd249a5568a40e63968e6c709296e462776247d996da120d83",
+    "contracts/generated/playback-page-request.schema.json": "633e6d74d8f28d5052ba811a681892763543df0cc7d18d35620af399509960b1",
+    "contracts/generated/playback-raster-response.schema.json": "e46eb2e5a0ebd69ecade0e760e7b8bfb788f87568d8ac19264bb2d3cfe8bd9dc",
+    "contracts/generated/playback-session-request.schema.json": "b45d48166734c48737bfc698128397816a3999967ce87f5418902a69f9585d06",
+    "contracts/generated/playback-session-response.schema.json": "415638e1cbd935663f775fe39f40a6c4b7ecdcacc5f194e6065d234aca6e594e",
+    "contracts/generated/pptx-export-request.schema.json": "b1d391cdfc671e5e57be8f0c71290ec02c31b4e0593f0e36b8b24d1428f04f17",
+    "contracts/generated/pptx-import-response.schema.json": "a9800de976d1094cfbfaf113bd13e6057824d1aabc9cbd29bb0527e9d53838dd",
+    "contracts/generated/pptx-source-response.schema.json": "2e5c6742f3f17a1fb46e11e3bdbdce761b952894f15c418f46ba32af0f1b5ca2",
+    "contracts/generated/template-request.schema.json": "2bdd1b8b225c9feaf39fb2a1194e45b4de8c2e524dafd5c35e242696ec1f398a",
+    "contracts/generated/template-response.schema.json": "169f70efec3e6398527962f7aa1f1935e52467db6e7c416f26dd6dfc789ad23a",
+    "contracts/generated/timeline-evaluate-request.schema.json": "52016c8c2f953e982f48346f4e7723e64b690a0ef93fcaba5b9d34c18f8c01ec",
+    "contracts/generated/transaction.schema.json": "fd4e81df73c4246b4277363e7960f19c3897d529a206d5c7d3b6e37ce3abf402",
+    "packages/contracts/src/generated/computation-invocation/part-001.ts": "eff1f2257ae2fc5527428d1f3a49caaa10ad1f37d74e40ce3178e3e9c702d3ef",
+    "packages/contracts/src/generated/computation-invocation/part-002.ts": "5dec7a2dd6007ff496fbf2d282071dbc2460d9eb88d4b8793797e6cd69885ee4",
+    "packages/contracts/src/generated/computation-invocation/part-003.ts": "b05fd393fb23605887f556df7e90c06cffc8fe2c4c242454da43d6c6e50dffa0",
+    "packages/contracts/src/generated/computation-invocation.ts": "b35171bc00cf84758f3336f19dea38ec6464c43c9f45ab1ccde2dcdc59ec3cb6",
+    "packages/contracts/src/generated/computation-receipt.ts": "dc3010ef849c5732313763e84f6113caa671db7d32965cd87cd6c04b738bbf1d",
+    "packages/contracts/src/generated/computation-request/part-001.ts": "8c8c57abfe9fdead463f672e678712f8aeceb57b9928a76e077b79e0e009cc81",
+    "packages/contracts/src/generated/computation-request/part-002.ts": "3e5aeb481bfffa37c152749eb6a5eae311cfde020f075c627b7a19befa6879ba",
+    "packages/contracts/src/generated/computation-request/part-003.ts": "1b21413338edfa4afeabcbccb2cce82cb939ffb0cf128c0855e4904c34eeb14c",
+    "packages/contracts/src/generated/computation-request.ts": "fbb882b195b10aeac8d14195c107566eca955946a38c980e244a63c5dde47624",
+    "packages/contracts/src/generated/document.ts": "a14355648a8b9b52b8e7aab9167500f7522f89b6cbf56162e9e18a06b53617d1",
+    "packages/contracts/src/generated/host-request.ts": "7fdfbbaa6cae3f99b05b7070d5a2b190bd20d2c7de7400c7a65b742069bae614",
+    "packages/contracts/src/generated/host-response.ts": "4eaf4d4fb97e8662f7f7d9d6898a8c145b2a5e69ed375b999f8047627dd00c55",
+    "packages/contracts/src/generated/kernel-request.ts": "f9a6057df24f9aeadad6b607f7a9774f088256a22c53cd332f4d38eea044c751",
+    "packages/contracts/src/generated/kernel-response.ts": "e58d8a68d5fbdc6295aabb53be1dbccd4db22729fce8d6f27f4643bc2303c1d6",
+    "packages/contracts/src/generated/operation-request/part-001.ts": "7bec2cfcb0a05afc0e28282e7d79eaba713ee98c3f6a7b6b93bc41697a0749d2",
+    "packages/contracts/src/generated/operation-request/part-002.ts": "d5630049759e9445ad3aeeede5d8db59a27738872ef286e9d30ae958244d1215",
+    "packages/contracts/src/generated/operation-request.ts": "4453ca9d62decfa822d0c49f3d9af8743878996cd04515d5f10632c986ee2028",
+    "packages/contracts/src/generated/page-compile-response.ts": "116c28738f435bc095a56722329923fd202f05cdbe23c0077d3689109a3a1fa5",
+    "packages/contracts/src/generated/page-placement-request.ts": "38fc4917b1d81a06b30d7c518d9440c441369404185849a61685d5eeb91422f4",
+    "packages/contracts/src/generated/page-raster-response.ts": "a8dc05147d603879dfa7c4b686338e4f511d900e14be13b2e3731bc8f6450005",
+    "packages/contracts/src/generated/page-render-request.ts": "bbfb06cda6aee3117d355265ecb9bffa4067d078a6e19e1d4676a9b1cfb38a63",
+    "packages/contracts/src/generated/playback-compile-response.ts": "30a05e5501b60a14a1904000c11652b1f7a0a2572dcea5f94d839b0ebb2fc1e9",
+    "packages/contracts/src/generated/playback-page-request.ts": "2d485161eab8d8b0db3dd29bc6181d4b4c9f588f08153004c8743c7102d57aed",
+    "packages/contracts/src/generated/playback-raster-response.ts": "ffb0b249be34de72f3cbfc7b2ea0687fb14410dfdb6b7a5d0ead01736e4bf8d5",
+    "packages/contracts/src/generated/playback-session-request.ts": "f9c90e7dad97e6cffb7aca64eb4f74e588b63e83ff125d4ce9e2df25df5c4d30",
+    "packages/contracts/src/generated/playback-session-response.ts": "b26a74d2410fd443fd5b9a63b23bf6a49a79a5308aad7270f91c6463f02c9dbe",
+    "packages/contracts/src/generated/pptx-export-request.ts": "94e70e432a2bbe8a924eca68c3e4b7ece42df47ea1b0aa9509847ed4fdf26680",
+    "packages/contracts/src/generated/pptx-import-response.ts": "f56d291b5a08d9ee739fe8d0885a6fcd3eaa6b5b213c3965d78c70fad2ffcf4a",
+    "packages/contracts/src/generated/pptx-source-response/part-002.ts": "3f37148885b42b89596e637ecf6d5b0de7a0f9ea841cf282fa5e04ba83dd471e",
+    "packages/contracts/src/generated/pptx-source-response.ts": "9227b55b6d7585a1e473040ce38a58395b380bc73272251614d149a3d405f502",
+    "packages/contracts/src/generated/template-request.ts": "90b41594505be4c6c376b7e4199c5f107b9c09077af7aece862dd14a4b252b39",
+    "packages/contracts/src/generated/template-response.ts": "ace88d29e9f6bf4f37d731c472d8e89e3b5827a1ecbb20f7a40eaa55d8efeb14",
+    "packages/contracts/src/generated/timeline-evaluate-request.ts": "c409b6c2d643779df692e0f892b0593a71662c11e15fc52484369c80b70ca0bb",
+    "packages/contracts/src/generated/transaction.ts": "adaad12229f472921087d703bb0641bd78b645043531a6bbbf397d55a3fe72b4"
+  },
+  "builds": {
+    "nativeCli": "cargo build --locked --offline -p mo-cli",
+    "wasm": "cargo build --locked --offline --release -p mo-wasm --target wasm32-unknown-unknown",
+    "binding": "wasm-bindgen --target nodejs; local package type commonjs"
+  },
+  "environment": {
+    "system": "Darwin",
+    "machine": "arm64",
+    "rustc": "rustc 1.92.0 (ded5c06cf 2025-12-08)",
+    "node": "v23.5.0"
+  },
+  "correctedFailures": [
+    "Preserved the existing group stroke error message after regression identified a change in the shared helper.",
+    "Configured generated wasm-bindgen Node output as CommonJS inside the ESM development workspace before parity execution."
+  ],
+  "notVerified": [
+    "native table reader and source-bound editing",
+    "table rendering and pixel parity",
+    "table styles and automatic layout",
+    "WPS/PowerPoint opening, editing, saving and reimport",
+    "product table path",
+    "performance and resource ceilings",
+    "installer size",
+    "complete F04 or full first-phase replacement"
+  ],
+  "product": {
+    "workspaceBranch": "codex/musteroffice-integration",
+    "materialsUpgraded": false,
+    "defaultEngineChanged": false,
+    "originalWorkspaceWritten": false
+  },
+  "goalComplete": false
+}

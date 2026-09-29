@@ -1,0 +1,1164 @@
+{
+  "format": "musteroffice.container-autoreverse-verification/1",
+  "date": "2026-09-29",
+  "status": "passed-bounded-computation-and-product-stage",
+  "goal": "ACTIVE; full first-phase implementation and replacement gates remain open",
+  "scope": "Finite coincident container autoReverse with two real descendant activations, nested turns, easing, clipping, restart and scoped navigation. Nonlinear ancestor projection of descendant turns is explicitly unsupported. Native source, packaged WASM and isolated product upgrade.",
+  "sources": [
+    {
+      "repository": "MusterOffice",
+      "path": "README.md",
+      "sha256": "8938d83cf817f850923bfe81667d22a538e0c30b796b0cc2eb24b25499078ebf",
+      "byteLength": 23908
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/tree/container_clock.rs",
+      "sha256": "0d0f9770d573b59e9ecf9dd83ceae81a9860d646f69760e613e290bdb39cb024",
+      "byteLength": 6791
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/tree/sample.rs",
+      "sha256": "85620afa47a174cae4fdda4c4432261e69294774e3d8eb9967e609f974806ed7",
+      "byteLength": 12020
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/tree/sample/schedule.rs",
+      "sha256": "9adba4b34cc1cd5c1bd3ad95c16e9004d1c61079074f39313c92493bc4336b8e",
+      "byteLength": 16076
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/tree/sample/schedule/lifecycle.rs",
+      "sha256": "36e5662fa1ba5ad4175abd05eb857496857e01c868ee61f07ea8b55997493a32",
+      "byteLength": 7732
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/tree/sample/schedule/seek.rs",
+      "sha256": "8d14ebb07bdd2b715beafc58ef328f36d4fd6c3f27fa9f388e513492c0e918b7",
+      "byteLength": 8177
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/tests/container_autoreverse.rs",
+      "sha256": "1c2889a3ba62110f3f5eaac1ec547cdc8d601b112ba7e0978d4a32661e61a113",
+      "byteLength": 11524
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/tests/container_easing.rs",
+      "sha256": "0e8295304218eedca59663f2be74e213650f5fbbaab0dd94781c68f9eacf5ddd",
+      "byteLength": 8225
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/tests/container_reversal.rs",
+      "sha256": "3bf1c7e8935420d7566e88bcd06b8ac1d5087fff6a45ed26f92ab9248a1785db",
+      "byteLength": 9752
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "docs/README.md",
+      "sha256": "7aa58f2546b9b42bc4d6424de494e794136d8a7b279d66134e9dad6094c59b17",
+      "byteLength": 41316
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "docs/design/presentations/timeline-media.md",
+      "sha256": "34224ef8de5ce8b2a1a94dba2e48aceb990c6fc948f22ccfcfb5f9c34688f2ff",
+      "byteLength": 14544
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "docs/implementation/container-autoreverse.md",
+      "sha256": "bf77f93ece28cfc8b74bcfddde19cc4163aed10e16f9b6cda2e03fa981779702",
+      "byteLength": 5113
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "docs/implementation/progress.md",
+      "sha256": "4e12c1156df648b726054f59578e842337826ff11d6084787f4e00d9573ae5f3",
+      "byteLength": 139484
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "tools/verification/container-autoreverse-fixtures.py",
+      "sha256": "833fbc2dba634e74410e9be087813b3f9b49cb2796a1e38d94f0698d8a970993",
+      "byteLength": 3575
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "tools/verification/container-rate-fixtures.py",
+      "sha256": "60efb0cb7ebe8eb7f1cf7384d6fb432046a70b2da678e99b9f8fbe8f8b3d79ee",
+      "byteLength": 9009
+    }
+  ],
+  "coreCommands": [
+    {
+      "name": "rust",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/rust.json",
+        "sha256": "bc27e0fd73e3c36713c409e5fdd647d96d351ed7214c91d369a26612c6de82b2",
+        "byteLength": 110764
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/rust.log",
+        "sha256": "4e0d8e71d3076b1a645a6127472c47bee7581584b4268d164e37ecf0b53fb13c",
+        "byteLength": 64765
+      },
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-timeline",
+        "-p",
+        "mo-presentation-model",
+        "-p",
+        "mo-presentation-source",
+        "-p",
+        "mo-pptx",
+        "-p",
+        "mo-presentation-compile",
+        "-p",
+        "mo-presentation-edit"
+      ],
+      "sourceFiles": 425,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "clippy",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/clippy.json",
+        "sha256": "2e1ac20c0c674efcbab23e11797d6d4549cb5ebf835f0346b9d606eacb99aea9",
+        "byteLength": 110823
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/clippy.log",
+        "sha256": "0fe57ac3b7bdf48a8868d045d4552d0df5e00136ff7c70fea5545356f37a1eab",
+        "byteLength": 743
+      },
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-timeline",
+        "-p",
+        "mo-presentation-model",
+        "-p",
+        "mo-presentation-source",
+        "-p",
+        "mo-pptx",
+        "-p",
+        "mo-presentation-compile",
+        "-p",
+        "mo-presentation-edit",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "sourceFiles": 425,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "native-build",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/native-build.json",
+        "sha256": "1c719fc3587c66ad487c2c90ac1c233913f91d7f00afeb37b76979a210dd1dd3",
+        "byteLength": 217245
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/native-build.log",
+        "sha256": "c4b1086f608332f4b0c1d77359d6217d034d14262c8e63d381f0eb5169a447cf",
+        "byteLength": 1965
+      },
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-cli",
+        "-p",
+        "mo-raster-worker",
+        "-p",
+        "mo-export-worker"
+      ],
+      "sourceFiles": 893,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "wasm-build",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/wasm-build.json",
+        "sha256": "b813582138f72a514e80f26855eeefe9dfeb155d97c370f2376c0d756475b064",
+        "byteLength": 211770
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/wasm-build.log",
+        "sha256": "b4c273762aecf5d10718f533cd9a49622b341c5fb664c276d2a57926a51c9907",
+        "byteLength": 1306
+      },
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--release",
+        "-p",
+        "mo-wasm",
+        "--target",
+        "wasm32-unknown-unknown"
+      ],
+      "sourceFiles": 869,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "wasm-web",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/wasm-web.json",
+        "sha256": "09241cb4d5e1d47997331390acb41df635ba4bd6eb8cd2419d36c5706564a790",
+        "byteLength": 1112
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/wasm-web.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byteLength": 0
+      },
+      "command": [
+        ".codex-work/toolchain/bin/wasm-bindgen",
+        "--target",
+        "web",
+        "--out-dir",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/wasm-web",
+        "target/wasm32-unknown-unknown/release/mo_wasm.wasm"
+      ],
+      "sourceFiles": 2,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "sdk",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/sdk.json",
+        "sha256": "2b49715764160c9dd711c317faf7ea0c07a6d7cb0218ca0f75c7abb51f05ce1e",
+        "byteLength": 213437
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/sdk.log",
+        "sha256": "cfceaf1086d91be5464144a81fc7ad8f3f5873745375d5f89ebac9caeaf2501f",
+        "byteLength": 199
+      },
+      "command": [
+        "python3",
+        "tools/sdk/build.py",
+        "--output",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/sdk"
+      ],
+      "sourceFiles": 877,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "bundle",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/bundle.json",
+        "sha256": "fd7f327892438b194ee2609ddeaa8eb04fc99423d89ffe29730537f995a926f1",
+        "byteLength": 42739
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/bundle.log",
+        "sha256": "c9c4f562133277ac9d704123fdb048bdfa58f1c2fe3e255d1d2bf73110dd2240",
+        "byteLength": 100
+      },
+      "command": [
+        "python3",
+        "tools/playback-sdk/build.py",
+        "--output",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/bundle",
+        "--wasm-dir",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/wasm-web",
+        "--raster-dir",
+        "${MUSTEROFFICE}/.codex-work/snapshot-scopes/wasm",
+        "--text-dir",
+        "${MUSTEROFFICE}/.codex-work/harfbuzz/release"
+      ],
+      "sourceFiles": 163,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "corpus",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/corpus.json",
+        "sha256": "4e197e56177a2c4ff89a5aec6eee190cb689d8c4a8049e7e33169d75022045f8",
+        "byteLength": 9843
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/corpus.log",
+        "sha256": "e424f9b877cbeb4b77a508dd5fd5ecea5bc2e3e56535eb05bcd4eea5eedbbd4c",
+        "byteLength": 75
+      },
+      "command": [
+        "python3",
+        "tools/verification/container-autoreverse-fixtures.py",
+        "--output",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/corpus",
+        "--export-template",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/manual/control.export.json",
+        "--page-template",
+        "${MUSTEROFFICE}/.codex-work/automatic-sequence/corpus/native-original-0-0.request.json",
+        "--worker",
+        "${MUSTEROFFICE}/target/debug/mo-raster-worker",
+        "--cli",
+        "${MUSTEROFFICE}/target/debug/mo-cli",
+        "--schema",
+        "${MUSTEROFFICE}/.codex-work/ecma376/xsd/pml.xsd"
+      ],
+      "sourceFiles": 34,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "playback-sync",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/playback-sync.json",
+        "sha256": "63ee31490a85eec36c2d3c83b4532cf4ff500f50ba73eb9c5d9e79058098bcc6",
+        "byteLength": 212885
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/playback-sync.log",
+        "sha256": "14fce06ce64b563e29914b3a7f5b199e528156b85d533d1b85e4149c7689b0f9",
+        "byteLength": 44
+      },
+      "command": [
+        "node",
+        "tools/verification/wasm-playback-reference.mjs",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/playback-sync",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/bundle",
+        "18cfc82bd530dbcd4ec5c51ce77c85d69d484075de74aa7d97d913a66f125cfe",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/corpus/author.json",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/corpus/source.json",
+        "sync"
+      ],
+      "sourceFiles": 735,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "playback-stepped",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/playback-stepped.json",
+        "sha256": "a811a40ffd697c63d81604bf3b0e6bbf192877a4d1393d5e49b37940d5d0de81",
+        "byteLength": 212891
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/playback-stepped.log",
+        "sha256": "14fce06ce64b563e29914b3a7f5b199e528156b85d533d1b85e4149c7689b0f9",
+        "byteLength": 44
+      },
+      "command": [
+        "node",
+        "tools/verification/wasm-playback-reference.mjs",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/playback-stepped",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/bundle",
+        "18cfc82bd530dbcd4ec5c51ce77c85d69d484075de74aa7d97d913a66f125cfe",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/corpus/author.json",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/corpus/source.json",
+        "stepped"
+      ],
+      "sourceFiles": 735,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "rotation-regression",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/rotation-regression.json",
+        "sha256": "4a08e042c3892c1c002b0f6395dd4376657494c2885919700025df6ee8d1aaf7",
+        "byteLength": 125753
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/rotation-regression.log",
+        "sha256": "8b1b0a1518f3e0318b2bc9fe6b1d07787ac85fbebad1692f6d61d05be06888b2",
+        "byteLength": 43
+      },
+      "command": [
+        "node",
+        "tools/verification/wasm-playback-reference.mjs",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/rotation-regression",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/bundle",
+        "18cfc82bd530dbcd4ec5c51ce77c85d69d484075de74aa7d97d913a66f125cfe",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/corpus/author.json",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/corpus/source.json",
+        "stepped"
+      ],
+      "sourceFiles": 428,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "easing-regression",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/easing-regression.json",
+        "sha256": "9d18f66d994f5b4932fbd067cf5b051821f52d1330a0a3aad1ef1ebf5ae96845",
+        "byteLength": 66702
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/easing-regression.log",
+        "sha256": "aac4052a3b49c26c583ef2e356260a9050a9d801baadf927720ed91b262fa101",
+        "byteLength": 43
+      },
+      "command": [
+        "node",
+        "tools/verification/wasm-playback-reference.mjs",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/easing-regression",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/bundle",
+        "18cfc82bd530dbcd4ec5c51ce77c85d69d484075de74aa7d97d913a66f125cfe",
+        "${MUSTEROFFICE}/.codex-work/container-easing/corpus/author.json",
+        "${MUSTEROFFICE}/.codex-work/container-easing/corpus/source.json",
+        "stepped"
+      ],
+      "sourceFiles": 234,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "rate-regression",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/rate-regression.json",
+        "sha256": "31b58e1acfc9b634d84a5098a10e94b55d998ebee717332d48985ba978ae8c30",
+        "byteLength": 116747
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/rate-regression.log",
+        "sha256": "8b1b0a1518f3e0318b2bc9fe6b1d07787ac85fbebad1692f6d61d05be06888b2",
+        "byteLength": 43
+      },
+      "command": [
+        "node",
+        "tools/verification/wasm-playback-reference.mjs",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/rate-regression",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/bundle",
+        "18cfc82bd530dbcd4ec5c51ce77c85d69d484075de74aa7d97d913a66f125cfe",
+        "${MUSTEROFFICE}/.codex-work/container-rate/corpus/author.json",
+        "${MUSTEROFFICE}/.codex-work/container-rate/corpus/source.json",
+        "stepped"
+      ],
+      "sourceFiles": 418,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "reversal-regression",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/reversal-regression.json",
+        "sha256": "346ae9de632d8c231938464b8bd55b638637df982d5d32d9c4648c92b5ec90da",
+        "byteLength": 129824
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/reversal-regression.log",
+        "sha256": "8b1b0a1518f3e0318b2bc9fe6b1d07787ac85fbebad1692f6d61d05be06888b2",
+        "byteLength": 43
+      },
+      "command": [
+        "node",
+        "tools/verification/wasm-playback-reference.mjs",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/reversal-regression",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/bundle",
+        "18cfc82bd530dbcd4ec5c51ce77c85d69d484075de74aa7d97d913a66f125cfe",
+        "${MUSTEROFFICE}/.codex-work/container-reversal/corpus-02/author.json",
+        "${MUSTEROFFICE}/.codex-work/container-reversal/corpus-02/source.json",
+        "stepped"
+      ],
+      "sourceFiles": 438,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "calibration-parity-02",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/calibration-parity-02.json",
+        "sha256": "7e03353659b52eec1ab61dd84c1360e2c90b4b8d5d202fbe0f54dccb1383bfbe",
+        "byteLength": 22735
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/calibration-parity-02.log",
+        "sha256": "e7d60585dd6d1e08194ae2807e4fbe4621fdab741f1651595cce1800cce7a928",
+        "byteLength": 86
+      },
+      "command": [
+        "python3",
+        ".codex-work/container-autoreverse/calibration-parity.py"
+      ],
+      "sourceFiles": 73,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    }
+  ],
+  "productCommands": [
+    {
+      "name": "prepare-sdk",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/prepare-sdk.json",
+        "sha256": "d8fff88ae518259083f84acb91fc90050785fc9d79c48104fa3aacb494aac3ac",
+        "byteLength": 1572
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/prepare-sdk.log",
+        "sha256": "c679dd068ea3fa355a7dddf49fe872300bd8bf12a933e307176562171a578959",
+        "byteLength": 648
+      },
+      "command": [
+        "node",
+        "scripts/prepare-musteroffice-development.mjs",
+        "--sdk",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/sdk",
+        "--worker",
+        "${MUSTEROFFICE}/target/debug/mo-export-worker"
+      ],
+      "sourceFiles": 4,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "prepare-playback",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/prepare-playback.json",
+        "sha256": "751e69005da92c4b82dd7b1335b9448383f9ea16ab5243a6915958e368e739f6",
+        "byteLength": 1247
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/prepare-playback.log",
+        "sha256": "66b2826efbcce025200d734e567dd22e24238f194b1250f4ceaaf92092ab5b61",
+        "byteLength": 9686
+      },
+      "command": [
+        "node",
+        "scripts/prepare-musteroffice-playback.mjs",
+        "--source",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/bundle"
+      ],
+      "sourceFiles": 3,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "consumer-build",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/consumer-build.json",
+        "sha256": "587054f7b8b2fa73d87d94af421a4eb4a43d362cf7e60c1afa261f3ec7d1d872",
+        "byteLength": 2390
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/consumer-build.log",
+        "sha256": "5d0e47614a4febf5c0510ed03c5d13dc2b3d78957c4002f879aeffc0d5bbe93c",
+        "byteLength": 7525
+      },
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "${MUSTERWORK_WORKTREE}/.codex-work/integration/container-autoreverse/export-consumer/Cargo.toml"
+      ],
+      "sourceFiles": 5,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "consumer-sequence",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/consumer-sequence.json",
+        "sha256": "b0f1c2db932faaef5c259fceabfc62da4c3a0702cca04bafbc3582d51ad1c749",
+        "byteLength": 2420
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/consumer-sequence.log",
+        "sha256": "6b4707162c3d36a40d3e370c49f4decbacb5d7803d443de2def4e3212d502c5f",
+        "byteLength": 580
+      },
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "${MUSTERWORK_WORKTREE}/.codex-work/integration/container-autoreverse/export-consumer/Cargo.toml",
+        "--test",
+        "sequence"
+      ],
+      "sourceFiles": 5,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "adapter",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/adapter.json",
+        "sha256": "0caf2cc2d0d065151991bd6f014c0ade4e322878c2672f09f38235ea28d8dabf",
+        "byteLength": 15482
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/adapter.log",
+        "sha256": "c6913f4d8facd88fffb30515e1db683e491d4152298837595f84993e81a7de6c",
+        "byteLength": 8199
+      },
+      "command": [
+        "cargo",
+        "test",
+        "--manifest-path",
+        "apps/agent-runtime/Cargo.toml",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-musteroffice",
+        "--lib"
+      ],
+      "sourceFiles": 50,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "client",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/client.json",
+        "sha256": "f9e66d5d6846872a7e4cf46e864c4a069cf5c20188e2bea8693b892bfdd05620",
+        "byteLength": 170386
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/client.log",
+        "sha256": "b14b1c262c53d27f6af1e0a63f26f26f10d7d1a3aa39f7877407a13c8bf02e13",
+        "byteLength": 1036
+      },
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_NAVIGATION_ROOT=${MUSTERWORK_WORKTREE}/.codex-work/integration/container-autoreverse/fixtures",
+        "MUSTERWORK_OFFICE_NAVIGATION_REPORT=${MUSTERWORK_WORKTREE}/.codex-work/integration/container-autoreverse/actual-worker.json",
+        "MUSTERWORK_OFFICE_CATALOG_FLOW_ROOT=${MUSTERWORK_WORKTREE}/.codex-work/integration/native-model-flow/loop-02-actual.json.catalog-device-assets",
+        "MUSTERWORK_OFFICE_NATIVE_FRAMES=${MUSTEROFFICE}/.codex-work/delivery-playback/parity-01",
+        "pnpm",
+        "--filter",
+        "@musterwork/agent-runtime-product-client",
+        "exec",
+        "vitest",
+        "run",
+        "tests/office-playback.integration.spec.ts",
+        "tests/office-navigation.integration.spec.ts",
+        "tests/office-playback-worker-client.spec.ts",
+        "tests/office-presentation-preview.spec.ts",
+        "tests/office-presentation-artifact.spec.ts",
+        "--environment",
+        "node"
+      ],
+      "sourceFiles": 555,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "viewer",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/viewer.json",
+        "sha256": "2be370e4655adfbd5bd5c94dce85fc4b05831cbf94c043b397ec2557d305bc19",
+        "byteLength": 75324
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/viewer.log",
+        "sha256": "5d379783d3ea9983a5e832870727e7b1f0fc6e3789fec276a9c8200c9d6ddb54",
+        "byteLength": 443
+      },
+      "command": [
+        "pnpm",
+        "--filter",
+        "@musterwork/desktop",
+        "exec",
+        "vitest",
+        "run",
+        "src/components/artifacts/__tests__/MusterworkOfficePlayer.spec.ts",
+        "src/components/artifacts/__tests__/MusterworkOfficePreview.spec.ts"
+      ],
+      "sourceFiles": 256,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "types",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/types.json",
+        "sha256": "476f433128c4dd2f3337fff4c3f55f03c7b44655d9c24f52a6d45a5df25146a4",
+        "byteLength": 75590
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/types.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byteLength": 0
+      },
+      "command": [
+        "pnpm",
+        "--filter",
+        "@musterwork/desktop",
+        "exec",
+        "vue-tsc",
+        "--project",
+        "../../.codex-work/integration/product-playback/tsconfig.json",
+        "--noEmit"
+      ],
+      "sourceFiles": 257,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "preparation",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/preparation.json",
+        "sha256": "3f18de436fa912b7605e08eb3a0da3b15a009a8894c1ee6ced11b6681f69c3cf",
+        "byteLength": 1824
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/preparation.log",
+        "sha256": "2030b6d5a45bdcce169b411f9e9db02887150f6289f6e8cf5937abe32fef2790",
+        "byteLength": 1475
+      },
+      "command": [
+        "node",
+        "--test",
+        "scripts/prepare-musteroffice-development.test.mjs",
+        "scripts/prepare-musteroffice-playback.test.mjs"
+      ],
+      "sourceFiles": 5,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "desktop-build",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/desktop-build.json",
+        "sha256": "62516c420262cdce245f32213d98624f597808635cdbe6c37f27fe99b70bbf24",
+        "byteLength": 505613
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/desktop-build.log",
+        "sha256": "2aa0f6e9ff4dfe877c51ccf59529f3b7b0eef53c628807e84c8e92ba27ea456e",
+        "byteLength": 74673
+      },
+      "command": [
+        "env",
+        "MUSTERWORK_MUSTEROFFICE_PLAYBACK=1",
+        "pnpm",
+        "--filter",
+        "@musterwork/desktop",
+        "exec",
+        "vite",
+        "build",
+        "--outDir",
+        "../../.codex-work/integration/container-autoreverse/desktop-build"
+      ],
+      "sourceFiles": 1737,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    }
+  ],
+  "results": {
+    "rustTestsPassed": 551,
+    "newTests": 8,
+    "nativeFrames": 130,
+    "independentClockAndActivationChecks": 130,
+    "staticPixelControls": 129,
+    "xsdParts": 25,
+    "wasmSyncFrames": 130,
+    "wasmSteppedFrames": 130,
+    "previousRotationFrames": 72,
+    "previousMixedContentEasingFrames": 40,
+    "previousRateFrames": 72,
+    "previousReversalFrames": 72,
+    "publicAuthoredCalibrationNativeFrames": 10,
+    "publicAuthoredCalibrationSyncFrames": 10,
+    "publicAuthoredCalibrationSteppedFrames": 10,
+    "calibrationXsdParts": 5,
+    "productTestsPassed": 162,
+    "productNativeFrames": 60,
+    "productWorkerFrames": 95,
+    "desktopFrontendBuild": "passed",
+    "installerBuilt": false
+  },
+  "materials": {
+    "sdk": "604e37764a0bc6d185954ee57f5d0486824b73c4dbd9044333c9b8b9951a509e",
+    "playback": "18cfc82bd530dbcd4ec5c51ce77c85d69d484075de74aa7d97d913a66f125cfe",
+    "worker": "abf85342ccb0c667b1ff4c891a7e003688522ecf444ec7dc5257571922bc1f09",
+    "workerBytes": 44061216,
+    "checkedPackageFiles": 1282,
+    "desktopCopiedFiles": 42,
+    "desktopCopiedUncompressedBytes": 18675653,
+    "desktopBytesDeltaFromContainerReversal": 6913,
+    "workerBytesDeltaFromContainerReversal": 3200
+  },
+  "materialReceipts": [
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/container-autoreverse/sdk/sdk-manifest.json",
+      "sha256": "604e37764a0bc6d185954ee57f5d0486824b73c4dbd9044333c9b8b9951a509e",
+      "byteLength": 225920
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/container-autoreverse/bundle/bundle-manifest.json",
+      "sha256": "18cfc82bd530dbcd4ec5c51ce77c85d69d484075de74aa7d97d913a66f125cfe",
+      "byteLength": 11855
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": ".codex-work/integration/container-autoreverse/materials.json",
+      "sha256": "a96d4ccc083650629ec8eca91dc8839f648a025c6998628b8ce3f209feb2ae55",
+      "byteLength": 269
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": "components/musteroffice/lock.json",
+      "sha256": "60252d31ff0f93f1f44773174a190a729fe3ff95b06c42f0be43126af86b8336",
+      "byteLength": 333
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": "components/musteroffice/playback-lock.json",
+      "sha256": "70636539a8c6b3fa7659a1d342aa755ea4a699d297e992c224210df874c6caf0",
+      "byteLength": 153
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": "apps/agent-runtime/Cargo.toml",
+      "sha256": "7d701f082cde67d8bff1d4b285190df1f555c1532d2a58d8461eff8bf852349c",
+      "byteLength": 16645
+    }
+  ],
+  "computationalEvidence": [
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/container-autoreverse/corpus/report.json",
+      "sha256": "7da01d9912eb59ca8e92b2d6a5bdeb25858f99205966d2875200004223e026e5",
+      "byteLength": 141682
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/container-autoreverse/playback-sync/report.json",
+      "sha256": "32895d52bba2fe9be7724ff64021c5953fdcad921fe2e86abef714f86c732d42",
+      "byteLength": 100024
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/container-autoreverse/playback-stepped/report.json",
+      "sha256": "2794d318b65d6246fd3809fbb550dfb77423c42006bfd1dc9808c8d419114c48",
+      "byteLength": 100027
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/container-autoreverse/rotation-regression/report.json",
+      "sha256": "310c393da684f3398fb4749f40a090981d2b0b2dbe7a4b7b1f5beefc27a67e55",
+      "byteLength": 56749
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/container-autoreverse/easing-regression/report.json",
+      "sha256": "422d0543530ae15807cba33026e76301ed98d2ee21edb765f4f99e69be2f5aba",
+      "byteLength": 31648
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/container-autoreverse/rate-regression/report.json",
+      "sha256": "9b94c1e2491c340d1f9580a73a986568c0e8754687de920b833d6a2479f77688",
+      "byteLength": 54608
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/container-autoreverse/reversal-regression/report.json",
+      "sha256": "643f50f25e1df9c7a9251763b0b1d9736f3b328f78ad5ebca3d9b31b54f3cb3d",
+      "byteLength": 57118
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/container-autoreverse/calibration-parity-02/report.json",
+      "sha256": "9d5edc969f29d0f293fdd15a739738cff69e73fbbe4ae0300b1f2dc438ab65ad",
+      "byteLength": 326
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": ".codex-work/integration/container-autoreverse/fixtures/report.json",
+      "sha256": "897fad4f5fad74db4abb90eb362a70fab4cb1af033d231bcf0f9b6082d3879d1",
+      "byteLength": 3189
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": ".codex-work/integration/container-autoreverse/actual-worker.json",
+      "sha256": "f5f4ae9351944ceeeaa3a9b20877dfc81ada0c91ac41056faa012e6cfd19f199",
+      "byteLength": 8502
+    }
+  ],
+  "sourcePreservation": [
+    {
+      "name": "auto-parallel",
+      "original": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/product-sources/auto-parallel.pptx",
+        "sha256": "d1b1ed65821fbf40a7b5b6bad3fc5bac20e831170fb6dcb4da63789dd6ae4df4",
+        "byteLength": 6021
+      },
+      "exported": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/fixtures/auto-parallel/export/009.pptx",
+        "sha256": "d1b1ed65821fbf40a7b5b6bad3fc5bac20e831170fb6dcb4da63789dd6ae4df4",
+        "byteLength": 6021
+      },
+      "byteIdentical": true,
+      "parts": 13
+    },
+    {
+      "name": "auto-nested",
+      "original": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/product-sources/auto-nested.pptx",
+        "sha256": "a838c5c08d9cc5cca243d3e0bcb6829decbefb57aeac07bfc166dfca16e1bc1b",
+        "byteLength": 6030
+      },
+      "exported": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/fixtures/auto-nested/export/009.pptx",
+        "sha256": "a838c5c08d9cc5cca243d3e0bcb6829decbefb57aeac07bfc166dfca16e1bc1b",
+        "byteLength": 6030
+      },
+      "byteIdentical": true,
+      "parts": 13
+    },
+    {
+      "name": "auto-easing",
+      "original": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/product-sources/auto-easing.pptx",
+        "sha256": "55ad157569035c799563fd143aa21377cae9bf139574703661a53f611020cd9a",
+        "byteLength": 6029
+      },
+      "exported": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/fixtures/auto-easing/export/009.pptx",
+        "sha256": "55ad157569035c799563fd143aa21377cae9bf139574703661a53f611020cd9a",
+        "byteLength": 6029
+      },
+      "byteIdentical": true,
+      "parts": 13
+    },
+    {
+      "name": "auto-cut-turn",
+      "original": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/product-sources/auto-cut-turn.pptx",
+        "sha256": "32520c7bf711a47ca85ba5549aefa671f748bba22ed2379c0ed827bf0dc8b952",
+        "byteLength": 6037
+      },
+      "exported": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/fixtures/auto-cut-turn/export/009.pptx",
+        "sha256": "32520c7bf711a47ca85ba5549aefa671f748bba22ed2379c0ed827bf0dc8b952",
+        "byteLength": 6037
+      },
+      "byteIdentical": true,
+      "parts": 13
+    },
+    {
+      "name": "auto-cut-late",
+      "original": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/product-sources/auto-cut-late.pptx",
+        "sha256": "0da8e68d7286ef8e4b8cb8ec6be9daa51df2e66a0925ce720477429227c58f0f",
+        "byteLength": 6035
+      },
+      "exported": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/container-autoreverse/fixtures/auto-cut-late/export/009.pptx",
+        "sha256": "0da8e68d7286ef8e4b8cb8ec6be9daa51df2e66a0925ce720477429227c58f0f",
+        "byteLength": 6035
+      },
+      "byteIdentical": true,
+      "parts": 13
+    }
+  ],
+  "wpsObservation": {
+    "version": "12.1.22553",
+    "status": "observed-endpoints",
+    "report": {
+      "repository": "MusterOffice",
+      "path": ".codex-work/container-autoreverse/wps-observation.json",
+      "sha256": "b58b308e3ac9dd2043e0d2420609f00632e3baf293f43f42b99c0305044e79c6",
+      "byteLength": 1722
+    },
+    "source": {
+      "repository": "MusterOffice",
+      "path": ".codex-work/scale-inputs/container-autoreverse-authored.pptx",
+      "sha256": "bc5cbe824a3375d6268651fdb02b3782a507e1312e1f455ce3fc1c8b7c1cc674",
+      "byteLength": 6182
+    },
+    "screenshots": [
+      {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/wps-early.png",
+        "sha256": "48a5a41f5922edf30d2f0681a7ca31d639ceea7c6914a66287cdb4e1445e8f4a",
+        "byteLength": 151922
+      },
+      {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/wps-final.png",
+        "sha256": "b02a3cbfcbf9e6d3831246211e0ec747c7e82bd28c24bbb7dff1ada1f41062e7",
+        "byteLength": 145845
+      }
+    ],
+    "analysis": {
+      "repository": "MusterOffice",
+      "path": ".codex-work/container-autoreverse/observe.py",
+      "sha256": "4ab8a5e9edb1bf1ff5eb3bba9500bd90b149c9d329c2f97092dae4a49e19af8c",
+      "byteLength": 2362
+    },
+    "generation": {
+      "repository": "MusterOffice",
+      "path": ".codex-work/container-autoreverse/calibrate.py",
+      "sha256": "d86aa9b4604e0e69635e26db798b1b6862198f79e23d2fa3b5815d0ea1c7f1e9",
+      "byteLength": 3624
+    },
+    "atomicEditRequests": [
+      {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/authored-sequence.request.json",
+        "sha256": "5188184609418efb442ebacece9ae4b2efa1e97e2bb2a8e89b22f49510a8acaf",
+        "byteLength": 14758
+      },
+      {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/authored-turns.request.json",
+        "sha256": "8b25d4901095b979035cd5c99b39d2f75713ca3026d1b74d54930783eb0c6297",
+        "byteLength": 33820
+      }
+    ],
+    "scope": "Unmodified complete native export from public authoring and atomic timeline edit. Alternating forward controls and container autoReverse return to expected endpoints. No PowerPoint, native editing, synchronized frame timing or arbitrary nested lifecycle claim.",
+    "restoredWindow": "rotation-absolute-fixed.pptx",
+    "maximumEndpointDirectionDeviationDegrees": 0.2109922406220619,
+    "newDirectoryPermissionGranted": false,
+    "negativeSpeedInteropGapStillOpen": true
+  },
+  "earlierFailures": [
+    {
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/calibration-parity.json",
+        "sha256": "38c90abbf241715b3399436c1f6216e900e8d5c8b65f25eef709e9d49b50462d",
+        "byteLength": 22736
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/calibration-parity.log",
+        "sha256": "e98f7b654b9f952f0498b0afb0a786ac0ba542d4160cd3ad58acd876ff5f6ee1",
+        "byteLength": 763
+      },
+      "source": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/calibration-parity-01.py",
+        "sha256": "fa7aeff87baf99287193f0f8982e4bb9c64ffb9a86b09d7f78bcf879379a260a",
+        "byteLength": 2021
+      },
+      "reason": "Calibration includes interactive main sequence; request omitted required event history. Supplied empty history through sample time; no production change."
+    },
+    {
+      "source": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/container-autoreverse/observe-01.py",
+        "sha256": "576e2d723ca1d130616f703005dcb6c112c122a8e428998c453119c2e96208a1",
+        "byteLength": 2491
+      },
+      "reason": "Inherited 0.2-degree screenshot assertion failed at 100.210992 degrees for a 100-degree endpoint. Record observed directions and deviation only; do not widen a pixel-acceptance threshold or claim synchronized timing."
+    },
+    {
+      "reason": "WPS custom file dialog did not accept path input reliably. Cancelled a source-placement directory permission prompt without granting; opened owned scale-inputs file through the app launch capability."
+    }
+  ],
+  "nativeLink": {
+    "library": {
+      "repository": "MusterOffice",
+      "path": ".codex-work/snapshot-scopes/native/libmo_skia_adapter.a",
+      "sha256": "52fa4ed0fd818c6423c557baa3e4abd2ae63bdcf1d96a154179c05f430e54815",
+      "byteLength": 111760
+    },
+    "environment": {
+      "MO_SKIA_LIB_DIR": "${MUSTEROFFICE}/.codex-work/snapshot-scopes/native"
+    },
+    "newDependencies": false,
+    "newCppChanges": false,
+    "publicJsonContractChanged": false
+  },
+  "references": [
+    "https://www.w3.org/TR/SMIL3/smil-timemanip.html"
+  ],
+  "limitations": [
+    "General unequal/delayed reverse intervals and nonlinear event deadline projection remain open. Descendant reversal turns under ancestor easing are explicitly rejected, not rounded.",
+    "WPS observation covers alternating forward and autoReverse endpoints in an unmodified authored export. It does not certify exact frame times, native editing, PowerPoint, arbitrary nested lifecycles or resolve the previous negative-speed interoperability gap.",
+    "Complete advanced PPT, real Agent/Electron, multiple platforms, historical migration, performance/resources/installer and all replacement gates remain open.",
+    "Sizes measure uncompressed desktop playback files and a macOS ARM64 debug export Worker, not a release installer. No FPS, RSS, startup or throughput claim. Existing frontend large-chunk warning remains.",
+    "Product work and verification are confined to the independent worktree. No default-engine switch, commits, publication, deployment or production database use."
+  ]
+}

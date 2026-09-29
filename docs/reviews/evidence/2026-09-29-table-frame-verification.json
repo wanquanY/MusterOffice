@@ -1,0 +1,1523 @@
+{
+  "date": "2026-09-29",
+  "scope": "Native cell body/frame library integration and shared ordinary text clipping across static/native/WASM/retained execution; not full native table rendering",
+  "previousEvidence": {
+    "path": "docs/reviews/evidence/2026-09-29-table-text-verification.json",
+    "sha256": "90b1918478e487c50798262f7637944484583fbb5162eca8082b59b4091764c8",
+    "byteLength": 49834
+  },
+  "implementation": {
+    "nativeCellBodyProvenance": true,
+    "declaredMergedCellRegion": true,
+    "sharedGridOwnerMap": true,
+    "sharedShapingAndFrameFlow": true,
+    "noSyntheticShapes": true,
+    "coveredTextRetained": true,
+    "unclippedCapacityRetained": true,
+    "axisSpecificClip": true,
+    "inactiveAxisGuardUsesSampledInverse": true,
+    "exactSingularFilledGeometryHasEmptyPixels": true,
+    "retainedClipBytesAccounted": true,
+    "perPageTableAggregationStillRequired": true,
+    "externalDependenciesAdded": false
+  },
+  "notAccepted": [
+    "automatic table row heights and merged-row fitting",
+    "full table fills, borders and page renderer",
+    "Office/WPS cell body precedence, inherited defaults and appearance calibration",
+    "public Native/WASM table cell frame/page computation parity",
+    "complete phase-one PPT functionality, editable Office/WPS round trips and Musterwork replacement acceptance",
+    "performance/RSS or installer size claims"
+  ],
+  "product": {
+    "workspace": "existing independent integration worktree",
+    "branch": "codex/musteroffice-integration",
+    "productWrites": false,
+    "mainWorkspaceWrites": false,
+    "materialUpgrade": false,
+    "defaultEngineChanged": false,
+    "sdkManifestSha256": "3c039e3b53d585dcc991f27d5c5ca0e0105ce532dd78a87c050d652783edbe37",
+    "playbackManifestSha256": "448d76996853514bba42a437e5ce809b5130762e4b6e615e12cb1bbf246dd433",
+    "workerSha256": "2d4cc22b84979469784e53c42c691476d3c9c0a08bd65bb3f0c14c278de43cde"
+  },
+  "checks": [
+    {
+      "name": "fmt",
+      "args": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exitCode": 0,
+      "seconds": 1.14,
+      "log": ".codex-work/table-frame/checks/fmt.log"
+    },
+    {
+      "name": "tests",
+      "args": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-presentation-source",
+        "-p",
+        "mo-pptx",
+        "-p",
+        "mo-presentation-compile"
+      ],
+      "exitCode": 0,
+      "seconds": 263.09,
+      "log": ".codex-work/table-frame/checks/tests.log"
+    },
+    {
+      "name": "native-tests",
+      "args": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-harfbuzz-sys",
+        "--test",
+        "table_text",
+        "--test",
+        "table_frame",
+        "--test",
+        "text_clipping",
+        "--test",
+        "source_frame",
+        "--test",
+        "source_capacity",
+        "--test",
+        "source_text_page",
+        "--test",
+        "text_decorations",
+        "--test",
+        "source_resource_page",
+        "--",
+        "--test-threads=1"
+      ],
+      "exitCode": 0,
+      "seconds": 32.1,
+      "log": ".codex-work/table-frame/checks/native-tests.log"
+    },
+    {
+      "name": "clippy",
+      "args": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-presentation-source",
+        "-p",
+        "mo-pptx",
+        "-p",
+        "mo-presentation-compile",
+        "-p",
+        "mo-harfbuzz-sys",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "seconds": 0.98,
+      "log": ".codex-work/table-frame/checks/clippy.log"
+    },
+    {
+      "name": "fmt",
+      "args": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exitCode": 0,
+      "seconds": 1.0,
+      "log": ".codex-work/table-frame/checks-final/fmt.log"
+    },
+    {
+      "name": "kernel-unit",
+      "args": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-kernel-api",
+        "--lib"
+      ],
+      "exitCode": 0,
+      "seconds": 5.51,
+      "log": ".codex-work/table-frame/checks-final/kernel-unit.log"
+    },
+    {
+      "name": "clippy",
+      "args": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-presentation-source",
+        "-p",
+        "mo-pptx",
+        "-p",
+        "mo-presentation-compile",
+        "-p",
+        "mo-harfbuzz-sys",
+        "-p",
+        "mo-kernel-api",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "seconds": 17.58,
+      "log": ".codex-work/table-frame/checks-final/clippy.log"
+    },
+    {
+      "name": "workspace-check",
+      "args": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--all-targets"
+      ],
+      "exitCode": 0,
+      "seconds": 66.12,
+      "log": ".codex-work/table-frame/checks-final/workspace-check.log"
+    },
+    {
+      "name": "schema-check",
+      "args": [
+        "cargo",
+        "run",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-contract-codegen",
+        "--",
+        "check",
+        "contracts/generated"
+      ],
+      "exitCode": 0,
+      "seconds": 4.17,
+      "log": ".codex-work/table-frame/checks-final/schema-check.log"
+    },
+    {
+      "name": "types-check",
+      "args": [
+        "pnpm",
+        "check:types"
+      ],
+      "exitCode": 0,
+      "seconds": 2.45,
+      "log": ".codex-work/table-frame/checks-final/types-check.log"
+    },
+    {
+      "name": "native-build",
+      "args": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-cli",
+        "-p",
+        "mo-raster-worker"
+      ],
+      "exitCode": 0,
+      "seconds": 6.74,
+      "log": ".codex-work/table-frame/checks-final/native-build.log"
+    },
+    {
+      "name": "wasm-build",
+      "args": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--release",
+        "-p",
+        "mo-wasm",
+        "--target",
+        "wasm32-unknown-unknown"
+      ],
+      "exitCode": 0,
+      "seconds": 66.87,
+      "log": ".codex-work/table-frame/checks-final/wasm-build.log"
+    },
+    {
+      "name": "bindgen",
+      "args": [
+        ".codex-work/toolchain/bin/wasm-bindgen",
+        "target/wasm32-unknown-unknown/release/mo_wasm.wasm",
+        "--target",
+        "nodejs",
+        "--out-dir",
+        ".codex-work/table-frame/wasm-node"
+      ],
+      "exitCode": 0,
+      "seconds": 0.85,
+      "log": ".codex-work/table-frame/checks-final/bindgen.log"
+    },
+    {
+      "name": "text-component",
+      "args": [
+        "pnpm",
+        "build:text-component"
+      ],
+      "exitCode": 0,
+      "seconds": 0.36,
+      "log": ".codex-work/table-frame/checks-final/text-component.log"
+    },
+    {
+      "name": "raster-component",
+      "args": [
+        "pnpm",
+        "build:raster-component"
+      ],
+      "exitCode": 0,
+      "seconds": 0.32,
+      "log": ".codex-work/table-frame/checks-final/raster-component.log"
+    }
+  ],
+  "generationChecks": [
+    {
+      "name": "schema-write",
+      "args": [
+        "cargo",
+        "run",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-contract-codegen",
+        "--",
+        "write",
+        "contracts/generated"
+      ],
+      "exitCode": 0,
+      "seconds": 8.52,
+      "log": ".codex-work/table-frame/checks-resume/schema-write.log"
+    },
+    {
+      "name": "types-write",
+      "args": [
+        "pnpm",
+        "generate:types"
+      ],
+      "exitCode": 0,
+      "seconds": 1.66,
+      "log": ".codex-work/table-frame/checks-resume/types-write.log"
+    }
+  ],
+  "rustTests": {
+    "sourceFormatCompile": 424,
+    "nativeComponent": 30,
+    "kernelUnit": 5,
+    "new": 10,
+    "newTestNames": [
+      {
+        "file": "crates/mo-pptx/tests/table_body.rs",
+        "name": "explicit_cell_layout_keeps_native_declaration_and_body_only_attributes"
+      },
+      {
+        "file": "crates/mo-pptx/tests/table_body.rs",
+        "name": "native_cell_defaults_do_not_inherit_body_layout_attributes"
+      },
+      {
+        "file": "crates/mo-pptx/tests/table_body.rs",
+        "name": "cell_body_binding_rejects_stale_input_and_obeys_limits_and_cancellation"
+      },
+      {
+        "file": "crates/mo-harfbuzz-sys/tests/table_frame.rs",
+        "name": "merged_cell_uses_the_grid_extent_and_real_cell_margins"
+      },
+      {
+        "file": "crates/mo-harfbuzz-sys/tests/table_frame.rs",
+        "name": "cell_anchor_rtl_grid_and_overflow_remain_separate_from_paint_clipping"
+      },
+      {
+        "file": "crates/mo-harfbuzz-sys/tests/table_frame.rs",
+        "name": "cell_frame_diagnostics_keep_flat_paragraph_and_fail_before_component_work"
+      },
+      {
+        "file": "crates/mo-harfbuzz-sys/tests/text_clipping.rs",
+        "name": "native_axis_clipping_matches_independent_pixel_masks_and_preserves_ink"
+      },
+      {
+        "file": "crates/mo-harfbuzz-sys/tests/text_clipping.rs",
+        "name": "cell_style_horizontal_clip_keeps_the_page_boundary_parent"
+      },
+      {
+        "file": "crates/mo-harfbuzz-sys/tests/text_clipping.rs",
+        "name": "retained_clips_are_resampled_with_rotation_and_nonuniform_animation_scale"
+      },
+      {
+        "file": "crates/mo-kernel-api/src/pptx_page.rs",
+        "name": "nested_table_errors_keep_cancellation_limit_conflict_and_input_categories"
+      }
+    ],
+    "targetedZeroScaleRerun": {
+      "path": ".codex-work/table-frame/zero-scale-fixed.log",
+      "sha256": "d8e6025d5ce9b4a12e81e7aa5710ae0bef3e2618a6d44d1d31134368e7e21ef5",
+      "byteLength": 742
+    }
+  },
+  "nativeFrames": {
+    "files": 8,
+    "frames": 9,
+    "clippedFrames": 7,
+    "xsdValidations": 8,
+    "backend": "actual NativeShaper with explicit owned font",
+    "filesSha256": {
+      ".codex-work/table-frame/native-frames/merged.json": "907c442dad04521244a5e76a1ca1a78cf8762e1bb2b16fb8c2c1ee19c985b005",
+      ".codex-work/table-frame/native-frames/merged.pptx": "88d02e8d076bdfe4398cccbf2f313d0369bda409298a5e5f33fdd2436fd0d461",
+      ".codex-work/table-frame/native-frames/overflow.json": "596f80023fbea4ab1d2d17fa91846f781cdfc73bfbc1a426f4fc98d444f76f00",
+      ".codex-work/table-frame/native-frames/overflow.pptx": "99237bd37ee8750d1b6a423776a9cfd4efc3769c3aac1d019470c965a9e84c5b",
+      ".codex-work/table-frame/native-frames/rtl-false-anchor-0.json": "575fa27285b92246865f5d17fd2ffc354b73757a98813faa4c3adb22927cd50e",
+      ".codex-work/table-frame/native-frames/rtl-false-anchor-0.pptx": "06ea751a8b48d32de84419d046935dc9be2e10c9bed190ace47c079dfd8285f8",
+      ".codex-work/table-frame/native-frames/rtl-false-anchor-1.json": "19a82eef1e4c7c5961cfce3079c447ef9db9674cb9e43e927a4d78b091949c0f",
+      ".codex-work/table-frame/native-frames/rtl-false-anchor-1.pptx": "67f39ff3df04e91d0f2dbb957fd499db0c2c8f2d42551d46419b03a7ce636f6b",
+      ".codex-work/table-frame/native-frames/rtl-false-anchor-2.json": "a51c30ab6268015351e70b5c692393bc4db793f18b7678df3e9f739f0c1051a0",
+      ".codex-work/table-frame/native-frames/rtl-false-anchor-2.pptx": "ee01a9d2e022cbac828ec0effb0927604b83a2a166c73bd2d9800d6c731f43f2",
+      ".codex-work/table-frame/native-frames/rtl-true-anchor-0.json": "973200c3712aa06e4d778bb9929b4da0befa8c267500199255a8510e4d98c20e",
+      ".codex-work/table-frame/native-frames/rtl-true-anchor-0.pptx": "23774c476c8b62f4b96dc3ac585da20fda9c418a4827955da6770a409b5bfc73",
+      ".codex-work/table-frame/native-frames/rtl-true-anchor-1.json": "2df95bef1b16a118250fb6b6493ebb844940e254facda5af31c7c54130d06328",
+      ".codex-work/table-frame/native-frames/rtl-true-anchor-1.pptx": "65d77e75a6d9534ea11f308bc9cf20185844a4522649ec13f77cc9ca3dfeee40",
+      ".codex-work/table-frame/native-frames/rtl-true-anchor-2.json": "d546fa0b324431c19874322d5ce5683f5ee0e069d81c9af9da5f3068775a0fc2",
+      ".codex-work/table-frame/native-frames/rtl-true-anchor-2.pptx": "216928a95834eb15543e8f3a7e6e68803f7498fad0cc9616065bbe72be717062"
+    }
+  },
+  "runtimeClipping": {
+    "staticFiles": 32,
+    "staticPairs": 64,
+    "retainedFiles": 15,
+    "retainedPairs": 90,
+    "fullMetadataAndPixelsEqual": true,
+    "rustLibraryPixelControl": true,
+    "retainedShapingCallsPerFrame": 0,
+    "seekBackIncluded": true,
+    "zeroScaleAxes": [
+      "x",
+      "y",
+      "both"
+    ],
+    "report": {
+      "path": ".codex-work/table-frame/clip-parity-v2/report.json",
+      "sha256": "5ea0290cf37b668642c918e73d179a1c2071c29865b139aa1844e9d58fd8522f",
+      "byteLength": 233136
+    },
+    "validation": {
+      "path": ".codex-work/table-frame/clip-validation.json",
+      "sha256": "9bfc80b6dd45fd63b4d6d4cda9e71068795c3f9136cd395318a92ae86dcf8f56",
+      "byteLength": 7731
+    },
+    "xsdParts": 376,
+    "jsonSchemaValidations": 323,
+    "backendInputs": [
+      {
+        "path": "target/debug/mo-raster-worker",
+        "sha256": "c767758ac946a5c0e07323b6b9888d448f845355d1ba73c85ce0e330457e687a",
+        "byteLength": 43065040
+      },
+      {
+        "path": ".codex-work/table-frame/wasm-node/mo_wasm.js",
+        "sha256": "5b9e837584d6201157b26a31fd3656b5b44efbe2bddc9729d0a027fff4a82e02",
+        "byteLength": 67733
+      },
+      {
+        "path": ".codex-work/table-frame/wasm-node/mo_wasm_bg.wasm",
+        "sha256": "c6faefe80b731dbb4722a2d6c989e40a712d0c5d07edcdb86378b592d726c6e4",
+        "byteLength": 16343303
+      },
+      {
+        "path": ".codex-work/text-component/index.js",
+        "sha256": "12450a5ddca869b7f59aaf36df21fd41c3001fa856f65c2eaf257f582d5cd551",
+        "byteLength": 7193
+      },
+      {
+        "path": ".codex-work/raster-component/index.js",
+        "sha256": "91f1d088ea8f41c0867dd2b84290fec74f258edca5448b50becc3baeec55d54c",
+        "byteLength": 16887
+      },
+      {
+        "path": ".codex-work/harfbuzz/release/mo-hb.mjs",
+        "sha256": "20631aec90cf765e43e93dca03a6acb9cb024ca936ed8b1f190b09cb300f206d",
+        "byteLength": 9465
+      },
+      {
+        "path": ".codex-work/snapshot-scopes/wasm/mo-skia.mjs",
+        "sha256": "a2f6139aecc20512c52d84612d9264d74f90422d957a83c83e14e1be6cda544c",
+        "byteLength": 14230
+      },
+      {
+        "path": ".codex-work/harfbuzz/release/mo-hb.wasm",
+        "sha256": "a9ee660dba755e41959a190db1e05522211234c2ee38215cb55dea8907a4302f",
+        "byteLength": 841468
+      },
+      {
+        "path": ".codex-work/snapshot-scopes/wasm/mo-skia.wasm",
+        "sha256": "c8792a9c86a4e3231692c37d8f986d00be5a8bb807bbc9a0099662329495bba2",
+        "byteLength": 2388651
+      },
+      {
+        "path": "fixtures/fonts/owned-decorations.ttf",
+        "sha256": "4921e243e8cb4080d7cd35839b6c41df40392fb41e4c05dab24c17cef6790f82",
+        "byteLength": 2416
+      },
+      {
+        "path": "fixtures/fonts/decoration-manifest.json",
+        "sha256": "854029d307ccfb3da13c94efe6d37d67d96f43dd74dd8f80b03834c2d9cd588a",
+        "byteLength": 985
+      }
+    ]
+  },
+  "pixelOracle": {
+    "drawPathsAndTransformsUnchanged": true,
+    "inactiveGeometryCoverageNeighborhoodDevicePixels": 1,
+    "colorCompositionEnvelopeRounding": 1,
+    "clippedVsUnclippedByteEqualityClaim": false,
+    "officeAppearanceClaim": false,
+    "activeEdgesGuardLocalEmu": 16000,
+    "viewportEmuPerPixel": 4000
+  },
+  "attempts": [
+    {
+      "log": {
+        "path": ".codex-work/table-frame/check-initial.log",
+        "sha256": "c141b94fc8f79d545e44799f8353a59c721d9afe40065e43efb9514cb222eddb",
+        "byteLength": 1456
+      },
+      "reason": "Borrowed table comparison used an incorrect as_ref; changed to direct pointer identity."
+    },
+    {
+      "log": {
+        "path": ".codex-work/table-frame/check-second.log",
+        "sha256": "046671d5d603ac7d289b74fc4f7aa4aa097fee017c2acc18202b6eab0573dccd",
+        "byteLength": 6192
+      },
+      "reason": "Initial module/type references and error conversion were corrected before the first passing compiler check."
+    },
+    {
+      "log": {
+        "path": ".codex-work/table-frame/frame-tests.log",
+        "sha256": "bec3799fde71375a3bb27bf13674260069944310a58e95d9278400d57a4e5a92",
+        "byteLength": 1435
+      },
+      "reason": "New test had two imported PROFILE constants; qualified capacity::PROFILE."
+    },
+    {
+      "log": {
+        "path": ".codex-work/table-frame/native-tests-third.log",
+        "sha256": "a60a5c37a6a1a68a02ce441cd1f088cfe45b869bc57e09882a80f4c1f9d1031e",
+        "byteLength": 826
+      },
+      "reason": "New test addressed a clip list at the raster rather than scene level; fixed test path."
+    },
+    {
+      "log": {
+        "path": ".codex-work/table-frame/native-tests-fourth.log",
+        "sha256": "87226d898b9c64f184a54b514fee6ad3b06e035931bb7cab179d7dce4e803e0d",
+        "byteLength": 2087
+      },
+      "reason": "Pixel comparison revealed different clipped/unclipped AA quantization. Playback fixture generation used an integer for the string generation type."
+    },
+    {
+      "log": {
+        "path": ".codex-work/table-frame/clip-tests-fifth.log",
+        "sha256": "36e80914179e3cc91d2b241a4f8aac2da9e7f857844f196bbab7f65ce71c73db",
+        "byteLength": 1730
+      },
+      "reason": "Page boundary clip is absent for an exact page viewport; owned base font had zero underline metrics. Switched to the existing explicitly declared owned decoration font."
+    },
+    {
+      "log": {
+        "path": ".codex-work/table-frame/clip-tests-sixth.log",
+        "sha256": "398f88a936261e35cd29195c68c382396b4a99cd674bbe0132ce7c0afe53f96e",
+        "byteLength": 1149
+      },
+      "reason": "The one-LSB-only full pixel comparison was invalid for clipped scan edge coverage. Preserved equal path/transform checks and a documented device-edge coverage oracle."
+    },
+    {
+      "log": {
+        "path": ".codex-work/table-frame/clip-tests-seventh.log",
+        "sha256": "99498471579490ddff2378f21cdef03bec565a7578491089faee2daf79d5c879",
+        "byteLength": 1171
+      },
+      "reason": "Nonuniform group oracle incorrectly used generic affine scaling. Corrected to the previously application-calibrated DrawingML sector rules."
+    },
+    {
+      "log": {
+        "path": ".codex-work/table-frame/clip-diagnostic-v2.log",
+        "sha256": "0848fae471994849416d85b3dca66f9afe5eca5fa80a5150067c5eb7fab9f2c2",
+        "byteLength": 2109
+      },
+      "reason": "Oversized page viewport test violated the existing page contract. Replaced with a fractional final pixel at the required ceiling dimensions."
+    },
+    {
+      "log": {
+        "path": ".codex-work/table-frame/clip-tests-eighth.log",
+        "sha256": "188637731dbbe0c367bb02144ba357e3760f151829038c82e895878c3f1a7f6d",
+        "byteLength": 1302
+      },
+      "reason": "Overlapping antialiased decorations demonstrated one-LSB color composition rounding outside the exact coverage envelope; the documented edge oracle now accounts for that rounding."
+    },
+    {
+      "log": {
+        "path": ".codex-work/table-frame/checks/workspace-check.log",
+        "sha256": "9c11873b49299e4f51d037e180487f510a37bd46336a780186e42848534e4673",
+        "byteLength": 2271
+      },
+      "reason": "New typed table geometry error required exhaustive kernel error mapping; preserved nested cancellation, budget, conflict, range and input error categories with an additional unit test."
+    },
+    {
+      "log": {
+        "path": ".codex-work/table-frame/zero-scale-initial.log",
+        "sha256": "57bf859eef6689d18129c396bf8cea8fd168bba93e09bd8fdde1a4faf2d7e80e",
+        "byteLength": 1153
+      },
+      "reason": "New actual zero-scale playback failed inverse clip construction. Exact zero-area transforms now use their finite collapsed native mask. Targeted tests verify empty pixels and unchanged timing/capacity."
+    },
+    {
+      "log": {
+        "path": ".codex-work/table-frame/checks-final/clip-parity.log",
+        "sha256": "be3008df0b9f85a10c36325cd1f71851a2524efea2b5af9989a952605921164b",
+        "byteLength": 954
+      },
+      "reason": "Generated Node bindgen output needed a local CommonJS package marker. Added only to the ignored build directory, then executed the full parity script successfully."
+    }
+  ],
+  "verificationCommands": [
+    {
+      "args": [
+        "node",
+        "tools/verification/native-table-parity.mjs",
+        ".codex-work/table-frame/wasm-node/mo_wasm.js",
+        "target/debug/mo-cli",
+        "fixtures/presentations/native-tables/request.json",
+        ".codex-work/table-frame/author-parity"
+      ],
+      "exitCode": 0,
+      "seconds": 1.92,
+      "log": ".codex-work/table-frame/table-regression-0.log"
+    },
+    {
+      "args": [
+        "python3",
+        "tools/verification/native-table-readback.py",
+        "--parity-dir",
+        ".codex-work/table-frame/author-parity",
+        "--schema-dir",
+        ".codex-work/ecma376/xsd",
+        "--output",
+        ".codex-work/table-frame/author-parity/readback.json"
+      ],
+      "exitCode": 0,
+      "seconds": 0.34,
+      "log": ".codex-work/table-frame/table-regression-1.log"
+    },
+    {
+      "args": [
+        "node",
+        "tools/verification/native-table-source-parity.mjs",
+        ".codex-work/table-frame/wasm-node/mo_wasm.js",
+        "target/debug/mo-cli",
+        ".codex-work/table-frame/author-parity",
+        ".codex-work/table-frame/source-regression"
+      ],
+      "exitCode": 0,
+      "seconds": 1.03,
+      "log": ".codex-work/table-frame/table-regression-2.log"
+    },
+    {
+      "args": [
+        "python3",
+        "tools/verification/native-table-source-readback.py",
+        "--corpus-dir",
+        ".codex-work/table-frame/author-parity",
+        "--parity-dir",
+        ".codex-work/table-frame/source-regression",
+        "--schema-dir",
+        ".codex-work/ecma376/xsd",
+        "--contracts-dir",
+        "contracts/generated",
+        "--output",
+        ".codex-work/table-frame/source-regression/readback.json"
+      ],
+      "exitCode": 0,
+      "seconds": 0.99,
+      "log": ".codex-work/table-frame/table-regression-3.log"
+    },
+    {
+      "args": [
+        "node",
+        "tools/verification/native-table-source-parity.mjs",
+        ".codex-work/table-frame/wasm-node/mo_wasm.js",
+        "target/debug/mo-cli",
+        ".codex-work/table-styles/corpus",
+        ".codex-work/table-frame/style-parity"
+      ],
+      "exitCode": 0,
+      "seconds": 0.62,
+      "log": ".codex-work/table-frame/table-regression-4.log"
+    },
+    {
+      "args": [
+        "python3",
+        "tools/verification/native-table-source-readback.py",
+        "--corpus-dir",
+        ".codex-work/table-styles/corpus",
+        "--parity-dir",
+        ".codex-work/table-frame/style-parity",
+        "--schema-dir",
+        ".codex-work/ecma376/xsd",
+        "--contracts-dir",
+        "contracts/generated",
+        "--output",
+        ".codex-work/table-frame/style-parity/readback.json"
+      ],
+      "exitCode": 0,
+      "seconds": 0.65,
+      "log": ".codex-work/table-frame/table-regression-5.log"
+    },
+    {
+      "args": [
+        "python3",
+        "tools/verification/native-table-style-readback.py",
+        "--parity-dir",
+        ".codex-work/table-frame/style-parity",
+        "--output",
+        ".codex-work/table-frame/style-parity/style-readback.json"
+      ],
+      "exitCode": 0,
+      "seconds": 0.05,
+      "log": ".codex-work/table-frame/table-regression-6.log"
+    }
+  ],
+  "environment": {
+    "system": "Darwin",
+    "systemRelease": "25.2.0",
+    "machine": "arm64",
+    "python": "3.13.0",
+    "rustc": "rustc 1.92.0 (ded5c06cf 2025-12-08)",
+    "node": "v23.5.0",
+    "nativeSkiaBuildDirectory": ".codex-work/snapshot-scopes/native",
+    "nativeTextBuildDirectory": ".codex-work/harfbuzz/release",
+    "timings": "Build/test elapsed diagnostics, not document performance measurements"
+  },
+  "sourceSha256": {
+    "Cargo.lock": "ff21d71517433255b3c08731c9bf7df704d0dab42fe5c60f2b8199e0d11dd06f",
+    "Cargo.toml": "2c0301c3dd3361cf0bd8a9b4b4b11d3a8568f361472d1d1d51ea33a6ef9cbf84",
+    "components/harfbuzz/lock.json": "09f7d48e187b4e03265cd8d9e9a89fdcc8dcfc373555ea66992d125d750fa363",
+    "components/skia/lock.json": "ecbed91435d044cf353f5a30a549530717971c946ba3827b96e6e5dcd7148efc",
+    "components/skia/mo_skia.cpp": "05c602bb40bd8b24b9fe1c7e4619540c3c18929ea9965202c3770aca13ef8450",
+    "components/skia/scan-continuation.patch": "8c4c7f68d557919106ab21b20b68ab260fdfaf16b5e1c08d357985f16357091a",
+    "contracts/generated/computation-invocation.schema.json": "697b78aa35072b28a695327c7a93b8be3d407b4c8e73da9afe262aa441c3d7f5",
+    "contracts/generated/computation-receipt.schema.json": "70478d7118ca20f8ee6fbe38e7eb9df02419c147eb76bfa7a25e4ba43483f92b",
+    "contracts/generated/computation-request.schema.json": "5ecc671589fc9bb985462287338da84866ab51356515a167d83074861fd538cd",
+    "contracts/generated/document.schema.json": "d241d51917d76b59dd4b413650d5cc72d0b4a544ca7661bc0520a5982573fb93",
+    "contracts/generated/host-request.schema.json": "39328c9f0cf01d3438b3ba33db5b6a048b87691ac1a660815ae81b1dd531690b",
+    "contracts/generated/host-response.schema.json": "ce8411f8fcac8bcc3d76e00b238f4b4ce97a352abb759605a50b87697063790c",
+    "contracts/generated/kernel-request.schema.json": "f4cf2ddec7d59d8f5d40e9127cc5997ca49b1d44fe3d6dc4c86c85b4515f5019",
+    "contracts/generated/kernel-response.schema.json": "941e6a2b0ab5b978656bae8dfc115eda55016ea15df1665676b10c77f7dca662",
+    "contracts/generated/operation-request.schema.json": "a00c5f9b45353daff08d3ebcec76870ea9a7dffbf144f2019b59c12e867da7e5",
+    "contracts/generated/page-compile-response.schema.json": "f8a474e39b84e763bd262f2c0b1aaa65546c3f5faee8a5928f58dee9830f7457",
+    "contracts/generated/page-placement-request.schema.json": "76ac4ed413f2fccaaf5ed66cfb6a1dae923c323a4400143ee9c705e2b2fb1d92",
+    "contracts/generated/page-raster-response.schema.json": "6ca520e4fe99fc2807537fded8de7e689e0fba27b92ea68356359236f5625b9d",
+    "contracts/generated/page-render-request.schema.json": "3bd66abd29f0b7f8ebf4f6f63b41cad528e022f515fc3b205eec4ca3eb264109",
+    "contracts/generated/playback-compile-response.schema.json": "09b1a29409c59ecd249a5568a40e63968e6c709296e462776247d996da120d83",
+    "contracts/generated/playback-page-request.schema.json": "610bec6a87b16762920b58925afdf54424b29a23e900392b9f7db9d7f4d40e4f",
+    "contracts/generated/playback-raster-response.schema.json": "e46eb2e5a0ebd69ecade0e760e7b8bfb788f87568d8ac19264bb2d3cfe8bd9dc",
+    "contracts/generated/playback-session-request.schema.json": "e9014bb92f52065541c7232d468b1d2a2f04ae80b1d46730e5274deccb2f3976",
+    "contracts/generated/playback-session-response.schema.json": "415638e1cbd935663f775fe39f40a6c4b7ecdcacc5f194e6065d234aca6e594e",
+    "contracts/generated/pptx-export-request.schema.json": "d5ca7293e40e8b33deee04341918beed35ac1ab448660a7be97a932cf317629d",
+    "contracts/generated/pptx-import-response.schema.json": "d06b6cd8937dc0291de4d3bb5ab871d885f246955501a21e21b9888a5c8e4629",
+    "contracts/generated/pptx-playback-raster-response.schema.json": "556c6fde51da5b85198b3ed46cf89fb4dba59ecac93d73522d4c8a0e4192da6e",
+    "contracts/generated/pptx-playback-session-response.schema.json": "bf7a5f5fd2ee5a6eca212c8184cb4aa8aa0f39bbc95f30b769c23cb62126e33a",
+    "contracts/generated/pptx-resource-page-raster-response.schema.json": "8009bf37bf0fd5c17987cc654dca144d3b96ea4a7683793a886c35c8b6f11825",
+    "contracts/generated/pptx-source-response.schema.json": "945b80cb25ca365534faa3f40263adbbcd38fd3acb0305e15ea4a666d2e9a86b",
+    "contracts/generated/pptx-text-body-response.schema.json": "d263e5fcfdcbe327373c53c6abc2892ac2efa942342d90a2ecc0c7dac6150ba1",
+    "contracts/generated/pptx-text-page-raster-response.schema.json": "d275a40472283fc827a7a872eaac3a30ba545db20208b0517d283ce37f2814ac",
+    "contracts/generated/template-request.schema.json": "fa45ea23cc790cf165a9e81ce8e6fb26614b3f1a87061dcef13ef5a6fa73f7c2",
+    "contracts/generated/template-response.schema.json": "17c3659a13b97820ac1f76da72621e38136fec58d027488d4d4e9a2f0c009925",
+    "contracts/generated/timeline-evaluate-request.schema.json": "d9b873bf0cbd937e522c92ba72444560212ffac546a490f593ef3078d6208543",
+    "contracts/generated/transaction.schema.json": "fd4e81df73c4246b4277363e7960f19c3897d529a206d5c7d3b6e37ce3abf402",
+    "crates/mo-harfbuzz-sys/tests/source_frame.rs": "08da02807f93f5c829d15bccdcaf290309d820d0b0d15e732f9e0e500978bed7",
+    "crates/mo-harfbuzz-sys/tests/table_frame.rs": "9ad6e94c6705c67b4d6c34df05a734d92b7cbb8f8881ec886a6bfa2c7901fa8a",
+    "crates/mo-harfbuzz-sys/tests/table_text.rs": "85fb62efc587b785855cd3a3e4e417e08d66538999d4e94c616d6888c9eff74a",
+    "crates/mo-harfbuzz-sys/tests/text_clipping.rs": "a6dc5e1c16e4b8bf061a7d68e5512014a1a290135f10ffaacc8a909fd7a3c678",
+    "crates/mo-kernel-api/src/pptx_page.rs": "daf5228b13a2ea3441d60e52434dfc1eeafb4b000e097f2f9150dcecebb1e795",
+    "crates/mo-pptx/src/drawing.rs": "3b4243ecf6c257ddeb7075429b72f2a82c9565f12fca844587bec6fe9c00d301",
+    "crates/mo-pptx/src/native.rs": "710a5369e29012388f329c8006d9b0579c32312d2c2b8dd9e4a8b99b706320e7",
+    "crates/mo-pptx/src/native/geometry.rs": "dbad529f773c67c8119d54c0a71cd4be5f4ba92bfff2cad472596cb31eac2f3a",
+    "crates/mo-pptx/src/native/paint.rs": "98fa5c7918df348d32ac9ea5e3d90b695247f6dd4a4327ac077ba0ea44068160",
+    "crates/mo-pptx/src/native/table.rs": "4415a3f0ac59fe60510cab58a1b2b0ca56556089a961841c45d2c5e81f1cfd7b",
+    "crates/mo-pptx/src/native/text.rs": "3a0f0c5c2e31b174fb7d316431a54598ec2ad03433f0e36cf97e0505de5a8d2c",
+    "crates/mo-pptx/tests/author_plan.rs": "903eea8855f656b663092a4da56c3263c5e15c2277371767da34b2e7c8fdf727",
+    "crates/mo-pptx/tests/native_tables.rs": "ffaed7ac5aa05a4db0acddca07d69c72dcd1829a12b787339fb6d4a67af32a50",
+    "crates/mo-pptx/tests/source_document.rs": "f8a8669cec62091859f2557c6092c096da93e243c255ad6029ba65223983062b",
+    "crates/mo-pptx/tests/source_tables.rs": "40c0d6864c6ad3c104ca205e00b7789c59f0896b35a900ea9fbc3e7b12f7a269",
+    "crates/mo-pptx/tests/table_body.rs": "8956eb634a9c9250714b5ad8a44bce5eab06eb3ab3a6ee8f6beea6203c83c0fe",
+    "crates/mo-pptx/tests/table_style_selection.rs": "abb260d6b88357d2b89845a6593a01b1a5e39d1023f2b9f79f7542ab016d3fdf",
+    "crates/mo-pptx/tests/table_styles.rs": "1cd4d0167a487ad25ae1f6d921910110f29a21ae39000aeaa46f238c4786e595",
+    "crates/mo-pptx/tests/table_styles/support.rs": "d027f8bd900ff3a8a5cf99ae2d9daf6d67cb6d7048ea04c9c31db17217d94220",
+    "crates/mo-pptx/tests/table_text.rs": "112f6216daa5bcd4f46e18431e4b1831606caac219cba9690c270d6d39b06bda",
+    "crates/mo-presentation-compile/Cargo.toml": "679e627da265680fc567cc1858e9e5941f50959da95b1e6d9103ec7263f383aa",
+    "crates/mo-presentation-compile/src/lib.rs": "efcaf09862edbe7fd784078626feba9efdeb4141051568928643f318a4cf576f",
+    "crates/mo-presentation-compile/src/page.rs": "024821584571402bf21da7d80cc16457cdc01cf86a2877044c6429fafa9896f3",
+    "crates/mo-presentation-compile/src/page_boundary.rs": "4a6a491332aff9df08cbd8cf6c0bd566d046cc50ef34a22b9249f94976a5b886",
+    "crates/mo-presentation-compile/src/page_types.rs": "bb488f058a4ba72ce83c20427a933e68fae909f0ed4eb45bbc55495428af3de5",
+    "crates/mo-presentation-compile/src/path_scene.rs": "0194443f3bec4acdef6b4964f58fb9feb7c047eab57c65cc9b5831a3472a6396",
+    "crates/mo-presentation-compile/src/source_frame.rs": "61b7d30ca5725acb0f98cf0d171148d168a07ed098d5d63fc2d908203f646a37",
+    "crates/mo-presentation-compile/src/source_frame/capacity.rs": "355850b8635f838afda4916acf3260fca1f5213b1d425248a0a9be00e597d127",
+    "crates/mo-presentation-compile/src/source_frame/clip.rs": "536d07e5d7be112e4ad9a2573b2cfae58286d91c87212817957ec6931579e56b",
+    "crates/mo-presentation-compile/src/source_frame/number.rs": "17aa1eb7fcbc2ce205224eb27e7821eaa9ed5a8629c1a68ef0523743be12def9",
+    "crates/mo-presentation-compile/src/source_frame/properties.rs": "6928cc5efc28d5c486dcde678b54a29d78641e3d61a93d6efd065058f7e0a2c1",
+    "crates/mo-presentation-compile/src/source_frame/types.rs": "057d55a45c482ddd0e0affe0f8fda4cfd8da0a7ed4c537729a651f81cf5f27c1",
+    "crates/mo-presentation-compile/src/source_number.rs": "be9d1761c0f9133744019a73adb07c05f80f5830bbc34d3b3f5c2557a82668d5",
+    "crates/mo-presentation-compile/src/source_resource_page/retained.rs": "383bd47e7553b66fe874a129a65a6c053266c1f2726236153cb94e806915efc4",
+    "crates/mo-presentation-compile/src/source_table.rs": "876f5fb5b120612e3023cf84758f6df9983ac2cc65fb3d988157d8231492c5f6",
+    "crates/mo-presentation-compile/src/source_table/frame.rs": "3ff37a5b4893a81c9b5e874cabb41e04bdf6457d911abe0df50194c14bf38a62",
+    "crates/mo-presentation-compile/src/source_table/geometry.rs": "3bc208a8b21f933f6229632cb8e88a848a68e2201a29f60772c4cf4ca99bc266",
+    "crates/mo-presentation-compile/src/source_text.rs": "57574ecbe3db73ea4329116eb4ebe7f07ab1d8bc6ea4c554727b40cb723ab077",
+    "crates/mo-presentation-compile/src/source_text/assemble.rs": "a4215dbf158943fa8c889274fb28869a47acb42f715530cdcba3f6f18fdc78f6",
+    "crates/mo-presentation-compile/src/source_text/budget.rs": "9d4900d7f74356e4bf49a8155ac01f91074cd7ab242da5b4724a36aec2cdf137",
+    "crates/mo-presentation-compile/src/source_text/table.rs": "ca26bc5521a433cd0579d68859abe279eb457b8f13dbb825936312c2f870a1c1",
+    "crates/mo-presentation-compile/src/source_text_page.rs": "1dac097ed83062b9b70cc1d0f88227a0cb7582418da4e64267fdde7d5a900244",
+    "crates/mo-presentation-compile/src/source_text_page/clip.rs": "c3cdb60c1b09f6bfa2f0e9cca2682cf5c6e3d9991d49905889e1d56808cefb76",
+    "crates/mo-presentation-compile/src/source_text_page/placement.rs": "e5dbfc5ffb9e68eb74e48b982f7bffb7dedeed90c6cdeb6286acd5cb9b1fd4fe",
+    "crates/mo-presentation-compile/src/source_text_page/retained.rs": "71aaea002e50f98672e1ca855c94bb70fd3511564c98587198e2c2f3da81d5b1",
+    "crates/mo-presentation-compile/tests/source_table_geometry.rs": "26fc55e4b578303de7c42313180c34198f93b597e3ef1bc8ea2fb2325605e833",
+    "crates/mo-presentation-edit/src/apply.rs": "137f37c203858031d987bdc5f56da9929710d3b1a9590d3dda8b778c3d2a77e9",
+    "crates/mo-presentation-edit/src/lib.rs": "8de4ecf919698782f84f71ac48e5ed23907921211935084707a6ee76ca76fd0d",
+    "crates/mo-presentation-edit/src/operations.rs": "ca640084727e4f1c7479e925b3a6d159319e5254bbc44b8371462c9404d96db2",
+    "crates/mo-presentation-edit/src/table.rs": "524445b86561af9f2ec0467545cb37c39730aabc3f1bdd8b947ea106aa6afe5c",
+    "crates/mo-presentation-edit/src/table/structure.rs": "b46d220f063d913e1f7d68fe9a6eeec128d52f97dbb4f8cf2fcafe482df5e20d",
+    "crates/mo-presentation-edit/tests/tables.rs": "fcc8cef49244b3b63b172bd99fa1dfb27feb8c2a830d348179c479fff09c5aee",
+    "crates/mo-presentation-model/Cargo.toml": "aa9ace2d672f2d436b562cf88b018631488ba94c464a7f61da4bef2a9231cfbf",
+    "crates/mo-presentation-model/src/dependencies.rs": "8fd633d61f1950a6479e6b4ba39df4b11e39f817a3be354226e74aef460adb0a",
+    "crates/mo-presentation-model/src/document.rs": "d2ce8b467882a0586ff098c4dfebdb13fc05788966db70b51f8fbc61fb426810",
+    "crates/mo-presentation-model/src/lib.rs": "a93f44646f161cb7d84a1b39b47ad5f675adf11c9e80fc95c678ddddbc6a896d",
+    "crates/mo-presentation-model/src/source.rs": "7cbb128f567625f9f81e323d7e0fd67ac746f9b3894f6381949462c2d619a134",
+    "crates/mo-presentation-model/src/table.rs": "d16741aeee53b8aa7e97cd14e10ddbffba49854ffc15f9ee1509061d36150289",
+    "crates/mo-presentation-model/src/table/grid.rs": "cf2a05afe417e700beef8a6be5207b7d18bb23840453b614d65917d7ce44c783",
+    "crates/mo-presentation-model/src/validation.rs": "2cfda2e5c61a00f04267ca578e267723837a90fccf5b7db5f28aaea87db68583",
+    "crates/mo-presentation-model/tests/tables.rs": "b77fa480ec6d884c7eaf709f226d32f8dcc034932e91c30d66b72a39ac826afb",
+    "crates/mo-presentation-source/Cargo.toml": "390e7597f566069506a56bbaf0d2d8e1543441712edc81d5b8b2768f1d665c6c",
+    "crates/mo-presentation-source/src/author.rs": "f8a992ef5ccbda774e30f1a33af573c604d3b272788d0bfe19ae99d18d18e727",
+    "crates/mo-presentation-source/src/author/paint.rs": "61dcba3a6b38b5fa35f454d7a328db1a8b8cf907712bc4d540421ea53145fcb9",
+    "crates/mo-presentation-source/src/author/surface.rs": "52b4b84ac80ff64912153b0878f340b59ed7929153804b7e374c534c6e20c146",
+    "crates/mo-presentation-source/src/author/table.rs": "8f1ca5b1c588808d9ff05b8da01ca43f22b297da0f452bf118310c6d17e61b58",
+    "crates/mo-presentation-source/src/author/text.rs": "fcadb7c905c9d41bff91a707774bc5bb12670b1ed68a088519b7576b972134b7",
+    "crates/mo-presentation-source/src/source.rs": "a98130d1ebf7e1833649ef8c3c8677072de4e7c5768a174130631ab1be510ec1",
+    "crates/mo-presentation-source/src/source/document.rs": "23dda38fdf07fe618bdf3dacd2266ac0a92b3c4347cad814be2dc951aeb10111",
+    "crates/mo-presentation-source/src/source/document/import.rs": "3c8ed37da7ee8d55b6a5b0a54466a2d1ec7005a4feb0a0c958b538bb39434b73",
+    "crates/mo-presentation-source/src/source/line/read.rs": "40c72474b25905b23fdd45d3494ed029f4c24d4c9f94b37ee93c8391d5220813",
+    "crates/mo-presentation-source/src/source/presentation.rs": "eda38b6d443e772e473f1277723ebef48b214c9362f50a8441d4772e67456ced",
+    "crates/mo-presentation-source/src/source/surface.rs": "9ea93c7f5196a1a941cc6bfb63fd5c37b92f5258831a13475c086738ad1068e1",
+    "crates/mo-presentation-source/src/source/table.rs": "a87fcf0c4eb4e405622641e59ddd84c0c4eaa832063882f6d750686a728d775a",
+    "crates/mo-presentation-source/src/source/table/grid.rs": "3a28b696b64976379fe5de99adee14c11e1401d3a576c57716908a7e5661e446",
+    "crates/mo-presentation-source/src/source/table/grid/tests.rs": "b930015c6fb46aec41676c09cd129a244c2ac6bff04569e6d7e1d271515a020c",
+    "crates/mo-presentation-source/src/source/table/read.rs": "1ac5467d2af1b9220888978a8ba57c04033a4e9b3a34d7d8177922a9df0c4f83",
+    "crates/mo-presentation-source/src/source/table/styles.rs": "83313ade2ba1781fbe91a5f29a1a210a852cf6b43e3899f440ed81c5b09aabb1",
+    "crates/mo-presentation-source/src/source/table/styles/part.rs": "c7ba8042aa7d21c67c4aaa5102584737491a746aadb0a9b123ee17ce432d71b4",
+    "crates/mo-presentation-source/src/source/table/styles/read.rs": "270edea4b49b3ab34ea4ac451107892e8f8f1cc62f22e7a1a3a3b0625da8fd2a",
+    "crates/mo-presentation-source/src/source/table/styles/select.rs": "b9546219170789ee91c0052d5c282cc80fa27bd1d262758c4fdad2851f3e14e5",
+    "crates/mo-presentation-source/src/source/text.rs": "ac50e719136856b941bf5d459f3bed938adefaeab80ac9f812a2df9812924ae0",
+    "crates/mo-presentation-source/src/source/text/attributes.rs": "4401ce77ab6866083deec2970ae1d13c341aaf4938d2efe4c80690564cf7ae63",
+    "crates/mo-presentation-source/src/source/text/binding.rs": "47088ec2b26cdea8146b9791495b1c62a2acc7470aa007842ec1d4603b644ec8",
+    "crates/mo-presentation-source/src/source/text/body.rs": "5b0b93457fb67dfb0e014fe479a3d5a16b465810901bf516aeb9135769bd327b",
+    "crates/mo-presentation-source/src/source/text/body/cell.rs": "1238eb97d3a63e490e09d5f736efc55d83337314b559c6db8bdb89329a8bebad",
+    "crates/mo-presentation-source/src/source/text/body/types.rs": "6addacc84ca93a96ee8f8a6d4767cebfd7e7e053fba0d15c431167c5603f4a1e",
+    "crates/mo-presentation-source/src/source/text/cascade.rs": "60534768afda4826171cf3f65676e1a6e23db564f99b2bdf05d192bdd0f349d6",
+    "crates/mo-presentation-source/src/source/text/cascade/chain.rs": "9e82e52d9e297813d9a943f9688ff4823fbeec9e6a127a4950884ca7f6d50eaa",
+    "crates/mo-presentation-source/src/source/text/cascade/table_text.rs": "9f7cdf94216cdc46201bc1e6e336fd6b13a732526cda2adf9e141c1f76292dc4",
+    "crates/mo-presentation-source/src/source/text/cascade/types.rs": "789c9cd8b24a533ccac0a9de6efd8be98724d95d69861d2106d29e2fb1cf061a",
+    "crates/mo-presentation-source/src/source/text/catalog.rs": "2cd77a19d280010cf588bca7e65f1dfc9624aae3acd2c18dde17fbfe4b8281f6",
+    "crates/mo-presentation-source/src/source/text/content.rs": "663944410ef734a95fc4a204571b535db2cab748a4ba2bf3e355dc585007fd23",
+    "crates/mo-presentation-source/src/source/text/fonts.rs": "466987bdf939b0e793656464093d94bb05627fd726e2b2a8b7ff9ae61d7cb394",
+    "crates/mo-presentation-source/src/source/text/fonts/selection.rs": "992f5dce6edbccc3fcde487474a2015252150e72665f14a4b8fff8509c6e0f4f",
+    "crates/mo-presentation-source/src/source/text/grammar.rs": "e995f4f549f73018e959e0534d32e34de27e88387cf24fb918103a9ddd7eb2ec",
+    "crates/mo-presentation-source/src/source/text/names.rs": "b2d11c859ef942644a4130a08e7e10be491bf510b818b19962305b4ee69f6b43",
+    "crates/mo-presentation-source/src/source/text/paint.rs": "d4412b0c6cb10981bec5e31c43b6b034e84f9f3f9ddf208036e5b6cc6e9b12f7",
+    "crates/mo-presentation-source/src/source/text/read.rs": "48644e1755bc3a2d0ce9fc459a54d8bf248f7272e73fd174a0a749facc4355fe",
+    "crates/mo-presentation-source/src/source/visual.rs": "130baaf5db77cca4ee9f6f66ce2b024731cd57a31f020ded351ab3303f1d6a78",
+    "docs/implementation/group-placement-compatibility.md": "f6886804da8f69497b70a4a1497440395fea70530fbfcc4095c2d5f6d03061c1",
+    "docs/implementation/product-worktree.md": "33195978ea20f6af8d90e9422b5e97d70218e462d704fa5ce2950d97a1ca6f65",
+    "docs/implementation/progress.md": "785aa2b7270f7b4fac4284718c5956a77fee4421f638b258bea5c2c5f67a90dd",
+    "docs/implementation/table-frame.md": "52f941927f9e337113c32af0dc517b945a4bd2bddd7ae0fc8a39b141b773c2d7",
+    "docs/implementation/table-geometry.md": "bb00aaff7a1f57c2a2ff67ca1429bc1781f1c8834e223ea62ed4d3ffdee71bec",
+    "docs/implementation/table-source.md": "4bdaf8e1d2c8564d6a5d45ad5ed276a5f931a61cef433d6e580df4ddbc53c2e0",
+    "docs/implementation/table-styles.md": "85c580cd23204c8fd6ac638e52e1a7ef699ce452aa3ad89e944c8c1f6dc05db7",
+    "docs/implementation/table-text.md": "47c847e4946f673985dd8438ff3d5f396daf838783a40ab3d6f65601a2e910d2",
+    "fixtures/fonts/decoration-manifest.json": "854029d307ccfb3da13c94efe6d37d67d96f43dd74dd8f80b03834c2d9cd588a",
+    "fixtures/fonts/manifest-paragraph.json": "76f5784660f6991789d53bbe915f97ae9c866f8f4fc4fa6df6c84255534b58a8",
+    "fixtures/fonts/owned-decorations.ttf": "4921e243e8cb4080d7cd35839b6c41df40392fb41e4c05dab24c17cef6790f82",
+    "fixtures/fonts/owned.ttf": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+    "fixtures/presentations/native-tables/request.json": "654d44fdd40313970955d884d65c6e3fa32676a37815cd73a8d4be4e489ddab7",
+    "packages/contracts/src/generated/computation-invocation.ts": "b35171bc00cf84758f3336f19dea38ec6464c43c9f45ab1ccde2dcdc59ec3cb6",
+    "packages/contracts/src/generated/computation-invocation/part-001.ts": "b061530c7f5c26342008aeb70a7821b33730bf01feb81b8071e36972ca7c4fc9",
+    "packages/contracts/src/generated/computation-invocation/part-002.ts": "5dec7a2dd6007ff496fbf2d282071dbc2460d9eb88d4b8793797e6cd69885ee4",
+    "packages/contracts/src/generated/computation-invocation/part-003.ts": "b05fd393fb23605887f556df7e90c06cffc8fe2c4c242454da43d6c6e50dffa0",
+    "packages/contracts/src/generated/computation-receipt.ts": "cdc99b9f8635a0e254f2b2617ead6ec1ba124216a2837c836b4e287fe2b6e380",
+    "packages/contracts/src/generated/computation-request.ts": "fbb882b195b10aeac8d14195c107566eca955946a38c980e244a63c5dde47624",
+    "packages/contracts/src/generated/computation-request/part-001.ts": "16363fe8018166c6d2284ad872057613aada1cae301bb05f9e1f549cb0e834c0",
+    "packages/contracts/src/generated/computation-request/part-002.ts": "3e5aeb481bfffa37c152749eb6a5eae311cfde020f075c627b7a19befa6879ba",
+    "packages/contracts/src/generated/computation-request/part-003.ts": "1b21413338edfa4afeabcbccb2cce82cb939ffb0cf128c0855e4904c34eeb14c",
+    "packages/contracts/src/generated/document.ts": "a4e2640caf48e048ede2beace622cc32db630242e8c5e0650e3056ee41350986",
+    "packages/contracts/src/generated/host-request.ts": "6ccc2229e9ee034c882ae6fa73c5a3c8738be6375d3a5aa1b67a0c5da66fbfed",
+    "packages/contracts/src/generated/host-response.ts": "73453368190bdb80160caa8a9bcb6893cf2d6f6d836734a6d1c64afdc0b78863",
+    "packages/contracts/src/generated/kernel-request.ts": "e6cf1eb9069bd459ceadf912d1ac97cde0abfbaa31e963f39ab47cb9060e33d2",
+    "packages/contracts/src/generated/kernel-response.ts": "d607140011b533f78bf22836205056f48c0c29fc90f515eb7c2cbe021fd6f7a6",
+    "packages/contracts/src/generated/operation-request.ts": "4453ca9d62decfa822d0c49f3d9af8743878996cd04515d5f10632c986ee2028",
+    "packages/contracts/src/generated/operation-request/part-001.ts": "84f334d2c1dfdf6640121b02158657b74f8c88870dfe59ee80fceb7f0512c8f7",
+    "packages/contracts/src/generated/operation-request/part-002.ts": "d5630049759e9445ad3aeeede5d8db59a27738872ef286e9d30ae958244d1215",
+    "packages/contracts/src/generated/page-compile-response.ts": "116c28738f435bc095a56722329923fd202f05cdbe23c0077d3689109a3a1fa5",
+    "packages/contracts/src/generated/page-placement-request.ts": "432be12511cee2be9828d7b4d05890d03c5a810c74c171cd2e5dd15225c82d11",
+    "packages/contracts/src/generated/page-raster-response.ts": "a8dc05147d603879dfa7c4b686338e4f511d900e14be13b2e3731bc8f6450005",
+    "packages/contracts/src/generated/page-render-request.ts": "de49a5ae130c6162d5efc7ca794f5d4ab172b6a1bf8897f159e5caf414082221",
+    "packages/contracts/src/generated/playback-compile-response.ts": "30a05e5501b60a14a1904000c11652b1f7a0a2572dcea5f94d839b0ebb2fc1e9",
+    "packages/contracts/src/generated/playback-page-request.ts": "c44ef520572b2c33e1d7df6fe775c59b8c5fc587d16b749a374b2e5a5d192e38",
+    "packages/contracts/src/generated/playback-raster-response.ts": "ffb0b249be34de72f3cbfc7b2ea0687fb14410dfdb6b7a5d0ead01736e4bf8d5",
+    "packages/contracts/src/generated/playback-session-request.ts": "e669723cc4ba6451bda693f84f1e008a98b5f9c8fbf2ee8159ca6145c4291bfe",
+    "packages/contracts/src/generated/playback-session-response.ts": "b26a74d2410fd443fd5b9a63b23bf6a49a79a5308aad7270f91c6463f02c9dbe",
+    "packages/contracts/src/generated/pptx-export-request.ts": "5095e1924c03d466ad664891ef963cb16a6e5be8f33c8a062bc2705596a46008",
+    "packages/contracts/src/generated/pptx-import-response.ts": "00db0fadd912f47543bb07a1c58a1c99881914a3230718d71bc343b8f2a94f77",
+    "packages/contracts/src/generated/pptx-playback-raster-response.ts": "99b1abc64fbece919db562c89c2e52babfab3105aac54c7e596ffd37768266b0",
+    "packages/contracts/src/generated/pptx-playback-session-response.ts": "0c71d7f3f3b422000f67ab38dcc128958f35c282c97a28b7a925a7d8e72eafb3",
+    "packages/contracts/src/generated/pptx-playback-session-response/part-001.ts": "b1422d4cb426a27e3284804797648e4bf2e3883d26faa4c26bb752aaeda62bb2",
+    "packages/contracts/src/generated/pptx-playback-session-response/part-002.ts": "05488c89037a2e93acfe307999cbee95ddb073a7d33a66c516098bf652cab0d8",
+    "packages/contracts/src/generated/pptx-resource-page-raster-response.ts": "9160350aa1242121fc02cab43547c63c5525384067ce3443cfb08403e884f1fa",
+    "packages/contracts/src/generated/pptx-source-response.ts": "7c38cef86255b928eb831f67c3130f3b8c3510fff2b1ac10be7f6aa731f8c53a",
+    "packages/contracts/src/generated/pptx-source-response/part-001.ts": "c030146bbace0d7e2e21586a7d578a972c11f81af0ad42cb29bdd26941b0de01",
+    "packages/contracts/src/generated/pptx-source-response/part-002.ts": "da603714626e7785b75674319811990fb28f46b743b85d68043bd3f505665172",
+    "packages/contracts/src/generated/pptx-source-response/part-003.ts": "463afde448e84b640e855f2bf602ffcbf00809246692fe0914c4950582732f6d",
+    "packages/contracts/src/generated/pptx-text-body-response.ts": "41734098bb212cba0ebf5ea20bfe311d40ad5638813b34f4070f059d826266e7",
+    "packages/contracts/src/generated/pptx-text-page-raster-response.ts": "5adb31883460fe3fe9dddc83f88d33bb5497e1e5c77225a0bc8ee81e69482c8b",
+    "packages/contracts/src/generated/template-request.ts": "ebbefc42ca2a87296f24b95a3bcee7139cfcc2c6515ad7b7ad8943f7bc50f8bc",
+    "packages/contracts/src/generated/template-response.ts": "dda528dd20d5601221a7f629bc9e239c9ae827354ec68061ece6898a9a8b7016",
+    "packages/contracts/src/generated/timeline-evaluate-request.ts": "033cb4f318809b5eba9fea6d695b80b3db0288a1388485d25c8f7a3976960f9c",
+    "packages/contracts/src/generated/transaction.ts": "adaad12229f472921087d703bb0641bd78b645043531a6bbbf397d55a3fe72b4",
+    "tools/test-support/source_glyphs.rs": "71912efda5c6980b6d74601a28e0136bfa91cfd201d8c0dac1d887e569b08f7f",
+    "tools/test-support/source_group_images.rs": "ce9cee950c3997a809984784be24acda9268bb65530879b44f1a23fd42090974",
+    "tools/test-support/source_playback.rs": "613d28f013bcb9d144e27682778bd2eaee37148e8a4f1a331cfa382e4517ba4f",
+    "tools/test-support/source_resource_page.rs": "0e56f68ada2da66951eab20db57a92caba88d0dd57dd077d99141863b3b78db3",
+    "tools/test-support/source_table.rs": "2c6f972995b72aeb1a6b9e5f8cd3ed9224f0405928ec64fd47294daf2a1ae19c",
+    "tools/test-support/source_text_page.rs": "5a202b3fd748e9c8fce3e75e785c782114a8477233dceb46574e9cb383bd631a",
+    "tools/test-support/table_text.rs": "b3ff9ec3791ee0422eb48a6b98a94b5e0fe899aa6a2f2abb88cbcdc8b97391c1",
+    "tools/verification/native-table-export.py": "51b7727b0b545911ec9019ccd8a31e0a5422fd4bf05b9d7c31cbc56027c5e040",
+    "tools/verification/native-table-frame-readback.py": "8a2ce32b381face7802cae1ee994c99fee0f562e9d262499b48be827e5071475",
+    "tools/verification/native-table-parity.mjs": "f85cef5a3dde744953bf30dc04867053a6b93ba1cfbbba2647042fca108d771c",
+    "tools/verification/native-table-readback.py": "24bc159ab866fea06e74bbbd70c02b22ad3201c976bdcc62045aac294e5296ac",
+    "tools/verification/native-table-source-parity.mjs": "b11c876f7d93a06c6f39acf7b2e8bff4bbf0a82f02286685ffef1b73e3dab5e4",
+    "tools/verification/native-table-source-readback.py": "ec808e48c8f164ce327aa7b038a85ea207072a9a29524bc515725b1903845c18",
+    "tools/verification/native-table-style-readback.py": "26b1b3b527aa0ec9fff2517417eecfac09ccf424307e186760c1b3855efc52f5",
+    "tools/verification/native-table-text-readback.py": "bf670509fc6bcde7a7166376a57940fd2aef7082b32b81a19f1e2781c88c2bd1",
+    "tools/verification/text-clipping-parity.mjs": "f9bca846a6c5009f3940de1d1c32f27c7efec4d9739fd3d8e781ae4303bdd84f",
+    "tools/verification/text-clipping-readback.py": "0430111dfb34346fbe34bc356c9c3161468cdcf07ae1f8ac387a4d869c00fe2e"
+  },
+  "changedPriorReceipts": [
+    "contracts/generated/pptx-playback-raster-response.schema.json",
+    "contracts/generated/pptx-playback-session-response.schema.json",
+    "contracts/generated/pptx-resource-page-raster-response.schema.json",
+    "contracts/generated/pptx-text-page-raster-response.schema.json",
+    "crates/mo-harfbuzz-sys/tests/table_text.rs",
+    "crates/mo-presentation-compile/src/source_frame/number.rs",
+    "crates/mo-presentation-compile/src/source_table.rs",
+    "crates/mo-presentation-compile/src/source_table/geometry.rs",
+    "crates/mo-presentation-compile/src/source_text/table.rs",
+    "crates/mo-presentation-source/src/source/text/cascade/table_text.rs",
+    "docs/implementation/progress.md",
+    "docs/implementation/table-text.md",
+    "packages/contracts/src/generated/pptx-playback-raster-response.ts",
+    "packages/contracts/src/generated/pptx-playback-session-response.ts",
+    "packages/contracts/src/generated/pptx-playback-session-response/part-001.ts",
+    "packages/contracts/src/generated/pptx-playback-session-response/part-002.ts",
+    "packages/contracts/src/generated/pptx-resource-page-raster-response.ts",
+    "packages/contracts/src/generated/pptx-text-page-raster-response.ts"
+  ],
+  "historicalExportAndEditedBytesUnchanged": true,
+  "historicalPptxArtifacts": 26,
+  "notes": [
+    "Cell defaults and duplicate bodyPr/tcPr precedence remain an explicit draft pending target application calibration.",
+    "Only ordinary text frames exercise the new clip pipeline through public page and session entry points; cell frame library tests are reported separately.",
+    "A clipped pixel comparison is not identical to an unclipped one because the pinned native scan conversion changes edge coverage; exact full pixel parity is required between Native/WASM and retained/direct execution.",
+    "Product fixed materials are unchanged. Existing independent integration worktree is reused. Original main workspace was not read, built, tested or written by this stage."
+  ],
+  "authorParity": {
+    "scope": "table model, transactions and native export parity; no rendering or application acceptance",
+    "cliSha256": "a7c342dac22a9d71b4fc9d81eb88b921af3d3d5c92f7264bc8acf7619fac110e",
+    "wasmJsSha256": "5b9e837584d6201157b26a31fd3656b5b44efbe2bddc9729d0a027fff4a82e02",
+    "wasmSha256": "c6faefe80b731dbb4722a2d6c989e40a712d0c5d07edcdb86378b592d726c6e4",
+    "inputSha256": "654d44fdd40313970955d884d65c6e3fa32676a37815cd73a8d4be4e489ddab7",
+    "node": "v23.5.0",
+    "dispatchCases": 14,
+    "exports": [
+      {
+        "name": "original",
+        "bytes": 6000,
+        "sha256": "6d06e61814393ebb7638b312e0ef58b983a1b6bdf09a92a9ef3e0603474162db"
+      },
+      {
+        "name": "edit-0",
+        "bytes": 6020,
+        "sha256": "cb01742e391f9d36f7e19f2bcf224b9dd104646b83d8119465939a9864cd08b0"
+      },
+      {
+        "name": "edit-1",
+        "bytes": 5982,
+        "sha256": "2572c12d9b1e5fbe84492103744ea3727b1fdad0bf413944cdea5bf360e244c9"
+      },
+      {
+        "name": "edit-2",
+        "bytes": 6008,
+        "sha256": "2d86e5b0e7a80bc45112a0d71e9215120eb7f343c6d8ff779d28e180a71abc41"
+      },
+      {
+        "name": "edit-3",
+        "bytes": 6013,
+        "sha256": "d5c842daf03bd102b3468b0def0e1395e523359aaa53480c45099ad5e435ac28"
+      },
+      {
+        "name": "edit-4",
+        "bytes": 6065,
+        "sha256": "3e6b5c737130c30d5e03fa259e255edd7352fdec240b2715b481fcd6020a445b"
+      },
+      {
+        "name": "edit-5",
+        "bytes": 6009,
+        "sha256": "ce61b684d03df44dd1f649945e0bf49521105f332b412a34780c860b26ebb5f7"
+      },
+      {
+        "name": "edit-6",
+        "bytes": 5973,
+        "sha256": "d2ef0db5351042f11b78cc586845f1f01a552f64ec9e5cdae6b04eac4c2e026c"
+      },
+      {
+        "name": "edit-7",
+        "bytes": 5981,
+        "sha256": "e0df548eee23aadb7a96f98b9eaccd0bc1271896bf59fd3b37ea04ee2a2c1539"
+      },
+      {
+        "name": "edit-8",
+        "bytes": 5978,
+        "sha256": "89334d53016ba2b2452023c282644baac4e95deda5c45aebde7b386ea43a7012"
+      },
+      {
+        "name": "edit-9",
+        "bytes": 5987,
+        "sha256": "2ed1c1b33ce699a6ec74b1a273d1551a050c12e1ba892fee2a25190acae068d0"
+      }
+    ]
+  },
+  "authorReadback": {
+    "scope": "independent structural readback after transactions; not application editing or rendering",
+    "presentations": 11,
+    "physicalCells": 119,
+    "xsdChecks": 66,
+    "cases": [
+      {
+        "name": "original",
+        "physicalCells": 9,
+        "xsdChecks": 6,
+        "sha256": "6d06e61814393ebb7638b312e0ef58b983a1b6bdf09a92a9ef3e0603474162db"
+      },
+      {
+        "name": "edit-0",
+        "physicalCells": 9,
+        "xsdChecks": 6,
+        "sha256": "cb01742e391f9d36f7e19f2bcf224b9dd104646b83d8119465939a9864cd08b0"
+      },
+      {
+        "name": "edit-1",
+        "physicalCells": 9,
+        "xsdChecks": 6,
+        "sha256": "2572c12d9b1e5fbe84492103744ea3727b1fdad0bf413944cdea5bf360e244c9"
+      },
+      {
+        "name": "edit-2",
+        "physicalCells": 12,
+        "xsdChecks": 6,
+        "sha256": "2d86e5b0e7a80bc45112a0d71e9215120eb7f343c6d8ff779d28e180a71abc41"
+      },
+      {
+        "name": "edit-3",
+        "physicalCells": 16,
+        "xsdChecks": 6,
+        "sha256": "d5c842daf03bd102b3468b0def0e1395e523359aaa53480c45099ad5e435ac28"
+      },
+      {
+        "name": "edit-4",
+        "physicalCells": 16,
+        "xsdChecks": 6,
+        "sha256": "3e6b5c737130c30d5e03fa259e255edd7352fdec240b2715b481fcd6020a445b"
+      },
+      {
+        "name": "edit-5",
+        "physicalCells": 12,
+        "xsdChecks": 6,
+        "sha256": "ce61b684d03df44dd1f649945e0bf49521105f332b412a34780c860b26ebb5f7"
+      },
+      {
+        "name": "edit-6",
+        "physicalCells": 9,
+        "xsdChecks": 6,
+        "sha256": "d2ef0db5351042f11b78cc586845f1f01a552f64ec9e5cdae6b04eac4c2e026c"
+      },
+      {
+        "name": "edit-7",
+        "physicalCells": 9,
+        "xsdChecks": 6,
+        "sha256": "e0df548eee23aadb7a96f98b9eaccd0bc1271896bf59fd3b37ea04ee2a2c1539"
+      },
+      {
+        "name": "edit-8",
+        "physicalCells": 9,
+        "xsdChecks": 6,
+        "sha256": "89334d53016ba2b2452023c282644baac4e95deda5c45aebde7b386ea43a7012"
+      },
+      {
+        "name": "edit-9",
+        "physicalCells": 9,
+        "xsdChecks": 6,
+        "sha256": "2ed1c1b33ce699a6ec74b1a273d1551a050c12e1ba892fee2a25190acae068d0"
+      }
+    ],
+    "inputSha256": "43551b240e1093b4e3c3531b9cd242ca2b85d021ba421c4c3f3f38f1bc30affe",
+    "scriptSha256": "24bc159ab866fea06e74bbbd70c02b22ad3201c976bdcc62045aac294e5296ac"
+  },
+  "sourceParity": {
+    "scope": "native/WASM table inspection, import, preserved native text edits and stale rejection; no rendering or external application acceptance",
+    "node": "v23.5.0",
+    "cliSha256": "a7c342dac22a9d71b4fc9d81eb88b921af3d3d5c92f7264bc8acf7619fac110e",
+    "wasmJsSha256": "5b9e837584d6201157b26a31fd3656b5b44efbe2bddc9729d0a027fff4a82e02",
+    "wasmSha256": "c6faefe80b731dbb4722a2d6c989e40a712d0c5d07edcdb86378b592d726c6e4",
+    "cases": [
+      {
+        "name": "original",
+        "sourceSha256": "6d06e61814393ebb7638b312e0ef58b983a1b6bdf09a92a9ef3e0603474162db",
+        "outputSha256": "878b497e2d358d35b48570c64fcf32d693ef7a51a94a43849ca649fca133063b",
+        "bytes": 6002,
+        "editedLeaves": 8,
+        "comparisons": 5
+      },
+      {
+        "name": "edit-0",
+        "sourceSha256": "cb01742e391f9d36f7e19f2bcf224b9dd104646b83d8119465939a9864cd08b0",
+        "outputSha256": "561f64fc4455bb24bcd9334c011c8bf5522bd792efd606bad334fb4cd342049f",
+        "bytes": 6003,
+        "editedLeaves": 8,
+        "comparisons": 5
+      },
+      {
+        "name": "edit-1",
+        "sourceSha256": "2572c12d9b1e5fbe84492103744ea3727b1fdad0bf413944cdea5bf360e244c9",
+        "outputSha256": "9e754da99440ec9f2fe02008f51ae0a25a3228d1492b97315a98ca07dda182a3",
+        "bytes": 5965,
+        "editedLeaves": 8,
+        "comparisons": 5
+      },
+      {
+        "name": "edit-2",
+        "sourceSha256": "2d86e5b0e7a80bc45112a0d71e9215120eb7f343c6d8ff779d28e180a71abc41",
+        "outputSha256": "f89271c2e5011e0a7594a91fabb56ffd7e4004214da48e9c3453d1909daf6ccd",
+        "bytes": 5991,
+        "editedLeaves": 8,
+        "comparisons": 5
+      },
+      {
+        "name": "edit-3",
+        "sourceSha256": "d5c842daf03bd102b3468b0def0e1395e523359aaa53480c45099ad5e435ac28",
+        "outputSha256": "f4510df687a1ee7796159f3555a966a436a8be466db5d7a3b02614874e1d012f",
+        "bytes": 5996,
+        "editedLeaves": 8,
+        "comparisons": 5
+      },
+      {
+        "name": "edit-4",
+        "sourceSha256": "3e6b5c737130c30d5e03fa259e255edd7352fdec240b2715b481fcd6020a445b",
+        "outputSha256": "6cbdfa7f189b1005a15d8fdd106d4447c4ed3ba135cf2ace3088c005c7e67d3c",
+        "bytes": 6045,
+        "editedLeaves": 8,
+        "comparisons": 5
+      },
+      {
+        "name": "edit-5",
+        "sourceSha256": "ce61b684d03df44dd1f649945e0bf49521105f332b412a34780c860b26ebb5f7",
+        "outputSha256": "6edb6088a7798bcd4d40de83cb869c2ed6be89385e8ac09545b28d2b10051c3b",
+        "bytes": 5995,
+        "editedLeaves": 5,
+        "comparisons": 5
+      },
+      {
+        "name": "edit-6",
+        "sourceSha256": "d2ef0db5351042f11b78cc586845f1f01a552f64ec9e5cdae6b04eac4c2e026c",
+        "outputSha256": "6ab369af1ac9ec86f772ccd24b1b5f274c465eac4f34be0ad653556cd643b868",
+        "bytes": 5957,
+        "editedLeaves": 3,
+        "comparisons": 5
+      },
+      {
+        "name": "edit-7",
+        "sourceSha256": "e0df548eee23aadb7a96f98b9eaccd0bc1271896bf59fd3b37ea04ee2a2c1539",
+        "outputSha256": "324cb06fd8a78ccc13f0e2e1be4c0f7b4bf7b8798cc9a8afb9765f8b9746759f",
+        "bytes": 5962,
+        "editedLeaves": 3,
+        "comparisons": 5
+      },
+      {
+        "name": "edit-8",
+        "sourceSha256": "89334d53016ba2b2452023c282644baac4e95deda5c45aebde7b386ea43a7012",
+        "outputSha256": "b7f279e8490fdb9d39a3522e040f2dfa516c91aa81f75cb5f4e663b1418809eb",
+        "bytes": 5960,
+        "editedLeaves": 3,
+        "comparisons": 5
+      },
+      {
+        "name": "edit-9",
+        "sourceSha256": "2ed1c1b33ce699a6ec74b1a273d1551a050c12e1ba892fee2a25190acae068d0",
+        "outputSha256": "8fa10244152496416edc8d561cc05c2d5118ca23a0f1de9d0904adb009158274",
+        "bytes": 5970,
+        "editedLeaves": 3,
+        "comparisons": 5
+      }
+    ],
+    "presentations": 11,
+    "comparisons": 55,
+    "editedLeaves": 65
+  },
+  "sourceReadback": {
+    "scope": "all other OPC part bytes and XML tokens preserved; independent table text, dimensions and merge readback; no application acceptance",
+    "presentations": 11,
+    "physicalCells": 119,
+    "editedLeaves": 65,
+    "xsdChecks": 66,
+    "jsonSchemaChecks": 55,
+    "cases": [
+      {
+        "name": "original",
+        "physicalCells": 9,
+        "editedLeaves": 8,
+        "xsdChecks": 6,
+        "jsonSchemaChecks": 5
+      },
+      {
+        "name": "edit-0",
+        "physicalCells": 9,
+        "editedLeaves": 8,
+        "xsdChecks": 6,
+        "jsonSchemaChecks": 5
+      },
+      {
+        "name": "edit-1",
+        "physicalCells": 9,
+        "editedLeaves": 8,
+        "xsdChecks": 6,
+        "jsonSchemaChecks": 5
+      },
+      {
+        "name": "edit-2",
+        "physicalCells": 12,
+        "editedLeaves": 8,
+        "xsdChecks": 6,
+        "jsonSchemaChecks": 5
+      },
+      {
+        "name": "edit-3",
+        "physicalCells": 16,
+        "editedLeaves": 8,
+        "xsdChecks": 6,
+        "jsonSchemaChecks": 5
+      },
+      {
+        "name": "edit-4",
+        "physicalCells": 16,
+        "editedLeaves": 8,
+        "xsdChecks": 6,
+        "jsonSchemaChecks": 5
+      },
+      {
+        "name": "edit-5",
+        "physicalCells": 12,
+        "editedLeaves": 5,
+        "xsdChecks": 6,
+        "jsonSchemaChecks": 5
+      },
+      {
+        "name": "edit-6",
+        "physicalCells": 9,
+        "editedLeaves": 3,
+        "xsdChecks": 6,
+        "jsonSchemaChecks": 5
+      },
+      {
+        "name": "edit-7",
+        "physicalCells": 9,
+        "editedLeaves": 3,
+        "xsdChecks": 6,
+        "jsonSchemaChecks": 5
+      },
+      {
+        "name": "edit-8",
+        "physicalCells": 9,
+        "editedLeaves": 3,
+        "xsdChecks": 6,
+        "jsonSchemaChecks": 5
+      },
+      {
+        "name": "edit-9",
+        "physicalCells": 9,
+        "editedLeaves": 3,
+        "xsdChecks": 6,
+        "jsonSchemaChecks": 5
+      }
+    ]
+  },
+  "styleParity": {
+    "scope": "native/WASM table inspection, import, preserved native text edits and stale rejection; no rendering or external application acceptance",
+    "node": "v23.5.0",
+    "cliSha256": "a7c342dac22a9d71b4fc9d81eb88b921af3d3d5c92f7264bc8acf7619fac110e",
+    "wasmJsSha256": "5b9e837584d6201157b26a31fd3656b5b44efbe2bddc9729d0a027fff4a82e02",
+    "wasmSha256": "c6faefe80b731dbb4722a2d6c989e40a712d0c5d07edcdb86378b592d726c6e4",
+    "cases": [
+      {
+        "name": "catalog-referenced",
+        "sourceSha256": "9de197faa6b46f5cfbe4aa5645e3379e4a27bc8793f1533fdb7a4cd949fcc8d4",
+        "outputSha256": "26be3934532bc0ad20cd4fe3eeeda907b5a18194cc1a4e0a6048379174bd54ae",
+        "bytes": 6902,
+        "editedLeaves": 8,
+        "comparisons": 5
+      },
+      {
+        "name": "catalog-without-reference",
+        "sourceSha256": "6f5cf83ef65e07aa34e7532aa705b44c9b1b442d484a1acb796e6b00ede6712e",
+        "outputSha256": "53132ff0d8c99bf4801da70502692850b05d09aeb26abe42e368160867072115",
+        "bytes": 6865,
+        "editedLeaves": 8,
+        "comparisons": 5
+      },
+      {
+        "name": "inline-all-regions",
+        "sourceSha256": "2e8918c571c80546dc061a4fff376742e008f1b873666fd08e66efc2554f7bae",
+        "outputSha256": "23005bb9806587dfb64b4dbfd9c8b86734a7de55d5aae02f59c2249e18207efb",
+        "bytes": 6559,
+        "editedLeaves": 8,
+        "comparisons": 5
+      },
+      {
+        "name": "inline-defaults-font-reference",
+        "sourceSha256": "f84faae0fbddaa34cf4ed8e0f6e2b8d907aeb5f6c5e1c92cb176aae54416b8ae",
+        "outputSha256": "ac4f6f701afc424f48e4db0a897e239bf4c92fc4916ec3b63c30faf4fa32ff6a",
+        "bytes": 6135,
+        "editedLeaves": 8,
+        "comparisons": 5
+      }
+    ],
+    "presentations": 4,
+    "comparisons": 20,
+    "editedLeaves": 32
+  },
+  "styleReadback": {
+    "scope": "all other OPC part bytes and XML tokens preserved; independent table text, dimensions and merge readback; no application acceptance",
+    "presentations": 4,
+    "physicalCells": 36,
+    "editedLeaves": 32,
+    "xsdChecks": 26,
+    "jsonSchemaChecks": 20,
+    "cases": [
+      {
+        "name": "catalog-referenced",
+        "physicalCells": 9,
+        "editedLeaves": 8,
+        "xsdChecks": 7,
+        "jsonSchemaChecks": 5
+      },
+      {
+        "name": "catalog-without-reference",
+        "physicalCells": 9,
+        "editedLeaves": 8,
+        "xsdChecks": 7,
+        "jsonSchemaChecks": 5
+      },
+      {
+        "name": "inline-all-regions",
+        "physicalCells": 9,
+        "editedLeaves": 8,
+        "xsdChecks": 6,
+        "jsonSchemaChecks": 5
+      },
+      {
+        "name": "inline-defaults-font-reference",
+        "physicalCells": 9,
+        "editedLeaves": 8,
+        "xsdChecks": 6,
+        "jsonSchemaChecks": 5
+      }
+    ]
+  },
+  "styleDeclarations": {
+    "scope": "owned native table style declarations and physical source locations; no layout or visual acceptance",
+    "styles": 4,
+    "physicalDeclarations": 806,
+    "cases": [
+      {
+        "name": "catalog-referenced",
+        "styles": 1,
+        "physicalDeclarations": 267
+      },
+      {
+        "name": "catalog-without-reference",
+        "styles": 1,
+        "physicalDeclarations": 267
+      },
+      {
+        "name": "inline-all-regions",
+        "styles": 1,
+        "physicalDeclarations": 266
+      },
+      {
+        "name": "inline-defaults-font-reference",
+        "styles": 1,
+        "physicalDeclarations": 6
+      }
+    ]
+  },
+  "cellFrameReadback": {
+    "scope": "XML/grid/body/native frame consistency, not full table rendering or application acceptance",
+    "status": "passed",
+    "files": [
+      {
+        "name": "merged.pptx",
+        "sourceSha256": "88d02e8d076bdfe4398cccbf2f313d0369bda409298a5e5f33fdd2436fd0d461",
+        "computationSha256": "907c442dad04521244a5e76a1ca1a78cf8762e1bb2b16fb8c2c1ee19c985b005",
+        "frames": 2,
+        "physicalCells": 9,
+        "paragraphs": 10,
+        "rightToLeft": false
+      },
+      {
+        "name": "overflow.pptx",
+        "sourceSha256": "99237bd37ee8750d1b6a423776a9cfd4efc3769c3aac1d019470c965a9e84c5b",
+        "computationSha256": "596f80023fbea4ab1d2d17fa91846f781cdfc73bfbc1a426f4fc98d444f76f00",
+        "frames": 1,
+        "physicalCells": 9,
+        "paragraphs": 10,
+        "rightToLeft": false
+      },
+      {
+        "name": "rtl-false-anchor-0.pptx",
+        "sourceSha256": "06ea751a8b48d32de84419d046935dc9be2e10c9bed190ace47c079dfd8285f8",
+        "computationSha256": "575fa27285b92246865f5d17fd2ffc354b73757a98813faa4c3adb22927cd50e",
+        "frames": 1,
+        "physicalCells": 9,
+        "paragraphs": 10,
+        "rightToLeft": false
+      },
+      {
+        "name": "rtl-false-anchor-1.pptx",
+        "sourceSha256": "67f39ff3df04e91d0f2dbb957fd499db0c2c8f2d42551d46419b03a7ce636f6b",
+        "computationSha256": "19a82eef1e4c7c5961cfce3079c447ef9db9674cb9e43e927a4d78b091949c0f",
+        "frames": 1,
+        "physicalCells": 9,
+        "paragraphs": 10,
+        "rightToLeft": false
+      },
+      {
+        "name": "rtl-false-anchor-2.pptx",
+        "sourceSha256": "ee01a9d2e022cbac828ec0effb0927604b83a2a166c73bd2d9800d6c731f43f2",
+        "computationSha256": "a51c30ab6268015351e70b5c692393bc4db793f18b7678df3e9f739f0c1051a0",
+        "frames": 1,
+        "physicalCells": 9,
+        "paragraphs": 10,
+        "rightToLeft": false
+      },
+      {
+        "name": "rtl-true-anchor-0.pptx",
+        "sourceSha256": "23774c476c8b62f4b96dc3ac585da20fda9c418a4827955da6770a409b5bfc73",
+        "computationSha256": "973200c3712aa06e4d778bb9929b4da0befa8c267500199255a8510e4d98c20e",
+        "frames": 1,
+        "physicalCells": 9,
+        "paragraphs": 10,
+        "rightToLeft": true
+      },
+      {
+        "name": "rtl-true-anchor-1.pptx",
+        "sourceSha256": "65d77e75a6d9534ea11f308bc9cf20185844a4522649ec13f77cc9ca3dfeee40",
+        "computationSha256": "2df95bef1b16a118250fb6b6493ebb844940e254facda5af31c7c54130d06328",
+        "frames": 1,
+        "physicalCells": 9,
+        "paragraphs": 10,
+        "rightToLeft": true
+      },
+      {
+        "name": "rtl-true-anchor-2.pptx",
+        "sourceSha256": "216928a95834eb15543e8f3a7e6e68803f7498fad0cc9616065bbe72be717062",
+        "computationSha256": "d546fa0b324431c19874322d5ce5683f5ee0e069d81c9af9da5f3068775a0fc2",
+        "frames": 1,
+        "physicalCells": 9,
+        "paragraphs": 10,
+        "rightToLeft": true
+      }
+    ],
+    "frames": 9,
+    "xsdValidations": 8,
+    "clippedFrames": 7
+  },
+  "additionalVerificationCommands": [
+    {
+      "args": [
+        "node",
+        "tools/verification/text-clipping-parity.mjs",
+        ".codex-work/table-frame/native-clips",
+        "target/debug/mo-raster-worker",
+        ".codex-work/table-frame/wasm-node/mo_wasm.js",
+        ".codex-work/text-component/index.js",
+        ".codex-work/raster-component/index.js",
+        ".codex-work/harfbuzz/release",
+        ".codex-work/snapshot-scopes/wasm",
+        ".codex-work/table-frame/clip-parity-v2"
+      ],
+      "exitCode": 0,
+      "log": ".codex-work/table-frame/clip-parity-v2.log",
+      "setup": "Node wasm-bindgen output directory contains package.json with type=commonjs."
+    },
+    {
+      "args": [
+        "python3",
+        "tools/verification/native-table-frame-readback.py",
+        "--corpus-dir",
+        ".codex-work/table-frame/native-frames",
+        "--schema-dir",
+        ".codex-work/ecma376/xsd",
+        "--output",
+        ".codex-work/table-frame/frame-readback.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "args": [
+        "python3",
+        "tools/verification/text-clipping-readback.py",
+        "--corpus-dir",
+        ".codex-work/table-frame/native-clips",
+        "--parity-report",
+        ".codex-work/table-frame/clip-parity-v2/report.json",
+        "--schema-dir",
+        ".codex-work/ecma376/xsd",
+        "--contracts-dir",
+        "contracts/generated",
+        "--output",
+        ".codex-work/table-frame/clip-validation.json"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

@@ -1,0 +1,1145 @@
+{
+  "format": "musteroffice.template-computation-verification/1",
+  "date": "2026-09-28",
+  "status": "scoped-whole-document-template-binding-verified; full-template-and-product-replacement-incomplete",
+  "environment": {
+    "system": "Darwin",
+    "architecture": "arm64",
+    "rust": "rustc 1.92.0 (ded5c06cf 2025-12-08)",
+    "node": "v23.5.0"
+  },
+  "scope": {
+    "parameters": [
+      "text-run",
+      "resource-declaration",
+      "theme-color",
+      "transform"
+    ],
+    "instance": "whole-document; new document scope, preserved local identities",
+    "interfaces": [
+      "embedded Rust SDK",
+      "development CLI",
+      "pure WASM",
+      "generated JSON schemas and TS types"
+    ],
+    "newRegistryDependencies": false,
+    "productFixedSdkChanged": false,
+    "productWorkerChanged": false,
+    "productMainWorkspaceWritten": false,
+    "publiclyPublished": false,
+    "newCoreStorageOrAuthority": false
+  },
+  "finalGates": [
+    "rust-tests-03",
+    "clippy-02",
+    "types-01",
+    "schemas-01",
+    "native-build-02",
+    "wasm-build-01",
+    "wasm-bindgen-01",
+    "parity-01",
+    "packages-01",
+    "sdk-build-01",
+    "sdk-consumer-01",
+    "sdk-consumer-verify-01"
+  ],
+  "rustTestsPassed": 367,
+  "templateCrateTests": 16,
+  "wasmNativeCases": 15,
+  "postRustChange": {
+    "files": [
+      "crates/mo-presentation-template/tests/native_source.rs"
+    ],
+    "description": "Equivalent collapse of nested test-only if conditions to satisfy strict Clippy; production source unchanged."
+  },
+  "runs": [
+    {
+      "name": "clippy-01",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "mo-common",
+        "-p",
+        "mo-presentation-model",
+        "-p",
+        "mo-presentation-source",
+        "-p",
+        "mo-presentation-template",
+        "-p",
+        "mo-presentation-operations",
+        "-p",
+        "mo-embedded-sdk",
+        "-p",
+        "mo-wasm",
+        "-p",
+        "mo-cli",
+        "-p",
+        "mo-contract-codegen",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 101,
+      "elapsedSeconds": 12.30231795902364,
+      "sourceUnchanged": true,
+      "sourceFiles": 1122,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "tools/mo-cli",
+        "tools/mo-contract-codegen",
+        "tools/test-support",
+        "tools/contracts",
+        "tools/verification/template-computation.mjs",
+        "tools/verification/product_command.py",
+        "fixtures",
+        "contracts/generated",
+        "packages/contracts",
+        "package.json",
+        "pnpm-lock.yaml"
+      ],
+      "sourceMapSha256": "c0494fae487dc1bab17612dccd1280e17a2b3bea01dc83e893a3a9a853abea3e",
+      "report": {
+        "path": ".codex-work/template-computation/clippy-01.json",
+        "sha256": "0644d3990d0f7ca945788b452394545bc85dd8d08df2df3081c78d97f3b9c37b",
+        "bytes": 276783
+      },
+      "log": {
+        "path": ".codex-work/template-computation/clippy-01.log",
+        "sha256": "592e5551796856863e4c1db4594ad7e787c56400863d9b5b689b0487aa35400c",
+        "bytes": 3374
+      },
+      "rustTestsPassed": 0,
+      "rustTestsIgnored": 0
+    },
+    {
+      "name": "clippy-02",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "mo-common",
+        "-p",
+        "mo-presentation-model",
+        "-p",
+        "mo-presentation-source",
+        "-p",
+        "mo-presentation-template",
+        "-p",
+        "mo-presentation-operations",
+        "-p",
+        "mo-embedded-sdk",
+        "-p",
+        "mo-wasm",
+        "-p",
+        "mo-cli",
+        "-p",
+        "mo-contract-codegen",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 5.979740792186931,
+      "sourceUnchanged": true,
+      "sourceFiles": 1122,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "tools/mo-cli",
+        "tools/mo-contract-codegen",
+        "tools/test-support",
+        "tools/contracts",
+        "tools/verification/template-computation.mjs",
+        "tools/verification/product_command.py",
+        "fixtures",
+        "contracts/generated",
+        "packages/contracts",
+        "package.json",
+        "pnpm-lock.yaml"
+      ],
+      "sourceMapSha256": "8910b0e3394dcbe1f9c7a791972659dd1f585e43c16350feb7577c95dd0414fe",
+      "report": {
+        "path": ".codex-work/template-computation/clippy-02.json",
+        "sha256": "14a899920a35381cb3083d43b4b90be35fc3cc2859d245006a1c288bcd5241e9",
+        "bytes": 276781
+      },
+      "log": {
+        "path": ".codex-work/template-computation/clippy-02.log",
+        "sha256": "a2471ecf1f11d51f9f4986af8cca5cb774ba70bea9fac627f49b6f14ca8a16b4",
+        "bytes": 1400
+      },
+      "rustTestsPassed": 0,
+      "rustTestsIgnored": 0
+    },
+    {
+      "name": "native-build-01",
+      "command": [
+        "cargo",
+        "build",
+        "-p",
+        "mo-cli"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 4.665044832974672,
+      "sourceUnchanged": true,
+      "sourceFiles": 1122,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "tools/mo-cli",
+        "tools/mo-contract-codegen",
+        "tools/test-support",
+        "tools/contracts",
+        "tools/verification/template-computation.mjs",
+        "tools/verification/product_command.py",
+        "fixtures",
+        "contracts/generated",
+        "packages/contracts",
+        "package.json",
+        "pnpm-lock.yaml"
+      ],
+      "sourceMapSha256": "fb3d6ed204badd13476bd5f7df61c209e6cf5c9f184bb897e8c875227a2d9a57",
+      "report": {
+        "path": ".codex-work/template-computation/native-build-01.json",
+        "sha256": "966f9dadda86c52c9d36bf2960ae25605c208d88b0daf18bec36598972929451",
+        "bytes": 276436
+      },
+      "log": {
+        "path": ".codex-work/template-computation/native-build-01.log",
+        "sha256": "186888ef597e6820e5bf9634dbded07c9a365a6d61c726b58d9c24fe29b68046",
+        "bytes": 741
+      },
+      "rustTestsPassed": 0,
+      "rustTestsIgnored": 0
+    },
+    {
+      "name": "native-build-02",
+      "command": [
+        "cargo",
+        "build",
+        "-p",
+        "mo-cli"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 4.349119249964133,
+      "sourceUnchanged": true,
+      "sourceFiles": 1122,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "tools/mo-cli",
+        "tools/mo-contract-codegen",
+        "tools/test-support",
+        "tools/contracts",
+        "tools/verification/template-computation.mjs",
+        "tools/verification/product_command.py",
+        "fixtures",
+        "contracts/generated",
+        "packages/contracts",
+        "package.json",
+        "pnpm-lock.yaml"
+      ],
+      "sourceMapSha256": "8910b0e3394dcbe1f9c7a791972659dd1f585e43c16350feb7577c95dd0414fe",
+      "report": {
+        "path": ".codex-work/template-computation/native-build-02.json",
+        "sha256": "690a6122ef2143c4f37f366726a5a899639aac8194524229f64d9afd0fff030d",
+        "bytes": 276436
+      },
+      "log": {
+        "path": ".codex-work/template-computation/native-build-02.log",
+        "sha256": "3e2ae445482ec724ca7c01d52981c2c5fa697bfa80ce37c090027759c95cfc5c",
+        "bytes": 1044
+      },
+      "rustTestsPassed": 0,
+      "rustTestsIgnored": 0
+    },
+    {
+      "name": "packages-01",
+      "command": [
+        "python3",
+        ".codex-work/template-computation/inspect.py"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.12000295799225569,
+      "sourceUnchanged": true,
+      "sourceFiles": 1158,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "tools/mo-cli",
+        "tools/mo-contract-codegen",
+        "tools/test-support",
+        "tools/contracts",
+        "tools/verification/template-computation.mjs",
+        "tools/verification/product_command.py",
+        "fixtures",
+        "contracts/generated",
+        "packages/contracts",
+        "package.json",
+        "pnpm-lock.yaml",
+        ".codex-work/template-computation/inspect.py",
+        ".codex-work/template-computation/corpus"
+      ],
+      "sourceMapSha256": "bbf6b0cff8ac44562ad55d5a00db44bc5fb61321916bdf492bb4cafb938b482b",
+      "report": {
+        "path": ".codex-work/template-computation/packages-01.json",
+        "sha256": "64138b46e7e4f22eb02c58914766f58143f9d66fbad0794c7b7a9e6445e3232b",
+        "bytes": 286434
+      },
+      "log": {
+        "path": ".codex-work/template-computation/packages-01.log",
+        "sha256": "643d922ffec45982ed76e0e3bc00795424029c88cd12e6d23f6e16e1e9f744bb",
+        "bytes": 982
+      },
+      "rustTestsPassed": 0,
+      "rustTestsIgnored": 0
+    },
+    {
+      "name": "parity-01",
+      "command": [
+        "node",
+        "tools/verification/template-computation.mjs",
+        ".codex-work/template-computation/corpus",
+        "target/debug/mo-cli",
+        ".codex-work/wasm-node/mo_wasm.js",
+        ".codex-work/template-computation/parity-result.json"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 1.2273699580691755,
+      "sourceUnchanged": true,
+      "sourceFiles": 1160,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "tools/mo-cli",
+        "tools/mo-contract-codegen",
+        "tools/test-support",
+        "tools/contracts",
+        "tools/verification/template-computation.mjs",
+        "tools/verification/product_command.py",
+        "fixtures",
+        "contracts/generated",
+        "packages/contracts",
+        "package.json",
+        "pnpm-lock.yaml",
+        ".codex-work/template-computation/corpus",
+        "target/debug/mo-cli",
+        ".codex-work/wasm-node/mo_wasm.js",
+        ".codex-work/wasm-node/mo_wasm_bg.wasm"
+      ],
+      "sourceMapSha256": "441ce5c380b9fb7fc12df5506a613167eda416c6a0e971a82f969b7e3382cba3",
+      "report": {
+        "path": ".codex-work/template-computation/parity-01.json",
+        "sha256": "c3f170299ec370bdd4496895cad37390704179d413f14d3c5b731f0587f617ab",
+        "bytes": 287058
+      },
+      "log": {
+        "path": ".codex-work/template-computation/parity-01.log",
+        "sha256": "ca419a13439073a602c04e055f104fd84f30f0657ce091474057fd0d80fe79ad",
+        "bytes": 147
+      },
+      "rustTestsPassed": 0,
+      "rustTestsIgnored": 0
+    },
+    {
+      "name": "rust-tests-01",
+      "command": [
+        "env",
+        "MO_TEMPLATE_TEST_OUTPUT=<core-workspace>/.codex-work/template-computation/corpus",
+        "cargo",
+        "test",
+        "-p",
+        "mo-common",
+        "-p",
+        "mo-presentation-model",
+        "-p",
+        "mo-presentation-edit",
+        "-p",
+        "mo-presentation-source",
+        "-p",
+        "mo-pptx",
+        "-p",
+        "mo-presentation-template",
+        "-p",
+        "mo-presentation-operations",
+        "-p",
+        "mo-embedded-sdk",
+        "--tests"
+      ],
+      "exitCode": 101,
+      "elapsedSeconds": 80.42242829198949,
+      "sourceUnchanged": true,
+      "sourceFiles": 1122,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "tools/mo-cli",
+        "tools/mo-contract-codegen",
+        "tools/test-support",
+        "tools/contracts",
+        "tools/verification/template-computation.mjs",
+        "tools/verification/product_command.py",
+        "fixtures",
+        "contracts/generated",
+        "packages/contracts",
+        "package.json",
+        "pnpm-lock.yaml"
+      ],
+      "sourceMapSha256": "fb3d6ed204badd13476bd5f7df61c209e6cf5c9f184bb897e8c875227a2d9a57",
+      "report": {
+        "path": ".codex-work/template-computation/rust-tests-01.json",
+        "sha256": "ad42f3a5f5b0536844ace6874e018cb301683e7b0b5430de64470a37ec0b6638",
+        "bytes": 276844
+      },
+      "log": {
+        "path": ".codex-work/template-computation/rust-tests-01.log",
+        "sha256": "e1e2bf0f7d79d98197fd22f93a1215781b652b3aad98f1d038f4570e0c43b644",
+        "bytes": 26824
+      },
+      "rustTestsPassed": 219,
+      "rustTestsIgnored": 0
+    },
+    {
+      "name": "rust-tests-02",
+      "command": [
+        "env",
+        "MO_TEMPLATE_TEST_OUTPUT=<core-workspace>/.codex-work/template-computation/corpus",
+        "cargo",
+        "test",
+        "-p",
+        "mo-common",
+        "-p",
+        "mo-timeline",
+        "-p",
+        "mo-presentation-model",
+        "-p",
+        "mo-presentation-edit",
+        "-p",
+        "mo-presentation-source",
+        "-p",
+        "mo-pptx",
+        "-p",
+        "mo-presentation-template",
+        "-p",
+        "mo-presentation-operations",
+        "-p",
+        "mo-embedded-sdk",
+        "--tests"
+      ],
+      "exitCode": 101,
+      "elapsedSeconds": 61.38317791605368,
+      "sourceUnchanged": true,
+      "sourceFiles": 1122,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "tools/mo-cli",
+        "tools/mo-contract-codegen",
+        "tools/test-support",
+        "tools/contracts",
+        "tools/verification/template-computation.mjs",
+        "tools/verification/product_command.py",
+        "fixtures",
+        "contracts/generated",
+        "packages/contracts",
+        "package.json",
+        "pnpm-lock.yaml"
+      ],
+      "sourceMapSha256": "75505408841de31234c0bbc0568985aeb9690777382ee9e759c482a9f6961589",
+      "report": {
+        "path": ".codex-work/template-computation/rust-tests-02.json",
+        "sha256": "6387ec89b4308caa3064ca4efc7cdc45f67d1b40456bfe51e95c60186b27f98e",
+        "bytes": 276873
+      },
+      "log": {
+        "path": ".codex-work/template-computation/rust-tests-02.log",
+        "sha256": "e1949660928b165c8dbcb2b795794c5d5fc0acc19b21ac86e6c8cdd267ea8196",
+        "bytes": 25939
+      },
+      "rustTestsPassed": 219,
+      "rustTestsIgnored": 0
+    },
+    {
+      "name": "rust-tests-03",
+      "command": [
+        "env",
+        "MO_TEMPLATE_TEST_OUTPUT=<core-workspace>/.codex-work/template-computation/corpus",
+        "cargo",
+        "test",
+        "-p",
+        "mo-common",
+        "-p",
+        "mo-timeline",
+        "-p",
+        "mo-presentation-model",
+        "-p",
+        "mo-presentation-edit",
+        "-p",
+        "mo-presentation-source",
+        "-p",
+        "mo-pptx",
+        "-p",
+        "mo-presentation-template",
+        "-p",
+        "mo-presentation-operations",
+        "-p",
+        "mo-embedded-sdk",
+        "--tests"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 51.04384616599418,
+      "sourceUnchanged": true,
+      "sourceFiles": 1122,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "tools/mo-cli",
+        "tools/mo-contract-codegen",
+        "tools/test-support",
+        "tools/contracts",
+        "tools/verification/template-computation.mjs",
+        "tools/verification/product_command.py",
+        "fixtures",
+        "contracts/generated",
+        "packages/contracts",
+        "package.json",
+        "pnpm-lock.yaml"
+      ],
+      "sourceMapSha256": "c0494fae487dc1bab17612dccd1280e17a2b3bea01dc83e893a3a9a853abea3e",
+      "report": {
+        "path": ".codex-work/template-computation/rust-tests-03.json",
+        "sha256": "860a4b373bb12a111d86c9157d8e64e6d91af63fc79232d1968df434d15f08fe",
+        "bytes": 276871
+      },
+      "log": {
+        "path": ".codex-work/template-computation/rust-tests-03.log",
+        "sha256": "f4a4895db14ebab5737f93d39632dd05af10ed8ca4a8292ed4fe5ad64fa5b2a1",
+        "bytes": 41466
+      },
+      "rustTestsPassed": 367,
+      "rustTestsIgnored": 0
+    },
+    {
+      "name": "schemas-01",
+      "command": [
+        "cargo",
+        "run",
+        "-p",
+        "mo-contract-codegen",
+        "--",
+        "check",
+        "contracts/generated"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 4.161171874962747,
+      "sourceUnchanged": true,
+      "sourceFiles": 1122,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "tools/mo-cli",
+        "tools/mo-contract-codegen",
+        "tools/test-support",
+        "tools/contracts",
+        "tools/verification/template-computation.mjs",
+        "tools/verification/product_command.py",
+        "fixtures",
+        "contracts/generated",
+        "packages/contracts",
+        "package.json",
+        "pnpm-lock.yaml"
+      ],
+      "sourceMapSha256": "8910b0e3394dcbe1f9c7a791972659dd1f585e43c16350feb7577c95dd0414fe",
+      "report": {
+        "path": ".codex-work/template-computation/schemas-01.json",
+        "sha256": "1f328314a0c016f67c49cc144f6cc3216cb6e19936abd47f4b3b22ca8f02d3dc",
+        "bytes": 276497
+      },
+      "log": {
+        "path": ".codex-work/template-computation/schemas-01.log",
+        "sha256": "16f40cbde43499c50010c6983d50a5d0e37305a9282b0e9970a96667baf277ed",
+        "bytes": 8055
+      },
+      "rustTestsPassed": 0,
+      "rustTestsIgnored": 0
+    },
+    {
+      "name": "sdk-build-01",
+      "command": [
+        "python3",
+        "tools/sdk/build.py",
+        "--output",
+        ".codex-work/template-computation/sdk",
+        "--archive",
+        ".codex-work/template-computation/sdk.tar.gz"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.7809239998459816,
+      "sourceUnchanged": true,
+      "sourceFiles": 1154,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "tools/mo-cli",
+        "tools/mo-contract-codegen",
+        "tools/test-support",
+        "tools/contracts",
+        "tools/verification/template-computation.mjs",
+        "tools/verification/product_command.py",
+        "fixtures",
+        "contracts/generated",
+        "packages/contracts",
+        "package.json",
+        "pnpm-lock.yaml",
+        "tools/sdk",
+        "components/drawingml-presets",
+        "components/unicode-bidi",
+        "components/rust-numeric",
+        "components/rustix"
+      ],
+      "sourceMapSha256": "542d5f9262a7543f8db14742116289ef8664def01ba86336721ce9c454ebc12b",
+      "report": {
+        "path": ".codex-work/template-computation/sdk-build-01.json",
+        "sha256": "eadee28263fe7c22df94eb9d510c6422d3c87972f78fabbaf5a280cd89e35441",
+        "bytes": 283990
+      },
+      "log": {
+        "path": ".codex-work/template-computation/sdk-build-01.log",
+        "sha256": "89fb0816ed14981f556c32ab9ab435308ff31da0ad1550ad0ba44f52fa920fcf",
+        "bytes": 199
+      },
+      "rustTestsPassed": 0,
+      "rustTestsIgnored": 0
+    },
+    {
+      "name": "sdk-consumer-01",
+      "command": [
+        "cargo",
+        "run",
+        "--offline",
+        "--locked",
+        "--manifest-path",
+        ".codex-work/template-computation/consumer/Cargo.toml",
+        "--",
+        ".codex-work/template-computation/corpus"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 25.19324649986811,
+      "sourceUnchanged": true,
+      "sourceFiles": 1757,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "tools/mo-cli",
+        "tools/mo-contract-codegen",
+        "tools/test-support",
+        "tools/contracts",
+        "tools/verification/template-computation.mjs",
+        "tools/verification/product_command.py",
+        "fixtures",
+        "contracts/generated",
+        "packages/contracts",
+        "package.json",
+        "pnpm-lock.yaml",
+        "tools/sdk",
+        "components/drawingml-presets",
+        "components/unicode-bidi",
+        "components/rust-numeric",
+        "components/rustix",
+        ".codex-work/template-computation/sdk",
+        ".codex-work/template-computation/consumer",
+        ".codex-work/template-computation/corpus"
+      ],
+      "sourceMapSha256": "ce887f8d97412bd8dd3fbaa24080c5dcd35546e34bd1f848544b5dd602e3cf0f",
+      "report": {
+        "path": ".codex-work/template-computation/sdk-consumer-01.json",
+        "sha256": "8eaf0fa3d964cd20bc652265e1c0fc613641376c195d7104d54905dbff485054",
+        "bytes": 470913
+      },
+      "log": {
+        "path": ".codex-work/template-computation/sdk-consumer-01.log",
+        "sha256": "c278d999658ccd764d9326ff3036b4e609fa76b64494aecf23154bd2047d12db",
+        "bytes": 5943
+      },
+      "rustTestsPassed": 0,
+      "rustTestsIgnored": 0
+    },
+    {
+      "name": "sdk-consumer-verify-01",
+      "command": [
+        "python3",
+        "tools/sdk/verify.py",
+        "--sha256",
+        "0315251073aa93c69c60bd4d8f68d22a44817a2cb74246f4590ad0a6d935f5ac",
+        ".codex-work/template-computation/sdk"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.22915645805187523,
+      "sourceUnchanged": true,
+      "sourceFiles": 1757,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "tools/mo-cli",
+        "tools/mo-contract-codegen",
+        "tools/test-support",
+        "tools/contracts",
+        "tools/verification/template-computation.mjs",
+        "tools/verification/product_command.py",
+        "fixtures",
+        "contracts/generated",
+        "packages/contracts",
+        "package.json",
+        "pnpm-lock.yaml",
+        "tools/sdk",
+        "components/drawingml-presets",
+        "components/unicode-bidi",
+        "components/rust-numeric",
+        "components/rustix",
+        ".codex-work/template-computation/sdk",
+        ".codex-work/template-computation/consumer",
+        ".codex-work/template-computation/corpus"
+      ],
+      "sourceMapSha256": "ce887f8d97412bd8dd3fbaa24080c5dcd35546e34bd1f848544b5dd602e3cf0f",
+      "report": {
+        "path": ".codex-work/template-computation/sdk-consumer-verify-01.json",
+        "sha256": "7bbbd539f10f7ee0e0ae6010405c0167261382d22cd045e563be6837f46b5869",
+        "bytes": 470892
+      },
+      "log": {
+        "path": ".codex-work/template-computation/sdk-consumer-verify-01.log",
+        "sha256": "f1225fc1f0bb8a47f184748efa1cc9f36232b15b7de932a146e80dae86ee0c8e",
+        "bytes": 32
+      },
+      "rustTestsPassed": 0,
+      "rustTestsIgnored": 0
+    },
+    {
+      "name": "timing-conditions-01",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "mo-pptx",
+        "--test",
+        "timing_conditions"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 3.7872848329134285,
+      "sourceUnchanged": true,
+      "sourceFiles": 1122,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "tools/mo-cli",
+        "tools/mo-contract-codegen",
+        "tools/test-support",
+        "tools/contracts",
+        "tools/verification/template-computation.mjs",
+        "tools/verification/product_command.py",
+        "fixtures",
+        "contracts/generated",
+        "packages/contracts",
+        "package.json",
+        "pnpm-lock.yaml"
+      ],
+      "sourceMapSha256": "c0494fae487dc1bab17612dccd1280e17a2b3bea01dc83e893a3a9a853abea3e",
+      "report": {
+        "path": ".codex-work/template-computation/timing-conditions-01.json",
+        "sha256": "b9750790e96e2392f735c89a5f5c715dc350f2e6fa0c6bf873afd61b93f4398c",
+        "bytes": 276476
+      },
+      "log": {
+        "path": ".codex-work/template-computation/timing-conditions-01.log",
+        "sha256": "93219ad350318b3dc50ce0d3349fdfeabf7948d78d874eaf7811f6cf26712cb2",
+        "bytes": 704
+      },
+      "rustTestsPassed": 4,
+      "rustTestsIgnored": 0
+    },
+    {
+      "name": "types-01",
+      "command": [
+        "pnpm",
+        "run",
+        "check:types"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 2.5078296249266714,
+      "sourceUnchanged": true,
+      "sourceFiles": 1122,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "tools/mo-cli",
+        "tools/mo-contract-codegen",
+        "tools/test-support",
+        "tools/contracts",
+        "tools/verification/template-computation.mjs",
+        "tools/verification/product_command.py",
+        "fixtures",
+        "contracts/generated",
+        "packages/contracts",
+        "package.json",
+        "pnpm-lock.yaml"
+      ],
+      "sourceMapSha256": "fb3d6ed204badd13476bd5f7df61c209e6cf5c9f184bb897e8c875227a2d9a57",
+      "report": {
+        "path": ".codex-work/template-computation/types-01.json",
+        "sha256": "b7284c5d400b9db3f8c87f52a9bea2a1191ce62cfc6512aa22a380292f382c43",
+        "bytes": 276429
+      },
+      "log": {
+        "path": ".codex-work/template-computation/types-01.log",
+        "sha256": "9ac621ffa35b5d37fd779552b87f4863c1b57c14035d502495ce7cb4973232ec",
+        "bytes": 4144
+      },
+      "rustTestsPassed": 0,
+      "rustTestsIgnored": 0
+    },
+    {
+      "name": "wasm-bindgen-01",
+      "command": [
+        "node",
+        "tools/contracts/build-wasm-node.mjs"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.8304057081695646,
+      "sourceUnchanged": true,
+      "sourceFiles": 1122,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "tools/mo-cli",
+        "tools/mo-contract-codegen",
+        "tools/test-support",
+        "tools/contracts",
+        "tools/verification/template-computation.mjs",
+        "tools/verification/product_command.py",
+        "fixtures",
+        "contracts/generated",
+        "packages/contracts",
+        "package.json",
+        "pnpm-lock.yaml"
+      ],
+      "sourceMapSha256": "8910b0e3394dcbe1f9c7a791972659dd1f585e43c16350feb7577c95dd0414fe",
+      "report": {
+        "path": ".codex-work/template-computation/wasm-bindgen-01.json",
+        "sha256": "f122faed2365f7929add2df16c80a5dabf77dad2553766d20462e8f4b8c49f3c",
+        "bytes": 276442
+      },
+      "log": {
+        "path": ".codex-work/template-computation/wasm-bindgen-01.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "rustTestsPassed": 0,
+      "rustTestsIgnored": 0
+    },
+    {
+      "name": "wasm-build-01",
+      "command": [
+        "cargo",
+        "build",
+        "-p",
+        "mo-wasm",
+        "--target",
+        "wasm32-unknown-unknown",
+        "--release"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 65.28256474994123,
+      "sourceUnchanged": true,
+      "sourceFiles": 1122,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "tools/mo-cli",
+        "tools/mo-contract-codegen",
+        "tools/test-support",
+        "tools/contracts",
+        "tools/verification/template-computation.mjs",
+        "tools/verification/product_command.py",
+        "fixtures",
+        "contracts/generated",
+        "packages/contracts",
+        "package.json",
+        "pnpm-lock.yaml"
+      ],
+      "sourceMapSha256": "8910b0e3394dcbe1f9c7a791972659dd1f585e43c16350feb7577c95dd0414fe",
+      "report": {
+        "path": ".codex-work/template-computation/wasm-build-01.json",
+        "sha256": "e825d3c7b73b7d48e70fa57789561b0f5284c0f4b8293dceec343bb0b8ca42fd",
+        "bytes": 276500
+      },
+      "log": {
+        "path": ".codex-work/template-computation/wasm-build-01.log",
+        "sha256": "5e7f877ef2ffe794cd7586108740cc0056268fb9f5582a4e183fccf29ec0ca29",
+        "bytes": 2054
+      },
+      "rustTestsPassed": 0,
+      "rustTestsIgnored": 0
+    }
+  ],
+  "retainedFailures": {
+    "rust-tests-01": "Old unsupported-event test still rejected onNext despite the existing mapped navigation condition. Retained unknown-event and invalid-target rejection; added positive direction and delay assertions.",
+    "rust-tests-02": "New test compared equivalent but differently encoded rational times. Corrected expected native millisecond encoding; no production change.",
+    "clippy-01": "Nested test-helper condition; collapsed without allow/bypass."
+  },
+  "exploratoryHistoryOnly": [
+    "Real native instantiation initially failed unbound source object. Fixed origin identity namespace and retained full source reprojection equality; no source guard removed.",
+    "A nested-instance test initially shadowed its fixture function name. Local binding renamed.",
+    "Strict-wire test caught Serde ignoring extra fields on a unit enum variant. Describe is now a closed empty struct variant; injected fields rejected."
+  ],
+  "parity": {
+    "report": {
+      "path": ".codex-work/template-computation/parity-result.json",
+      "sha256": "79753d54456611a12a8f1b37567b11f14f883e30d60b8b2df7f4d42acfb669c8",
+      "bytes": 4123
+    },
+    "results": {
+      "nativeSha256": "2ede25d55aa33045d09cdbeb7c1ff4140ce2279247e0576255bf57bf0b02e1db",
+      "wasmSha256": "8cad50cdfcdee0cfd716d1b5826e7fa38224de15e295d08765ca5267c8b0a558",
+      "cases": [
+        {
+          "name": "action-extra.request.json",
+          "requestSha256": "f5d383478e524caa0270df865a23dd06ed365ad5692a974d6187c37db3731591",
+          "responseSha256": "43f0cc5dc586dd2ba240bdd5613c6121b49d60de57ffaf7f650db18bde96c8c2",
+          "status": "error"
+        },
+        {
+          "name": "authored.request.json",
+          "requestSha256": "b8f02c839834f02db4a2d58d93b2eb94c51700ef77bd70ee7f8c8dc54ec3949b",
+          "responseSha256": "047425324e4faa5154407d66b4de915eed54ae3d906bba120c13a9e39c513e6b",
+          "status": "instantiated"
+        },
+        {
+          "name": "describe.request.json",
+          "requestSha256": "b51a0836b5b6cccca3607ba900d15c6678a8e1db4c3cf2da175d8b6de55932ae",
+          "responseSha256": "714a6c1596a016ba588b51b704a3d5be4aeb78dfe8a8eccdb0138d263e8518b8",
+          "status": "described"
+        },
+        {
+          "name": "duplicate.request.json",
+          "requestSha256": "e944d26223c5598252078068e34ff1213fb50bd8adf1bed46f52c46281e375ff",
+          "responseSha256": "c058faa08b4fe503be7a7952dff8843946c45a4d448b4ee43fe64fa74e27daf7",
+          "status": "error"
+        },
+        {
+          "name": "jobId.request.json",
+          "requestSha256": "f9798d7faca5992e6dabeaac08737eae6dad4b166e129cf09297317c216e0167",
+          "responseSha256": "6eddad5ccdbea399bc057f7a982aea45a7c2a73379affc100cce497764b094fc",
+          "status": "error"
+        },
+        {
+          "name": "native-0.request.json",
+          "requestSha256": "a80c6f4634db1cc23e1111e286d94cf30ba0d2ed5578638ad2fd3d45d0948e33",
+          "responseSha256": "cb57b3e99178c8c3d7c8d5bf033c6625caefbc7416791e2e56b4ac6827bac692",
+          "status": "instantiated"
+        },
+        {
+          "name": "native-1.request.json",
+          "requestSha256": "84a4c334fba3c0600e1a89854ec05b6d50e035f4ec92e7ae521b035894e2903b",
+          "responseSha256": "be1a630f136c0339f6e4f64060b862810189f224bd3632a9940589162b3e9f19",
+          "status": "instantiated"
+        },
+        {
+          "name": "permissions.request.json",
+          "requestSha256": "a908b88d7869eff2448b4ae5a7aa7472d102a47fc41fbffd1108308e43c47355",
+          "responseSha256": "0b1930f80bac1d4bd9dc6ebc123ce146374980ed5b5a499712806bd3cd05b453",
+          "status": "error"
+        },
+        {
+          "name": "source-integrity.request.json",
+          "requestSha256": "4b14c1e29ea68cf230237a996fff8fc20aaccaf611882bced442d3f3682df230",
+          "responseSha256": "10d2b3455f88b5290ca9c60db0df0df8f14faf8b7c2c07a66e843dfd28859ac2",
+          "status": "error"
+        },
+        {
+          "name": "source-pin.request.json",
+          "requestSha256": "0d2924c9ea4380ada018e269082320a3b36192569c21086f6c23b76bc1b745b6",
+          "responseSha256": "abd4a61614727513a6bafef7b4a3bb57580add1de0bdfa3f84d2308ceac69b9b",
+          "status": "error"
+        },
+        {
+          "name": "storage.request.json",
+          "requestSha256": "8c3d029da591200e057df7dc2b9c7c85d9769a8974ff1efd6eb1dfc66bebce30",
+          "responseSha256": "000857060805fbb03d300b01c4c7bc23b03e0ef07b642f9869f94882795bbf64",
+          "status": "error"
+        },
+        {
+          "name": "target-extra.request.json",
+          "requestSha256": "356f577a8f1566575381d5b552991a777accf567d97d95c9b8c44b3887dfe56b",
+          "responseSha256": "175dfb25063abf57a95f953257b7b22f92668a0839c7b4fe898acc4f698c1567",
+          "status": "error"
+        },
+        {
+          "name": "template-pin.request.json",
+          "requestSha256": "bac48a4f2725503b6ef4a4a9ab050328dfc554136109ee65d068ba5c483e5b42",
+          "responseSha256": "eddf584977a2b04c2dc3ad72041fbbdd16be17f1a6fb15c3c5a9fb623ea9883a",
+          "status": "error"
+        },
+        {
+          "name": "unexpected.request.json",
+          "requestSha256": "f0085d70636627a394b8b85626ba3ff2a8b08161deabc645792810cc6decd53d",
+          "responseSha256": "c486d1b6e52c38c61cbbe15a5d8aad8a1dcf65fd8adacd99b487f868f9417ff0",
+          "status": "error"
+        },
+        {
+          "name": "version.request.json",
+          "requestSha256": "93993285cf03f0403bfc710c5ac5da7a335ad7cc54233b241c45c8ab013f8465",
+          "responseSha256": "cbc2142c399dbd24cfc537035ff14d24519fff45529a8ff2fdc245c449cd4959",
+          "status": "error"
+        }
+      ]
+    }
+  },
+  "nativePackages": {
+    "report": {
+      "path": ".codex-work/template-computation/native-packages.json",
+      "sha256": "3ee5edcdbf9e1fcc4387136867468f063234cb41202ab9655ec2abcfe5323727",
+      "bytes": 1236
+    },
+    "results": {
+      "source": {
+        "file": "source.pptx",
+        "sha256": "6b481c31f7d0bc9f3c00987d66e441a868438a0c0965a971ae915b144642fe35",
+        "bytes": 11039
+      },
+      "instances": [
+        {
+          "file": "instance-0.pptx",
+          "bytes": 11058,
+          "sha256": "c31e22f95ac93f1d262ba611fb5578f186a30a9a8389ec7006b74f9020d9a654",
+          "parts": 21,
+          "xmlParts": 20,
+          "changedParts": [
+            "ppt/slides/slide1.xml"
+          ],
+          "text": [
+            "原生模板 😀 <&>",
+            "MusterOffice · PresentationML export verification",
+            "中文 / العربية / 🚀 / é",
+            "Source text stays text; shapes stay native shapes."
+          ],
+          "unknownExtensionPreserved": true
+        },
+        {
+          "file": "instance-1.pptx",
+          "bytes": 11037,
+          "sha256": "9d6fbd7542a277dc6b75b46c8bb98ec0b74b10f43eafa49c9b996fac0887a804",
+          "parts": 21,
+          "xmlParts": 20,
+          "changedParts": [
+            "ppt/slides/slide1.xml"
+          ],
+          "text": [
+            "Another isolated native instance",
+            "MusterOffice · PresentationML export verification",
+            "中文 / العربية / 🚀 / é",
+            "Source text stays text; shapes stay native shapes."
+          ],
+          "unknownExtensionPreserved": true
+        }
+      ]
+    }
+  },
+  "sdk": {
+    "manifest": {
+      "path": ".codex-work/template-computation/sdk/sdk-manifest.json",
+      "sha256": "0315251073aa93c69c60bd4d8f68d22a44817a2cb74246f4590ad0a6d935f5ac",
+      "bytes": 217288
+    },
+    "archive": {
+      "path": ".codex-work/template-computation/sdk.tar.gz",
+      "sha256": "6422db47c8e30f84cce59e22248a8d7141716eac1166682cfaf74b1e9928aaea",
+      "bytes": 842968
+    },
+    "libraries": 26,
+    "registryPackages": 54,
+    "files": 564,
+    "independentConsumerCases": 3,
+    "consumerSource": [
+      {
+        "path": ".codex-work/template-computation/consumer/Cargo.toml",
+        "sha256": "344149cbcf9f3e4e958da731a30b50695a5086e3e37ea39eb1b36e240df0fa2c",
+        "bytes": 180
+      },
+      {
+        "path": ".codex-work/template-computation/consumer/Cargo.lock",
+        "sha256": "9994531ccc0a2826fa89c5c31220324f7cd61911ea5d74496b16e15829c399a9",
+        "bytes": 17307
+      },
+      {
+        "path": ".codex-work/template-computation/consumer/src/main.rs",
+        "sha256": "bd8e27632534089f2c1dc8dede6ab565c4c724a4d0ea43e6a84276ef6ff73dec",
+        "bytes": 1294
+      }
+    ],
+    "sizeMeaning": "Source archive only; not linked binary, desktop installation, download or runtime memory measurement."
+  },
+  "newProductionSource": [
+    {
+      "path": "crates/mo-presentation-template/src/bindings.rs",
+      "sha256": "2b34ca17690fdf2a65f58dff8da938d34ecd2fd20f0c10d9e62a25b1ac759412",
+      "bytes": 8278,
+      "lines": 216
+    },
+    {
+      "path": "crates/mo-presentation-template/src/computation.rs",
+      "sha256": "97790ddcbe836a2de404067da4a40f27169b162b8dbb98c2bd92e149bdef4ea1",
+      "bytes": 3252,
+      "lines": 92
+    },
+    {
+      "path": "crates/mo-presentation-template/src/contract.rs",
+      "sha256": "593bf553ec2a660a9175655e8494f9dea50fd746fbcea59326eafe64b20dfc26",
+      "bytes": 5239,
+      "lines": 151
+    },
+    {
+      "path": "crates/mo-presentation-template/src/error.rs",
+      "sha256": "90df6a817880b718328634ea0d71ca2bd602db5e256e66d22ef1a0ef1fd6c4f7",
+      "bytes": 3432,
+      "lines": 95
+    },
+    {
+      "path": "crates/mo-presentation-template/src/lib.rs",
+      "sha256": "8f798d9862b5c150259ce88f689b034fbead123f3bc806492fea562c96dbb6e4",
+      "bytes": 8988,
+      "lines": 241
+    }
+  ],
+  "notAccepted": [
+    "partial-page assembly and identity remapping",
+    "advanced chart/table/SmartArt/math template parameters",
+    "layout stress and complete native capability coverage",
+    "Musterwork selected-template workflow and fixed-material upgrade",
+    "full MCP/Skill/Plugin template tool workflow",
+    "browser application session and playback integration",
+    "Office/WPS visual and editable roundtrip acceptance",
+    "real fonts, performance, size and full P00/E0-E3 replacement gates"
+  ],
+  "goalRemainsActive": true
+}

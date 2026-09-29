@@ -1,0 +1,297 @@
+{
+  "stage": "product-template-render",
+  "date": "2026-09-28",
+  "status": "verified-implementation-segment",
+  "scope": {
+    "implemented": [
+      "Original OfficeHost shared permits for SDK-frozen rendering environment and native template source rendering.",
+      "Actual worker source PPTX, page previews and truthful SDK delivery receipts, then downstream Agent template instance export."
+    ],
+    "notCompleted": [
+      "Automatic upload remains on the HTML coordinator; native maintained Agent policy/stages and fenced publication are not wired yet.",
+      "Template parameter stress, complete quality, advanced content, page assembly, HTML migration, real desktop/model and Office/WPS replacement acceptance."
+    ]
+  },
+  "environment": {
+    "system": "Darwin",
+    "release": "25.2.0",
+    "machine": "arm64",
+    "productBranch": "codex/musteroffice-integration",
+    "buildProfile": "debug tests, not distribution size or performance evidence"
+  },
+  "materials": {
+    "sdkManifestSha256": "c2a893bc0a9cbac1bee5242ef8acbc26ea2657feb4f66f6c64db906a2c30f3b6",
+    "worker": {
+      "sha256": "9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+      "byteLength": 42660544
+    },
+    "sameRegistryLockAndSdkMaterialsAsPreviousStage": true,
+    "newBinaries": 0,
+    "newRegistryDependencies": 0
+  },
+  "checks": [
+    {
+      "run": "unit-02",
+      "report": ".codex-work/integration/template-render/unit-02.json",
+      "reportSha256": "42531ea50562f692e7e75ee75f96732abd267317be6a6323577cd09c7d9ee7b5",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-render/unit-02-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-render/unit-02-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-render/unit-02-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-musteroffice",
+        "--lib",
+        "template::"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "elapsedSeconds": 4.18976908409968,
+      "logSha256": "7b6984731ebf94edeb67f17432e0ddf9db0ba92fb25bdf259465bde2e1e98624"
+    },
+    {
+      "run": "native-01",
+      "report": ".codex-work/integration/template-render/native-01.json",
+      "reportSha256": "db751514e7a8927c0e5bf25b31fa90555cb5bbde99bf72f513dffc243ee3f9c3",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-render/native-01-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-render/native-01-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-render/native-01-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::office_agent::templates::native_template_instance_exports_real_retained_pptx",
+        "--",
+        "--include-ignored",
+        "--test-threads=1"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "elapsedSeconds": 34.87133066705428,
+      "logSha256": "b80546def147136acfcc425bd8d492c576ac26b5e953686a632b8454ebdbf9b4"
+    },
+    {
+      "run": "libraries-02",
+      "report": ".codex-work/integration/template-render/libraries-02.json",
+      "reportSha256": "a5fac83832b7a14fde3b6abea884d740c664a7ce649b797669bafab6509d3947",
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-render/libraries-02-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-render/libraries-02-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-render/libraries-02-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "clippy",
+        "--no-deps",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-musteroffice",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "elapsedSeconds": 28.29563200008124,
+      "logSha256": "dc46ca26f94b324bfdfdcc2412f876ea1bcc99a028b1b125e9a8ae39e69d977b"
+    }
+  ],
+  "counts": {
+    "templateUnitTests": 10,
+    "newRenderUnitTests": 3,
+    "actualNativeAgentConformanceTests": 1
+  },
+  "lintScope": "musterwork-agent-musteroffice --all-targets --no-deps -- -D warnings; not a full product lint claim",
+  "actualOutputVerification": {
+    "status": "passed",
+    "assets": 12,
+    "sourcePptxSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+    "sourceBytes": 10735,
+    "sourceParts": 21,
+    "allSourceBytesUnchanged": true,
+    "settingsDigest": "defdb1f5f6340f6d13d5c9654f5ade8b3bfcb6a79731a2ffd578e45b2c435ecb",
+    "environmentMatchesActualOutputContext": true,
+    "fontIdentityMatchesActualOutput": true,
+    "previews": [
+      {
+        "pageId": "ca52b0537063d3c012cd17478996a12ee499531292ff78c0448d450b77b11704",
+        "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d",
+        "bytes": 14915,
+        "equalToOwnedFixture": "006.png"
+      },
+      {
+        "pageId": "ed5e4b8724dd2eafbbb31ca55c513031c65cbbe9d12fcecd32369530c55fc772",
+        "sha256": "b347f37576dff5268f77cc7666066568d50e993ee690d3941c27693734acd0c9",
+        "bytes": 11174,
+        "equalToOwnedFixture": "008.png"
+      }
+    ],
+    "bundleClaims": [
+      {
+        "kind": "structure",
+        "status": "passed",
+        "subjectSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+        "basis": "static-inspection",
+        "profileId": "opc-zip-xml-graph-digest-v1-draft",
+        "evidenceAssetIds": [
+          "asset:37c8cb09125f77a38489e9e85ec48435120cabfc3e9121a04752abd4d42aea3e"
+        ],
+        "reason": "Actual stored OPC/ZIP/XML graph and digest verified; full PresentationML XSD is not asserted."
+      },
+      {
+        "kind": "layout",
+        "status": "not_proven",
+        "subjectSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+        "basis": "none",
+        "profileId": "presentations-pptx-resource-delivery-v1-draft",
+        "evidenceAssetIds": [
+          "asset:37c8cb09125f77a38489e9e85ec48435120cabfc3e9121a04752abd4d42aea3e"
+        ],
+        "reason": "Every editor preview was rendered, but full layout fidelity has not been proved."
+      },
+      {
+        "kind": "native-editability",
+        "status": "not_proven",
+        "subjectSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+        "basis": "none",
+        "profileId": "presentations-pptx-resource-delivery-v1-draft",
+        "evidenceAssetIds": [
+          "asset:37c8cb09125f77a38489e9e85ec48435120cabfc3e9121a04752abd4d42aea3e"
+        ],
+        "reason": "Native output was written; complete external editing roundtrip has not been proved."
+      },
+      {
+        "kind": "playback",
+        "status": "not_proven",
+        "subjectSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+        "basis": "none",
+        "profileId": "presentations-pptx-resource-delivery-v1-draft",
+        "evidenceAssetIds": [
+          "asset:37c8cb09125f77a38489e9e85ec48435120cabfc3e9121a04752abd4d42aea3e"
+        ],
+        "reason": "Editor previews do not prove animation, transition or media playback."
+      },
+      {
+        "kind": "target-application",
+        "status": "not_proven",
+        "subjectSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+        "basis": "none",
+        "profileId": "presentations-pptx-resource-delivery-v1-draft",
+        "evidenceAssetIds": [
+          "asset:37c8cb09125f77a38489e9e85ec48435120cabfc3e9121a04752abd4d42aea3e"
+        ],
+        "reason": "This delivery has no target-application test evidence."
+      }
+    ],
+    "qualityFlags": {
+      "layoutQualityProven": false,
+      "nativeEditabilityProven": false,
+      "playbackProven": false,
+      "targetApplicationProven": false
+    },
+    "instanceSha256": "86f741759a6a746f4bd2fa5a3d0097939b2f14ddfeeb622fb8c65ea8237a801a",
+    "instanceMatchesPreviousStage": true,
+    "scope": "Owned native source rendering and downstream actual Agent template instance. Does not prove full quality, Office/WPS or automatic upload wiring."
+  },
+  "actualOutputReportSha256": "6d132d0eb68e3b261c8fbef7ce6f64e312430e6dcd8304535c1699ae3b7d4085",
+  "sourceDelta": {
+    "changed": [
+      "crates/infrastructure/musteroffice/src/host.rs",
+      "crates/infrastructure/musteroffice/src/lib.rs",
+      "crates/infrastructure/musteroffice/src/template.rs",
+      "crates/infrastructure/musteroffice/src/template/package.rs",
+      "crates/infrastructure/musteroffice/src/template/tests.rs",
+      "tests/conformance/tests/sqlite_agent_loop/presentation_office_agent/templates.rs"
+    ],
+    "added": [
+      "crates/infrastructure/musteroffice/src/template/render.rs",
+      "crates/infrastructure/musteroffice/src/template/render/tests.rs"
+    ],
+    "removed": [],
+    "dependencyAndSdkInputsUnchanged": true,
+    "nativeToFinalUnitDelta": [
+      "crates/infrastructure/musteroffice/src/template/render/tests.rs"
+    ],
+    "deltaReason": "Only a needless borrow in the new render unit test was corrected; production and conformance code are byte-identical."
+  },
+  "sourceFiles": [
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/host.rs",
+      "sha256": "f61df73bd91d2b829739e255830677100db3a294569ebbaf9b43e123a8d2a331",
+      "lines": 150
+    },
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/lib.rs",
+      "sha256": "4af07b63e8ac98ee51ef56213712b9cc4cb36cabe4641533250bbce31c56b476",
+      "lines": 43
+    },
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/template.rs",
+      "sha256": "a067cfd409bc9e2cf92792e585836fa35e195c9f145325e863468971b7521b0d",
+      "lines": 168
+    },
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/template/package.rs",
+      "sha256": "07dbef9ef614163a30fddd77740ef4c92edc880946efdcac2fa27908fd1900a7",
+      "lines": 250
+    },
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/template/tests.rs",
+      "sha256": "63faee2f2b3c17093260c58de223ba209885e2455c42d3907469fb49eb9fffec",
+      "lines": 435
+    },
+    {
+      "path": "apps/agent-runtime/tests/conformance/tests/sqlite_agent_loop/presentation_office_agent/templates.rs",
+      "sha256": "b9210aa30fe81369f122d2b4c134b832ed51a774443f84480d1f2527c8640467",
+      "lines": 491
+    },
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/template/render.rs",
+      "sha256": "ef069c606e10b70c93af603db74a0cd3af67f2b2ad29b9fe8f5c4a245b94d231",
+      "lines": 287
+    },
+    {
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/template/render/tests.rs",
+      "sha256": "1639656f799bc39efbfb5731b6c8ce03de261a092d49a8a1a769c4f015bbf846",
+      "lines": 192
+    }
+  ],
+  "retainedFailures": [
+    {
+      "run": "libraries-01",
+      "reportSha256": "80a4aa2c7f43c3fc322ed2c6ea4cc4948c3601cd64d8ef1227a0f2530122e4d8",
+      "exitCode": 101,
+      "sourceUnchanged": true,
+      "reason": "Test-only needless borrow rejected by strict Clippy; fixed without changing lint scope or production code."
+    }
+  ],
+  "priorRegressionEvidence": "2026-09-28-product-template-source-verification.json",
+  "performanceClaim": false,
+  "distributionSizeClaim": false
+}

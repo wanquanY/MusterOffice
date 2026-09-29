@@ -1,0 +1,868 @@
+{
+  "format": "musteroffice.flat-motion-presets-verification/1",
+  "date": "2026-09-29",
+  "status": "passed-bounded-native-interop-and-product-stage",
+  "goal": "ACTIVE; complete first-phase implementation and replacement gates remain open",
+  "scope": "Native path effect identity for flat line/curve timelines; strict symmetric neutral envelope lifting; preserve exact paths and all original leaf timing semantics.",
+  "sources": [
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-pptx/tests/timing_envelope.rs",
+      "sha256": "da631f5ec36ed2b80bdf06b16431a009caffd4e38ddd84ad02f09c07a1daa75d",
+      "byteLength": 17386
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-pptx/src/timing/write_flat.rs",
+      "sha256": "0d63aaabe33bcec49c665ee3937b134488f91775ba05b1b6b0a377932d2a8602",
+      "byteLength": 2600
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-presentation-source/src/timing/preset.rs",
+      "sha256": "15102ca409da5fee6644c7b9fa9a5f677f4309a9a0565a521c44108ba7c527d2",
+      "byteLength": 2526
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-presentation-source/src/timing/read/envelope.rs",
+      "sha256": "d5a8fdc84841071f09ddb59337ba1f52dcc582f069bb07205ab56a2117dc25f6",
+      "byteLength": 6148
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "docs/implementation/flat-motion-presets.md",
+      "sha256": "7cad461f957e84d17c0b9747f10a62c14222ebcb94bacb8d46089826b40a24f9",
+      "byteLength": 4293
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "docs/implementation/motion-paths.md",
+      "sha256": "bfb9dc241b02a31beae306cdfdc3e6044b3cd2c5c15eed827ef777538357cec3",
+      "byteLength": 7459
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "docs/implementation/product-worktree.md",
+      "sha256": "6ccc999a1603db0b57154abea07b9b342d5571f94b4d1f9376711fbd8e95deec",
+      "byteLength": 8718
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "docs/implementation/progress.md",
+      "sha256": "d3102ff6444934006082a7d81b7f7e86956acfc2e3ae36b44b124829a73d34bb",
+      "byteLength": 140654
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "README.md",
+      "sha256": "bdbe57e40fa43833778ccf33df03cdbd0103dfaf0b299697791bfd11114f2570",
+      "byteLength": 23786
+    }
+  ],
+  "coreCommands": [
+    {
+      "name": "rust",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/rust.json",
+        "sha256": "bbb30af7f0372a6c71c68499ccac2c592c35a8a5a42b42017d4db10f990f5b98",
+        "byteLength": 77757
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/rust.log",
+        "sha256": "d76fb40260e14020236b1af7713a1a55264bf7e2ac5aa9c72109da76b803800b",
+        "byteLength": 47296
+      },
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-presentation-source",
+        "-p",
+        "mo-pptx",
+        "-p",
+        "mo-timeline"
+      ],
+      "sourceFiles": 299,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "clippy",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/clippy.json",
+        "sha256": "f80bd683a8db491553fb18349f1d90e8e857bd9d8ea47cce09dac5d32a275665",
+        "byteLength": 111991
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/clippy.log",
+        "sha256": "ab953e36b125a453b0dd34def571ac3b3bf55b5f0646da7b90fad4ea24f8fb7e",
+        "byteLength": 408
+      },
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-timeline",
+        "-p",
+        "mo-presentation-model",
+        "-p",
+        "mo-presentation-source",
+        "-p",
+        "mo-pptx",
+        "-p",
+        "mo-presentation-compile",
+        "-p",
+        "mo-presentation-edit",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "sourceFiles": 430,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "native-build",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/native-build.json",
+        "sha256": "f206a9f9e17586288e103cb428aedcead6147baa7e37c1f2985aedcd09e7b59d",
+        "byteLength": 218412
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/native-build.log",
+        "sha256": "b4894a60bf1e3c1cad0612b79ee40680a4137cc2bfd0f479ef52c77455b71a7e",
+        "byteLength": 1504
+      },
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-cli",
+        "-p",
+        "mo-raster-worker",
+        "-p",
+        "mo-export-worker"
+      ],
+      "sourceFiles": 898,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "wasm-build",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/wasm-build.json",
+        "sha256": "6c88bb89d570a9dbf563f4f0b8517aacff3a8545864c40f356e668150df06675",
+        "byteLength": 212938
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/wasm-build.log",
+        "sha256": "cecf8be4634c0551b6aa50c52cc31055793fd4f0927bddb172da231aa3affc93",
+        "byteLength": 846
+      },
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--release",
+        "-p",
+        "mo-wasm",
+        "--target",
+        "wasm32-unknown-unknown"
+      ],
+      "sourceFiles": 874,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "wasm-web",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/wasm-web.json",
+        "sha256": "1cc2ebb04dce9ab8dbbc924e866dd900788af309d560b1ff38826e73f222eeef",
+        "byteLength": 1110
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/wasm-web.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byteLength": 0
+      },
+      "command": [
+        ".codex-work/toolchain/bin/wasm-bindgen",
+        "--target",
+        "web",
+        "--out-dir",
+        "${MUSTEROFFICE}/.codex-work/flat-motion-presets/wasm-web",
+        "target/wasm32-unknown-unknown/release/mo_wasm.wasm"
+      ],
+      "sourceFiles": 2,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "sdk",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/sdk.json",
+        "sha256": "97686d782dc98ccd03281beb8bfb6bf385b6d1648d184a2323420894554dbcc1",
+        "byteLength": 214603
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/sdk.log",
+        "sha256": "84f390af91780f3c067549fb65de4d73fad8b999c719cffc0649dae0b56149d9",
+        "byteLength": 199
+      },
+      "command": [
+        "python3",
+        "tools/sdk/build.py",
+        "--output",
+        "${MUSTEROFFICE}/.codex-work/flat-motion-presets/sdk"
+      ],
+      "sourceFiles": 882,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "bundle",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/bundle.json",
+        "sha256": "f1e45ed3d111646ceb4a5e64bd372fe2d37942bcde067c811a5e8b412d3fc092",
+        "byteLength": 43866
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/bundle.log",
+        "sha256": "e2c3290b261082a2d05048b49e267b5b1c168f980595672d4a69488442c93fbc",
+        "byteLength": 100
+      },
+      "command": [
+        "python3",
+        "tools/playback-sdk/build.py",
+        "--output",
+        "${MUSTEROFFICE}/.codex-work/flat-motion-presets/bundle",
+        "--wasm-dir",
+        "${MUSTEROFFICE}/.codex-work/flat-motion-presets/wasm-web",
+        "--raster-dir",
+        "${MUSTEROFFICE}/.codex-work/snapshot-scopes/wasm",
+        "--text-dir",
+        "${MUSTEROFFICE}/.codex-work/harfbuzz/release"
+      ],
+      "sourceFiles": 167,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "corpus",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/corpus.json",
+        "sha256": "885a3644ca230a81b8d65040a37bc87d63e3b32aa7e2abef36e013bb64f3b512",
+        "byteLength": 1878
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/corpus.log",
+        "sha256": "8b646d03b54647da18e71b85cdf1421a319b0900b2598439e2da75f99cdaaaaa",
+        "byteLength": 110
+      },
+      "command": [
+        "python3",
+        "tools/verification/motion-path-fixtures.py",
+        "--output",
+        "${MUSTEROFFICE}/.codex-work/flat-motion-presets/corpus",
+        "--export-template",
+        "${MUSTEROFFICE}/.codex-work/motion-paths/line-control.export.json",
+        "--page-template",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/corpus/auto-parallel-0.request.json",
+        "--author-template",
+        "${MUSTEROFFICE}/.codex-work/motion-native/corpus-02/author-0.request.json",
+        "--cli",
+        "${MUSTEROFFICE}/target/debug/mo-cli",
+        "--worker",
+        "${MUSTEROFFICE}/target/debug/mo-raster-worker",
+        "--schema",
+        "${MUSTEROFFICE}/.codex-work/ecma376/xsd/pml.xsd"
+      ],
+      "sourceFiles": 3,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "playback-sync",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/playback-sync.json",
+        "sha256": "c977fbb5d8ac7620e70ec56c155c4d3c82c8fe458233f0150c7284e0d2e56091",
+        "byteLength": 98833
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/playback-sync.log",
+        "sha256": "9e03cd473eae6f8f88b50a71e2de96bf6483ca1b41063c73adb8115f9ae7a900",
+        "byteLength": 43
+      },
+      "command": [
+        "node",
+        "tools/verification/wasm-playback-reference.mjs",
+        "${MUSTEROFFICE}/.codex-work/flat-motion-presets/playback-sync",
+        "${MUSTEROFFICE}/.codex-work/flat-motion-presets/bundle",
+        "448d76996853514bba42a437e5ce809b5130762e4b6e615e12cb1bbf246dd433",
+        "${MUSTEROFFICE}/.codex-work/flat-motion-presets/corpus/author.json",
+        "${MUSTEROFFICE}/.codex-work/flat-motion-presets/corpus/source.json",
+        "sync"
+      ],
+      "sourceFiles": 334,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "playback-stepped",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/playback-stepped.json",
+        "sha256": "115bd1c88fea183a30f583fd3c28f37aa118835c82cb1d987a3de8d44f7d268c",
+        "byteLength": 98839
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/playback-stepped.log",
+        "sha256": "9e03cd473eae6f8f88b50a71e2de96bf6483ca1b41063c73adb8115f9ae7a900",
+        "byteLength": 43
+      },
+      "command": [
+        "node",
+        "tools/verification/wasm-playback-reference.mjs",
+        "${MUSTEROFFICE}/.codex-work/flat-motion-presets/playback-stepped",
+        "${MUSTEROFFICE}/.codex-work/flat-motion-presets/bundle",
+        "448d76996853514bba42a437e5ce809b5130762e4b6e615e12cb1bbf246dd433",
+        "${MUSTEROFFICE}/.codex-work/flat-motion-presets/corpus/author.json",
+        "${MUSTEROFFICE}/.codex-work/flat-motion-presets/corpus/source.json",
+        "stepped"
+      ],
+      "sourceFiles": 334,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "motion-regression",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/motion-regression.json",
+        "sha256": "2800c3b6a9ace44345f75ab993adde1d9ff9c96117062615b26a46c6d57a07cb",
+        "byteLength": 54776
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/motion-regression.log",
+        "sha256": "786029e36d2ee011af25562cc656ad712914adbd5f9a5318ae3af07ec7260624",
+        "byteLength": 43
+      },
+      "command": [
+        "node",
+        "tools/verification/wasm-playback-reference.mjs",
+        "${MUSTEROFFICE}/.codex-work/flat-motion-presets/motion-regression",
+        "${MUSTEROFFICE}/.codex-work/flat-motion-presets/bundle",
+        "448d76996853514bba42a437e5ce809b5130762e4b6e615e12cb1bbf246dd433",
+        "${MUSTEROFFICE}/.codex-work/motion-native/corpus-02/author.json",
+        "${MUSTEROFFICE}/.codex-work/motion-native/corpus-02/source.json",
+        "stepped"
+      ],
+      "sourceFiles": 193,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    }
+  ],
+  "productCommands": [
+    {
+      "name": "prepare-sdk",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/flat-motion-presets/prepare-sdk.json",
+        "sha256": "d982fc8d335ef629d3e0c14ffe2f633c3e87992beae62f0b6df9b98776a13c1a",
+        "byteLength": 1569
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/flat-motion-presets/prepare-sdk.log",
+        "sha256": "237ab5569938d84041db3f309990ec9d2397592e955482a38a38d5c268d8995b",
+        "byteLength": 648
+      },
+      "command": [
+        "node",
+        "scripts/prepare-musteroffice-development.mjs",
+        "--sdk",
+        "${MUSTEROFFICE}/.codex-work/flat-motion-presets/sdk",
+        "--worker",
+        "${MUSTEROFFICE}/target/debug/mo-export-worker"
+      ],
+      "sourceFiles": 4,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "prepare-playback",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/flat-motion-presets/prepare-playback.json",
+        "sha256": "ff02210def903627ab1d382087d4e74a06efc94507263a16eeed9e29825c4e97",
+        "byteLength": 1245
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/flat-motion-presets/prepare-playback.log",
+        "sha256": "88e0a8ee349f6e4dee67d71f3fe3ce31f29b4b6dff6f6ca88803c57267cc88db",
+        "byteLength": 9686
+      },
+      "command": [
+        "node",
+        "scripts/prepare-musteroffice-playback.mjs",
+        "--source",
+        "${MUSTEROFFICE}/.codex-work/flat-motion-presets/bundle"
+      ],
+      "sourceFiles": 3,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "consumer-build",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/flat-motion-presets/consumer-build.json",
+        "sha256": "945e391e688e9faf19f290447dba00f0c030408c8f3cfa3b47c1a1f853c12612",
+        "byteLength": 2358
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/flat-motion-presets/consumer-build.log",
+        "sha256": "c3b8789f5912136261a407cd4115120f79a9748c89ab0baddc14fa169604e61d",
+        "byteLength": 7523
+      },
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "${MUSTERWORK_WORKTREE}/.codex-work/integration/flat-motion-presets/export-consumer/Cargo.toml"
+      ],
+      "sourceFiles": 5,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "consumer-sequence",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/flat-motion-presets/consumer-sequence.json",
+        "sha256": "2dea584a3b3b1e9bfc81e537840d51135718f8d86856673a4f214ecf0d730e24",
+        "byteLength": 2388
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/flat-motion-presets/consumer-sequence.log",
+        "sha256": "5d7a34092b1d2b971880a8b038fa4dcf1415239022f088c99d07b1878fa6ab7d",
+        "byteLength": 576
+      },
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "${MUSTERWORK_WORKTREE}/.codex-work/integration/flat-motion-presets/export-consumer/Cargo.toml",
+        "--test",
+        "sequence"
+      ],
+      "sourceFiles": 5,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "adapter",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/flat-motion-presets/adapter.json",
+        "sha256": "6c0dff9253b23339b4282ea9a890a6fde42de710a95d1942e8bb915ec073d555",
+        "byteLength": 15483
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/flat-motion-presets/adapter.log",
+        "sha256": "f1b3871875d418c4c41483be8a87997c038bd7294f82cd49b3575d0a26dfe31f",
+        "byteLength": 8199
+      },
+      "command": [
+        "cargo",
+        "test",
+        "--manifest-path",
+        "apps/agent-runtime/Cargo.toml",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-musteroffice",
+        "--lib"
+      ],
+      "sourceFiles": 50,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "client",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/flat-motion-presets/client.json",
+        "sha256": "724b79f9ac8c0293ea26d1a50be4dcc28fd99f9b6a1878e71dca226c476b6352",
+        "byteLength": 108450
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/flat-motion-presets/client.log",
+        "sha256": "4f717a8183c7471270794d6afcd7abc0f4837526efe89830829cba3645ab4060",
+        "byteLength": 1171
+      },
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_NAVIGATION_ROOT=${MUSTERWORK_WORKTREE}/.codex-work/integration/flat-motion-presets/fixtures",
+        "MUSTERWORK_OFFICE_NAVIGATION_REPORT=${MUSTERWORK_WORKTREE}/.codex-work/integration/flat-motion-presets/actual-worker.json",
+        "MUSTERWORK_OFFICE_CATALOG_FLOW_ROOT=${MUSTERWORK_WORKTREE}/.codex-work/integration/native-model-flow/loop-02-actual.json.catalog-device-assets",
+        "MUSTERWORK_OFFICE_NATIVE_FRAMES=${MUSTEROFFICE}/.codex-work/delivery-playback/parity-01",
+        "pnpm",
+        "--filter",
+        "@musterwork/agent-runtime-product-client",
+        "exec",
+        "vitest",
+        "run",
+        "tests/office-playback.integration.spec.ts",
+        "tests/office-navigation.integration.spec.ts",
+        "tests/office-playback-worker-client.spec.ts",
+        "tests/office-presentation-preview.spec.ts",
+        "tests/office-presentation-artifact.spec.ts",
+        "--environment",
+        "node"
+      ],
+      "sourceFiles": 360,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "viewer",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/flat-motion-presets/viewer.json",
+        "sha256": "bf604686dd0f27e2d63a237b4b40442f7156f3c469323b1fa1c6ca63125a7372",
+        "byteLength": 75324
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/flat-motion-presets/viewer.log",
+        "sha256": "a5becd8889fb547004e59b6afaca1331b413f7ade3282f8d224933da96226251",
+        "byteLength": 444
+      },
+      "command": [
+        "pnpm",
+        "--filter",
+        "@musterwork/desktop",
+        "exec",
+        "vitest",
+        "run",
+        "src/components/artifacts/__tests__/MusterworkOfficePlayer.spec.ts",
+        "src/components/artifacts/__tests__/MusterworkOfficePreview.spec.ts"
+      ],
+      "sourceFiles": 256,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "types",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/flat-motion-presets/types.json",
+        "sha256": "d25adab011a4df5a68b107c5206b9c25e31844755f7938ef3ee305a0a4ada790",
+        "byteLength": 75590
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/flat-motion-presets/types.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byteLength": 0
+      },
+      "command": [
+        "pnpm",
+        "--filter",
+        "@musterwork/desktop",
+        "exec",
+        "vue-tsc",
+        "--project",
+        "../../.codex-work/integration/product-playback/tsconfig.json",
+        "--noEmit"
+      ],
+      "sourceFiles": 257,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "preparation",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/flat-motion-presets/preparation.json",
+        "sha256": "4ead167fa26da0660cf6f3ea62c58221400e23c4b77d0fe012402225d2bf9547",
+        "byteLength": 1824
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/flat-motion-presets/preparation.log",
+        "sha256": "be37bb8e7f9f6989164828210e08ee02771bb3bb81bdf865017bab748bca4cf8",
+        "byteLength": 1470
+      },
+      "command": [
+        "node",
+        "--test",
+        "scripts/prepare-musteroffice-development.test.mjs",
+        "scripts/prepare-musteroffice-playback.test.mjs"
+      ],
+      "sourceFiles": 5,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "desktop-build",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/flat-motion-presets/desktop-build.json",
+        "sha256": "976e8e663db6d17f82f630e2b47d3d27651d25d9513c78ae61df2cc35cb1921d",
+        "byteLength": 505611
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/flat-motion-presets/desktop-build.log",
+        "sha256": "e85a08b94958ce639dd62c94806593db7e7d45e8ace0e9b0acd12ede249bd272",
+        "byteLength": 74067
+      },
+      "command": [
+        "env",
+        "MUSTERWORK_MUSTEROFFICE_PLAYBACK=1",
+        "pnpm",
+        "--filter",
+        "@musterwork/desktop",
+        "exec",
+        "vite",
+        "build",
+        "--outDir",
+        "../../.codex-work/integration/flat-motion-presets/desktop-build"
+      ],
+      "sourceFiles": 1737,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    }
+  ],
+  "results": {
+    "rustTestsPassed": 416,
+    "newRustTests": 1,
+    "nativeFrames": 64,
+    "staticControls": 32,
+    "xsdParts": 10,
+    "wasmSyncFrames": 64,
+    "wasmSteppedFrames": 64,
+    "legacyMotionFrames": 28,
+    "productTestsPassed": 159,
+    "productNativeFrames": 20,
+    "productWorkerFrames": 34,
+    "desktopFrontendBuild": "passed",
+    "installerBuilt": false
+  },
+  "materials": {
+    "sdk": "3c039e3b53d585dcc991f27d5c5ca0e0105ce532dd78a87c050d652783edbe37",
+    "playback": "448d76996853514bba42a437e5ce809b5130762e4b6e615e12cb1bbf246dd433",
+    "worker": "2d4cc22b84979469784e53c42c691476d3c9c0a08bd65bb3f0c14c278de43cde",
+    "workerBytes": 44482960,
+    "checkedPackageFiles": 1288,
+    "desktopCopiedFiles": 42,
+    "desktopCopiedUncompressedBytes": 18867688,
+    "desktopBytesDeltaFromMotionPaths": 105,
+    "workerBytesDeltaFromMotionPaths": 432
+  },
+  "materialReceipts": [
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/flat-motion-presets/sdk/sdk-manifest.json",
+      "sha256": "3c039e3b53d585dcc991f27d5c5ca0e0105ce532dd78a87c050d652783edbe37",
+      "byteLength": 227006
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/flat-motion-presets/bundle/bundle-manifest.json",
+      "sha256": "448d76996853514bba42a437e5ce809b5130762e4b6e615e12cb1bbf246dd433",
+      "byteLength": 11855
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": ".codex-work/integration/flat-motion-presets/materials.json",
+      "sha256": "a43e0ab9a4e21cbbc30230c464be6524d5393b3969ded33288b5cf13631fcefb",
+      "byteLength": 269
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": "components/musteroffice/lock.json",
+      "sha256": "9f38768379a88fc59a52f274378680b1bcb0a2c288ae6ffef9eae72aa9d0eeff",
+      "byteLength": 333
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": "components/musteroffice/playback-lock.json",
+      "sha256": "5d2b499bf8cdb315a48a659390653b06ea8be7df3baa58f70886bc1464482e5e",
+      "byteLength": 153
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": "apps/agent-runtime/Cargo.toml",
+      "sha256": "ee934faf31fb5a4103b6948210d4298b80c3e591d77a1d442610847f5576198d",
+      "byteLength": 16645
+    }
+  ],
+  "computationalEvidence": [
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/flat-motion-presets/corpus/report.json",
+      "sha256": "92c456203ef5677254157010b63875c7a9d8d74acf524c01a2af0a2a9e7d90c2",
+      "byteLength": 38492
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/flat-motion-presets/playback-sync/report.json",
+      "sha256": "14efbdb92aa79441de37b01f7f31d95436a3e6f4eca09ca58cad20935fd0d1b8",
+      "byteLength": 51212
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/flat-motion-presets/playback-stepped/report.json",
+      "sha256": "91a977f7c8ce1efd374732908e9d226671137e8431ffd0ac3c7ff50e16a33cd7",
+      "byteLength": 51215
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/flat-motion-presets/motion-regression/report.json",
+      "sha256": "1b15a155d8df215fbd274a1063ab3a59dccb4080220ede8847140e68f854aea8",
+      "byteLength": 22534
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": ".codex-work/integration/flat-motion-presets/fixtures/report.json",
+      "sha256": "bf3e21d7d7981f45a3244ee7dd9894c609a3b175e6041e418bf6b100f437f85b",
+      "byteLength": 2500
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": ".codex-work/integration/flat-motion-presets/actual-worker.json",
+      "sha256": "e0ac467d48977864d09a2e5595fa4b2a402531740258f0383f5eec2c8b6d5272",
+      "byteLength": 3118
+    }
+  ],
+  "sourcePreservation": [
+    {
+      "name": "path-forward",
+      "original": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/product-sources/path-forward.pptx",
+        "sha256": "d42c74dd4516b5fb4387eac1cdf27c2c74dff06526402a809ac242d5745e65ff",
+        "byteLength": 6122
+      },
+      "exported": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/flat-motion-presets/fixtures/path-forward/export/009.pptx",
+        "sha256": "d42c74dd4516b5fb4387eac1cdf27c2c74dff06526402a809ac242d5745e65ff",
+        "byteLength": 6122
+      },
+      "byteIdentical": true,
+      "parts": 13
+    },
+    {
+      "name": "path-reverse",
+      "original": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/product-sources/path-reverse.pptx",
+        "sha256": "6947d9215e7d2ab9d908f5501bc4b8027e2f2a9215157cf5a82779cb6524901b",
+        "byteLength": 6147
+      },
+      "exported": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/flat-motion-presets/fixtures/path-reverse/export/009.pptx",
+        "sha256": "6947d9215e7d2ab9d908f5501bc4b8027e2f2a9215157cf5a82779cb6524901b",
+        "byteLength": 6147
+      },
+      "byteIdentical": true,
+      "parts": 13
+    }
+  ],
+  "wpsObservation": {
+    "application": "WPS Office 12.1.22553",
+    "allSixMovedBetweenCaptures": true,
+    "report": {
+      "repository": "MusterOffice",
+      "path": ".codex-work/flat-motion-presets/wps-observation.json",
+      "sha256": "01a70397df6114caf007df0e7cbb29c2d0ad70b47b33ac1b1bbe705a65b275a0",
+      "byteLength": 2442
+    },
+    "control": {
+      "repository": "MusterOffice",
+      "path": ".codex-work/scale-inputs/flat-motion-presets-control.pptx",
+      "sha256": "e7e2611e8c1f2fc632f07e92451b367ed069224625f1b1d1453e1a75516091c0",
+      "byteLength": 5832
+    },
+    "directExport": {
+      "repository": "MusterOffice",
+      "path": ".codex-work/flat-motion-presets/corpus/path-forward.pptx",
+      "sha256": "d42c74dd4516b5fb4387eac1cdf27c2c74dff06526402a809ac242d5745e65ff",
+      "byteLength": 6122
+    },
+    "allThirteenUncompressedPartsIdentical": true,
+    "changedPartsFromPreviousExport": [
+      "ppt/slides/slide1.xml"
+    ],
+    "screenshots": [
+      {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/wps-control-early.png",
+        "sha256": "eacebcacdf2fe22faace26435e340462c1c8234d2da6cd883c1d97cbee1dd008",
+        "byteLength": 116558
+      },
+      {
+        "repository": "MusterOffice",
+        "path": ".codex-work/flat-motion-presets/wps-control-final.png",
+        "sha256": "35aca7a442ce442d987978f9f6f016ba59278ea266b99c994802e87be044db58",
+        "byteLength": 117916
+      }
+    ],
+    "scope": "Single variable original native effect identity; all six paths moved. Captures not synchronized; no timing, FPS, complete editing or PowerPoint claim.",
+    "restoredOriginalDocument": "rotation-absolute-fixed.pptx",
+    "initialForeground": "com.kingsoft.wpsoffice.mac"
+  },
+  "newDependencies": false,
+  "newCppChanges": false,
+  "publicJsonContractChanged": false,
+  "limitations": [
+    "WPS observation covers these six automatic paths, not arbitrary click/dependency/repeat timing, native editing roundtrip or PowerPoint.",
+    "Shared core parity is not an independent Office visual reference.",
+    "Full advanced PPT, real Agent/Electron, multiple platforms, historical migration, performance/resources/installer and all replacement gates remain open.",
+    "Sizes are uncompressed development materials and a debug macOS ARM64 export Worker; no release installer, FPS, RSS, startup or throughput claim. Existing frontend large-chunk warning remains.",
+    "Product work confined to independent worktree. No default-engine switch, commit, public release, deployment or production database use."
+  ]
+}

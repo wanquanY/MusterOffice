@@ -33,6 +33,22 @@ try {
 ```
 
 `prepareAuthor(request)` accepts the generated author prepare contract instead.
+
+`prepareDeliveryInputs({delivery, width}, contents)` derives deck-ordered source
+page requests, exact PPTX/font asset identities and the explicit font manifest
+from a transported delivery. It runs the existing full byte/context inspection
+once and creates no playback owner or pixels. The portable content channel is
+bounded to 128 MiB; native receivers can instead reuse
+`ReceivedDelivery::playback_inputs` over their already inspected asset readers,
+without packing or reopening content. Fonts are shared across the returned page
+requests, not copied into every page entry. The returned document revision is
+provenance; source playback's `binding.revision` must use `inputs.source.sha256`.
+Construct the existing `prepareSource` page with profile
+`drawingml-resource-page-q32-v1-draft`, the selected page's `request` fields,
+and `inputs.fonts`. Supply the selected source/font bytes through their existing
+binary channels. Actual source preparation still checks supported timing and
+resource semantics; successful input derivation is not a playback quality claim.
+
 `sample(at, raster, history = null)`, `timing()`, `advance(generation)`, `info`,
 `dispose()` and idempotent `close()` cover the retained computation lifecycle.
 `info` is a detached copy; changes to it cannot change a live owner's binding.
@@ -60,8 +76,14 @@ The execution exclusively leases its playback owner until take/close; attempts
 to sample, advance or dispose that owner meanwhile return BUSY. A healthy early
 close permits a new sample. Component faults quarantine the component and close
 the playback owner; the product must terminate that Worker. `step` accepts
-1–4096 work units, not a time budget. Preparation, individual Skia primitives and
-completion validation still include synchronous work. This API does not claim
+1–4096 work units, not a time budget. After rasterization, `step` snapshots the
+component reply into owned Rust memory, then validates premultiplication and
+hashes at most 16 KiB per validation work unit. `complete` becomes true only
+after this validation; `take` still checks the owner/generation, hashes the frame
+commands, serializes metadata and copies the final pixels out. Observed invalid
+replies fail and quarantine immediately, including before a later close.
+Preparation, individual Skia primitives, allocations/copies, command hashing and
+final metadata serialization still include synchronous work. This API does not claim
 bounded cancellation latency or immediate physical memory reclamation.
 Pass generation/ticks as canonical decimal strings, never floating-point numbers.
 The Rust core validates requests, resources, profiles and component pixels;

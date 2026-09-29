@@ -1,0 +1,944 @@
+{
+  "format": "musteroffice.product-sdk-preview-verification/1",
+  "status": "passed-scoped-product-sdk-and-preview",
+  "date": "2026-09-28",
+  "productBranch": "codex/musteroffice-integration",
+  "productBaseCommit": "8280b9837b7ed7fae5a502e97d6967b128772c11",
+  "sdk": {
+    "manifestSha256": "550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+    "manifestFiles": 556,
+    "libraryCrates": 25,
+    "registryDependencyChanges": 0,
+    "removedCrates": [
+      "mo-operation-service"
+    ],
+    "addedCrates": [
+      "mo-kernel-api",
+      "mo-native-render",
+      "mo-presentation-operations"
+    ]
+  },
+  "worker": {
+    "target": "darwin-arm64",
+    "sha256": "b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0",
+    "byteLength": 38694800,
+    "profile": "development binary; not a release-size measurement"
+  },
+  "runs": [
+    {
+      "group": "snapshot",
+      "name": "libraries-01",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-protocol",
+        "-p",
+        "musterwork-agent-sqlite",
+        "--lib"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 1691.7386366249993,
+      "sourceUnchanged": true,
+      "sourceFiles": 3782,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "bins/musterwork-agent-device",
+        "vendor/musteroffice/35e9a712d7bde8342783fcdf7a284335fd907d0a0f8acbfd4ad8a6c40650fb07",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "e6dfd71f43a3fea41c9434bd2b7b33bbbf0d04eeaf8d753d5e2c3545f2a14a64",
+      "report": {
+        "path": ".codex-work/product-snapshot-references/libraries-01.json",
+        "sha256": "252de3b83fad4a348272451c3ddad6090c3471e275cd83d4334e44ecf09d552b"
+      },
+      "log": {
+        "path": ".codex-work/product-snapshot-references/libraries-01.log",
+        "sha256": "44f13a68065e14e7f64eab8f201878e0e19fa983dbe30bce1f89a0bf1b1a9647"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 104,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 360,
+          "failed": 0,
+          "ignored": 3
+        }
+      ],
+      "vitestPassed": null
+    },
+    {
+      "group": "snapshot",
+      "name": "clippy-01",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-protocol",
+        "-p",
+        "musterwork-agent-sqlite",
+        "--lib",
+        "--no-deps",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 79.1965533751063,
+      "sourceUnchanged": true,
+      "sourceFiles": 3782,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "bins/musterwork-agent-device",
+        "vendor/musteroffice/35e9a712d7bde8342783fcdf7a284335fd907d0a0f8acbfd4ad8a6c40650fb07",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "e6dfd71f43a3fea41c9434bd2b7b33bbbf0d04eeaf8d753d5e2c3545f2a14a64",
+      "report": {
+        "path": ".codex-work/product-snapshot-references/clippy-01.json",
+        "sha256": "088f6c7cc2e47d8bb7ba528291f1be4c7ac03989b5b36c9dde6458d0d87f38af"
+      },
+      "log": {
+        "path": ".codex-work/product-snapshot-references/clippy-01.log",
+        "sha256": "3bffc744f13a196fd39bf05dc46154d2f7854aa2baeaf7e2c8a454e3ffe4849b"
+      },
+      "rustTestSummaries": [],
+      "vitestPassed": null
+    },
+    {
+      "group": "snapshot",
+      "name": "workspace-01",
+      "command": [
+        "cargo",
+        "check",
+        "--workspace",
+        "--all-targets",
+        "--locked",
+        "--offline"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 162.3640292917844,
+      "sourceUnchanged": true,
+      "sourceFiles": 3782,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "bins/musterwork-agent-device",
+        "vendor/musteroffice/35e9a712d7bde8342783fcdf7a284335fd907d0a0f8acbfd4ad8a6c40650fb07",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "e6dfd71f43a3fea41c9434bd2b7b33bbbf0d04eeaf8d753d5e2c3545f2a14a64",
+      "report": {
+        "path": ".codex-work/product-snapshot-references/workspace-01.json",
+        "sha256": "e6ffa7581842d3d6b8fbea855f1ad2c4a799714894b0e932b4a0b39c8966c9f6"
+      },
+      "log": {
+        "path": ".codex-work/product-snapshot-references/workspace-01.log",
+        "sha256": "14d6dd6202b10a79a0613608cc9f93c7ef6349cdc4175cf5a2e0ac59f24e40d8"
+      },
+      "rustTestSummaries": [],
+      "vitestPassed": null
+    },
+    {
+      "group": "sdk",
+      "name": "authoring-01",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::",
+        "--",
+        "--test-threads=1"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 338.94192825001664,
+      "sourceUnchanged": true,
+      "sourceFiles": 3871,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "bins/musterwork-agent-device",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "eeb83aa6483647441f5ffcfa2150329f64a4fe21bca83ae7991c145d32e74dac",
+      "report": {
+        "path": ".codex-work/product-sdk-refresh/product/authoring-01.json",
+        "sha256": "33b22c0e7e6afb0496e415e53347e2949bac68a4ae02cb726097f587231b0a3d"
+      },
+      "log": {
+        "path": ".codex-work/product-sdk-refresh/product/authoring-01.log",
+        "sha256": "421c28f4cd8a4362a433d38f77073a023843ead989dfd95aa444deb16f19094d"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 62,
+          "failed": 0,
+          "ignored": 12
+        }
+      ],
+      "vitestPassed": null
+    },
+    {
+      "group": "sdk",
+      "name": "real-commit-02",
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_TEST_INPUT=MO:/.codex-work/product-sdk-refresh/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=MW:/components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0",
+        "MUSTERWORK_OFFICE_TEST_BASELINE=MO:/.codex-work/product-sdk-refresh/actual-sdk-02",
+        "MUSTERWORK_OFFICE_COMMIT_TEST_OUTPUT=MO:/.codex-work/product-sdk-refresh/actual-product-02",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::office_drafts::exports::",
+        "--",
+        "--ignored",
+        "--test-threads=1"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 79.74821479199454,
+      "sourceUnchanged": true,
+      "sourceFiles": 3871,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "bins/musterwork-agent-device",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "8db508234595f4537a3034b45be35e757919179403fdd2ad7732cef92ef4f170",
+      "report": {
+        "path": ".codex-work/product-sdk-refresh/product/real-commit-02.json",
+        "sha256": "bc9de3c6e7665cc11605e273cd4b84df26e84bf1b4d80eecc1bb56b31f0accc1"
+      },
+      "log": {
+        "path": ".codex-work/product-sdk-refresh/product/real-commit-02.log",
+        "sha256": "d12904a24f42e07b012654a49fefcd76987844353aea8a029a732973d4a8690a"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "vitestPassed": null
+    },
+    {
+      "group": "sdk",
+      "name": "clippy-02",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-musteroffice",
+        "--all-targets",
+        "--no-deps",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 35.55246070888825,
+      "sourceUnchanged": true,
+      "sourceFiles": 3871,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "bins/musterwork-agent-device",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "8db508234595f4537a3034b45be35e757919179403fdd2ad7732cef92ef4f170",
+      "report": {
+        "path": ".codex-work/product-sdk-refresh/product/clippy-02.json",
+        "sha256": "5640dc4a1136688aa2ec138229b6305ddad68a7865482bde3ea44a09ee723563"
+      },
+      "log": {
+        "path": ".codex-work/product-sdk-refresh/product/clippy-02.log",
+        "sha256": "754c76da90bf788097462c15effb68c84122e1d6e3cc8fd610dc57b1832ca1d7"
+      },
+      "rustTestSummaries": [],
+      "vitestPassed": null
+    },
+    {
+      "group": "sdk",
+      "name": "real-adapter-01",
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_TEST_INPUT=MO:/.codex-work/product-sdk-refresh/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=MW:/components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0",
+        "MUSTERWORK_OFFICE_TEST_BASELINE=MO:/.codex-work/product-sdk-refresh/actual-sdk-02",
+        "MUSTERWORK_OFFICE_TEST_OUTPUT=MO:/.codex-work/product-sdk-refresh/actual-adapter-01",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-musteroffice",
+        "--test",
+        "native_export",
+        "--",
+        "--ignored",
+        "--test-threads=1"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 11.735334541881457,
+      "sourceUnchanged": true,
+      "sourceFiles": 3871,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "bins/musterwork-agent-device",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "8db508234595f4537a3034b45be35e757919179403fdd2ad7732cef92ef4f170",
+      "report": {
+        "path": ".codex-work/product-sdk-refresh/product/real-adapter-01.json",
+        "sha256": "f60563e0b0d74c2d365e31bf6f8bc55fd087cc9850eeb9431ecf73a6415034a3"
+      },
+      "log": {
+        "path": ".codex-work/product-sdk-refresh/product/real-adapter-01.log",
+        "sha256": "675cb22c1c4932ed2ffcae49c575949518092b211cbb2367782686b70c418bb2"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "vitestPassed": null
+    },
+    {
+      "group": "sdk",
+      "name": "preparation-01",
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_TEST_INPUT=MO:/.codex-work/product-sdk-refresh/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=MW:/components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0",
+        "MUSTERWORK_OFFICE_TEST_BASELINE=MO:/.codex-work/product-sdk-refresh/actual-sdk-02",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::office_preparation::",
+        "--",
+        "--ignored",
+        "--test-threads=1"
+      ],
+      "exitCode": 101,
+      "elapsedSeconds": 68.27842062502168,
+      "sourceUnchanged": true,
+      "sourceFiles": 3871,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "bins/musterwork-agent-device",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "8db508234595f4537a3034b45be35e757919179403fdd2ad7732cef92ef4f170",
+      "report": {
+        "path": ".codex-work/product-sdk-refresh/product/preparation-01.json",
+        "sha256": "d56ab4c12ddf3aa3b596ce9b2312e5a50fa20fabcb4b4dd7a0db95dbc8ba0b9a"
+      },
+      "log": {
+        "path": ".codex-work/product-sdk-refresh/product/preparation-01.log",
+        "sha256": "46c4489f470db2c18e9a877d67f1a1aaee584beaa300713fece76f6fcaa63450"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 5,
+          "failed": 1,
+          "ignored": 0
+        }
+      ],
+      "vitestPassed": null
+    },
+    {
+      "group": "frontend",
+      "name": "reader-01",
+      "command": [
+        "pnpm",
+        "--filter",
+        "@musterwork/agent-runtime-product-client",
+        "exec",
+        "vitest",
+        "run",
+        "tests/office-presentation-artifact.spec.ts",
+        "tests/office-presentation-preview.spec.ts",
+        "--root",
+        ".",
+        "--environment",
+        "node"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 1.450192250078544,
+      "sourceUnchanged": true,
+      "sourceFiles": 318,
+      "sourceInventory": [
+        "packages/agent-runtime-product-client/src",
+        "packages/agent-runtime-product-client/tests",
+        "packages/frontend-shared/src/artifacts",
+        "packages/frontend-shared/src/shared-project/presentation-preview.ts",
+        "packages/frontend-shared/package.json",
+        "packages/i18n/src/messages",
+        "apps/desktop/src/services/musterwork/artifacts",
+        "apps/desktop/src/components/artifacts/__tests__",
+        "apps/web/src/services/musterwork/artifacts",
+        "apps/web/src/views/shared-project/__tests__"
+      ],
+      "sourceMapSha256": "07531cd88aeb9eead09b9476a3367654b38859bd9d83261cf047f08a423eff8d",
+      "report": {
+        "path": ".codex-work/product-sdk-refresh/frontend/reader-01.json",
+        "sha256": "1df28ca38c4dc0e2a23931724ceea7473deaeae67a82a9db3d6a208c4d7d5a83"
+      },
+      "log": {
+        "path": ".codex-work/product-sdk-refresh/frontend/reader-01.log",
+        "sha256": "ef39d4277980fe6b4e67121520dcac3a401e146098ade9ad87d29e5d39e7958b"
+      },
+      "rustTestSummaries": [],
+      "vitestPassed": 106
+    },
+    {
+      "group": "frontend",
+      "name": "desktop-01",
+      "command": [
+        "pnpm",
+        "--filter",
+        "@musterwork/desktop",
+        "exec",
+        "vitest",
+        "run",
+        "src/components/artifacts/__tests__/MusterworkOfficePreview.spec.ts",
+        "src/services/musterwork/artifacts/__tests__/agent-runtime-repository.spec.ts",
+        "src/services/musterwork/artifacts/__tests__/preview-parsers.spec.ts"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 4.395875375019386,
+      "sourceUnchanged": true,
+      "sourceFiles": 318,
+      "sourceInventory": [
+        "packages/agent-runtime-product-client/src",
+        "packages/agent-runtime-product-client/tests",
+        "packages/frontend-shared/src/artifacts",
+        "packages/frontend-shared/src/shared-project/presentation-preview.ts",
+        "packages/frontend-shared/package.json",
+        "packages/i18n/src/messages",
+        "apps/desktop/src/services/musterwork/artifacts",
+        "apps/desktop/src/components/artifacts/__tests__",
+        "apps/web/src/services/musterwork/artifacts",
+        "apps/web/src/views/shared-project/__tests__"
+      ],
+      "sourceMapSha256": "07531cd88aeb9eead09b9476a3367654b38859bd9d83261cf047f08a423eff8d",
+      "report": {
+        "path": ".codex-work/product-sdk-refresh/frontend/desktop-01.json",
+        "sha256": "400ad28da13feab3efbd7168fff1647e0f1d398935e4271d7ce21e7bca7d504a"
+      },
+      "log": {
+        "path": ".codex-work/product-sdk-refresh/frontend/desktop-01.log",
+        "sha256": "675a5734e37f0fa0c33db9b51eac515e3af0bc44111f89765736d863d640cec3"
+      },
+      "rustTestSummaries": [],
+      "vitestPassed": 39
+    },
+    {
+      "group": "frontend",
+      "name": "web-01",
+      "command": [
+        "pnpm",
+        "--filter",
+        "@musterwork/web",
+        "exec",
+        "vitest",
+        "run",
+        "src/views/shared-project/__tests__/shared-presentation-preview.spec.ts",
+        "src/services/musterwork/artifacts/__tests__/web-repository.spec.ts"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 3.2420116669964045,
+      "sourceUnchanged": true,
+      "sourceFiles": 318,
+      "sourceInventory": [
+        "packages/agent-runtime-product-client/src",
+        "packages/agent-runtime-product-client/tests",
+        "packages/frontend-shared/src/artifacts",
+        "packages/frontend-shared/src/shared-project/presentation-preview.ts",
+        "packages/frontend-shared/package.json",
+        "packages/i18n/src/messages",
+        "apps/desktop/src/services/musterwork/artifacts",
+        "apps/desktop/src/components/artifacts/__tests__",
+        "apps/web/src/services/musterwork/artifacts",
+        "apps/web/src/views/shared-project/__tests__"
+      ],
+      "sourceMapSha256": "07531cd88aeb9eead09b9476a3367654b38859bd9d83261cf047f08a423eff8d",
+      "report": {
+        "path": ".codex-work/product-sdk-refresh/frontend/web-01.json",
+        "sha256": "52ae66f2a1299db19152cef7e83f7a804988fc2985a2bdc3fd9a61a1adcd2c20"
+      },
+      "log": {
+        "path": ".codex-work/product-sdk-refresh/frontend/web-01.log",
+        "sha256": "14982caf464d22bb55d2c08720aa741ba3a4d9f0c0fbd9bb09b9d5cdc7f073c4"
+      },
+      "rustTestSummaries": [],
+      "vitestPassed": 72
+    },
+    {
+      "group": "frontend",
+      "name": "desktop-types-01",
+      "command": [
+        "pnpm",
+        "--filter",
+        "@musterwork/desktop",
+        "exec",
+        "vue-tsc",
+        "--noEmit",
+        "-p",
+        "tsconfig.app.json",
+        "--pretty",
+        "false"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 19.47552670794539,
+      "sourceUnchanged": true,
+      "sourceFiles": 318,
+      "sourceInventory": [
+        "packages/agent-runtime-product-client/src",
+        "packages/agent-runtime-product-client/tests",
+        "packages/frontend-shared/src/artifacts",
+        "packages/frontend-shared/src/shared-project/presentation-preview.ts",
+        "packages/frontend-shared/package.json",
+        "packages/i18n/src/messages",
+        "apps/desktop/src/services/musterwork/artifacts",
+        "apps/desktop/src/components/artifacts/__tests__",
+        "apps/web/src/services/musterwork/artifacts",
+        "apps/web/src/views/shared-project/__tests__"
+      ],
+      "sourceMapSha256": "07531cd88aeb9eead09b9476a3367654b38859bd9d83261cf047f08a423eff8d",
+      "report": {
+        "path": ".codex-work/product-sdk-refresh/frontend/desktop-types-01.json",
+        "sha256": "48cab8380e0cd14fe9c6322ee5ffe16513a089fb252b15df58ea06eeaa92b260"
+      },
+      "log": {
+        "path": ".codex-work/product-sdk-refresh/frontend/desktop-types-01.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "rustTestSummaries": [],
+      "vitestPassed": null
+    },
+    {
+      "group": "frontend",
+      "name": "web-types-01",
+      "command": [
+        "pnpm",
+        "--filter",
+        "@musterwork/web",
+        "exec",
+        "vue-tsc",
+        "--noEmit",
+        "-p",
+        "tsconfig.json",
+        "--pretty",
+        "false"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 14.883920958032832,
+      "sourceUnchanged": true,
+      "sourceFiles": 318,
+      "sourceInventory": [
+        "packages/agent-runtime-product-client/src",
+        "packages/agent-runtime-product-client/tests",
+        "packages/frontend-shared/src/artifacts",
+        "packages/frontend-shared/src/shared-project/presentation-preview.ts",
+        "packages/frontend-shared/package.json",
+        "packages/i18n/src/messages",
+        "apps/desktop/src/services/musterwork/artifacts",
+        "apps/desktop/src/components/artifacts/__tests__",
+        "apps/web/src/services/musterwork/artifacts",
+        "apps/web/src/views/shared-project/__tests__"
+      ],
+      "sourceMapSha256": "07531cd88aeb9eead09b9476a3367654b38859bd9d83261cf047f08a423eff8d",
+      "report": {
+        "path": ".codex-work/product-sdk-refresh/frontend/web-types-01.json",
+        "sha256": "9f76891791450326e93b4dae04fd427ddc0660eae8d7a3e858a7edcc5e7ecc68"
+      },
+      "log": {
+        "path": ".codex-work/product-sdk-refresh/frontend/web-types-01.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "rustTestSummaries": [],
+      "vitestPassed": null
+    },
+    {
+      "group": "sdk",
+      "name": "preparation-02",
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_TEST_INPUT=MO:/.codex-work/product-sdk-refresh/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=MW:/components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0",
+        "MUSTERWORK_OFFICE_TEST_BASELINE=MO:/.codex-work/product-sdk-refresh/actual-sdk-02",
+        "MUSTERWORK_OFFICE_TEST_OUTPUT=MO:/.codex-work/product-sdk-refresh/actual-prepared-02",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::office_preparation::prepared_export_preserves_actual_delivery_claims_inputs_and_retry_identity",
+        "--",
+        "--ignored",
+        "--exact",
+        "--test-threads=1"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 14.24861150002107,
+      "sourceUnchanged": true,
+      "sourceFiles": 3871,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "bins/musterwork-agent-device",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native"
+      ],
+      "sourceMapSha256": "8db508234595f4537a3034b45be35e757919179403fdd2ad7732cef92ef4f170",
+      "report": {
+        "path": ".codex-work/product-sdk-refresh/product/preparation-02.json",
+        "sha256": "c270287ac5b7c722f84ce79bb16bd17762c4584801dd3f895844b6a272bd4837"
+      },
+      "log": {
+        "path": ".codex-work/product-sdk-refresh/product/preparation-02.log",
+        "sha256": "da0819dbc987408cdf9f94a283fa0f51b6056dc1b13f50e3796a995bb78db312"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "group": "frontend",
+      "name": "web-02",
+      "command": [
+        "pnpm",
+        "--filter",
+        "@musterwork/web",
+        "exec",
+        "vitest",
+        "run",
+        "src/views/shared-project/__tests__/shared-presentation-preview.spec.ts",
+        "src/services/musterwork/artifacts/__tests__/web-repository.spec.ts"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 2.235181082971394,
+      "sourceUnchanged": true,
+      "sourceFiles": 318,
+      "sourceInventory": [
+        "packages/agent-runtime-product-client/src",
+        "packages/agent-runtime-product-client/tests",
+        "packages/frontend-shared/src/artifacts",
+        "packages/frontend-shared/src/shared-project/presentation-preview.ts",
+        "packages/frontend-shared/package.json",
+        "packages/i18n/src/messages",
+        "apps/desktop/src/services/musterwork/artifacts",
+        "apps/desktop/src/components/artifacts/__tests__",
+        "apps/web/src/services/musterwork/artifacts",
+        "apps/web/src/views/shared-project/__tests__"
+      ],
+      "sourceMapSha256": "d20db3c86b6389908a618dcbbb575d118336e91c8b1a6b2b27271606d77e0ad3",
+      "report": {
+        "path": ".codex-work/product-sdk-refresh/frontend/web-02.json",
+        "sha256": "0fa87ffbfeb17fe7ab6d0906f7b97d175846e64935fb47e46653bf9dcb2460be"
+      },
+      "log": {
+        "path": ".codex-work/product-sdk-refresh/frontend/web-02.log",
+        "sha256": "63a9785a1274b8dd4e5f91c8e1a1f8d24b5152e48e87b08430b2b95107390720"
+      },
+      "vitestPassed": 72,
+      "reason": "Removed trailing whitespace in the new Web repository test; affected suite rerun."
+    }
+  ],
+  "scope": {
+    "formalAgentSuccessor": false,
+    "defaultEngineSwitched": false,
+    "playbackIntegrated": false,
+    "externalApplicationRoundtrip": false,
+    "fullReplacementAcceptance": false,
+    "font": "Owned 1920-byte synthetic fixture; no ambient system fonts",
+    "input": "Owned two-page synthetic presentation; not a real-world coverage corpus",
+    "timings": "Command elapsed time only, not performance benchmarks"
+  },
+  "preservedFailures": [
+    {
+      "name": "export-01",
+      "reason": "Wrong raster-worker binary selected for an export probe; corrected to the pinned export worker and export-02 passed."
+    },
+    {
+      "name": "clippy-01",
+      "reason": "All-targets exposed unwrap assertions in existing adapter tests. Added assertion context without removing checks; clippy-02 passed."
+    },
+    {
+      "name": "real-commit-01",
+      "reason": "Interrupted without terminal evidence; missing handle and process verified before real-commit-02 reran."
+    },
+    {
+      "name": "preparation-01",
+      "reason": "Five tests passed; the remaining test lacked its required output-directory environment variable. No production-code change was made.",
+      "resolution": "preparation-02 supplies a new explicit output directory; the one affected test passed."
+    }
+  ],
+  "remainingIgnored": "Three legacy external-environment authoring tests; three unrelated SQLite library tests. Host child entry point is explicitly spawned by its parent test.",
+  "actualBytes": {
+    "record": {
+      "path": ".codex-work/product-sdk-refresh/actual-bytes-verification.json",
+      "sha256": "9113207cd2dc4b78ab67650eb2cb94943840e6632ffaeb8ce6aa7ed0cb24aa0e"
+    },
+    "sdkAdapterAndFirstArtifactAll12AssetsIdentical": true,
+    "sameArtifactTwoVersions": true,
+    "versions": [
+      {
+        "version": "1",
+        "xmlParts": 20,
+        "title": "Owned delivery integration fixture",
+        "assets": [
+          {
+            "file": "000.bin",
+            "role": "editable-document",
+            "sha256": "9a4ad7d6ac0822277d1cd87f93c685818174c70928bcaa25882ea8d87dbda66d",
+            "byteLength": 20032
+          },
+          {
+            "file": "001.bin",
+            "role": "image",
+            "sha256": "3f76a9a5cae823017a1ddda66fe4cadf422e496bb0e6364ea5050dcac13afd82",
+            "byteLength": 147
+          },
+          {
+            "file": "002.bin",
+            "role": "other",
+            "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+            "byteLength": 1920
+          },
+          {
+            "file": "003.bin",
+            "role": "other",
+            "sha256": "9ed1d3c6874d012c168a25eaa5af58e68047116d811d7cf9cc32ef722892e0a0",
+            "byteLength": 797
+          },
+          {
+            "file": "004.bin",
+            "role": "other",
+            "sha256": "0f5119d7dac31d299829342ff36995dc8744374641f95ede9542febb5445f364",
+            "byteLength": 1176
+          },
+          {
+            "file": "005.bin",
+            "role": "other",
+            "sha256": "0bffc364ebc35e13750064c9973269ffbd30a4246b761133e6b6be09d6eb390d",
+            "byteLength": 2386
+          },
+          {
+            "file": "006.bin",
+            "role": "preview",
+            "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d",
+            "byteLength": 14915
+          },
+          {
+            "file": "007.bin",
+            "role": "quality-report",
+            "sha256": "2eb1b25c80ed0f8c222269a197e9590d8202532d60192935ec71b13025f41637",
+            "byteLength": 3222
+          },
+          {
+            "file": "008.bin",
+            "role": "preview",
+            "sha256": "b347f37576dff5268f77cc7666066568d50e993ee690d3941c27693734acd0c9",
+            "byteLength": 11174
+          },
+          {
+            "file": "009.bin",
+            "role": "quality-report",
+            "sha256": "82d01b39cc3907bf96ba5804da72b8e3b9f2523f95ddf97e64df66ee624a2e2e",
+            "byteLength": 2554
+          },
+          {
+            "file": "010.bin",
+            "role": "quality-report",
+            "sha256": "708a69692a88b90bf25ff6b2341520f6a92c07ef32fa93c2c2af01d45928e48d",
+            "byteLength": 745
+          },
+          {
+            "file": "011.bin",
+            "role": "pptx",
+            "sha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+            "byteLength": 10735
+          }
+        ]
+      },
+      {
+        "version": "2",
+        "xmlParts": 20,
+        "title": "Revised native presentation",
+        "assets": [
+          {
+            "file": "000.bin",
+            "role": "editable-document",
+            "sha256": "a3c1bdae85a80e0d3f57002eff727916872754959d2aaa34c8247f28b76b2120",
+            "byteLength": 20025
+          },
+          {
+            "file": "001.bin",
+            "role": "image",
+            "sha256": "3f76a9a5cae823017a1ddda66fe4cadf422e496bb0e6364ea5050dcac13afd82",
+            "byteLength": 147
+          },
+          {
+            "file": "002.bin",
+            "role": "other",
+            "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+            "byteLength": 1920
+          },
+          {
+            "file": "003.bin",
+            "role": "other",
+            "sha256": "9ed1d3c6874d012c168a25eaa5af58e68047116d811d7cf9cc32ef722892e0a0",
+            "byteLength": 797
+          },
+          {
+            "file": "004.bin",
+            "role": "other",
+            "sha256": "0f5119d7dac31d299829342ff36995dc8744374641f95ede9542febb5445f364",
+            "byteLength": 1176
+          },
+          {
+            "file": "005.bin",
+            "role": "other",
+            "sha256": "001efb7a04321b05819b25dd8f67272e8dcd91652b5adcb85a21bfab07e8b374",
+            "byteLength": 2386
+          },
+          {
+            "file": "006.bin",
+            "role": "preview",
+            "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d",
+            "byteLength": 14915
+          },
+          {
+            "file": "007.bin",
+            "role": "quality-report",
+            "sha256": "25ee6f009b63ac4eaec5a74f305137641d45979b0762203b15317fddc3078022",
+            "byteLength": 3222
+          },
+          {
+            "file": "008.bin",
+            "role": "preview",
+            "sha256": "b347f37576dff5268f77cc7666066568d50e993ee690d3941c27693734acd0c9",
+            "byteLength": 11174
+          },
+          {
+            "file": "009.bin",
+            "role": "quality-report",
+            "sha256": "18c6a787a44fd3c87b47d70d1eee4efb7a5fa1a5aa9a102d08c2f9609210f17f",
+            "byteLength": 2554
+          },
+          {
+            "file": "010.bin",
+            "role": "quality-report",
+            "sha256": "5627d3a913db48f7053a50c3d8f0ff6b173fb8c2916ddc321ee7108891c09a9c",
+            "byteLength": 745
+          },
+          {
+            "file": "011.bin",
+            "role": "pptx",
+            "sha256": "62994f6dc2c998ca9620091a3dc6c7cb20cceaf41784a322275e1f06904ea240",
+            "byteLength": 10729
+          }
+        ]
+      }
+    ],
+    "preparedExportAssetsVerified": 12
+  },
+  "finalFrontendSourceDeltaFromInitialGates": {
+    "paths": [
+      "apps/web/src/services/musterwork/artifacts/__tests__/web-repository.spec.ts"
+    ],
+    "scope": "Whitespace in a Web test only; executable application code unchanged; web-02 passed."
+  },
+  "preparationScript": {
+    "command": "node --test scripts/prepare-musteroffice-development.test.mjs",
+    "passed": 15,
+    "logSha256": "ac4d6ae559a95452bb994222191ad9b2d4417d0fa964fafa176cc31f00fc0c05",
+    "pinnedInputRecheckPassed": true
+  }
+}

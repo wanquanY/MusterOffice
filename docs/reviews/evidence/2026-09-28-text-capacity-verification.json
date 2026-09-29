@@ -1,0 +1,555 @@
+{
+  "stage": "text-capacity",
+  "date": "2026-09-28",
+  "status": "verified-measurements-and-product-transfer-not-final-quality",
+  "scope": {
+    "implemented": [
+      "Shape-local capacity from the exact computed frame, no repeated shaping or text alteration.",
+      "Static and retained playback raster metadata and bounded delivery validation.",
+      "Pinned product SDK/worker refresh and real maintained source/stress result transfer."
+    ],
+    "notCompleted": [
+      "NativeVerify acceptance and native catalog transaction.",
+      "Automatic upload/native environment selection and complete product flows.",
+      "Full layout, typography, advanced PPT, Office/WPS, performance/size and replacement acceptance."
+    ]
+  },
+  "environment": {
+    "system": "Darwin",
+    "release": "25.2.0",
+    "machine": "arm64",
+    "profile": "Native debug worker and Rust release WASM; tests are not benchmarks",
+    "productBranch": "codex/musteroffice-integration"
+  },
+  "materials": {
+    "sdkManifestSha256": "1cf36a1a8808c2efa28f5413b96cdba4656ae594d9cf38e94317d7a3a3a2c4c9",
+    "sdkLibraries": 26,
+    "sdkRegistryPackages": 54,
+    "registryDependenciesChanged": false,
+    "worker": {
+      "sha256": "52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50",
+      "byteLength": 42750912
+    },
+    "font": {
+      "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+      "byteLength": 1920
+    },
+    "wasm": {
+      "sha256": "2fceee6e0d00c4a8f06fcf5d75c4b423548108f06573162f550cf751ca82261c",
+      "byteLength": 14428506
+    },
+    "rasterWorker": {
+      "sha256": "bbd5bdf86c62734a1c9dc1d5ca220dba4cc76998ff12d0ba5c30f0286173cec9",
+      "byteLength": 39525936
+    },
+    "sdkArchive": {
+      "sha256": "ea50a47ff94dac194631a93344ad050d1ad059b27eb2402d8e33b2432545e113",
+      "bytes": 849500
+    }
+  },
+  "testCount": 109,
+  "checks": [
+    {
+      "run": "libraries-01",
+      "location": "kernel",
+      "passedTests": 83,
+      "scope": "library tests; capacity fixture changed later",
+      "command": [
+        "env",
+        "MO_SKIA_LIB_DIR=$MUSTEROFFICE/.codex-work/scan-dispatch/native-normalized",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-presentation-compile",
+        "-p",
+        "mo-presentation-delivery",
+        "-p",
+        "mo-harfbuzz-sys",
+        "--lib"
+      ],
+      "elapsedSeconds": 9.20724045787938,
+      "sourceUnchangedDuringRun": true,
+      "changedSinceRun": [
+        "crates/mo-harfbuzz-sys/tests/source_capacity.rs"
+      ],
+      "reportSha256": "313b00560e7d67076140bf5ba42632148887902e4191bb9cce0106c4d1d96a8d",
+      "logSha256": "9d38e4ccc38b838beb6b2fb9b655755cb0cddcebf166047d34d6594f1a1694d1"
+    },
+    {
+      "run": "frame-02",
+      "location": "kernel",
+      "passedTests": 7,
+      "scope": "seven existing source_frame tests counted; three capacity tests counted only in frame-04",
+      "command": [
+        "env",
+        "MO_SKIA_LIB_DIR=$MUSTEROFFICE/.codex-work/scan-dispatch/native-normalized",
+        "env",
+        "MO_CAPACITY_OUTPUT=$MUSTEROFFICE/.codex-work/text-capacity/corpus",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-harfbuzz-sys",
+        "--test",
+        "source_capacity",
+        "--test",
+        "source_frame",
+        "--",
+        "--test-threads=1"
+      ],
+      "elapsedSeconds": 7.454351207939908,
+      "sourceUnchangedDuringRun": true,
+      "changedSinceRun": [
+        "crates/mo-harfbuzz-sys/tests/source_capacity.rs"
+      ],
+      "reportSha256": "ba3b2fe2dd36c58062a35798c3fa1bd91b4b4477a301341022a553686d4616dc",
+      "logSha256": "bc37ba8e49c5fb578ee2edb1e4a31664f7111131cd25dcc30bc8f837cd681fb9"
+    },
+    {
+      "run": "frame-04",
+      "location": "kernel",
+      "passedTests": 3,
+      "scope": "final focused capacity fixture",
+      "command": [
+        "env",
+        "MO_SKIA_LIB_DIR=$MUSTEROFFICE/.codex-work/scan-dispatch/native-normalized",
+        "env",
+        "MO_CAPACITY_OUTPUT=$MUSTEROFFICE/.codex-work/text-capacity/corpus-03",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-harfbuzz-sys",
+        "--test",
+        "source_capacity",
+        "--",
+        "--test-threads=1"
+      ],
+      "elapsedSeconds": 3.164276125142351,
+      "sourceUnchangedDuringRun": true,
+      "changedSinceRun": [],
+      "reportSha256": "e28deac4333b958561f5d9557b61aa4c41b480216e8636766cf0564d01c3b8be",
+      "logSha256": "2513dda8d97d3f9beb3486dd4bb28ec63a262c4c824d5955edc97e67e0eee591"
+    },
+    {
+      "run": "native-delivery-01",
+      "location": "kernel",
+      "passedTests": 14,
+      "scope": "real native render, delivery and playback",
+      "command": [
+        "env",
+        "MO_SKIA_LIB_DIR=$MUSTEROFFICE/.codex-work/scan-dispatch/native-normalized",
+        "env",
+        "MO_DELIVERY_WORKER=$MUSTEROFFICE/target/debug/mo-raster-worker",
+        "MO_DELIVERY_WORKER_SHA256=bbd5bdf86c62734a1c9dc1d5ca220dba4cc76998ff12d0ba5c30f0286173cec9",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-native-render",
+        "--tests",
+        "--",
+        "--include-ignored",
+        "--test-threads=1"
+      ],
+      "elapsedSeconds": 65.04731079097837,
+      "sourceUnchangedDuringRun": true,
+      "changedSinceRun": [
+        "crates/mo-harfbuzz-sys/tests/source_capacity.rs"
+      ],
+      "reportSha256": "580fb13576315ad4613d857a9a9a53bdd7d327c91767e4ce5ef1fb86a33f1eec",
+      "logSha256": "fd2129f95f3041857666c71e9cc710e0b34bb11a8d3ef3903a5b3eaf5ba22e46"
+    },
+    {
+      "run": "lint-02",
+      "location": "kernel",
+      "passedTests": 0,
+      "scope": "strict related crate tests",
+      "command": [
+        "env",
+        "MO_SKIA_LIB_DIR=$MUSTEROFFICE/.codex-work/scan-dispatch/native-normalized",
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-presentation-compile",
+        "-p",
+        "mo-presentation-delivery",
+        "-p",
+        "mo-native-render",
+        "-p",
+        "mo-harfbuzz-sys",
+        "--tests",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "elapsedSeconds": 2.230168792186305,
+      "sourceUnchangedDuringRun": true,
+      "changedSinceRun": [],
+      "reportSha256": "5e635e6ca453ca0cc02370f5cd0b93553c9c9b63efd0de32ef93032158a0718d",
+      "logSha256": "0d932b773b5ccdea2182518c1bc141f6c0088b00ac58ecd4d2c82e0e00ec46f1"
+    },
+    {
+      "run": "parity-04",
+      "location": "kernel",
+      "passedTests": 0,
+      "scope": "twelve paired Native/WASM actual calls",
+      "command": [
+        "node",
+        "tools/verification/text-capacity-parity.mjs",
+        ".codex-work/text-capacity/corpus-03",
+        "target/debug/mo-raster-worker",
+        ".codex-work/text-capacity/wasm/mo_wasm.js",
+        ".codex-work/text-capacity/text/index.js",
+        ".codex-work/text-capacity/raster/index.js",
+        ".codex-work/harfbuzz",
+        ".codex-work/scan-dispatch/wasm-normalized",
+        ".codex-work/text-capacity/parity-04"
+      ],
+      "elapsedSeconds": 0.8204648750834167,
+      "sourceUnchangedDuringRun": true,
+      "changedSinceRun": [],
+      "reportSha256": "131f8bcc99664fff8bbef0d22de12767a11f92fd3face25776d869cd4628b55a",
+      "logSha256": "e94a731249d0520bc96b0f5ac7c0761d8f47ed62e388f0b0076981a7c860e14c"
+    },
+    {
+      "run": "product-inspection-02",
+      "location": "kernel",
+      "passedTests": 0,
+      "scope": "independent actual product artifact comparison",
+      "command": [
+        "python3",
+        "tools/verification/product-template-capacity-evidence.py",
+        "--prefix",
+        "../musterwork-musteroffice/.codex-work/integration/text-capacity/native-01-native",
+        "--prior-prefix",
+        "../musterwork-musteroffice/.codex-work/integration/template-coordinator/native-01-native",
+        "--report",
+        ".codex-work/text-capacity/product-03.json"
+      ],
+      "elapsedSeconds": 0.08550400007516146,
+      "sourceUnchangedDuringRun": true,
+      "changedSinceRun": [],
+      "reportSha256": "358534d0f7e826d8e1aeb98896aded2d4fb743f6dad885381fd49d96d7088433",
+      "logSha256": "3176c2cae752373a81f08262a8ba662838460086ce591d83ab9a69cadad2e0ca"
+    },
+    {
+      "run": "native-01",
+      "location": "product",
+      "passedTests": 2,
+      "scope": "real maintained product definition/stress",
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_STRESS_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/input-02",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/text-capacity/native-01-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/text-capacity/native-01-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/text-capacity/native-01-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::office_agent::template_maintenance::",
+        "--",
+        "--include-ignored",
+        "--test-threads=1"
+      ],
+      "elapsedSeconds": 88.15077133383602,
+      "sourceUnchangedDuringRun": true,
+      "changedSinceRun": [],
+      "reportSha256": "94d5ca7413038d8aff5871637d797bb391311553cb7da7c4548bb3e61140dfdc",
+      "logSha256": "72a48fa4a7f5bf2b6b1687e2539a5f81a177ea150b91421ba65ecd1392e1a764"
+    },
+    {
+      "run": "adapter-01",
+      "location": "product",
+      "passedTests": 0,
+      "scope": "strict product adapter all targets",
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_STRESS_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/input-02",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/text-capacity/adapter-01-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/text-capacity/adapter-01-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/text-capacity/adapter-01-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "clippy",
+        "--no-deps",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-musteroffice",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "elapsedSeconds": 30.358531499980018,
+      "sourceUnchangedDuringRun": true,
+      "changedSinceRun": [],
+      "reportSha256": "b3737f24c1e72d3454f2e2ab1c20f6662f84a9d93aedb074dbefd5591189e340",
+      "logSha256": "b0f1fd374a9bfafbf4fa85c790ab3312fc5d0355097761946f4210fb3a6e323a"
+    }
+  ],
+  "nativeWasm": {
+    "pairedCalls": 12,
+    "exactMeasurementsAndPixels": true,
+    "reportSha256": "efc392c77e3005fc535604f7f6cc2178bf5777730f48c89d024706ac12b9e666",
+    "cases": [
+      {
+        "sourceSha256": "1ede155290372f6f4f37489542bc6046ce0f0d023163d3d9e90035ff1776134a",
+        "mode": "text",
+        "responseSha256": "5f2d72b82535d934d1b0bef12ce85f3ff2e9c937bd5d0e8e6af1acb3c0824d80",
+        "pixelSha256": "1c37494e301c63da2d57197421e09c81fa26ffc02dbb35f7597e0f81da696381",
+        "pixelBytes": 921600
+      },
+      {
+        "sourceSha256": "1ede155290372f6f4f37489542bc6046ce0f0d023163d3d9e90035ff1776134a",
+        "mode": "resource",
+        "responseSha256": "6fab5c76972c117303a8ec4a7e43d379e950bd233ef789c62615a1fee02c6f90",
+        "pixelSha256": "1c37494e301c63da2d57197421e09c81fa26ffc02dbb35f7597e0f81da696381",
+        "pixelBytes": 921600
+      },
+      {
+        "sourceSha256": "3c6c27ee9a009280d681b9812408e095cb284d094de80308ccb55126e6bd758b",
+        "mode": "text",
+        "responseSha256": "e54cf9c96bb568ddfba7c57a203822e12ce8cdf5a53e4a52257347ee9910bd1d",
+        "pixelSha256": "507f9cd6d90c84bf8699e1a95ce6ac72ce65c7e87262737b6109f077f57f1e46",
+        "pixelBytes": 921600
+      },
+      {
+        "sourceSha256": "3c6c27ee9a009280d681b9812408e095cb284d094de80308ccb55126e6bd758b",
+        "mode": "resource",
+        "responseSha256": "d3811515165f1a65f86bde07e8aafeb344c8e10d5eada578d7b379e8e0d7e8fc",
+        "pixelSha256": "507f9cd6d90c84bf8699e1a95ce6ac72ce65c7e87262737b6109f077f57f1e46",
+        "pixelBytes": 921600
+      },
+      {
+        "sourceSha256": "4a4bd71ef3069cb3dedf906ff1182090c433254109782f30b87645e42b354143",
+        "mode": "text",
+        "responseSha256": "e84c42675ade5c1cbad5eb84314e44f0508a5eb7fdd6baa3274123327d43c3e6",
+        "pixelSha256": "f313035cec4648bfe92f34e4211bea5a888267889dddf386361fb2a552b6f7e5",
+        "pixelBytes": 921600
+      },
+      {
+        "sourceSha256": "4a4bd71ef3069cb3dedf906ff1182090c433254109782f30b87645e42b354143",
+        "mode": "resource",
+        "responseSha256": "7596a1ab05205ef6cc5aaf7fc0bb0954f5e97b85a54118e8fc2dc7069e3fc124",
+        "pixelSha256": "f313035cec4648bfe92f34e4211bea5a888267889dddf386361fb2a552b6f7e5",
+        "pixelBytes": 921600
+      },
+      {
+        "sourceSha256": "6dd712c01b596a7d03a378c6c5aca5c18c2a35466253525cb1a0c90701f733db",
+        "mode": "text",
+        "responseSha256": "2f12877aa95928312d32d76eef3ddc62d98fa2ae4030f82f70929f103a00800e",
+        "pixelSha256": "dc575a82b9e90bb8b170868db743cd3185978468564db20126c194eceb566ea7",
+        "pixelBytes": 921600
+      },
+      {
+        "sourceSha256": "6dd712c01b596a7d03a378c6c5aca5c18c2a35466253525cb1a0c90701f733db",
+        "mode": "resource",
+        "responseSha256": "0e6935426e99abd773df472b500300202ab0c10ff8b975464aee98f82eca4a66",
+        "pixelSha256": "dc575a82b9e90bb8b170868db743cd3185978468564db20126c194eceb566ea7",
+        "pixelBytes": 921600
+      },
+      {
+        "sourceSha256": "a7129b6c48fd24d75f9813fddf165d1e3e2b5a378d73deba53b056f582556145",
+        "mode": "text",
+        "responseSha256": "e227c82d0ac5394b287c29e363c61a1d4f4ddd01d21112e4017e2a65bdd60080",
+        "pixelSha256": "1c37494e301c63da2d57197421e09c81fa26ffc02dbb35f7597e0f81da696381",
+        "pixelBytes": 921600
+      },
+      {
+        "sourceSha256": "a7129b6c48fd24d75f9813fddf165d1e3e2b5a378d73deba53b056f582556145",
+        "mode": "resource",
+        "responseSha256": "586e13278a190e9867e3f720b5e0899577c35ffe508d45ddb3e200011bcd190f",
+        "pixelSha256": "1c37494e301c63da2d57197421e09c81fa26ffc02dbb35f7597e0f81da696381",
+        "pixelBytes": 921600
+      },
+      {
+        "sourceSha256": "b093657b039c7bab8c5a863113dfc33b079061b184f309f7847168c366e9cbe7",
+        "mode": "text",
+        "responseSha256": "d3af19fb1c499c249012e0416292d05f6600e7a34583bade31b25354cd948f61",
+        "pixelSha256": "ec8d9f6f3722ec7627670d7180086a2306789351ede6420eaedf15c05110c876",
+        "pixelBytes": 921600
+      },
+      {
+        "sourceSha256": "b093657b039c7bab8c5a863113dfc33b079061b184f309f7847168c366e9cbe7",
+        "mode": "resource",
+        "responseSha256": "978483d7096eddcb734ab0f6c2fafdd96fa44ce0d1412cd120c23adba22aedfc",
+        "pixelSha256": "ec8d9f6f3722ec7627670d7180086a2306789351ede6420eaedf15c05110c876",
+        "pixelBytes": 921600
+      }
+    ]
+  },
+  "actualProduct": {
+    "profile": "product-template-text-capacity/1",
+    "qualityProven": false,
+    "sourceSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+    "priorSourceSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+    "pptxAndPngBytesUnchanged": true,
+    "claimSemanticsUnchanged": true,
+    "computations": 9,
+    "measuredPages": 18,
+    "measuredFrames": 72,
+    "framesWithHorizontalOverflow": 1,
+    "framesWithVerticalOverflow": 0
+  },
+  "actualProductReportSha256": "aeb004d03ae5aa24df818aefeb5784ac8092c528119844244bc63d3d7aeb1a75",
+  "findings": [
+    {
+      "dimension": "text-maximum-latin-wide",
+      "pageId": "43e2152ebcaac68bed8530500ca3de0834f7ce7951f31e71f9859c725cfeea42",
+      "frame": {
+        "contentHeight": "1230014209064960",
+        "emergencyLines": 0,
+        "firstHorizontalOverflow": {
+          "line": 0,
+          "paragraph": 71
+        },
+        "horizontalOverflowLines": 1,
+        "inkBounds": {
+          "max": {
+            "x": "17244199204159488",
+            "y": "975011263283200"
+          },
+          "min": {
+            "x": "36000415875072",
+            "y": "135001559531520"
+          }
+        },
+        "inner": {
+          "max": {
+            "x": "17179869184000000",
+            "y": "2791728742400000"
+          },
+          "min": {
+            "x": "0",
+            "y": "0"
+          }
+        },
+        "lineCount": 1,
+        "maximumLeftExcess": "0",
+        "maximumRightExcess": "100330436034560",
+        "object": {
+          "nativeId": 2,
+          "part": "/ppt/slides/slide2.xml"
+        },
+        "verticalExcess": "0"
+      }
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "crates/mo-presentation-compile/src/source_frame.rs",
+      "sha256": "ce0bfc34111a9c9bf4795a207bcb1bfea0e773bbf503a7fa862c676a0cc2b44d",
+      "lines": 362
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_frame/capacity.rs",
+      "sha256": "b918e1851764d8c560b8049d6e2146630e218ec106ab5402daf1e02e7b5d5854",
+      "lines": 160
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_text_page.rs",
+      "sha256": "ada712b62c41dbcb4e6edcbef1f758d0056a85f5cf1217dfb2a430a275f2ee5f",
+      "lines": 379
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_text_page/types.rs",
+      "sha256": "974c1305e897fe74a62234d1874e75af3abdb4ad1428054a393e1774c7ae1f9c",
+      "lines": 142
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_text_page/retained.rs",
+      "sha256": "effdaf3335fd23c282880bc4e0e590c45944cd54c37f3f06d45aea29a0b905a2",
+      "lines": 188
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_resource_page.rs",
+      "sha256": "a776bd2cbeaba661451c2ba567d4860ad67cca7a50f2fd3065114b5a5889d288",
+      "lines": 213
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_resource_page/types.rs",
+      "sha256": "c204337b753b2afe39cf551a92f35225a0e2a6411b6eecfb2df45a05076e558e",
+      "lines": 81
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_resource_page/retained.rs",
+      "sha256": "a9c74ddd290895e2a5881096a16bb666c7d8c0bc8fead22ae20e0d888c0aad1f",
+      "lines": 209
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_resource_page/retained_frame.rs",
+      "sha256": "fcaaef4cc2c3f8f05a6104abfe339ba01f371d5b8cf7f1a817363e659bf3c9c8",
+      "lines": 96
+    },
+    {
+      "path": "crates/mo-presentation-delivery/src/preview.rs",
+      "sha256": "84ea932da61ae995ea12bc2d3c74a57c2f3adb6c4c823702147d10f342c60149",
+      "lines": 174
+    },
+    {
+      "path": "crates/mo-presentation-delivery/src/receive/evidence.rs",
+      "sha256": "c7758416dfa23a62316bcb179e7ca084a34f00c55233d8947246d02c833c050c",
+      "lines": 199
+    },
+    {
+      "path": "crates/mo-presentation-delivery/src/receive/tests.rs",
+      "sha256": "74068d9e3f019172965a837836f49ecc38876b1e2c92fc523889a704e8916db2",
+      "lines": 385
+    },
+    {
+      "path": "crates/mo-native-render/tests/delivery.rs",
+      "sha256": "eb51d7aa2c27bb10859506cfad6cfaae30f1c47cd872368669f9d9582607b0d9",
+      "lines": 328
+    },
+    {
+      "path": "crates/mo-harfbuzz-sys/tests/source_capacity.rs",
+      "sha256": "953dcdc4d4ee78548e77826194cae6f80fcb12fe118fad9135e0869e37ceb60a",
+      "lines": 144
+    },
+    {
+      "path": "tools/verification/text-capacity-parity.mjs",
+      "sha256": "a1a546e367c88692cc9e0b84d6714601bdecacef380ab1df9ce68c6ba4d591da",
+      "lines": 70
+    },
+    {
+      "path": "tools/verification/product-template-capacity-evidence.py",
+      "sha256": "fffef78c18a0544f1a6a53791de0b054b1129af48f055e9d7171e5388c4e2cd9",
+      "lines": 139
+    }
+  ],
+  "additionalChecks": {
+    "schemaGenerator": "passed",
+    "typescriptAndGeneratedTypes": "passed",
+    "sourceFormatting": "passed",
+    "kernelAndProductGitDiffCheck": "passed"
+  },
+  "publication": {
+    "stableChanged": false,
+    "mainProductWorkspaceWritten": false,
+    "remoteOrDeployment": false,
+    "goalComplete": false
+  }
+}

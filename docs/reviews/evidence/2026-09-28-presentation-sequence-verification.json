@@ -1,0 +1,885 @@
+{
+  "format": "musteroffice.presentation-sequence-verification/1",
+  "date": "2026-09-28",
+  "status": "passed-bounded-stage",
+  "goal": "Full v0.4 remains ACTIVE; no full PPT replacement acceptance",
+  "previousEvidence": {
+    "path": "docs/reviews/evidence/2026-09-28-native-node-events-verification.json",
+    "sha256": "802658eedde4acf54b7be6facdadf5bedbc3957ca5370fce4de28bf5b1150f9a",
+    "byteLength": 2730209
+  },
+  "implementation": {
+    "operation": "setPresentationSequence",
+    "compiler": "PresentationSequence::compile",
+    "sdkTypes": "mo_embedded_sdk::timeline",
+    "semantics": "Explicit click groups, sequential batches, parallel effects; exact bounded lowering into native editorial timing tree; whole slide replacement"
+  },
+  "sources": [
+    {
+      "path": "Cargo.lock",
+      "sha256": "c5459a2763435c6407a994125db5916b7556b567c839ca75615bb167b6d9f1a0",
+      "byteLength": 30105
+    },
+    {
+      "path": "crates/mo-embedded-sdk/Cargo.toml",
+      "sha256": "67cc97dc6f685a96492350a7a56e0da96a7151b6ef5508fbb486c0dbbe5082bb",
+      "byteLength": 635
+    },
+    {
+      "path": "crates/mo-embedded-sdk/src/execute.rs",
+      "sha256": "989d017c9095f6866a8f3972c0540c7f30a33aa269d3f3cb9b04e79c9e9b4734",
+      "byteLength": 3574
+    },
+    {
+      "path": "crates/mo-embedded-sdk/src/inputs.rs",
+      "sha256": "eb7952a55940a2d8814309aac2cfd14f44e2f36c548cb9f3c871374b561f5368",
+      "byteLength": 3685
+    },
+    {
+      "path": "crates/mo-embedded-sdk/src/lib.rs",
+      "sha256": "d79440a6d07b67f51de34ba4e6afcb5adc638aed4fec505a8ad793e1ed10e31d",
+      "byteLength": 942
+    },
+    {
+      "path": "crates/mo-embedded-sdk/src/presentation.rs",
+      "sha256": "4a63e60d42579ce34f77240817e62d169e3f38fc08470b9d06b231bd750ff528",
+      "byteLength": 8064
+    },
+    {
+      "path": "crates/mo-embedded-sdk/tests/execution.rs",
+      "sha256": "56cd107d3e98d90f35137a07126ce92422e8782e71751aca05dfc1b53a4004bf",
+      "byteLength": 4197
+    },
+    {
+      "path": "crates/mo-embedded-sdk/tests/presentation.rs",
+      "sha256": "fe13a38a16e8867f1cc8923b8b6c58913fbf538e08397fc7f24b608616c1237d",
+      "byteLength": 4250
+    },
+    {
+      "path": "crates/mo-embedded-sdk/tests/presentation_sequence.rs",
+      "sha256": "86b71f0010f4939ab30b4c3d1f4fc20994cae3eb28f095cd3e7a7868be98a11e",
+      "byteLength": 2916
+    },
+    {
+      "path": "crates/mo-embedded-sdk/tests/template.rs",
+      "sha256": "c2ac9a6cdab34b764ce65368d63662c6eff9a1adbbbd352bb07be32a3a94b7ab",
+      "byteLength": 2619
+    },
+    {
+      "path": "crates/mo-embedded-sdk/tests/template_execution.rs",
+      "sha256": "269fcf016b32eca47df50f3323a89c0609a2d5723fccecd94f8538117edc1393",
+      "byteLength": 3453
+    },
+    {
+      "path": "crates/mo-pptx/tests/presentation_sequence.rs",
+      "sha256": "5a5fbc04c673de18899286b3238baa48ec8119897f20f9466dfc80a3ba22778d",
+      "byteLength": 4607
+    },
+    {
+      "path": "crates/mo-presentation-edit/Cargo.toml",
+      "sha256": "e1ad47178745f6b10d10e3896eb23fe66b64f44ba7038019db021ff8e70b393b",
+      "byteLength": 386
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/apply.rs",
+      "sha256": "bd8f240094647e2c45cc91e49c6cf69414a27c1b10b6e6dd0036ab28450b756f",
+      "byteLength": 15076
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/diagnostics.rs",
+      "sha256": "5296e7b03a378b33982f97d492960823c1d115fe42f1e61dc34e0e06bed2e0fb",
+      "byteLength": 2260
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/lib.rs",
+      "sha256": "257cf45d43838cdb21b8a9d05ed73cacca2e9682d665f8ededa0b0d57c4ad3ac",
+      "byteLength": 238
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/operations.rs",
+      "sha256": "00a30cd2950bddc5797ccf6989aab359f554823282b21604ea1af8c009c4efb7",
+      "byteLength": 2870
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/timing.rs",
+      "sha256": "278fd99d9492293792c0706e46b12407862d44fa152e9795555e3302625358e0",
+      "byteLength": 3961
+    },
+    {
+      "path": "crates/mo-presentation-edit/src/transaction.rs",
+      "sha256": "031eba4b587586e10349c9fde1cec26b50390193aae79bd11b9cfbb30e04e4b3",
+      "byteLength": 12973
+    },
+    {
+      "path": "crates/mo-presentation-edit/tests/support/mod.rs",
+      "sha256": "c7d4cf745ed392a5f64b988af8386e0e559465008ba0e2ef43d274cbab216f6c",
+      "byteLength": 3320
+    },
+    {
+      "path": "crates/mo-presentation-edit/tests/timing.rs",
+      "sha256": "2dcfec1148c49efd3937958f1977dea0e81432f994301ca08a9228909c748b86",
+      "byteLength": 21376
+    },
+    {
+      "path": "crates/mo-presentation-edit/tests/transactions.rs",
+      "sha256": "02ed0aaf9f8f0014cae6299e0933d2a8684893e71659fd3f35f710e788784bed",
+      "byteLength": 10190
+    },
+    {
+      "path": "crates/mo-presentation-edit/tests/validation.rs",
+      "sha256": "ce57b22e3dadf7f00fa056055cf2e054ef0c7d9fc3c2d06a8aea2991605a70dd",
+      "byteLength": 3808
+    },
+    {
+      "path": "crates/mo-timeline/Cargo.toml",
+      "sha256": "9704450e5152b4c9fb55985cfa6e5d3ae4df23d5c1a333ca7ef5c3231d556237",
+      "byteLength": 357
+    },
+    {
+      "path": "crates/mo-timeline/src/authoring/compile.rs",
+      "sha256": "420180aad359c51cade0e26a2d02a5a4c277a56798074203fc56d6da54a3afdc",
+      "byteLength": 10646
+    },
+    {
+      "path": "crates/mo-timeline/src/authoring.rs",
+      "sha256": "9dcb6973760ddd6fcde03db8e941cb83b7d472c4dbb55fca2abeaab403260157",
+      "byteLength": 2253
+    },
+    {
+      "path": "crates/mo-timeline/src/clock.rs",
+      "sha256": "bb87fd3152fa4a62f8d308e7decf67a895835a4cd3b4b276ca22c11fb32a8037",
+      "byteLength": 7230
+    },
+    {
+      "path": "crates/mo-timeline/src/evaluate.rs",
+      "sha256": "d590a7061877894629b9e1f6c81faf4430da00b2f1bba8f6921e17297ef00632",
+      "byteLength": 4720
+    },
+    {
+      "path": "crates/mo-timeline/src/events.rs",
+      "sha256": "069da8cc1204449cf23338e001e3d0e0b2eea52ed7d703e6c9db8a95a4f213bc",
+      "byteLength": 3902
+    },
+    {
+      "path": "crates/mo-timeline/src/exact.rs",
+      "sha256": "ff20f2dc7c8942a4c1b0a5d7b2bde27e01fe2e0fb00fa7c371b4a0825c3e76fb",
+      "byteLength": 2512
+    },
+    {
+      "path": "crates/mo-timeline/src/generation.rs",
+      "sha256": "2fff72c3bc5ce6d537e0873868730a69a4a40bc8aded4591a4b02b71aef8f6d5",
+      "byteLength": 1518
+    },
+    {
+      "path": "crates/mo-timeline/src/lib.rs",
+      "sha256": "03fceebc5623c57783d5d1770ceef2e893ddd829e18bbeab1d676e7fe44bba95",
+      "byteLength": 1339
+    },
+    {
+      "path": "crates/mo-timeline/src/model.rs",
+      "sha256": "a3509ca466d6f21c48eabf72777aafe0ff412b2a73d85e355bbff3ff5395449b",
+      "byteLength": 12396
+    },
+    {
+      "path": "crates/mo-timeline/src/plan.rs",
+      "sha256": "4b929a824a93b05676f90e3a53dca42a39c9b78e49eb0b8531dc1b9556a54439",
+      "byteLength": 3848
+    },
+    {
+      "path": "crates/mo-timeline/src/sampler.rs",
+      "sha256": "35f5b80265f680554f47bf1269abcb18f6f19c92546f9448fcde3eb421a4c25d",
+      "byteLength": 6980
+    },
+    {
+      "path": "crates/mo-timeline/src/tree/causality.rs",
+      "sha256": "a2cfaa92b5ef680a31c9a51575708b984fb1437d2f778fc037c0db3df5f2439b",
+      "byteLength": 1976
+    },
+    {
+      "path": "crates/mo-timeline/src/tree/presentation.rs",
+      "sha256": "fc764298aa9260fe4cedea5f34bc30023195364e85ed9d8fb448a89c09c8f941",
+      "byteLength": 3228
+    },
+    {
+      "path": "crates/mo-timeline/src/tree/sample/clocks.rs",
+      "sha256": "1b0708150463469a362164c897bb56b6efdfb3ff59f7697e35f20f4c8e600623",
+      "byteLength": 3134
+    },
+    {
+      "path": "crates/mo-timeline/src/tree/sample/intervals.rs",
+      "sha256": "f2aae51bf536157ef80dd75214c4bb47969e759a92c7bdc72a91671c976021e9",
+      "byteLength": 6218
+    },
+    {
+      "path": "crates/mo-timeline/src/tree/sample/properties.rs",
+      "sha256": "f2e225d5823851e2e6a58f80028cbc9546b43b02ca524b5be1ca06454b696d5b",
+      "byteLength": 2684
+    },
+    {
+      "path": "crates/mo-timeline/src/tree/sample/schedule/condition.rs",
+      "sha256": "1fed2c6af9b14c4f7ff69c6113c1ae2e7d7f6b6e6a9a64b8b97fe06099bd62f9",
+      "byteLength": 8867
+    },
+    {
+      "path": "crates/mo-timeline/src/tree/sample/schedule/lifecycle.rs",
+      "sha256": "c3ed7e34f8f57a4c6c31cf7ed131a875326d6665374c18f9bd7df39ed0da24f7",
+      "byteLength": 6456
+    },
+    {
+      "path": "crates/mo-timeline/src/tree/sample/schedule/navigation.rs",
+      "sha256": "77e90080481243758485f752f73da9c6e5acaee7265a82a35356f055be864888",
+      "byteLength": 9643
+    },
+    {
+      "path": "crates/mo-timeline/src/tree/sample/schedule/seek.rs",
+      "sha256": "9c18c50b7039f7a5558e8b3b10692c8085e37acec52fa884903ab7cc0b929ba1",
+      "byteLength": 8014
+    },
+    {
+      "path": "crates/mo-timeline/src/tree/sample/schedule.rs",
+      "sha256": "f11b8ad9f18fabcdc08331cb7eddc85012ce7a217453840479cde6c617098f63",
+      "byteLength": 14941
+    },
+    {
+      "path": "crates/mo-timeline/src/tree/sample.rs",
+      "sha256": "0b9e8f9ddcebdcdfd30b68f2de606469c433215b40819c7f5a22174fc00ca037",
+      "byteLength": 9422
+    },
+    {
+      "path": "crates/mo-timeline/src/tree.rs",
+      "sha256": "bbca2ff2a81b0c8d25a713a09b938dcb492f557df0a09fbdcfdde14e8a631c3b",
+      "byteLength": 12386
+    },
+    {
+      "path": "crates/mo-timeline/tests/authoring.rs",
+      "sha256": "696c191cf755dbae656c2f704223e6e7b3af119e11ca87ebfde6e50864ab945d",
+      "byteLength": 9066
+    },
+    {
+      "path": "crates/mo-timeline/tests/container_lifecycle.rs",
+      "sha256": "7fb018afbe267cf36f5ed2e0325f7024f459c5068345dc8a5e730d5877aaae92",
+      "byteLength": 10851
+    },
+    {
+      "path": "crates/mo-timeline/tests/end_conditions.rs",
+      "sha256": "50553c46d13f9987a1d093a43fb9605ca28bf528d7aacc75e5cae24b4d36367c",
+      "byteLength": 10807
+    },
+    {
+      "path": "crates/mo-timeline/tests/navigation.rs",
+      "sha256": "ac0d78118c018a8c3a9b1af78487390c9bcb23ab683b1ebb394dd9e673df76e8",
+      "byteLength": 23019
+    },
+    {
+      "path": "crates/mo-timeline/tests/repeat_bounds.rs",
+      "sha256": "815d2add0d88d054e3c17b979f396a958756183b6bf34b39412a5a7f9ce1df6d",
+      "byteLength": 9774
+    },
+    {
+      "path": "crates/mo-timeline/tests/restart.rs",
+      "sha256": "8ec252807323a9cc3e70f206f2d3ce1941fd572360595183cb8e04f8aeb85b6e",
+      "byteLength": 17107
+    },
+    {
+      "path": "crates/mo-timeline/tests/retained.rs",
+      "sha256": "e98892d1e6157117f4ebbf04115dd74aa7a4e6451638815f08e4b3ca8d4a0c38",
+      "byteLength": 9250
+    },
+    {
+      "path": "crates/mo-timeline/tests/scale.rs",
+      "sha256": "dfd8e029d7b2e9693dd6fbbc1a76a03c973b19a7814ba0a6c893faee2ad49409",
+      "byteLength": 5498
+    },
+    {
+      "path": "crates/mo-timeline/tests/start_conditions.rs",
+      "sha256": "5e150c0bca10dd29f1ddf2c73453ad5dc18764910473cf24a235fe08cf029e9f",
+      "byteLength": 11934
+    },
+    {
+      "path": "crates/mo-timeline/tests/time_transform.rs",
+      "sha256": "3a2ecb2571d6c66d730585bd971bd35e1a884a0dce0ae335aed0fb47c92fd135",
+      "byteLength": 8723
+    },
+    {
+      "path": "crates/mo-timeline/tests/timeline.rs",
+      "sha256": "d07fe57a7f12b1712fb40b18b3dc8488a8c984bb823aa511a4f4e0edfd583b45",
+      "byteLength": 12977
+    },
+    {
+      "path": "crates/mo-timeline/tests/tree.rs",
+      "sha256": "0642efeaf0dec00b1b6e86ae45730d3f6dea9518498a8627579b85ba05292aaa",
+      "byteLength": 14123
+    },
+    {
+      "path": "crates/mo-timeline/tests/visibility.rs",
+      "sha256": "e09ccc5472b8eb67d23cbfd1c3d6b9b76d6bea7e77b65c21488f8d87a4ac03f9",
+      "byteLength": 10796
+    },
+    {
+      "path": "integrations/skills/musteroffice-presentations/references/advanced-content.md",
+      "sha256": "3187b810835f9d8a9e86fad70ded5538b535978f0bc115e17e62c07dd044f5e8",
+      "byteLength": 2676
+    },
+    {
+      "path": "tools/verification/presentation-sequence-fixtures.py",
+      "sha256": "719a4502d5c0c556ebd0d864a0768900e796344ec5a72f4ae5f7541a776583f7",
+      "byteLength": 10529
+    },
+    {
+      "path": "tools/verification/presentation-sequence-parity.mjs",
+      "sha256": "0ecef6ce561080a7971d90799794aff89730551f8fcc0b4552e1040a6fceafbd",
+      "byteLength": 3274
+    }
+  ],
+  "commands": [
+    {
+      "report": {
+        "path": ".codex-work/native-grouping/clippy.json",
+        "sha256": "1e911c9b632221a5a409f23fde98e7111d1df65c601150c32bd1fa07390428dc",
+        "byteLength": 210859
+      },
+      "log": {
+        "path": ".codex-work/native-grouping/clippy.log",
+        "sha256": "02090345b98100dce521c40806c9b5ebf2d58833f3d5f529d968599c3285d4ee",
+        "byteLength": 620
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 38.415026917122304
+    },
+    {
+      "report": {
+        "path": ".codex-work/native-grouping/schema-write.json",
+        "sha256": "9e391f9e15374c514187d82a1b0a23c26040d0522fdb748b615f62a247899426",
+        "byteLength": 210794
+      },
+      "log": {
+        "path": ".codex-work/native-grouping/schema-write.log",
+        "sha256": "61151f17ce7b9e100f2cdfae2af99b29f0828b898d03fd851224ab36f6a2ead6",
+        "byteLength": 8554
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 26.219985916046426
+    },
+    {
+      "report": {
+        "path": ".codex-work/native-grouping/types-write.json",
+        "sha256": "43afc8edfe14a67c9a86aa395e38c7df5c6407b68f1706259fb54fae2de77e59",
+        "byteLength": 33300
+      },
+      "log": {
+        "path": ".codex-work/native-grouping/types-write.log",
+        "sha256": "5ca396310c31045cafebf9a1185c925bf0f4355190672b64cfa00c1305970c32",
+        "byteLength": 3907
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 1.627163166878745
+    },
+    {
+      "report": {
+        "path": ".codex-work/native-grouping/types-check.json",
+        "sha256": "41ed8e601f6e75bb7be2a8f7164eb18bc5c748a3d0acf2aeaee71dc5f83ed0e7",
+        "byteLength": 71360
+      },
+      "log": {
+        "path": ".codex-work/native-grouping/types-check.log",
+        "sha256": "cad290968d57526e0a6958210b4070c7fcf229a49e86089c62affb6a210ff36c",
+        "byteLength": 4215
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 2.716221917187795
+    },
+    {
+      "report": {
+        "path": ".codex-work/native-grouping/native-build.json",
+        "sha256": "698e6b2e987bc4332c1a7c02c4a00c25339c245f9a7a587d06b169131de8d537",
+        "byteLength": 210924
+      },
+      "log": {
+        "path": ".codex-work/native-grouping/native-build.log",
+        "sha256": "cc2ae7fa116022b1dedd561de4ce379d2805f39f1d887c58b64d57985ceacea9",
+        "byteLength": 1965
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 30.08858916698955
+    },
+    {
+      "report": {
+        "path": ".codex-work/native-grouping/sdk-tests.json",
+        "sha256": "930681ec10e10637f56f8165b17832023c52abe49a21c286e0e40c68eae48531",
+        "byteLength": 14127
+      },
+      "log": {
+        "path": ".codex-work/native-grouping/sdk-tests.log",
+        "sha256": "4d5037ca0eb9c158308e5f78c388f5ed544b252aedc136d8489bfba560bc5478",
+        "byteLength": 2276
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 24.26995045808144
+    },
+    {
+      "report": {
+        "path": ".codex-work/native-grouping/sdk-build-02.json",
+        "sha256": "deddfc47de2d1fb339148eb95f58397061b22d0a6d9d1d31eaf7610ab03b398b",
+        "byteLength": 207203
+      },
+      "log": {
+        "path": ".codex-work/native-grouping/sdk-build-02.log",
+        "sha256": "1b7bacc844f63edd358d2829ac2ab730171ad2b6c53aa84b433f97604e6f23fe",
+        "byteLength": 199
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 0.39078929205425084
+    },
+    {
+      "report": {
+        "path": ".codex-work/native-grouping/facade-clippy.json",
+        "sha256": "8e54ca3205a3182fb9becfd89aed8dd4e6946c5913e0e81f96c85c864d8e5987",
+        "byteLength": 2968
+      },
+      "log": {
+        "path": ".codex-work/native-grouping/facade-clippy.log",
+        "sha256": "530a9213b0f7a7a3ec08e86fae060de6238394aba5ab4071e4f6f1c33f9f095a",
+        "byteLength": 1550
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 21.326282625086606
+    },
+    {
+      "report": {
+        "path": ".codex-work/native-grouping/wasm-build.json",
+        "sha256": "a8040f23afa718c9f47f479777f9f2eb3c723f6e012880ca46360f40ec0c743a",
+        "byteLength": 210796
+      },
+      "log": {
+        "path": ".codex-work/native-grouping/wasm-build.log",
+        "sha256": "bc83e9bbd7a393823076f3537a781ebc1aff055f639d238e650e2f8ee5ba64cf",
+        "byteLength": 1306
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 95.34636249998584
+    },
+    {
+      "report": {
+        "path": ".codex-work/native-grouping/wasm-bindgen.json",
+        "sha256": "a2e21d5e5aa1146198b88d8712ab615429cabb7981701054c77ae8cea9758199",
+        "byteLength": 762
+      },
+      "log": {
+        "path": ".codex-work/native-grouping/wasm-bindgen.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byteLength": 0
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 0.8131298332009465
+    },
+    {
+      "report": {
+        "path": ".codex-work/native-grouping/bundle-build.json",
+        "sha256": "c029365544dc77825ea01ce3e9e418b8bfc3ccb7764f9cac95921f42ea980525",
+        "byteLength": 38791
+      },
+      "log": {
+        "path": ".codex-work/native-grouping/bundle-build.log",
+        "sha256": "3079db2c16bd10528ddea5b3dec8db716825dfc4f37a7e36717532cfc164d9c5",
+        "byteLength": 100
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 0.5324928748887032
+    },
+    {
+      "report": {
+        "path": ".codex-work/native-grouping/corpus-03.json",
+        "sha256": "76173864f9d3af4e4bb2cb8bf7312feef7019dc3f7bfd0201e8d0022acf6e237",
+        "byteLength": 2036
+      },
+      "log": {
+        "path": ".codex-work/native-grouping/corpus-03.log",
+        "sha256": "394ffe0eedf62402734e9ecea97991596ed777a3d5589286f59042966fb25609",
+        "byteLength": 40
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 10.04073870787397
+    },
+    {
+      "report": {
+        "path": ".codex-work/native-grouping/wasm-sync-final.json",
+        "sha256": "57e19201a8f9715b0a4d56c768c4b0fcf8c39b8024b792a5dc2b07a3ff3ca22b",
+        "byteLength": 140792
+      },
+      "log": {
+        "path": ".codex-work/native-grouping/wasm-sync-final.log",
+        "sha256": "d7496bf9a22a064aff157c09597a0eecca0ddac7b2a5f8b8e9735f6e90fe56f1",
+        "byteLength": 45
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 1.3863177909515798
+    },
+    {
+      "report": {
+        "path": ".codex-work/native-grouping/wasm-stepped-final.json",
+        "sha256": "4bd55d56ce815c4e5f3a0b92eb8fe6173019522e6226cb9b3fc96375ac006882",
+        "byteLength": 140798
+      },
+      "log": {
+        "path": ".codex-work/native-grouping/wasm-stepped-final.log",
+        "sha256": "d7496bf9a22a064aff157c09597a0eecca0ddac7b2a5f8b8e9735f6e90fe56f1",
+        "byteLength": 45
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 1.7813610001467168
+    },
+    {
+      "report": {
+        "path": ".codex-work/native-grouping/operation-parity-final.json",
+        "sha256": "b4a4671179d1e70b20835e28678088079a445d6203bb12edde90f4966287d717",
+        "byteLength": 122203
+      },
+      "log": {
+        "path": ".codex-work/native-grouping/operation-parity-final.log",
+        "sha256": "a47a37f701c5cb1b8ed96580dfe069a6782d75d0d1829d5b982011047ecb8b9e",
+        "byteLength": 55
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 0.33652291586622596
+    },
+    {
+      "report": {
+        "path": ".codex-work/native-grouping/product-fixtures-final.json",
+        "sha256": "5d8e4829552b0b36d8d21edd97e5fba647d4175d2a198e2833a6b577ca47f0ef",
+        "byteLength": 122662
+      },
+      "log": {
+        "path": ".codex-work/native-grouping/product-fixtures-final.log",
+        "sha256": "a2db47d18e43d7a5d121068ac571a3fb6c204b30de7f8ae8e1416b6f706fd617",
+        "byteLength": 53
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 11.952817374840379
+    },
+    {
+      "report": {
+        "path": "product-worktree/.codex-work/integration/native-grouping/prepare-sdk-03.json",
+        "sha256": "e679f266683363a22146341945465bb5d04fb8c91c4b0e51eb8de7bbfb13116a",
+        "byteLength": 1855
+      },
+      "log": {
+        "path": "product-worktree/.codex-work/integration/native-grouping/prepare-sdk-03.log",
+        "sha256": "1188699ab87537cff2cf2cf6bb505166582ee3329a7e1a6db01ab451cce85db2",
+        "byteLength": 647
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 3.2465288331732154
+    },
+    {
+      "report": {
+        "path": "product-worktree/.codex-work/integration/native-grouping/prepare-playback.json",
+        "sha256": "504571f68aaad7ef55d664ae4fd8dc5c22f9dd8e077f16fccaa5eee115f642ef",
+        "byteLength": 1501
+      },
+      "log": {
+        "path": "product-worktree/.codex-work/integration/native-grouping/prepare-playback.log",
+        "sha256": "69271a1f04e8d47d3f4575e657866150767084848a6bedd1e59626b700e64487",
+        "byteLength": 9686
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 0.44405729114077985
+    },
+    {
+      "report": {
+        "path": "product-worktree/.codex-work/integration/native-grouping/consumer-build-03.json",
+        "sha256": "461c2709e5e548f72098db4ca88f6858f07e53404382a80ec3cb3adb181ad4da",
+        "byteLength": 2296
+      },
+      "log": {
+        "path": "product-worktree/.codex-work/integration/native-grouping/consumer-build-03.log",
+        "sha256": "4cf86278c1e6d659943a46a3d7e3da429ac15be90f0f17742e24ef85228e7d3e",
+        "byteLength": 72
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 0.17608008300885558
+    },
+    {
+      "report": {
+        "path": "product-worktree/.codex-work/integration/native-grouping/consumer-sequence.json",
+        "sha256": "6946bdc82f11f4480c673362545fb05c105658bc44fc523d9154866403489a13",
+        "byteLength": 2323
+      },
+      "log": {
+        "path": "product-worktree/.codex-work/integration/native-grouping/consumer-sequence.log",
+        "sha256": "50b974f3fd84cdb0cb3e8df846c8e4b5f25c2d7bddec6f99426129c2d6c0b08d",
+        "byteLength": 568
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 2.188500666990876
+    },
+    {
+      "report": {
+        "path": "product-worktree/.codex-work/integration/native-grouping/adapter-03.json",
+        "sha256": "037925cc9092a6fddb9e0d68a17ff35a60cf060c6bb76d47e7eb8a86f41fdce8",
+        "byteLength": 15483
+      },
+      "log": {
+        "path": "product-worktree/.codex-work/integration/native-grouping/adapter-03.log",
+        "sha256": "b5ccc04684a26aa7e4cb78f26a13bedd3ed9d766a1739b417ebb0d93d8041bc4",
+        "byteLength": 8199
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 18.491951083065942
+    },
+    {
+      "report": {
+        "path": "product-worktree/.codex-work/integration/native-grouping/preparation.json",
+        "sha256": "d031b83249b5551145fc45eda5fc36d59956f17169b506da207e957498b50462",
+        "byteLength": 1824
+      },
+      "log": {
+        "path": "product-worktree/.codex-work/integration/native-grouping/preparation.log",
+        "sha256": "2c0f68793638a806290cc0c4f1f2c5135d43810b9c75fe46000b6abcb6c9d9f4",
+        "byteLength": 1473
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 0.2976116659119725
+    },
+    {
+      "report": {
+        "path": "product-worktree/.codex-work/integration/native-grouping/client-final.json",
+        "sha256": "ac796e956e0e8dd7be7b395a5ca31103789ec69c77e0ef95a471c1d623abdd7b",
+        "byteLength": 112651
+      },
+      "log": {
+        "path": "product-worktree/.codex-work/integration/native-grouping/client-final.log",
+        "sha256": "9fbcbadec98f60b8a8de9d231b40c9093a1ab8d4be61365efaeb8d9f21a77822",
+        "byteLength": 1168
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 2.164041625102982
+    },
+    {
+      "report": {
+        "path": "product-worktree/.codex-work/integration/native-grouping/viewer.json",
+        "sha256": "497a9c1d8508e5fae54318968a4874ce0633a96fc4ec7c5a3f3be21aafffb1b3",
+        "byteLength": 75321
+      },
+      "log": {
+        "path": "product-worktree/.codex-work/integration/native-grouping/viewer.log",
+        "sha256": "290fd0ae57d859e70d0ba22f524a7af61ce5d39ecfae7a7f16e69d8bf66a3f07",
+        "byteLength": 444
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 3.3700686248485
+    },
+    {
+      "report": {
+        "path": "product-worktree/.codex-work/integration/native-grouping/types.json",
+        "sha256": "7c3a4b9d4975f0558e22448b53c55885a89e723886d98e2a9904956490788df2",
+        "byteLength": 75590
+      },
+      "log": {
+        "path": "product-worktree/.codex-work/integration/native-grouping/types.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byteLength": 0
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 1.3192440420389175
+    },
+    {
+      "report": {
+        "path": "product-worktree/.codex-work/integration/native-grouping/desktop-build.json",
+        "sha256": "d1673d2b791f60d6f801bde3493e66174ab02e92fade06afab26dc2e5d6f7e42",
+        "byteLength": 505607
+      },
+      "log": {
+        "path": "product-worktree/.codex-work/integration/native-grouping/desktop-build.log",
+        "sha256": "326dc0f260ff1f33aa8bd6cca2455d11097f1c08869267349c3d483474e4f069",
+        "byteLength": 72855
+      },
+      "exitCode": 0,
+      "sourceUnchangedDuringRun": true,
+      "elapsedSeconds": 19.945365000050515
+    }
+  ],
+  "rustTestLog": {
+    "path": ".codex-work/native-grouping/rust-tests.log",
+    "sha256": "5aa50e60b0c0a5f24ba6ff4c7373b33e79f21b7a30be16085bfb1ce993cc4ee6",
+    "byteLength": 42169
+  },
+  "checks": {
+    "rustTests": 391,
+    "newRustTests": 10,
+    "publicWasmEdits": 4,
+    "publicWasmByteIdenticalPptx": 4,
+    "publicInvalidInputPairs": 5,
+    "nativeFrames": 132,
+    "wasmSyncFrames": 132,
+    "wasmSteppedFrames": 132,
+    "xsdPresentationParts": 44,
+    "ownedPptxFiles": 8,
+    "productNativeFrames": 28,
+    "productWorkerFrames": 42,
+    "productTests": 159,
+    "typescript": true,
+    "desktopFrontendBuild": true,
+    "fullAgentElectronAcceptance": false,
+    "productionCommit": false,
+    "stableSwitched": false
+  },
+  "materials": {
+    "sdkManifest": {
+      "path": ".codex-work/native-grouping/sdk-02/sdk-manifest.json",
+      "sha256": "df42eaf39350877d840296bdc62d980317e6e8851103351cdd3eff8093a1f6be",
+      "byteLength": 222906
+    },
+    "playbackManifest": {
+      "path": ".codex-work/native-grouping/bundle/bundle-manifest.json",
+      "sha256": "ff0928c11efb598321b127c75180571967000b094273326a1ea846b59cb40201",
+      "byteLength": 11855
+    },
+    "exportWorker": {
+      "path": "target/debug/mo-export-worker",
+      "sha256": "7b90f626c5ff261d7c1d59e13ff85dbd9477377e53764a2e89c7907134b73431",
+      "byteLength": 43413088
+    },
+    "cli": {
+      "path": "target/debug/mo-cli",
+      "sha256": "69d122da5907c73c82a84b3b1c7ca0484321e8b2f0bc741272f4e8c2004be77f",
+      "byteLength": 68461384
+    },
+    "rasterWorker": {
+      "path": "target/debug/mo-raster-worker",
+      "sha256": "99630ca71dc3506f4179d34aa4864b315286ab67b7943417d31e97c7860053fa",
+      "byteLength": 40318256
+    },
+    "productLocks": [
+      {
+        "path": "product-worktree/components/musteroffice/lock.json",
+        "sha256": "e54b8ea18e5382926b89d7c96ee62646dff6499511de39f281cc097c9a07cf3b",
+        "byteLength": 333
+      },
+      {
+        "path": "product-worktree/components/musteroffice/playback-lock.json",
+        "sha256": "1223ea230745cea532ea43094bf599825dcbfbacbd08011e99091e492a3cb756",
+        "byteLength": 153
+      }
+    ],
+    "verifiedSdkBundleAndVendorFiles": 1224
+  },
+  "ownedExternalEvidence": {
+    "app": "WPS Office 12.1.22553 macOS ARM64",
+    "files": [
+      {
+        "path": ".codex-work/native-grouping/native-after-previous.pptx",
+        "sha256": "c9ce26ff45bbbed7bf69c1aa10600c2d082daa06b00153abeed4ec59809b1cf7",
+        "byteLength": 9682
+      },
+      {
+        "path": ".codex-work/native-grouping/kernel-export-before.pptx",
+        "sha256": "2587f3ccf5e3a9ee484e622b34f0316d106554f8af16aca310b18e0fdc39ce9a",
+        "byteLength": 6183
+      },
+      {
+        "path": ".codex-work/native-grouping/kernel-export-wps-edited.pptx",
+        "sha256": "0623a32d60159da0d99330c8bd11abdfcbdc0df4791bb998305fd586692bb550",
+        "byteLength": 9686
+      },
+      {
+        "path": ".codex-work/native-grouping/kernel-export-wps-overlap.pptx",
+        "sha256": "97b144c994ca74e0395b91109da4b212eb30e2182d6925ce6747527e959523a5",
+        "byteLength": 9686
+      },
+      {
+        "path": ".codex-work/native-grouping/compiled-sequence-wps.pptx",
+        "sha256": "17e79e4395074b791ee242864342cb1f6364a41d746ff69e755f991fd7c49d61",
+        "byteLength": 9682
+      }
+    ],
+    "screenshots": [
+      {
+        "path": ".codex-work/native-grouping/export-red-two-seconds.png",
+        "sha256": "3a8b07501490966ce113ea10e1140c8e77666a9bc776ae0c4ebc6b933016cca1",
+        "byteLength": 372294
+      },
+      {
+        "path": ".codex-work/native-grouping/overlap-after.png",
+        "sha256": "1186db8e252433b3a4f0f7bde5ab2c3f4af6bc02653474958481c23300a0859f",
+        "byteLength": 373165
+      },
+      {
+        "path": ".codex-work/native-grouping/compiled-red-three-seconds-saved.png",
+        "sha256": "bb221cbc20905fb4ef25b371e0184f5c0a34aeb094ddc854fafa821d01c7aa78",
+        "byteLength": 370226
+      }
+    ],
+    "observations": [
+      "WPS native After Previous creates a new parallel batch with a group offset.",
+      "Changing first effect 1s to 2s through WPS after kernel re-export updates successor offset 1000 to 2000ms.",
+      "Two parallel effects of 2s and 1s are followed by a batch at 2s in this native sample.",
+      "New author operation export edited in WPS from 2s to 3s moves successor group from 2000 to 3000ms. Four WPS controls reimport and sample at exact expected times."
+    ],
+    "foreground": "Prior authorized brief foreground calibration; Telegram restored; owned scale-inputs only"
+  },
+  "reports": {
+    "corpus": {
+      "path": ".codex-work/native-grouping/corpus-03/report.json",
+      "sha256": "e1205d8625381808f4ff5ca7bd738ea83289efebc867e9b40b6a206e75a3c27c",
+      "byteLength": 35196
+    },
+    "publicParity": {
+      "path": ".codex-work/native-grouping/operation-parity-final/report.json",
+      "sha256": "89c631826aac02a82eb89dd934d4d69c06f0196fb7299943a14f4d97a9aae655",
+      "byteLength": 4357
+    },
+    "productActualWorker": {
+      "path": "product-worktree/.codex-work/integration/native-grouping/actual-worker-final.json",
+      "sha256": "d2a675daf54a15f7d46b57ca7e930b3f51e0b4a0cbce7392958d325bd53b1813",
+      "byteLength": 3723
+    }
+  },
+  "sizes": {
+    "platform": "macOS ARM64 development builds",
+    "desktopPlaybackFiles": 42,
+    "desktopPlaybackUncompressedBytes": 18289269,
+    "previousPlaybackUncompressedBytes": 18163275,
+    "increaseBytes": 125994,
+    "exportWorkerDebugBytes": 43413088,
+    "installerOrRuntimePerformanceClaim": false
+  },
+  "recordedExperimentIssues": [
+    "Initial source-inventory path tools/mo-wasm was wrong; corrected to the crates inventory before running builds.",
+    "First product preparation inventory included two intended generated files; immutable source and lock paths were used in subsequent successful run.",
+    "SDK facade exposed timeline types after the first SDK bundle; final SDK rebuilt, Cargo locks synchronized offline, consumer and adapter tested with locked resolution.",
+    "Python fixture style was normalized by Ruff; final corpus and parity were regenerated and retained alongside prior observations."
+  ],
+  "limitations": [
+    "Explicit graph export and arbitrary source timing edits are not converted or inferred; earlier WPS node-reference loss remains an open compatibility case.",
+    "Author sequence operation replaces the whole authored slide timeline and rejects unsupported source-binding mutations. It does not store a second author program or automatically reflow arbitrary low-level timeline edits.",
+    "Current effect types are rotation, scale and visibility; all remaining presets, multi-behavior effects, transitions, media, SmartArt, formulas and complete v0.4 scope remain required.",
+    "WPS owned scale examples are not PowerPoint acceptance or universal editor fidelity; delayed, interactive and multi-behavior native editor cases need further investigation.",
+    "SDK, product Worker and Vite checks do not replace real Agent/Electron, cross-platform, history migration, performance, resources, installed size or full replacement gates.",
+    "SDK facade-only re-export followed native/WASM behavior builds; executable semantics were unchanged and the final SDK was separately rebuilt and consumed."
+  ]
+}

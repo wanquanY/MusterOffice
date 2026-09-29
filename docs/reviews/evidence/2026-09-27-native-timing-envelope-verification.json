@@ -1,0 +1,1003 @@
+{
+  "format": "musteroffice.native-timing-envelope-verification/1",
+  "status": "passed-scoped-flat-transform-projection",
+  "source": {
+    "baseline": {
+      "path": ".codex-work/native-timing-envelope/baseline.json",
+      "byteLength": 277501,
+      "sha256": "eba4cc8442d68fddf8e2ae6b0fb80e2cf846a6224c14eaa1b1d6f8feb5856949"
+    },
+    "changed": [
+      {
+        "path": "crates/mo-pptx/src/timing.rs",
+        "byteLength": 5511,
+        "sha256": "64eee939f815b9f79633d89eb5c1f3285a2f7d796fc56b3e461780440ca5acb5"
+      },
+      {
+        "path": "crates/mo-pptx/src/timing/write_flat.rs",
+        "byteLength": 2482,
+        "sha256": "24a7b9aaf69fb2fc8ef87f8c4c8de3ac668f4a19658909d2832ae3427a15cfed"
+      },
+      {
+        "path": "crates/mo-pptx/tests/timing.rs",
+        "byteLength": 37718,
+        "sha256": "a22524a6b9dc8dd8524e7f215beabae5d4a65293e8115198f5da5faa2d3c4508"
+      },
+      {
+        "path": "crates/mo-pptx/tests/timing_envelope.rs",
+        "byteLength": 10027,
+        "sha256": "10bff2cc3618e492df703d22dde2c134de654f62872ffb2c1d768745327e06d4"
+      },
+      {
+        "path": "crates/mo-presentation-source/src/timing.rs",
+        "byteLength": 165,
+        "sha256": "28846e4a1afd209e8a43b93f87ece18349356b2f002838861dc8173561fb5ecb"
+      },
+      {
+        "path": "crates/mo-presentation-source/src/timing/preset.rs",
+        "byteLength": 853,
+        "sha256": "79c25e91629d1d2efad70229cc47f8e0467a50e2ccf674c8240cf075f5cfd931"
+      },
+      {
+        "path": "crates/mo-presentation-source/src/timing/read.rs",
+        "byteLength": 14664,
+        "sha256": "5f01f7043614d722612ceeb5c9747394ef1b993eb9229a9eee75a4f8f4ee2b77"
+      },
+      {
+        "path": "crates/mo-presentation-source/src/timing/read/envelope.rs",
+        "byteLength": 5328,
+        "sha256": "28930d5a6b4ae58348187a65e2480ba9ceadabe54bc34a45ac62e60489a630f6"
+      },
+      {
+        "path": "docs/README.md",
+        "byteLength": 28794,
+        "sha256": "eb7c1716d3bb73287749b30caef832f52e6fbaf7b12114316cbfa9210e3daa9c"
+      },
+      {
+        "path": "docs/design/presentations/timeline-media.md",
+        "byteLength": 10582,
+        "sha256": "11da90a34fdd978fb16e1ba859f21e766b8569042ad11ceaf988c5cfe162075e"
+      },
+      {
+        "path": "docs/implementation/native-timing-envelope.md",
+        "byteLength": 7369,
+        "sha256": "f769bcd55cda48fa04f6f46d6b780f3192f8d23e7f63e50e03367ec6dee59bcd"
+      },
+      {
+        "path": "docs/implementation/progress.md",
+        "byteLength": 108871,
+        "sha256": "163c7edbb2c6c1b9b7ae13715b61be8f37fa81d20606445af11a5d2ff3e30e7e"
+      }
+    ],
+    "unchanged": {
+      "components/": 155,
+      "integrations/": 8,
+      "packages/": 149,
+      "contracts/": 120,
+      "fixtures/": 30,
+      "tools/": 761,
+      "Cargo.toml": 1,
+      "Cargo.lock": 1,
+      "package.json": 1,
+      "pnpm-lock.yaml": 1,
+      "crates/mo-pptx/src/timing/write_tree.rs": 1
+    },
+    "localLinks": 409,
+    "dependenciesChanged": false,
+    "changedCodeOver2000Lines": 0
+  },
+  "implementation": {
+    "flatWriter": "One main sequence child with two unbounded parallel groups and one emphasis effect per behavior. All added clocks start at zero, hold indefinitely and restart never.",
+    "reader": "Strict structural lift only; native editorial OPC preserved. No navigation or finite container stripped.",
+    "behaviorIdentity": "Original IDs 2..N+1 and leaf references unchanged; appended container IDs checked for overflow, duplicates and unresolved references.",
+    "presets": {
+      "growShrink": 6,
+      "spin": 8,
+      "class": "emph",
+      "subtype": 0
+    },
+    "explicitTreeWriterChanged": false,
+    "xmlCaptureElementLimit": "32 * max_nodes + 32; independent XML and semantic budgets still apply",
+    "productUiOrPersistenceAdded": false
+  },
+  "verification": {
+    "commands": {
+      "timing-tests-03": {
+        "record": {
+          "path": ".codex-work/native-timing-envelope/timing-tests-03.json",
+          "byteLength": 60337,
+          "sha256": "298b7c05c715aa99df9d20543bfbadbc2b5ad476c3e27c6d3c7878efbee97fe9"
+        },
+        "log": {
+          "path": ".codex-work/native-timing-envelope/timing-tests-03.log",
+          "byteLength": 2492,
+          "sha256": "84f5342636889e111d839b3b07337b68d70961100fec3625874605f5803442cf"
+        }
+      },
+      "export-probes-01": {
+        "record": {
+          "path": ".codex-work/native-timing-envelope/export-probes-01.json",
+          "byteLength": 2015,
+          "sha256": "1f2014bacb0372b674ddc0f1f68731c98ede52f085e819f1009fea492af48571"
+        },
+        "log": {
+          "path": ".codex-work/native-timing-envelope/export-probes-01.log",
+          "byteLength": 599,
+          "sha256": "561ff1d121f1a338372aaf424be4c12bf98913e47c673b8bb534c6df77cd49a9"
+        }
+      },
+      "corpus-01": {
+        "record": {
+          "path": ".codex-work/native-timing-envelope/corpus-01.json",
+          "byteLength": 2735,
+          "sha256": "154eb82e16ab4ec7ebda42936ccb2e879024b2f7953c917e047caae85afdf7c0"
+        },
+        "log": {
+          "path": ".codex-work/native-timing-envelope/corpus-01.log",
+          "byteLength": 66,
+          "sha256": "213302483270386dbe65b98a65b4aed603080240a65c6ab525c5155a3229ce59"
+        }
+      },
+      "native-sdk-build": {
+        "record": {
+          "path": ".codex-work/native-timing-envelope/native-sdk-build.json",
+          "byteLength": 46351,
+          "sha256": "3075610c8b5f71e479891c312ce823154af0f87e4be458add9a5bfd36db79235"
+        },
+        "log": {
+          "path": ".codex-work/native-timing-envelope/native-sdk-build.log",
+          "byteLength": 50,
+          "sha256": "4bad0694cc48f18e0efa1679e386a0b00b2755bca17984bebc3b2dfd0c2f667d"
+        }
+      },
+      "wasm-bindgen-01": {
+        "record": {
+          "path": ".codex-work/native-timing-envelope/wasm-bindgen-01.json",
+          "byteLength": 1041,
+          "sha256": "2bee22b8b92832ec5bf355e1e0fbb26e73401185399bd5e0aadc7fed698a73e7"
+        },
+        "log": {
+          "path": ".codex-work/native-timing-envelope/wasm-bindgen-01.log",
+          "byteLength": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "inspection-01": {
+        "record": {
+          "path": ".codex-work/native-timing-envelope/inspection-01.json",
+          "byteLength": 2404,
+          "sha256": "419a37b5ed3c3e289dcd4f7eaa9207da9e10e68fab3db426af122cf652b99d1a"
+        },
+        "log": {
+          "path": ".codex-work/native-timing-envelope/inspection-01.log",
+          "byteLength": 269,
+          "sha256": "f604da0c6b92f9971e604da9440631ac6fed134a67495e980612d26fae9f49bb"
+        }
+      },
+      "bundle-01": {
+        "record": {
+          "path": ".codex-work/native-timing-envelope/bundle-01.json",
+          "byteLength": 3004758,
+          "sha256": "d30b59b548b7e858224c7c7fd1f1b594750fa28bfca1d497cc50bc7d767c0228"
+        },
+        "log": {
+          "path": ".codex-work/native-timing-envelope/bundle-01.log",
+          "byteLength": 100,
+          "sha256": "d2cddd43a97dc5fc70aed360a5d60caa4ab691d6a617752d6a2cec32aab7f909"
+        }
+      },
+      "sdk-01": {
+        "record": {
+          "path": ".codex-work/native-timing-envelope/sdk-01.json",
+          "byteLength": 64804,
+          "sha256": "7de67282574d7406c104ac1891280478fa12e25e78ea4b8d38aca0c5f11738fe"
+        },
+        "log": {
+          "path": ".codex-work/native-timing-envelope/sdk-01.log",
+          "byteLength": 45,
+          "sha256": "a1d592b3014a07dc9c89a0738960860ac18bf5ad5df86da5f4c82cee3de666a4"
+        }
+      },
+      "browser-01": {
+        "record": {
+          "path": ".codex-work/native-timing-envelope/browser-01.json",
+          "byteLength": 229866,
+          "sha256": "91792cd331c9912b68b0cebc24ba723b1899c0e81e6543fd3b78bd389c8712d1"
+        },
+        "log": {
+          "path": ".codex-work/native-timing-envelope/browser-01.log",
+          "byteLength": 136,
+          "sha256": "0b9e44a8e46b1905fa3618e718ee41921845df2952f83dbb9f580a2779008352"
+        }
+      },
+      "structure-01": {
+        "record": {
+          "path": ".codex-work/native-timing-envelope/structure-01.json",
+          "byteLength": 1309,
+          "sha256": "46e1b97137b5d01f4d6b433944aaba1c24fe9c319a81b8ebf971c5e3768e8ae3"
+        },
+        "log": {
+          "path": ".codex-work/native-timing-envelope/structure-01.log",
+          "byteLength": 149,
+          "sha256": "5ab5441f801aea9dbf46a3e5ac05924e9c524817b0f8c94e9a9b577c5a385afb"
+        }
+      },
+      "wps-measure-01": {
+        "record": {
+          "path": ".codex-work/native-timing-envelope/wps-measure-01.json",
+          "byteLength": 1993,
+          "sha256": "630fb69ba023c26612b9e2c77b7786b322ea75000ddbb8072d586c0fe219ed3a"
+        },
+        "log": {
+          "path": ".codex-work/native-timing-envelope/wps-measure-01.log",
+          "byteLength": 637,
+          "sha256": "28d7af062fef96dc51de82b1fb4673f6abf88f4f2a577371091cee126e06fa8e"
+        }
+      }
+    },
+    "workspace": {
+      "report": {
+        "path": ".codex-work/native-timing-envelope/workspace-01/report.json",
+        "byteLength": 11795,
+        "sha256": "863b69d3ea7f021368e81ef8083b53baac124bff231dfd5ac0dc09ef441f9fae"
+      },
+      "steps": [
+        {
+          "name": "verification-driver-tests",
+          "log": {
+            "path": ".codex-work/native-timing-envelope/workspace-01/verification-driver-tests.log",
+            "byteLength": 625,
+            "sha256": "1e9a9602a6b0424a205e703528ce857749ce69d1a312514bc1155b2b0e4089cc"
+          }
+        },
+        {
+          "name": "agent-package-tests",
+          "log": {
+            "path": ".codex-work/native-timing-envelope/workspace-01/agent-package-tests.log",
+            "byteLength": 783,
+            "sha256": "5d4a8a6b2192f9103d0b9658dd423dae9727cdb496cdc0889fc44c5b97cb0d57"
+          }
+        },
+        {
+          "name": "playback-sdk-package-tests",
+          "log": {
+            "path": ".codex-work/native-timing-envelope/workspace-01/playback-sdk-package-tests.log",
+            "byteLength": 473,
+            "sha256": "fb45060c12c8de29467e2c3ca059e01132a798ded60e0823a98bb33976778a95"
+          }
+        },
+        {
+          "name": "format",
+          "log": {
+            "path": ".codex-work/native-timing-envelope/workspace-01/format.log",
+            "byteLength": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "name": "clippy",
+          "log": {
+            "path": ".codex-work/native-timing-envelope/workspace-01/clippy.log",
+            "byteLength": 2551,
+            "sha256": "900a3450e516494372b77bec49969e2c518a18a676fa3228fe30ab75049b7289"
+          }
+        },
+        {
+          "name": "rust-tests",
+          "log": {
+            "path": ".codex-work/native-timing-envelope/workspace-01/rust-tests.log",
+            "byteLength": 120331,
+            "sha256": "94b5632fbe8560a0e75a2cf02b657a2b83bbd895a0327b7cd3ed5506bc27735e"
+          },
+          "tests": {
+            "passed": 972,
+            "ignored": 25
+          }
+        },
+        {
+          "name": "schemas",
+          "log": {
+            "path": ".codex-work/native-timing-envelope/workspace-01/schemas.log",
+            "byteLength": 8131,
+            "sha256": "0e50370974fb15b7b3a9291e2055b2504b447fa8fd47f15079432de5045dc6cf"
+          }
+        },
+        {
+          "name": "native-build",
+          "log": {
+            "path": ".codex-work/native-timing-envelope/workspace-01/native-build.log",
+            "byteLength": 1821,
+            "sha256": "2833bf7b703db1d4ff990b7ce29f0972f3e468cfb51b009a7c30a39e08a42108"
+          }
+        },
+        {
+          "name": "native-render-tests",
+          "log": {
+            "path": ".codex-work/native-timing-envelope/workspace-01/native-render-tests.log",
+            "byteLength": 733,
+            "sha256": "e1a03f287e609e45b7ee91f5b940b17f77cf56675095410c10694d44c28f9e6c"
+          },
+          "tests": {
+            "passed": 4,
+            "ignored": 0
+          }
+        },
+        {
+          "name": "native-playback-tests",
+          "log": {
+            "path": ".codex-work/native-timing-envelope/workspace-01/native-playback-tests.log",
+            "byteLength": 710,
+            "sha256": "43170744e47a490e9615adf3f832d08470ae67d35b393f682c21166be3f03e9c"
+          },
+          "tests": {
+            "passed": 4,
+            "ignored": 0
+          }
+        },
+        {
+          "name": "native-host-export-tests",
+          "log": {
+            "path": ".codex-work/native-timing-envelope/workspace-01/native-host-export-tests.log",
+            "byteLength": 1133,
+            "sha256": "b80973cbd08c943c031d24ded38a79b82b1ac5df3c2f9feaac31c29c65e5b3b7"
+          },
+          "tests": {
+            "passed": 9,
+            "ignored": 0
+          }
+        },
+        {
+          "name": "native-export-tests",
+          "log": {
+            "path": ".codex-work/native-timing-envelope/workspace-01/native-export-tests.log",
+            "byteLength": 1665,
+            "sha256": "9265136059fe42188c1dbd0474bf164e6e6551a3a86c843f4a2b10c6362f8430"
+          },
+          "tests": {
+            "passed": 12,
+            "ignored": 1
+          }
+        },
+        {
+          "name": "native-computation-cli-tests",
+          "log": {
+            "path": ".codex-work/native-timing-envelope/workspace-01/native-computation-cli-tests.log",
+            "byteLength": 432,
+            "sha256": "5358bc6b829b7165b203c24fb88fea3be52e784d6b5bf55267ae1b23b88d63ee"
+          },
+          "tests": {
+            "passed": 1,
+            "ignored": 0
+          }
+        },
+        {
+          "name": "pure-operation-wasm",
+          "log": {
+            "path": ".codex-work/native-timing-envelope/workspace-01/pure-operation-wasm.log",
+            "byteLength": 661,
+            "sha256": "ac3a1addef77d1d2f3bd347b385429a84b33ef5b9668594fe2a92e8f3fe09a58"
+          }
+        },
+        {
+          "name": "legacy-host-wasm",
+          "log": {
+            "path": ".codex-work/native-timing-envelope/workspace-01/legacy-host-wasm.log",
+            "byteLength": 303,
+            "sha256": "e04c7eea0157e8842b77481a3c9c54ded21bca386ae93619bc11770bbedf7c5b"
+          }
+        },
+        {
+          "name": "wasm-build",
+          "log": {
+            "path": ".codex-work/native-timing-envelope/workspace-01/wasm-build.log",
+            "byteLength": 846,
+            "sha256": "90b2355df248f41a84ffaf0cbeb12d05aaa0bfedd2014d59d69e36fff934ba9a"
+          }
+        },
+        {
+          "name": "wasm-bindgen",
+          "log": {
+            "path": ".codex-work/native-timing-envelope/workspace-01/wasm-bindgen.log",
+            "byteLength": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "name": "document-native-wasm-parity",
+          "log": {
+            "path": ".codex-work/native-timing-envelope/workspace-01/document-native-wasm-parity.log",
+            "byteLength": 336664,
+            "sha256": "78bdf1a0083df02fc44b5787f7845182ad46d38c8976cb2b86d4f5cd874310ef"
+          }
+        }
+      ],
+      "notSelected": [
+        "mcp",
+        "mcp-protocol",
+        "typescript"
+      ]
+    },
+    "corpus": {
+      "path": ".codex-work/native-timing-envelope/corpus/report.json",
+      "byteLength": 5238,
+      "sha256": "d060bfa07cf3784c719a1a9f2a74b69d2046963dc074b1985c0742d55c1d31ca"
+    },
+    "authorSourcePairs": 24,
+    "newFrames": 48,
+    "retainedFrames": 139,
+    "replays": {
+      "native-sdk-build": {
+        "report": {
+          "path": ".codex-work/native-timing-envelope/native-sdk-build/report.json",
+          "byteLength": 123395,
+          "sha256": "3d428b824e5f190ffe029e9534a802d2bff348d97229805d8752cfcf3cce9ef0"
+        },
+        "frames": 187,
+        "owners": 25
+      },
+      "sdk-01": {
+        "report": {
+          "path": ".codex-work/native-timing-envelope/sdk-01/report.json",
+          "byteLength": 122974,
+          "sha256": "b091736a87f9b3e58c9168abecd3b67144beed10e4dee23f4ce3455882412381"
+        },
+        "frames": 187,
+        "owners": 25
+      },
+      "browser-01": {
+        "report": {
+          "path": ".codex-work/native-timing-envelope/browser-01/report.json",
+          "byteLength": 156497,
+          "sha256": "b2599c60abfe543deb6f64098a826e7b0129c04a7d32f18091b4921b791b5e75"
+        },
+        "frames": 187,
+        "owners": 25
+      }
+    },
+    "publicNativeWasmInspection": {
+      "path": ".codex-work/native-timing-envelope/inspection/report.json",
+      "byteLength": 1691,
+      "sha256": "300fc2f81c4feea0e9cb02eef55919e23429eaeab768f3af852c039379ec2962"
+    },
+    "nativeXml": {
+      "structure": {
+        "path": ".codex-work/native-timing-envelope/writer-structure.json",
+        "byteLength": 1072,
+        "sha256": "5dd4065359e799322d065cac609b6162dcd8655a10ccd720123b0a4881e48400"
+      },
+      "metadataOnlyControls": {
+        "path": ".codex-work/native-timing-envelope/isolation-check.json",
+        "byteLength": 576,
+        "sha256": "85239ba940aa5c313231c962f0309281fdd68e905a483f3f1d3b4d2dd0194870"
+      },
+      "validatedParts": 14,
+      "unchangedBehaviorSubtrees": 12
+    },
+    "retainedFailures": [
+      {
+        "record": {
+          "path": ".codex-work/native-timing-envelope/pptx-tests-01.json",
+          "byteLength": 60010,
+          "sha256": "d9aa81a3d6af09c2f2fe913ecd2b08a3bfcfaf473fc56a746482ff867a524c55"
+        },
+        "log": {
+          "path": ".codex-work/native-timing-envelope/pptx-tests-01.log",
+          "byteLength": 22108,
+          "sha256": "86dd1187d87ae4f0030e4e4ef695c8388fceae6be147a888005e48fa16f68438"
+        },
+        "reason": "Old end-condition test modified the first container start instead of the behavior start.",
+        "resolution": "Scope mutation to intended behavior/cTn; retain rejection assertions. Final targeted and full gate pass."
+      },
+      {
+        "record": {
+          "path": ".codex-work/native-timing-envelope/timing-tests-02.json",
+          "byteLength": 60339,
+          "sha256": "79ae5caadace62c5a647870ed692d709c8731d735f2f847d147e4975d54abf34"
+        },
+        "log": {
+          "path": ".codex-work/native-timing-envelope/timing-tests-02.log",
+          "byteLength": 2408,
+          "sha256": "8e520d6bc2562b4613d79bfa6ac79e0de0689fbbd4863cdb2a4ff895dd7f5adb"
+        },
+        "reason": "New duplicate-ID negative fixture modified a shape ID instead of a timing cTn ID.",
+        "resolution": "Scope mutation to intended behavior/cTn; retain rejection assertions. Final targeted and full gate pass."
+      }
+    ]
+  },
+  "wps": {
+    "application": "WPS Office for macOS",
+    "version": "12.1.22553",
+    "build": "22553",
+    "osVersion": "26.2",
+    "architecture": "arm64",
+    "userAuthorizedForegroundCalibration": true,
+    "directoryAccess": "Only the previously authorized owned scale-inputs calibration directory; new output bytes copied to its mutable calibration file.",
+    "originalAppRestored": true,
+    "ownedCalibrationTabClosed": true,
+    "existingUserDocumentEdited": false,
+    "observedFiles": [
+      {
+        "path": ".codex-work/native-timing-envelope/no-navigation.pptx",
+        "byteLength": 17412,
+        "sha256": "4fd7b41c5753340f52d2767e7317a23d896d1bf3d382b1598f3155670dffa8f5"
+      },
+      {
+        "path": ".codex-work/native-timing-envelope/no-navigation-presets.pptx",
+        "byteLength": 17712,
+        "sha256": "959216860421c8d952a98aaac4a73afc67d3cc8965a6b3bc9935c649ca128ada"
+      },
+      {
+        "path": ".codex-work/native-timing-envelope/writer-scale.pptx",
+        "byteLength": 6064,
+        "sha256": "b7a859242b393266b77025910ceef010075ecb06b991879447a255d28d628e08"
+      },
+      {
+        "path": ".codex-work/native-timing-envelope/writer-mixed.pptx",
+        "byteLength": 6161,
+        "sha256": "84432992a7c7f219b89edbacf48a3ab4edb258a82c143b9a48f96489d231bc3b"
+      }
+    ],
+    "screenshots": [
+      {
+        "path": ".codex-work/native-timing-envelope/no-navigation-final.jpg",
+        "byteLength": 151453,
+        "sha256": "de4c1d400856cf5b4399008bdc130603f3ad8f75c4cf3a585f3fed0fb3d0a8e3"
+      },
+      {
+        "path": ".codex-work/native-timing-envelope/no-navigation-presets-final.jpg",
+        "byteLength": 167652,
+        "sha256": "c46114027c691e5c1d5f5069416f6175a19f3407f31e846a1ca06cf4cd1711d8"
+      },
+      {
+        "path": ".codex-work/native-timing-envelope/writer-scale-final.jpg",
+        "byteLength": 167652,
+        "sha256": "c46114027c691e5c1d5f5069416f6175a19f3407f31e846a1ca06cf4cd1711d8"
+      },
+      {
+        "path": ".codex-work/native-timing-envelope/writer-mixed-final.jpg",
+        "byteLength": 159649,
+        "sha256": "1f21863b4a4a222f3a8f91e204f3bdc6d374714dc6b7613ce2b5551210f5dfbd"
+      }
+    ],
+    "measurement": {
+      "path": ".codex-work/native-timing-envelope/wps-measurement.json",
+      "byteLength": 6205,
+      "sha256": "a57e2fda38d556bd21a9a402b5ecf2f951713932a32f932643cf4fdc2b995b99"
+    },
+    "observations": {
+      "no-navigation": {
+        "size": [
+          3840,
+          2100
+        ],
+        "colors": {
+          "red": {
+            "pixels": 26178,
+            "bbox": [
+              635,
+              467,
+              822,
+              607
+            ],
+            "width": 187,
+            "height": 140
+          },
+          "green": {
+            "pixels": 25856,
+            "bbox": [
+              1755,
+              467,
+              1941,
+              607
+            ],
+            "width": 186,
+            "height": 140
+          },
+          "blue": {
+            "pixels": 26178,
+            "bbox": [
+              2874,
+              467,
+              3061,
+              607
+            ],
+            "width": 187,
+            "height": 140
+          },
+          "purple": {
+            "pixels": 26180,
+            "bbox": [
+              635,
+              1400,
+              822,
+              1540
+            ],
+            "width": 187,
+            "height": 140
+          },
+          "orange": {
+            "pixels": 26044,
+            "bbox": [
+              1755,
+              1400,
+              1942,
+              1540
+            ],
+            "width": 187,
+            "height": 140
+          },
+          "cyan": {
+            "pixels": 26178,
+            "bbox": [
+              2874,
+              1400,
+              3061,
+              1540
+            ],
+            "width": 187,
+            "height": 140
+          }
+        }
+      },
+      "no-navigation-presets": {
+        "size": [
+          3840,
+          2100
+        ],
+        "colors": {
+          "red": {
+            "pixels": 104439,
+            "bbox": [
+              542,
+              397,
+              915,
+              677
+            ],
+            "width": 373,
+            "height": 280
+          },
+          "green": {
+            "pixels": 103790,
+            "bbox": [
+              1662,
+              397,
+              2035,
+              676
+            ],
+            "width": 373,
+            "height": 279
+          },
+          "blue": {
+            "pixels": 104439,
+            "bbox": [
+              2781,
+              397,
+              3154,
+              677
+            ],
+            "width": 373,
+            "height": 280
+          },
+          "purple": {
+            "pixels": 104440,
+            "bbox": [
+              542,
+              1330,
+              915,
+              1610
+            ],
+            "width": 373,
+            "height": 280
+          },
+          "orange": {
+            "pixels": 104716,
+            "bbox": [
+              1661,
+              1330,
+              2035,
+              1610
+            ],
+            "width": 374,
+            "height": 280
+          },
+          "cyan": {
+            "pixels": 104440,
+            "bbox": [
+              2781,
+              1330,
+              3154,
+              1610
+            ],
+            "width": 373,
+            "height": 280
+          }
+        }
+      },
+      "writer-scale": {
+        "size": [
+          3840,
+          2100
+        ],
+        "colors": {
+          "red": {
+            "pixels": 104439,
+            "bbox": [
+              542,
+              397,
+              915,
+              677
+            ],
+            "width": 373,
+            "height": 280
+          },
+          "green": {
+            "pixels": 103790,
+            "bbox": [
+              1662,
+              397,
+              2035,
+              676
+            ],
+            "width": 373,
+            "height": 279
+          },
+          "blue": {
+            "pixels": 104439,
+            "bbox": [
+              2781,
+              397,
+              3154,
+              677
+            ],
+            "width": 373,
+            "height": 280
+          },
+          "purple": {
+            "pixels": 104440,
+            "bbox": [
+              542,
+              1330,
+              915,
+              1610
+            ],
+            "width": 373,
+            "height": 280
+          },
+          "orange": {
+            "pixels": 104716,
+            "bbox": [
+              1661,
+              1330,
+              2035,
+              1610
+            ],
+            "width": 374,
+            "height": 280
+          },
+          "cyan": {
+            "pixels": 104440,
+            "bbox": [
+              2781,
+              1330,
+              3154,
+              1610
+            ],
+            "width": 373,
+            "height": 280
+          }
+        }
+      },
+      "writer-mixed": {
+        "size": [
+          3840,
+          2100
+        ],
+        "colors": {
+          "red": {
+            "pixels": 104439,
+            "bbox": [
+              542,
+              397,
+              915,
+              677
+            ],
+            "width": 373,
+            "height": 280
+          },
+          "green": {
+            "pixels": 103790,
+            "bbox": [
+              1662,
+              397,
+              2035,
+              676
+            ],
+            "width": 373,
+            "height": 279
+          },
+          "blue": {
+            "pixels": 26179,
+            "bbox": [
+              2898,
+              443,
+              3038,
+              630
+            ],
+            "width": 140,
+            "height": 187
+          },
+          "purple": {
+            "pixels": 104440,
+            "bbox": [
+              542,
+              1330,
+              915,
+              1610
+            ],
+            "width": 373,
+            "height": 280
+          },
+          "orange": {
+            "pixels": 26044,
+            "bbox": [
+              1755,
+              1400,
+              1942,
+              1540
+            ],
+            "width": 187,
+            "height": 140
+          },
+          "cyan": {
+            "pixels": 26178,
+            "bbox": [
+              2874,
+              1400,
+              3061,
+              1540
+            ],
+            "width": 187,
+            "height": 140
+          }
+        }
+      }
+    },
+    "conclusion": "Metadata-only control isolates recognition. Production flat exports animate all six owned targets; final scale/rotation/remove/reverse results agree with expected final poses.",
+    "scope": "JPEG final color bounds within one pixel; no precision timing, intermediate frames, navigation, edit/resave or PowerPoint acceptance."
+  },
+  "artifacts": {
+    "nativeCli": {
+      "path": ".codex-work/native-timing-envelope/cli-build",
+      "byteLength": 59205464,
+      "sha256": "811df6d9146c85c670e53f55c0612f70fa2203effe26724155bfb8570c7c89f5"
+    },
+    "nativeWorker": {
+      "path": ".codex-work/native-timing-envelope/worker-build",
+      "byteLength": 38603520,
+      "sha256": "161aec2aeb076027aaab5d666d6c932bda7e558a206509ce1cd557b5159649a9"
+    },
+    "testBuildCli": {
+      "path": ".codex-work/native-timing-envelope/cli",
+      "byteLength": 59568072,
+      "sha256": "e83c269cba8f6e470ccb6f504d5190ede602726d172b710acb52e5ea1bf3254a"
+    },
+    "testBuildWorker": {
+      "path": ".codex-work/native-timing-envelope/worker",
+      "byteLength": 38375456,
+      "sha256": "9b1da598a0af6ba823c8d139e5960219aa6c08adcccc1a87af1969aacffc0778"
+    },
+    "priorSdkConsumer": {
+      "path": ".codex-work/timeline-scale/consumer",
+      "byteLength": 21806912,
+      "sha256": "035209980c1bf66177dac2828766f9949019f387c95b84ab7ceab17364bea6c0"
+    },
+    "corpusGenerator": {
+      "path": ".codex-work/native-timing-envelope/corpus.py",
+      "byteLength": 4073,
+      "sha256": "f30f53d4cf2b9e1a5a3ba0994d5cf0d8029a8727772847ca2dc57d4a578476a7"
+    },
+    "probeGenerator": {
+      "path": ".codex-work/native-timing-envelope/export-probes.py",
+      "byteLength": 2262,
+      "sha256": "9b5b23787a54ef7aeb1eece4c4cae579c95cad0e9c783056e29695714764adb5"
+    },
+    "probeManifest": {
+      "path": ".codex-work/native-timing-envelope/writer-probes.json",
+      "byteLength": 840,
+      "sha256": "e8c6b04d6c00e77d9a1c453c7273a1324cb9f51384a4201c2e8e37ebc74e2649"
+    },
+    "inspectionDriver": {
+      "path": ".codex-work/native-timing-envelope/inspect.mjs",
+      "byteLength": 2257,
+      "sha256": "73e1f5b246b8685111d420083a41bb49c35e7343306b8e94ef3c6b4e3a9d6440"
+    },
+    "wpsMeasurement": {
+      "path": ".codex-work/native-timing-envelope/wps-measure.py",
+      "byteLength": 2143,
+      "sha256": "94fd4140de7b090a0043fc450726d31ff71dc10f936fcd00d1b324a13580b475"
+    },
+    "structureChecker": {
+      "path": ".codex-work/native-timing-envelope/structure-check.py",
+      "byteLength": 2315,
+      "sha256": "350605514910d9427883543af5a25a6a1a4f7a8dabdeb53b662b8b4d50a472c5"
+    },
+    "assembler": {
+      "path": ".codex-work/native-timing-envelope/assemble.py",
+      "byteLength": 10723,
+      "sha256": "cce9cd54eec939a500ac99e4a19f962381ee49b86465979ad3b621701eddbcf2"
+    }
+  },
+  "package": {
+    "manifest": {
+      "path": ".codex-work/native-timing-envelope/bundle-01/bundle-manifest.json",
+      "byteLength": 10715,
+      "sha256": "77f3200618e1b36bbad8a80c97768dede03cc0b22ed24a88bc688ce9a1c2c456"
+    },
+    "archive": {
+      "path": ".codex-work/native-timing-envelope/bundle-01.tar.gz",
+      "byteLength": 4174438,
+      "sha256": "d8261a51ea4765a6087e14dda638dc7f3d0d078ec70a207838c1d8bf615ad9b6"
+    },
+    "files": 60,
+    "unpackedBytesExcludingManifest": 14521676,
+    "unpackedByteDelta": 10343,
+    "compressedByteDelta": 2823,
+    "changes": [
+      {
+        "path": "runtime/mo_wasm_bg.wasm",
+        "bytes": 10343,
+        "sha256": "50e9080f4fcd55dd9e79689a4956424effaa7162b8cfb2d7981bb76a8f821fdd"
+      }
+    ],
+    "releaseCleared": false,
+    "pptxExamples": [
+      {
+        "name": "writer-scale",
+        "bytes": 6064,
+        "priorBytes": 5939,
+        "deltaBytes": 125,
+        "changedParts": [
+          "ppt/slides/slide1.xml"
+        ],
+        "xsdParts": [
+          "ppt/presentation.xml",
+          "ppt/presProps.xml",
+          "ppt/slideLayouts/slideLayout1.xml",
+          "ppt/slideMasters/slideMaster1.xml",
+          "ppt/slides/slide1.xml",
+          "ppt/theme/theme1.xml"
+        ],
+        "priorSha256": "09aca1b9aeae1375077a8a0b495de9eec53e48b0135184c9af18683e4c70d79a"
+      },
+      {
+        "name": "writer-mixed",
+        "bytes": 6161,
+        "priorBytes": 6032,
+        "deltaBytes": 129,
+        "changedParts": [
+          "ppt/slides/slide1.xml"
+        ],
+        "xsdParts": [
+          "ppt/presentation.xml",
+          "ppt/presProps.xml",
+          "ppt/slideLayouts/slideLayout1.xml",
+          "ppt/slideMasters/slideMaster1.xml",
+          "ppt/slides/slide1.xml",
+          "ppt/theme/theme1.xml"
+        ],
+        "priorSha256": "ca98def58ff57103c32ba27d36878f4db2dedfd82d466127a2336e4a8d3c933f"
+      }
+    ]
+  },
+  "limits": [
+    "Only the neutral flat-transform envelope implemented; explicit nested export still lacks full presentation projection.",
+    "Full main sequence navigation, click groups, reactivation, arbitrary presets and from/by scale semantics remain open.",
+    "Shared-kernel frame parity is not an independent Office visual reference.",
+    "WPS observations cover two owned six-rectangle production exports on one application version.",
+    "No exact WPS clock, intermediate-frame, editing/resave or PowerPoint acceptance.",
+    "No new throughput, total RSS, cancellation latency or desktop installer measurement.",
+    "Rust SDK source archive not regenerated; existing independent consumer validates stable protocol with new native worker.",
+    "No TS/MCP source or protocol changes; their independent groups not rerun.",
+    "No Musterwork change or replacement activation; full goal remains active."
+  ]
+}

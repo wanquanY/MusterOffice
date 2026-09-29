@@ -1,0 +1,375 @@
+{
+  "stage": "product-native-review-run",
+  "date": "2026-09-28",
+  "status": "verified-native-review-purpose-loop-and-reconciliation-not-final-template-stage",
+  "tests": 61,
+  "reviewTests": 48,
+  "additionalProtocolTests": 13,
+  "checks": [
+    {
+      "run": "loop-02",
+      "passedTests": 10,
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::visual_review::",
+        "--",
+        "--test-threads=1"
+      ],
+      "elapsedSeconds": 62.32173449988477,
+      "sourceUnchanged": true,
+      "currentInventoryMatches": true,
+      "reportSha256": "9605052054e683cf3cc43be358821772019b9b093b33e865313fcbfc19f80a99",
+      "logSha256": "148ab0c12916b0e3f61dc02ff801418951918aed1f4e068631cdf9c4c5f9a69f"
+    },
+    {
+      "run": "parent-01",
+      "passedTests": 2,
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::parent",
+        "--",
+        "--test-threads=1"
+      ],
+      "elapsedSeconds": 7.678081041900441,
+      "sourceUnchanged": true,
+      "currentInventoryMatches": true,
+      "reportSha256": "ccdf030f3f26d1cd132e4e8747da753085bb2337a08cd1badfa04af7019850b5",
+      "logSha256": "79ee6fc25627ab54c72331a6a9f25f338160a012cfd8c1379a9fff20b0252678"
+    },
+    {
+      "run": "python-02",
+      "passedTests": 34,
+      "command": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONPATH=$MUSTERWORK_WORKTREE/apps/agent-runtime/clients/python/src:$MUSTERWORK_WORKTREE",
+        "SECRET_KEY=isolated-native-template-test-not-a-production-secret",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "$MUSTERWORK_WORKTREE/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "$MUSTERWORK_WORKTREE/backend/tests/unit/test_native_presentation_review.py",
+        "$MUSTERWORK_WORKTREE/backend/tests/unit/test_presentation_review_authority.py"
+      ],
+      "elapsedSeconds": 4.214129874948412,
+      "sourceUnchanged": true,
+      "currentInventoryMatches": true,
+      "reportSha256": "edee66512540ee6ba4c888f61a8369854df4a10d22c2d3d500eccc7fb19694f7",
+      "logSha256": "b6b47d630a89a639dd5aecf61e59233261e21dcabb62c3d5002b6239da92eb7f"
+    },
+    {
+      "run": "known-04",
+      "passedTests": 2,
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "presentation_review_authority"
+      ],
+      "elapsedSeconds": 1.0167488330043852,
+      "sourceUnchanged": true,
+      "currentInventoryMatches": true,
+      "reportSha256": "e98f62ff2da410d81ca89fef97cb929b9960d3fadc27215be4cfd2dd01971c04",
+      "logSha256": "a8e649a3f6b0b811072431b22410d5f59dc94b31dfc0f5b23fa5756fe5820e6e"
+    },
+    {
+      "run": "lint-01",
+      "passedTests": 0,
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--no-deps",
+        "-p",
+        "musterwork-agent-runtime-artifact",
+        "-p",
+        "musterwork-agent-runtime-application",
+        "-p",
+        "musterwork-agent-runtime-maintenance",
+        "-p",
+        "musterwork-agent-runtime-snapshot",
+        "-p",
+        "musterwork-agent-backend-capabilities",
+        "-p",
+        "musterwork-agent-protocol",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "elapsedSeconds": 17.15486454195343,
+      "sourceUnchanged": true,
+      "currentInventoryMatches": true,
+      "reportSha256": "79cdefd294f2ddfd8d4af79a6d32928b96dd91eaa3dd2fc28861aafa6890d4b7",
+      "logSha256": "8fe75c6a337942c2085ef6a37272c589b65f1647fe069cb35110e94e6c5de289"
+    },
+    {
+      "run": "protocol-01",
+      "passedTests": 13,
+      "command": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "cargo",
+        "run",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-xtask",
+        "--",
+        "protocol"
+      ],
+      "elapsedSeconds": 57.248726041056216,
+      "sourceUnchanged": true,
+      "currentInventoryMatches": true,
+      "reportSha256": "4ad50ae9e1f8d45e6f674d82a9bb93923941419e5508891e3c197bdf40f1d1a6",
+      "logSha256": "0dc1f72704fdbe599782295f2ea4d112192e4846f2152e10e7230a4d90a63459"
+    }
+  ],
+  "environment": {
+    "system": "Darwin",
+    "release": "25.2.0",
+    "machine": "arm64",
+    "productBranch": "codex/musteroffice-integration",
+    "profile": "native debug; test elapsed time is not a performance benchmark"
+  },
+  "materials": {
+    "sdkManifestSha256": "7ed23b21a12b0cacc4cf563ead1b60133a6b5659c3a235881c910d5ece232471",
+    "workerSha256": "52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50",
+    "sdkAndWorkerUnchanged": true,
+    "dependencyDeclarationsChanged": false,
+    "pythonEnvironment": "isolated worktree Python3.12 quality group; added existing uv.lock Pillow11.3.0 to run backend tests"
+  },
+  "proof": {
+    "nativePurposeTag": 17,
+    "legacyPurposeTags": [
+      5,
+      6
+    ],
+    "legacyKnownAnswerPreserved": true,
+    "canonicalEncoding": "Ascending field tags; explicit native arm after fields1..16 preserves legacy oneof encodings",
+    "nativeLoop": "Actual production Loop/SQLite with deterministic Provider",
+    "nativeCoordinator": "Actual completed SQLite runs and content evidence; frozen authority fixture, not a live backend admission service",
+    "recovery": "Persisted staged completion simulates interrupted commit; no second successful model dispatch and no duplicate usage",
+    "cancellation": "Real SQLite parent stop propagation in child heartbeat; late admission denied; prior admission replay idempotent",
+    "visualQualityProven": false,
+    "productionPptxRebuilt": false
+  },
+  "exclusions": [
+    "NativeVerify final stage has not yet created subjects or invoked this review workflow.",
+    "Native complete producing proof, native catalog transaction and automatic upload selection remain incomplete.",
+    "No live model vision, native review authority PostgreSQL transaction integration, process kill, external Office/WPS, advanced PPT completeness, historical migration, release-size or performance acceptance in this stage."
+  ],
+  "retainedEarlierRuns": [
+    {
+      "run": "known-01",
+      "status": "native snapshot failed strict restore; crosslanguage oneof ordering defect"
+    },
+    {
+      "run": "known-02",
+      "status": "localized canonical field-order difference at byte173; fixed codec, preserved strict checks"
+    },
+    {
+      "run": "loop-01",
+      "status": "new coordinator test omitted TraceContext import; corrected before tests"
+    },
+    {
+      "run": "python-fixture-first-attempt",
+      "status": "isolated quality-group environment lacked Pillow; installed exact existing lock version11.3.0"
+    }
+  ],
+  "warnings": "Backend tests retain294 existing warnings including Pydantic v1 validators; no warning suppression",
+  "sourceFiles": [
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/proto/musterwork/agent/v1/presentation.proto",
+      "sha256": "cd9e6543015d68d3685b8c0cc11ab838e6e6d24e6ce830cddf26649feb87b6b5",
+      "lines": 48
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/persistence-protocol-lock/musterwork/agent/v1/presentation.proto.jsonl",
+      "sha256": "be750595d883d20df090e49f26a653d4f76e2e9b1fc690fb7c6da2b74332b90b",
+      "lines": 5
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/clients/python/src/musterwork/agent/v1/presentation_pb2.py",
+      "sha256": "f088cef17b873adc17c500d2e3ad2e5735b4801c507c7a2babe601791a20f28c",
+      "lines": 45
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/clients/python/src/musterwork/agent/v1/presentation_pb2.pyi",
+      "sha256": "3a568503accaedacd631cfe2c6d9099c3eba314bcfce0b2f7e70774e2db45bd0",
+      "lines": 84
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/clients/typescript/src/musterwork/agent/v1/presentation_pb.ts",
+      "sha256": "bf5a5f1ed2d778ebb36e4fb2e9cff2acaaa56886206e26930bfed171057f256c",
+      "lines": 221
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/crates/runtime/snapshot/src/presentation_maintenance.rs",
+      "sha256": "6b1a9dd3b5737f44d483420efae2a3e68bfb35d0dfcfaed5f86de67900a752b8",
+      "lines": 369
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/crates/infrastructure/rpc-protocol/src/presentation_snapshot_codec.rs",
+      "sha256": "ea350ed8fceff528289deb044ca52c6a1a96acdac0bb2e2de5788407e8634b18",
+      "lines": 221
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/crates/runtime/artifact/src/lib.rs",
+      "sha256": "9fc87c559b0ecac837b3169ff66096db8e3ff33b04502ecfa61267d91d5bb403",
+      "lines": 901
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/crates/runtime/artifact/src/presentation_authoring.rs",
+      "sha256": "61936fe2f3948139f217daf75a71529d2a4820b99423a4405bee7c25afd8fc0f",
+      "lines": 458
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/crates/runtime/artifact/src/presentation_review_subject.rs",
+      "sha256": "d38167628392af0198a7a5d5127ee75a094cd81abd3a9a76bf24db13c62178b4",
+      "lines": 317
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/crates/runtime/artifact/src/presentation_review_subject/state.rs",
+      "sha256": "7421285e4b7d5c1f43606097ca6230c98730977d75b5b41c7982b478fe856c8d",
+      "lines": 83
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/crates/runtime/artifact/src/presentation_tool.rs",
+      "sha256": "296333a4ad544b0e21aca0ec39abb54abdb839dc1aeaf9101f5aeb118964e902",
+      "lines": 612
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/crates/runtime/application/src/presentation_review.rs",
+      "sha256": "07d8814d96c0d0d0530917ba7615074d4d6d570ad2e614ba5ef6f79a5d533dfa",
+      "lines": 253
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/crates/runtime/maintenance/src/presentation_review.rs",
+      "sha256": "10c1a0e18986229a75ecda6b48b96e1d608cc5a0bf46a350dd8f18ddc97d2120",
+      "lines": 468
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/crates/runtime/maintenance/src/presentation_tools/review.rs",
+      "sha256": "87b3265d88abb0347a4390dbb1ac4a068d1488eb0243c8573d6f8f0aeee63bd4",
+      "lines": 162
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/crates/infrastructure/backend-capabilities/src/presentation_review.rs",
+      "sha256": "2ccce44c4d8ae66c4f661627d2c68c344f1121434127663b58b4acd7b6123c87",
+      "lines": 65
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/tests/conformance/tests/presentation_review_authority.rs",
+      "sha256": "e6db9529d3037aa0ba0b2ce6e8bc0e9a3d626e72f3a5aeb39b51e9c878855f37",
+      "lines": 141
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/tests/conformance/tests/sqlite_agent_loop/presentation_review.rs",
+      "sha256": "255591583bd1594dbc2702cedebea4f4fce7ca8401f1ddd28bd2a2ae054249b7",
+      "lines": 851
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/tests/conformance/tests/sqlite_agent_loop/presentation_native_review.rs",
+      "sha256": "9ddd3368f0ba947fb4e30b092c57cece2d0f2b5b69af11d2a14ba29ddb9f0d2a",
+      "lines": 192
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/tests/conformance/tests/sqlite_agent_loop/presentation_native_review_coordinator.rs",
+      "sha256": "3c251c1f31149b6551f9cf8b6040c6535412ec89d6f1ba3ccedef1167f5dd763",
+      "lines": 197
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/tests/conformance/tests/sqlite_agent_loop/presentation_parent.rs",
+      "sha256": "405e3d9ae7cf18242c271c9d0d127e2cf9ad5304576ff2a86ac8b408214d6f4a",
+      "lines": 132
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/tests/conformance/tests/sqlite_agent_loop/presentation_product_tools.rs",
+      "sha256": "98364657c19b259db5e2a26d5ff99bf47dc0cda189f4141ec6a51338b1dc920c",
+      "lines": 749
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/contracts/presentation-native-review-known-answer.json",
+      "sha256": "8f0314307f74a72e2b6b3490ea475647951a60f5d49e619d2da35e9bce742f66",
+      "lines": 8
+    },
+    {
+      "repository": "product",
+      "path": "backend/agent_runtime/presentation_review_snapshot.py",
+      "sha256": "8abf715afa3c9e8715f3887a73e9bbcac36b8a52c2f17b6e2f8b9b5a36442a9d",
+      "lines": 290
+    },
+    {
+      "repository": "product",
+      "path": "backend/agent_runtime/presentation_native_review_subject.py",
+      "sha256": "bc850e80d8a9a21566d2657dd5cb51b6620a52343694a04650fae435543c40ac",
+      "lines": 91
+    },
+    {
+      "repository": "product",
+      "path": "backend/runtime_capabilities/presentation_review_authority.py",
+      "sha256": "4018e9fa6d9d5da9ac9f07bd6f1b85fbcaccca8661572ee9c2981ebbe50f2643",
+      "lines": 246
+    },
+    {
+      "repository": "product",
+      "path": "backend/tests/unit/test_native_presentation_review.py",
+      "sha256": "8e750bd361d392fc4999f85b625e67493e2924c60cf4557d09d66defd75460e6",
+      "lines": 176
+    }
+  ]
+}

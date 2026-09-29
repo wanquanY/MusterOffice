@@ -1,0 +1,950 @@
+{
+  "format": "musteroffice.playback-geometry-verification/1",
+  "status": "passed-scoped-bounded-author-geometry-complete-ppt-open",
+  "source": {
+    "baseline": {
+      "path": ".codex-work/playback-geometry/baseline.json",
+      "byteLength": 276361,
+      "sha256": "19869e9d57dd0873f59384c1c679daabbffde7b0f5a5bb4f87d033e6b6cce282"
+    },
+    "changed": [
+      {
+        "path": "crates/mo-presentation-compile/src/lib.rs",
+        "byteLength": 1600,
+        "sha256": "d391cc20283db93fb6ab1397990780151e3022255b072157d98143bdb9158bb6"
+      },
+      {
+        "path": "crates/mo-presentation-compile/src/page.rs",
+        "byteLength": 12902,
+        "sha256": "75151d426a4b53e3b4d9c470d2a0a82cd8854dbd51dae433e11e003fab995a6c"
+      },
+      {
+        "path": "crates/mo-presentation-compile/src/page_geometry.rs",
+        "byteLength": 3419,
+        "sha256": "b0fcc16760536de986c4c75858c35a7551edee4f779eb934071fe172c9ff2a09"
+      },
+      {
+        "path": "crates/mo-presentation-compile/src/page_geometry/tests.rs",
+        "byteLength": 4792,
+        "sha256": "cb1d3a6701e074239f11be34613f3bba2dff8e8e902dd78fae2f19bc86bb00e0"
+      },
+      {
+        "path": "crates/mo-presentation-compile/src/playback.rs",
+        "byteLength": 8763,
+        "sha256": "442ef2d3dd95cb196dbc67a6f3ae987c38e4e598209ec21083f0d43ed072138a"
+      },
+      {
+        "path": "crates/mo-presentation-compile/tests/playback_geometry.rs",
+        "byteLength": 2472,
+        "sha256": "a70939700ed97995356eccdb0395db5b7c69e0dde7d171353772237da8c7e628"
+      },
+      {
+        "path": "docs/README.md",
+        "byteLength": 28432,
+        "sha256": "b863954000361d15b446ffabca75c56a0c4f51d0dd12c398992542bd16eeaebb"
+      },
+      {
+        "path": "docs/design/presentations/runtime-performance.md",
+        "byteLength": 14709,
+        "sha256": "fba9749d5dd215e277992f83879ee0026434ddbb1ca0a81a6a70d845a3b63be4"
+      },
+      {
+        "path": "docs/implementation/playback-geometry.md",
+        "byteLength": 7115,
+        "sha256": "f30e989c42aeb043e6d72697b0ee8c6a171ca601fd0973138c3a34b594e844f3"
+      },
+      {
+        "path": "docs/implementation/progress.md",
+        "byteLength": 107335,
+        "sha256": "42e3fec62adafe870269091d251bd1e51a5eaad0ae4fa1a1f1f4eb970faf124c"
+      }
+    ],
+    "unchanged": {
+      "components/": 155,
+      "integrations/": 8,
+      "tools/": 760,
+      "packages/": 149,
+      "contracts/": 120,
+      "fixtures/": 30,
+      "Cargo.toml": 1,
+      "Cargo.lock": 1,
+      "package.json": 1,
+      "pnpm-lock.yaml": 1
+    },
+    "localLinks": 412,
+    "dependenciesChanged": false,
+    "changedCodeOver2000Lines": 0
+  },
+  "implementation": {
+    "owner": "immutable author document digest and slide; one playback plan",
+    "key": [
+      "stable preorder object ordinal",
+      "local source size",
+      "local anchor",
+      "subdivision count"
+    ],
+    "entryLimit": 1024,
+    "accountedPayloadByteLimit": 1048576,
+    "accounting": "Vec allocation capacity plus Entry and key sizes; map/allocator overhead separately bounded by entry count, not a total RSS cap",
+    "admission": "one retained precision per admitted object; non-admitted full-quality transient, no cycling eviction",
+    "perFramePrecisionAndDeviceChecks": true,
+    "toleranceRelaxed": false,
+    "framePixelsOrCompletionCached": false,
+    "globalOrPersistentCache": false,
+    "productUiOrPersistenceAdded": false
+  },
+  "verification": {
+    "commands": {
+      "compile-tests-01": {
+        "record": {
+          "path": ".codex-work/playback-geometry/compile-tests-01.json",
+          "byteLength": 26190,
+          "sha256": "7c36e8bcc4a42c390eff4b9fc914326502e3f8c5368a5546245f3646d90f339f"
+        },
+        "log": {
+          "path": ".codex-work/playback-geometry/compile-tests-01.log",
+          "byteLength": 1194,
+          "sha256": "1161eb8913141cd6ba9b901a49d449632f9fb069f6a0a6424dc08b5fe3d4980a"
+        }
+      },
+      "corpus-01": {
+        "record": {
+          "path": ".codex-work/playback-geometry/corpus-01.json",
+          "byteLength": 2300,
+          "sha256": "aa1f7adee5ce795d077e3d6efc8206e3bbfaf59a5fa78329070efbba66fa9cd7"
+        },
+        "log": {
+          "path": ".codex-work/playback-geometry/corpus-01.log",
+          "byteLength": 39,
+          "sha256": "fba5e0ccc327750b9bc6d205b3e0ef1e146ad2cdb4ef9b4127ff5e390372faec"
+        }
+      },
+      "native-sdk-01": {
+        "record": {
+          "path": ".codex-work/playback-geometry/native-sdk-01.json",
+          "byteLength": 4677,
+          "sha256": "c6dea9c613c39452e87f88635941048c7b078389b6cb20e46f1816b283518829"
+        },
+        "log": {
+          "path": ".codex-work/playback-geometry/native-sdk-01.log",
+          "byteLength": 48,
+          "sha256": "5a213f78c9424cfe429064a6138e5becea174215265c082b6d2f7c29303b30ec"
+        }
+      },
+      "wasm-bindgen-01": {
+        "record": {
+          "path": ".codex-work/playback-geometry/wasm-bindgen-01.json",
+          "byteLength": 1037,
+          "sha256": "ee80040de6e9be893c9a2e315c4a0028f4063672c06b2b0f99c6db46a7231f17"
+        },
+        "log": {
+          "path": ".codex-work/playback-geometry/wasm-bindgen-01.log",
+          "byteLength": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "bundle-01": {
+        "record": {
+          "path": ".codex-work/playback-geometry/bundle-01.json",
+          "byteLength": 3004698,
+          "sha256": "2e4e27a3d7675a2f7fe64b2aabf6067e12e5a8ecb308017c20291746501386fc"
+        },
+        "log": {
+          "path": ".codex-work/playback-geometry/bundle-01.log",
+          "byteLength": 100,
+          "sha256": "e28ae40c709f8a170933996fa548dc05f498db3e1284f00ca5bdb01197f585b4"
+        }
+      },
+      "sdk-01": {
+        "record": {
+          "path": ".codex-work/playback-geometry/sdk-01.json",
+          "byteLength": 22559,
+          "sha256": "1fac59c8e29731fe741cad09f1ad6265379b23daa9af2472eb31b0f6380f47bb"
+        },
+        "log": {
+          "path": ".codex-work/playback-geometry/sdk-01.log",
+          "byteLength": 43,
+          "sha256": "1e8a1670bebdb03921d4c3ba4d7c3762242bf6d2a4dac9cc2d1a49aec418bee4"
+        }
+      },
+      "browser-01": {
+        "record": {
+          "path": ".codex-work/playback-geometry/browser-01.json",
+          "byteLength": 77656,
+          "sha256": "99be1119f8cd47666a0717e828e83349ea02710257aecad337dd172baba47d11"
+        },
+        "log": {
+          "path": ".codex-work/playback-geometry/browser-01.log",
+          "byteLength": 134,
+          "sha256": "1174cbcd0bd549b7e1f73bae28d0a90097da80669a2dc320f6bab2faccf57007"
+        }
+      },
+      "lifecycle-01": {
+        "record": {
+          "path": ".codex-work/playback-geometry/lifecycle-01.json",
+          "byteLength": 74172,
+          "sha256": "d3afc32fe7f55271cae03180add992512e088dca03748584882da1adbbd2b959"
+        },
+        "log": {
+          "path": ".codex-work/playback-geometry/lifecycle-01.log",
+          "byteLength": 31,
+          "sha256": "60326dae4c728730889823c3591d0474435878508b191304efc0d2306f9ea5f7"
+        }
+      },
+      "costs-01": {
+        "record": {
+          "path": ".codex-work/playback-geometry/costs-01.json",
+          "byteLength": 40278,
+          "sha256": "2514eb4f847d11652a2e9adb315eef5945a470efc254afed6b604b9fd34bbb69"
+        },
+        "log": {
+          "path": ".codex-work/playback-geometry/costs-01.log",
+          "byteLength": 5015,
+          "sha256": "16c59c860eaf1da950f5fd1481f5bd26bdecd27ffe889f7126e09837e49e683f"
+        }
+      }
+    },
+    "intermediateTests": {
+      "record": {
+        "record": {
+          "path": ".codex-work/playback-geometry/targeted-01.json",
+          "byteLength": 26104,
+          "sha256": "8f2ef3cbec66949eb61c692cc1e85de3473c8b186dbdd6a5c0301a0bdf2ecbc4"
+        },
+        "log": {
+          "path": ".codex-work/playback-geometry/targeted-01.log",
+          "byteLength": 725,
+          "sha256": "e5c81de03dddc953c7d92023e9febbf40f4a6f7dc3d83b03f797affa42af5344"
+        }
+      },
+      "scope": "Three unit cases passed before adding the slide identity fence. Final workspace retests final source; this intermediate record is not final source verification."
+    },
+    "workspace": {
+      "report": {
+        "path": ".codex-work/playback-geometry/workspace-01/report.json",
+        "byteLength": 11696,
+        "sha256": "7d8ce12546ea7828171babc0f79c8c2c03f44f1b55eeec4d09854dbdbb0a75e1"
+      },
+      "steps": [
+        {
+          "name": "verification-driver-tests",
+          "log": {
+            "path": ".codex-work/playback-geometry/workspace-01/verification-driver-tests.log",
+            "byteLength": 625,
+            "sha256": "1e9a9602a6b0424a205e703528ce857749ce69d1a312514bc1155b2b0e4089cc"
+          }
+        },
+        {
+          "name": "agent-package-tests",
+          "log": {
+            "path": ".codex-work/playback-geometry/workspace-01/agent-package-tests.log",
+            "byteLength": 783,
+            "sha256": "af1d96cc7d58bfed049a1271b15072a8b895ea8caa9c174074584b03a874fe6d"
+          }
+        },
+        {
+          "name": "playback-sdk-package-tests",
+          "log": {
+            "path": ".codex-work/playback-geometry/workspace-01/playback-sdk-package-tests.log",
+            "byteLength": 473,
+            "sha256": "fb45060c12c8de29467e2c3ca059e01132a798ded60e0823a98bb33976778a95"
+          }
+        },
+        {
+          "name": "format",
+          "log": {
+            "path": ".codex-work/playback-geometry/workspace-01/format.log",
+            "byteLength": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "name": "clippy",
+          "log": {
+            "path": ".codex-work/playback-geometry/workspace-01/clippy.log",
+            "byteLength": 2339,
+            "sha256": "98d53fe917dc520b5728867ec015f54605ca8dcb00a8c33b3644b35590323c60"
+          }
+        },
+        {
+          "name": "rust-tests",
+          "log": {
+            "path": ".codex-work/playback-geometry/workspace-01/rust-tests.log",
+            "byteLength": 119364,
+            "sha256": "6e75426ac72b7ffd60de113266d3d030679fcfce3739fa043e914eeae6a7ff82"
+          },
+          "tests": {
+            "passed": 965,
+            "ignored": 25
+          }
+        },
+        {
+          "name": "schemas",
+          "log": {
+            "path": ".codex-work/playback-geometry/workspace-01/schemas.log",
+            "byteLength": 7795,
+            "sha256": "c31b1eceff997166224a5bbd2b24b81f2e25eb5f41b3a63e6d6ca5f46e3302e1"
+          }
+        },
+        {
+          "name": "native-build",
+          "log": {
+            "path": ".codex-work/playback-geometry/workspace-01/native-build.log",
+            "byteLength": 1609,
+            "sha256": "0b7b923306799a9fbcc78c2f02a0e06dd35638eb5c13ce2b80d48a98fe4862f0"
+          }
+        },
+        {
+          "name": "native-render-tests",
+          "log": {
+            "path": ".codex-work/playback-geometry/workspace-01/native-render-tests.log",
+            "byteLength": 733,
+            "sha256": "d65e06761410dc8057bdd0fed2f331b6c1e9fcf828558cefd238a3ad0197b67f"
+          },
+          "tests": {
+            "passed": 4,
+            "ignored": 0
+          }
+        },
+        {
+          "name": "native-playback-tests",
+          "log": {
+            "path": ".codex-work/playback-geometry/workspace-01/native-playback-tests.log",
+            "byteLength": 710,
+            "sha256": "f39d331c66ef11176e7f538e5f128643f378b1df9f7cee23c49c9854fe40b40e"
+          },
+          "tests": {
+            "passed": 4,
+            "ignored": 0
+          }
+        },
+        {
+          "name": "native-host-export-tests",
+          "log": {
+            "path": ".codex-work/playback-geometry/workspace-01/native-host-export-tests.log",
+            "byteLength": 1133,
+            "sha256": "d57e1cfb6777a5f8c051b34406469bba8054b88a913bf6af5a57ac6415b3bfe8"
+          },
+          "tests": {
+            "passed": 9,
+            "ignored": 0
+          }
+        },
+        {
+          "name": "native-export-tests",
+          "log": {
+            "path": ".codex-work/playback-geometry/workspace-01/native-export-tests.log",
+            "byteLength": 1665,
+            "sha256": "3c4f67498c14a0dd41f0ea4fe262bb948bf2c2c8f3d0fbd46a6a4aade97f6522"
+          },
+          "tests": {
+            "passed": 12,
+            "ignored": 1
+          }
+        },
+        {
+          "name": "native-computation-cli-tests",
+          "log": {
+            "path": ".codex-work/playback-geometry/workspace-01/native-computation-cli-tests.log",
+            "byteLength": 432,
+            "sha256": "b7118a988d415c5f53ae0f6bfd7d613b719232b25f2cfef55701a2c8958ec34f"
+          },
+          "tests": {
+            "passed": 1,
+            "ignored": 0
+          }
+        },
+        {
+          "name": "pure-operation-wasm",
+          "log": {
+            "path": ".codex-work/playback-geometry/workspace-01/pure-operation-wasm.log",
+            "byteLength": 449,
+            "sha256": "2093a491eab82177594b4ef8b6af67fe48f261182fc4bf054b2b363798114115"
+          }
+        },
+        {
+          "name": "legacy-host-wasm",
+          "log": {
+            "path": ".codex-work/playback-geometry/workspace-01/legacy-host-wasm.log",
+            "byteLength": 303,
+            "sha256": "b4d6495eae8c158dd19f6c44c7e9bd545bc025780e388d3c831b98b06e8e63ff"
+          }
+        },
+        {
+          "name": "wasm-build",
+          "log": {
+            "path": ".codex-work/playback-geometry/workspace-01/wasm-build.log",
+            "byteLength": 634,
+            "sha256": "0fbccd5c543a1f4b90646ca375b9a4765461e2e8609107195a36627584d2986c"
+          }
+        },
+        {
+          "name": "wasm-bindgen",
+          "log": {
+            "path": ".codex-work/playback-geometry/workspace-01/wasm-bindgen.log",
+            "byteLength": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "name": "document-native-wasm-parity",
+          "log": {
+            "path": ".codex-work/playback-geometry/workspace-01/document-native-wasm-parity.log",
+            "byteLength": 336664,
+            "sha256": "a43ecf8566960c0df3c8eddda13d59eba677302dea9f7815622e387020552865"
+          }
+        }
+      ],
+      "notSelected": [
+        "mcp",
+        "mcp-protocol",
+        "typescript"
+      ]
+    },
+    "corpus": {
+      "path": ".codex-work/playback-geometry/corpus/report.json",
+      "byteLength": 1069,
+      "sha256": "3e6c99718615a7da41e5bef111f1dec00d53fdb4edb4729cc96c786191707327"
+    },
+    "replays": {
+      "native-sdk-01": {
+        "path": ".codex-work/playback-geometry/native-sdk-01/report.json",
+        "byteLength": 43925,
+        "sha256": "dc5189b32222191855a89cb2d90bb2de0eb7425b092dc5268ab979ab0250935f"
+      },
+      "sdk-01": {
+        "path": ".codex-work/playback-geometry/sdk-01/report.json",
+        "byteLength": 43800,
+        "sha256": "376dd0d054d387aa4ded4ec5d5af25bb1a68a3dd619bf5c17e66fa7fd0be61f7"
+      },
+      "browser-01": {
+        "path": ".codex-work/playback-geometry/browser-01/report.json",
+        "byteLength": 62721,
+        "sha256": "9f168380512e1ba2f25991aa5223c57c2f5e8e7660200f054f609a1acfd086f2"
+      },
+      "lifecycle-01": {
+        "path": ".codex-work/playback-geometry/lifecycle-01/report.json",
+        "byteLength": 15504,
+        "sha256": "58bd8b16cb6485deee3875c06100b98767ab89b3e74ec4e3f961cb2ad094009a"
+      }
+    },
+    "nativeSdkFrames": 67,
+    "nodeSdkFrames": 67,
+    "browserFrames": 67,
+    "ownersPerReplay": 9,
+    "wasmLifecycleCases": 36,
+    "retainedFailures": []
+  },
+  "artifacts": {
+    "worker": {
+      "path": ".codex-work/playback-geometry/worker",
+      "byteLength": 38552304,
+      "sha256": "e14f0041100f94eb8f94354b619def5ae8cbb5af0e15f63b1e901cc641e8e78b"
+    },
+    "cli": {
+      "path": ".codex-work/playback-geometry/cli",
+      "byteLength": 59148520,
+      "sha256": "178c9b3e6869f81e3fc6d21166a0cdbbeda088437f180e55e627d734b8ecfad7"
+    },
+    "priorSdkConsumer": {
+      "path": ".codex-work/timeline-scale/consumer",
+      "byteLength": 21806912,
+      "sha256": "035209980c1bf66177dac2828766f9949019f387c95b84ab7ceab17364bea6c0"
+    },
+    "baselineWorker": {
+      "path": ".codex-work/group-stroke/worker-03",
+      "byteLength": 38488176,
+      "sha256": "90b6001e6e5e47137f94bef64522ce741eb4f50052d5c78024c56ab352b87c76"
+    },
+    "diagnosticCorpusGenerator": {
+      "path": ".codex-work/playback-geometry/corpus.py",
+      "byteLength": 2691,
+      "sha256": "5210f23bdfed8a08be3ba6078f5c3f86b17963d147efb8f4c849586047967cff"
+    },
+    "diagnosticMeasurementHost": {
+      "path": ".codex-work/playback-geometry/measure.mjs",
+      "byteLength": 6533,
+      "sha256": "ec6f3c4279d5d632cba000117542673a691fab3c8fe26ae7d8bcda107b8d73bf"
+    }
+  },
+  "package": {
+    "manifest": {
+      "path": ".codex-work/playback-geometry/bundle-01/bundle-manifest.json",
+      "byteLength": 10715,
+      "sha256": "807785d6431c19c657396411d392eac23dfc87d3e158265b1b58943f81e8f1d3"
+    },
+    "archive": {
+      "path": ".codex-work/playback-geometry/bundle-01.tar.gz",
+      "byteLength": 4170743,
+      "sha256": "21fea374fdcdcb6912f0d6a81c162497f0cf7e6a4891147f1171e3fdfc6387fd"
+    },
+    "files": 60,
+    "unpackedBytesExcludingManifest": 14509215,
+    "unpackedByteDelta": 9724,
+    "compressedByteDelta": 2928,
+    "changes": [
+      {
+        "path": "runtime/mo_wasm_bg.wasm",
+        "bytes": 9724,
+        "sha256": "1fde63a905ef32f5877f70cbba74a81a7e7b576919ffe2b8af0f019855f98714"
+      }
+    ],
+    "releaseCleared": false
+  },
+  "performance": {
+    "report": {
+      "path": ".codex-work/playback-geometry/costs.json",
+      "byteLength": 136796,
+      "sha256": "7688df2c88ffb5740d7aa38a9edb6c11048757ab30410ad19cb0c531eb61b6d5"
+    },
+    "hardware": {
+      "cpu": "Apple M4 Max",
+      "platform": "darwin",
+      "release": "25.2.0",
+      "arch": "arm64",
+      "memory": 38654705664
+    },
+    "versions": {
+      "node": "23.5.0",
+      "acorn": "8.14.0",
+      "ada": "2.9.2",
+      "amaro": "0.2.0",
+      "ares": "1.34.4",
+      "brotli": "1.1.0",
+      "cjs_module_lexer": "1.4.1",
+      "cldr": "46.0",
+      "icu": "76.1",
+      "llhttp": "9.2.1",
+      "modules": "131",
+      "napi": "9",
+      "nbytes": "0.1.1",
+      "ncrypto": "0.0.1",
+      "nghttp2": "1.64.0",
+      "openssl": "3.6.3",
+      "simdjson": "3.10.1",
+      "simdutf": "5.6.4",
+      "sqlite": "3.47.2",
+      "tz": "2024b",
+      "undici": "6.21.0",
+      "unicode": "16.0",
+      "uv": "1.49.2",
+      "uvwasi": "0.0.21",
+      "v8": "12.9.202.28-node.12",
+      "zlib": "1.2.12"
+    },
+    "observations": [
+      {
+        "name": "nested-1",
+        "curveSegments": 32,
+        "pixelSha256": "a01687d4423895add929e2433bb396b74c7dc51ee1dbc6080880be76ec2166de",
+        "cases": [
+          {
+            "version": "baseline",
+            "memory": [
+              {
+                "at": "prepared",
+                "kernelLinearBytes": 1966080,
+                "jsHeapUsed": 9048232,
+                "processRss": 137658368
+              },
+              {
+                "at": "warm",
+                "kernelLinearBytes": 2293760,
+                "jsHeapUsed": 9361624,
+                "processRss": 173998080
+              },
+              {
+                "at": 20,
+                "kernelLinearBytes": 2293760,
+                "jsHeapUsed": 9580888,
+                "processRss": 205127680
+              },
+              {
+                "at": 40,
+                "kernelLinearBytes": 2293760,
+                "jsHeapUsed": 9788608,
+                "processRss": 218677248
+              },
+              {
+                "at": 50,
+                "kernelLinearBytes": 2293760,
+                "jsHeapUsed": 9893168,
+                "processRss": 257015808
+              },
+              {
+                "at": 100,
+                "kernelLinearBytes": 2293760,
+                "jsHeapUsed": 9439496,
+                "processRss": 277463040
+              },
+              {
+                "at": 200,
+                "kernelLinearBytes": 2293760,
+                "jsHeapUsed": 9363712,
+                "processRss": 308625408
+              },
+              {
+                "at": "disposed",
+                "kernelLinearBytes": 2293760,
+                "jsHeapUsed": 9379480,
+                "processRss": 308756480
+              }
+            ],
+            "first": {
+              "workMs": 16.558333000000005,
+              "elapsedMs": 16.772541999999987
+            },
+            "workMs": {
+              "n": 200,
+              "p50": 2.0536670000000186,
+              "p95": 2.477083000000107,
+              "max": 12.439458000000059
+            },
+            "elapsedMs": {
+              "n": 200,
+              "p50": 2.1412500000000136,
+              "p95": 2.5922919999999294,
+              "max": 13.52470900000003
+            }
+          },
+          {
+            "version": "retained",
+            "memory": [
+              {
+                "at": "prepared",
+                "kernelLinearBytes": 1966080,
+                "jsHeapUsed": 9048200,
+                "processRss": 157483008
+              },
+              {
+                "at": "warm",
+                "kernelLinearBytes": 2359296,
+                "jsHeapUsed": 9351392,
+                "processRss": 180518912
+              },
+              {
+                "at": 20,
+                "kernelLinearBytes": 2359296,
+                "jsHeapUsed": 9570624,
+                "processRss": 205127680
+              },
+              {
+                "at": 40,
+                "kernelLinearBytes": 2359296,
+                "jsHeapUsed": 9778352,
+                "processRss": 218677248
+              },
+              {
+                "at": 50,
+                "kernelLinearBytes": 2359296,
+                "jsHeapUsed": 9882912,
+                "processRss": 257015808
+              },
+              {
+                "at": 100,
+                "kernelLinearBytes": 2359296,
+                "jsHeapUsed": 9454424,
+                "processRss": 277463040
+              },
+              {
+                "at": 200,
+                "kernelLinearBytes": 2359296,
+                "jsHeapUsed": 9266360,
+                "processRss": 308625408
+              },
+              {
+                "at": "disposed",
+                "kernelLinearBytes": 2359296,
+                "jsHeapUsed": 9280696,
+                "processRss": 308854784
+              }
+            ],
+            "first": {
+              "workMs": 13.308332999999976,
+              "elapsedMs": 13.528290999999996
+            },
+            "workMs": {
+              "n": 200,
+              "p50": 1.3268330000000788,
+              "p95": 1.5286669999999845,
+              "max": 10.336541000000011
+            },
+            "elapsedMs": {
+              "n": 200,
+              "p50": 1.4140409999999974,
+              "p95": 1.6448340000000599,
+              "max": 59.372749999999996
+            }
+          }
+        ]
+      },
+      {
+        "name": "nested-child-stroke-1",
+        "curveSegments": 32,
+        "pixelSha256": "40adc4e6d4446b0eb42f61f3cd93063cca39bb282a9f7719d4956023e03e4e3b",
+        "cases": [
+          {
+            "version": "baseline",
+            "memory": [
+              {
+                "at": "prepared",
+                "kernelLinearBytes": 1966080,
+                "jsHeapUsed": 9028528,
+                "processRss": 291258368
+              },
+              {
+                "at": "warm",
+                "kernelLinearBytes": 2293760,
+                "jsHeapUsed": 9311600,
+                "processRss": 308117504
+              },
+              {
+                "at": 20,
+                "kernelLinearBytes": 2293760,
+                "jsHeapUsed": 9531072,
+                "processRss": 310951936
+              },
+              {
+                "at": 40,
+                "kernelLinearBytes": 2293760,
+                "jsHeapUsed": 9739624,
+                "processRss": 311246848
+              },
+              {
+                "at": 50,
+                "kernelLinearBytes": 2293760,
+                "jsHeapUsed": 9844664,
+                "processRss": 314064896
+              },
+              {
+                "at": 100,
+                "kernelLinearBytes": 2293760,
+                "jsHeapUsed": 9410776,
+                "processRss": 320700416
+              },
+              {
+                "at": 200,
+                "kernelLinearBytes": 2293760,
+                "jsHeapUsed": 9325424,
+                "processRss": 324386816
+              },
+              {
+                "at": "disposed",
+                "kernelLinearBytes": 2293760,
+                "jsHeapUsed": 9339536,
+                "processRss": 324386816
+              }
+            ],
+            "first": {
+              "workMs": 3.884249999999838,
+              "elapsedMs": 4.12495899999999
+            },
+            "workMs": {
+              "n": 200,
+              "p50": 2.036207999999988,
+              "p95": 2.2545829999999114,
+              "max": 2.6326669999998558
+            },
+            "elapsedMs": {
+              "n": 200,
+              "p50": 2.118167000000085,
+              "p95": 2.3542500000000928,
+              "max": 2.7224999999998545
+            }
+          },
+          {
+            "version": "retained",
+            "memory": [
+              {
+                "at": "prepared",
+                "kernelLinearBytes": 1966080,
+                "jsHeapUsed": 9029592,
+                "processRss": 306954240
+              },
+              {
+                "at": "warm",
+                "kernelLinearBytes": 2293760,
+                "jsHeapUsed": 9315176,
+                "processRss": 309116928
+              },
+              {
+                "at": 20,
+                "kernelLinearBytes": 2293760,
+                "jsHeapUsed": 9532784,
+                "processRss": 311066624
+              },
+              {
+                "at": 40,
+                "kernelLinearBytes": 2293760,
+                "jsHeapUsed": 9741360,
+                "processRss": 311246848
+              },
+              {
+                "at": 50,
+                "kernelLinearBytes": 2293760,
+                "jsHeapUsed": 9846400,
+                "processRss": 314064896
+              },
+              {
+                "at": 100,
+                "kernelLinearBytes": 2293760,
+                "jsHeapUsed": 9419944,
+                "processRss": 320700416
+              },
+              {
+                "at": 200,
+                "kernelLinearBytes": 2293760,
+                "jsHeapUsed": 9232360,
+                "processRss": 324386816
+              },
+              {
+                "at": "disposed",
+                "kernelLinearBytes": 2293760,
+                "jsHeapUsed": 9246728,
+                "processRss": 324386816
+              }
+            ],
+            "first": {
+              "workMs": 3.0566670000000613,
+              "elapsedMs": 3.199999999999818
+            },
+            "workMs": {
+              "n": 200,
+              "p50": 1.2980839999997897,
+              "p95": 1.4600410000000466,
+              "max": 1.858459000000039
+            },
+            "elapsedMs": {
+              "n": 200,
+              "p50": 1.3758329999998296,
+              "p95": 1.5456669999998667,
+              "max": 1.9796670000000631
+            }
+          }
+        ]
+      },
+      {
+        "name": "capacity-0",
+        "curveSegments": 35200,
+        "pixelSha256": "ce91574885eb952e4f2c214a01e34c1d6ea1f868924de754690c85f6c324af45",
+        "cases": [
+          {
+            "version": "baseline",
+            "memory": [
+              {
+                "at": "prepared",
+                "kernelLinearBytes": 13434880,
+                "jsHeapUsed": 12772648,
+                "processRss": 328007680
+              },
+              {
+                "at": "warm",
+                "kernelLinearBytes": 13434880,
+                "jsHeapUsed": 13005368,
+                "processRss": 355876864
+              },
+              {
+                "at": 20,
+                "kernelLinearBytes": 13434880,
+                "jsHeapUsed": 9216992,
+                "processRss": 268763136
+              },
+              {
+                "at": 40,
+                "kernelLinearBytes": 13434880,
+                "jsHeapUsed": 9392336,
+                "processRss": 268861440
+              },
+              {
+                "at": "disposed",
+                "kernelLinearBytes": 13434880,
+                "jsHeapUsed": 9407648,
+                "processRss": 269123584
+              }
+            ],
+            "first": {
+              "workMs": 440.0188330000001,
+              "elapsedMs": 440.18674999999985
+            },
+            "workMs": {
+              "n": 40,
+              "p50": 428.567500000001,
+              "p95": 444.02000000000044,
+              "max": 448.03441600000224
+            },
+            "elapsedMs": {
+              "n": 40,
+              "p50": 428.6936249999999,
+              "p95": 444.15666599999895,
+              "max": 448.1622500000012
+            }
+          },
+          {
+            "version": "retained",
+            "memory": [
+              {
+                "at": "prepared",
+                "kernelLinearBytes": 13434880,
+                "jsHeapUsed": 12768816,
+                "processRss": 359628800
+              },
+              {
+                "at": "warm",
+                "kernelLinearBytes": 13893632,
+                "jsHeapUsed": 9033272,
+                "processRss": 302170112
+              },
+              {
+                "at": 20,
+                "kernelLinearBytes": 13893632,
+                "jsHeapUsed": 9216800,
+                "processRss": 268779520
+              },
+              {
+                "at": 40,
+                "kernelLinearBytes": 13893632,
+                "jsHeapUsed": 9392048,
+                "processRss": 268861440
+              },
+              {
+                "at": "disposed",
+                "kernelLinearBytes": 13893632,
+                "jsHeapUsed": 9407312,
+                "processRss": 269500416
+              }
+            ],
+            "first": {
+              "workMs": 431.4956250000005,
+              "elapsedMs": 431.69379200000003
+            },
+            "workMs": {
+              "n": 40,
+              "p50": 402.40625,
+              "p95": 414.9656669999986,
+              "max": 468.4433749999989
+            },
+            "elapsedMs": {
+              "n": 40,
+              "p50": 402.5442919999987,
+              "p95": 415.104041999999,
+              "max": 468.63945799999783
+            }
+          }
+        ]
+      }
+    ],
+    "scope": "Three owned 320x240 frames, including a 1100-object capacity input; real packaged Node Worker synchronous samples, one owner/version/case. First frame separate, 10 warmups, 200 alternating-order samples/version on nested inputs and 40/version on capacity input. Full identical native pixels+metadata asserted outside timer. workMs inside Worker excludes IPC; elapsedMs includes IPC. Kernel linear memory is allocator high-water, not live cache bytes or total runtime memory. JS heap/whole-process RSS snapshots are diagnostic with two live Workers and uncontrolled GC/OS load; no general RSS or throughput acceptance."
+  },
+  "limits": [
+    "Only immutable author local outlines retained; source playback uses its existing plan unchanged",
+    "Repeated fixed frames measured; not complete animated workloads, release throughput or cold-start acceptance",
+    "Large-page median still exceeds 400 ms; compile and other long critical sections remain open",
+    "Observed tail regressions retained: 59.373 ms IPC-including maximum on nested input and 468.443 ms internal maximum on capacity input; no latency SLA",
+    "Stable sampled linear-memory high-water is not live cache accounting, leak proof or physical memory reclamation evidence",
+    "Prior independent SDK consumer reused for stable playback protocol; SDK source archive not refreshed in this stage",
+    "No Office/WPS application calibration or complete advanced PPT acceptance",
+    "No desktop installer size estimate or total RSS bound",
+    "No Musterwork changes or replacement activation",
+    "TS/MCP sources unchanged; standalone TS/MCP protocol groups not rerun in this stage"
+  ]
+}

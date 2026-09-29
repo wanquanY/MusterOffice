@@ -1,0 +1,240 @@
+{
+  "stage": "product-native-catalog",
+  "date": "2026-09-28",
+  "status": "native-catalog-transaction-and-signed-consumption-verified-not-full-product-replacement",
+  "tests": 147,
+  "checks": [
+    {
+      "run": "unit-04",
+      "passedTests": 60,
+      "args": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONPATH=$MUSTERWORK_WORKTREE/apps/agent-runtime/clients/python/src:$MUSTERWORK_WORKTREE",
+        "SECRET_KEY=isolated-native-template-test-not-a-production-secret",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_NATIVE_FIT_PREFIX=$MUSTERWORK_WORKTREE/.codex-work/integration/native-final/wide-02-native",
+        "MUSTERWORK_NATIVE_FINAL_STAGE=$MUSTERWORK_WORKTREE/.codex-work/integration/native-final/positive-01-actual.json.stage",
+        "$MUSTERWORK_WORKTREE/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "$MUSTERWORK_WORKTREE/backend/tests/unit/test_native_template_publication.py",
+        "$MUSTERWORK_WORKTREE/backend/tests/unit/test_native_template_catalog_source.py",
+        "$MUSTERWORK_WORKTREE/backend/tests/unit/test_native_template_catalog_admin.py",
+        "$MUSTERWORK_WORKTREE/backend/tests/unit/test_native_template_compilation.py",
+        "$MUSTERWORK_WORKTREE/backend/tests/unit/test_native_template_verification.py",
+        "$MUSTERWORK_WORKTREE/backend/tests/unit/test_presentation_compilation_delivery.py"
+      ],
+      "elapsedSeconds": 7.014145042048767,
+      "reportSha256": "9e07004ff6f1c4046962ab7f825e080a50cddde2ef66c9f895c35db0c5e56ec7",
+      "logSha256": "2a03a41acaceb9e2da5c0c5d758b1c9dede5468fab4051ede0d51ae1d72fc055",
+      "currentInventoryMatches": true
+    },
+    {
+      "run": "legacy-02",
+      "passedTests": 68,
+      "args": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONPATH=$MUSTERWORK_WORKTREE/apps/agent-runtime/clients/python/src:$MUSTERWORK_WORKTREE",
+        "SECRET_KEY=isolated-native-template-test-not-a-production-secret",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_NATIVE_FIT_PREFIX=$MUSTERWORK_WORKTREE/.codex-work/integration/native-final/wide-02-native",
+        "MUSTERWORK_NATIVE_FINAL_STAGE=$MUSTERWORK_WORKTREE/.codex-work/integration/native-final/positive-01-actual.json.stage",
+        "$MUSTERWORK_WORKTREE/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "$MUSTERWORK_WORKTREE/backend/tests/unit/test_presentation_templates.py",
+        "$MUSTERWORK_WORKTREE/backend/tests/unit/test_presentation_compilation.py",
+        "$MUSTERWORK_WORKTREE/backend/tests/unit/test_presentation_template_retry.py",
+        "$MUSTERWORK_WORKTREE/backend/tests/unit/test_presentation_compilation_runtime.py",
+        "$MUSTERWORK_WORKTREE/backend/tests/unit/test_presentation_template_source.py"
+      ],
+      "elapsedSeconds": 6.244610666995868,
+      "reportSha256": "34e8e706c931b5cffe7c20d2b9cbd38a4f85ad7c1766aabb9f44f380a2f28086",
+      "logSha256": "ac51a23c9211b03ee9f9b8249e782c469302eb32be6dbf7496f68df9d2b87e3e",
+      "currentInventoryMatches": true
+    },
+    {
+      "run": "postgres-02",
+      "passedTests": 19,
+      "args": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONPATH=$MUSTERWORK_WORKTREE/apps/agent-runtime/clients/python/src:$MUSTERWORK_WORKTREE",
+        "SECRET_KEY=isolated-native-template-test-not-a-production-secret",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_NATIVE_FIT_PREFIX=$MUSTERWORK_WORKTREE/.codex-work/integration/native-final/wide-02-native",
+        "MUSTERWORK_NATIVE_FINAL_STAGE=$MUSTERWORK_WORKTREE/.codex-work/integration/native-final/positive-01-actual.json.stage",
+        "$MUSTERWORK_WORKTREE/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "$MUSTERWORK_WORKTREE/backend/tests/unit/../database/test_native_template_catalog_postgres.py",
+        "$MUSTERWORK_WORKTREE/backend/tests/unit/../database/test_native_template_compilation_postgres.py",
+        "$MUSTERWORK_WORKTREE/backend/tests/unit/../database/test_presentation_compilation_postgres.py"
+      ],
+      "elapsedSeconds": 8.156552708009258,
+      "reportSha256": "438a816fc852ca4daf4130b91c7dc0ef6b3d976c1aeb2cc139f4fa43889ac89a",
+      "logSha256": "2f4447324430b58e6ea1a155cd88e7298ce219aa68dcbedacdefc4a9c958197f",
+      "currentInventoryMatches": true
+    },
+    {
+      "run": "lint-01",
+      "passedTests": 0,
+      "args": [
+        "$MUSTERWORK_WORKTREE/.venv/bin/ruff",
+        "check",
+        "$MUSTERWORK_WORKTREE/backend/services/presentation_templates/compilation.py",
+        "$MUSTERWORK_WORKTREE/backend/services/presentation_templates/catalog.py",
+        "$MUSTERWORK_WORKTREE/backend/services/presentation_templates/compilation_publication.py",
+        "$MUSTERWORK_WORKTREE/backend/services/presentation_templates/compilation_native_publication.py",
+        "$MUSTERWORK_WORKTREE/backend/services/presentation_templates/compilation_native_files.py",
+        "$MUSTERWORK_WORKTREE/backend/tests/unit/native_template_catalog_fixture.py",
+        "$MUSTERWORK_WORKTREE/backend/tests/unit/test_native_template_compilation.py",
+        "$MUSTERWORK_WORKTREE/backend/tests/unit/test_native_template_publication.py",
+        "$MUSTERWORK_WORKTREE/backend/tests/unit/test_native_template_catalog_source.py",
+        "$MUSTERWORK_WORKTREE/backend/tests/unit/test_native_template_catalog_admin.py",
+        "$MUSTERWORK_WORKTREE/backend/tests/database/test_native_template_catalog_postgres.py"
+      ],
+      "elapsedSeconds": 0.1521059579681605,
+      "reportSha256": "38eb684c66950d9bf9a4727ae9496eec4b09610f5ad4e487bfb44316898f07df",
+      "logSha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "currentInventoryMatches": true
+    }
+  ],
+  "environment": {
+    "system": "Darwin",
+    "release": "25.2.0",
+    "machine": "arm64",
+    "productBranch": "codex/musteroffice-integration",
+    "postgres": "PostgreSQL 16.15 on aarch64-unknown-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit",
+    "postgresImage": "sha256:c05eced0bdb41ea9b95a656472a6aa4d50cad0d8a2e33d14eb1c53fd6204f2ae",
+    "isolatedPostgresRemoved": true,
+    "productionDatabaseChanged": false
+  },
+  "materials": {
+    "sdkManifestSha256": "7ed23b21a12b0cacc4cf563ead1b60133a6b5659c3a235881c910d5ece232471",
+    "workerSha256": "52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50",
+    "workerBytes": 42750912,
+    "sdkAndWorkerUnchanged": true,
+    "workerBuild": "ARM64 debug, not a distribution-size measurement",
+    "nativeStageFiles": {
+      "wide-02-native-stress-definition/stage.json": "0da71a06d1bf8ec9ec809b7cb6e6b87ec73f08b2a88b7ecacfda4cd87e5b151d",
+      "wide-02-native-stress-definition/files.json": "26fd63eec6742788d3634add850c31ba10fb0ec1543e8705242a5e1f8259c2b9",
+      "wide-02-native-stress-maintenance/stage.json": "23e28a33eaeaebfc2dc7e409f87f256522b25117cdba577d58745b497e8df72e",
+      "wide-02-native-stress-maintenance/files.json": "2b410fa682e1dc0126c1669b7f64a79583ccd23c7917de93b5f9b9981c64a476",
+      "positive-01-actual.json.stage/stage.json": "0c59ac6850a0bf8f9f4d52358319e73a33153b316c4c12ab4d5e80e35ee29b49",
+      "positive-01-actual.json.stage/files.json": "77c47781a4d95700e348345541a055e9b3a73afb390f658bc8de569e5d375a18"
+    }
+  },
+  "implemented": [
+    "Native package, immutable source/resources and previews retain the exact SDK bytes.",
+    "Original same-generation Define/Stress/Verify journal chain owns private read authority.",
+    "Shared fenced transaction rechecks cancellation, lease, accepted final checkpoint, page coverage, owner, current version and latest import intent.",
+    "Native coordinator commits version, current selection, completion and event in the original transaction; restart needs no repeated native calculation.",
+    "Actual signed Device-authorized gRPC source service consumes the coordinator-created version and returns the original package/resources.",
+    "Operator native drafts require explicit rights-checked administrative publication; personal templates remain private.",
+    "Native administrative publication reuses bounded validation from immutable journal evidence instead of trusting catalog fields.",
+    "Concurrent PostgreSQL commits produce exactly one version and completion; native checkpoints and versions reject mutation."
+  ],
+  "verificationScope": {
+    "sqliteCases": 60,
+    "legacyCases": 68,
+    "postgresCases": 19,
+    "strictRuffFiles": 11,
+    "nativeStageOrigin": "Retained exact files from real Rust SDK runs; only outer request/job/generation fields are adapted for isolated SQL admission.",
+    "runtimeBoundary": "Fixture trusted Runtime completion port; not full live backend parent/child RPC admission.",
+    "sourceRpc": "Production signed authority, gRPC, catalog and original SQL; in-memory private blob provider.",
+    "publicPublishing": "Only isolated test catalogs; no real public publication or deployment.",
+    "visualQuality": "Earlier canonical model request/response fixtures remain fixtures, not live external vision evidence.",
+    "immutablePackage": true,
+    "globalQualityClaimPromoted": false
+  },
+  "inputLimits": {
+    "jsonObjectBytes": 8388608,
+    "singleMaterialBytes": 134217728,
+    "totalRetainedBytes": 268435456,
+    "maxObjects": 1024
+  },
+  "retainedFailure": {
+    "run": "unit-01",
+    "passedTests": 49,
+    "failedTests": 2,
+    "cause": "Catalog fixture lacked the publications table; checkpoint mutation violated a SQL CHECK before reaching the intended fence.",
+    "resolution": "Compose full catalog test schema and use a valid prepared checkpoint state; production guards remain enabled."
+  },
+  "warnings": "294 existing backend deprecation warnings in each test invocation; no new warning suppression.",
+  "exclusions": [
+    "Upload composition still asks the legacy engine for environment; automatic native selection remains next.",
+    "Complete live parent/child Runtime admission and real model vision are not exercised by these backend fixtures.",
+    "Canonical model request/response audit references remain owned by original Runtime journals; do not follow arbitrary nested JSON as read authority. End-to-end retention/cleanup acceptance remains open.",
+    "No new Office/WPS interop, full advanced PPT, Native/WASM, historical migration or complete product session acceptance in this stage.",
+    "No benchmark or release desktop-size estimate is inferred from elapsed test time or debug worker size."
+  ],
+  "sourceFiles": [
+    {
+      "path": "backend/services/presentation_templates/compilation.py",
+      "sha256": "95ff0fb3c4a9478071f9c5296a75511d6ab558409dc7e9d16844202580f8eb32",
+      "lines": 393
+    },
+    {
+      "path": "backend/services/presentation_templates/catalog.py",
+      "sha256": "8aae89491ddc4e5d0f1e45fd8e2e9a2a70dd73d5d625a3c5b70b46b14a8f536f",
+      "lines": 551
+    },
+    {
+      "path": "backend/services/presentation_templates/compilation_publication.py",
+      "sha256": "52d6a528fad6517c44ad5af2ba205001440b368f09a6495d7c935f5e7ea35576",
+      "lines": 94
+    },
+    {
+      "path": "backend/services/presentation_templates/compilation_native_publication.py",
+      "sha256": "72dab672fe6616bf603f061e9274fc4d5597db427d445aebdd11646f29bc7408",
+      "lines": 231
+    },
+    {
+      "path": "backend/services/presentation_templates/compilation_native_files.py",
+      "sha256": "c4bf3c41028b6d94f5918a724d178400c5d4bdebfdd3fd5a915da5f4e3da2595",
+      "lines": 104
+    },
+    {
+      "path": "backend/tests/unit/native_template_catalog_fixture.py",
+      "sha256": "4c07a9c9dd1edc18de5e2429723abac54ab60668eeed6e990fffa7618da7bab7",
+      "lines": 99
+    },
+    {
+      "path": "backend/tests/unit/test_native_template_compilation.py",
+      "sha256": "ce34fd88f9be15fd09684ba7a27f9fc3840e533497312818c2977482c5eda48c",
+      "lines": 311
+    },
+    {
+      "path": "backend/tests/unit/test_native_template_publication.py",
+      "sha256": "c4cd69cf46a91e8e396782f2ae101d5eb223f0445db228a30abfaf7f039b9174",
+      "lines": 140
+    },
+    {
+      "path": "backend/tests/unit/test_native_template_catalog_source.py",
+      "sha256": "c4404de634729fbb30a393e4b8170c07b7c3c37bebf5bca7e150f705fa2e1087",
+      "lines": 103
+    },
+    {
+      "path": "backend/tests/unit/test_native_template_catalog_admin.py",
+      "sha256": "ab5eb24b0acbb3482b1122a5219c3b7267f592687c5fcc0e0869565bc3b7f7dd",
+      "lines": 92
+    },
+    {
+      "path": "backend/tests/database/test_native_template_catalog_postgres.py",
+      "sha256": "b33e4f15b39c76bb2340cab1236ec120416d8a37dbbfeb6801fa445a9ca489a5",
+      "lines": 113
+    }
+  ]
+}

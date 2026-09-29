@@ -1,0 +1,894 @@
+{
+  "format": "musteroffice.wps-timing-roundtrip-verification/1",
+  "status": "passed-scoped-identity-scale-export-fix-with-open-roundtrip-gaps",
+  "source": {
+    "baseline": {
+      "path": ".codex-work/wps-timing-roundtrip/baseline.json",
+      "byteLength": 273590,
+      "sha256": "0dbe87dbbcbd2d5e8c133e44a0dbf3daaa5478a7da36da81fdcbfdb1c19e336f"
+    },
+    "changed": [
+      {
+        "path": "crates/mo-pptx/src/timing.rs",
+        "byteLength": 5908,
+        "sha256": "29793ae3ab8ee80912d708a71f79e93a79f2136aac73f4713f22c9b6ba5a1231"
+      },
+      {
+        "path": "crates/mo-pptx/tests/timing_scale.rs",
+        "byteLength": 13074,
+        "sha256": "5535c24675d701a7dfa43eb15f51150320611c5e9c0bc4e2ddd86e3a1a02b9f0"
+      },
+      {
+        "path": "docs/README.md",
+        "byteLength": 28968,
+        "sha256": "36bfbe79053b98a9cfbec240bb402f486abd9966a9c4853d18173b07ba941041"
+      },
+      {
+        "path": "docs/design/presentations/timeline-media.md",
+        "byteLength": 10985,
+        "sha256": "68f1244ed721d77afc51fb08919877e17c7b1c0fed8c0816c4328b6f8632c5e7"
+      },
+      {
+        "path": "docs/implementation/progress.md",
+        "byteLength": 109531,
+        "sha256": "33d5ca16c23e9b2e334c42cb3807c9ba3fa7ead30726be7e7dd3325f6d26c987"
+      },
+      {
+        "path": "docs/implementation/wps-timing-roundtrip.md",
+        "byteLength": 6373,
+        "sha256": "d7b567252e66675150fa55acd37dcae082fe70bd2a3ff07097e9ab87195b076c"
+      }
+    ],
+    "unchanged": {
+      "components/": 155,
+      "integrations/": 8,
+      "packages/": 149,
+      "contracts/": 120,
+      "fixtures/": 30,
+      "tools/": 761,
+      "crates/mo-timeline/": 23,
+      "crates/mo-presentation-source/": 106,
+      "Cargo.toml": 1,
+      "Cargo.lock": 1,
+      "package.json": 1,
+      "pnpm-lock.yaml": 1
+    },
+    "localLinks": 412,
+    "dependenciesChanged": false
+  },
+  "implementation": {
+    "writer": "Use by-only exactly when both scale start axes are 100000; otherwise retain explicit from/to. One effective value source; no ignored by beside to.",
+    "sharedFlatAndTreeBehaviorWriter": true,
+    "readerOrTimelineSemanticsChanged": false,
+    "productUiPermissionStorageAdded": false
+  },
+  "verification": {
+    "commands": {
+      "timing-tests-01": {
+        "record": {
+          "path": ".codex-work/wps-timing-roundtrip/timing-tests-01.json",
+          "byteLength": 65576,
+          "sha256": "a6f9bbef458e0b93da8b7048eecd365fe304fa749b2a2d6924f0d4c57b99d74f"
+        },
+        "log": {
+          "path": ".codex-work/wps-timing-roundtrip/timing-tests-01.log",
+          "byteLength": 2652,
+          "sha256": "87385fcb8d0450fe09d4c9ae6347e70e2561c39b71606b4e23eb9f232d972291"
+        }
+      },
+      "export-probes-01": {
+        "record": {
+          "path": ".codex-work/wps-timing-roundtrip/export-probes-01.json",
+          "byteLength": 1210,
+          "sha256": "2c60d31622c3a40fb90ab671023c48e2e54fb7302ced563d980fa728140e533e"
+        },
+        "log": {
+          "path": ".codex-work/wps-timing-roundtrip/export-probes-01.log",
+          "byteLength": 898,
+          "sha256": "74ecf1009ec8510350dcd83ea2858a6597d3b2937ec964013e9c543bd4bdffd6"
+        }
+      },
+      "structure-02": {
+        "record": {
+          "path": ".codex-work/wps-timing-roundtrip/structure-02.json",
+          "byteLength": 2536,
+          "sha256": "7d1640515ca4c48c2e8f932ed829a6dd9b9d48975c33c7713ef7497b64d4aa12"
+        },
+        "log": {
+          "path": ".codex-work/wps-timing-roundtrip/structure-02.log",
+          "byteLength": 1467,
+          "sha256": "b666f3feae182102e74709907c7362c77823d9bd16a65c492a7344c9cfb0abcd"
+        }
+      },
+      "inspection-01": {
+        "record": {
+          "path": ".codex-work/wps-timing-roundtrip/inspection-01.json",
+          "byteLength": 2351,
+          "sha256": "484b69cb3738ac65dd0468cc917b0417b51efe5bcd89f5021fccbc998406b58a"
+        },
+        "log": {
+          "path": ".codex-work/wps-timing-roundtrip/inspection-01.log",
+          "byteLength": 325,
+          "sha256": "e58a6ecc9c8fdd972e1b87e902d7da40c4cde5a809ea0308778a50161efc501d"
+        }
+      },
+      "corpus-01": {
+        "record": {
+          "path": ".codex-work/wps-timing-roundtrip/corpus-01.json",
+          "byteLength": 1450,
+          "sha256": "ec2ddf76197ae5ee05db79d48141cf9d534bbb1f79b07febb8658fc41c2c89d5"
+        },
+        "log": {
+          "path": ".codex-work/wps-timing-roundtrip/corpus-01.log",
+          "byteLength": 66,
+          "sha256": "b5be7e860d35cf83f5b38232eac3660a537ec26ed9ed867f6c764726db155f0f"
+        }
+      },
+      "native-sdk-01": {
+        "record": {
+          "path": ".codex-work/wps-timing-roundtrip/native-sdk-01.json",
+          "byteLength": 67280,
+          "sha256": "fc0752f5b7edafa84372d0bd0c349bce9510c6a49952c2cda5a416b97c7b021c"
+        },
+        "log": {
+          "path": ".codex-work/wps-timing-roundtrip/native-sdk-01.log",
+          "byteLength": 50,
+          "sha256": "db5ddf1338c3c8a4dd6d793a451f44938a3e22a93ad844e9d134df427f081239"
+        }
+      },
+      "wasm-bindgen-01": {
+        "record": {
+          "path": ".codex-work/wps-timing-roundtrip/wasm-bindgen-01.json",
+          "byteLength": 767,
+          "sha256": "a1178084b49a3138f10efe32584eb14b557ccaf8cac3513f6592711916c5e592"
+        },
+        "log": {
+          "path": ".codex-work/wps-timing-roundtrip/wasm-bindgen-01.log",
+          "byteLength": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "bundle-01": {
+        "record": {
+          "path": ".codex-work/wps-timing-roundtrip/bundle-01.json",
+          "byteLength": 5602,
+          "sha256": "dcd3314e338707d0a8b180eaef48cc8d4537efe282f35b093b48bd877263fa88"
+        },
+        "log": {
+          "path": ".codex-work/wps-timing-roundtrip/bundle-01.log",
+          "byteLength": 100,
+          "sha256": "e03fa4a99615e632c0052f45d4aa61e84094cbc5c08a551fb4a7aeda5fa2aedf"
+        }
+      },
+      "sdk-01": {
+        "record": {
+          "path": ".codex-work/wps-timing-roundtrip/sdk-01.json",
+          "byteLength": 85521,
+          "sha256": "cf99219b68c63cf1de1a3ffe3d7fe7446a9a136eb7b0bdb1719ce8e8982b5d4c"
+        },
+        "log": {
+          "path": ".codex-work/wps-timing-roundtrip/sdk-01.log",
+          "byteLength": 45,
+          "sha256": "9ce6a8c83963224281028685fa1fdf9ee8889eadf29213183df46ab5fd41bc01"
+        }
+      },
+      "browser-01": {
+        "record": {
+          "path": ".codex-work/wps-timing-roundtrip/browser-01.json",
+          "byteLength": 87273,
+          "sha256": "1beb8592bbd8e7ab240b5fb3cac3492fd1db207deafe3f3ab5f5c42a92c5ed54"
+        },
+        "log": {
+          "path": ".codex-work/wps-timing-roundtrip/browser-01.log",
+          "byteLength": 136,
+          "sha256": "1bb81f7b47f297bb2cd351ce613a9c5b3a23de8250bde7cd4f3d4e94c88e3d5f"
+        }
+      },
+      "wps-measure-01": {
+        "record": {
+          "path": ".codex-work/wps-timing-roundtrip/wps-measure-01.json",
+          "byteLength": 1271,
+          "sha256": "5ed9b927de2d04fd72806e9372791792f62a267f088fcc77f6be6cf56aaa3353"
+        },
+        "log": {
+          "path": ".codex-work/wps-timing-roundtrip/wps-measure-01.log",
+          "byteLength": 340,
+          "sha256": "d6c75e025d78e484017543bd1b5e9e0d853f366fb4643cbb9506617f52d355f9"
+        }
+      },
+      "wps-by-measure-01": {
+        "record": {
+          "path": ".codex-work/wps-timing-roundtrip/wps-by-measure-01.json",
+          "byteLength": 988,
+          "sha256": "f71585f9160f38d52b16e5b2dd4b67d29e1939c170f77bfe51ad9f48ce3592fd"
+        },
+        "log": {
+          "path": ".codex-work/wps-timing-roundtrip/wps-by-measure-01.log",
+          "byteLength": 205,
+          "sha256": "e7cf3dd8758e43f941495fa52f5eff5c3d85dfcf3b3c4e5c53aed48d60cd8cce"
+        }
+      }
+    },
+    "workspace": {
+      "report": {
+        "path": ".codex-work/wps-timing-roundtrip/workspace-01/report.json",
+        "byteLength": 11754,
+        "sha256": "51eb7b03907f8e0e97e1dee42db148b83113b73e7c3458ee7a7e59935d198398"
+      },
+      "steps": [
+        {
+          "name": "verification-driver-tests",
+          "log": {
+            "path": ".codex-work/wps-timing-roundtrip/workspace-01/verification-driver-tests.log",
+            "byteLength": 625,
+            "sha256": "de859072ad017dabf4be2f9a8c836685d79cd0fd202cac9addebf2d43c1d764e"
+          }
+        },
+        {
+          "name": "agent-package-tests",
+          "log": {
+            "path": ".codex-work/wps-timing-roundtrip/workspace-01/agent-package-tests.log",
+            "byteLength": 783,
+            "sha256": "5d08a55f9fd1daa2d2325fe4b6cc673856f5717d4e678123209125740ae7fe88"
+          }
+        },
+        {
+          "name": "playback-sdk-package-tests",
+          "log": {
+            "path": ".codex-work/wps-timing-roundtrip/workspace-01/playback-sdk-package-tests.log",
+            "byteLength": 473,
+            "sha256": "15bfb59dcea27473dd3a761c232cc6d53eef5dd262af1745bd578a57d1c9c92b"
+          }
+        },
+        {
+          "name": "format",
+          "log": {
+            "path": ".codex-work/wps-timing-roundtrip/workspace-01/format.log",
+            "byteLength": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "name": "clippy",
+          "log": {
+            "path": ".codex-work/wps-timing-roundtrip/workspace-01/clippy.log",
+            "byteLength": 2430,
+            "sha256": "6e8b48e0bf55db4780378c816288b1ec51eb4b39d612dcaab22265f6f002d500"
+          }
+        },
+        {
+          "name": "rust-tests",
+          "log": {
+            "path": ".codex-work/wps-timing-roundtrip/workspace-01/rust-tests.log",
+            "byteLength": 120371,
+            "sha256": "9a4c77c262d3c1d7979a1cd3c12f6f474cb1afbb3434603fac7c73b5de731e88"
+          },
+          "tests": {
+            "passed": 974,
+            "ignored": 25
+          }
+        },
+        {
+          "name": "schemas",
+          "log": {
+            "path": ".codex-work/wps-timing-roundtrip/workspace-01/schemas.log",
+            "byteLength": 7886,
+            "sha256": "81093ecac7c1030e56425779e292389afdcbb7ac562efb889bcaa6f965318330"
+          }
+        },
+        {
+          "name": "native-build",
+          "log": {
+            "path": ".codex-work/wps-timing-roundtrip/workspace-01/native-build.log",
+            "byteLength": 1576,
+            "sha256": "4e5e385587d837cfe000378a6ecdf1170109c3724bb94ab239dedda392f11d95"
+          }
+        },
+        {
+          "name": "native-render-tests",
+          "log": {
+            "path": ".codex-work/wps-timing-roundtrip/workspace-01/native-render-tests.log",
+            "byteLength": 733,
+            "sha256": "27af8b580a6a142729cfd9290c3aebed39003bcbf3a716959cbf196f865a2325"
+          },
+          "tests": {
+            "passed": 4,
+            "ignored": 0
+          }
+        },
+        {
+          "name": "native-playback-tests",
+          "log": {
+            "path": ".codex-work/wps-timing-roundtrip/workspace-01/native-playback-tests.log",
+            "byteLength": 710,
+            "sha256": "f6d1ac9ba9cf5f2c1df98bbcb259b6a0a2c053eefb42a94377528b48cf8f97d0"
+          },
+          "tests": {
+            "passed": 4,
+            "ignored": 0
+          }
+        },
+        {
+          "name": "native-host-export-tests",
+          "log": {
+            "path": ".codex-work/wps-timing-roundtrip/workspace-01/native-host-export-tests.log",
+            "byteLength": 1133,
+            "sha256": "33ac5587c02176ef5c1fdaea1fb46d082c200dd1e098870d6fb602eb555f8869"
+          },
+          "tests": {
+            "passed": 9,
+            "ignored": 0
+          }
+        },
+        {
+          "name": "native-export-tests",
+          "log": {
+            "path": ".codex-work/wps-timing-roundtrip/workspace-01/native-export-tests.log",
+            "byteLength": 1665,
+            "sha256": "43fcc595b8535554979a569f2a5ff5074f25b2faa4c35c9bc2ab964529cc0c7c"
+          },
+          "tests": {
+            "passed": 12,
+            "ignored": 1
+          }
+        },
+        {
+          "name": "native-computation-cli-tests",
+          "log": {
+            "path": ".codex-work/wps-timing-roundtrip/workspace-01/native-computation-cli-tests.log",
+            "byteLength": 432,
+            "sha256": "6323b7a890500dedafd7ac46fa6df2b0b3fbcbb914b041dba98babe94d5c7399"
+          },
+          "tests": {
+            "passed": 1,
+            "ignored": 0
+          }
+        },
+        {
+          "name": "pure-operation-wasm",
+          "log": {
+            "path": ".codex-work/wps-timing-roundtrip/workspace-01/pure-operation-wasm.log",
+            "byteLength": 417,
+            "sha256": "6fc564f9ba6ce3d011012c211f6c31bd3a5652a9289f9cfe6536cd059fe3eee9"
+          }
+        },
+        {
+          "name": "legacy-host-wasm",
+          "log": {
+            "path": ".codex-work/wps-timing-roundtrip/workspace-01/legacy-host-wasm.log",
+            "byteLength": 303,
+            "sha256": "3030d9395d8ed800ad3c6681a23a39f810f338cdc6f2b00c01b4d286a6e222bc"
+          }
+        },
+        {
+          "name": "wasm-build",
+          "log": {
+            "path": ".codex-work/wps-timing-roundtrip/workspace-01/wasm-build.log",
+            "byteLength": 602,
+            "sha256": "652fb7f1c01c68535fc79f5c59c4c08eada993c8e7a83a2ebd7883db168a84e8"
+          }
+        },
+        {
+          "name": "wasm-bindgen",
+          "log": {
+            "path": ".codex-work/wps-timing-roundtrip/workspace-01/wasm-bindgen.log",
+            "byteLength": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "name": "document-native-wasm-parity",
+          "log": {
+            "path": ".codex-work/wps-timing-roundtrip/workspace-01/document-native-wasm-parity.log",
+            "byteLength": 336664,
+            "sha256": "d06397739e2a512234ac984194d4d3d04d693f950957de76fa7d66bfe02cf477"
+          }
+        }
+      ],
+      "notSelected": [
+        "mcp",
+        "mcp-protocol",
+        "typescript"
+      ]
+    },
+    "targetedTests": 23,
+    "corpus": {
+      "path": ".codex-work/wps-timing-roundtrip/corpus/report.json",
+      "byteLength": 7365,
+      "sha256": "1d840d3ebf78a3e063628ee1beea30a1404d9509b8a6ad29f0019aac9d00a15a"
+    },
+    "authorSourcePairs": 36,
+    "newFrames": 72,
+    "retainedFrames": 187,
+    "replays": {
+      "native-sdk-01": {
+        "report": {
+          "path": ".codex-work/wps-timing-roundtrip/native-sdk-01/report.json",
+          "byteLength": 169697,
+          "sha256": "39fa9664758921c30444c721d0ee1bef6c7ebf9b5caa2a76401c2ed0fa9e9aad"
+        },
+        "frames": 259,
+        "owners": 29
+      },
+      "sdk-01": {
+        "report": {
+          "path": ".codex-work/wps-timing-roundtrip/sdk-01/report.json",
+          "byteLength": 169201,
+          "sha256": "588fd3bf5d0ef76d9b9c651223adb08e93773d847da15caf60773a32009bdc0a"
+        },
+        "frames": 259,
+        "owners": 29
+      },
+      "browser-01": {
+        "report": {
+          "path": ".codex-work/wps-timing-roundtrip/browser-01/report.json",
+          "byteLength": 208896,
+          "sha256": "0cc70a7a2a4f1ba55255435fbf8f02f31b7def1b1a2c4d2b09e9b71c9147538b"
+        },
+        "frames": 259,
+        "owners": 29
+      }
+    },
+    "publicNativeWasmInspection": {
+      "path": ".codex-work/wps-timing-roundtrip/inspection/report.json",
+      "byteLength": 2001,
+      "sha256": "372655dfda8db64a9a1960a528880a536d8d802913c14c52409f006d71f47273"
+    },
+    "nativeXml": {
+      "report": {
+        "path": ".codex-work/wps-timing-roundtrip/structure-report.json",
+        "byteLength": 3123,
+        "sha256": "05aceb3fba4ba9316973c1ae3a3b1c1ce20c93335fc1846e9976902033d0862e"
+      },
+      "validatedProductionParts": 18,
+      "calibratedControlEqualsProductionUncompressedParts": 13
+    },
+    "retainedFailures": [
+      {
+        "record": {
+          "path": ".codex-work/wps-timing-roundtrip/structure-01.json",
+          "byteLength": 2523,
+          "sha256": "0ba5666f537ac774989b0350fab1b8f2f3c2e932af9229bce999a9128d05d8da"
+        },
+        "log": {
+          "path": ".codex-work/wps-timing-roundtrip/structure-01.log",
+          "byteLength": 365,
+          "sha256": "f9712b8dd191bd3a36ec687f23b095190cda4323ab03e500b2c41561b71d5795"
+        },
+        "reason": "Verification script called integer st_size as a function; corrected only the file-size read in a new retained script, then repeated all structure assertions successfully.",
+        "resolutionCommand": "structure-02"
+      }
+    ]
+  },
+  "wps": {
+    "application": "WPS Office for macOS",
+    "version": "12.1.22553",
+    "osVersion": "26.2",
+    "architecture": "arm64",
+    "userAuthorizedForegroundCalibration": true,
+    "directoryAccess": "Only owned scale-inputs calibration directory",
+    "originalAppRestored": true,
+    "ownedCalibrationTabClosed": true,
+    "existingUserDocumentEdited": false,
+    "inputs": [
+      {
+        "path": ".codex-work/wps-timing-roundtrip/before.pptx",
+        "byteLength": 6161,
+        "sha256": "84432992a7c7f219b89edbacf48a3ab4edb258a82c143b9a48f96489d231bc3b"
+      },
+      {
+        "path": ".codex-work/wps-timing-roundtrip/wps-moved.pptx",
+        "byteLength": 9806,
+        "sha256": "9401627ab86ae493bad885d42b6104a41565a87102e7e8bb7e60dab13991a4d0"
+      },
+      {
+        "path": ".codex-work/wps-timing-roundtrip/by-only-control.pptx",
+        "byteLength": 5764,
+        "sha256": "b9d33a3e69f3021ef71357e279f2ad7f78c1614cb9b4811904801c648d6fcb9a"
+      },
+      {
+        "path": ".codex-work/wps-timing-roundtrip/by-only-wps-moved.pptx",
+        "byteLength": 9638,
+        "sha256": "9923d694f4316d796b5fa858d80b10ab1f820f973aafba95db46fb133fd51620"
+      }
+    ],
+    "propertyScreenshots": [
+      {
+        "path": ".codex-work/wps-timing-roundtrip/by-only-property.jpg",
+        "byteLength": 395736,
+        "sha256": "621298b719cfe8df88c341d51bcc4a618d73ed364b5b3636babad7099eee2716"
+      },
+      {
+        "path": ".codex-work/wps-timing-roundtrip/by-only-reopened-property.jpg",
+        "byteLength": 399419,
+        "sha256": "0e6d3f92d6ba9b68bd281e8c8ec2009f1f2a0a252eb16592a97ca5ada8338d91"
+      }
+    ],
+    "measurements": [
+      {
+        "path": ".codex-work/wps-timing-roundtrip/wps-measurement.json",
+        "byteLength": 3204,
+        "sha256": "eb82ac00750251e333f75c901cc8f7bf9b63df7427b1128892b1a7a416f8d299"
+      },
+      {
+        "path": ".codex-work/wps-timing-roundtrip/wps-by-measurement.json",
+        "byteLength": 1742,
+        "sha256": "1a2279d78edc742e9f98f17c86db5bf83164fa63d2bdd927b1eabc99f2aa314f"
+      }
+    ],
+    "observations": [
+      {
+        "wps-moved": {
+          "size": [
+            3840,
+            2100
+          ],
+          "colors": {
+            "red": {
+              "pixels": 104439,
+              "bbox": [
+                575,
+                397,
+                948,
+                677
+              ],
+              "width": 373,
+              "height": 280
+            },
+            "green": {
+              "pixels": 103790,
+              "bbox": [
+                1662,
+                397,
+                2035,
+                676
+              ],
+              "width": 373,
+              "height": 279
+            },
+            "blue": {
+              "pixels": 26179,
+              "bbox": [
+                2898,
+                443,
+                3038,
+                630
+              ],
+              "width": 140,
+              "height": 187
+            },
+            "purple": {
+              "pixels": 104440,
+              "bbox": [
+                542,
+                1330,
+                915,
+                1610
+              ],
+              "width": 373,
+              "height": 280
+            },
+            "orange": {
+              "pixels": 26044,
+              "bbox": [
+                1755,
+                1400,
+                1942,
+                1540
+              ],
+              "width": 187,
+              "height": 140
+            },
+            "cyan": {
+              "pixels": 26178,
+              "bbox": [
+                2874,
+                1400,
+                3061,
+                1540
+              ],
+              "width": 187,
+              "height": 140
+            }
+          }
+        },
+        "wps-reopened": {
+          "size": [
+            3840,
+            2100
+          ],
+          "colors": {
+            "red": {
+              "pixels": 104439,
+              "bbox": [
+                575,
+                397,
+                948,
+                677
+              ],
+              "width": 373,
+              "height": 280
+            },
+            "green": {
+              "pixels": 103790,
+              "bbox": [
+                1662,
+                397,
+                2035,
+                676
+              ],
+              "width": 373,
+              "height": 279
+            },
+            "blue": {
+              "pixels": 26179,
+              "bbox": [
+                2898,
+                443,
+                3038,
+                630
+              ],
+              "width": 140,
+              "height": 187
+            },
+            "purple": {
+              "pixels": 104440,
+              "bbox": [
+                542,
+                1330,
+                915,
+                1610
+              ],
+              "width": 373,
+              "height": 280
+            },
+            "orange": {
+              "pixels": 26044,
+              "bbox": [
+                1755,
+                1400,
+                1942,
+                1540
+              ],
+              "width": 187,
+              "height": 140
+            },
+            "cyan": {
+              "pixels": 26178,
+              "bbox": [
+                2874,
+                1400,
+                3061,
+                1540
+              ],
+              "width": 187,
+              "height": 140
+            }
+          }
+        }
+      },
+      {
+        "by-only-reopened": {
+          "size": [
+            3840,
+            2100
+          ],
+          "colors": {
+            "red": {
+              "pixels": 104439,
+              "bbox": [
+                575,
+                397,
+                948,
+                677
+              ],
+              "width": 373,
+              "height": 280
+            },
+            "green": {
+              "pixels": 103790,
+              "bbox": [
+                1662,
+                397,
+                2035,
+                676
+              ],
+              "width": 373,
+              "height": 279
+            },
+            "blue": {
+              "pixels": 104439,
+              "bbox": [
+                2781,
+                397,
+                3154,
+                677
+              ],
+              "width": 373,
+              "height": 280
+            },
+            "purple": {
+              "pixels": 104440,
+              "bbox": [
+                542,
+                1330,
+                915,
+                1610
+              ],
+              "width": 373,
+              "height": 280
+            },
+            "orange": {
+              "pixels": 104716,
+              "bbox": [
+                1661,
+                1330,
+                2035,
+                1610
+              ],
+              "width": 374,
+              "height": 280
+            },
+            "cyan": {
+              "pixels": 104440,
+              "bbox": [
+                2781,
+                1330,
+                3154,
+                1610
+              ],
+              "width": 373,
+              "height": 280
+            }
+          }
+        }
+      }
+    ],
+    "shapeEdit": {
+      "xBefore": 1250000,
+      "xAfter": 1321755
+    },
+    "byProperty": "200% before save and after close/reopen; six native by values preserved.",
+    "mixedSavedSource": "Final pose remains expected after close/reopen; onEnd target reference removed, navigation/defaults rewritten. Full semantics not accepted.",
+    "excludedCapture": {
+      "file": {
+        "path": ".codex-work/wps-timing-roundtrip/by-only-reopened-final.jpg",
+        "byteLength": 320927,
+        "sha256": "c283c832885e159c4ee3ff6000a6af021aee8d8ee14f71bdf40a8ed81d29e13c"
+      },
+      "reason": "Captured editor instead of slideshow; excluded from visual acceptance. A later state-and-screenshot capture confirms slideshow and is measured."
+    },
+    "scope": "Actual shape edit/save/reopen and final color bounds only. No animation property edit, precise timestamps, navigation, repeated resave or PowerPoint acceptance."
+  },
+  "artifacts": {
+    "cli": {
+      "path": ".codex-work/wps-timing-roundtrip/cli",
+      "byteLength": 59205464,
+      "sha256": "507ca0e3456d3433aadf07e25bc351f389085104ebc691151afc14ed734fee53"
+    },
+    "worker": {
+      "path": ".codex-work/wps-timing-roundtrip/worker",
+      "byteLength": 38603520,
+      "sha256": "8a319330aff5c20c62030364e54de8c089d4ec187b524edb929d505999f2b8f8"
+    },
+    "export-probes.py": {
+      "path": ".codex-work/wps-timing-roundtrip/export-probes.py",
+      "byteLength": 2655,
+      "sha256": "3d15b54546ee4c2b69241aea5554ce19b814f963dcd1b05692be9829309d94ef"
+    },
+    "writer-probes.json": {
+      "path": ".codex-work/wps-timing-roundtrip/writer-probes.json",
+      "byteLength": 1179,
+      "sha256": "16b4fed314eb74c05dc3e914b0a791f9d0aebe1d049282a0b7922b3480ad4695"
+    },
+    "corpus.py": {
+      "path": ".codex-work/wps-timing-roundtrip/corpus.py",
+      "byteLength": 4096,
+      "sha256": "849b98ceff3be53e05d6202b8cff637b22202e0f279569d30bb1bc68d3a2dbbd"
+    },
+    "inspect.mjs": {
+      "path": ".codex-work/wps-timing-roundtrip/inspect.mjs",
+      "byteLength": 2260,
+      "sha256": "ba3b2dc6547da8048452f471effac8a10be70beceac8649fb75a13db9412502e"
+    },
+    "structure-check-02.py": {
+      "path": ".codex-work/wps-timing-roundtrip/structure-check-02.py",
+      "byteLength": 3919,
+      "sha256": "3857d9f49843bacbda35155f3b974b7c7592b9dd265c7cc0c71dc09da1c5928a"
+    },
+    "wps-measure.py": {
+      "path": ".codex-work/wps-timing-roundtrip/wps-measure.py",
+      "byteLength": 1962,
+      "sha256": "e2c0eaa3126c3ed3499042442788041b6116a138245e141468c6b4de994a2fe5"
+    },
+    "wps-by-measure.py": {
+      "path": ".codex-work/wps-timing-roundtrip/wps-by-measure.py",
+      "byteLength": 1890,
+      "sha256": "6c654cb836e941c780cff7ee926aa38c22ffcd4fcee46a063985512fae1bea75"
+    },
+    "assemble.py": {
+      "path": ".codex-work/wps-timing-roundtrip/assemble.py",
+      "byteLength": 10061,
+      "sha256": "3ea71593d1173234718fb49230e0835fb0bb5810a50f3b6826f357e7f1451ae4"
+    }
+  },
+  "package": {
+    "manifest": {
+      "path": ".codex-work/wps-timing-roundtrip/bundle-01/bundle-manifest.json",
+      "byteLength": 10715,
+      "sha256": "1b7b45ac1793a36df7f9a1e925a494e7d135c2526663fe4b549c79d36c9ea390"
+    },
+    "archive": {
+      "path": ".codex-work/wps-timing-roundtrip/bundle-01.tar.gz",
+      "byteLength": 4174400,
+      "sha256": "fbc31d0ccc8b085f6fb68612a242afb51aa6e2619c377c458c000fff5d3c0351"
+    },
+    "files": 60,
+    "unpackedBytesExcludingManifest": 14521878,
+    "unpackedByteDelta": 202,
+    "compressedByteDelta": -38,
+    "changes": [
+      {
+        "path": "runtime/mo_wasm_bg.wasm",
+        "bytes": 202,
+        "sha256": "6f070dbb28e9b7e25b245cf6e8ed32355edcb735f9701aab0fa63a964aae91b7"
+      }
+    ],
+    "releaseCleared": false,
+    "pptxExamples": [
+      {
+        "name": "writer-scale",
+        "bytes": 6055,
+        "byCount": 6,
+        "xsdParts": [
+          "ppt/presentation.xml",
+          "ppt/presProps.xml",
+          "ppt/slideLayouts/slideLayout1.xml",
+          "ppt/slideMasters/slideMaster1.xml",
+          "ppt/slides/slide1.xml",
+          "ppt/theme/theme1.xml"
+        ],
+        "onlyChange": "identity from/to to by-only",
+        "previousBytes": 6064
+      },
+      {
+        "name": "writer-mixed",
+        "bytes": 6155,
+        "byCount": 4,
+        "xsdParts": [
+          "ppt/presentation.xml",
+          "ppt/presProps.xml",
+          "ppt/slideLayouts/slideLayout1.xml",
+          "ppt/slideMasters/slideMaster1.xml",
+          "ppt/slides/slide1.xml",
+          "ppt/theme/theme1.xml"
+        ],
+        "onlyChange": "identity from/to to by-only",
+        "previousBytes": 6161
+      },
+      {
+        "name": "writer-range",
+        "bytes": 6103,
+        "byCount": 3,
+        "xsdParts": [
+          "ppt/presentation.xml",
+          "ppt/presProps.xml",
+          "ppt/slideLayouts/slideLayout1.xml",
+          "ppt/slideMasters/slideMaster1.xml",
+          "ppt/slides/slide1.xml",
+          "ppt/theme/theme1.xml"
+        ]
+      }
+    ]
+  },
+  "limits": [
+    "Both actual WPS saved files still return MAPPING_NOT_IMPLEMENTED in Native and WASM. No container/navigation stripping was added.",
+    "Missing native dependency targets and omitted defaults need full presentation semantics and independent calibration.",
+    "Nonidentity preset editing, arbitrary timing trees, navigation/restart and advanced content remain open.",
+    "Cross-end parity uses shared kernel and is not an independent Office reference.",
+    "No new throughput, RSS, cancellation latency or desktop installer measurement.",
+    "Rust SDK source archive not regenerated; existing consumer verifies stable protocol with new worker.",
+    "No new MCP/protocol changes or acceptance; independent groups not selected.",
+    "No Musterwork modification or replacement activation; full goal remains active."
+  ]
+}

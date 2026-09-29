@@ -1,0 +1,2064 @@
+{
+  "format": "musteroffice.rotation-composition-verification/1",
+  "date": "2026-09-29",
+  "status": "passed-bounded-stage",
+  "goal": "ACTIVE; full first-phase implementation and replacement gates remain open",
+  "scope": "Exact absolute/layout/add rotation composition, bounded native animRot grammar, and absolute author endpoint conversion at native export. Shared native/WASM calculation and independent product worktree upgrade.",
+  "sources": [
+    {
+      "repository": "MusterOffice",
+      "path": "README.md",
+      "sha256": "96b5240d72582f9a2a153e4c9cbb810485ebceb665dec16850d41018e7472aca",
+      "byteLength": 23857
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/computation-invocation.schema.json",
+      "sha256": "5eca79b62120823bdd3a97700ce33979acbfca5b9159669c42dc4ed794d91f15",
+      "byteLength": 117349
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/computation-receipt.schema.json",
+      "sha256": "c8d536355abb4499042532e73680ba9778c94dc87fd03bef3e28525f07e6463a",
+      "byteLength": 92434
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/computation-request.schema.json",
+      "sha256": "56b4c6ea99c58227adc8e063280ce352ae36d78b16039c5b487dee02f6fa7128",
+      "byteLength": 116198
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/document.schema.json",
+      "sha256": "f3f37bbf03d8a3969d32935cd60533f2559f2e8291434426ae48ccbb4347e215",
+      "byteLength": 68322
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/host-request.schema.json",
+      "sha256": "431140e242a1b6a21161717550e7c8c598877b5c9fcc36c2e7e6ae20a8cbf4d9",
+      "byteLength": 113451
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/host-response.schema.json",
+      "sha256": "6fd4116398d1841f6bd9a6fba3c245781bb5bd2b2670b4f8ec8bc3c28bd35319",
+      "byteLength": 103985
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/kernel-request.schema.json",
+      "sha256": "16c6e401d0f396eff4d3758aaa74462d0a9d2cc652bdf1219954d4374a53cc7c",
+      "byteLength": 85881
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/kernel-response.schema.json",
+      "sha256": "3c033696f72d33873e98f81e656d671b94e7b6e1201e5d9e2505c38fbeb4b71c",
+      "byteLength": 77741
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/operation-request.schema.json",
+      "sha256": "640deea4894701e7f4e32710fe5368603a093af3fd962406e3fa3b462cbcbc35",
+      "byteLength": 108347
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/page-placement-request.schema.json",
+      "sha256": "97fc82d66e3b73985b8c73762f02bc5ebb29d6f652f043f3566a6965a3011f91",
+      "byteLength": 69092
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/page-render-request.schema.json",
+      "sha256": "b6e1c6cc7ffff41ada813fba81a8dda84dc1b85fe886641fcad28363269ac74b",
+      "byteLength": 73484
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/playback-compile-response.schema.json",
+      "sha256": "6bb3d94440d27306d3a4c3487de213838f6a2ef5a5682bb40b1fd215bcbc2835",
+      "byteLength": 56235
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/playback-page-request.schema.json",
+      "sha256": "195c5d428a295e45fc844a0ab052500e5d87f136c22da75155a9f590a3ee049b",
+      "byteLength": 77581
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/playback-raster-response.schema.json",
+      "sha256": "da15b0458c5a1bbb5d5453ab883db22e87408ac38d7d592c38ae713d1de90c96",
+      "byteLength": 29198
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/playback-session-request.schema.json",
+      "sha256": "18fc8e076d943e2f9fa0c8251c5bf539e1508229ead37ac4315cb395cac42934",
+      "byteLength": 80192
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/playback-session-response.schema.json",
+      "sha256": "3509777c8bfe41ef4e974d435509b8f8c8a81b616b5fba2dd17d61ad646ef43c",
+      "byteLength": 72221
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/pptx-export-request.schema.json",
+      "sha256": "a536f1dafe51d90dc6e3e7308c7117890bb1a011209d40fe55808a13b3c42607",
+      "byteLength": 72273
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/pptx-import-response.schema.json",
+      "sha256": "d9ef049c6619a3e41b77a12ec577f810cbf2d727a10455cda4138077a59d770a",
+      "byteLength": 70666
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/pptx-playback-raster-response.schema.json",
+      "sha256": "2f9ec87d2817cc3acdd0b01304ba114b6b61a0b04833ff4d8aafcb9538e7a2d4",
+      "byteLength": 143654
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/pptx-playback-session-response.schema.json",
+      "sha256": "762e29db3a8596645fd4fd4e2d9238deb4abb2893efc0dbf4fa690507af28126",
+      "byteLength": 150554
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/pptx-timing-response.schema.json",
+      "sha256": "090109065f3b559d7a5fea218d18aa8a892d97ada34d56c496b01c50831149f9",
+      "byteLength": 25301
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/template-request.schema.json",
+      "sha256": "784cddca7f3dc8b51e81da071be4d42af9c7bcd6dd6900ed8f23f821f15e34e8",
+      "byteLength": 77725
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/template-response.schema.json",
+      "sha256": "b401e9e13798be47109f449aa40a8dfb2b8cc1e86edd56e8be0a1b7aff0f29cd",
+      "byteLength": 88184
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/timeline-evaluate-request.schema.json",
+      "sha256": "a7f9a5821f5ac07491df92e20c62d69a7e288d80a8341da19975ab673ae1616b",
+      "byteLength": 73268
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/timeline-evaluate-response.schema.json",
+      "sha256": "e9d324f178e84dea33d57a1c2faba5d02ce367bf3df0b78b32145ba924b2c485",
+      "byteLength": 10306
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/transaction.schema.json",
+      "sha256": "114224c2bbc7d2bda316860fb2fd1c9c3eac7ffebb753d676a2728491a67abf3",
+      "byteLength": 76054
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-embedded-sdk/tests/presentation_sequence.rs",
+      "sha256": "828a1ae5737327625b68033c87595581f31564adc73220baca102ae6a841d4ee",
+      "byteLength": 2981
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-kernel-api/tests/timeline.rs",
+      "sha256": "2c474fee9efad0e468a80cf01b41e180c731bf0011d77f6ac6e8793030e13b7f",
+      "byteLength": 4300
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-pptx/src/definitions.rs",
+      "sha256": "ea3a5f76870a9914d21530cb72d3b3735db61350e3986e1ad00a26c067d035a2",
+      "byteLength": 5859
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-pptx/src/timing.rs",
+      "sha256": "e5eb3a47dac210511b3d72af99b56c266b217c9622d1487c827c9d69e26594d4",
+      "byteLength": 10991
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-pptx/src/timing/write_flat.rs",
+      "sha256": "a8794352acef38ec85ad5d8846f4f22a7aed91168392acb9cefc9d7388b6fc58",
+      "byteLength": 2573
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-pptx/src/timing/write_tree.rs",
+      "sha256": "21489640b78e149867454e785f946cf076b7d937091de03d0e6d1f8d355e63e7",
+      "byteLength": 5734
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-pptx/tests/support/rotation.rs",
+      "sha256": "01c81a0fe355d0048299c9e40375ef9f6fed51952ea7fc8310996034039968ff",
+      "byteLength": 472
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-pptx/tests/timing.rs",
+      "sha256": "94632ce12d83dd9b740060d2c159b1e383ed5fee4eb2c9e960a003a270a68ff2",
+      "byteLength": 40300
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-pptx/tests/timing_conditions.rs",
+      "sha256": "7ddd4bf1a3437fdbf0227310f05e91af234721f3926278d12144a8a8665f822a",
+      "byteLength": 10635
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-pptx/tests/timing_envelope.rs",
+      "sha256": "ef9c945c0b2b3456b14d8bb9fc6bfd8186bd8e3ee2b7e7d7d23d5b4c252cf763",
+      "byteLength": 15283
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-pptx/tests/timing_motion_defaults.rs",
+      "sha256": "5bc536c84386e95193b2880016f68ef03aea8908cc555a6f40b9bac1942c7aaa",
+      "byteLength": 4188
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-pptx/tests/timing_navigation.rs",
+      "sha256": "30dcfe9950846a9b6a9230f39696548a41ec5866c0fd6a60f97df98a4aab1de8",
+      "byteLength": 12937
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-pptx/tests/timing_node_events.rs",
+      "sha256": "cebb90308cbe55c9e2dbf822c0bb5ec092f054f37caea41393389fbff3ef8c11",
+      "byteLength": 9456
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-pptx/tests/timing_restart.rs",
+      "sha256": "fbf06ab16da0a689dd90afbdecd620a4c7db1407e2ec4e5e4d9a91141fec84bf",
+      "byteLength": 6222
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-pptx/tests/timing_rotation_inputs.rs",
+      "sha256": "1c38fac76ae577e160c2e0ec7e13e63214b17ba539a36e976abec73b1b22839d",
+      "byteLength": 5822
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-presentation-compile/src/placement.rs",
+      "sha256": "ab03bc8896e8a8f465404b3765af8fadc63a33eabf69c266b6e21b75d3d7a597",
+      "byteLength": 5488
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-presentation-compile/src/sampled_properties.rs",
+      "sha256": "b0e1f66bffa43dcf71ec9167ac5fb7c95e7cc6ea2adc365471fd45dcaad77e91",
+      "byteLength": 7434
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-presentation-compile/src/source_placement.rs",
+      "sha256": "5ea2e0748cd77db77552382ec7821b3a3f72d465bde7e0b45c320328b87e9e20",
+      "byteLength": 12251
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-presentation-compile/tests/playback.rs",
+      "sha256": "a9fe0f6b089299f2d7e6f831ead1c6f01936c0efee993239fe0b18a5fde25164",
+      "byteLength": 8498
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-presentation-edit/tests/timing.rs",
+      "sha256": "009e71777e46098e39588d764bb0e73de31642760981568616e674f9423e522d",
+      "byteLength": 21791
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-presentation-source/src/timing/read/behavior.rs",
+      "sha256": "f9b02a1ccf219c13c3c8ed5173387a5b11fbb52d57609e4afd562d1e5515712b",
+      "byteLength": 4984
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-presentation-source/src/timing/read/behavior/rotation.rs",
+      "sha256": "388ea7b7cbd5a780c72446439675fed60f81bdc4051fbddbb7fca4a4cfc017cd",
+      "byteLength": 1739
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-presentation-template/tests/bindings.rs",
+      "sha256": "3a07b20f140093f6bec7936f0f0b2863fa2f594ab5feab29f69a496539e5b731",
+      "byteLength": 17557
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/evaluate.rs",
+      "sha256": "6e1d1415e91a4b7c3deca62eb922093bf1be4d5bc15d1c61c0b7863adb2fc89f",
+      "byteLength": 6653
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/model.rs",
+      "sha256": "dac7c06b035c264303d7326226b7da83db474756e9489a385158e6afbdb2f1c5",
+      "byteLength": 15101
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/tree/sample.rs",
+      "sha256": "13650f91d484a0b71819550dfe155bdd14895244b0c380817f9088b10f854c08",
+      "byteLength": 10644
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/tree/sample/properties.rs",
+      "sha256": "3e9e6762bfa723822786a474f57713c5e2116406d4f13b25aad4067655d78456",
+      "byteLength": 6478
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/tests/authoring.rs",
+      "sha256": "c8c04d497bcd6e3f93c67f27a7c64c2c2a908e6d89a02223e2d8668239bf9e73",
+      "byteLength": 10351
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/tests/container_easing.rs",
+      "sha256": "627e8202e8688056d81c57a5ff2776ba68dd8ae326dc87c93a1b4120f838d21f",
+      "byteLength": 8422
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/tests/container_lifecycle.rs",
+      "sha256": "b60f35b6f52c4126d8f8e98b26302fe9cbfeb613173d550c800d96ecee6c5579",
+      "byteLength": 10926
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/tests/end_conditions.rs",
+      "sha256": "2fb6e57bbf1483f6ccbcb374132ab985fd0939815ac12da71dc314aa3cd0b845",
+      "byteLength": 10882
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/tests/motion.rs",
+      "sha256": "a46bbdd2848e8412ef7ba7cf6cd888e16d51e1d42271cf2a7e822b4eb089f0ff",
+      "byteLength": 4519
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/tests/navigation.rs",
+      "sha256": "8cbda6a3fb36c078ab532d9c05bdc72200f6113afb9cab98e432ea2b1e75bc61",
+      "byteLength": 23355
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/tests/repeat_bounds.rs",
+      "sha256": "c9cad6a538569864ad0e31cc49b05835f11707e2cafd4141ec656140ddadc59c",
+      "byteLength": 9849
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/tests/restart.rs",
+      "sha256": "9e838c63da0a447c38532e4e75d25f60c5109dbf07671b63e33670d8f15086c4",
+      "byteLength": 17235
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/tests/rotation_composition.rs",
+      "sha256": "eb7a5d69f571da1023ed799be2616bc15aee070c6d4956cfd0973e377d5c3983",
+      "byteLength": 4870
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/tests/scale.rs",
+      "sha256": "2cf4cd0fa87471c70338ed6cf2a0381347b44228b0cbe41c29f69cd0ed06a15c",
+      "byteLength": 5547
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/tests/start_conditions.rs",
+      "sha256": "0722a35f79e7f458417253922ac06ddb969de951ac50e8207258eaa83692478b",
+      "byteLength": 12013
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/tests/time_transform.rs",
+      "sha256": "e3d48c2f09c58920a63303cba60e4786fb393ff80522db43a82e887cab812bbf",
+      "byteLength": 8802
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/tests/timeline.rs",
+      "sha256": "552edb3127d6d461639dc047fd08c74b8fba02c559aaffabb16035c7c183910d",
+      "byteLength": 13125
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/tests/tree.rs",
+      "sha256": "8e91b1993f5f460bbae590d7304d5bb9a905b838863ce8cbccbdc03727e179f4",
+      "byteLength": 14331
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/tests/visibility.rs",
+      "sha256": "b7a0c1b34f1d48c9ef52a7c82f62200c77669bbc4fb5aa58b4e57d3d903eb824",
+      "byteLength": 10954
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "docs/README.md",
+      "sha256": "07c3ed86439e316fd82646d74820b47aa38fd03c54d6f2d82e3ed310b5cdd507",
+      "byteLength": 40516
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "docs/design/presentations/timeline-media.md",
+      "sha256": "61b112fd6851691cae3ce6aa41f579897d49339d0b281ebdd834f83cbe926b41",
+      "byteLength": 13513
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "docs/implementation/native-motion-defaults.md",
+      "sha256": "f8bf0563ddb18e3d9d440c759a844f897ce6bea4ed5391bc3622fd758fda3495",
+      "byteLength": 5123
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "docs/implementation/progress.md",
+      "sha256": "58969015feda7b88d6cab15f8de2b825c06ee97c7375139231899df9b34ba56d",
+      "byteLength": 137614
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "docs/implementation/rotation-composition.md",
+      "sha256": "4408d09f35de9cf9b69f6a7b51df2e57ccc0853e4f9175ca5e227baab09c27db",
+      "byteLength": 6477
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "integrations/skills/musteroffice-presentations/references/advanced-content.md",
+      "sha256": "33d4644768630723d2007555a5a1bd54ed5dba61630ad19a99887fb49de3091d",
+      "byteLength": 4127
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/computation-invocation.ts",
+      "sha256": "cc60233ae270dcef42029e5e9e0a928020e0a01ce0131fc91d561c185c2b8508",
+      "byteLength": 48707
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/computation-receipt.ts",
+      "sha256": "622b43e8bb79ce10e22707e4473dafc36ff163103808e50b98f4eab433b8ec8b",
+      "byteLength": 42421
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/computation-request.ts",
+      "sha256": "40624a5c4b9cebba5ff6cf06b6995a714b865dc54a74cdf62de36d8b0e1d5926",
+      "byteLength": 48873
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/document.ts",
+      "sha256": "3ac302d03808fd3ee6ebc0845abd8f20506e3348b041b7e5618835badcd644a5",
+      "byteLength": 30860
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/host-request.ts",
+      "sha256": "6d62fd0c7ed0dd9ae56bed2bdedea1206319b2aa515e09c70df33f5dc4672718",
+      "byteLength": 31107
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/host-response.ts",
+      "sha256": "84de34596003676ee279a228e241b6b4622829d3ce790ae3f0bc924f21335e57",
+      "byteLength": 29702
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/kernel-request.ts",
+      "sha256": "c3f4f929a20480d79e391a3f658f104dd75db5aac5a0271cb788e814d8cc85f0",
+      "byteLength": 22988
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/kernel-response.ts",
+      "sha256": "0073e626799fbcb310b75a71a5123383132548245f80c986cd14014dbf912d5e",
+      "byteLength": 21483
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/operation-request.ts",
+      "sha256": "20d9dfb44434cac7a2853c2071da45657a931582dcfefbc1fa76ec635afacbab",
+      "byteLength": 46392
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/page-placement-request.ts",
+      "sha256": "f8d02fd5883a72994c0be25936b8125ed17bb0cef423bf3c7eee62e6fcf70119",
+      "byteLength": 32254
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/page-render-request.ts",
+      "sha256": "706c19ed328f21fab2fb0ad1c3897a7028c14e357aa2d35aa450114d4ef359c7",
+      "byteLength": 34502
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/playback-compile-response.ts",
+      "sha256": "863227c3ed98b2433d6804dd8fcff0cb28c2ec220765d88444f34c18d1c9bbc6",
+      "byteLength": 19738
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/playback-page-request.ts",
+      "sha256": "2ce432d61125ff0cbf7facf60b9b18525cadcb1d7bd3c077096a3f29fbb6cf17",
+      "byteLength": 36208
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/playback-raster-response.ts",
+      "sha256": "82cea610a820095199413cc4ed29126fb897d44667c703859f952f2d5421dd90",
+      "byteLength": 10833
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/playback-session-request.ts",
+      "sha256": "edc96a6b964ed4ed7809d713808aa59a44226867bb20acd82a79eb61ed0249ab",
+      "byteLength": 22159
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/playback-session-response.ts",
+      "sha256": "9340104b7e11551c0077f8d9449c1838d55a283edf2e454b7b92b48b084e6690",
+      "byteLength": 25473
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/pptx-export-request.ts",
+      "sha256": "9252c12561f717de00edbd1b8caa92cb4e4553256cfac05a1f6df937142efd5c",
+      "byteLength": 33454
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/pptx-import-response.ts",
+      "sha256": "13df0a75a511692a815355bc6c4fae0f69add9d6c9b320e839ff1d6be8fd48b2",
+      "byteLength": 19694
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/pptx-playback-raster-response.ts",
+      "sha256": "361cfd10cba7ea59becda553da7365fb9207e26f5a2542567adcdd980646bf62",
+      "byteLength": 41424
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/pptx-playback-session-response.ts",
+      "sha256": "f4bedfb90d79a6a65fa5c405dfcca7cf27c885241cb66374ad92e7bde022f6c6",
+      "byteLength": 43546
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/pptx-timing-response.ts",
+      "sha256": "3ae3d8056d7233d1c8ae66bf2d3bd2bc1bc283a70a136e29706709a579d1a43a",
+      "byteLength": 7334
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/template-request.ts",
+      "sha256": "678b8ad54e476618665a58c8d2b9f0f3d03817beec0de300153550494e743ed1",
+      "byteLength": 35324
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/template-response.ts",
+      "sha256": "c44fa318592ebacf93217bf16b5eb105927d91d1afa89c5a63b2b549378bc412",
+      "byteLength": 24649
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/timeline-evaluate-request.ts",
+      "sha256": "fe2163cfc9654c11b706d02fce8cc220b3993eb7bcf461989515da2c93db3746",
+      "byteLength": 34576
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/timeline-evaluate-response.ts",
+      "sha256": "63a812307fb54b615bf047521a2c09c17eeff63038876442612263315bb29452",
+      "byteLength": 3972
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/transaction.ts",
+      "sha256": "035247ae69db74fde77df47945f80fe35905225e1b6c815fcc8d1e3b7c31ae27",
+      "byteLength": 30360
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "tools/verification/rotation-composition-fixtures.py",
+      "sha256": "0deb2a0aa1944ae386ea427486422ebc865851954266e08842b545239b8cf1ee",
+      "byteLength": 6344
+    }
+  ],
+  "coreCommands": [
+    {
+      "name": "rust-02",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/rust-02.json",
+        "sha256": "82bc32960801a0910db928e900868c88d0b14c5b592962e63996bf8d806c652e",
+        "byteLength": 109790
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/rust-02.log",
+        "sha256": "0a40dc1998178b461fd255427bcdd1c9190e9a5e7021e24fbc669c47bb21199d",
+        "byteLength": 61631
+      },
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-timeline",
+        "-p",
+        "mo-presentation-model",
+        "-p",
+        "mo-presentation-source",
+        "-p",
+        "mo-pptx",
+        "-p",
+        "mo-presentation-compile",
+        "-p",
+        "mo-presentation-edit"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 421
+    },
+    {
+      "name": "clippy-02",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/clippy-02.json",
+        "sha256": "6c5a1a5d9d6f88cae272188cc65c48df40cfdfd3239b4bb915b239d7e2163025",
+        "byteLength": 109851
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/clippy-02.log",
+        "sha256": "dc5c2add2055108a29c2dcc43a32734893d909037a5e43759aa70572d1c11820",
+        "byteLength": 743
+      },
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-timeline",
+        "-p",
+        "mo-presentation-model",
+        "-p",
+        "mo-presentation-source",
+        "-p",
+        "mo-pptx",
+        "-p",
+        "mo-presentation-compile",
+        "-p",
+        "mo-presentation-edit",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 421
+    },
+    {
+      "name": "api-tests",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/api-tests.json",
+        "sha256": "58e1c05186eedc74b5f966a38bf6b8fddcf5e4e3a0aae255a48af01dabcbf389",
+        "byteLength": 210863
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/api-tests.log",
+        "sha256": "792c9670c3d739976a93573adb677da88b61ba577baf1b85b8c3a71b62be7fc4",
+        "byteLength": 2043
+      },
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-presentation-template",
+        "-p",
+        "mo-kernel-api",
+        "-p",
+        "mo-embedded-sdk",
+        "--test",
+        "bindings",
+        "--test",
+        "timeline",
+        "--test",
+        "presentation_sequence"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 865
+    },
+    {
+      "name": "schema",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/schema.json",
+        "sha256": "a44fcd579f36f050eb3d56c1c6e0e55fe35fa08c66b1cd63ea35c5dec5722ac5",
+        "byteLength": 211478
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/schema.log",
+        "sha256": "2ded3614abb48802d864bcdbc77759e6097c193cdd2c668fc16b925df44d5c8d",
+        "byteLength": 8309
+      },
+      "command": [
+        "cargo",
+        "run",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-contract-codegen",
+        "--",
+        "write",
+        "contracts/generated"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 868
+    },
+    {
+      "name": "types",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/types.json",
+        "sha256": "771ee748969070804a33a3e2482c0cf1c24ed4378864de248fc6467ebadbe903",
+        "byteLength": 32901
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/types.log",
+        "sha256": "2d874ac1a17285936fce0a20c305d61ef18afcd06f0a6eaa20b3ee76a2ec7d10",
+        "byteLength": 3763
+      },
+      "command": [
+        "node",
+        "tools/contracts/generate-types.mjs",
+        "write"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 127
+    },
+    {
+      "name": "types-check",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/types-check.json",
+        "sha256": "4ea6af575b7fa02cce5b820f05c4c01f142c1632eb985f5e8713571eecab8a00",
+        "byteLength": 73998
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/types-check.log",
+        "sha256": "cad290968d57526e0a6958210b4070c7fcf229a49e86089c62affb6a210ff36c",
+        "byteLength": 4215
+      },
+      "command": [
+        "pnpm",
+        "run",
+        "check:types"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 286
+    },
+    {
+      "name": "native-build",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/native-build.json",
+        "sha256": "4d1468902038fbc5cb3dedf5f2f5b2ee0631f1f6d35d75709b3bc5b1c0fb7847",
+        "byteLength": 216272
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/native-build.log",
+        "sha256": "723bbfe23069579f7bb3efc501a229a6022f0dc4b3486e4761e733077918ebec",
+        "byteLength": 2019
+      },
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-cli",
+        "-p",
+        "mo-raster-worker",
+        "-p",
+        "mo-export-worker"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 889
+    },
+    {
+      "name": "wasm-build",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/wasm-build.json",
+        "sha256": "cffd55b271885626b6c5c92ddda2a0c3d46c37bd00f8cb2ff5f715198cb76e23",
+        "byteLength": 210798
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/wasm-build.log",
+        "sha256": "ba7537bcda25f547c66806fde6abd82941d829ab155b5d2b7a46e302216c713d",
+        "byteLength": 1306
+      },
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--release",
+        "-p",
+        "mo-wasm",
+        "--target",
+        "wasm32-unknown-unknown"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 865
+    },
+    {
+      "name": "wasm-web",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/wasm-web.json",
+        "sha256": "f0fa0887ec6494abeb4e0d1ecd3440c4e72120315dc72c972b8b2fbc2af3a906",
+        "byteLength": 1111
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/wasm-web.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byteLength": 0
+      },
+      "command": [
+        ".codex-work/toolchain/bin/wasm-bindgen",
+        "--target",
+        "web",
+        "--out-dir",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/wasm-web",
+        "target/wasm32-unknown-unknown/release/mo_wasm.wasm"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 2
+    },
+    {
+      "name": "sdk",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/sdk.json",
+        "sha256": "50c72929bef3702dc5518a4f077ff029cc71bb8b77a4ebaf4694567a7affc4af",
+        "byteLength": 212464
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/sdk.log",
+        "sha256": "eb3e6e9941100eeedc8cc4bd3187802c7673bdcc5423ed77c362d7c990efad71",
+        "byteLength": 199
+      },
+      "command": [
+        "python3",
+        "tools/sdk/build.py",
+        "--output",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/sdk"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 873
+    },
+    {
+      "name": "bundle",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/bundle.json",
+        "sha256": "94ed2f358adc029061ceae2c565c36c44688c06aaa7f815540829bbcfb632aa5",
+        "byteLength": 42736
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/bundle.log",
+        "sha256": "385911e312d54a2a1425a3484f241410b227abc3cabff9c23a436d9b4f0c6a99",
+        "byteLength": 100
+      },
+      "command": [
+        "python3",
+        "tools/playback-sdk/build.py",
+        "--output",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/bundle",
+        "--wasm-dir",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/wasm-web",
+        "--raster-dir",
+        "${MUSTEROFFICE}/.codex-work/snapshot-scopes/wasm",
+        "--text-dir",
+        "${MUSTEROFFICE}/.codex-work/harfbuzz/release"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 163
+    },
+    {
+      "name": "rotation-by-export",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/rotation-by-export.json",
+        "sha256": "70ca8928123dad727ace80ca7c9bef9e48da4413124f9e807f888b2650cbd984",
+        "byteLength": 1489
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/rotation-by-export.log",
+        "sha256": "bac1c875cdb9ef8028b7d97f8c12e67cc00b2100dcb743e241ba0ed21a2e6daa",
+        "byteLength": 5626
+      },
+      "command": [
+        "target/debug/mo-cli",
+        "pptx-export",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/rotation-by.export.json",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/manual/empty.bin",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/product-sources/rotation-by.pptx"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 3
+    },
+    {
+      "name": "rotation-layout-export",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/rotation-layout-export.json",
+        "sha256": "b1966268d992637fbe077a3919b7d308db18c501d8683a03ea7d2aa98d5b68e9",
+        "byteLength": 1511
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/rotation-layout-export.log",
+        "sha256": "833d1d69bb188bc47fdebbb0669432dc397317ad94d4efc91b68bc126a7c0bbc",
+        "byteLength": 5626
+      },
+      "command": [
+        "target/debug/mo-cli",
+        "pptx-export",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/rotation-layout.export.json",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/manual/empty.bin",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/product-sources/rotation-layout.pptx"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 3
+    },
+    {
+      "name": "rotation-absolute-export",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/rotation-absolute-export.json",
+        "sha256": "3a17fee95064b99e75b8d3bd9d34299dc920b7d01cfc0bf861cc455627038e7d",
+        "byteLength": 1521
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/rotation-absolute-export.log",
+        "sha256": "7e728456ee1cee5eb9c210064c0c9f245266794a2fd6f1e16a64e90e0e7c5ea2",
+        "byteLength": 5626
+      },
+      "command": [
+        "target/debug/mo-cli",
+        "pptx-export",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/rotation-absolute.export.json",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/manual/empty.bin",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/product-sources/rotation-absolute.pptx"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 3
+    },
+    {
+      "name": "rotation-by-timing",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/rotation-by-timing.json",
+        "sha256": "5f39237ea8739b4af8826765c2c3e6b7b2f3cd4056d6ad0692ff2ef571c2198e",
+        "byteLength": 1432
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/rotation-by-timing.log",
+        "sha256": "787bae576a659f35d2b2d89954c9fccccc4ba7ca11649e6416d338adaf39986a",
+        "byteLength": 8066
+      },
+      "command": [
+        "target/debug/mo-cli",
+        "pptx-timing",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/rotation-by.query.json",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/product-sources/rotation-by.pptx"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 3
+    },
+    {
+      "name": "rotation-layout-timing",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/rotation-layout-timing.json",
+        "sha256": "e5445357ae2a085f4beba32ebcea15b03377412681ce4222975a5d3b183426ae",
+        "byteLength": 1464
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/rotation-layout-timing.log",
+        "sha256": "b787dc7fee7bc6ea9fffe91025f9f6cc938cd708e7102b67503b4aec4fbc8861",
+        "byteLength": 8102
+      },
+      "command": [
+        "target/debug/mo-cli",
+        "pptx-timing",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/rotation-layout.query.json",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/product-sources/rotation-layout.pptx"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 3
+    },
+    {
+      "name": "rotation-absolute-timing",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/rotation-absolute-timing.json",
+        "sha256": "7f6a9a029b38af0169a43a20d59d374a752387a89770ee814a2b3fbc5245ffae",
+        "byteLength": 1481
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/rotation-absolute-timing.log",
+        "sha256": "80dd9468b7f9952dd618852413459faa3fa1d1eaa6ac56fb7fa2e971e10cfa85",
+        "byteLength": 8180
+      },
+      "command": [
+        "target/debug/mo-cli",
+        "pptx-timing",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/rotation-absolute.query.json",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/product-sources/rotation-absolute.pptx"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 3
+    },
+    {
+      "name": "rotation-overlap-timing",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/rotation-overlap-timing.json",
+        "sha256": "d3bfdf35e877eb9ebfdeeaa4e6fdf5fa7c021fc5676793e4d32b6a3679a33f9c",
+        "byteLength": 1472
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/rotation-overlap-timing.log",
+        "sha256": "3a29e00cea519aedfff420d64c77cde6c85e1f45a6b8623783a1087f5e9a9497",
+        "byteLength": 3671
+      },
+      "command": [
+        "target/debug/mo-cli",
+        "pptx-timing",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/rotation-overlap.query.json",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/product-sources/rotation-overlap.pptx"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 3
+    },
+    {
+      "name": "corpus",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/corpus.json",
+        "sha256": "a2742847ceddb80a0576637756087df4a6d64f658e9a5f4275ad6c24b502e639",
+        "byteLength": 9779
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/corpus.log",
+        "sha256": "9bc728ac702645e9846ccc1c779467239b4eea3730330a37833eb3b281c2588f",
+        "byteLength": 73
+      },
+      "command": [
+        "python3",
+        "tools/verification/rotation-composition-fixtures.py",
+        "--output",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/corpus",
+        "--sources",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/product-sources",
+        "--worker",
+        "${MUSTEROFFICE}/target/debug/mo-raster-worker",
+        "--template",
+        "${MUSTEROFFICE}/.codex-work/automatic-sequence/corpus/native-original-0-0.request.json",
+        "--schema",
+        "${MUSTEROFFICE}/.codex-work/ecma376/xsd/pml.xsd"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 34
+    },
+    {
+      "name": "playback-sync",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/playback-sync.json",
+        "sha256": "6c472cd4968b7a7a43cf646d3d37638e92de05abee967d9bfe249e0c3212bbcc",
+        "byteLength": 125607
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/playback-sync.log",
+        "sha256": "8b1b0a1518f3e0318b2bc9fe6b1d07787ac85fbebad1692f6d61d05be06888b2",
+        "byteLength": 43
+      },
+      "command": [
+        "node",
+        "tools/verification/wasm-playback-reference.mjs",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/playback-sync",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/bundle",
+        "18661cb0b89dc65d0de268a519fa16c5354ae23f8b1f99e3d907a7108d8fef6d",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/corpus/author.json",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/corpus/source.json",
+        "sync"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 428
+    },
+    {
+      "name": "playback-stepped",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/playback-stepped.json",
+        "sha256": "bc20a5d4fe01b3f2f42736e8c9f25a7396ea58c9c2f7294eb4f1b43a10c81eb4",
+        "byteLength": 125613
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/playback-stepped.log",
+        "sha256": "8b1b0a1518f3e0318b2bc9fe6b1d07787ac85fbebad1692f6d61d05be06888b2",
+        "byteLength": 43
+      },
+      "command": [
+        "node",
+        "tools/verification/wasm-playback-reference.mjs",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/playback-stepped",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/bundle",
+        "18661cb0b89dc65d0de268a519fa16c5354ae23f8b1f99e3d907a7108d8fef6d",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/corpus/author.json",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/corpus/source.json",
+        "stepped"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 428
+    }
+  ],
+  "productCommands": [
+    {
+      "name": "prepare-sdk",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/rotation-composition/prepare-sdk.json",
+        "sha256": "358e2c27bc9ccbc1d8abc77760a9a29da41712a2876550c67d8738a473c68f12",
+        "byteLength": 1570
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/rotation-composition/prepare-sdk.log",
+        "sha256": "9636312886c74b78230e2e8a1a8018424bf2a2bbf69afa4e3ea9d83eb2d2e384",
+        "byteLength": 648
+      },
+      "command": [
+        "node",
+        "scripts/prepare-musteroffice-development.mjs",
+        "--sdk",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/sdk",
+        "--worker",
+        "${MUSTEROFFICE}/target/debug/mo-export-worker"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 4
+    },
+    {
+      "name": "prepare-playback",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/rotation-composition/prepare-playback.json",
+        "sha256": "6a300cf2ba0df9327515e92bad1781cbe98bb83a2bccf1764f3c1c9bc6d060f3",
+        "byteLength": 1245
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/rotation-composition/prepare-playback.log",
+        "sha256": "2302b41061d822db0e0e9c54eed82f569d9e423e429b512bf572ff598fd74ffa",
+        "byteLength": 9686
+      },
+      "command": [
+        "node",
+        "scripts/prepare-musteroffice-playback.mjs",
+        "--source",
+        "${MUSTEROFFICE}/.codex-work/rotation-composition/bundle"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 3
+    },
+    {
+      "name": "consumer-build",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/rotation-composition/consumer-build.json",
+        "sha256": "9c11bf71a0a7d10e09d0c58a54d0decdc2eb9b787fd9cd05bf16aef97890dbcd",
+        "byteLength": 2374
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/rotation-composition/consumer-build.log",
+        "sha256": "69a627fabcd938ef1c2f219aa4d87c178a460d9b2a4d878279d88449b874d8fd",
+        "byteLength": 7524
+      },
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "${MUSTERWORK_WORKTREE}/.codex-work/integration/rotation-composition/export-consumer/Cargo.toml"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 5
+    },
+    {
+      "name": "consumer-sequence",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/rotation-composition/consumer-sequence.json",
+        "sha256": "6696eed5d9b23a8f21e09f45c4ce915b60042159d38d0b635484fae39b25c61c",
+        "byteLength": 2403
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/rotation-composition/consumer-sequence.log",
+        "sha256": "a13982ada4f381de6aa1b803e301504ec51d8dd5915434b019a4fe354ff83af2",
+        "byteLength": 578
+      },
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "${MUSTERWORK_WORKTREE}/.codex-work/integration/rotation-composition/export-consumer/Cargo.toml",
+        "--test",
+        "sequence"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 5
+    },
+    {
+      "name": "adapter",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/rotation-composition/adapter.json",
+        "sha256": "69bb7c0066fe6b86c4d8c54c88d44d524bc57b8b7aa3c797c4df7a868ae475ab",
+        "byteLength": 15483
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/rotation-composition/adapter.log",
+        "sha256": "958b899a1e64bad751544aea5c7abb39fc020b09378175aba1c1fd125fce2bd0",
+        "byteLength": 8199
+      },
+      "command": [
+        "cargo",
+        "test",
+        "--manifest-path",
+        "apps/agent-runtime/Cargo.toml",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-musteroffice",
+        "--lib"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 50
+    },
+    {
+      "name": "client-02",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/rotation-composition/client-02.json",
+        "sha256": "ffb07575e6580722ae0770ad7133937cd6a7e966472cffcf17d4c4ed2e35a0a6",
+        "byteLength": 153392
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/rotation-composition/client-02.log",
+        "sha256": "cd8fd729cf3a40d938bad1f938768d3cef5cef445cdef99a44044c9c4c20cc32",
+        "byteLength": 1316
+      },
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_NAVIGATION_ROOT=${MUSTERWORK_WORKTREE}/.codex-work/integration/rotation-composition/fixtures-02",
+        "MUSTERWORK_OFFICE_NAVIGATION_REPORT=${MUSTERWORK_WORKTREE}/.codex-work/integration/rotation-composition/actual-worker-02.json",
+        "MUSTERWORK_OFFICE_CATALOG_FLOW_ROOT=${MUSTERWORK_WORKTREE}/.codex-work/integration/native-model-flow/loop-02-actual.json.catalog-device-assets",
+        "MUSTERWORK_OFFICE_NATIVE_FRAMES=${MUSTEROFFICE}/.codex-work/delivery-playback/parity-01",
+        "pnpm",
+        "--filter",
+        "@musterwork/agent-runtime-product-client",
+        "exec",
+        "vitest",
+        "run",
+        "tests/office-playback.integration.spec.ts",
+        "tests/office-navigation.integration.spec.ts",
+        "tests/office-playback-worker-client.spec.ts",
+        "tests/office-presentation-preview.spec.ts",
+        "tests/office-presentation-artifact.spec.ts",
+        "--environment",
+        "node"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 494
+    },
+    {
+      "name": "viewer",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/rotation-composition/viewer.json",
+        "sha256": "745a23b724828a399726240e5092ee4636a8a865fb225fa9e87d88e74666a2e5",
+        "byteLength": 75324
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/rotation-composition/viewer.log",
+        "sha256": "d49fe077340d2f8a2c5c66161de3934b2c390995c46e94e228bc8e50fa570f6a",
+        "byteLength": 444
+      },
+      "command": [
+        "pnpm",
+        "--filter",
+        "@musterwork/desktop",
+        "exec",
+        "vitest",
+        "run",
+        "src/components/artifacts/__tests__/MusterworkOfficePlayer.spec.ts",
+        "src/components/artifacts/__tests__/MusterworkOfficePreview.spec.ts"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 256
+    },
+    {
+      "name": "types",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/rotation-composition/types.json",
+        "sha256": "c4ae1d9d9dee3dfce167719186414566f03185c0dae88c06d83043956ad90265",
+        "byteLength": 75590
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/rotation-composition/types.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byteLength": 0
+      },
+      "command": [
+        "pnpm",
+        "--filter",
+        "@musterwork/desktop",
+        "exec",
+        "vue-tsc",
+        "--project",
+        "../../.codex-work/integration/product-playback/tsconfig.json",
+        "--noEmit"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 257
+    },
+    {
+      "name": "preparation",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/rotation-composition/preparation.json",
+        "sha256": "e0d1fb32fd26194729ce7fa09d0d5c08f3ba4902f3766faba0060ef8d5ab4c0e",
+        "byteLength": 1824
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/rotation-composition/preparation.log",
+        "sha256": "b793ba596db8b4d249ac35532c051ca1967bd95d6e1d8ce19906becc0e9e7b0c",
+        "byteLength": 1478
+      },
+      "command": [
+        "node",
+        "--test",
+        "scripts/prepare-musteroffice-development.test.mjs",
+        "scripts/prepare-musteroffice-playback.test.mjs"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 5
+    },
+    {
+      "name": "desktop-build",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/rotation-composition/desktop-build.json",
+        "sha256": "17266558c40870c2734bf89b3a8b10bcc4cf8d0db26207f33f5cb59dcd2d24d7",
+        "byteLength": 505612
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/rotation-composition/desktop-build.log",
+        "sha256": "aad94d364cf7e290501cb02849390b2ede0952999e55c9acca376b38a8479843",
+        "byteLength": 74370
+      },
+      "command": [
+        "env",
+        "MUSTERWORK_MUSTEROFFICE_PLAYBACK=1",
+        "pnpm",
+        "--filter",
+        "@musterwork/desktop",
+        "exec",
+        "vite",
+        "build",
+        "--outDir",
+        "../../.codex-work/integration/rotation-composition/desktop-build"
+      ],
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "sourceFiles": 1737
+    }
+  ],
+  "results": {
+    "rustTestsPassed": 530,
+    "apiTemplateSdkTestsPassed": 13,
+    "productTestsPassed": 161,
+    "nativeFrames": 72,
+    "independentAngleChecks": 72,
+    "staticPixelControls": 68,
+    "xsdParts": 20,
+    "wasmSyncFrames": 72,
+    "wasmSteppedFrames": 72,
+    "productNativeFrames": 48,
+    "productWorkerFrames": 76,
+    "desktopFrontendBuild": "passed",
+    "installerBuilt": false
+  },
+  "materials": {
+    "sdk": "7b465c1f9151ca11e975ade1043fc060a808fbc690ba7d4ffef8f12ad821e735",
+    "playback": "18661cb0b89dc65d0de268a519fa16c5354ae23f8b1f99e3d907a7108d8fef6d",
+    "worker": "885a54b20c33f106e07a381d875f5b1e6055579255ae28d20a5d00013537fcf1",
+    "workerBytes": 44057472,
+    "checkedPackageFiles": 1282,
+    "desktopCopiedFiles": 42,
+    "desktopCopiedUncompressedBytes": 18659516,
+    "desktopBytesDeltaFromNativeMotionDefaults": 84785,
+    "workerBytesDeltaFromNativeMotionDefaults": 57616
+  },
+  "materialReceipts": [
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/rotation-composition/sdk/sdk-manifest.json",
+      "sha256": "7b465c1f9151ca11e975ade1043fc060a808fbc690ba7d4ffef8f12ad821e735",
+      "byteLength": 225920
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/rotation-composition/bundle/bundle-manifest.json",
+      "sha256": "18661cb0b89dc65d0de268a519fa16c5354ae23f8b1f99e3d907a7108d8fef6d",
+      "byteLength": 11855
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": ".codex-work/integration/rotation-composition/materials.json",
+      "sha256": "617ea73c71aaa2f2765ac495241fa8c8fa9f1f615d1edfc9f9145d99e589da8a",
+      "byteLength": 269
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": "components/musteroffice/lock.json",
+      "sha256": "1c679e4d72dd97f64a9c25083e3d7123fae1ba901b807a1e27c76fdb44ded0ea",
+      "byteLength": 333
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": "components/musteroffice/playback-lock.json",
+      "sha256": "95d638c0f01995fb6b6a6523e3bd85c6991881eea4deef5d97fca39ec91dc548",
+      "byteLength": 153
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": "apps/agent-runtime/Cargo.toml",
+      "sha256": "a526aab845bf5e4b95bb5b9ab1da83bf383e8db04e45d428ff1999c4b30056e2",
+      "byteLength": 16645
+    }
+  ],
+  "computationalEvidence": [
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/rotation-composition/corpus/report.json",
+      "sha256": "4ba540f8de58e0fb03061dfcef343af1e151b874380d1cda52ccfc961ac5e67b",
+      "byteLength": 92041
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/rotation-composition/playback-sync/report.json",
+      "sha256": "67c47ee79b326e0b611583247fc710ba0303595cd9b4b78bee350958169a3f3f",
+      "byteLength": 56746
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/rotation-composition/playback-stepped/report.json",
+      "sha256": "173a8fbc1e66c1744038bdf8c8cd0feb8544d251e5eb507d4eae8275481c09b1",
+      "byteLength": 56749
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": ".codex-work/integration/rotation-composition/fixtures-02/report.json",
+      "sha256": "cc4bd48227b44bdcc1ba89e9be836ef395269d0e97249cb763be8b0435d05684",
+      "byteLength": 2977
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": ".codex-work/integration/rotation-composition/actual-worker-02.json",
+      "sha256": "2b3649a8c62f6e1d33e79d6acecfcee825d5b3d4c345ac369ed1e9893ed41bc5",
+      "byteLength": 6819
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/rotation-composition/preservation.json",
+      "sha256": "fe65ff448c2d9d61e7050052311c4e81c532535631660dd4f0fd3cd7964c2a41",
+      "byteLength": 757
+    }
+  ],
+  "wps": {
+    "version": "12.1.22553",
+    "originalLocalAngleDegrees": 20,
+    "byOnlyEndsDegrees": [
+      50,
+      120
+    ],
+    "fromToEndsDegrees": [
+      50,
+      90
+    ],
+    "overlapRemoveEndDegrees": 90,
+    "fixedAuthorAbsoluteEndsDegrees": [
+      30,
+      70
+    ],
+    "modesTopToBottom": [
+      null,
+      "base",
+      "repl",
+      "sum",
+      "mult",
+      "none"
+    ],
+    "admittedModes": [
+      null,
+      "base",
+      "repl"
+    ],
+    "observations": [
+      {
+        "receipt": {
+          "repository": "MusterOffice",
+          "path": ".codex-work/rotation-composition/observations.json",
+          "sha256": "ff98ded9dc19365e6b56213136e35d9b31847fabe6e7ad030db69ebeb7f25072",
+          "byteLength": 6111
+        },
+        "count": 30,
+        "maxErrorDegrees": 0.04375345794730379,
+        "method": "Principal axis of owned solid-color rectangles, modulo 180 degrees; this is an orientation observation, not a color fidelity measurement.",
+        "observations": [
+          {
+            "image": "manual/wps-first.png",
+            "sha256": "26af767975751a606ea98c3685e03be8faedd2f29a2f61ddab34d7428f700e4d",
+            "rows": [
+              {
+                "angleDegrees": 50.033448712222764,
+                "expectedDegrees": 50,
+                "errorDegrees": 0.03344871222276424,
+                "pixels": 5046
+              },
+              {
+                "angleDegrees": 50.03560319019997,
+                "expectedDegrees": 50,
+                "errorDegrees": 0.03560319019997138,
+                "pixels": 5041
+              },
+              {
+                "angleDegrees": 50.03065302927025,
+                "expectedDegrees": 50,
+                "errorDegrees": 0.0306530292702476,
+                "pixels": 5047
+              },
+              {
+                "angleDegrees": 50.03594280810324,
+                "expectedDegrees": 50,
+                "errorDegrees": 0.03594280810324335,
+                "pixels": 5069
+              },
+              {
+                "angleDegrees": 50.03104624674817,
+                "expectedDegrees": 50,
+                "errorDegrees": 0.03104624674816847,
+                "pixels": 5046
+              },
+              {
+                "angleDegrees": 50.03245890074795,
+                "expectedDegrees": 50,
+                "errorDegrees": 0.03245890074794744,
+                "pixels": 5054
+              }
+            ]
+          },
+          {
+            "image": "manual/wps-second.png",
+            "sha256": "e2eb00ba8885a3cfbf70b89e613ede742e4afea4133e5461dcbb95d1b3f4826a",
+            "rows": [
+              {
+                "angleDegrees": 120.03322422169498,
+                "expectedDegrees": 120,
+                "errorDegrees": 0.033224221694979406,
+                "pixels": 5034
+              },
+              {
+                "angleDegrees": 120.0437534579473,
+                "expectedDegrees": 120,
+                "errorDegrees": 0.04375345794730379,
+                "pixels": 5032
+              },
+              {
+                "angleDegrees": 120.02259694005612,
+                "expectedDegrees": 120,
+                "errorDegrees": 0.022596940056118342,
+                "pixels": 5042
+              },
+              {
+                "angleDegrees": 120.02632434055911,
+                "expectedDegrees": 120,
+                "errorDegrees": 0.026324340559114034,
+                "pixels": 5052
+              },
+              {
+                "angleDegrees": 120.03150714048058,
+                "expectedDegrees": 120,
+                "errorDegrees": 0.031507140480584894,
+                "pixels": 5045
+              },
+              {
+                "angleDegrees": 120.02097568587632,
+                "expectedDegrees": 120,
+                "errorDegrees": 0.020975685876322814,
+                "pixels": 5050
+              }
+            ]
+          },
+          {
+            "image": "manual/fromto-first.png",
+            "sha256": "6fe9485d337d8a19a9b918dbf29d25cd087bc124afe2d63d4e83fa5b50fe9e96",
+            "rows": [
+              {
+                "angleDegrees": 50.033448712222764,
+                "expectedDegrees": 50,
+                "errorDegrees": 0.03344871222276424,
+                "pixels": 5046
+              },
+              {
+                "angleDegrees": 50.03560319019997,
+                "expectedDegrees": 50,
+                "errorDegrees": 0.03560319019997138,
+                "pixels": 5041
+              },
+              {
+                "angleDegrees": 50.03065302927025,
+                "expectedDegrees": 50,
+                "errorDegrees": 0.0306530292702476,
+                "pixels": 5047
+              },
+              {
+                "angleDegrees": 50.03594280810324,
+                "expectedDegrees": 50,
+                "errorDegrees": 0.03594280810324335,
+                "pixels": 5069
+              },
+              {
+                "angleDegrees": 50.03104624674817,
+                "expectedDegrees": 50,
+                "errorDegrees": 0.03104624674816847,
+                "pixels": 5046
+              },
+              {
+                "angleDegrees": 50.03245890074795,
+                "expectedDegrees": 50,
+                "errorDegrees": 0.03245890074794744,
+                "pixels": 5054
+              }
+            ]
+          },
+          {
+            "image": "manual/fromto-second.png",
+            "sha256": "3ea26b8670d4f9e39dd78b6d6f05ad66d70ccce716ae188c67ebfc39f06a8127",
+            "rows": [
+              {
+                "angleDegrees": 90.0,
+                "expectedDegrees": 90,
+                "errorDegrees": 0.0,
+                "pixels": 3306
+              },
+              {
+                "angleDegrees": 90.02700330292433,
+                "expectedDegrees": 90,
+                "errorDegrees": 0.027003302924327954,
+                "pixels": 3279
+              },
+              {
+                "angleDegrees": 90.01288509693418,
+                "expectedDegrees": 90,
+                "errorDegrees": 0.012885096934184048,
+                "pixels": 3286
+              },
+              {
+                "angleDegrees": 90.0,
+                "expectedDegrees": 90,
+                "errorDegrees": 0.0,
+                "pixels": 3306
+              },
+              {
+                "angleDegrees": 90.02282643205632,
+                "expectedDegrees": 90,
+                "errorDegrees": 0.022826432056319845,
+                "pixels": 3285
+              },
+              {
+                "angleDegrees": 90.00461332757871,
+                "expectedDegrees": 90,
+                "errorDegrees": 0.004613327578709914,
+                "pixels": 4946
+              }
+            ]
+          },
+          {
+            "image": "overlap-final.png",
+            "sha256": "3ea26b8670d4f9e39dd78b6d6f05ad66d70ccce716ae188c67ebfc39f06a8127",
+            "rows": [
+              {
+                "angleDegrees": 90.0,
+                "expectedDegrees": 90,
+                "errorDegrees": 0.0,
+                "pixels": 3306
+              },
+              {
+                "angleDegrees": 90.02700330292433,
+                "expectedDegrees": 90,
+                "errorDegrees": 0.027003302924327954,
+                "pixels": 3279
+              },
+              {
+                "angleDegrees": 90.01288509693418,
+                "expectedDegrees": 90,
+                "errorDegrees": 0.012885096934184048,
+                "pixels": 3286
+              },
+              {
+                "angleDegrees": 90.0,
+                "expectedDegrees": 90,
+                "errorDegrees": 0.0,
+                "pixels": 3306
+              },
+              {
+                "angleDegrees": 90.02282643205632,
+                "expectedDegrees": 90,
+                "errorDegrees": 0.022826432056319845,
+                "pixels": 3285
+              },
+              {
+                "angleDegrees": 90.00461332757871,
+                "expectedDegrees": 90,
+                "errorDegrees": 0.004613327578709914,
+                "pixels": 4946
+              }
+            ]
+          }
+        ],
+        "focusRestoredTo": "com.google.Chrome"
+      },
+      {
+        "receipt": {
+          "repository": "MusterOffice",
+          "path": ".codex-work/rotation-composition/observations-fixed.json",
+          "sha256": "98c4e49e8c9dd99e5f0dd590373550ef65fa7ec16dd5cb1e5236b85cb67e00c8",
+          "byteLength": 2646
+        },
+        "count": 12,
+        "maxErrorDegrees": 0.14468112320526672,
+        "method": "Principal axis of owned solid-color rectangles, modulo 180 degrees; this is an orientation observation, not a color fidelity measurement.",
+        "observations": [
+          {
+            "image": "fixed-first.png",
+            "sha256": "ff9ba7339fdc0ffd44896479268880571f79341bb47431b0f6108f98b723b00c",
+            "rows": [
+              {
+                "angleDegrees": 30.122656779764043,
+                "expectedDegrees": 30,
+                "errorDegrees": 0.12265677976404277,
+                "pixels": 5360
+              },
+              {
+                "angleDegrees": 29.961993157776725,
+                "expectedDegrees": 30,
+                "errorDegrees": 0.03800684222327533,
+                "pixels": 5276
+              },
+              {
+                "angleDegrees": 30.13167283536012,
+                "expectedDegrees": 30,
+                "errorDegrees": 0.13167283536012064,
+                "pixels": 5373
+              },
+              {
+                "angleDegrees": 30.144681123205267,
+                "expectedDegrees": 30,
+                "errorDegrees": 0.14468112320526672,
+                "pixels": 5386
+              },
+              {
+                "angleDegrees": 29.960412933859665,
+                "expectedDegrees": 30,
+                "errorDegrees": 0.039587066140335025,
+                "pixels": 5294
+              },
+              {
+                "angleDegrees": 29.980310289627095,
+                "expectedDegrees": 30,
+                "errorDegrees": 0.01968971037290501,
+                "pixels": 5464
+              }
+            ]
+          },
+          {
+            "image": "fixed-second.png",
+            "sha256": "2e5e13acb56aa1d93222457e12dd0118ddf96c1f8ebd328d3bdbedeffaeff206",
+            "rows": [
+              {
+                "angleDegrees": 70.12656577312394,
+                "expectedDegrees": 70,
+                "errorDegrees": 0.1265657731239429,
+                "pixels": 5358
+              },
+              {
+                "angleDegrees": 69.9152253608284,
+                "expectedDegrees": 70,
+                "errorDegrees": 0.08477463917159866,
+                "pixels": 5257
+              },
+              {
+                "angleDegrees": 70.12039328584022,
+                "expectedDegrees": 70,
+                "errorDegrees": 0.12039328584022257,
+                "pixels": 5360
+              },
+              {
+                "angleDegrees": 70.10926023003043,
+                "expectedDegrees": 70,
+                "errorDegrees": 0.10926023003042928,
+                "pixels": 5375
+              },
+              {
+                "angleDegrees": 69.93738693454983,
+                "expectedDegrees": 70,
+                "errorDegrees": 0.0626130654501651,
+                "pixels": 5268
+              },
+              {
+                "angleDegrees": 69.97581560866811,
+                "expectedDegrees": 70,
+                "errorDegrees": 0.02418439133188599,
+                "pixels": 5449
+              }
+            ]
+          }
+        ],
+        "focusRestoredTo": "com.kingsoft.wpsoffice.mac"
+      }
+    ],
+    "calibrationInputs": [
+      {
+        "repository": "MusterOffice",
+        "path": ".codex-work/scale-inputs/rotation-composition-manual.pptx",
+        "sha256": "d2d65c6da73723282678544dd72c07146e8d58c5e1ecffeb657a9a2496e113c2",
+        "byteLength": 6016
+      },
+      {
+        "repository": "MusterOffice",
+        "path": ".codex-work/scale-inputs/rotation-fromto-manual.pptx",
+        "sha256": "d713fa66b4a66c787ee5e710071a49ba67d26d0f4962fa2cd9ad1e2a3121387d",
+        "byteLength": 6017
+      },
+      {
+        "repository": "MusterOffice",
+        "path": ".codex-work/scale-inputs/rotation-overlap.pptx",
+        "sha256": "7b8c6dba171d084e6a169754c11c5f4fc124f5f7e1056ea4102abfcfd0cf0cf0",
+        "byteLength": 5860
+      },
+      {
+        "repository": "MusterOffice",
+        "path": ".codex-work/scale-inputs/rotation-absolute-fixed.pptx",
+        "sha256": "4f9d60addca4749a4f0f0a81e6f3f7ef5018677a3a4ecc3d75b8ad5080f29c71",
+        "byteLength": 6266
+      }
+    ],
+    "scripts": [
+      {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/calibrate.py",
+        "sha256": "c38f60c6ab497e4fc7d3c32c95dc870f1bcc2a56b325a448f94b31b45f3fd94a",
+        "byteLength": 3877
+      },
+      {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/observe.py",
+        "sha256": "323ebeee275ab76e6f94a1115f2cf4d7026aa5535446aad1bd8f5f7702695617",
+        "byteLength": 1669
+      },
+      {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/observe-fixed.py",
+        "sha256": "0ba8bb9c039a95653f23218f12c8ed6f53c0a4572fed0a31b417837a483c0e89",
+        "byteLength": 1598
+      }
+    ]
+  },
+  "sourcePreservation": [
+    {
+      "name": "rotation-by",
+      "sha256": "5e52bca0d4ec7a833c76d4cadacfb8e0dc70aa5a81e789ab47f98ac9f50dc83c",
+      "byteLength": 6263,
+      "parts": 13,
+      "byteIdentical": true
+    },
+    {
+      "name": "rotation-layout",
+      "sha256": "7845227bdfcaae8c721bee9fe318c4192620ef2bc56e9ed6bfceb7ce86e4d17e",
+      "byteLength": 6263,
+      "parts": 13,
+      "byteIdentical": true
+    },
+    {
+      "name": "rotation-absolute",
+      "sha256": "4f9d60addca4749a4f0f0a81e6f3f7ef5018677a3a4ecc3d75b8ad5080f29c71",
+      "byteLength": 6266,
+      "parts": 13,
+      "byteIdentical": true
+    },
+    {
+      "name": "rotation-overlap",
+      "sha256": "7b8c6dba171d084e6a169754c11c5f4fc124f5f7e1056ea4102abfcfd0cf0cf0",
+      "byteLength": 5860,
+      "parts": 13,
+      "byteIdentical": true
+    }
+  ],
+  "earlierFailures": [
+    {
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/rust.json",
+        "sha256": "ea92c6536c41a12668e8bc8075fce62584dbaf1f4bf61704e1c35aea96dda89f",
+        "byteLength": 109561
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/rotation-composition/rust.log",
+        "sha256": "de2814fad4d44d88034d323d6461ef2de799fd4972e971382328bed6d98f26aa",
+        "byteLength": 26799
+      },
+      "reason": "Legacy roundtrip assertions compared an absolute frame directly to the newly correct layout-based native frame. Tests now assert both bases explicitly and compare numeric values only in zero-layout fixtures; final rust-02 passes. Earlier local compile/test logs also retain constructor migration and changed native grammar expectations."
+    }
+  ],
+  "nativeLink": {
+    "library": {
+      "repository": "MusterOffice",
+      "path": ".codex-work/snapshot-scopes/native/libmo_skia_adapter.a",
+      "sha256": "52fa4ed0fd818c6423c557baa3e4abd2ae63bdcf1d96a154179c05f430e54815",
+      "byteLength": 111760
+    },
+    "newDependencies": false,
+    "newCppChanges": false
+  },
+  "references": [
+    "https://learn.microsoft.com/en-us/openspecs/office_standards/ms-oi29500/39903f1a-fcb4-4aee-81e2-66f4fc7493fd",
+    "https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.presentation.commonbehavior.additive?view=openxml-3.0.1",
+    "https://learn.microsoft.com/en-us/office/vba/api/powerpoint.animationbehavior.additive",
+    "https://learn.microsoft.com/en-us/openspecs/office_standards/ms-oe376/6988ac0e-8227-47dd-a67b-1bbb925cd0af",
+    "https://learn.microsoft.com/en-us/openspecs/office_standards/ms-oe376/d4cb5f92-92a0-4103-9a15-d499efbe9785"
+  ],
+  "limitations": [
+    "General native sum/mult/none and accumulate, nonzero-from add native export, other property domains and general container clocks remain open.",
+    "WPS owned orientation observations do not prove color fidelity, timing curves, arbitrary document compatibility or PowerPoint actual playback.",
+    "Complete advanced PPT, real Agent/Electron, multiple platforms, historical migration, performance/resource/installer and all replacement gates remain open.",
+    "No installer, release worker, FPS, RSS or startup claim. Desktop Vite build retained its existing large-chunk warning.",
+    "All product changes and checks stay in the independent worktree. No original-main writes, default-engine switch, commits, publication, deployment or production database submission."
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "format": "musteroffice.motion-wps-observation/1",
+  "date": "2026-09-28",
+  "status": "observed-with-unresolved-import-and-editor-checks",
+  "previousEvidence": {
+    "path": "docs/reviews/evidence/2026-09-28-motion-linear-verification.json",
+    "sha256": "aa095094b476c5ba997111de31014626ae52d91060f4646135811acdd3be32a3",
+    "byteLength": 37661
+  },
+  "application": {
+    "version": "12.1.22553",
+    "build": "22553"
+  },
+  "action": "WPS GUI drew a custom straight path on the owned static six-rectangle control and saved it. The animation pane listed shape:0 with a 2-second duration.",
+  "source": {
+    "path": ".codex-work/motion-native/wps-authored-line.pptx",
+    "sha256": "6b259e8f5bf743362196c460e75a027a821f427e23e29d6ed782e48df1bdc386",
+    "byteLength": 9582
+  },
+  "editorCapture": {
+    "path": ".codex-work/motion-native/wps-control-editor.jpg",
+    "sha256": "cd04c39df5850e78ef31481346a8ae7dd3f0b2f77507b599d6c3d0a57e4090e2",
+    "byteLength": 361211
+  },
+  "observedNativeEffectAttributes": {
+    "id": "5",
+    "presetID": "0",
+    "presetClass": "path",
+    "presetSubtype": "0",
+    "accel": "50000",
+    "decel": "50000",
+    "fill": "hold",
+    "nodeType": "clickEffect"
+  },
+  "observedNativeMotionAttributes": {
+    "origin": "layout",
+    "path": "M 0 0 L 0.098984 0 ",
+    "pathEditMode": "relative",
+    "ptsTypes": ""
+  },
+  "observedBehaviorAttributes": {},
+  "actualKernelQuery": {
+    "path": ".codex-work/motion-native/wps-authored-line-query.json",
+    "sha256": "0e97a5623f58250ca8d442e86a296ed020f5d21214ce16460d75895546413d51",
+    "byteLength": 127
+  },
+  "actualKernelResponse": {
+    "status": "error",
+    "error": {
+      "code": "MAPPING_NOT_IMPLEMENTED",
+      "message": "PPTX mapping not implemented: native timing: unmapped attributes on cTn"
+    }
+  },
+  "actualResponseFile": {
+    "path": ".codex-work/motion-native/wps-authored-line-response.json",
+    "sha256": "47ddcc5476620820a72f22c33bbc2ca070cca0d78a0578a1ee29ac7456c11bb0",
+    "byteLength": 146
+  },
+  "finding": "The WPS-authored custom path also uses presetID=0 and presetClass=path. It adds accel/decel=50000 on the effect container and omits additive on cBhvr. Current Reader rejects unimplemented container attributes; omission semantics must be implemented from evidence, not guessed or ignored.",
+  "nextExperiment": "A public-API one-effect next/click export has been prepared at .codex-work/scale-inputs/motion-click-export.pptx for comparison with the six automatic effects. It has not been opened or accepted in WPS.",
+  "limitations": [
+    "Playback endpoints previously passed only for the kernel-exported automatic sample.",
+    "This observation does not establish why that sample has an empty animation pane.",
+    "No Reader or writer was weakened, effects removed, easing ignored or native editing acceptance claimed."
+  ],
+  "foreground": "Previous Google Chrome was restored via the supported driver. Subsequent read found the user in ChatGPT; no further activation."
+}

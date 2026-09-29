@@ -1,0 +1,1473 @@
+{
+  "format": "musteroffice.connected-motion-paths-verification/1",
+  "date": "2026-09-29",
+  "status": "passed-bounded-computation-and-product-stage",
+  "goal": "ACTIVE; complete first-phase implementation and replacement gates remain open",
+  "scope": "Connected layout-relative lines, cubic Beziers and close commands; normalized arc-length pacing compiled once with deterministic bounded integer geometry. Native editable controls, author/source playback, actual packaged WASM and isolated product upgrade.",
+  "sources": [
+    {
+      "repository": "MusterOffice",
+      "path": "README.md",
+      "sha256": "744fa0c73b6098ddb94342bce409ddd8f630d51c32544cfd381b1ae1a12fce26",
+      "byteLength": 23802
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/computation-invocation.schema.json",
+      "sha256": "fcd03034beb8ff4c6319cb37fd27ecb79d3b1fee0d38a14d26ec1dc0921de971",
+      "byteLength": 120115
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/computation-receipt.schema.json",
+      "sha256": "a1958862970c619a4f3dba9f4458ebf56d40034f8368c2933ea90ba86e6cef80",
+      "byteLength": 95200
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/computation-request.schema.json",
+      "sha256": "21e9af77a82c9facc49451bb2473ca7aedc968c5f4e3d9904eb42db2afc5cfaa",
+      "byteLength": 118964
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/document.schema.json",
+      "sha256": "048d61bab0c3c40ceac4f041eb3bd400cde4da3b7a76e5f92a62ff3330bab135",
+      "byteLength": 71088
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/host-request.schema.json",
+      "sha256": "e45f739bb5e13c0bd7cc5756b4f5bcd87f7e3d109e692a5fa5076430f20834d0",
+      "byteLength": 116217
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/host-response.schema.json",
+      "sha256": "34b9576b45e2d83fb4b9b104b9e45edf69dd262cfcb6f39de6524cd88320c885",
+      "byteLength": 106751
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/kernel-request.schema.json",
+      "sha256": "e1dde6471dee17f3dce1b8aaa1c1c12a5c9008569b7d444106224248764ddc69",
+      "byteLength": 88647
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/kernel-response.schema.json",
+      "sha256": "93d2e8fd9debec4cd9852ac5425d272aafc87efefd0fab888ea487bb3cc2770d",
+      "byteLength": 80507
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/operation-request.schema.json",
+      "sha256": "f7d418c308492aaa1e677887325b569c85d45d98e5dfb1764eeea065572b3f31",
+      "byteLength": 111113
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/page-placement-request.schema.json",
+      "sha256": "c985c23b23fda51967bb055fe60b2f70d0ba2ef9b27f21dbbb371f516e7548e4",
+      "byteLength": 71858
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/page-render-request.schema.json",
+      "sha256": "6df56492b2607306f1ae957ec7cd9683ecd015100b453532ba49e98ee176e3a1",
+      "byteLength": 76250
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/playback-compile-response.schema.json",
+      "sha256": "7a8735aca61787c5b36b8e779bfde9c25dabf83a103ea9b48fce242b6832a3a1",
+      "byteLength": 56330
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/playback-page-request.schema.json",
+      "sha256": "6b42f264d13084d2dedb01573bd9b431ce0fcb4c6f11de1d2f28d8b2330cf1db",
+      "byteLength": 80347
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/playback-raster-response.schema.json",
+      "sha256": "985d5a51bc97612a551630c4b8c6c6e2af867ad94f12deff8df623fec025c70b",
+      "byteLength": 29293
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/playback-session-request.schema.json",
+      "sha256": "8a9eb588613161472ff136476c548530624935fdbb70b57c69cf43f5e7b249e1",
+      "byteLength": 82958
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/playback-session-response.schema.json",
+      "sha256": "a78c226c8d03c81851301f05a21f87bf01437fe94500ed4c685998b9eaf6875e",
+      "byteLength": 72316
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/pptx-export-request.schema.json",
+      "sha256": "aa3efd77a50b57b392450f1d8fed3ab660a00d8f7feedfb338dd6a773523fe49",
+      "byteLength": 75039
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/pptx-import-response.schema.json",
+      "sha256": "eef5c4a5427539cb006ce56804b0c94ec5c718dd861b3d0473d9633da47ddeee",
+      "byteLength": 73432
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/pptx-playback-raster-response.schema.json",
+      "sha256": "8aacbb0a9eceb791ee6faa8656922931b9d9f6a73bd981d98f27026e819f0b0f",
+      "byteLength": 143749
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/pptx-playback-session-response.schema.json",
+      "sha256": "44d84b6970a277c78d5576ab250ab0cb08d18ed8a97b94dfe3ec35e9cb981182",
+      "byteLength": 150649
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/pptx-timing-response.schema.json",
+      "sha256": "34cacf40600f9f29babc78e98dfaf0db98e21bd1d57c20b7e5ec5af0843d41f4",
+      "byteLength": 28067
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/template-request.schema.json",
+      "sha256": "0d28a3c83424592315c0658a4342233cee19a8eadae6667fc9294f7621a84f0c",
+      "byteLength": 80491
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/template-response.schema.json",
+      "sha256": "7fa8385fcf3a78f728f0306c371b024cd1dfb202e0ea550a5290f28268b85c0d",
+      "byteLength": 90950
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/timeline-evaluate-request.schema.json",
+      "sha256": "91edbf29b589f9c544c9a6162c07b159d32b400c5df3e9755ae60e6dafa8830b",
+      "byteLength": 76034
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/timeline-evaluate-response.schema.json",
+      "sha256": "a5153e234790225d47bf4ade5892dac01a350a3814d0bfe4fe5280b6204e4656",
+      "byteLength": 10401
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "contracts/generated/transaction.schema.json",
+      "sha256": "742decae1de8e376ea130a97fa77974d5793178b2485f511ba8bffe21d0cb33d",
+      "byteLength": 78820
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-pptx/src/timing.rs",
+      "sha256": "86dac005dd73c7a2d5ece4101c174582fa8edb9118e036d5edcb1e8d54de5a5c",
+      "byteLength": 11228
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-pptx/src/timing/write_motion.rs",
+      "sha256": "52f617d2367bb573989165fd5d3bb1edd4bfcb2b7cc351422978987da2abdab7",
+      "byteLength": 1002
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-pptx/tests/timing_motion.rs",
+      "sha256": "5cc066c94847fa35ed8f099079c8eb6e4d54a7b22ebc547e2e792cf4f96f36e1",
+      "byteLength": 7679
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-pptx/tests/timing_motion_path.rs",
+      "sha256": "6dd67b12f12c77d4bcef3282ebb110c775724d61786b126b0e1f315e07bb3062",
+      "byteLength": 5578
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-presentation-compile/src/playback.rs",
+      "sha256": "f1f6d8c4e027deae817a27dec751791e92e8bf0119a9cb3f144e83f29111c6d1",
+      "byteLength": 9560
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-presentation-compile/src/source_playback.rs",
+      "sha256": "9035fa249e7788d220428ddd9d4c48b81daa533bae5f11ca05846e431d03481d",
+      "byteLength": 12538
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-presentation-source/src/timing/preset.rs",
+      "sha256": "21c0e925073ffa515737dfb3812aeedec627428a7d19035e5eadcd0dae70a3d6",
+      "byteLength": 2116
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-presentation-source/src/timing/read/behavior.rs",
+      "sha256": "e6188e35173e2272e9103222abe53ab93016e9dec617dab42001cf40e0b596cf",
+      "byteLength": 5144
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-presentation-source/src/timing/read/behavior/motion.rs",
+      "sha256": "b1d8f2dc06c75c5e60e6f9d622652ee4aacb2ffdca9e15bb5f26ae7bfa9a9228",
+      "byteLength": 7015
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/authoring/compile.rs",
+      "sha256": "fabf885718ad7fbbac277d38264364ac1a6d90a5ab26e617df96fea0ee1c9c26",
+      "byteLength": 14199
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/evaluate.rs",
+      "sha256": "13bcf5c2d93763c1b5cb4b42381e354641d1100ae9b21a2777fc52032a3e57ec",
+      "byteLength": 7056
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/lib.rs",
+      "sha256": "463e6e9dd4c2dab0dde0466a38a53f704451f46b291fd65d2ffea39fe62dca5b",
+      "byteLength": 1387
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/model.rs",
+      "sha256": "512076ddd83e2a6502bee55f65dd7d40b1ceef1a05e565803759f32e21c18df4",
+      "byteLength": 15385
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/motion.rs",
+      "sha256": "7491e81dfe6d37a3fd3b3041228b246e8a9ca35bb6950d00768bd7716b4db056",
+      "byteLength": 4533
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/motion_path.rs",
+      "sha256": "1ed76f1e5fbb9bb394a0cf0aee1f5dbbb57520a74f80696ca02ae660a6b74bcd",
+      "byteLength": 7956
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/motion_path/numeric.rs",
+      "sha256": "4bd711266bd9c055e6cc86913d24c86ea236198a9b652fffaff481eca970d33f",
+      "byteLength": 2431
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/plan.rs",
+      "sha256": "4e7b6b9b79060cad97829a2e617f4f0ea5177b54304989875a7004de6a9a0b55",
+      "byteLength": 4320
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/tree.rs",
+      "sha256": "1a586815d9199066b2b1785127b52bac296a8d2403fed428fc096a2a9a4397de",
+      "byteLength": 12618
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/tree/presentation.rs",
+      "sha256": "2ebfbf9a69daa86d6e0ee9de438ed6647582cdce835bf9dc096ce0aa7988236e",
+      "byteLength": 5001
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/tree/sample.rs",
+      "sha256": "c265ab655f2b54013b1fbd9fb470cf0a57bf3dc4e3fcbebee870466359e45775",
+      "byteLength": 12378
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/src/tree/sample/properties.rs",
+      "sha256": "6be76c163fe245345dc2b4d76b71ec88a3b6f5f420bd0ce1f05e298d9e5fe910",
+      "byteLength": 6755
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "crates/mo-timeline/tests/motion_path.rs",
+      "sha256": "d6ac9d20a505c0e0c3d1f9571ac0104a033100e643a23494fc16707365887072",
+      "byteLength": 9214
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "docs/README.md",
+      "sha256": "7bd0ae61021facc628857e2392c3982f550270f8034b51ebeedd427ea9d765ec",
+      "byteLength": 41572
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "docs/design/presentations/timeline-media.md",
+      "sha256": "9f1de578605bb59a0c4a39506d923a29ca0ff76da5336d8cb5293086007c183b",
+      "byteLength": 15150
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "docs/implementation/motion-paths.md",
+      "sha256": "366e79ffdd5bffd824f2b02d24d21efca661a7484b539f2e928d01525d2db259",
+      "byteLength": 7124
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "docs/implementation/progress.md",
+      "sha256": "d2c0aa38674f16bb185db351e9f76fed77305cb6e9df353da7ce45b411817573",
+      "byteLength": 140076
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/computation-invocation.ts",
+      "sha256": "db0183dd474a687b73cadea20d385c04417e2f114bce6072ad2193f70a50dfb3",
+      "byteLength": 2260
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/computation-invocation/part-001.ts",
+      "sha256": "abdc74bb69e78e9e787480738593ff9ebfb1994c5467de6c23fbd4b35ac8f620",
+      "byteLength": 26626
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/computation-invocation/part-002.ts",
+      "sha256": "62749b1ac483e1645bd40fd3b9aa9a6f795016fa3b959ca910eccf0c59ef9857",
+      "byteLength": 24583
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/computation-receipt.ts",
+      "sha256": "8882451872c9f1803547bb744286552540fda8f4a2ab9b56e35e2d7288034b43",
+      "byteLength": 43436
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/computation-request.ts",
+      "sha256": "66b8149218f2b6f364e2d8161e1a1b43e210411c25f90cb66f55ba8c11068246",
+      "byteLength": 2226
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/computation-request/part-001.ts",
+      "sha256": "35b4616dfe3f76f457c2155e8a14323c223ce99b96be82c78f6e789fd1993542",
+      "byteLength": 26777
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/computation-request/part-002.ts",
+      "sha256": "414f6f3eee9cc0a3ac06dd49c3b60f818755ec5a3c85bb210c59381eb1c0556f",
+      "byteLength": 24582
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/document.ts",
+      "sha256": "0e7e9a545324174474464229061ec68c33e48943019b4e61e965654f78ccb9a2",
+      "byteLength": 31855
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/host-request.ts",
+      "sha256": "673570ca6af836ad60c4fe7254f1430ec2f9a397f4c43b0fb5acca98e4a11a98",
+      "byteLength": 31895
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/host-response.ts",
+      "sha256": "555056d7511e6d96d75da3fca8ddf48f0fee1fbda66ec5ddf17c3d9c302e763b",
+      "byteLength": 30490
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/kernel-request.ts",
+      "sha256": "09d81b574999e1d083e299ca84b28454119b7ca70f0bac4254c3ce4b3fbecc20",
+      "byteLength": 23776
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/kernel-response.ts",
+      "sha256": "56573498e231af258c2cbd591939cf09ee2ee955cb6f71a66c224177c954977d",
+      "byteLength": 22271
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/operation-request.ts",
+      "sha256": "65bdeda69135bafa808b5af835a1807ba9d43bad6a610710ae1339d218900811",
+      "byteLength": 47403
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/page-placement-request.ts",
+      "sha256": "743792f37fc40050843ab624f8cbcf7ce7d4b587007a4218d5a0a39c0c5fa24d",
+      "byteLength": 33273
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/page-render-request.ts",
+      "sha256": "015255929647105a51cba2cef8b0dde81425b3d9cffe6cea228eb49bd6ea7f2e",
+      "byteLength": 35515
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/playback-compile-response.ts",
+      "sha256": "33b9825cf08eb6d1adce1da973b3cfbcfead7500f526a27695df14e9a25dd37a",
+      "byteLength": 19835
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/playback-page-request.ts",
+      "sha256": "90c00f57c15b76ce2d9dce15234f1c2c698a7a00d750e6ee8eed8feb0ed8087f",
+      "byteLength": 37225
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/playback-raster-response.ts",
+      "sha256": "24ae9f27958964da571bf8652a2b99ff28ec900dd2dc6e703efb5e055c2b0f1d",
+      "byteLength": 10930
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/playback-session-request.ts",
+      "sha256": "621cec0562221cf82527a786710a4eff23d3c621a4abd2462dec6146848c4f9a",
+      "byteLength": 22947
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/playback-session-response.ts",
+      "sha256": "e8083e637da2d4bfd0c8b2667bfbef0cc1f6bd10f8580ba4e8983660d6cdbb2b",
+      "byteLength": 25570
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/pptx-export-request.ts",
+      "sha256": "51b92369c8f0b0bccd810d5f8ae31ed037444fa386d479086ff3304c3c7d5ded",
+      "byteLength": 34467
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/pptx-import-response.ts",
+      "sha256": "f3d086a299a1c3fbd77000519a6499a0d0adddb0df8588325f4c72d9d1c01aa7",
+      "byteLength": 20482
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/pptx-playback-raster-response.ts",
+      "sha256": "6c65f45af8c3c44f5977a72fe7e3406f4f62eaf157fa14a35300020ec765bd8c",
+      "byteLength": 41521
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/pptx-playback-session-response.ts",
+      "sha256": "952b625e3e1df9467a8f3302883558ec4ddb814880d261c8b8dc4945ceac7b66",
+      "byteLength": 43643
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/pptx-timing-response.ts",
+      "sha256": "312daebb400e1c04fb4db987dce3cd309a074c6ae47c3720b787736072fea0a2",
+      "byteLength": 8122
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/template-request.ts",
+      "sha256": "b38763819d899ea9757985975a5654d826f13d82ffc74607b0d14d42c98871f5",
+      "byteLength": 36333
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/template-response.ts",
+      "sha256": "99e526ed0961d58b66b59e22f534c0ac91c45ceeb214344d36767537644a153f",
+      "byteLength": 25437
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/timeline-evaluate-request.ts",
+      "sha256": "ef01b5d0e874194a25dd038a9f0fcfdb36e6c8ebe66adeae0b93ef469380e6fa",
+      "byteLength": 35601
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/timeline-evaluate-response.ts",
+      "sha256": "89f22c202b30a371be9f3c09729629b90bc7c37f82f1c9e3c43457a09b2d49eb",
+      "byteLength": 4069
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "packages/contracts/src/generated/transaction.ts",
+      "sha256": "4296de942fd0f7ed7a991f44d9ca196488da63030bed70c16a36531e0470bb0c",
+      "byteLength": 31361
+    },
+    {
+      "repository": "MusterOffice",
+      "path": "tools/verification/motion-path-fixtures.py",
+      "sha256": "320b615c6fca3d36067633c607ee5b7e8e61d9b57c8333ca489bd96040415344",
+      "byteLength": 9956
+    }
+  ],
+  "coreCommands": [
+    {
+      "name": "rust-02",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/rust-02.json",
+        "sha256": "caea5c7eb32fe4f92302b08506b90fe927e237f7d07d83b3031da6bf6dc94f71",
+        "byteLength": 111932
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/rust-02.log",
+        "sha256": "1685adc87df0dffbf4f60d0c50b2ece52afe09d202513e70281b556fe9c5acb9",
+        "byteLength": 65597
+      },
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-timeline",
+        "-p",
+        "mo-presentation-model",
+        "-p",
+        "mo-presentation-source",
+        "-p",
+        "mo-pptx",
+        "-p",
+        "mo-presentation-compile",
+        "-p",
+        "mo-presentation-edit"
+      ],
+      "sourceFiles": 430,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "clippy",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/clippy.json",
+        "sha256": "942cfc9aa166d4bb174a5a22ae8b98771439b6d6e7dc962bd792445bb70ab450",
+        "byteLength": 111991
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/clippy.log",
+        "sha256": "18a3d234d254292f1d79c4cb076c1d32e847429d49cdcf50c58c103512cc3540",
+        "byteLength": 743
+      },
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-timeline",
+        "-p",
+        "mo-presentation-model",
+        "-p",
+        "mo-presentation-source",
+        "-p",
+        "mo-pptx",
+        "-p",
+        "mo-presentation-compile",
+        "-p",
+        "mo-presentation-edit",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "sourceFiles": 430,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "native-build",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/native-build.json",
+        "sha256": "e66ac350e153c90c8d0a66a4d7d03086d57fceb18374fd2572aed381c9990170",
+        "byteLength": 218413
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/native-build.log",
+        "sha256": "6f29bae73f04bf8e304e8a267b8d43d6b2102c5eb1b4e0db3a0e6cc71fa07dea",
+        "byteLength": 1965
+      },
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-cli",
+        "-p",
+        "mo-raster-worker",
+        "-p",
+        "mo-export-worker"
+      ],
+      "sourceFiles": 898,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "wasm-build",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/wasm-build.json",
+        "sha256": "7767fe390612b35d720d0fa61c5721f729ed2ff72a2c63e74e2bc928960d0f7f",
+        "byteLength": 212938
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/wasm-build.log",
+        "sha256": "8e853b2791db65aec0cacd2402f22c5fdc67c739dea3da132198ee4bed4ffb1a",
+        "byteLength": 1306
+      },
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--release",
+        "-p",
+        "mo-wasm",
+        "--target",
+        "wasm32-unknown-unknown"
+      ],
+      "sourceFiles": 874,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "wasm-web",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/wasm-web.json",
+        "sha256": "4352f9cb24ae2cc78127236f22dc922e377ecf4362cd9e31a03242b96b78c708",
+        "byteLength": 1103
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/wasm-web.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byteLength": 0
+      },
+      "command": [
+        ".codex-work/toolchain/bin/wasm-bindgen",
+        "--target",
+        "web",
+        "--out-dir",
+        "${MUSTEROFFICE}/.codex-work/motion-paths/wasm-web",
+        "target/wasm32-unknown-unknown/release/mo_wasm.wasm"
+      ],
+      "sourceFiles": 2,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "sdk",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/sdk.json",
+        "sha256": "d25c67fa14ce3a24a98e2aee7a858629b37592fd9ea9eb2f331c91e090868e05",
+        "byteLength": 214596
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/sdk.log",
+        "sha256": "792209382b3555e63f57db446e5ba1978e0d94350daa2fa7dc691e917de847e6",
+        "byteLength": 199
+      },
+      "command": [
+        "python3",
+        "tools/sdk/build.py",
+        "--output",
+        "${MUSTEROFFICE}/.codex-work/motion-paths/sdk"
+      ],
+      "sourceFiles": 882,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "bundle",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/bundle.json",
+        "sha256": "64ed5b9ba9f23754be5aae64e6c426931e1a1f814ce368d4756f22c72e054275",
+        "byteLength": 43852
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/bundle.log",
+        "sha256": "4a7ac43ddd189f709dc4ce3394aa8f20aa663eebc1f0b53414e09e69265f82b0",
+        "byteLength": 100
+      },
+      "command": [
+        "python3",
+        "tools/playback-sdk/build.py",
+        "--output",
+        "${MUSTEROFFICE}/.codex-work/motion-paths/bundle",
+        "--wasm-dir",
+        "${MUSTEROFFICE}/.codex-work/motion-paths/wasm-web",
+        "--raster-dir",
+        "${MUSTEROFFICE}/.codex-work/snapshot-scopes/wasm",
+        "--text-dir",
+        "${MUSTEROFFICE}/.codex-work/harfbuzz/release"
+      ],
+      "sourceFiles": 167,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "corpus",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/corpus.json",
+        "sha256": "771506f62ef02bc534a9eca68b9db14e710ef46a6f6bb54c21c4a28f0a126769",
+        "byteLength": 1871
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/corpus.log",
+        "sha256": "8b646d03b54647da18e71b85cdf1421a319b0900b2598439e2da75f99cdaaaaa",
+        "byteLength": 110
+      },
+      "command": [
+        "python3",
+        "tools/verification/motion-path-fixtures.py",
+        "--output",
+        "${MUSTEROFFICE}/.codex-work/motion-paths/corpus",
+        "--export-template",
+        "${MUSTEROFFICE}/.codex-work/motion-paths/line-control.export.json",
+        "--page-template",
+        "${MUSTEROFFICE}/.codex-work/container-autoreverse/corpus/auto-parallel-0.request.json",
+        "--author-template",
+        "${MUSTEROFFICE}/.codex-work/motion-native/corpus-02/author-0.request.json",
+        "--cli",
+        "${MUSTEROFFICE}/target/debug/mo-cli",
+        "--worker",
+        "${MUSTEROFFICE}/target/debug/mo-raster-worker",
+        "--schema",
+        "${MUSTEROFFICE}/.codex-work/ecma376/xsd/pml.xsd"
+      ],
+      "sourceFiles": 3,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "playback-sync",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/playback-sync.json",
+        "sha256": "e61838d3cd9614b2b9c0f9017d5926103de76d815678a169f62ede0b7881c944",
+        "byteLength": 94129
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/playback-sync.log",
+        "sha256": "9e03cd473eae6f8f88b50a71e2de96bf6483ca1b41063c73adb8115f9ae7a900",
+        "byteLength": 43
+      },
+      "command": [
+        "node",
+        "tools/verification/wasm-playback-reference.mjs",
+        "${MUSTEROFFICE}/.codex-work/motion-paths/playback-sync",
+        "${MUSTEROFFICE}/.codex-work/motion-paths/bundle",
+        "a7bcd2d987ae11b64a94584bf45435cdccd5c2ea267bade38744c28d4b8016d5",
+        "${MUSTEROFFICE}/.codex-work/motion-paths/corpus/author.json",
+        "${MUSTEROFFICE}/.codex-work/motion-paths/corpus/source.json",
+        "sync"
+      ],
+      "sourceFiles": 334,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "playback-stepped",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/playback-stepped.json",
+        "sha256": "db13276d92ba2e2d371677449965338da30f12e60c7d7a4362c3a2a684bfdb1e",
+        "byteLength": 94135
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/playback-stepped.log",
+        "sha256": "9e03cd473eae6f8f88b50a71e2de96bf6483ca1b41063c73adb8115f9ae7a900",
+        "byteLength": 43
+      },
+      "command": [
+        "node",
+        "tools/verification/wasm-playback-reference.mjs",
+        "${MUSTEROFFICE}/.codex-work/motion-paths/playback-stepped",
+        "${MUSTEROFFICE}/.codex-work/motion-paths/bundle",
+        "a7bcd2d987ae11b64a94584bf45435cdccd5c2ea267bade38744c28d4b8016d5",
+        "${MUSTEROFFICE}/.codex-work/motion-paths/corpus/author.json",
+        "${MUSTEROFFICE}/.codex-work/motion-paths/corpus/source.json",
+        "stepped"
+      ],
+      "sourceFiles": 334,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "motion-regression",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/motion-regression.json",
+        "sha256": "a8a4d577d8f5e2f53bc58a894b767935f1e46b4a568689b1a1ef10ad35263942",
+        "byteLength": 53818
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/motion-regression.log",
+        "sha256": "786029e36d2ee011af25562cc656ad712914adbd5f9a5318ae3af07ec7260624",
+        "byteLength": 43
+      },
+      "command": [
+        "node",
+        "tools/verification/wasm-playback-reference.mjs",
+        "${MUSTEROFFICE}/.codex-work/motion-paths/motion-regression",
+        "${MUSTEROFFICE}/.codex-work/motion-paths/bundle",
+        "a7bcd2d987ae11b64a94584bf45435cdccd5c2ea267bade38744c28d4b8016d5",
+        "${MUSTEROFFICE}/.codex-work/motion-native/corpus-02/author.json",
+        "${MUSTEROFFICE}/.codex-work/motion-native/corpus-02/source.json",
+        "stepped"
+      ],
+      "sourceFiles": 193,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "calibration-parity",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/calibration-parity.json",
+        "sha256": "ed3d8bba043bd7abeee5382e376cdd9199699eca2e66ebda3ddc242d0ce6e3cb",
+        "byteLength": 20554
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/calibration-parity.log",
+        "sha256": "0e4b9db5b9e723afa8d3da2b9152ae48fe76e1109d685495ef77955029cef4c1",
+        "byteLength": 84
+      },
+      "command": [
+        "python3",
+        ".codex-work/motion-paths/calibration-parity.py"
+      ],
+      "sourceFiles": 70,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "schema-check",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/schema-check.json",
+        "sha256": "ef911e0ac24478b01e2a3d88f81477d49e1ed98e59c9c45775c6e149f952f98c",
+        "byteLength": 32997
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/schema-check.log",
+        "sha256": "c20c96bc356525c955ca84500d0c5ba7020b1b412def9e684cd0ed59a06d77e1",
+        "byteLength": 8428
+      },
+      "command": [
+        "cargo",
+        "run",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-contract-codegen",
+        "--",
+        "check",
+        "contracts/generated"
+      ],
+      "sourceFiles": 127,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "types-verify",
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/types-verify.json",
+        "sha256": "4e8f96a87a256aebde25dd6d9eec22a8da9aaf94e2cf7a901bd2b1539d7f1c25",
+        "byteLength": 69846
+      },
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/types-verify.log",
+        "sha256": "cad290968d57526e0a6958210b4070c7fcf229a49e86089c62affb6a210ff36c",
+        "byteLength": 4215
+      },
+      "command": [
+        "pnpm",
+        "check:types"
+      ],
+      "sourceFiles": 267,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    }
+  ],
+  "productCommands": [
+    {
+      "name": "prepare-sdk",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/motion-paths/prepare-sdk.json",
+        "sha256": "b49c51fd383992f10ac8fe77e63362ad6a599ff117c24b7cd9f76eef0d9f7c49",
+        "byteLength": 1563
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/motion-paths/prepare-sdk.log",
+        "sha256": "8158a93b4db3007b4fff26599ed454ae4d55ff4995ca0045ac92035f30d048fe",
+        "byteLength": 648
+      },
+      "command": [
+        "node",
+        "scripts/prepare-musteroffice-development.mjs",
+        "--sdk",
+        "${MUSTEROFFICE}/.codex-work/motion-paths/sdk",
+        "--worker",
+        "${MUSTEROFFICE}/target/debug/mo-export-worker"
+      ],
+      "sourceFiles": 4,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "prepare-playback",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/motion-paths/prepare-playback.json",
+        "sha256": "9de000a023f563cf7e8cbf5804f7bc01b6e601269302b6c87b80940f2e552454",
+        "byteLength": 1238
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/motion-paths/prepare-playback.log",
+        "sha256": "5503f7255abd4b7c5cfb4310ab19559c0936acca9144f9a1c9f0bea5d3bde502",
+        "byteLength": 9686
+      },
+      "command": [
+        "node",
+        "scripts/prepare-musteroffice-playback.mjs",
+        "--source",
+        "${MUSTEROFFICE}/.codex-work/motion-paths/bundle"
+      ],
+      "sourceFiles": 3,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "consumer-build",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/motion-paths/consumer-build.json",
+        "sha256": "4c52d5ecafe242dec4cd76914472fcfc7837c303ae7dcf696f1ca2d927fe5097",
+        "byteLength": 2246
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/motion-paths/consumer-build.log",
+        "sha256": "532f6d99b2428b4533cc898e7a720d6aa600bb55edc05ac4174f4cc6ff90b79a",
+        "byteLength": 7516
+      },
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "${MUSTERWORK_WORKTREE}/.codex-work/integration/motion-paths/export-consumer/Cargo.toml"
+      ],
+      "sourceFiles": 5,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "consumer-sequence",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/motion-paths/consumer-sequence.json",
+        "sha256": "45cb03d77dff2be31f4cc413c737f3ece60e3d65a4359c8734c5a7113b191736",
+        "byteLength": 2276
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/motion-paths/consumer-sequence.log",
+        "sha256": "2bf51a1aed0e35108820c39366372a429c04fabd0ba9b5a1a4e91c835cccd771",
+        "byteLength": 562
+      },
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "${MUSTERWORK_WORKTREE}/.codex-work/integration/motion-paths/export-consumer/Cargo.toml",
+        "--test",
+        "sequence"
+      ],
+      "sourceFiles": 5,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "adapter",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/motion-paths/adapter.json",
+        "sha256": "aa4cda501c18d36c6dd622700b873f7390d97f921262cff8a25d042ccf5943ce",
+        "byteLength": 15482
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/motion-paths/adapter.log",
+        "sha256": "de41ea8b138ee113e1171b29c632d633ee04edbf5b16b84680c4ad402903550e",
+        "byteLength": 8199
+      },
+      "command": [
+        "cargo",
+        "test",
+        "--manifest-path",
+        "apps/agent-runtime/Cargo.toml",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-musteroffice",
+        "--lib"
+      ],
+      "sourceFiles": 50,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "client",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/motion-paths/client.json",
+        "sha256": "3b2812a2654fca0ec3d672bb61e2a5e792e8b801d011a51ce72c6ba1b4940c64",
+        "byteLength": 106861
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/motion-paths/client.log",
+        "sha256": "2dcf3a14057d0af06a0311b4e4d9229f6dbc406f7f186573569feb4ba6936778",
+        "byteLength": 1171
+      },
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_NAVIGATION_ROOT=${MUSTERWORK_WORKTREE}/.codex-work/integration/motion-paths/fixtures",
+        "MUSTERWORK_OFFICE_NAVIGATION_REPORT=${MUSTERWORK_WORKTREE}/.codex-work/integration/motion-paths/actual-worker.json",
+        "MUSTERWORK_OFFICE_CATALOG_FLOW_ROOT=${MUSTERWORK_WORKTREE}/.codex-work/integration/native-model-flow/loop-02-actual.json.catalog-device-assets",
+        "MUSTERWORK_OFFICE_NATIVE_FRAMES=${MUSTEROFFICE}/.codex-work/delivery-playback/parity-01",
+        "pnpm",
+        "--filter",
+        "@musterwork/agent-runtime-product-client",
+        "exec",
+        "vitest",
+        "run",
+        "tests/office-playback.integration.spec.ts",
+        "tests/office-navigation.integration.spec.ts",
+        "tests/office-playback-worker-client.spec.ts",
+        "tests/office-presentation-preview.spec.ts",
+        "tests/office-presentation-artifact.spec.ts",
+        "--environment",
+        "node"
+      ],
+      "sourceFiles": 360,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "viewer",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/motion-paths/viewer.json",
+        "sha256": "a588a8b455a1209b9605c6f45f2ae38e8df14538c88fd3ee7f2ce548a8b636db",
+        "byteLength": 75324
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/motion-paths/viewer.log",
+        "sha256": "cc608ce2abbdbeab87418cdd5dae560e51fbb859ab9c0a7ab05b7a601f8dbe4c",
+        "byteLength": 444
+      },
+      "command": [
+        "pnpm",
+        "--filter",
+        "@musterwork/desktop",
+        "exec",
+        "vitest",
+        "run",
+        "src/components/artifacts/__tests__/MusterworkOfficePlayer.spec.ts",
+        "src/components/artifacts/__tests__/MusterworkOfficePreview.spec.ts"
+      ],
+      "sourceFiles": 256,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "types",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/motion-paths/types.json",
+        "sha256": "5a3709e28f4ecad7b48d5304cb5441f3d59225f6b5929df76acaef7ee61b40ee",
+        "byteLength": 75589
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/motion-paths/types.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byteLength": 0
+      },
+      "command": [
+        "pnpm",
+        "--filter",
+        "@musterwork/desktop",
+        "exec",
+        "vue-tsc",
+        "--project",
+        "../../.codex-work/integration/product-playback/tsconfig.json",
+        "--noEmit"
+      ],
+      "sourceFiles": 257,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "preparation",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/motion-paths/preparation.json",
+        "sha256": "089ce673fb5e42f4a8a979d23277a94603294ec22a6cc1e84f43a717fb41864d",
+        "byteLength": 1825
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/motion-paths/preparation.log",
+        "sha256": "7136a7fec6f0d67b7e509191b99721841c7174ad6b3b80750503b0bb6615febd",
+        "byteLength": 1471
+      },
+      "command": [
+        "node",
+        "--test",
+        "scripts/prepare-musteroffice-development.test.mjs",
+        "scripts/prepare-musteroffice-playback.test.mjs"
+      ],
+      "sourceFiles": 5,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    },
+    {
+      "name": "desktop-build",
+      "receipt": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/motion-paths/desktop-build.json",
+        "sha256": "de32d1a6a5ef84485f4c2b33ce729a7d3f6031958f4cbe1fca1353a5cd363514",
+        "byteLength": 505604
+      },
+      "log": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/motion-paths/desktop-build.log",
+        "sha256": "01d12581322f88de2991293cff023befef4780db587d3d1db7647fabb3ef59a8",
+        "byteLength": 71946
+      },
+      "command": [
+        "env",
+        "MUSTERWORK_MUSTEROFFICE_PLAYBACK=1",
+        "pnpm",
+        "--filter",
+        "@musterwork/desktop",
+        "exec",
+        "vite",
+        "build",
+        "--outDir",
+        "../../.codex-work/integration/motion-paths/desktop-build"
+      ],
+      "sourceFiles": 1737,
+      "exitCode": 0,
+      "sourceUnchanged": true
+    }
+  ],
+  "results": {
+    "rustTestsPassed": 560,
+    "newRustTests": 9,
+    "nativeFrames": 64,
+    "staticControls": 32,
+    "maxNormalizedPositionError": 4.812658912408423e-07,
+    "maxStaticChannelDifference": 1,
+    "maxStaticTotalChannelDifference": 116,
+    "xsdParts": 10,
+    "wasmSyncFrames": 64,
+    "wasmSteppedFrames": 64,
+    "legacyMotionFrames": 28,
+    "publicAuthoringCalibrationNativeFrames": 6,
+    "publicAuthoringCalibrationWasmFramesPerMode": 6,
+    "calibrationXsdParts": 5,
+    "productTestsPassed": 159,
+    "productNativeFrames": 20,
+    "productWorkerFrames": 34,
+    "desktopFrontendBuild": "passed",
+    "installerBuilt": false
+  },
+  "materials": {
+    "sdk": "0c0b1df056860570a9f41d55bea3ded0e5bfb69f8adebd0b99ce17949abded94",
+    "playback": "a7bcd2d987ae11b64a94584bf45435cdccd5c2ea267bade38744c28d4b8016d5",
+    "worker": "a10dea2bfadee50a993505060efbb8ae8b73284bad042bf8a41ea24ba1c97ba9",
+    "workerBytes": 44482528,
+    "checkedPackageFiles": 1288,
+    "desktopCopiedFiles": 42,
+    "desktopCopiedUncompressedBytes": 18867583,
+    "desktopBytesDeltaFromContainerAutoreverse": 191930,
+    "workerBytesDeltaFromContainerAutoreverse": 421312
+  },
+  "materialReceipts": [
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/motion-paths/sdk/sdk-manifest.json",
+      "sha256": "0c0b1df056860570a9f41d55bea3ded0e5bfb69f8adebd0b99ce17949abded94",
+      "byteLength": 227006
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/motion-paths/bundle/bundle-manifest.json",
+      "sha256": "a7bcd2d987ae11b64a94584bf45435cdccd5c2ea267bade38744c28d4b8016d5",
+      "byteLength": 11855
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": ".codex-work/integration/motion-paths/materials.json",
+      "sha256": "402602bee869c3ae9c5f85b6c495757fa8e714228d66690bc9930145bfd1fb7a",
+      "byteLength": 269
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": "components/musteroffice/lock.json",
+      "sha256": "2b5e54098288cd4717f6708890254913ca81e6088449728bd01099bddb72eab6",
+      "byteLength": 333
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": "components/musteroffice/playback-lock.json",
+      "sha256": "366ccf5578d42277b5400abf37ded7ccae59c7621bdb391585a36badab6b0658",
+      "byteLength": 153
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": "apps/agent-runtime/Cargo.toml",
+      "sha256": "631ccef9467fc416e4e14eab11989bcb9a0dc01e4f05c58b5efc85774dd72a9b",
+      "byteLength": 16645
+    }
+  ],
+  "computationalEvidence": [
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/motion-paths/corpus/report.json",
+      "sha256": "d61cb60a308b0f594e0b07f5ed93235dde8443e9bb4eb015ec6f41a22e12ac3f",
+      "byteLength": 37974
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/motion-paths/playback-sync/report.json",
+      "sha256": "516d70b173c2299f2387cbf16d9ae38c83bc5a0f7033ef378f7bc17ee1f7bbb0",
+      "byteLength": 49833
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/motion-paths/playback-stepped/report.json",
+      "sha256": "9626f5e786811df5aca0864b708cfc21995cda3fd6a2fc5acec3b67d6dbbf937",
+      "byteLength": 49836
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/motion-paths/motion-regression/report.json",
+      "sha256": "fae840a4f82f8b53754ee758ea7bcbb5ade2b4e4f5f52f684c81da542a937da7",
+      "byteLength": 22534
+    },
+    {
+      "repository": "MusterOffice",
+      "path": ".codex-work/motion-paths/calibration-parity/report.json",
+      "sha256": "6fcf4f647f31334be23a09db98d73a9fb1491d8826018fbf3e6fa22c321584b0",
+      "byteLength": 316
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": ".codex-work/integration/motion-paths/fixtures/report.json",
+      "sha256": "1db338355659bc45857644eb742703d4ce369ba26594866e74b14558bfe62855",
+      "byteLength": 2479
+    },
+    {
+      "repository": "musterwork-worktree",
+      "path": ".codex-work/integration/motion-paths/actual-worker.json",
+      "sha256": "8122189262dbda399e80c90489fd3873ff415fd30039ec46fe42387dee0937b5",
+      "byteLength": 3118
+    }
+  ],
+  "sourcePreservation": [
+    {
+      "name": "path-forward",
+      "original": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/product-sources/path-forward.pptx",
+        "sha256": "bdc76255fecce7647c5b0a8150dd6e959b2d5c37ac790fd74003d72e0acc7ae4",
+        "byteLength": 6085
+      },
+      "exported": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/motion-paths/fixtures/path-forward/export/009.pptx",
+        "sha256": "bdc76255fecce7647c5b0a8150dd6e959b2d5c37ac790fd74003d72e0acc7ae4",
+        "byteLength": 6085
+      },
+      "byteIdentical": true,
+      "parts": 13
+    },
+    {
+      "name": "path-reverse",
+      "original": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/product-sources/path-reverse.pptx",
+        "sha256": "edc3336c4c90dad5c8e54464e43c6378de0363c9eaea6306b3e19c54cd0d6a71",
+        "byteLength": 6110
+      },
+      "exported": {
+        "repository": "musterwork-worktree",
+        "path": ".codex-work/integration/motion-paths/fixtures/path-reverse/export/009.pptx",
+        "sha256": "edc3336c4c90dad5c8e54464e43c6378de0363c9eaea6306b3e19c54cd0d6a71",
+        "byteLength": 6110
+      },
+      "byteIdentical": true,
+      "parts": 13
+    }
+  ],
+  "wpsObservation": {
+    "version": "12.1.22553",
+    "status": "observed-motion-and-endpoints",
+    "report": {
+      "repository": "MusterOffice",
+      "path": ".codex-work/motion-paths/wps-authored-observation.json",
+      "sha256": "d429a666f325b18bb62d1ae0f8284887f87b8dddf79b70c2d1ccdb47b0cd1aa5",
+      "byteLength": 4657
+    },
+    "source": {
+      "repository": "MusterOffice",
+      "path": ".codex-work/scale-inputs/motion-paths-sequence.pptx",
+      "sha256": "caae17eee87014ae360c9d890206e26f6036dcb2e19250d10266c05fcb3080c3",
+      "byteLength": 6238
+    },
+    "screenshots": [
+      {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/wps-authored-early.png",
+        "sha256": "b3e24c848924c62fc645aadb844aacd01c4bab335964c53933d6c93065916076",
+        "byteLength": 116378
+      },
+      {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/wps-authored-final.png",
+        "sha256": "76aa203426fd90587921ecd5346903a5f177d6019c9a00727b7e91e597a66a54",
+        "byteLength": 116379
+      },
+      {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/wps-sequence-early.png",
+        "sha256": "7b439d5423a9ddb80393e4da3db990c3fc1e907224a957084c63f933fc3e9337",
+        "byteLength": 118119
+      },
+      {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/wps-sequence-final.png",
+        "sha256": "924c75f81122b8bacfbd94df30fab97778ae466b31b57e85a5557ba60a5d320e",
+        "byteLength": 117902
+      }
+    ],
+    "authoringRequest": {
+      "repository": "MusterOffice",
+      "path": ".codex-work/motion-paths/authored-path-sequence.request.json",
+      "sha256": "5fef28f923829d6a99b6544f846a6a7f57873b5ffcc39c22da929e2d85ca93d2",
+      "byteLength": 26515
+    },
+    "scope": "Unsynchronized screenshots. Endpoint displacement observation only; no native editing roundtrip, PowerPoint, frame-time fidelity, FPS or full interop gate.",
+    "flatGraphStatus": "Opened but did not animate; no native presentation sequence role. This is an interoperability limitation, not a successful animation export.",
+    "sequenceStatus": "Unmodified export following public setPresentationSequence played connected paths and returned closed paths to the initial position.",
+    "maximumEndpointDisplacementDeviationPixels": 2.503633573144009,
+    "restoredWindow": "rotation-absolute-fixed.pptx",
+    "newDirectoryPermissionGranted": false,
+    "pacingCalibration": {
+      "repository": "MusterOffice",
+      "path": ".codex-work/motion-paths/wps-observation.json",
+      "sha256": "f92ea8914873151cef0db975effd5afc7d4575b822f3cde9b7536cff2170fd0d",
+      "byteLength": 3048
+    },
+    "pacingInput": {
+      "repository": "MusterOffice",
+      "path": ".codex-work/scale-inputs/motion-path-pacing.pptx",
+      "sha256": "b83006aa5038c7b9a4d7687247d0e76afdd4a08853354dad61e883fa74033454",
+      "byteLength": 5876
+    }
+  },
+  "earlierFailures": [
+    {
+      "receipt": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/rust.json",
+        "sha256": "4e69dc7008a7204d790a945854e0cd388ca475b980e55091e94623507fa6b60b",
+        "byteLength": 111934
+      },
+      "reason": "New test fixture lacked required root envelope and complete event history for a presentation sequence. Corrected test inputs; final complete run passes."
+    },
+    {
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/initial-test.log",
+        "sha256": "db00010bd78da530882749d3dc0ee69ece10ed96d5d8ff126605003617dbe31b",
+        "byteLength": 25727
+      },
+      "reason": "Legacy rejection test still rejected multiple line/close commands newly supported by design. Replaced with disconnected move and quadratic commands that remain unsupported; positive coverage added."
+    },
+    {
+      "log": {
+        "repository": "MusterOffice",
+        "path": ".codex-work/motion-paths/types-check-driver.log",
+        "sha256": "28d44b899d5ac373daa853aac8fd54f394f01d0389f78aee0357b1f2066413ed",
+        "byteLength": 635
+      },
+      "reason": "Evidence runner refused to overwrite an existing log. Re-ran read-only check under a new receipt name; original evidence retained."
+    }
+  ],
+  "nativeLink": {
+    "library": {
+      "repository": "MusterOffice",
+      "path": ".codex-work/snapshot-scopes/native/libmo_skia_adapter.a",
+      "sha256": "52fa4ed0fd818c6423c557baa3e4abd2ae63bdcf1d96a154179c05f430e54815",
+      "byteLength": 111760
+    },
+    "newDependencies": false,
+    "newCppChanges": false,
+    "publicJsonContractChanged": true
+  },
+  "references": [
+    "https://learn.microsoft.com/en-us/openspecs/office_standards/ms-oe376/20acd8bd-6ba0-461d-ae9f-f7e0f90e1ff7"
+  ],
+  "limitations": [
+    "Disconnected moves, formulas, parent origin, absolute edit mode and rotated paths remain explicitly unsupported.",
+    "WPS played the public presentation-sequence export. The bare v0.1 timing graph opened but did not animate; general native timing-envelope interoperability remains open. The earlier XML pacing sample also did not honor its parent cutoff in WPS.",
+    "Screenshots are not clock-synchronized and measured endpoint displacement differences do not pass a pixel or editing interoperability gate. No PowerPoint or native editing roundtrip claim.",
+    "Full advanced PPT, real Agent/Electron, multiple platforms, historical migration, performance/resources/installer and all replacement gates remain open.",
+    "Sizes are uncompressed development materials and a debug macOS ARM64 export Worker; no release installer, FPS, RSS, startup or throughput claim. Existing frontend large-chunk warning remains.",
+    "Product work confined to independent worktree. No default-engine switch, commit, public release, deployment or production database use."
+  ]
+}

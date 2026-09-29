@@ -1,0 +1,637 @@
+{
+  "stage": "product-native-cloud",
+  "date": "2026-09-28",
+  "status": "cloud-native-host-and-profile-routing-verified-locally-not-full-product-replacement",
+  "tests": 31,
+  "checks": [
+    {
+      "run": "route-02",
+      "passedTests": 6,
+      "args": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50",
+        "MUSTERWORK_CLOUD_OFFICE_REPORT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-cloud/route-02-actual.json",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "postgres_browser_gateway",
+        "--",
+        "--test-threads=1"
+      ],
+      "elapsedSeconds": 31.27838308387436,
+      "reportSha256": "93eeebe0188b4b225c1a71e150c0ba5fa88075b8dd2a97dcb4498d9cd54a59c9",
+      "logSha256": "5f5ad7517f6cc0c649a99691a4ebff4b3ee731e1b795ac1387b087b71d8482c8",
+      "currentInventoryMatches": true
+    },
+    {
+      "run": "cloud-02",
+      "passedTests": 3,
+      "args": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50",
+        "MUSTERWORK_CLOUD_OFFICE_REPORT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-cloud/cloud-02-actual.json",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-cloud-worker",
+        "--lib",
+        "office::tests",
+        "--",
+        "--include-ignored",
+        "--test-threads=1"
+      ],
+      "elapsedSeconds": 29.0603181659244,
+      "reportSha256": "2999bd0f66f3773511a4c6d7f8876f29edbd59d934f34070303e4904502f90aa",
+      "logSha256": "75c84ca56f1d44d94dbfc0a388727d9af75c5b943dd4d3e7513409feb09857f2",
+      "currentInventoryMatches": true
+    },
+    {
+      "run": "device-02",
+      "passedTests": 3,
+      "args": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50",
+        "MUSTERWORK_CLOUD_OFFICE_REPORT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-cloud/device-02-actual.json",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-device-runtime",
+        "--lib",
+        "office::tests",
+        "--",
+        "--test-threads=1"
+      ],
+      "elapsedSeconds": 11.459624374983832,
+      "reportSha256": "bd1d682bffe453e66f869ab9d6c8050c40d005cd622f171bcc0afc0267b7b27f",
+      "logSha256": "94809444cb6b9f96bc3d7791b16f5ce66253088c4824c471cf34ace5e8c92ff2",
+      "currentInventoryMatches": true
+    },
+    {
+      "run": "adapter-02",
+      "passedTests": 19,
+      "args": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50",
+        "MUSTERWORK_CLOUD_OFFICE_REPORT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-cloud/adapter-02-actual.json",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-musteroffice",
+        "--lib",
+        "--",
+        "--test-threads=1"
+      ],
+      "elapsedSeconds": 6.2531168749555945,
+      "reportSha256": "9aa5760048f9f1d5de942f06957b6d2a471af9313e46480992565b6b9440be26",
+      "logSha256": "e70bd089a4ce5f9101fc5fbe853c067077a93d658b092ca298091ab4bb25c52e",
+      "currentInventoryMatches": true
+    },
+    {
+      "run": "lint-02",
+      "passedTests": 0,
+      "args": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50",
+        "MUSTERWORK_CLOUD_OFFICE_REPORT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-cloud/lint-02-actual.json",
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--no-deps",
+        "-p",
+        "musterwork-agent-cloud-worker",
+        "-p",
+        "musterwork-agent-device-runtime",
+        "-p",
+        "musterwork-agent-musteroffice",
+        "-p",
+        "musterwork-agent-postgres",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "elapsedSeconds": 43.14974483381957,
+      "reportSha256": "32ceb558485e44de5584f30e3991bd05f9445b9062a9cb6571e74f13689b89ae",
+      "logSha256": "11a1d1c2e3df58f4d9f52f1fb7ca93cd4ff95463a86114cbd912c6f476493a94",
+      "currentInventoryMatches": true
+    }
+  ],
+  "environment": {
+    "system": "Darwin",
+    "release": "25.2.0",
+    "machine": "arm64",
+    "productBranch": "codex/musteroffice-integration",
+    "productHead": "8280b9837b7ed7fae5a502e97d6967b128772c11",
+    "postgres": "testkit IsolatedPostgres with postgres:16-alpine; fresh schema and upgrade tests",
+    "productionDatabaseChanged": false,
+    "actualCloudDeployment": false
+  },
+  "materials": {
+    "sdkManifestSha256": "7ed23b21a12b0cacc4cf563ead1b60133a6b5659c3a235881c910d5ece232471",
+    "workerSha256": "52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50",
+    "workerBytes": 42750912,
+    "sdkAndWorkerUnchanged": true,
+    "workerBuild": "macOS ARM64 debug; not release-size evidence",
+    "realCloudHostReportSha256": "3ebcb570f430d2f1dab32023b636c3e26bc572ae26d8b9b911030620406293d8",
+    "byteReportSha256": "abe5ae67874342bd98bf3112b8bb9cd3d166a80e1bf23459c55def1da271a523",
+    "verifiedFiles": [
+      {
+        "id": "asset:094a18ff925e1ac9f5b5f6c7cbcecefc63a5b508b624b1aabff53b27727d1330",
+        "role": "editable-document",
+        "sha256": "b4355c310a731ea0a598866507fdfef161bc7a1714747ff747c75f60e485984c",
+        "bytes": 19882,
+        "mediaType": "application/vnd.musteroffice.presentation+json"
+      },
+      {
+        "id": "asset:9e3f6948ad97a5e47190a4e7e8230290c5ef2dd2dd17aeb9b69286ac24c7d2ae",
+        "role": "source",
+        "sha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+        "bytes": 10735,
+        "mediaType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "zipEntries": 21,
+        "xmlParts": 20
+      },
+      {
+        "id": "asset:78c596e447625e0334b569daffe2432e932c72f0a7650d990d89b07a58806bef",
+        "role": "other",
+        "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+        "bytes": 1920,
+        "mediaType": "application/octet-stream"
+      },
+      {
+        "id": "asset:6e35f826dbfc9d45ea447df72ddff70a4d25e4ac1793436456b077b84ef55cb5",
+        "role": "other",
+        "sha256": "9ed1d3c6874d012c168a25eaa5af58e68047116d811d7cf9cc32ef722892e0a0",
+        "bytes": 797,
+        "mediaType": "application/vnd.musteroffice.font-profile+json"
+      },
+      {
+        "id": "asset:7c81959f2e249a1fcbb898dede953a56c87b9a28cc277c29c45de1e8e46c6ae1",
+        "role": "other",
+        "sha256": "0f5119d7dac31d299829342ff36995dc8744374641f95ede9542febb5445f364",
+        "bytes": 1176,
+        "mediaType": "application/vnd.musteroffice.feature-registry+json"
+      },
+      {
+        "id": "asset:27b51e58c1627ddf801f0556ef48ee2b6a7118200eabde413cc675ef48067f53",
+        "role": "other",
+        "sha256": "978b1b95113586c968e0f21f3b75e24729df9985a2e28d23720d4fe39655997d",
+        "bytes": 2385,
+        "mediaType": "application/vnd.musteroffice.presentation-context+json"
+      },
+      {
+        "id": "asset:af35eeb7a2a890944a2fa8b3f22ba2942a622a774003aa90e10582e52d42bec3",
+        "role": "preview",
+        "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d",
+        "bytes": 14915,
+        "mediaType": "image/png",
+        "dimensions": [
+          640,
+          360
+        ]
+      },
+      {
+        "id": "asset:e5e8fe0aa8b16475a2f001ba5f46c827c07e90b7219a5e251d1fe2ff04849d20",
+        "role": "quality-report",
+        "sha256": "bac1f838e3e1f2831dac15544b919038ef80ac2ce493e079cf419919cae7c638",
+        "bytes": 5166,
+        "mediaType": "application/json"
+      },
+      {
+        "id": "asset:4b9fa77de6c96c5765863a577aabf37cb5ee6bd9fa4fc8fa4afe870e03badece",
+        "role": "preview",
+        "sha256": "b347f37576dff5268f77cc7666066568d50e993ee690d3941c27693734acd0c9",
+        "bytes": 11174,
+        "mediaType": "image/png",
+        "dimensions": [
+          640,
+          360
+        ]
+      },
+      {
+        "id": "asset:cbfa76f8e6a9376e978098b9a0ab946c62f8520a36771db82a26d3c46160c904",
+        "role": "quality-report",
+        "sha256": "376a127e971c6bd4bc0101f7e403b7ad83b8a3cc171b18fa5b4d730bd49ea1e7",
+        "bytes": 4495,
+        "mediaType": "application/json"
+      },
+      {
+        "id": "asset:e76c9b7f42a70e9e88651cadeaf91b8232ca1d4af69471d3bb416afd96422ca4",
+        "role": "quality-report",
+        "sha256": "34e7014839f462e48a08a68d0088665c67e22b70027b0bfb9114a7feac2943dd",
+        "bytes": 859,
+        "mediaType": "application/vnd.musteroffice.quality+json"
+      },
+      {
+        "id": "asset:97ce41918553591d448aaea2fe30c41e32ca71f29a18f8051f0df6fdc44607c6",
+        "role": "pptx",
+        "sha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+        "bytes": 10735,
+        "mediaType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "zipEntries": 21,
+        "xmlParts": 20
+      }
+    ],
+    "inspection": {
+      "assetsVerified": 12,
+      "bundleDigest": "30cbeea1bb3da62eb895fc7fe68cdc16b663be576f8789102dac2ccfc8aa4465",
+      "declaredClaims": [
+        {
+          "basis": "static-inspection",
+          "evidenceAssetIds": [
+            "asset:e76c9b7f42a70e9e88651cadeaf91b8232ca1d4af69471d3bb416afd96422ca4"
+          ],
+          "kind": "structure",
+          "profileId": "opc-zip-xml-graph-digest-v1-draft",
+          "reason": "Actual stored OPC/ZIP/XML graph and digest verified; full PresentationML XSD is not asserted.",
+          "status": "passed",
+          "subjectSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5"
+        },
+        {
+          "basis": "none",
+          "evidenceAssetIds": [
+            "asset:e76c9b7f42a70e9e88651cadeaf91b8232ca1d4af69471d3bb416afd96422ca4"
+          ],
+          "kind": "layout",
+          "profileId": "presentations-pptx-resource-delivery-v1-draft",
+          "reason": "Every editor preview was rendered, but full layout fidelity has not been proved.",
+          "status": "not_proven",
+          "subjectSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5"
+        },
+        {
+          "basis": "none",
+          "evidenceAssetIds": [
+            "asset:e76c9b7f42a70e9e88651cadeaf91b8232ca1d4af69471d3bb416afd96422ca4"
+          ],
+          "kind": "native-editability",
+          "profileId": "presentations-pptx-resource-delivery-v1-draft",
+          "reason": "Native output was written; complete external editing roundtrip has not been proved.",
+          "status": "not_proven",
+          "subjectSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5"
+        },
+        {
+          "basis": "none",
+          "evidenceAssetIds": [
+            "asset:e76c9b7f42a70e9e88651cadeaf91b8232ca1d4af69471d3bb416afd96422ca4"
+          ],
+          "kind": "playback",
+          "profileId": "presentations-pptx-resource-delivery-v1-draft",
+          "reason": "Editor previews do not prove animation, transition or media playback.",
+          "status": "not_proven",
+          "subjectSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5"
+        },
+        {
+          "basis": "none",
+          "evidenceAssetIds": [
+            "asset:e76c9b7f42a70e9e88651cadeaf91b8232ca1d4af69471d3bb416afd96422ca4"
+          ],
+          "kind": "target-application",
+          "profileId": "presentations-pptx-resource-delivery-v1-draft",
+          "reason": "This delivery has no target-application test evidence.",
+          "status": "not_proven",
+          "subjectSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5"
+        }
+      ],
+      "documentId": "cloud:owned-source",
+      "pages": 2,
+      "profile": "delivery-bytes-reference-binding-v1-draft",
+      "revision": "b609fca5e624b4fd276d7599b4f127100353f9cb5b7f9dffd32b41da2db59c00",
+      "semanticDigest": "219581df76a2346bf4e2795c27d027bb206a5bef041fda26df21ae19c00ff1e4",
+      "settingsDigest": "50c3358a4304b1f429a7bccc589646a508cbba102b8508b44f704bfa1f52d80a",
+      "totalBytes": "84239"
+    },
+    "actualEnvironment": {
+      "delivery": {
+        "colorContext": {
+          "placeholder": null,
+          "systemColors": {}
+        },
+        "defaults": {
+          "fontDelivery": "referenceOnly",
+          "fontFamily": "MusterOffice Synthetic",
+          "pageBackground": {
+            "alpha": 255,
+            "blue": 255,
+            "green": 255,
+            "red": 255
+          },
+          "textColor": {
+            "alpha": 255,
+            "blue": 56,
+            "green": 34,
+            "red": 22
+          },
+          "textSize": "304800",
+          "themeColors": {
+            "accent1": {
+              "alpha": 255,
+              "blue": 232,
+              "green": 114,
+              "red": 27
+            },
+            "accent2": {
+              "alpha": 255,
+              "blue": 154,
+              "green": 185,
+              "red": 38
+            },
+            "accent3": {
+              "alpha": 255,
+              "blue": 59,
+              "green": 173,
+              "red": 242
+            },
+            "accent4": {
+              "alpha": 255,
+              "blue": 216,
+              "green": 98,
+              "red": 133
+            },
+            "accent5": {
+              "alpha": 255,
+              "blue": 141,
+              "green": 118,
+              "red": 229
+            },
+            "accent6": {
+              "alpha": 255,
+              "blue": 184,
+              "green": 166,
+              "red": 91
+            },
+            "dark1": {
+              "alpha": 255,
+              "blue": 56,
+              "green": 34,
+              "red": 22
+            },
+            "dark2": {
+              "alpha": 255,
+              "blue": 122,
+              "green": 100,
+              "red": 82
+            },
+            "followedHyperlink": {
+              "alpha": 255,
+              "blue": 114,
+              "green": 79,
+              "red": 149
+            },
+            "hyperlink": {
+              "alpha": 255,
+              "blue": 193,
+              "green": 99,
+              "red": 5
+            },
+            "light1": {
+              "alpha": 255,
+              "blue": 255,
+              "green": 255,
+              "red": 255
+            },
+            "light2": {
+              "alpha": 255,
+              "blue": 254,
+              "green": 241,
+              "red": 232
+            }
+          }
+        },
+        "fonts": {
+          "faces": [
+            {
+              "family": {
+                "expected": "MusterOffice Synthetic",
+                "record": 1
+              },
+              "font": 0,
+              "postscript": {
+                "expected": "MusterOfficeSynthetic",
+                "record": 6
+              },
+              "subfamily": {
+                "expected": "Regular",
+                "record": 2
+              }
+            }
+          ],
+          "fonts": [
+            {
+              "byteLength": "1920",
+              "expectedSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+              "faceIndex": 0,
+              "offset": "0"
+            }
+          ],
+          "profile": "explicit-font-resource-manifest-draft-v1",
+          "typefaces": [
+            {
+              "bold": null,
+              "boldItalic": null,
+              "italic": null,
+              "policy": {
+                "kind": "exactFamily"
+              },
+              "regular": {
+                "face": 0,
+                "variations": []
+              },
+              "typeface": "MusterOffice Synthetic"
+            }
+          ]
+        },
+        "imageSource": "embeddedSnapshot",
+        "previewWidth": 640,
+        "sampling": "nearest"
+      },
+      "fontByteLength": "1920",
+      "fontSha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+      "renderer": {
+        "implementationSha256": "52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50",
+        "profile": "drawingml-resource-page-q32-v1-draft"
+      },
+      "settingsDigest": "50c3358a4304b1f429a7bccc589646a508cbba102b8508b44f704bfa1f52d80a"
+    }
+  },
+  "implemented": [
+    "Device and Cloud share the exact pinned product configuration and public SDK settings/font loader.",
+    "Optional closed Cloud configuration opens a shared OfficeHost before activation and rejects partial or invalid configuration.",
+    "Existing Cloud maintenance cycle owns bounded spool recovery; no second task or storage platform.",
+    "Native template maintenance and product engine composition route to the configured shared SDK host.",
+    "PostgreSQL execution routes freeze the compiler profile and retain the original execution policy.",
+    "Legacy browser availability does not qualify a native route; native client_only rejects and errors never trigger an HTML fallback.",
+    "Actual old-schema upgrade preserves every old route column and explicit legacy browser-loss handoff."
+  ],
+  "limits": {
+    "computeSlots": "1..64, default 1, per host process",
+    "maxAssets": 1024,
+    "maxAssetBytes": 134217728,
+    "maxTotalBytes": 536870912,
+    "executionTimeoutSeconds": 120,
+    "memoryClaim": "Input/output and concurrency limits; not a hard process RSS limit."
+  },
+  "verificationScope": {
+    "cloud": 3,
+    "device": 3,
+    "sharedAdapter": 19,
+    "postgresRoutes": 6,
+    "strictClippy": "Cloud, Device, Office adapter and PostgreSQL libraries, --no-deps -D warnings",
+    "actualFiles": "Configured Cloud host directly imports, renders and exports an owned two-page source using the pinned real SDK/worker.",
+    "routeBoundary": "Production SQL store with real isolated PostgreSQL; no full Backend/Cloud API/parent-child/model deployment.",
+    "sourceFiles": [
+      {
+        "path": "apps/agent-runtime/Cargo.lock",
+        "sha256": "17b4ce42fbaf226169c0d7e1d275dd65a10065eb45de08312c18cb070849b76a",
+        "lines": 8774
+      },
+      {
+        "path": "apps/agent-runtime/applications/cloud-worker/Cargo.toml",
+        "sha256": "f0ff18f567f021de66dffc4c2ac1368ca8808889ebb943e6df3c39b084405c52",
+        "lines": 142
+      },
+      {
+        "path": "apps/agent-runtime/applications/cloud-worker/src/office.rs",
+        "sha256": "e4a59f3781b44b330fc28d39e7f4b1923a2ed7503db647cad085739668af2de4",
+        "lines": 104
+      },
+      {
+        "path": "apps/agent-runtime/applications/cloud-worker/src/office/tests.rs",
+        "sha256": "95147153a36dd3bd9c7df5c8789c57e82c7b847df19e027f012cb9f1a0f576d7",
+        "lines": 235
+      },
+      {
+        "path": "apps/agent-runtime/applications/cloud-worker/src/config.rs",
+        "sha256": "dc200e202e9187e8f0a8bc7f14d40a2ac3b972dbb63d777c7c4c4483eab1d0b2",
+        "lines": 757
+      },
+      {
+        "path": "apps/agent-runtime/applications/cloud-worker/src/composition.rs",
+        "sha256": "5951adc844a84e4ca9d9699d3a64a2158b2d25c85b950f7312866d0f03c90f3e",
+        "lines": 1716
+      },
+      {
+        "path": "apps/agent-runtime/applications/cloud-worker/src/lib.rs",
+        "sha256": "bf4b72131702c95ef2a465238efa8fad3aa38260a890190c7efcd9c40a3a222b",
+        "lines": 50
+      },
+      {
+        "path": "apps/agent-runtime/applications/cloud-worker/src/presentation.rs",
+        "sha256": "bb98fdc23b41f4ed97a4e062e1422d27493d1ee734fb074765a24556ff4a8ce6",
+        "lines": 233
+      },
+      {
+        "path": "apps/agent-runtime/applications/cloud-worker/src/presentation_routing.rs",
+        "sha256": "af329801e9a1f10a37fcb69a3117ee014a2293365474a2b01e3680c86324166b",
+        "lines": 152
+      },
+      {
+        "path": "apps/agent-runtime/applications/cloud-worker/src/tool_composition.rs",
+        "sha256": "4ce2014f490e3056ba0d9be14645b73ffdd2e80bd6a2fc53da9e3cec5b44ac78",
+        "lines": 748
+      },
+      {
+        "path": "apps/agent-runtime/applications/device-runtime/src/office.rs",
+        "sha256": "6467229c62308ce196d03a38ebcabdb722f53424c1c6426e5c8d22048be99c1b",
+        "lines": 77
+      },
+      {
+        "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/lib.rs",
+        "sha256": "090e50576ecac84975a4649ff68aa00c235ca613da79a4ec4153c11b8c98e7b9",
+        "lines": 46
+      },
+      {
+        "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/configuration.rs",
+        "sha256": "2c7380c584fe77a8b914fe333ea5f88b492c2009f927b3e8af55119bd937762d",
+        "lines": 115
+      },
+      {
+        "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/configuration/environment.rs",
+        "sha256": "b4372f86c26fbcd82ec69564582b5b6272411679adca4087eb72a72a4f1ef569",
+        "lines": 94
+      },
+      {
+        "path": "apps/agent-runtime/crates/infrastructure/postgres/src/lib.rs",
+        "sha256": "bf6cb87c8c71a326d2bcad8ba8cb02e7c5ab733c86d90b830b75ebee740655d7",
+        "lines": 215
+      },
+      {
+        "path": "apps/agent-runtime/crates/infrastructure/postgres/src/browser_gateway.rs",
+        "sha256": "1c258f78d2aa5aa435707bfb7c111335500296532dc52b7c0037183af6db306a",
+        "lines": 1308
+      },
+      {
+        "path": "apps/agent-runtime/crates/infrastructure/postgres/src/browser_gateway/presentation_route.rs",
+        "sha256": "0559542f0009921177652d5e2fd8921c4eaa0bd521b56bf37a64b352bc9222b4",
+        "lines": 221
+      },
+      {
+        "path": "apps/agent-runtime/crates/infrastructure/postgres/migrations/0206_presentation_route_compiler.sql",
+        "sha256": "d3282a47d85ff2a7083f4be950f87c1ddf1b54b92b0459efbcdc2b3a0a62a489",
+        "lines": 19
+      },
+      {
+        "path": "apps/agent-runtime/tests/conformance/tests/postgres_browser_gateway.rs",
+        "sha256": "a84b547545c4d60eaa9c07f43426b1f9f04f57af26716a5c3aef770699292dd4",
+        "lines": 452
+      },
+      {
+        "path": "apps/agent-runtime/tests/conformance/tests/postgres_browser_gateway/native_route.rs",
+        "sha256": "0751a910cc69d59c2fac830839912dac3a06562e834fb9e9b3467149958a9931",
+        "lines": 240
+      },
+      {
+        "path": "apps/agent-runtime/crates/infrastructure/postgres/src/resource_authority.rs",
+        "sha256": "57f2b90598b1ae6adccfdb6431181eaf7477dd6e25edd11dc0648759f9519d49",
+        "lines": 100
+      },
+      {
+        "path": "apps/agent-runtime/crates/infrastructure/postgres/src/loop_journal/recovery.rs",
+        "sha256": "71d0f4ac3d9b79717362fa45ba79a0f39dbada0b01e0c17961a21a93eb10ceb0",
+        "lines": 1289
+      },
+      {
+        "path": "apps/agent-runtime/crates/infrastructure/postgres/src/projection_branch.rs",
+        "sha256": "da26d984e40950ac4f099bcd445be955b1acaf5dfe9193b3ef9acdd691b32aa5",
+        "lines": 221
+      },
+      {
+        "path": "apps/agent-runtime/crates/infrastructure/postgres/src/workspace_assignment/tree.rs",
+        "sha256": "0ac1a45892b78f0aa1e7c6db9a0b42fabea4f658d3f8d90981f08326820763b1",
+        "lines": 162
+      }
+    ],
+    "compositionResponsibility": "Existing 1716-line composition remains a wiring owner; new host lifecycle logic is separated into office.rs."
+  },
+  "retainedFailures": [
+    "Initial Cloud test referenced settings_digest on receipt instead of actual inspection; corrected the assertion without changing production validation.",
+    "Initial strict Clippy found four pre-existing PostgreSQL syntax lints. Equivalent field shorthand, conditional let chains and removal of an extra borrow were applied; no warnings were suppressed."
+  ],
+  "exclusions": [
+    "Automatic upload still resolves the legacy environment. Native pre-admission environment discovery and full live maintenance remain next.",
+    "Only a macOS ARM64 worker is pinned; no Linux worker, cloud deployment or new public native Cloud Tool release.",
+    "Stable release profile is unchanged; native candidate remains device.v54 / author@7 / Skill v10.",
+    "No new Office/WPS interoperability, full advanced PPT, Native/WASM, history or whole product acceptance.",
+    "No performance or desktop package estimate is derived from tests or debug worker bytes."
+  ]
+}

@@ -1,0 +1,261 @@
+{
+  "format": "musteroffice.product-native-environment-verification/1",
+  "date": "2026-09-28",
+  "status": "scoped-environment-integration-verified; replacement-incomplete",
+  "productBranch": "codex/musteroffice-integration",
+  "productBaseCommit": "8280b9837b7ed7fae5a502e97d6967b128772c11",
+  "sdkManifestSha256": "550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+  "worker": {
+    "sha256": "b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0",
+    "target": "darwin-arm64",
+    "profile": "development; no performance or package size claim"
+  },
+  "registeredTool": "artifact.presentation.author@5",
+  "stagedCatalog": "device.v52",
+  "activeCatalog": "device.v50",
+  "defaultEngineReplaced": false,
+  "runs": [
+    {
+      "name": "agent-01",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::office_agent::",
+        "--",
+        "--include-ignored",
+        "--test-threads=1"
+      ],
+      "explicitOwnedWorkerEnvironment": true,
+      "exitCode": 0,
+      "elapsedSeconds": 111.18466466688551,
+      "sourceUnchanged": true,
+      "sourceFiles": 4101,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../packages/agent-runtime-product-client/tests/fixtures/office-native",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker"
+      ],
+      "sourceMapSha256": "ef469552ba153662dd40c2b83837b4c8916de1880f07b4f1df5d3648fe55aded",
+      "report": {
+        "path": ".codex-work/product-native-environment/agent-01.json",
+        "sha256": "9ade96a03fd44c9c8427ede53efabbf0d9d45bec189bcb5edcd4c7e920e7c3f1"
+      },
+      "log": {
+        "path": ".codex-work/product-native-environment/agent-01.log",
+        "sha256": "bf3f0a960149abf1dfa3a939071dbc17c45265f85daf5d33c897742b3cf5ae53"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 11,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "agent-boundary-01",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::office_agent::environment::environment_is_rechecked_at_export_preparation_and_atomic_publication",
+        "--",
+        "--include-ignored",
+        "--test-threads=1"
+      ],
+      "explicitOwnedWorkerEnvironment": true,
+      "exitCode": 0,
+      "elapsedSeconds": 18.77450062497519,
+      "sourceUnchanged": true,
+      "sourceFiles": 4157,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker"
+      ],
+      "sourceMapSha256": "73536f898af458094344bb53e985f691f28ba58973a650d7dfb81c5fded865a8",
+      "report": {
+        "path": ".codex-work/product-native-environment/agent-boundary-01.json",
+        "sha256": "ca8bad905ae3370ed87f7f226c498cad0fa2a079b62efabe9502c9ada8651855"
+      },
+      "log": {
+        "path": ".codex-work/product-native-environment/agent-boundary-01.log",
+        "sha256": "ec0e38dc85773284c7ae2e45342916a8870b44c37f36e9fa4264953510acf339"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "device-config-01",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "musterwork-agent-device-runtime",
+        "--lib",
+        "office::"
+      ],
+      "explicitOwnedWorkerEnvironment": false,
+      "exitCode": 0,
+      "elapsedSeconds": 72.0530257911887,
+      "sourceUnchanged": true,
+      "sourceFiles": 4157,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker"
+      ],
+      "sourceMapSha256": "73536f898af458094344bb53e985f691f28ba58973a650d7dfb81c5fded865a8",
+      "report": {
+        "path": ".codex-work/product-native-environment/device-config-01.json",
+        "sha256": "e5385d4b3e48a0efeadd0d89ddb5a4404f36451453c8428adb91f70e8ef87f7c"
+      },
+      "log": {
+        "path": ".codex-work/product-native-environment/device-config-01.log",
+        "sha256": "6555b1df5a616415d833fffbdf3eceaa4b2036642961756a5766ab56aad6496c"
+      },
+      "rustTestSummaries": [
+        {
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "name": "production-clippy-01",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "musterwork-agent-musteroffice",
+        "-p",
+        "musterwork-agent-runtime-artifact",
+        "-p",
+        "musterwork-agent-tool-executor",
+        "-p",
+        "musterwork-agent-device-runtime",
+        "--lib",
+        "--no-deps",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "explicitOwnedWorkerEnvironment": false,
+      "exitCode": 0,
+      "elapsedSeconds": 36.539417665917426,
+      "sourceUnchanged": true,
+      "sourceFiles": 4157,
+      "sourceInventory": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "crates",
+        "contracts",
+        "proto",
+        "tests/conformance",
+        "applications/device-runtime",
+        "build-support",
+        "resources/skills",
+        "vendor/musteroffice/550e264393618a838c8d0cf722184ef939373bd0dfc91d2c4a8c2da87f5dda31",
+        "../../../MusterOffice/.codex-work/product-sdk-refresh/input",
+        "../../components/musteroffice/generated/workers/darwin-arm64/b93e718a02d8620b56c5627ad0c2066cd84cdb694a6fe2d7818399d752a557d0/mo-export-worker"
+      ],
+      "sourceMapSha256": "73536f898af458094344bb53e985f691f28ba58973a650d7dfb81c5fded865a8",
+      "report": {
+        "path": ".codex-work/product-native-environment/production-clippy-01.json",
+        "sha256": "c0ae41b450f54b2def5b68f509e58b9dcf6cd7297acf0d31414431510f539bba"
+      },
+      "log": {
+        "path": ".codex-work/product-native-environment/production-clippy-01.log",
+        "sha256": "1c8784793fb97609c43cbfe3c5e65b0b32491f93a0f5dbbd39c3ac6051b3f456"
+      },
+      "rustTestSummaries": []
+    }
+  ],
+  "passedDistinctTests": 16,
+  "sourceScopeNotes": [
+    "agent-01 captured the same production sources but preceded addition of the final provenance test; that added test passed in agent-boundary-01.",
+    "Later runs also capture build-support and resource Skill files; agent-01 did not inventory those auxiliary paths.",
+    "Clippy is scoped to four selected production libraries with --no-deps, not a workspace-wide lint claim."
+  ],
+  "outputs": [
+    {
+      "version": 1,
+      "path": ".codex-work/product-native-environment/actual-agent-01-environment/version-1.pptx",
+      "bytes": 10735,
+      "sha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+      "sameBytesAsExplicitV4Export": true,
+      "zipParts": 21,
+      "xmlPartsParsed": 20,
+      "crc": "passed"
+    },
+    {
+      "version": 2,
+      "path": ".codex-work/product-native-environment/actual-agent-01-environment/version-2.pptx",
+      "bytes": 10729,
+      "sha256": "0d28df97204dab351fc0b85d6853f9d28edfb4dc111fc18d8a22f733a4e4264e",
+      "sameBytesAsExplicitV4Export": true,
+      "zipParts": 21,
+      "xmlPartsParsed": 20,
+      "crc": "passed"
+    }
+  ],
+  "skillDraft": {
+    "path": "resources/skills/musterwork-presentation-authoring-v8/SKILL.md",
+    "sha256": "813039be4f02cea0077c97ecc5f8e2921d9071ab1f82fdfd1e6a29f70a508c03",
+    "registeredInActiveRelease": false,
+    "realModelSessionVerified": false,
+    "genericCodexValidator": {
+      "exitCode": 1,
+      "reason": "Product-specific optional_tools, required_tools, title, when_to_use are outside the generic Codex frontmatter schema; product metadata was retained.",
+      "resultSource": "executed skill-creator quick_validate.py; tool transcript, no source-bound log captured"
+    }
+  },
+  "unverified": [
+    "Real model session and full desktop replacement acceptance",
+    "Native template and reopen existing Artifact flows",
+    "Licensed font distribution and complete glyph/typography quality",
+    "Complete playback, media, SmartArt, equations and native editing round trips",
+    "Shared Home/PostgreSQL native computation route",
+    "Process kill/power loss, full Native/WASM parity, Office/WPS matrix, performance and final package size"
+  ],
+  "qualityClaim": "Only the owned fixture structural checks passed; remaining quality dimensions not_proven."
+}

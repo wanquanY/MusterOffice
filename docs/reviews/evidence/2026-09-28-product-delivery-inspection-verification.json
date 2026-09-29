@@ -1,0 +1,339 @@
+{
+  "stage": "product-delivery-inspection",
+  "date": "2026-09-28",
+  "status": "verified-reinspection-computation-not-native-verify-stage",
+  "implemented": [
+    "Read-only SDK access to bound preview observations from the same receipt inspection.",
+    "Product engine delegates delivery byte/page/plan/font/preview validation to SDK.",
+    "Exact output closure and independent accepted pins; capacity overflow/unmeasured/measured-fit, no full quality promotion."
+  ],
+  "notCompleted": [
+    "NativeVerify maintained Tool execution and final proof.",
+    "Native visual-review subject binding within the existing product review owner.",
+    "Native catalog publication and automatic upload environment selection.",
+    "Full advanced PPT, Office/WPS, historical migration, performance/size and replacement acceptance."
+  ],
+  "environment": {
+    "system": "Darwin",
+    "release": "25.2.0",
+    "machine": "arm64",
+    "productBranch": "codex/musteroffice-integration",
+    "profile": "native debug development; test elapsed time is not a benchmark"
+  },
+  "materials": {
+    "sdkManifestSha256": "7ed23b21a12b0cacc4cf563ead1b60133a6b5659c3a235881c910d5ece232471",
+    "worker": {
+      "sha256": "52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50",
+      "byteLength": 42750912
+    },
+    "workerUnchanged": true,
+    "registryDependenciesChanged": false,
+    "sdkLibraries": 26,
+    "sdkRegistryPackages": 54
+  },
+  "tests": 31,
+  "checks": [
+    {
+      "location": "kernel",
+      "run": "delivery-01",
+      "passedTests": 26,
+      "command": [
+        "env",
+        "MO_SKIA_LIB_DIR=$MUSTEROFFICE/.codex-work/scan-dispatch/native-normalized",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-presentation-delivery",
+        "-p",
+        "mo-native-export",
+        "--lib"
+      ],
+      "elapsedSeconds": 6.5159530830569565,
+      "sourceUnchanged": true,
+      "currentInventoryMatches": true,
+      "reportSha256": "1a2d014f1233337ef2300d07b922e66ab679764fcfd2cb902feecde98715f812",
+      "logSha256": "1d4154cd2d39e1a48daec72a3b9cff2f2f06e1c63c5c3337b3bd4a743eba0929"
+    },
+    {
+      "location": "kernel",
+      "run": "lint-01",
+      "passedTests": 0,
+      "command": [
+        "env",
+        "MO_SKIA_LIB_DIR=$MUSTEROFFICE/.codex-work/scan-dispatch/native-normalized",
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-presentation-delivery",
+        "-p",
+        "mo-native-export",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "elapsedSeconds": 3.524621207965538,
+      "sourceUnchanged": true,
+      "currentInventoryMatches": true,
+      "reportSha256": "2187c51221a9cfaf8615cbc1d6f475fff66b0c61fd31bd739c0dd449d65426ef",
+      "logSha256": "af5a2b2b64c223111d2caf41ef491354027dc855597e510e57d9097fa46acf90"
+    },
+    {
+      "location": "product",
+      "run": "inspection-02",
+      "passedTests": 1,
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_STRESS_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/input-02",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-verify/inspection-02-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-verify/inspection-02-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-verify/inspection-02-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "env",
+        "MUSTERWORK_NATIVE_INSPECTION_PREFIX=$MUSTERWORK_WORKTREE/.codex-work/integration/text-capacity/native-01-native",
+        "MUSTERWORK_NATIVE_INSPECTION_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-verify/inspection-02-actual.json",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::office_agent::template_engine::inspection::",
+        "--",
+        "--include-ignored",
+        "--test-threads=1"
+      ],
+      "elapsedSeconds": 33.4053278749343,
+      "sourceUnchanged": true,
+      "currentInventoryMatches": true,
+      "reportSha256": "e988ce0a0127424f149989fbd0a5cf706f1bdd11623ae3a95bde5cd092861e94",
+      "logSha256": "568b258e23cdd0f9f182d09350c998d5744aebb89bd9afa186d581b5a03d06f4"
+    },
+    {
+      "location": "product",
+      "run": "adapter-01",
+      "passedTests": 0,
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_STRESS_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/input-02",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-verify/adapter-01-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-verify/adapter-01-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-verify/adapter-01-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "clippy",
+        "--no-deps",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-musteroffice",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "elapsedSeconds": 30.29127087490633,
+      "sourceUnchanged": true,
+      "currentInventoryMatches": true,
+      "reportSha256": "2ff3825cb62f0e914c67685d01a26e855c3bc911786c110d7edf3195a8dc61f5",
+      "logSha256": "0dcd9e00cb7d3d602bbf1553519bba77a519fe3547543578a4578fc52d33b80a"
+    },
+    {
+      "location": "product",
+      "run": "artifact-01",
+      "passedTests": 2,
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_STRESS_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/input-02",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-verify/artifact-01-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-verify/artifact-01-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-verify/artifact-01-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-runtime-artifact",
+        "--lib",
+        "presentation_engine::"
+      ],
+      "elapsedSeconds": 3.8816067909356207,
+      "sourceUnchanged": true,
+      "currentInventoryMatches": true,
+      "reportSha256": "e1b68335da2af826fd50854115914076ef7926adf3e58daf9afc7fb3de554ef3",
+      "logSha256": "4b0bca6ef422e94c8aa6c5d3a285a3acf4ee3e8a6be8a7bd11119bd2017419e0"
+    },
+    {
+      "location": "product",
+      "run": "native-01",
+      "passedTests": 2,
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_STRESS_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/input-02",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-verify/native-01-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-verify/native-01-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-verify/native-01-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::office_agent::template_maintenance::",
+        "--",
+        "--include-ignored",
+        "--test-threads=1"
+      ],
+      "elapsedSeconds": 51.58558391593397,
+      "sourceUnchanged": true,
+      "currentInventoryMatches": true,
+      "reportSha256": "501372132a85e8525902881cbbe594c3d6418f25655c2cccff4dbd6e5c06cc1f",
+      "logSha256": "5bf309a2cd238326fd108bbfd763c24261d36e16f65f777bf8f6a184d6d612e7"
+    }
+  ],
+  "actualInspection": {
+    "productions": 9,
+    "pages": 18,
+    "measuredFrames": 72,
+    "overflows": 1,
+    "statuses": [
+      "measured-fit",
+      "measured-fit",
+      "measured-fit",
+      "overflow",
+      "measured-fit",
+      "measured-fit",
+      "measured-fit",
+      "measured-fit",
+      "measured-fit"
+    ],
+    "qualityProven": false,
+    "negativeCases": 6,
+    "measurementsMatchIndependentPriorInspection": true,
+    "reportSha256": "145a811ef38b5304e1a6deb5a07dd2063d8b53cc3900b07185b8b5210397d46e"
+  },
+  "productionRegression": {
+    "profile": "product-template-text-capacity/1",
+    "qualityProven": false,
+    "sourceSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+    "priorSourceSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+    "pptxAndPngBytesUnchanged": true,
+    "claimSemanticsUnchanged": true,
+    "computations": 9,
+    "measuredPages": 18,
+    "measuredFrames": 72,
+    "framesWithHorizontalOverflow": 1,
+    "framesWithVerticalOverflow": 0
+  },
+  "productionReportSha256": "aeb004d03ae5aa24df818aefeb5784ac8092c528119844244bc63d3d7aeb1a75",
+  "sourceFiles": [
+    {
+      "repository": "kernel",
+      "path": "crates/mo-presentation-delivery/src/lib.rs",
+      "sha256": "ff206e532d8001034b2aa989fd4f6fa8e7842300a63abee7a22caf81d3350132",
+      "lines": 52
+    },
+    {
+      "repository": "kernel",
+      "path": "crates/mo-presentation-delivery/src/receive.rs",
+      "sha256": "e076be7abfd11d3301cb3e9f6cd1dc390b2b54ffa0721fef14daf9095ac84f3c",
+      "lines": 269
+    },
+    {
+      "repository": "kernel",
+      "path": "crates/mo-presentation-delivery/src/receive/evidence.rs",
+      "sha256": "e1d2fda237c4e11b8e8da0368e618e03d758502ca2f5dffeb5d52ce3a7656f03",
+      "lines": 205
+    },
+    {
+      "repository": "kernel",
+      "path": "crates/mo-presentation-delivery/src/receive/tests.rs",
+      "sha256": "4892bc36432097b57a2d7595208659a4f2175a5306925c70dd31716e3b9b6335",
+      "lines": 402
+    },
+    {
+      "repository": "kernel",
+      "path": "crates/mo-native-export/src/client.rs",
+      "sha256": "07973c67d9e0e52d717d4fe6f29e8bdaaab70d2789ad906a3ea4ce9d95080393",
+      "lines": 300
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/template/engine.rs",
+      "sha256": "1b56978e67c87ab67a5719ad861c1dbd8064d1e2106dc48db2ad59469568aea6",
+      "lines": 344
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/crates/infrastructure/musteroffice/src/template/engine/inspect.rs",
+      "sha256": "c87948ca47d5687c7295d907cbd7844ce8e2321f00c8022bcfea8bbe1f1f983c",
+      "lines": 219
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/crates/runtime/artifact/src/presentation_engine/office_template.rs",
+      "sha256": "65a236b6c494b3334ac5d1724e4aa0a5acc69e564fd4a1ab3f027b9144ada93b",
+      "lines": 120
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/tests/conformance/tests/sqlite_agent_loop/presentation_office_agent/template_engine.rs",
+      "sha256": "22cb3253bd1a2bc4e958049f84e4001b0cd5bc544a0cf19f2547d75bdf8290c2",
+      "lines": 447
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/tests/conformance/tests/sqlite_agent_loop/presentation_office_agent/template_engine/inspection.rs",
+      "sha256": "9eec9aa8ebcadbd1bff1d2fedb7016e908d69215875cf183547e0461c15f3395",
+      "lines": 199
+    },
+    {
+      "repository": "product",
+      "path": "apps/agent-runtime/Cargo.toml",
+      "sha256": "e722fe044d8c8c07cce2900e329370dc4108801f7c4769771a532c9086c2bdd9",
+      "lines": 344
+    },
+    {
+      "repository": "product",
+      "path": "components/musteroffice/lock.json",
+      "sha256": "da4c6e3231f6cc0642d9a3fb29a096dc5bc2dab9e6fb165437e90cf987da8a13",
+      "lines": 11
+    }
+  ],
+  "preservedFailure": {
+    "run": "inspection-01",
+    "reason": "Test attempted direct serde decoding of domain ContentRef; corrected through the existing PresentationContentRef wire representation."
+  },
+  "boundaries": {
+    "mainProductWorkspaceWritten": false,
+    "stableChanged": false,
+    "remoteOrDeployment": false,
+    "goalComplete": false
+  }
+}

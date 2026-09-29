@@ -1,0 +1,534 @@
+{
+  "stage": "product-template-coordinator",
+  "date": "2026-09-28",
+  "status": "verified-explicit-native-definition-stress-coordination-not-full-replacement",
+  "scope": {
+    "implemented": [
+      "Original backend journal/coordinator whole-source NativeDefine and NativeStress, generation/lease/cancellation ownership preserved.",
+      "Lossless native output export and materialization across CAS namespaces, explicit outer-envelope authority only.",
+      "Actual snapshot/delivery page identity and real PostgreSQL migration, immutable rows and rollback protection."
+    ],
+    "notCompleted": [
+      "NativeVerify actual quality computation and catalog publication.",
+      "Automatic upload native environment discovery/default selection, Cloud/Web and complete UI flows.",
+      "Batch/recovery capacity, other parameter worker coverage, advanced PPT, Office/WPS and complete replacement gates."
+    ]
+  },
+  "environment": {
+    "system": "Darwin",
+    "release": "25.2.0",
+    "machine": "arm64",
+    "branch": "codex/musteroffice-integration",
+    "head": "8280b9837b7ed7fae5a502e97d6967b128772c11",
+    "profile": "debug native conformance and isolated backend/database tests; not a benchmark"
+  },
+  "materials": {
+    "sdkManifestSha256": "c2a893bc0a9cbac1bee5242ef8acbc26ea2657feb4f66f6c64db906a2c30f3b6",
+    "workerSha256": "9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+    "workerBytes": 42660544,
+    "sdkAndWorkerUnchanged": true,
+    "registryDependenciesAdded": 0
+  },
+  "testCount": 107,
+  "checks": [
+    {
+      "run": "native-01",
+      "report": ".codex-work/integration/template-coordinator/native-01.json",
+      "reportSha256": "db41e0a28119439c03f4e83343d85a5c802c99495f7a698b1b45044169e27e66",
+      "passedTests": 2,
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_STRESS_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/input-02",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-coordinator/native-01-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-coordinator/native-01-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-coordinator/native-01-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::office_agent::template_maintenance::",
+        "--",
+        "--include-ignored",
+        "--test-threads=1"
+      ],
+      "elapsedSeconds": 92.24217137508094,
+      "sourceUnchanged": true,
+      "logSha256": "babaf354c686b928af893e0a9f1f41a63106be78f3a3f9268fe662245dd351da",
+      "currentRelevantInventoryMatched": 4241,
+      "inventoryScope": "Rust/runtime/materials; unrelated Python changed later"
+    },
+    {
+      "run": "maintenance-lib-01",
+      "report": ".codex-work/integration/template-coordinator/maintenance-lib-01.json",
+      "reportSha256": "7bea2a6166c0505e4ec1f827f21553f5008c40a6b6f0e7b2002aca81e3624163",
+      "passedTests": 0,
+      "command": [
+        "env",
+        "MUSTERWORK_OFFICE_STRESS_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/input-02",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=9dcf30de180b5fb5b753f60bd53591ce7f2eac821e8046e03b7d4b58379ad2ae",
+        "MUSTERWORK_OFFICE_AGENT_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-coordinator/maintenance-lib-01-agent",
+        "MUSTERWORK_OFFICE_OPEN_TEST_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-coordinator/maintenance-lib-01-open",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-coordinator/maintenance-lib-01-native",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "cargo",
+        "clippy",
+        "--no-deps",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-runtime-maintenance",
+        "-p",
+        "musterwork-agent-runtime-snapshot",
+        "-p",
+        "musterwork-agent-musteroffice",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "elapsedSeconds": 12.019762375159189,
+      "sourceUnchanged": true,
+      "logSha256": "5567498460e93c635f28cce6d93fe3dc17addb556d66e9bba2cf220c05e47f43",
+      "currentRelevantInventoryMatched": 4241,
+      "inventoryScope": "Rust/runtime/materials; unrelated Python changed later"
+    },
+    {
+      "run": "backend-03",
+      "report": ".codex-work/integration/template-coordinator/backend-03.json",
+      "reportSha256": "9060186f3b42408f9c21196d4381904fe2d0a28e99826bb77b6f1bc1406a5122",
+      "passedTests": 95,
+      "command": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONPATH=$MUSTERWORK_WORKTREE/apps/agent-runtime/clients/python/src:$MUSTERWORK_WORKTREE",
+        "SECRET_KEY=$ISOLATED_TEST_SECRET",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_NATIVE_CHECKPOINT_PREFIX=$MUSTERWORK_WORKTREE/.codex-work/integration/template-coordinator/native-01-native",
+        "MUSTERWORK_NATIVE_TRANSFER_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-coordinator/backend-03-transfer",
+        "$TEST_PYTHON",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "backend/tests/unit/test_native_template_compilation.py",
+        "backend/tests/unit/test_native_template_runtime_content.py",
+        "backend/tests/unit/test_native_template_runtime.py",
+        "backend/tests/unit/test_native_template_snapshot.py",
+        "backend/tests/unit/test_presentation_compilation.py",
+        "backend/tests/unit/test_presentation_compilation_runtime.py",
+        "backend/tests/unit/test_presentation_compilation_delivery.py",
+        "backend/tests/unit/test_presentation_template_retry.py",
+        "backend/tests/unit/test_presentation_template_worker.py"
+      ],
+      "elapsedSeconds": 4.273675249889493,
+      "sourceUnchanged": true,
+      "logSha256": "b0579c782ec1ec14ad1404b0dbf12075220df35faaa17f6d9897ef64710b85a8",
+      "currentRelevantInventoryMatched": 1598,
+      "inventoryScope": "full captured backend/material inventory"
+    },
+    {
+      "run": "postgres-03",
+      "report": ".codex-work/integration/template-coordinator/postgres-03.json",
+      "reportSha256": "64b718307999c15a3428ad68ce8008cafff1b405638ef59f6888a46d5ccd0db8",
+      "passedTests": 10,
+      "command": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONPATH=$MUSTERWORK_WORKTREE/apps/agent-runtime/clients/python/src:$MUSTERWORK_WORKTREE",
+        "SECRET_KEY=$ISOLATED_TEST_SECRET",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "PRESENTATION_TEST_POSTGRES_DSN=$ISOLATED_TEST_POSTGRES_DSN",
+        "$TEST_PYTHON",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "backend/tests/database/test_presentation_compilation_postgres.py",
+        "backend/tests/database/test_native_template_compilation_postgres.py"
+      ],
+      "elapsedSeconds": 3.7529384158551693,
+      "sourceUnchanged": true,
+      "logSha256": "e8c94ee78cd256d89a5f8ddc476a7a3be9dc3aeb3e23424ab0f8a7d40b71c23e",
+      "currentRelevantInventoryMatched": 1469,
+      "inventoryScope": "full captured backend/material inventory"
+    }
+  ],
+  "actualExecution": {
+    "earlyCompletionRejected": true,
+    "nativeComputations": 10,
+    "outOfPlanCaseRejected": true,
+    "rejectedEvidenceMutations": 13,
+    "requiredCases": 8,
+    "scriptedModelRequests": 14,
+    "stageOutput": {
+      "byte_length": 25183,
+      "content_id": "58978416-555a-521e-8ec6-7ed6bb8b0cf2",
+      "media_type": "application/json",
+      "sha256": "4c0ffb8e3bf2eb70b9eeaee55ae3d6acf39a068243de6cfe604502d7ea4e3357"
+    },
+    "successfulCaseComputations": 9
+  },
+  "actualOutputs": {
+    "report": ".codex-work/integration-template-coordinator-actual-01.json",
+    "reportSha256": "72084a334d5d01cc70116f7d4c51fe7c6d42816b92bbd6eae1872699c2e14765",
+    "verification": {
+      "planSha256": "ee7f3f7fca56a3cb4244cdd3be752d6844b53f196512b76afd8c5f6d7cfddb1a",
+      "planBytes": 1656,
+      "fontSha256": "f2ffc5c85964790d2760fa70df6913c08f7cd719c5b6f8b9a2d3c37ec4b83973",
+      "sourceSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+      "cases": [
+        {
+          "caseId": 0,
+          "dimension": "source-values",
+          "scalars": 3,
+          "pptxSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+          "pptxBytes": 10735,
+          "changedParts": [],
+          "preservedCompressedParts": 21,
+          "actualAssets": 12,
+          "previews": [
+            {
+              "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d",
+              "byteLength": 14915
+            },
+            {
+              "sha256": "b347f37576dff5268f77cc7666066568d50e993ee690d3941c27693734acd0c9",
+              "byteLength": 11174
+            }
+          ],
+          "claims": {
+            "structure": "passed",
+            "layout": "not_proven",
+            "native-editability": "not_proven",
+            "playback": "not_proven",
+            "target-application": "not_proven"
+          }
+        },
+        {
+          "caseId": 1,
+          "dimension": "text-minimum",
+          "scalars": 1,
+          "pptxSha256": "87ec13b3c5ec7ce07d4d691b6d60202555183dd2551143c40c59e0b99f38a8bd",
+          "pptxBytes": 10738,
+          "changedParts": [
+            "ppt/slides/slide2.xml"
+          ],
+          "preservedCompressedParts": 20,
+          "actualAssets": 12,
+          "previews": [
+            {
+              "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d",
+              "byteLength": 14915
+            },
+            {
+              "sha256": "15676d97baaabcbc93f5bd15b6ec52b0c6132aaad2e2ccba905fa670a40f1bd8",
+              "byteLength": 10941
+            }
+          ],
+          "claims": {
+            "structure": "passed",
+            "layout": "not_proven",
+            "native-editability": "not_proven",
+            "playback": "not_proven",
+            "target-application": "not_proven"
+          }
+        },
+        {
+          "caseId": 2,
+          "dimension": "text-maximum-latin-wide",
+          "scalars": 16,
+          "pptxSha256": "34218b3a257a34e3900fe938593d0ccd1bcbe71b1ccebfc06b74cce570c6802e",
+          "pptxBytes": 10741,
+          "changedParts": [
+            "ppt/slides/slide2.xml"
+          ],
+          "preservedCompressedParts": 20,
+          "actualAssets": 12,
+          "previews": [
+            {
+              "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d",
+              "byteLength": 14915
+            },
+            {
+              "sha256": "fd4cd4ab603832f3a7d654ac54d9c7e96ba5fcd5ca8b212fe6c6950e41f95cb8",
+              "byteLength": 13767
+            }
+          ],
+          "claims": {
+            "structure": "passed",
+            "layout": "not_proven",
+            "native-editability": "not_proven",
+            "playback": "not_proven",
+            "target-application": "not_proven"
+          }
+        },
+        {
+          "caseId": 3,
+          "dimension": "text-maximum-latin-narrow",
+          "scalars": 16,
+          "pptxSha256": "c19c6847d889b51472465f339df1262e68ef44102dfd944c2605e54239e401fb",
+          "pptxBytes": 10741,
+          "changedParts": [
+            "ppt/slides/slide2.xml"
+          ],
+          "preservedCompressedParts": 20,
+          "actualAssets": 12,
+          "previews": [
+            {
+              "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d",
+              "byteLength": 14915
+            },
+            {
+              "sha256": "5311e1d8449c8b64417dfe174d2c5c4b523aea1d4900dca1ae3f27948a44972c",
+              "byteLength": 12422
+            }
+          ],
+          "claims": {
+            "structure": "passed",
+            "layout": "not_proven",
+            "native-editability": "not_proven",
+            "playback": "not_proven",
+            "target-application": "not_proven"
+          }
+        },
+        {
+          "caseId": 4,
+          "dimension": "text-maximum-cjk",
+          "scalars": 16,
+          "pptxSha256": "95e71cf3194a6007476cfb85b42afeba470e4b4eb516ac97bb946daf6aff7c25",
+          "pptxBytes": 10770,
+          "changedParts": [
+            "ppt/slides/slide2.xml"
+          ],
+          "preservedCompressedParts": 20,
+          "actualAssets": 12,
+          "previews": [
+            {
+              "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d",
+              "byteLength": 14915
+            },
+            {
+              "sha256": "ef198630c89edc0f9d27c3977699628d88a70c6e3db8f81b6ebc066601b2648d",
+              "byteLength": 13779
+            }
+          ],
+          "claims": {
+            "structure": "passed",
+            "layout": "not_proven",
+            "native-editability": "not_proven",
+            "playback": "not_proven",
+            "target-application": "not_proven"
+          }
+        },
+        {
+          "caseId": 5,
+          "dimension": "text-maximum-rtl",
+          "scalars": 16,
+          "pptxSha256": "357cab78767515b8a8770d78b78d04e888c4b4453f12b424b7a566c6bb35fd0b",
+          "pptxBytes": 10762,
+          "changedParts": [
+            "ppt/slides/slide2.xml"
+          ],
+          "preservedCompressedParts": 20,
+          "actualAssets": 12,
+          "previews": [
+            {
+              "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d",
+              "byteLength": 14915
+            },
+            {
+              "sha256": "337ab16c08dffed0889244a1fc1d529f019e144eb9eedff4ddf1a735449a64a6",
+              "byteLength": 12908
+            }
+          ],
+          "claims": {
+            "structure": "passed",
+            "layout": "not_proven",
+            "native-editability": "not_proven",
+            "playback": "not_proven",
+            "target-application": "not_proven"
+          }
+        },
+        {
+          "caseId": 6,
+          "dimension": "text-maximum-combining",
+          "scalars": 16,
+          "pptxSha256": "ff36e000b9ac6724e552672bf59f3c304cef0f48154c091c08d70a4dbe90eef8",
+          "pptxBytes": 10746,
+          "changedParts": [
+            "ppt/slides/slide2.xml"
+          ],
+          "preservedCompressedParts": 20,
+          "actualAssets": 12,
+          "previews": [
+            {
+              "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d",
+              "byteLength": 14915
+            },
+            {
+              "sha256": "bb08e9e85a84864addaf75146ad994571d5809588472558344c801d8b407a530",
+              "byteLength": 13361
+            }
+          ],
+          "claims": {
+            "structure": "passed",
+            "layout": "not_proven",
+            "native-editability": "not_proven",
+            "playback": "not_proven",
+            "target-application": "not_proven"
+          }
+        },
+        {
+          "caseId": 7,
+          "dimension": "text-maximum-word-breaks",
+          "scalars": 16,
+          "pptxSha256": "710bc643ed4c4394e75d9e072ff3c8241755f57d8697b020a713768a311f3721",
+          "pptxBytes": 10741,
+          "changedParts": [
+            "ppt/slides/slide2.xml"
+          ],
+          "preservedCompressedParts": 20,
+          "actualAssets": 12,
+          "previews": [
+            {
+              "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d",
+              "byteLength": 14915
+            },
+            {
+              "sha256": "3de4dce98c54fb91ce2f4d897e8439f674d32cfa5c845c28f4cf469e7b798e6a",
+              "byteLength": 12183
+            }
+          ],
+          "claims": {
+            "structure": "passed",
+            "layout": "not_proven",
+            "native-editability": "not_proven",
+            "playback": "not_proven",
+            "target-application": "not_proven"
+          }
+        }
+      ],
+      "allRequiredTextCasesExecuted": true,
+      "maintainedStressStageCompleted": true,
+      "qualityProven": false,
+      "scope": "Original maintained definition then all eight text cases; no typography or external application acceptance",
+      "stageBytes": 25183,
+      "storedContentCount": 107,
+      "sourcePageIds": [
+        "68560027d4d4d07a49f4c28e90d3346dc61c4b327418d3d8f5df720078112c6c",
+        "43e2152ebcaac68bed8530500ca3de0834f7ce7951f31e71f9859c725cfeea42"
+      ]
+    }
+  },
+  "transfer": {
+    "report": ".codex-work/integration/template-coordinator/backend-03-transfer/report.json",
+    "reportSha256": "d0e0f69bbad52d8cd55a6e7eaf746b6c5d49e1e70ba01616a363716240bfd5b6",
+    "verification": {
+      "byteTotal": 658750,
+      "qualityUpgraded": false,
+      "stages": [
+        {
+          "allReferencedBytesPreserved": true,
+          "embeddedReferencesUnchanged": true,
+          "mediaTypes": [
+            "application/json",
+            "application/octet-stream",
+            "application/vnd.musteroffice.feature-registry+json",
+            "application/vnd.musteroffice.font-profile+json",
+            "application/vnd.musteroffice.presentation+json",
+            "application/vnd.musteroffice.presentation-context+json",
+            "application/vnd.musteroffice.quality+json",
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            "image/png"
+          ],
+          "reboundReferences": 17,
+          "references": 17,
+          "stage": "native_define",
+          "templateSha256": "05149304ea1a7867cde2381a2e16e0396dbadcaef8d63580486cc79c85a515e4"
+        },
+        {
+          "allReferencedBytesPreserved": true,
+          "embeddedReferencesUnchanged": true,
+          "mediaTypes": [
+            "application/json",
+            "application/octet-stream",
+            "application/vnd.musteroffice.feature-registry+json",
+            "application/vnd.musteroffice.font-profile+json",
+            "application/vnd.musteroffice.presentation+json",
+            "application/vnd.musteroffice.presentation-context+json",
+            "application/vnd.musteroffice.quality+json",
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            "image/png"
+          ],
+          "reboundReferences": 107,
+          "references": 107,
+          "stage": "native_stress",
+          "templateSha256": "05149304ea1a7867cde2381a2e16e0396dbadcaef8d63580486cc79c85a515e4"
+        }
+      ],
+      "uploadedUniqueContent": 78
+    }
+  },
+  "database": {
+    "serverVersion": "postgres (PostgreSQL) 16.15",
+    "image": "sha256:c05eced0bdb41ea9b95a656472a6aa4d50cad0d8a2e33d14eb1c53fd6204f2ae",
+    "isolation": "temporary container and per-test schemas; no host mounts; production database unchanged",
+    "isolatedContainerRemoved": true,
+    "migration": "368",
+    "nativeWholeSourceIndex": -1,
+    "rollbackWithNativeRows": "rejected before schema removal; evidence retained"
+  },
+  "sources": {
+    "product/backend/services/presentation_templates/compilation_native.py": "164a655156eb708da1e22e843f1b6fd1fe1c5cc7fd50616b81e18cc495631edb",
+    "product/backend/services/presentation_templates/compilation.py": "f6249d5e974ee1bf2f64fecf79c1ee42fb1d974beacca996e90330655f16ee2e",
+    "product/backend/services/presentation_templates/compilation_checkpoints.py": "6824d47dc2ac58ccfb5b03e36c825a42d7199f114a9b313cd775ecdae258410d",
+    "product/backend/services/presentation_templates/compilation_journal.py": "f5aaca541d04cd35dc1e80d33ba7c7589dc39f957ad9eb06dd95be42527ef4d0",
+    "product/backend/services/presentation_templates/compilation_runtime.py": "f3e2efd6f963df274ebd4c480d9995ed3932dda2c1bcc91927a9e3e9e7b77604",
+    "product/backend/services/presentation_templates/runtime_content.py": "478a29e6223429c3c5c26103668f9791acadd8c65738cd0167db12766303a2a6",
+    "product/backend/models/presentation_compilation.py": "f644898a389bbf90fefb95d6becf28d8f688ad433ac50c55616012c6881b530f",
+    "product/backend/migrations/sql/368_presentation_native_stages.sql": "92b588c982c47435242c9f16304a9ec28be7e4fd63457b53a62eeaa982291fa0",
+    "product/backend/migrations/sql/368_rollback.sql": "75e8f2f15cfeb019436f804769f376df3fdd8db590b7da634cd789b77a2e4f75",
+    "product/backend/tests/unit/test_native_template_compilation.py": "e5f2dd2306672bc34255ffa88ff114a2be1970f90812f4ebec6f100f47d6a83f",
+    "product/backend/tests/unit/test_native_template_runtime.py": "0176442d059ca934e43ec9c005bd274241595e30e92e4ff3843117a3a6160e5d",
+    "product/backend/tests/unit/test_native_template_runtime_content.py": "8e430dc38e20d183a9021cb20f4fcb2e12fbd923fa5ca0ba2336b8616d38f544",
+    "product/backend/tests/database/test_native_template_compilation_postgres.py": "421e91a637934cc394f6e60c1b5f023bb8098eaaa89e6c1f626af0db6106cb83",
+    "product/backend/tests/database/test_presentation_compilation_postgres.py": "606bef8b9b064b30183069b14ae3b5703c59cb3a6044fdb5318bdb6b3a3c437b",
+    "product/apps/agent-runtime/crates/runtime/maintenance/src/presentation_tools/office/evidence.rs": "c884e847fb4542ce40b8ddf5e7ad2efdf3c9d71986132ec1e5a0521989d863cc",
+    "product/apps/agent-runtime/crates/runtime/maintenance/src/presentation_tools/office/stress.rs": "d8e6a682f33a29cf579a2615a1e7904c04a143a83e905bbe736a91112b551b89",
+    "product/apps/agent-runtime/crates/runtime/maintenance/src/presentation_tools/office/stress/input.rs": "5c9ece54165a7a368e53159a452386c3a6c0df77d5d37eef71d72c2a8a9179f7",
+    "product/apps/agent-runtime/crates/runtime/maintenance/src/presentation_tools/office/stress/proof.rs": "8ccd502d90a5b7e7b046581315c89af90c77dbc2eee297cf303860f501830dff",
+    "product/apps/agent-runtime/tests/conformance/tests/sqlite_agent_loop/presentation_office_agent/template_maintenance/stress.rs": "9a3ba89f23b0be2105d0c343aae957b84b68184f7c2bb218f2cfa0b3f4c0f44b",
+    "core/tools/verification/product-template-stress-maintenance-evidence.py": "198da1f476924c2b48384f402bdc687b4f12f5d958b6c86fa4cb80d6e5a14ebb"
+  },
+  "quality": {
+    "structure": "limited owned file checks passed",
+    "layout": "not_proven",
+    "nativeEditability": "not_proven",
+    "playback": "not_proven",
+    "targetApplication": "not_proven"
+  },
+  "additionalChecks": [
+    "Focused new Python files Ruff check and format check passed; Git diff whitespace check passed.",
+    "Strict Clippy for maintenance, snapshot and adapter libraries passed; not entire product lint."
+  ],
+  "retainedFailures": [
+    {
+      "run": "backend-01",
+      "reason": "Coordinator fixture used legacy MemoryStorage keys instead of production content-addressed owner namespace; switched fixture to existing faithful PrivateStorage."
+    }
+  ]
+}

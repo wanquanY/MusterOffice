@@ -1,6 +1,8 @@
 # MCP、Skill、Plugin 与公共操作合同
 
-2026-09-27 · 职责按 [ADR 0007](../decisions/0007-kernel-only-integration-boundary.md) 修订：SDK/CLI/MCP 为薄计算入口，权限、持久存储、任务与产品页面由接入方负责。设计中的完整接口与示例仍待逐项验收；现已生成计算请求/调用/收据等六份 Schema，并由直接 SDK/CLI 和本地薄 MCP 消费，见[当前实现](../implementation/thin-mcp.md)。该计算 draft 尚未冻结发行，旧 draft 宿主 Schema 保留原语义。
+2026-09-27 · 职责按 [ADR 0007](../decisions/0007-kernel-only-integration-boundary.md) 修订：SDK/CLI/MCP 为薄计算入口，权限、持久存储、任务与产品页面由接入方负责。设计中的完整接口与示例仍待逐项验收；现已生成计算请求/调用/收据等 Schema，并由直接 SDK/CLI 和本地薄 MCP 消费，见[当前实现](../implementation/thin-mcp.md)。该计算 draft 尚未冻结发行，旧 draft 宿主 Schema 保留原语义。
+
+2026-09-28，模板描述与实例化已纳入同一计算调用及收据，详见[模板共享协议](../implementation/template-protocol.md)。Musterwork 候选 Agent 已接入其原目录读取、固定版本和独立实例提交，见[产品模板调用](../implementation/product-native-templates.md)。下表完整工具面仍是目标设计，模板生产、页面组装和完整替换继续实施。
 
 已有[原生 MCP](../implementation/mcp-stdio.md)、[持久调度](../implementation/native-scheduler.md)、[TS 客户端](../implementation/operation-client.md)等阶段实现与证据；其中标准宿主/资源库属于旧方案，已隔离到显式旧版 MCP 兼容入口；默认本地入口不依赖它们。后续收敛须保留文稿计算及真实文件验证，不能把历史通过称为新边界已完成。
 

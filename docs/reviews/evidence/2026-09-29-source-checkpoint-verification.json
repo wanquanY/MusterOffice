@@ -1,0 +1,882 @@
+{
+  "format": "musteroffice.source-checkpoint-verification/1",
+  "date": "2026-09-29",
+  "status": "passed-selected-source-gates",
+  "base": "9e86c84b9cbd3f0af7d98cad5d2b69f599718075",
+  "implementationCommits": [
+    "2e9cbb19fc032d176bd935dc9ebbeb30f8ea45da",
+    "3a7b8e55e86c790be90023bcdb0fef4ed8a188af",
+    "7d5162e1f4f949e0d2222bdf774faf3a7db4ce4c"
+  ],
+  "sdkBaselineReceiptsMatched": 639,
+  "sourceSha256": "00feaa06cd59488cda50210a0f482d4cf860b3a9b1a8b85a0740597fe95ff281",
+  "sourceUnchangedWithinEachGateRun": true,
+  "lockRepair": {
+    "status": "installed-and-locked-metadata-passed",
+    "externalPackagesUnchanged": 139,
+    "internalChanges": {
+      "mo-embedded-sdk": {
+        "before": {
+          "name": "mo-embedded-sdk",
+          "version": "0.1.0",
+          "dependencies": [
+            "mo-common",
+            "mo-native-export",
+            "mo-native-io",
+            "mo-native-render",
+            "mo-opc",
+            "mo-presentation-delivery",
+            "mo-presentation-edit",
+            "mo-presentation-model",
+            "mo-presentation-operations",
+            "mo-presentation-template",
+            "sha2"
+          ]
+        },
+        "after": {
+          "name": "mo-embedded-sdk",
+          "version": "0.1.0",
+          "dependencies": [
+            "mo-common",
+            "mo-native-export",
+            "mo-native-io",
+            "mo-native-render",
+            "mo-opc",
+            "mo-presentation-delivery",
+            "mo-presentation-edit",
+            "mo-presentation-model",
+            "mo-presentation-operations",
+            "mo-presentation-template",
+            "mo-timeline",
+            "sha2"
+          ]
+        }
+      },
+      "mo-presentation-model": {
+        "before": {
+          "name": "mo-presentation-model",
+          "version": "0.1.0",
+          "dependencies": [
+            "mo-common",
+            "mo-timeline",
+            "schemars",
+            "serde",
+            "serde_json"
+          ]
+        },
+        "after": {
+          "name": "mo-presentation-model",
+          "version": "0.1.0",
+          "dependencies": [
+            "mo-common",
+            "mo-timeline",
+            "schemars",
+            "serde",
+            "serde_json",
+            "thiserror"
+          ]
+        }
+      }
+    },
+    "candidateSha256": "8688dc666d52cc2980f67d7b2292441f6b3cd610d77a7c446f12a0899803f694",
+    "preparationNote": "Initial scratch assertion expected source crate instead of SDK; actual Cargo metadata and both production manifests confirm timeline SDK and model error dependency edges.",
+    "previousSha256": "718577aa25370a6f226373c6de398a4b3fe499f3527393d5b6ad63c9dca62b68",
+    "metadataArgs": [
+      "cargo",
+      "metadata",
+      "--manifest-path",
+      "tools/mo-mcp/Cargo.toml",
+      "--locked",
+      "--offline",
+      "--format-version",
+      "1"
+    ],
+    "metadataExitCode": 0,
+    "onlyChangedSourcePath": "tools/mo-mcp/Cargo.lock",
+    "previousSourceSha256": "1af6bcdee2e895893f964614e8fe729b57067db6860703246c25e510ee9a3959",
+    "updatedSourceSha256": "00feaa06cd59488cda50210a0f482d4cf860b3a9b1a8b85a0740597fe95ff281",
+    "commit": "7d5162e1f4f949e0d2222bdf774faf3a7db4ce4c"
+  },
+  "initialFailure": {
+    "name": "mcp-clippy",
+    "argv": [
+      "cargo",
+      "clippy",
+      "--manifest-path",
+      "tools/mo-mcp/Cargo.toml",
+      "--all-targets",
+      "--locked",
+      "--offline",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "status": "failed",
+    "log": ".codex-work/commit-preparation-20260929/gates/mcp-clippy.log",
+    "exitCode": 101,
+    "durationSeconds": 0.23295412515290082,
+    "logReceipt": {
+      "path": ".codex-work/commit-preparation-20260929/gates/mcp-clippy.log",
+      "sha256": "e3b89644471082c25eff03df77c697e067d89eacd3c4c86ed1d1cf67ac8eee87",
+      "byteLength": 279
+    }
+  },
+  "workspaceTests": {
+    "passed": 1292,
+    "failed": 0,
+    "ignored": 26
+  },
+  "selectedGroups": [
+    "lint",
+    "mcp",
+    "native",
+    "rust",
+    "typescript"
+  ],
+  "notSelectedGroups": [
+    "contracts",
+    "mcp-protocol",
+    "wasm"
+  ],
+  "checks": [
+    {
+      "name": "verification-driver-tests",
+      "argv": [
+        "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/verification",
+        "-p",
+        "test_current.py",
+        "-v"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/gates/verification-driver-tests.log",
+      "exitCode": 0,
+      "durationSeconds": 0.175438541918993,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/gates/verification-driver-tests.log",
+        "sha256": "53deab22c1f501cd3852f0efa0253225affe3ce8b85ea022256793cfd367e14f",
+        "byteLength": 625
+      }
+    },
+    {
+      "name": "agent-package-tests",
+      "argv": [
+        "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/agent-package",
+        "-p",
+        "test_build.py",
+        "-v"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/gates/agent-package-tests.log",
+      "exitCode": 0,
+      "durationSeconds": 0.12774450005963445,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/gates/agent-package-tests.log",
+        "sha256": "87b5d50226cb098fde17a72a0d76223c5ed9fb93b79f21629b098790ee355aa2",
+        "byteLength": 783
+      }
+    },
+    {
+      "name": "playback-sdk-package-tests",
+      "argv": [
+        "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/playback-sdk",
+        "-p",
+        "test_build.py",
+        "-v"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/gates/playback-sdk-package-tests.log",
+      "exitCode": 0,
+      "durationSeconds": 0.07669158303178847,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/gates/playback-sdk-package-tests.log",
+        "sha256": "45f6b1e0c723c1d08f6aa41574e654d8478a275228c6eff06550ad9b18527b71",
+        "byteLength": 473
+      }
+    },
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/gates/format.log",
+      "exitCode": 0,
+      "durationSeconds": 1.4617132081184536,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/gates/format.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byteLength": 0
+      }
+    },
+    {
+      "name": "clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/gates/clippy.log",
+      "exitCode": 0,
+      "durationSeconds": 132.77304391702637,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/gates/clippy.log",
+        "sha256": "da492824df13a39f94c21cb9384c91a7f95be1ac5f7695991995cb19cfce3806",
+        "byteLength": 3812
+      }
+    },
+    {
+      "name": "rust-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--locked",
+        "--offline"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/gates/rust-tests.log",
+      "exitCode": 0,
+      "durationSeconds": 1207.3851927078795,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/gates/rust-tests.log",
+        "sha256": "e4548bade792d3c869839434efd1efdf9e679b457700833300d80331031cef0d",
+        "byteLength": 162982
+      },
+      "rustTests": {
+        "passed": 1292,
+        "failed": 0,
+        "ignored": 26
+      }
+    },
+    {
+      "name": "types",
+      "argv": [
+        "pnpm",
+        "check:types"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/gates/types.log",
+      "exitCode": 0,
+      "durationSeconds": 2.833987707970664,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/gates/types.log",
+        "sha256": "cf67b99ee091380e5a4c6fefdb8bf00f1bccd76b43b61c04267e8a55aa0ad1e0",
+        "byteLength": 4284
+      }
+    },
+    {
+      "name": "client-tests",
+      "argv": [
+        "pnpm",
+        "test:operation-client"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/gates/client-tests.log",
+      "exitCode": 0,
+      "durationSeconds": 0.655227541923523,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/gates/client-tests.log",
+        "sha256": "ae8c339cb289671de000a84d9aec72fce8abb96a3852abe159199cae644f203f",
+        "byteLength": 1906
+      }
+    },
+    {
+      "name": "playback-client-tests",
+      "argv": [
+        "pnpm",
+        "test:playback-client"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/gates/playback-client-tests.log",
+      "exitCode": 0,
+      "durationSeconds": 0.603630708064884,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/gates/playback-client-tests.log",
+        "sha256": "1510341faa4fd5cde6d6225f6f4d8ca10b87baba74728568adb2af19950fbf79",
+        "byteLength": 2521
+      }
+    },
+    {
+      "name": "native-build",
+      "argv": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-cli",
+        "-p",
+        "mo-host",
+        "-p",
+        "mo-raster-worker",
+        "-p",
+        "mo-export-worker"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/gates/native-build.log",
+      "exitCode": 0,
+      "durationSeconds": 6.50104087498039,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/gates/native-build.log",
+        "sha256": "8c6285127a115bc029c3c38f540324cd29906017b991269a239203fc4bfaddc3",
+        "byteLength": 741
+      }
+    },
+    {
+      "name": "native-render-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-native-render",
+        "--test",
+        "delivery",
+        "--",
+        "--ignored"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/gates/native-render-tests.log",
+      "workers": {
+        "mo-raster-worker": {
+          "path": "target/debug/mo-raster-worker",
+          "sha256": "61adf7d1e189cbc622e8374d18dfe0691b41d7461c987b4be1b7c4b351fa4b31"
+        },
+        "mo-export-worker": {
+          "path": "target/debug/mo-export-worker",
+          "sha256": "4e5ce8b64c59a676baeee18bb109891c8c5826abe004f387f90fd3ae390cedd0"
+        }
+      },
+      "exitCode": 0,
+      "durationSeconds": 35.15429491689429,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/gates/native-render-tests.log",
+        "sha256": "2d057ba19b75091a2f8b2777009817741e6179c2df196b32ecffc6b9da97888d",
+        "byteLength": 733
+      },
+      "rustTests": {
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    {
+      "name": "native-playback-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-native-render",
+        "--test",
+        "playback",
+        "--",
+        "--ignored"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/gates/native-playback-tests.log",
+      "workers": {
+        "mo-raster-worker": {
+          "path": "target/debug/mo-raster-worker",
+          "sha256": "61adf7d1e189cbc622e8374d18dfe0691b41d7461c987b4be1b7c4b351fa4b31"
+        },
+        "mo-export-worker": {
+          "path": "target/debug/mo-export-worker",
+          "sha256": "4e5ce8b64c59a676baeee18bb109891c8c5826abe004f387f90fd3ae390cedd0"
+        }
+      },
+      "exitCode": 0,
+      "durationSeconds": 8.547873500036076,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/gates/native-playback-tests.log",
+        "sha256": "c489cd1f64119d5197c9bda223297a29fcb5351c7201483c773149b85d83c755",
+        "byteLength": 710
+      },
+      "rustTests": {
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    {
+      "name": "native-host-export-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-standard-host",
+        "--test",
+        "exports",
+        "--",
+        "--ignored"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/gates/native-host-export-tests.log",
+      "workers": {
+        "mo-raster-worker": {
+          "path": "target/debug/mo-raster-worker",
+          "sha256": "61adf7d1e189cbc622e8374d18dfe0691b41d7461c987b4be1b7c4b351fa4b31"
+        },
+        "mo-export-worker": {
+          "path": "target/debug/mo-export-worker",
+          "sha256": "4e5ce8b64c59a676baeee18bb109891c8c5826abe004f387f90fd3ae390cedd0"
+        }
+      },
+      "exitCode": 0,
+      "durationSeconds": 23.043950667139143,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/gates/native-host-export-tests.log",
+        "sha256": "27e34fee45030d82cfe5bd066309a9112bf19a781f74836b65fa3d69705013ab",
+        "byteLength": 1133
+      },
+      "rustTests": {
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    {
+      "name": "native-export-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-export-worker"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/gates/native-export-tests.log",
+      "workers": {
+        "mo-raster-worker": {
+          "path": "target/debug/mo-raster-worker",
+          "sha256": "61adf7d1e189cbc622e8374d18dfe0691b41d7461c987b4be1b7c4b351fa4b31"
+        },
+        "mo-export-worker": {
+          "path": "target/debug/mo-export-worker",
+          "sha256": "4e5ce8b64c59a676baeee18bb109891c8c5826abe004f387f90fd3ae390cedd0"
+        }
+      },
+      "exitCode": 0,
+      "durationSeconds": 21.616503334138542,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/gates/native-export-tests.log",
+        "sha256": "2fdfb38355e5e09b67a2c52545f89fa7594552309b1218dd789126711cb01294",
+        "byteLength": 1665
+      },
+      "rustTests": {
+        "passed": 12,
+        "failed": 0,
+        "ignored": 1
+      }
+    },
+    {
+      "name": "native-computation-cli-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "mo-cli",
+        "--test",
+        "computation",
+        "--",
+        "--ignored"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/gates/native-computation-cli-tests.log",
+      "workers": {
+        "mo-raster-worker": {
+          "path": "target/debug/mo-raster-worker",
+          "sha256": "61adf7d1e189cbc622e8374d18dfe0691b41d7461c987b4be1b7c4b351fa4b31"
+        },
+        "mo-export-worker": {
+          "path": "target/debug/mo-export-worker",
+          "sha256": "4e5ce8b64c59a676baeee18bb109891c8c5826abe004f387f90fd3ae390cedd0"
+        }
+      },
+      "exitCode": 0,
+      "durationSeconds": 16.22203545900993,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/gates/native-computation-cli-tests.log",
+        "sha256": "af6e15eac0491464a1bb7aeb984ee58a31e47488d6f6cf0bdd0a9fb0a5725d54",
+        "byteLength": 432
+      },
+      "rustTests": {
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    {
+      "name": "mcp-format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--manifest-path",
+        "tools/mo-mcp/Cargo.toml",
+        "--",
+        "--check"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/mcp-gates/mcp-format.log",
+      "exitCode": 0,
+      "durationSeconds": 0.18533458397723734,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/mcp-gates/mcp-format.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byteLength": 0
+      }
+    },
+    {
+      "name": "mcp-clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--manifest-path",
+        "tools/mo-mcp/Cargo.toml",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/mcp-gates/mcp-clippy.log",
+      "exitCode": 0,
+      "durationSeconds": 24.01473691686988,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/mcp-gates/mcp-clippy.log",
+        "sha256": "e5a86204fa5801878ae0843baf40401b9087a93e7c220b8f680587deca70331d",
+        "byteLength": 5489
+      }
+    },
+    {
+      "name": "mcp-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--manifest-path",
+        "tools/mo-mcp/Cargo.toml",
+        "--locked",
+        "--offline"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/mcp-gates/mcp-tests.log",
+      "exitCode": 0,
+      "durationSeconds": 34.2586910831742,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/mcp-gates/mcp-tests.log",
+        "sha256": "5b03cd2b08b8f5cedb0719fd8b767e52d659bab8c1a01794689be4b68a1aef2e",
+        "byteLength": 6970
+      },
+      "rustTests": {
+        "passed": 17,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    {
+      "name": "mcp-build",
+      "argv": [
+        "cargo",
+        "build",
+        "--manifest-path",
+        "tools/mo-mcp/Cargo.toml",
+        "--locked",
+        "--offline"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/mcp-gates/mcp-build.log",
+      "exitCode": 0,
+      "durationSeconds": 1.8896651251707226,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/mcp-gates/mcp-build.log",
+        "sha256": "6dc416ee5cb8791cbf9c7f196174894af413770cba9eae7cbf3cc6660fbe0a8d",
+        "byteLength": 160
+      }
+    },
+    {
+      "name": "mcp-legacy-clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--manifest-path",
+        "tools/mo-mcp/Cargo.toml",
+        "--features",
+        "legacy-host",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/mcp-gates/mcp-legacy-clippy.log",
+      "exitCode": 0,
+      "durationSeconds": 4.590887374943122,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/mcp-gates/mcp-legacy-clippy.log",
+        "sha256": "694d7c0d8c75c5e95f2a65996f08f605b2d524fa5713446ef0b9f83a1215ca34",
+        "byteLength": 713
+      }
+    },
+    {
+      "name": "mcp-legacy-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--manifest-path",
+        "tools/mo-mcp/Cargo.toml",
+        "--features",
+        "legacy-host",
+        "--locked",
+        "--offline"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/mcp-gates/mcp-legacy-tests.log",
+      "exitCode": 0,
+      "durationSeconds": 7.498487959150225,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/mcp-gates/mcp-legacy-tests.log",
+        "sha256": "8ad89f766a14cf90e092f428ce956f2df344cadc0cb87cf0885677e8c63c449f",
+        "byteLength": 2927
+      },
+      "rustTests": {
+        "passed": 18,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    {
+      "name": "mcp-legacy-build",
+      "argv": [
+        "cargo",
+        "build",
+        "--manifest-path",
+        "tools/mo-mcp/Cargo.toml",
+        "--features",
+        "legacy-host",
+        "--bin",
+        "mo-mcp-legacy",
+        "--locked",
+        "--offline"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/mcp-gates/mcp-legacy-build.log",
+      "exitCode": 0,
+      "durationSeconds": 1.7200481670442969,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/mcp-gates/mcp-legacy-build.log",
+        "sha256": "5e2b6dfad82075c54974a5456c77a4eb16d01bc5eae04dc701107823dc64f941",
+        "byteLength": 160
+      }
+    },
+    {
+      "name": "mcp-http-clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--manifest-path",
+        "tools/mo-mcp/Cargo.toml",
+        "--features",
+        "http",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/mcp-gates/mcp-http-clippy.log",
+      "exitCode": 0,
+      "durationSeconds": 19.58542212517932,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/mcp-gates/mcp-http-clippy.log",
+        "sha256": "d1fa5cfff087fdc46629a7889d76519aebaacc5d4b1f5d1a43d12ba19a3be86a",
+        "byteLength": 4656
+      }
+    },
+    {
+      "name": "mcp-http-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--manifest-path",
+        "tools/mo-mcp/Cargo.toml",
+        "--features",
+        "http",
+        "--locked",
+        "--offline"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/mcp-gates/mcp-http-tests.log",
+      "exitCode": 0,
+      "durationSeconds": 29.567626875126734,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/mcp-gates/mcp-http-tests.log",
+        "sha256": "e18b9c93c90493de58410c3596152e9d90734a1bbb16a14663b176a4f5231bd0",
+        "byteLength": 6923
+      },
+      "rustTests": {
+        "passed": 22,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    {
+      "name": "mcp-http-build",
+      "argv": [
+        "cargo",
+        "build",
+        "--manifest-path",
+        "tools/mo-mcp/Cargo.toml",
+        "--features",
+        "http",
+        "--bin",
+        "mo-mcp-http",
+        "--locked",
+        "--offline"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/mcp-gates/mcp-http-build.log",
+      "exitCode": 0,
+      "durationSeconds": 2.1574490829370916,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/mcp-gates/mcp-http-build.log",
+        "sha256": "5c5740d364018409b689cb629ab1cd376aea5f0d04062ef4e8a23a2024b3f2a2",
+        "byteLength": 160
+      }
+    },
+    {
+      "name": "mcp-all-features-clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--manifest-path",
+        "tools/mo-mcp/Cargo.toml",
+        "--all-features",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "log": ".codex-work/commit-preparation-20260929/mcp-gates/mcp-all-features-clippy.log",
+      "exitCode": 0,
+      "durationSeconds": 1.9423289170954376,
+      "logReceipt": {
+        "path": ".codex-work/commit-preparation-20260929/mcp-gates/mcp-all-features-clippy.log",
+        "sha256": "f9175472479f1b3493e6c7e281b3ef0473f91ca631a26df1804e9634557b5eb1",
+        "byteLength": 416
+      }
+    }
+  ],
+  "reportReceipts": [
+    {
+      "path": ".codex-work/commit-preparation-20260929/gates/report.json",
+      "sha256": "dbbd6a16b7a561a57358b84a048eaf2aaaeca4d0b169884a3c77cb8857e813a4",
+      "byteLength": 13361
+    },
+    {
+      "path": ".codex-work/commit-preparation-20260929/mcp-gates/report.json",
+      "sha256": "f760ec950d91007906823d8131dea5c7cf09454c395b1d35c503ec658da5d2e5",
+      "byteLength": 6111
+    }
+  ],
+  "tableImageEvidence": {
+    "path": "docs/reviews/evidence/2026-09-29-table-images-verification.json",
+    "sha256": "8360981e7d32bd0058ee907a16c2b12a674c2138e3dd126d5fdf5c9c4ed216ad",
+    "byteLength": 133957
+  },
+  "tableImageChecks": {
+    "path": ".codex-work/table-images/checks/results.json",
+    "sha256": "f4ccfaee36cecc0da6c4aa0f61aff42ac3dc3de47c92a22cf42db9805b4dc57d",
+    "byteLength": 3807
+  },
+  "sourceAudit": {
+    "sourceFilesChecked": 534,
+    "maxSourceLines": 1935,
+    "over2000": [],
+    "jsonFilesParsed": 142,
+    "conflictMarkers": []
+  },
+  "documentAudit": {
+    "originalFilesPreservedExceptKnownEdits": true,
+    "knownEdits": [
+      "README.md",
+      "docs/README.md",
+      "docs/implementation/progress.md",
+      "docs/reviews/evidence/2026-09-28-template-protocol-verification.json",
+      "tools/test-support/source_resource_page.rs"
+    ],
+    "localLinks": 1041,
+    "missingLinks": []
+  },
+  "publicationPathNormalization": {
+    "originalReport": {
+      "path": "docs/reviews/evidence/2026-09-28-template-protocol-verification.json",
+      "bytes": 16931,
+      "sha256": "7317c4d15a0b5d30462c7d6563fc43c73fb093fcc8e8d3111228614177112f4c"
+    },
+    "normalizedReport": {
+      "path": "docs/reviews/evidence/2026-09-28-template-protocol-verification.json",
+      "sha256": "aa9e5fc4d04b39413f0e8869782fb55b940cd31e0a4869933cef4967ca69975d",
+      "byteLength": 17092
+    },
+    "explanation": "Four product-root prefixes in displayed command arguments use ${MUSTERWORK_ROOT}. Original execution receipts and hashes remain unchanged; original report bytes are retained in the ignored local backup."
+  },
+  "boundaries": {
+    "localCommitOnly": true,
+    "productRepositoryWritten": false,
+    "remotePushed": false,
+    "productMerged": false,
+    "defaultEngineChanged": false,
+    "fullPptReplacementAccepted": false,
+    "releaseAccepted": false,
+    "testTimingsArePerformanceMeasurements": false
+  },
+  "limitations": [
+    "No new Office/WPS editable round trip or full visual acceptance",
+    "No new real Agent/Electron session or full product migration acceptance",
+    "No final installer-size or runtime performance claim",
+    "MCP feature builds/tests are not a new official client/protocol-session acceptance",
+    "The global complete phase-one objective remains unfinished"
+  ]
+}

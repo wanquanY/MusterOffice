@@ -1,0 +1,410 @@
+{
+  "version": 1,
+  "date": "2026-09-28",
+  "stage": "product-native-dispatch",
+  "status": "verified implementation progress; replacement acceptance incomplete",
+  "tests": 32,
+  "checks": [
+    {
+      "run": "dispatch-06",
+      "passedTests": 24,
+      "args": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50",
+        "MUSTERWORK_CLOUD_OFFICE_REPORT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-dispatch/dispatch-06-actual.json",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "postgres_presentation_admission",
+        "--test",
+        "postgres_execution",
+        "--",
+        "--test-threads=1"
+      ],
+      "reportSha256": "fdee53b32b07193e0317faa1179828a6c1007b461a566d1f8e30a0ca83cb7a10",
+      "logSha256": "d49a264a85df114bd742e17d62eba2ce634ddafcdf0f5b86c704478e2725481a",
+      "elapsedSeconds": 54.39989933301695,
+      "currentInventoryMatches": true
+    },
+    {
+      "run": "native-tools-03",
+      "passedTests": 4,
+      "args": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50",
+        "MUSTERWORK_CLOUD_OFFICE_REPORT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-dispatch/native-tools-03-actual.json",
+        "MUSTERWORK_OFFICE_TEST_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-agent/input",
+        "MUSTERWORK_NATIVE_TEMPLATE_SOURCE=$MUSTERWORK_WORKTREE/.codex-work/integration/template-protocol/actual-open-02/version-1.pptx",
+        "MUSTERWORK_NATIVE_TEMPLATE_OUTPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-dispatch/native-tools-03-native",
+        "MUSTERWORK_OFFICE_STRESS_INPUT=$MUSTERWORK_WORKTREE/.codex-work/integration/template-stress-plan/input-02",
+        "MUSTERWORK_NATIVE_INSPECTION_PREFIX=$MUSTERWORK_WORKTREE/.codex-work/integration/text-capacity/native-01-native",
+        "MUSTERWORK_NATIVE_FIT_PREFIX=$MUSTERWORK_WORKTREE/.codex-work/integration/native-final/wide-02-native",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "sqlite_agent_loop",
+        "presentation_authoring::office_agent::template_maintenance",
+        "--",
+        "--include-ignored",
+        "--test-threads=1"
+      ],
+      "reportSha256": "6bb580c3935036af0c77bcdc66c935ca9f538cd87d7c1bd79b98e86a9db1cd90",
+      "logSha256": "0adc5ef51f93231e4394c3ec31e552df51f70729318493c75c7ba7f782dc85de",
+      "elapsedSeconds": 100.58872129186057,
+      "currentInventoryMatches": true
+    },
+    {
+      "run": "cloud-02",
+      "passedTests": 3,
+      "args": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50",
+        "MUSTERWORK_CLOUD_OFFICE_REPORT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-dispatch/cloud-02-actual.json",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-cloud-worker",
+        "--lib",
+        "office::tests",
+        "--",
+        "--include-ignored",
+        "--test-threads=1"
+      ],
+      "reportSha256": "8531a35714ac3d49554ae404645d87cc8c516f935e3103224a7a05ecf9cfba9b",
+      "logSha256": "a776eaf98339fe82c41711f11a1393e2a414c06a65fe8b7950e2290f72da48ea",
+      "elapsedSeconds": 29.929690666962415,
+      "currentInventoryMatches": true
+    },
+    {
+      "run": "lint-02",
+      "passedTests": 0,
+      "args": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50",
+        "MUSTERWORK_CLOUD_OFFICE_REPORT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-dispatch/lint-02-actual.json",
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--no-deps",
+        "-p",
+        "musterwork-agent-cloud-worker",
+        "-p",
+        "musterwork-agent-cloud-api",
+        "-p",
+        "musterwork-agent-musteroffice",
+        "-p",
+        "musterwork-agent-postgres",
+        "-p",
+        "musterwork-agent-runtime-snapshot",
+        "-p",
+        "musterwork-agent-runtime-maintenance",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "reportSha256": "f9b1bdb06445dcb36def679cd4247faef6b58e1b5016d1ed4349bf6560414c26",
+      "logSha256": "3b182bf1c3fd52c80f95c30b147e97c740996d31aad56fc24da61a53f64e28b5",
+      "elapsedSeconds": 29.384687999961898,
+      "currentInventoryMatches": true
+    },
+    {
+      "run": "schema-05",
+      "passedTests": 1,
+      "args": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50",
+        "MUSTERWORK_CLOUD_OFFICE_REPORT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-dispatch/schema-05-actual.json",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-conformance",
+        "--test",
+        "postgres_persistence",
+        "migrations_are_fresh_repeatable_owned_and_constraint_complete",
+        "--",
+        "--test-threads=1"
+      ],
+      "reportSha256": "3a05a07c3ebe397a9fd83a8494b15825bfbaa18d42d5037b39012af346207529",
+      "logSha256": "ff172e942050c7eb72daf1ca49a23caef55dffeebdb071196e0312a45542ae94",
+      "elapsedSeconds": 23.274270167108625,
+      "currentInventoryMatches": true
+    },
+    {
+      "run": "migration-lock-02",
+      "passedTests": 0,
+      "args": [
+        "env",
+        "MUSTERWORK_BUILTIN_RELEASE_PROFILE=native-office-preview",
+        "MUSTERWORK_OFFICE_TEST_WORKER=$MUSTERWORK_WORKTREE/components/musteroffice/generated/workers/darwin-arm64/52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50/mo-export-worker",
+        "MUSTERWORK_OFFICE_TEST_WORKER_SHA256=52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50",
+        "MUSTERWORK_CLOUD_OFFICE_REPORT=$MUSTERWORK_WORKTREE/.codex-work/integration/native-dispatch/migration-lock-02-actual.json",
+        "cargo",
+        "run",
+        "--locked",
+        "--offline",
+        "-p",
+        "musterwork-agent-xtask",
+        "--",
+        "migration-lock"
+      ],
+      "reportSha256": "bb130324004c4bbb33b685f4a577a8e55c3e4d4d53d646d82599980155f68d25",
+      "logSha256": "9ba61bb4792487a077adc607f24f5c2fca7c19678c60ce3a9c35276bdc14978c",
+      "elapsedSeconds": 0.823372749844566,
+      "currentInventoryMatches": true
+    }
+  ],
+  "scope": {
+    "platform": "Darwin arm64",
+    "productBranch": "codex/musteroffice-integration",
+    "originalWorkspaceWritten": false,
+    "productionDatabaseChanged": false,
+    "deployed": false,
+    "externalModelsInvoked": false
+  },
+  "dispatch": {
+    "database": "isolated PostgreSQL containers; original application, admission, Ledger, scheduler and cancellation interfaces",
+    "nativeStages": [
+      "native_define",
+      "native_stress",
+      "native_verify"
+    ],
+    "oversizedIneligibleHead": 17,
+    "directAndIdempotentClaimsGuarded": true,
+    "expiredLeaseRecoveryMatched": true,
+    "cancellationDoesNotRequireComputeHost": true,
+    "nativeVisualReviewDoesNotRequireComputeHost": true,
+    "manifestIdentityNegativeCases": 9,
+    "singleConnectionAdmissionAndReplay": true,
+    "historicalProjection": "Original immutable facts retained; disposable test rebuilds only migration 0207 derived index, then verifies bounded restartable backfill"
+  },
+  "actualComputation": {
+    "reportSha256": "3ebcb570f430d2f1dab32023b636c3e26bc572ae26d8b9b911030620406293d8",
+    "files": [
+      {
+        "sha256": "b4355c310a731ea0a598866507fdfef161bc7a1714747ff747c75f60e485984c",
+        "bytes": 19882,
+        "role": "editable-document",
+        "mediaType": "application/vnd.musteroffice.presentation+json"
+      },
+      {
+        "sha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+        "bytes": 10735,
+        "role": "source",
+        "mediaType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "zipEntries": 21,
+        "xmlParts": 20
+      },
+      {
+        "sha256": "5e182a1675e0255bce1ff90e6a00d1fee0c12acee868987af1b4f39bf27cabc9",
+        "bytes": 1920,
+        "role": "other",
+        "mediaType": "application/octet-stream"
+      },
+      {
+        "sha256": "9ed1d3c6874d012c168a25eaa5af58e68047116d811d7cf9cc32ef722892e0a0",
+        "bytes": 797,
+        "role": "other",
+        "mediaType": "application/vnd.musteroffice.font-profile+json"
+      },
+      {
+        "sha256": "0f5119d7dac31d299829342ff36995dc8744374641f95ede9542febb5445f364",
+        "bytes": 1176,
+        "role": "other",
+        "mediaType": "application/vnd.musteroffice.feature-registry+json"
+      },
+      {
+        "sha256": "978b1b95113586c968e0f21f3b75e24729df9985a2e28d23720d4fe39655997d",
+        "bytes": 2385,
+        "role": "other",
+        "mediaType": "application/vnd.musteroffice.presentation-context+json"
+      },
+      {
+        "sha256": "9994f570012293468dec551ea69744d5097431f71783f994f423e77bf183283d",
+        "bytes": 14915,
+        "role": "preview",
+        "mediaType": "image/png",
+        "dimensions": [
+          640,
+          360
+        ]
+      },
+      {
+        "sha256": "bac1f838e3e1f2831dac15544b919038ef80ac2ce493e079cf419919cae7c638",
+        "bytes": 5166,
+        "role": "quality-report",
+        "mediaType": "application/json"
+      },
+      {
+        "sha256": "b347f37576dff5268f77cc7666066568d50e993ee690d3941c27693734acd0c9",
+        "bytes": 11174,
+        "role": "preview",
+        "mediaType": "image/png",
+        "dimensions": [
+          640,
+          360
+        ]
+      },
+      {
+        "sha256": "376a127e971c6bd4bc0101f7e403b7ad83b8a3cc171b18fa5b4d730bd49ea1e7",
+        "bytes": 4495,
+        "role": "quality-report",
+        "mediaType": "application/json"
+      },
+      {
+        "sha256": "34e7014839f462e48a08a68d0088665c67e22b70027b0bfb9114a7feac2943dd",
+        "bytes": 859,
+        "role": "quality-report",
+        "mediaType": "application/vnd.musteroffice.quality+json"
+      },
+      {
+        "sha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5",
+        "bytes": 10735,
+        "role": "pptx",
+        "mediaType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "zipEntries": 21,
+        "xmlParts": 20
+      }
+    ],
+    "inspection": {
+      "assetsVerified": 12,
+      "bundleDigest": "30cbeea1bb3da62eb895fc7fe68cdc16b663be576f8789102dac2ccfc8aa4465",
+      "declaredClaims": [
+        {
+          "basis": "static-inspection",
+          "evidenceAssetIds": [
+            "asset:e76c9b7f42a70e9e88651cadeaf91b8232ca1d4af69471d3bb416afd96422ca4"
+          ],
+          "kind": "structure",
+          "profileId": "opc-zip-xml-graph-digest-v1-draft",
+          "reason": "Actual stored OPC/ZIP/XML graph and digest verified; full PresentationML XSD is not asserted.",
+          "status": "passed",
+          "subjectSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5"
+        },
+        {
+          "basis": "none",
+          "evidenceAssetIds": [
+            "asset:e76c9b7f42a70e9e88651cadeaf91b8232ca1d4af69471d3bb416afd96422ca4"
+          ],
+          "kind": "layout",
+          "profileId": "presentations-pptx-resource-delivery-v1-draft",
+          "reason": "Every editor preview was rendered, but full layout fidelity has not been proved.",
+          "status": "not_proven",
+          "subjectSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5"
+        },
+        {
+          "basis": "none",
+          "evidenceAssetIds": [
+            "asset:e76c9b7f42a70e9e88651cadeaf91b8232ca1d4af69471d3bb416afd96422ca4"
+          ],
+          "kind": "native-editability",
+          "profileId": "presentations-pptx-resource-delivery-v1-draft",
+          "reason": "Native output was written; complete external editing roundtrip has not been proved.",
+          "status": "not_proven",
+          "subjectSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5"
+        },
+        {
+          "basis": "none",
+          "evidenceAssetIds": [
+            "asset:e76c9b7f42a70e9e88651cadeaf91b8232ca1d4af69471d3bb416afd96422ca4"
+          ],
+          "kind": "playback",
+          "profileId": "presentations-pptx-resource-delivery-v1-draft",
+          "reason": "Editor previews do not prove animation, transition or media playback.",
+          "status": "not_proven",
+          "subjectSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5"
+        },
+        {
+          "basis": "none",
+          "evidenceAssetIds": [
+            "asset:e76c9b7f42a70e9e88651cadeaf91b8232ca1d4af69471d3bb416afd96422ca4"
+          ],
+          "kind": "target-application",
+          "profileId": "presentations-pptx-resource-delivery-v1-draft",
+          "reason": "This delivery has no target-application test evidence.",
+          "status": "not_proven",
+          "subjectSha256": "fdb4cdd72ed24fd4e23030ef9bd1cc53ae6ec0465e27a1f59b325c0b7f8bf6f5"
+        }
+      ],
+      "documentId": "cloud:owned-source",
+      "pages": 2,
+      "profile": "delivery-bytes-reference-binding-v1-draft",
+      "revision": "b609fca5e624b4fd276d7599b4f127100353f9cb5b7f9dffd32b41da2db59c00",
+      "semanticDigest": "219581df76a2346bf4e2795c27d027bb206a5bef041fda26df21ae19c00ff1e4",
+      "settingsDigest": "50c3358a4304b1f429a7bccc589646a508cbba102b8508b44f704bfa1f52d80a",
+      "totalBytes": "84239"
+    },
+    "sdkManifestSha256": "7ed23b21a12b0cacc4cf563ead1b60133a6b5659c3a235881c910d5ece232471",
+    "workerSha256": "52bdebdbebd0ef7feca35e4f66213ba237e7ef48a3f6b248d0ac168c71dfcc50",
+    "workerBytes": 42750912,
+    "workerBuild": "macOS ARM64 debug; not distribution/performance evidence",
+    "nativeMaintenance": "Actual SDK Define/Stress/Verify and original SQLite journal. Scripted model/review ports verify orchestration; no live quality verdict."
+  },
+  "deployment": {
+    "schema": "0207, append-only migration lock",
+    "startup": "Bounded derived projection rebuild from pending exact snapshots and verified manifests; schema migrations remain dedicated-process-only",
+    "oldBinaryRollout": "Drain old workers before first migration/API/worker activation. Pre-change executables have no environment predicate; mixed old/new binaries are not certified."
+  },
+  "exclusions": [
+    "Full uploaded source to private signed parent/child model workflow, catalog commit and Agent consumption in one product session remain open.",
+    "No live external model, Linux worker, full advanced-content or Office/WPS/Native-WASM acceptance in this stage.",
+    "No production activation or public native Cloud Tool release.",
+    "No performance or packaged-size claims."
+  ],
+  "developmentCorrections": [
+    "Added the missing checksum for the earlier new migration 0206 without changing its SQL or existing checksums.",
+    "Corrected sorted table inventory and restored two entries already created by migration 0192 after complete schema conformance exposed the pre-existing drift. All final tests rerun against the resulting inventory.",
+    "Added transient content error mapping after compiler diagnosed an exhaustive match.",
+    "Fixed test telemetry access; retained failed report.",
+    "Initial native maintenance invocation omitted required owned-fixture environment variables; all four cases rerun with exact retained inputs.",
+    "Moved manifest reads outside admission write transaction and released duplicate-claim connections before receipt reads; single-connection tests passed."
+  ],
+  "sourceFiles": {
+    "Cargo.lock": "e505ed63878b437a11466f293c16c5e14f420ea660b2ae94e8b4fd8b5292fd52",
+    "migration-lock.toml": "42bbf567f5a44b61b962a292075b4cb88e96b2281a8370dcf427ce184e0e5856",
+    "crates/runtime/snapshot/Cargo.toml": "2df521084e756144c6ab65137de6ef896c0770051cec43a8d50be2062fe9eb28",
+    "crates/runtime/snapshot/src/lib.rs": "d0d50801e8f09f54ade60220c3b9f4037d648e988563b1cb264bc1de73e30461",
+    "crates/runtime/snapshot/src/presentation_environment.rs": "a931892c991659f0022777cb327e301eb11eaf760e2672243c1afb3b8e253d6c",
+    "crates/runtime/maintenance/src/presentation_tools/office.rs": "61d47583ce18cdb13ec98d8dea580553b20531d46eae4169622e7d7631c20c17",
+    "crates/infrastructure/postgres/migrations/0207_presentation_execution_environment.sql": "9e8b07a194d75338d85abc5bbf0d70cde38134556dc065de8cc67f07bf8e6499",
+    "crates/infrastructure/postgres/src/presentation_environment.rs": "d865f2eeac716b64419381ef7fb5f289aa63c6d88f27869ab058852e08963366",
+    "crates/infrastructure/postgres/src/admission.rs": "28108b45f78b14da46184aa0dd1a240c1e55883f3c710c224759109472f304b2",
+    "crates/infrastructure/postgres/src/presentation_admission.rs": "55929e4cb035373d816608a91ecb0fc88534bd3d2d7616e3dac83820784b04fd",
+    "crates/infrastructure/postgres/src/execution.rs": "d60a5fb6d7d9521767ac579f84e2205118444b504ae2960d61c6c5489f70f8f6",
+    "crates/infrastructure/postgres/src/ledger.rs": "3c92f1f576acf28645a8d803a5c1772bac336b624d4d89a1626b39ccb1e1d2c0",
+    "crates/infrastructure/postgres/src/scheduler.rs": "e9a57a398af1f371e73c0cf7a7212a2aaa8213b6ff180fc10a66e8885c4adcd8",
+    "crates/infrastructure/postgres/src/runtime_application_error.rs": "a67e359f6aa7897524a102d2bbfd938c9cc1ac84809ea7678123defccfa73076",
+    "crates/infrastructure/postgres/src/migration.rs": "977e0eda8d03e40cd9601f7e85c0a55cb8c4242e653215ca35a1c0cf238620c4",
+    "crates/infrastructure/postgres/src/lib.rs": "b072761a694071f208d9103eb9db590b729f2a5ca0be60b71fa2afb315e5f22d",
+    "crates/infrastructure/musteroffice/src/configuration/descriptor.rs": "037be3dc09bae9ef1c1f7f8faa10bdf5c1dc3bb0634032037fa0ee8972898c69",
+    "applications/cloud-api/src/composition.rs": "a833efb8dfc9e5af0aec54eaf5596b854337faa15083cf9ac2568fb20d6dcd15",
+    "applications/cloud-worker/src/composition.rs": "29fe65962ebb8f49a42bb00925b49a7586ead62db29c2e87b81f39af478b1813",
+    "applications/cloud-worker/src/office.rs": "a28ac7254c226296acfcce8fee1702a7c9d4ee08e61ea92471a196bebdc17c13",
+    "applications/cloud-worker/src/office/tests.rs": "5e1b0be5f4533d14944e14737698680dd3c74d88f1cd08b1d689b1989d41b72b",
+    "tests/conformance/tests/postgres_presentation_admission.rs": "1d409346d824df976fd14b222a77f9f0e719c5e61bd1acc7a650538690870a21",
+    "tests/conformance/tests/support/presentation_dispatch.rs": "2f636350869531f526c7235375d9e1f06c88d23952491cd4ecc7573230e2a10c"
+  }
+}

@@ -6,6 +6,7 @@
 
 - 产品名称：**MusterOffice**。
 - 建立独立本地项目，主分支 `main`，不创建额外 worktree。
+- 2026-09-27 用户另行要求 **Musterwork 接入工作使用独立 worktree**，释放其产品主工作区；此要求不改变 MusterOffice 自身的主工作区安排。迁移及执行边界见[产品工作区记录](../implementation/product-worktree.md)。
 - 面向 Agent，强调高性能、轻量化、多端跨平台。
 - 第一期为完整演示文稿内核，包含动画/转场、音视频、SmartArt、公式的创建、编辑和播放/呈现，并完成 Musterwork PPT 能力替换；产品可扩展其他办公场景。
 - 计划开源，不采购 Apryse；核心质量和可编辑性要求保留。
