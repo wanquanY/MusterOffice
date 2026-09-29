@@ -11,7 +11,7 @@ impl FrameBackend<'_> {
         let font_bytes = self
             .work
             .font_upload_bytes
-            .checked_add(font.len() as u64)
+            .checked_add(self.inner.font_upload_bytes(font))
             .ok_or_else(limit)?;
         let request_words = self
             .work

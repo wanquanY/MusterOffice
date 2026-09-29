@@ -7,6 +7,11 @@ export interface ShapingComponent {
     shapeBatch(font: Uint8Array, frame: Uint32Array): Uint32Array;
     outlineBatch(font: Uint8Array, frame: Uint32Array): Uint32Array;
     measureBatch(font: Uint8Array, frame: Uint32Array): Uint32Array;
+    registerFont(font: Uint8Array): number;
+    unregisterFont(handle: number): void;
+    shapeRegistered(handle: number, frame: Uint32Array): Uint32Array;
+    measureRegistered(handle: number, frame: Uint32Array): Uint32Array;
+    outlineRegistered(handle: number, frame: Uint32Array): Uint32Array;
     invalidate(): void;
 }
 "#;
@@ -29,11 +34,61 @@ extern "C" {
         font: &[u8],
         frame: &[u32],
     ) -> Result<Vec<u32>, JsValue>;
+    #[wasm_bindgen(method,catch,js_name=registerFont)]
+    fn register(this: &ShapingComponent, font: &[u8]) -> Result<u32, JsValue>;
+    #[wasm_bindgen(method,catch,js_name=unregisterFont)]
+    fn unregister(this: &ShapingComponent, handle: u32) -> Result<(), JsValue>;
+    #[wasm_bindgen(method,catch,js_name=shapeRegistered)]
+    fn registered_shape(
+        this: &ShapingComponent,
+        handle: u32,
+        frame: &[u32],
+    ) -> Result<Vec<u32>, JsValue>;
+    #[wasm_bindgen(method,catch,js_name=measureRegistered)]
+    fn registered_metrics(
+        this: &ShapingComponent,
+        handle: u32,
+        frame: &[u32],
+    ) -> Result<Vec<u32>, JsValue>;
+    #[wasm_bindgen(method,catch,js_name=outlineRegistered)]
+    fn registered_outlines(
+        this: &ShapingComponent,
+        handle: u32,
+        frame: &[u32],
+    ) -> Result<Vec<u32>, JsValue>;
     #[wasm_bindgen(method,catch,js_name=invalidate)]
     fn discard(this: &ShapingComponent) -> Result<(), JsValue>;
 }
 pub(crate) struct Backend<'a>(pub(crate) &'a ShapingComponent);
 impl TextBackend for Backend<'_> {
+    fn supports_font_residency(&self) -> bool {
+        true
+    }
+    fn register_font(&mut self, font: &[u8]) -> Result<u32, TextError> {
+        self.0
+            .register(font)
+            .map_err(|_| TextError::Host("WASM font registration failed"))
+    }
+    fn unregister_font(&mut self, handle: u32) -> Result<(), TextError> {
+        self.0
+            .unregister(handle)
+            .map_err(|_| TextError::Host("WASM font release failed"))
+    }
+    fn shape_registered(&mut self, handle: u32, frame: &[u32]) -> Result<Vec<u32>, TextError> {
+        self.0
+            .registered_shape(handle, frame)
+            .map_err(|_| TextError::Host("WASM registered shaping failed"))
+    }
+    fn measure_registered(&mut self, handle: u32, frame: &[u32]) -> Result<Vec<u32>, TextError> {
+        self.0
+            .registered_metrics(handle, frame)
+            .map_err(|_| TextError::Host("WASM registered metrics failed"))
+    }
+    fn outline_registered(&mut self, handle: u32, frame: &[u32]) -> Result<Vec<u32>, TextError> {
+        self.0
+            .registered_outlines(handle, frame)
+            .map_err(|_| TextError::Host("WASM registered outlines failed"))
+    }
     fn shape_batch(&mut self, font: &[u8], frame: &[u32]) -> Result<Vec<u32>, TextError> {
         self.0
             .invoke(font, frame)

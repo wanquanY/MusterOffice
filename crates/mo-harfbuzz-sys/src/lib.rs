@@ -2,6 +2,7 @@
 //! Workspace computation crates remain unsafe-free; the audited boundary is private.
 #[allow(unsafe_code)]
 mod ffi;
+mod fonts;
 use mo_text::{
     TextError,
     backend::{self, TextBackend},
@@ -12,6 +13,7 @@ static INSTANCE: Mutex<()> = Mutex::new(());
 #[derive(Default)]
 pub struct NativeShaper {
     invalid: bool,
+    fonts: fonts::Fonts,
 }
 impl NativeShaper {
     pub fn is_invalid(&self) -> bool {
@@ -73,6 +75,31 @@ impl NativeShaper {
     }
 }
 impl TextBackend for NativeShaper {
+    fn supports_font_residency(&self) -> bool {
+        true
+    }
+    fn register_font(&mut self, font: &[u8]) -> Result<u32, TextError> {
+        if self.invalid || ffi::invalid() {
+            return Err(TextError::Host("native instance invalidated"));
+        }
+        self.fonts.insert(font)
+    }
+    fn unregister_font(&mut self, handle: u32) -> Result<(), TextError> {
+        self.fonts.remove(handle)
+    }
+    fn shape_registered(&mut self, handle: u32, frame: &[u32]) -> Result<Vec<u32>, TextError> {
+        let font = self.fonts.get(handle)?;
+        self.execute(&font, frame, ffi::Operation::Shape)
+    }
+    fn measure_registered(&mut self, handle: u32, frame: &[u32]) -> Result<Vec<u32>, TextError> {
+        let font = self.fonts.get(handle)?;
+        self.execute(&font, frame, ffi::Operation::Metrics)
+    }
+    fn outline_registered(&mut self, handle: u32, frame: &[u32]) -> Result<Vec<u32>, TextError> {
+        let font = self.fonts.get(handle)?;
+        self.execute(&font, frame, ffi::Operation::Outlines)
+    }
+
     fn shape_batch(&mut self, font: &[u8], frame: &[u32]) -> Result<Vec<u32>, TextError> {
         self.execute(font, frame, ffi::Operation::Shape)
     }
@@ -84,6 +111,7 @@ impl TextBackend for NativeShaper {
     }
     fn invalidate(&mut self) {
         self.invalid = true;
+        self.fonts.clear();
         ffi::invalidate();
     }
 }

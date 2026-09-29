@@ -41,7 +41,7 @@ struct Pending {
 }
 pub(crate) struct Compiler<'a, 'm, 'font> {
     manifest: &'a PreparedManifest<'m, 'font>,
-    backend: &'a mut dyn TextBackend,
+    backend: mo_text::backend::FontSession<'a, 'font>,
     limits: TextPageLimits,
     pending: BTreeMap<(String, u32), Vec<Pending>>,
     preparation: prepare::PreparationBudget,
@@ -60,7 +60,7 @@ impl<'a, 'm, 'font> Compiler<'a, 'm, 'font> {
     ) -> Self {
         Self {
             manifest,
-            backend,
+            backend: manifest.font_session(backend),
             limits,
             pending: BTreeMap::new(),
             preparation: prepare::PreparationBudget::new(limits),
@@ -146,11 +146,16 @@ impl<'a, 'm, 'font> Compiler<'a, 'm, 'font> {
         limits.max_request_words -= self.work.request_words;
         limits.max_glyphs -= self.work.glyphs;
         limits.max_path_commands -= self.work.path_commands;
-        let frame =
-            source_frame::compute(pending.frame, self.manifest, self.backend, limits, check)?;
+        let frame = source_frame::compute(
+            pending.frame,
+            self.manifest,
+            &mut self.backend,
+            limits,
+            check,
+        )?;
         let (clusters, owners) = glyphs::bind(&frame, &pending.paints, check)?;
         let mut worker = source_frame::backend::FrameBackend {
-            inner: self.backend,
+            inner: &mut self.backend,
             work: frame.work.clone(),
             limits,
         };

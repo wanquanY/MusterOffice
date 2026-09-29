@@ -1,6 +1,8 @@
 //! Private transport between the shared Rust text engine and an isolated shaper.
 //! A single call uploads one font and a batch, never one crossing per glyph.
+mod session;
 use crate::TextError;
+pub use session::FontSession;
 
 pub const MAGIC: u32 = 0x4d4f5342;
 pub const COMPONENT_MAGIC: u32 = 0x4d4f4842;
@@ -9,6 +11,30 @@ pub const MAX_RESULT_WORDS: usize = 2 + 256 * 9 + 262144 * 7;
 pub const MAX_REQUEST_WORDS: usize = 2_200_000;
 
 pub trait TextBackend {
+    /// Actual font bytes transferred by the next batch. Legacy transports upload
+    /// the whole font. A verified calculation-scoped session can reuse residency.
+    fn font_upload_bytes(&self, font: &[u8]) -> u64 {
+        font.len() as u64
+    }
+    fn supports_font_residency(&self) -> bool {
+        false
+    }
+    fn register_font(&mut self, _font: &[u8]) -> Result<u32, TextError> {
+        Err(TextError::Host("font residency unavailable"))
+    }
+    fn unregister_font(&mut self, _handle: u32) -> Result<(), TextError> {
+        Err(TextError::Host("font residency unavailable"))
+    }
+    fn shape_registered(&mut self, _handle: u32, _frame: &[u32]) -> Result<Vec<u32>, TextError> {
+        Err(TextError::Host("font residency unavailable"))
+    }
+    fn measure_registered(&mut self, _handle: u32, _frame: &[u32]) -> Result<Vec<u32>, TextError> {
+        Err(TextError::Host("font residency unavailable"))
+    }
+    fn outline_registered(&mut self, _handle: u32, _frame: &[u32]) -> Result<Vec<u32>, TextError> {
+        Err(TextError::Host("font residency unavailable"))
+    }
+
     /// Reply: [0, count, length, component words, ...], or [status, failedRun].
     /// Any exception, trap, malformed reply or status 2/6 invalidates the instance.
     fn shape_batch(&mut self, font: &[u8], frame: &[u32]) -> Result<Vec<u32>, TextError>;

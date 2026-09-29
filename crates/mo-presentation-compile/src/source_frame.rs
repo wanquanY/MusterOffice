@@ -53,7 +53,8 @@ pub fn compile(
     check: &dyn Fn() -> bool,
 ) -> Result<SourceFramePlan, SourceFrameError> {
     let prepared = prepare(index, q, manifest, limits, check)?;
-    compute(prepared, manifest, backend, limits, check)
+    let mut session = manifest.font_session(backend);
+    compute(prepared, manifest, &mut session, limits, check)
 }
 pub(crate) struct PreparedFrame {
     prepared: crate::source_text::PreparedSourceText,

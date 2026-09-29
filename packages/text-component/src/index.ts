@@ -25,6 +25,9 @@ type Operation = keyof typeof profiles;
 export class ShapingComponent {
   #module: ComponentModule | undefined;
   #busy = false;
+  #fonts = new Map<number, {pointer:number; bytes:number}>();
+  #fontBytes = 0;
+  #nextFont = 0;
   private constructor(module: ComponentModule) { this.#module = module; }
   static async create(factory: ComponentFactory, compiled: WebAssembly.Module): Promise<ShapingComponent> {
     for (const item of WebAssembly.Module.imports(compiled)) {
@@ -43,12 +46,40 @@ export class ShapingComponent {
     return new ShapingComponent(module);
   }
   get invalid(): boolean { return !this.#module; }
-  invalidate(): void { this.#module = undefined; }
+  invalidate(): void { this.#fonts.clear(); this.#fontBytes=0; this.#module = undefined; }
+
+  registerFont(font: Uint8Array): number {
+    const m=this.#module;
+    if(!m || this.#busy) throw new Error("Shaping instance unavailable");
+    let pointer=0;
+    try {
+      if(!font.length || font.length>128*1024*1024 || this.#fontBytes+font.length>128*1024*1024 || this.#fonts.size>=32 || this.#nextFont>=0xffffffff)
+        throw new Error("Resident font budget exceeded");
+      pointer=m._malloc(font.length);
+      if(!pointer) throw new Error("Resident font allocation failed");
+      m.HEAPU8.set(font,pointer);
+      const handle=++this.#nextFont;
+      this.#fonts.set(handle,{pointer,bytes:font.length});this.#fontBytes+=font.length;
+      return handle;
+    } catch(error) {
+      try { if(pointer) m._free(pointer); } finally { this.invalidate(); }
+      throw error;
+    }
+  }
+  unregisterFont(handle: number): void {
+    const m=this.#module, font=this.#fonts.get(handle);
+    if(!m || this.#busy || !font) throw new Error("Unknown resident font");
+    try { m._free(font.pointer); this.#fonts.delete(handle); this.#fontBytes-=font.bytes; }
+    catch(error) { this.invalidate(); throw error; }
+  }
+  shapeRegistered(handle:number,frame:Uint32Array):Uint32Array {return this.#batch(handle,frame,"shape");}
+  measureRegistered(handle:number,frame:Uint32Array):Uint32Array {return this.#batch(handle,frame,"metrics");}
+  outlineRegistered(handle:number,frame:Uint32Array):Uint32Array {return this.#batch(handle,frame,"outlines");}
 
   shapeBatch(font: Uint8Array, frame: Uint32Array): Uint32Array {return this.#batch(font,frame,"shape");}
   measureBatch(font: Uint8Array, frame: Uint32Array): Uint32Array {return this.#batch(font,frame,"metrics");}
   outlineBatch(font: Uint8Array, frame: Uint32Array): Uint32Array {return this.#batch(font,frame,"outlines");}
-  #batch(font: Uint8Array, frame: Uint32Array, operation: Operation): Uint32Array {
+  #batch(font: Uint8Array | number, frame: Uint32Array, operation: Operation): Uint32Array {
     const profile = profiles[operation], maximum = profile.reply, shaping = operation === "shape";
     const m = this.#module;
     if (!m || this.#busy) throw new Error("Shaping instance unavailable");
@@ -61,11 +92,14 @@ export class ShapingComponent {
       allocations.push(pointer); return pointer;
     };
     try {
-      if (!font.length || font.length > 128 * 1024 * 1024 || frame.length < 4 || frame.length > profile.request ||
+      const resident=typeof font==="number"?this.#fonts.get(font):undefined;
+      const fontLength=typeof font==="number"?(resident?.bytes??0):font.length;
+      if (!fontLength || fontLength > 128 * 1024 * 1024 || frame.length < 4 || frame.length > profile.request ||
           frame[0] !== profile.magic || frame[1] !== 1 || frame[2] !== 0x0e0500 || frame[3]! > profile.count) {
         throw new Error("Invalid shaping transport frame");
       }
-      const fontPointer = allocate(font.length); m.HEAPU8.set(font, fontPointer);
+      const fontPointer = resident?.pointer ?? allocate(fontLength);
+      if(typeof font!=="number") m.HEAPU8.set(font, fontPointer);
       const slots = allocate(8), requestPointer = allocate(frame.length * 4), languagePointer = shaping?allocate(256):0;
       // Getter accesses below always retrieve the current view after memory growth.
       const results: Uint32Array[] = [];
@@ -85,9 +119,9 @@ export class ShapingComponent {
         }
         m.HEAPU32.set(frame.subarray(offset, offset + requestLength), requestPointer / 4); offset += requestLength;
         m.HEAPU32.fill(0, slots / 4, slots / 4 + 2);
-        const status = operation === "metrics" ? m._mo_hb_measure_font(fontPointer,font.length,requestPointer,requestLength,slots,slots+4) :
-          operation === "outlines" ? m._mo_hb_outline_font(fontPointer,font.length,requestPointer,requestLength,slots,slots+4) :
-          m._mo_hb_shape(fontPointer, font.length, requestPointer, requestLength, languagePointer, languageLength, slots, slots + 4);
+        const status = operation === "metrics" ? m._mo_hb_measure_font(fontPointer,fontLength,requestPointer,requestLength,slots,slots+4) :
+          operation === "outlines" ? m._mo_hb_outline_font(fontPointer,fontLength,requestPointer,requestLength,slots,slots+4) :
+          m._mo_hb_shape(fontPointer, fontLength, requestPointer, requestLength, languagePointer, languageLength, slots, slots + 4);
         output = m.HEAPU32[slots / 4]!;
         const count = m.HEAPU32[slots / 4 + 1]!;
         if (!Number.isInteger(status) || status < 0 || status > 6 || (status !== 0 && (output !== 0 || count !== 0))) {

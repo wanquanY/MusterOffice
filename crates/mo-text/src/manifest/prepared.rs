@@ -101,6 +101,14 @@ impl<'m, 'font> PreparedManifest<'m, 'font> {
             limits,
         })
     }
+    /// One bounded residency scope for an entire native page/frame calculation.
+    /// The scope releases every registered font even on cancellation or failure.
+    pub fn font_session<'a>(
+        &'a self,
+        backend: &'a mut dyn backend::TextBackend,
+    ) -> backend::FontSession<'a, 'font> {
+        backend::FontSession::new(backend, self.resources.fonts())
+    }
     /// Total immutable faces validated when loading this manifest. Repeated
     /// operations reuse them; per-operation FlowWork reports available faces,
     /// including faces not selected by that paragraph.
