@@ -2,15 +2,22 @@
 //! character and paint records across bodies, list levels and master defaults.
 //! Text leaves remain in the existing edit projection; layout is not inferred.
 mod attributes;
+mod binding;
+pub use binding::{SourceTextBodyBinding, bind_body};
+mod catalog;
+pub(super) use catalog::CatalogRoots;
 pub mod body;
 pub mod cascade;
+mod content;
 pub mod fonts;
 mod grammar;
 mod names;
 pub mod paint;
 mod read;
 use super::{drawingml::*, effects::*, fill::*, line::*};
+pub(super) use attributes::coordinate32;
 pub use attributes::*;
+pub(super) use content::{ContentReader, ContentResult};
 pub use names::*;
 pub(super) use read::{Budget, Reader};
 use schemars::JsonSchema;
@@ -30,6 +37,8 @@ pub struct SourceTextCatalog {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct SourceTextRoot {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cell: Option<super::table::SourceCellAddress>,
     pub source_ordinal: u32,
     /// Physical shape ID in this part; None for presentation/master defaults.
     pub owner: Option<u32>,

@@ -41,6 +41,67 @@ fn cancelled(check: &dyn Fn() -> bool) -> Result<(), Failure> {
         Ok(())
     }
 }
+/// Inline document calculations shared with WASM. Import/export require their
+/// explicit byte channels; this function does not resolve assets or publish.
+pub fn compute_inline(
+    invocation: Invocation,
+    check: &dyn Fn() -> bool,
+) -> Result<ComputationReceipt, Failure> {
+    cancelled(check)?;
+    invocation.validate_cancellable(check)?;
+    let (request_digest, result) = match &invocation.request.action {
+        DocumentAction::DescribeTemplate { definition } => {
+            let source = Snapshot::restore(
+                *invocation.snapshot.expect("source validated"),
+                ValidationLimits::default(),
+            )?;
+            let template = mo_presentation_template::Template::new(
+                source,
+                *definition.clone(),
+                Default::default(),
+                check,
+            )?;
+            let request_digest = invocation.request.digest().map_err(|_| {
+                Failure::new(FailureCode::InputInvalid, "canonical operation request")
+            })?;
+            (
+                request_digest,
+                ComputationResult::DescribedTemplate {
+                    description: Box::new(template.describe(check)?),
+                },
+            )
+        }
+        _ => {
+            let candidate = compute_mutation(
+                &invocation.request.computation(),
+                invocation.snapshot.map(|s| *s),
+                check,
+            )?;
+            let digest = candidate.request_digest().clone();
+            let (snapshot, receipt) = candidate.into_parts();
+            (
+                digest,
+                ComputationResult::Mutated {
+                    snapshot: Box::new(snapshot),
+                    receipt,
+                },
+            )
+        }
+    };
+    let result = ComputationReceipt {
+        request_id: invocation.request.request_id,
+        request_digest,
+        result,
+    };
+    crate::budget::check_size(
+        &result,
+        MAX_INVOCATION_BYTES,
+        "computation result bytes",
+        check,
+    )?;
+    cancelled(check)?;
+    Ok(result)
+}
 pub fn compute_mutation(
     request: &Computation<'_>,
     base: Option<SnapshotRecord>,
@@ -48,11 +109,26 @@ pub fn compute_mutation(
 ) -> Result<MutationCandidate, Failure> {
     cancelled(check)?;
     request.validate_profile()?;
+    crate::budget::check_size(
+        request.action,
+        MAX_OPERATION_BYTES,
+        "operation bytes",
+        check,
+    )?;
+    if let Some(source) = &base {
+        crate::budget::check_size(source, MAX_OPERATION_BYTES, "snapshot bytes", check)?;
+    }
     let request_digest = request
         .digest()
         .map_err(|_| Failure::new(FailureCode::InputInvalid, "canonical operation request"))?;
     let limits = ValidationLimits::default();
     let (snapshot, transaction, base_revision, base_semantic_digest) = match &request.action {
+        DocumentAction::DescribeTemplate { .. } => {
+            return Err(Failure::new(
+                FailureCode::InputInvalid,
+                "template description requires read-only computation",
+            ));
+        }
         DocumentAction::Import { .. } => {
             return Err(Failure::new(
                 FailureCode::ResourceIncomplete,
@@ -80,6 +156,44 @@ pub fn compute_mutation(
                 None,
                 None,
             )
+        }
+        DocumentAction::InstantiateTemplate {
+            document_id,
+            definition,
+            template_digest,
+            bindings,
+        } => {
+            let source = base.ok_or_else(|| {
+                Failure::new(
+                    FailureCode::NotFound,
+                    "template source snapshot must be provided",
+                )
+            })?;
+            let source = Snapshot::restore(source, limits)?;
+            let template = mo_presentation_template::Template::new(
+                source,
+                *definition.clone(),
+                Default::default(),
+                check,
+            )?;
+            let instance = template.instantiate(
+                &mo_presentation_template::InstantiateRequest {
+                    request_id: request.request_id.clone(),
+                    document_id: document_id.clone(),
+                    template_digest: template_digest.clone(),
+                    bindings: bindings.clone(),
+                },
+                check,
+            )?;
+            return candidate(
+                request_digest,
+                instance.snapshot,
+                None,
+                Some(Box::new(instance.receipt)),
+                None,
+                None,
+                check,
+            );
         }
         DocumentAction::Apply {
             document_id,
@@ -118,6 +232,7 @@ pub fn compute_mutation(
         request_digest,
         snapshot,
         transaction,
+        None,
         base_revision,
         base_semantic_digest,
         check,
@@ -128,6 +243,7 @@ fn candidate(
     request_digest: Digest,
     snapshot: SnapshotRecord,
     transaction: Option<Box<mo_presentation_edit::TransactionReceipt>>,
+    template: Option<Box<mo_presentation_template::InstantiationReceipt>>,
     base_revision: Option<Digest>,
     base_semantic_digest: Option<Digest>,
     check: &dyn Fn() -> bool,
@@ -137,6 +253,7 @@ fn candidate(
         revision: snapshot.revision.clone(),
         semantic_digest: snapshot.semantic_digest.clone(),
         transaction,
+        template,
     };
     crate::budget::check_size(&snapshot, MAX_OPERATION_BYTES, "snapshot bytes", check)?;
     cancelled(check)?;
@@ -213,5 +330,5 @@ pub fn compute_import(
     let digest = request
         .digest()
         .map_err(|_| Failure::new(FailureCode::InputInvalid, "canonical operation request"))?;
-    candidate(digest, snapshot, None, None, None, check)
+    candidate(digest, snapshot, None, None, None, None, check)
 }

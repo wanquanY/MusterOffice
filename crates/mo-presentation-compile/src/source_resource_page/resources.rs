@@ -29,7 +29,7 @@ struct Pending<'a> {
 pub(super) fn prepare(
     input: &dyn ImageInput,
     index: &SourceIndex,
-    page: &source_page::PreparedPage,
+    page: &source_page::PreparedPage<'_>,
     options: ResourcePageOptions,
     decoder: &mut dyn ImageDecoder,
     check: &dyn Fn() -> bool,

@@ -632,6 +632,33 @@
           "properties": {
             "kind": {
               "type": "string",
+              "const": "tableStyle"
+            },
+            "part": {
+              "type": "string"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "via": {
+              "$ref": "#/$defs/FillOwner"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part",
+            "sourceOrdinal",
+            "via"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
               "const": "theme"
             },
             "part": {
@@ -796,6 +823,133 @@
           ]
         },
         {
+          "description": "Physical cell formatting. Covered cells remain queryable; page painting\nselects merge origins separately.",
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "tableCell"
+            },
+            "nativeId": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nativeId",
+            "cell"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "edge": {
+              "$ref": "#/$defs/TableCellEdge"
+            },
+            "kind": {
+              "type": "string",
+              "const": "tableCellBorder"
+            },
+            "nativeId": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nativeId",
+            "cell",
+            "edge"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "tableBackground"
+            },
+            "nativeId": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nativeId"
+          ]
+        },
+        {
+          "description": "A real table-style declaration instantiated by this native table. None\nselects tblBg. Also identifies the exact lazy phClr reference context.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "tableStyleFill"
+            },
+            "nativeId": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "region": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/TableStyleRegion"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nativeId"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "edge": {
+              "$ref": "#/$defs/TableStyleEdge"
+            },
+            "kind": {
+              "type": "string",
+              "const": "tableStyleBorder"
+            },
+            "nativeId": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "region": {
+              "$ref": "#/$defs/TableStyleRegion"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nativeId",
+            "region",
+            "edge"
+          ]
+        },
+        {
           "type": "object",
           "properties": {
             "kind": {
@@ -825,6 +979,48 @@
     },
     "FillUnresolved": {
       "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "tableGrid"
+            },
+            "owner": {
+              "$ref": "#/$defs/FillOwner"
+            },
+            "reason": {
+              "$ref": "#/$defs/NativeTableGridIssue"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "owner",
+            "reason"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "tableStyle"
+            },
+            "owner": {
+              "$ref": "#/$defs/FillOwner"
+            },
+            "reason": {
+              "$ref": "#/$defs/TableStyleSelectionError"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "owner",
+            "reason"
+          ]
+        },
         {
           "type": "object",
           "properties": {
@@ -1331,6 +1527,111 @@
         "divisionByZero",
         "undefinedDirection",
         "tangentPole"
+      ]
+    },
+    "FrameCapacity": {
+      "type": "object",
+      "properties": {
+        "cell": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "contentHeight": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "emergencyLines": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "firstHorizontalOverflow": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FrameLine"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "horizontalOverflowLines": {
+          "description": "Counts the actual line search decisions, without rounding to integer EMU.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "inkBounds": {
+          "description": "Unpainted glyph ink, including overhang; not a clipping/overlap verdict.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Rect"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "inner": {
+          "description": "Q32 EMU before page/group/animation placement. Insets are already applied.",
+          "$ref": "#/$defs/Rect"
+        },
+        "lineCount": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "maximumLeftExcess": {
+          "description": "Largest pen excursion beyond each line's own width (indent/margins apply).",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "maximumRightExcess": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "object": {
+          "$ref": "#/$defs/SourceObjectRef"
+        },
+        "verticalExcess": {
+          "description": "max(content_height - inner height, 0), before vertical anchoring.",
+          "$ref": "#/$defs/FixedQ32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "object",
+        "inner",
+        "contentHeight",
+        "verticalExcess",
+        "lineCount",
+        "horizontalOverflowLines",
+        "emergencyLines",
+        "maximumLeftExcess",
+        "maximumRightExcess"
+      ]
+    },
+    "FrameLine": {
+      "type": "object",
+      "properties": {
+        "line": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "paragraph": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "paragraph",
+        "line"
       ]
     },
     "FrameWork": {
@@ -2228,84 +2529,259 @@
         "wedgeRoundRectCallout"
       ]
     },
+    "NativeTableGridIssue": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "emptyGrid"
+            }
+          },
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "actual": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "expected": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "rowWidth"
+            },
+            "row": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "kind",
+            "row",
+            "actual",
+            "expected"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "duplicateCellId"
+            }
+          },
+          "required": [
+            "kind",
+            "cell"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "invalidSpan"
+            }
+          },
+          "required": [
+            "kind",
+            "cell"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "missingNeighbour"
+            }
+          },
+          "required": [
+            "kind",
+            "cell"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "conflictingNeighbours"
+            }
+          },
+          "required": [
+            "kind",
+            "cell"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "outsideMerge"
+            },
+            "origin": {
+              "$ref": "#/$defs/SourceCellAddress"
+            }
+          },
+          "required": [
+            "kind",
+            "cell",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "conflictingSpan"
+            },
+            "origin": {
+              "$ref": "#/$defs/SourceCellAddress"
+            }
+          },
+          "required": [
+            "kind",
+            "cell",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "incompleteMerge"
+            },
+            "origin": {
+              "$ref": "#/$defs/SourceCellAddress"
+            }
+          },
+          "required": [
+            "kind",
+            "origin"
+          ]
+        }
+      ]
+    },
     "NativeTextElement": {
-      "type": "string",
-      "enum": [
-        "txBody",
-        "txStyles",
-        "defaultTextStyle",
-        "titleStyle",
-        "bodyStyle",
-        "otherStyle",
-        "lstStyle",
-        "bodyPr",
-        "p",
-        "pPr",
-        "defPPr",
-        "lvl1pPr",
-        "lvl2pPr",
-        "lvl3pPr",
-        "lvl4pPr",
-        "lvl5pPr",
-        "lvl6pPr",
-        "lvl7pPr",
-        "lvl8pPr",
-        "lvl9pPr",
-        "r",
-        "br",
-        "fld",
-        "t",
-        "rPr",
-        "defRPr",
-        "endParaRPr",
-        "noAutofit",
-        "normAutofit",
-        "spAutoFit",
-        "lnSpc",
-        "spcBef",
-        "spcAft",
-        "spcPct",
-        "spcPts",
-        "buClrTx",
-        "buClr",
-        "buSzTx",
-        "buSzPct",
-        "buSzPts",
-        "buFontTx",
-        "buFont",
-        "buNone",
-        "buAutoNum",
-        "buChar",
-        "tabLst",
-        "tab",
-        "latin",
-        "ea",
-        "cs",
-        "sym",
-        "fontRef",
-        "highlight",
-        "uLnTx",
-        "uLn",
-        "uFillTx",
-        "uFill",
-        "hlinkClick",
-        "hlinkMouseOver",
-        "rtl",
-        "noFill",
-        "solidFill",
-        "gradFill",
-        "blipFill",
-        "pattFill",
-        "grpFill",
-        "ln",
-        "effectLst",
-        "effectDag",
-        "srgbClr",
-        "scrgbClr",
-        "hslClr",
-        "sysClr",
-        "schemeClr",
-        "prstClr"
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "txBody",
+            "txStyles",
+            "defaultTextStyle",
+            "titleStyle",
+            "bodyStyle",
+            "otherStyle",
+            "lstStyle",
+            "bodyPr",
+            "p",
+            "pPr",
+            "defPPr",
+            "lvl1pPr",
+            "lvl2pPr",
+            "lvl3pPr",
+            "lvl4pPr",
+            "lvl5pPr",
+            "lvl6pPr",
+            "lvl7pPr",
+            "lvl8pPr",
+            "lvl9pPr",
+            "r",
+            "br",
+            "fld",
+            "t",
+            "rPr",
+            "defRPr",
+            "endParaRPr",
+            "noAutofit",
+            "normAutofit",
+            "spAutoFit",
+            "lnSpc",
+            "spcBef",
+            "spcAft",
+            "spcPct",
+            "spcPts",
+            "buClrTx",
+            "buClr",
+            "buSzTx",
+            "buSzPct",
+            "buSzPts",
+            "buFontTx",
+            "buFont",
+            "buNone",
+            "buAutoNum",
+            "buChar",
+            "tabLst",
+            "tab",
+            "latin",
+            "ea",
+            "cs",
+            "sym",
+            "fontRef",
+            "highlight",
+            "uLnTx",
+            "uLn",
+            "uFillTx",
+            "uFill",
+            "hlinkClick",
+            "hlinkMouseOver",
+            "rtl",
+            "noFill",
+            "solidFill",
+            "gradFill",
+            "blipFill",
+            "pattFill",
+            "grpFill",
+            "ln",
+            "effectLst",
+            "effectDag",
+            "srgbClr",
+            "scrgbClr",
+            "hslClr",
+            "sysClr",
+            "schemeClr",
+            "prstClr"
+          ]
+        },
+        {
+          "description": "Native table-style font collection; stored in the table style catalog.",
+          "type": "string",
+          "const": "font"
+        }
       ]
     },
     "NativeTileFlip": {
@@ -2321,7 +2797,7 @@
       "type": "object",
       "properties": {
         "authoredFont": {
-          "description": "Original run font declaration; absent for a shape fontRef fallback.",
+          "description": "Original selected font declaration; absent for a fontRef fallback.",
           "anyOf": [
             {
               "$ref": "#/$defs/SourceTextFont"
@@ -2333,6 +2809,17 @@
         },
         "declaredBy": {
           "$ref": "#/$defs/TextStyleDeclaration"
+        },
+        "tableFont": {
+          "description": "Script/collection location for an explicit table a:font declaration.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TableFontBinding"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "theme": {
           "anyOf": [
@@ -2363,6 +2850,40 @@
       "required": [
         "typeface",
         "declaredBy"
+      ]
+    },
+    "OpacityGroupWork": {
+      "type": "object",
+      "properties": {
+        "groups": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "maximumDepth": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "peakPixelBytes": {
+          "description": "Peak simultaneously live intermediate pixels, excluding output/snapshots.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "pixelWork": {
+          "description": "Pixels cleared plus pixels composited, including fully transparent groups.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "groups",
+        "maximumDepth",
+        "peakPixelBytes",
+        "pixelWork"
       ]
     },
     "ParagraphProperty": {
@@ -2646,6 +3167,22 @@
       "required": [
         "object",
         "cause"
+      ]
+    },
+    "Point": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "y": {
+          "$ref": "#/$defs/FixedQ32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
       ]
     },
     "PptxPageFailure": {
@@ -3131,6 +3668,16 @@
           "description": "Dimensionless raw Q32; not added to pixel coordinate budgets.",
           "$ref": "#/$defs/FixedQ32"
         },
+        "opacityGroups": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpacityGroupWork"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "paths": {
           "type": "integer",
           "format": "uint32",
@@ -3167,6 +3714,22 @@
         "gradientDraws",
         "gradientCoordinateErrorBound",
         "gradientValueErrorBound"
+      ]
+    },
+    "Rect": {
+      "type": "object",
+      "properties": {
+        "max": {
+          "$ref": "#/$defs/Point"
+        },
+        "min": {
+          "$ref": "#/$defs/Point"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "min",
+        "max"
       ]
     },
     "ResolutionDeclaration": {
@@ -3401,6 +3964,26 @@
         "HOST_FAILURE"
       ]
     },
+    "SourceCellAddress": {
+      "type": "object",
+      "properties": {
+        "column": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "row": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "row",
+        "column"
+      ]
+    },
     "SourceColor": {
       "type": "string",
       "enum": [
@@ -3491,6 +4074,26 @@
     },
     "SourceFrameIssue": {
       "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "coveredCell"
+            },
+            "origin": {
+              "$ref": "#/$defs/SourceCellAddress"
+            }
+          },
+          "required": [
+            "kind",
+            "cell",
+            "origin"
+          ]
+        },
         {
           "type": "object",
           "properties": {
@@ -4087,6 +4690,27 @@
         {
           "type": "object",
           "properties": {
+            "first": {
+              "$ref": "#/$defs/TableBorderTarget"
+            },
+            "kind": {
+              "type": "string",
+              "const": "tableBorderConflict"
+            },
+            "second": {
+              "$ref": "#/$defs/TableBorderTarget"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "first",
+            "second"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
             "kind": {
               "type": "string",
               "const": "fillSpace"
@@ -4345,6 +4969,17 @@
         },
         "resourcesSha256": {
           "$ref": "#/$defs/Digest"
+        },
+        "textCapacity": {
+          "description": "Shape-local capacity from the painted frame; None is historical/unmeasured.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TextCapacity"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "textFrames": {
           "type": "integer",
@@ -4776,8 +5411,284 @@
         "menuBar"
       ]
     },
+    "TableBorderTarget": {
+      "type": "object",
+      "properties": {
+        "cell": {
+          "$ref": "#/$defs/SourceCellAddress"
+        },
+        "edge": {
+          "$ref": "#/$defs/TableCellEdge"
+        },
+        "nativeId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "nativeId",
+        "cell",
+        "edge"
+      ]
+    },
+    "TableCellEdge": {
+      "type": "string",
+      "enum": [
+        "left",
+        "right",
+        "top",
+        "bottom",
+        "topLeftToBottomRight",
+        "bottomLeftToTopRight"
+      ]
+    },
+    "TableFontBinding": {
+      "type": "object",
+      "properties": {
+        "slot": {
+          "$ref": "#/$defs/NativeFontSlot"
+        },
+        "supplemental": {
+          "description": "Index into the table font collection's ordered supplemental list.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "slot"
+      ]
+    },
+    "TableStyleEdge": {
+      "type": "string",
+      "enum": [
+        "left",
+        "right",
+        "top",
+        "bottom",
+        "insideHorizontal",
+        "insideVertical",
+        "topLeftToBottomRight",
+        "topRightToBottomLeft"
+      ]
+    },
+    "TableStyleRegion": {
+      "type": "string",
+      "enum": [
+        "wholeTbl",
+        "band1H",
+        "band2H",
+        "band1V",
+        "band2V",
+        "lastCol",
+        "firstCol",
+        "lastRow",
+        "seCell",
+        "swCell",
+        "firstRow",
+        "neCell",
+        "nwCell"
+      ]
+    },
+    "TableStyleSelectionError": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "conflictingStyles"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "invalidIdentity"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingDefinition"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "gridMismatch"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "cellOutsideGrid"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "retainedDeclaration"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "cancelled"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "TableTextStyleSource": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "inline"
+            },
+            "object": {
+              "$ref": "#/$defs/SourceObjectRef"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "catalog"
+            },
+            "part": {
+              "type": "string"
+            },
+            "styleId": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part",
+            "styleId"
+          ]
+        }
+      ]
+    },
     "TextBodyOrigin": {
       "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "cell"
+            },
+            "object": {
+              "$ref": "#/$defs/SourceObjectRef"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "cell",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "cellDefault"
+            },
+            "object": {
+              "$ref": "#/$defs/SourceObjectRef"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "cell"
+          ]
+        },
         {
           "type": "object",
           "properties": {
@@ -4928,8 +5839,62 @@
         }
       ]
     },
+    "TextCapacity": {
+      "type": "object",
+      "properties": {
+        "frames": {
+          "description": "Complete frame coverage in paint order, including empty text frames.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FrameCapacity"
+          }
+        },
+        "profile": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "frames"
+      ]
+    },
     "TextCascadeUnresolved": {
       "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "tableGrid"
+            },
+            "reason": {
+              "$ref": "#/$defs/NativeTableGridIssue"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reason"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "tableStyle"
+            },
+            "reason": {
+              "$ref": "#/$defs/TableStyleSelectionError"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reason"
+          ]
+        },
         {
           "type": "object",
           "properties": {
@@ -5111,6 +6076,33 @@
     },
     "TextStyleOrigin": {
       "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "tableStyle"
+            },
+            "region": {
+              "$ref": "#/$defs/TableStyleRegion"
+            },
+            "source": {
+              "$ref": "#/$defs/TableTextStyleSource"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "source",
+            "region",
+            "sourceOrdinal"
+          ]
+        },
         {
           "type": "object",
           "properties": {

@@ -54,7 +54,7 @@ fn malformed_wire_limits_and_control_pixels_stop_the_owner() {
 fn validation_uses_the_shared_raster_profile_registry_and_resource_mode() {
     let pixels = [0, 0, 0, 255];
     for images in [false, true] {
-        for version in 4..=12 {
+        for version in 4..=14 {
             let profile = mo_raster::profile_for_frame(version).unwrap();
             let mut p = pipe(&[]);
             p.resources = images;

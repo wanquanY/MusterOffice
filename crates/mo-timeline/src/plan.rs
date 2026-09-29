@@ -8,8 +8,15 @@ pub struct TimelineLimits {
     pub max_events: usize,
     pub max_conditions: usize,
     pub max_schedule_steps: usize,
+    /// Retained activation records, including waiting entries. No unbounded
+    /// history is allocated for event feedback or repeated parent activation.
+    pub max_intervals: usize,
     pub max_exact_bits: u64,
     pub max_depth: usize,
+    /// Aggregate input segments and compiled vertices across the timeline.
+    pub max_motion_segments: usize,
+    pub max_motion_vertices: usize,
+    pub max_motion_steps: usize,
 }
 impl Default for TimelineLimits {
     fn default() -> Self {
@@ -18,8 +25,12 @@ impl Default for TimelineLimits {
             max_events: 65536,
             max_conditions: 65536,
             max_schedule_steps: 1_000_000,
+            max_intervals: 65536,
             max_exact_bits: 1024,
             max_depth: 128,
+            max_motion_segments: 65536,
+            max_motion_vertices: 262144,
+            max_motion_steps: 1_000_000,
         }
     }
 }
@@ -28,10 +39,15 @@ impl Default for TimelineLimits {
 pub struct TimelinePlan {
     pub(crate) timeline: Timeline,
     pub(crate) interactive: bool,
+    pub(crate) restarting: bool,
     pub(crate) digest: Digest,
     pub(crate) limits: TimelineLimits,
     pub(crate) hierarchy: crate::tree::Hierarchy,
+    pub(crate) motion_paths: Vec<Option<crate::motion_path::PathPlan>>,
     pub(crate) clocks: Vec<crate::clock::BehaviorClock>,
+    pub(crate) container_clocks: Vec<Option<Box<crate::tree::container_clock::ContainerClock>>>,
+    pub(crate) initial_visibility:
+        std::collections::BTreeMap<mo_common::ObjectId, crate::Visibility>,
 }
 impl TimelinePlan {
     pub fn compile(
@@ -45,6 +61,19 @@ impl TimelinePlan {
         }
         if !(128..=4096).contains(&limits.max_exact_bits) {
             return Err(TimelineError::Limit("exact arithmetic policy"));
+        }
+        for node in &timeline.nodes {
+            cancel(check)?;
+            if let crate::Effect::Scale { from, to, .. } = node.effect
+                && [from.x, from.y, to.x, to.y]
+                    .into_iter()
+                    .any(|v| v > crate::MAX_SCALE_MILLI_PERCENT)
+            {
+                return Err(invalid(
+                    Some(&node.id),
+                    "scale outside native size percentage range",
+                ));
+            }
         }
         match timeline.format {
             crate::TimelineVersion::V01 if timeline.tree.is_some() => {

@@ -134,6 +134,7 @@ fn lower(
     // Validate device policy before potentially expensive geometry work.
     mo_raster::compile(
         &PathRasterRequest {
+            opacity_groups: vec![],
             clips: vec![],
             viewport: request.viewport.clone(),
             paths: vec![],
@@ -142,6 +143,7 @@ fn lower(
         check,
     )?;
     if scene.paths.len() > 4096
+        || scene.opacity_groups.len() > 4096
         || scene.transforms.len() > 8192
         || scene.instances.len() > mo_raster::MAX_DRAWS
     {
@@ -344,6 +346,7 @@ fn lower(
         }
     }
     let mut lowered = PathRasterRequest {
+        opacity_groups: scene.opacity_groups.clone(),
         clips: vec![],
         viewport: request.viewport.clone(),
         paths: vec![],

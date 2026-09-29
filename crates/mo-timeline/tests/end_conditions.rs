@@ -6,8 +6,8 @@ fn time(n: i64, d: u32) -> RationalTime {
 fn id(s: &str) -> TimingNodeId {
     TimingNodeId::new(s).unwrap()
 }
-fn at(n: i64, d: u32) -> StartCondition {
-    StartCondition::At { offset: time(n, d) }
+fn at(n: i64, d: u32) -> TimeCondition {
+    TimeCondition::At { offset: time(n, d) }
 }
 fn exact(n: i64, d: i64) -> ExactValue {
     ExactValue {
@@ -17,8 +17,9 @@ fn exact(n: i64, d: i64) -> ExactValue {
 }
 fn node(name: &str) -> TimingNode {
     TimingNode {
+        restart: mo_timeline::RestartMode::Never,
         id: id(name),
-        start: at(0, 1),
+        start: at(0, 1).into(),
         duration: time(2, 1),
         end_conditions: vec![],
         repeat_milli: RepeatCount::Indefinite,
@@ -26,6 +27,7 @@ fn node(name: &str) -> TimingNode {
         fill: FillMode::Hold,
         time_transform: None,
         effect: Effect::Rotation {
+            composition: Default::default(),
             target: ObjectId::new(name).unwrap(),
             from: 0,
             to: 120,
@@ -45,9 +47,13 @@ fn timeline(nodes: Vec<TimingNode>, tree: Option<TimingTree>) -> Timeline {
 }
 fn container(name: &str, children: &[&str], duration: ContainerDuration) -> TimingContainer {
     TimingContainer {
+        time_transform: None,
+        presentation: None,
+        navigation: None,
+        restart: mo_timeline::RestartMode::Never,
         id: id(name),
         kind: ContainerKind::Sequence,
-        start: at(0, 1),
+        start: at(0, 1).into(),
         end_conditions: vec![],
         duration,
         fill: FillMode::Hold,
@@ -98,13 +104,13 @@ fn begin_and_end_vertices_allow_mutual_node_references_without_an_event_cycle() 
     a.repeat_milli = 5000.into();
     a.end_conditions = vec![after("b", NodeEvent::Begin, 0, 1)];
     let mut b = node("b");
-    b.start = after("a", NodeEvent::Begin, 1, 1);
+    b.start = after("a", NodeEvent::Begin, 1, 1).into();
     let mut t = timeline(vec![a, b], None);
     let f = sample(&t, 2, 1);
     assert_eq!(f.state.nodes[0].end, Some(exact(1, 1)));
     assert_eq!(f.state.nodes[0].progress, Some(exact(1, 2)));
     assert_eq!(f.state.nodes[1].start, Some(exact(1, 1)));
-    t.nodes[1].start = after("a", NodeEvent::End, 0, 1);
+    t.nodes[1].start = after("a", NodeEvent::End, 0, 1).into();
     assert!(TimelinePlan::compile(&t, TimelineLimits::default(), &|| false).is_err());
     t.nodes.pop();
     t.nodes[0].end_conditions = vec![after("a", NodeEvent::Begin, 1, 2)];
@@ -115,7 +121,7 @@ fn begin_and_end_vertices_allow_mutual_node_references_without_an_event_cycle() 
 #[test]
 fn earliest_eligible_end_is_unscaled_and_redefines_reverse_before_parent_clipping() {
     let mut a = node("a");
-    a.start = at(1, 1);
+    a.start = at(1, 1).into();
     a.duration = time(4, 1);
     a.repeat_milli = 1000.into();
     a.time_transform = Some(TimeTransform {
@@ -151,10 +157,10 @@ fn clicks_distinguish_activation_stop_and_successor_at_the_same_timestamp() {
         delay: time(0, 1),
     };
     let mut a = node("a");
-    a.start = click.clone();
+    a.start = click.clone().into();
     a.end_conditions = vec![click.clone()];
     let mut b = node("b");
-    b.start = click;
+    b.start = click.into();
     let t = timeline(
         vec![a, b],
         Some(TimingTree {
@@ -188,7 +194,7 @@ fn clicks_distinguish_activation_stop_and_successor_at_the_same_timestamp() {
 #[test]
 fn before_activation_clicks_are_ignored_and_delay_is_in_parent_time() {
     let mut a = node("a");
-    a.start = at(2, 1);
+    a.start = at(2, 1).into();
     a.time_transform = Some(TimeTransform {
         speed_milli_percent: 200000,
         ..Default::default()
@@ -217,7 +223,7 @@ fn sequence_end_offsets_use_its_gate_and_late_stop_events_remain_available_to_su
     let mut a = node("a");
     a.repeat_milli = 1000.into();
     let mut b = node("b");
-    b.start = at(1, 1);
+    b.start = at(1, 1).into();
     b.end_conditions = vec![at(0, 1), at(2, 1)];
     let mut t = timeline(
         vec![a, b],
@@ -236,7 +242,8 @@ fn sequence_end_offsets_use_its_gate_and_late_stop_events_remain_available_to_su
     t.nodes[1].start = TimeCondition::Click {
         target: None,
         delay: time(0, 1),
-    };
+    }
+    .into();
     t.nodes[1].end_conditions.clear();
     let h = history(&[3]);
     let f = plan(&t)
@@ -248,7 +255,7 @@ fn sequence_end_offsets_use_its_gate_and_late_stop_events_remain_available_to_su
 #[test]
 fn expired_declared_ends_diagnose_and_unknown_events_keep_the_interval_open() {
     let mut a = node("a");
-    a.start = at(2, 1);
+    a.start = at(2, 1).into();
     a.end_conditions = vec![at(1, 1)];
     let mut t = timeline(vec![a], None);
     assert!(

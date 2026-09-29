@@ -1,5 +1,5 @@
 //! Immutable document/timing plan feeding the existing certified page pipeline.
-use crate::{PageError, PagePlacements, PagePlan, PageRasterInfo, PageRenderRequest, angle::Angle};
+use crate::{PageError, PagePlacements, PagePlan, PageRasterInfo, PageRenderRequest};
 use mo_common::RationalTime;
 use mo_raster::RasterBackend;
 use mo_timeline::{
@@ -8,8 +8,24 @@ use mo_timeline::{
 };
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use std::collections::BTreeMap;
 pub const PLAYBACK_PAGE_PROFILE: &str = "rotation-playback-author-page-q96-v1-draft";
+pub const TRANSFORM_PLAYBACK_PAGE_PROFILE: &str = "transform-playback-author-page-q96-v1-draft";
+pub const MOTION_PLAYBACK_PAGE_PROFILE: &str = "motion-playback-author-page-q96-v1-draft";
+pub const PROPERTY_PLAYBACK_PAGE_PROFILE: &str = "property-playback-author-page-q96-v1-draft";
+/// Shared response profile selection for kernel producers and native SDK consumers.
+pub fn frame_profile(frame: &EvaluatedFrame) -> &'static str {
+    if frame.state.profile == mo_timeline::PACED_MOTION_FRAME_PROFILE {
+        "paced-motion-playback-author-page-q64-v1-draft"
+    } else if frame.state.profile == mo_timeline::MOTION_FRAME_PROFILE {
+        MOTION_PLAYBACK_PAGE_PROFILE
+    } else if frame.state.profile == mo_timeline::PROPERTY_FRAME_PROFILE {
+        PROPERTY_PLAYBACK_PAGE_PROFILE
+    } else if frame.state.profile == mo_timeline::TRANSFORM_FRAME_PROFILE {
+        TRANSFORM_PLAYBACK_PAGE_PROFILE
+    } else {
+        PLAYBACK_PAGE_PROFILE
+    }
+}
 #[derive(Debug, thiserror::Error)]
 pub enum PlaybackError {
     #[error(transparent)]
@@ -54,7 +70,7 @@ impl PreparedPlaybackFrame {
     }
     pub fn complete(
         self,
-        reply: mo_raster::BackendReply,
+        reply: impl Into<mo_raster::RasterCompletionReply>,
         check: &dyn Fn() -> bool,
     ) -> Result<PlaybackImage, PlaybackError> {
         let image = self
@@ -81,7 +97,7 @@ fn finish_frame(
 ) -> PlaybackImage {
     PlaybackImage {
         info: PlaybackRasterInfo {
-            profile: PLAYBACK_PAGE_PROFILE.into(),
+            profile: frame_profile(&frame).into(),
             frame,
             page: PageRasterInfo {
                 page,
@@ -94,13 +110,15 @@ fn finish_frame(
 }
 /// Holds author data and one interval schedule; each sample derives transient
 /// property/placement data.
-/// Geometry and scene lowering still run per sampled frame. This is not yet the
+/// Local outlines are retained within a fixed capacity; precision selection,
+/// placement certification and scene lowering still run per frame. This is not yet the
 /// complete retained compositor, host state machine or media session.
 pub struct PlaybackPagePlan {
     request: PageRenderRequest,
     base: PagePlacements,
     timeline: TimelineSampler,
     binding: PlaybackBinding,
+    geometry: crate::page_geometry::PageGeometry,
 }
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 pub enum GenerationError {
@@ -133,6 +151,10 @@ impl PlaybackPagePlan {
             check,
         )?;
         Ok(Self {
+            geometry: crate::page_geometry::PageGeometry::new(
+                base.document_sha256.clone(),
+                base.slide.clone(),
+            ),
             request,
             base,
             timeline: TimelineSampler::new(timeline),
@@ -172,23 +194,20 @@ impl PlaybackPagePlan {
         check: &dyn Fn() -> bool,
     ) -> Result<(EvaluatedFrame, Option<PagePlacements>), PlaybackError> {
         let frame = self.timeline.evaluate(&self.binding, at, history, check)?;
-        if frame.state.rotations.is_empty() {
+        let transforms =
+            crate::sampled_properties::sampled(&frame.state, check).map_err(PageError::from)?;
+        if !transforms.values().any(|v| {
+            v.rotation.is_some()
+                || v.scale.is_some()
+                || v.motion.is_some()
+                || v.visibility.is_some()
+        }) {
             return Ok((frame, None));
         }
-        let rotations: BTreeMap<_, _> = frame
-            .state
-            .rotations
-            .iter()
-            .map(|(id, v)| {
-                crate::cancel(check)?;
-                Ok((id.clone(), Angle::exact(v)?))
-            })
-            .collect::<Result<_, crate::CompileError>>()
-            .map_err(PageError::from)?;
         let placements = crate::placement::place_validated(
             &self.request.page,
             &self.base.document_sha256,
-            &rotations,
+            &transforms,
             check,
         )
         .map_err(PageError::from)?;
@@ -204,10 +223,12 @@ impl PlaybackPagePlan {
         let (page, _) = crate::page::prepare_page(
             &self.request,
             Some(placements.as_ref().unwrap_or(&self.base)),
+            Some(&mut self.geometry),
+            Some(&frame.state.opacity),
             check,
         )?;
         Ok(PlaybackCompiledFrame {
-            profile: PLAYBACK_PAGE_PROFILE.into(),
+            profile: frame_profile(&frame).into(),
             frame,
             placements: placements.unwrap_or_else(|| self.base.clone()),
             page,
@@ -233,6 +254,8 @@ impl PlaybackPagePlan {
         let (page, compiled) = crate::page::prepare_page(
             &self.request,
             Some(placements.as_ref().unwrap_or(&self.base)),
+            Some(&mut self.geometry),
+            Some(&frame.state.opacity),
             check,
         )?;
         Ok(PreparedPlaybackFrame {

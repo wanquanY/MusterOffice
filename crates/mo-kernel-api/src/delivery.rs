@@ -3,7 +3,7 @@ use mo_common::{ByteLength, RequestId};
 use mo_opc::ReaderAt;
 use mo_presentation_delivery::{
     Content, DeliveryBundle, DeliveryError, DeliveryExpectation, DeliveryLimits, DeliverySource,
-    ReceiptInspection,
+    ReceiptInspection, ReceivedDelivery,
 };
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -56,7 +56,7 @@ impl<R: ReaderAt> DeliverySource for Sources<'_, R> {
         })
     }
 }
-fn failure(error: DeliveryError) -> crate::PptxFailure {
+pub(crate) fn failure(error: DeliveryError) -> crate::PptxFailure {
     use crate::PptxFailureCode as C;
     if let DeliveryError::Pptx(e) = error {
         return crate::pptx_source::pptx_failure(e);
@@ -77,7 +77,7 @@ fn run<R: ReaderAt>(
     reader: &R,
     length: u64,
     check: &dyn Fn() -> bool,
-) -> Result<ReceiptInspection, DeliveryError> {
+) -> Result<ReceivedDelivery, DeliveryError> {
     if check() {
         return Err(DeliveryError::Cancelled);
     }
@@ -86,6 +86,21 @@ fn run<R: ReaderAt>(
     }
     let request: DeliveryInspectRequest = mo_common::from_json_str(input)
         .map_err(|_| DeliveryError::Invalid("delivery request JSON"))?;
+    inspect_request(request, reader, length, check)
+}
+
+pub(crate) fn inspect_request<R: ReaderAt>(
+    request: DeliveryInspectRequest,
+    reader: &R,
+    length: u64,
+    check: &dyn Fn() -> bool,
+) -> Result<ReceivedDelivery, DeliveryError> {
+    if check() {
+        return Err(DeliveryError::Cancelled);
+    }
+    if length > crate::MAX_INLINE_RESOURCE_BYTES as u64 {
+        return Err(DeliveryError::Limit("inline delivery input"));
+    }
     let limits = DeliveryLimits::default();
     if request.contents.len() != request.bundle.assets.len()
         || request.contents.len() > limits.max_artifacts
@@ -130,15 +145,7 @@ fn run<R: ReaderAt>(
     if end != length {
         return Err(DeliveryError::Invalid("unbound delivery content"));
     }
-    Ok(mo_presentation_delivery::inspect(
-        &request.bundle,
-        &request.expected,
-        &sources,
-        limits,
-        check,
-    )?
-    .report()
-    .clone())
+    mo_presentation_delivery::inspect(&request.bundle, &request.expected, &sources, limits, check)
 }
 
 /// Native hosts may stream the bounded diagnostic bundle; production Embedded
@@ -150,8 +157,8 @@ pub fn inspect_delivery_at<R: ReaderAt>(
     check: &dyn Fn() -> bool,
 ) -> DeliveryInspectResponse {
     match run(input, reader, length, check) {
-        Ok(report) => DeliveryInspectResponse::Inspected {
-            report: Box::new(report),
+        Ok(received) => DeliveryInspectResponse::Inspected {
+            report: Box::new(received.report().clone()),
         },
         Err(error) => DeliveryInspectResponse::Error {
             error: failure(error),

@@ -26,13 +26,17 @@ export interface WasmOwner {
   render(request: string, raster: RasterPort): WasmFrame;
   prepare_render(request: string): WasmPreparedFrame;
   complete_render(frame: WasmPreparedFrame, reply: {status: number; pixels: Uint8Array}): WasmCompletedFrame;
+  complete_validation(validation: WasmPixelValidation): WasmCompletedFrame;
   free(): void;
 }
 export interface WasmPreparedFrame {
   readonly failure: string;
   begin(raster: SteppedRasterPort): RasterStart;
+  /** Consumes the prepared frame and snapshots the complete component reply. */
+  begin_validation(reply: {status: number; pixels: Uint8Array}): WasmPixelValidation;
   free(): void;
 }
+export interface WasmPixelValidation { readonly failed: boolean; step(workUnits: number): boolean; free(): void; }
 export interface WasmCompletedFrame extends WasmFrame { readonly invalidates_backend: boolean; }
 export type RasterFailure = {status: 1 | 2 | 3 | 4; pixels: Uint8Array};
 export type RasterStart = {status: 0; execution: RasterTask} | RasterFailure;
@@ -47,6 +51,7 @@ export interface WasmSourceOwner extends WasmOwner {
     decoder: DecoderPort, shaping: ShapingPort): string;
 }
 export interface PlaybackModule {
+  prepare_delivery_playback(request: string, contents: Uint8Array): string;
   PlaybackSession: new () => WasmOwner;
   PptxPlaybackSession: new () => WasmSourceOwner;
 }

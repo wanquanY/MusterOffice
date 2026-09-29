@@ -35,6 +35,9 @@ pub(in crate::source) struct Budget<'a> {
     check: &'a dyn Fn() -> bool,
 }
 impl Budget<'_> {
+    pub(in crate::source) fn is_cancelled(&self) -> bool {
+        (self.check)()
+    }
     pub(in crate::source) fn step(&mut self) -> Computed<()> {
         cancelled(self.check)?;
         if self.steps >= self.limits.max_steps {

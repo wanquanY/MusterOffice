@@ -20,6 +20,31 @@ export type LineOutcome =
     };
 export type LineOrigin =
   | {
+      cell: SourceCellAddress;
+      edge: TableCellEdge;
+      kind: "tableCell";
+      object: SourceObjectRef;
+      sourceOrdinal: number;
+    }
+  | {
+      edge: TableStyleEdge;
+      kind: "tableStyle";
+      object: SourceObjectRef;
+      part: string;
+      region: TableStyleRegion;
+      sourceOrdinal: number;
+    }
+  | {
+      edge: TableStyleEdge;
+      kind: "tableTheme";
+      part: string;
+      referenceOrdinal: number;
+      region: TableStyleRegion;
+      sourceOrdinal: number;
+      styleIndex: number;
+      via: SourceObjectRef;
+    }
+  | {
       kind: "object";
       object: SourceObjectRef;
       sourceOrdinal: number;
@@ -35,6 +60,30 @@ export type LineOrigin =
   | {
       kind: "profileDefault";
     };
+export type TableCellEdge = "left" | "right" | "top" | "bottom" | "topLeftToBottomRight" | "bottomLeftToTopRight";
+export type TableStyleEdge =
+  | "left"
+  | "right"
+  | "top"
+  | "bottom"
+  | "insideHorizontal"
+  | "insideVertical"
+  | "topLeftToBottomRight"
+  | "topRightToBottomLeft";
+export type TableStyleRegion =
+  | "wholeTbl"
+  | "band1H"
+  | "band2H"
+  | "band1V"
+  | "band2V"
+  | "lastCol"
+  | "firstCol"
+  | "lastRow"
+  | "seCell"
+  | "swCell"
+  | "firstRow"
+  | "neCell"
+  | "nwCell";
 export type NativePenAlignment = "ctr" | "in";
 export type NativeLineCap = "flat" | "rnd" | "sq";
 export type NativeCompoundLine = "sng" | "dbl" | "thickThin" | "thinThick" | "tri";
@@ -483,6 +532,16 @@ export type EffectiveLineJoin =
 export type Emu = string;
 export type LineUnresolved =
   | {
+      kind: "tableGrid";
+      object: SourceObjectRef;
+      reason: NativeTableGridIssue;
+    }
+  | {
+      kind: "tableStyle";
+      object: SourceObjectRef;
+      reason: TableStyleSelectionError;
+    }
+  | {
       kind: "unsupportedObject";
       object: SourceObjectRef;
     }
@@ -509,6 +568,69 @@ export type LineUnresolved =
       kind: "unsupportedFill";
       nativeKind: NativeRetainedLineFill;
       origin: LineOrigin;
+    };
+export type NativeTableGridIssue =
+  | {
+      kind: "emptyGrid";
+    }
+  | {
+      actual: number;
+      expected: number;
+      kind: "rowWidth";
+      row: number;
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "duplicateCellId";
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "invalidSpan";
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "missingNeighbour";
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "conflictingNeighbours";
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "outsideMerge";
+      origin: SourceCellAddress;
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "conflictingSpan";
+      origin: SourceCellAddress;
+    }
+  | {
+      kind: "incompleteMerge";
+      origin: SourceCellAddress;
+    };
+export type TableStyleSelectionError =
+  | {
+      kind: "conflictingStyles";
+    }
+  | {
+      kind: "invalidIdentity";
+    }
+  | {
+      kind: "missingDefinition";
+    }
+  | {
+      kind: "gridMismatch";
+    }
+  | {
+      kind: "cellOutsideGrid";
+    }
+  | {
+      kind: "retainedDeclaration";
+      sourceOrdinal: number;
+    }
+  | {
+      kind: "cancelled";
     };
 export type SourcePlaceholderMatch =
   | {
@@ -581,6 +703,10 @@ export interface EffectiveLine {
 export interface LineValue4 {
   declaredBy: LineOrigin;
   value: NativePenAlignment;
+}
+export interface SourceCellAddress {
+  column: number;
+  row: number;
 }
 export interface SourceObjectRef {
   nativeId: number;

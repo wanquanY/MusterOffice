@@ -16,6 +16,16 @@ export type DocumentId = string;
  */
 export type Operation =
   | {
+      kind: "editTable";
+      object: ObjectId;
+      operation: TableOperation;
+    }
+  | {
+      kind: "setPresentationSequence";
+      sequence: PresentationSequence;
+      slide: SlideId;
+    }
+  | {
       kind: "setTimeline";
       slide: SlideId;
       timeline?: Timeline | null;
@@ -116,115 +126,118 @@ export type Operation =
     };
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "SlideId".
- */
-export type SlideId = string;
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "TimelineVersion".
- */
-export type TimelineVersion = "musteroffice.timeline/0.1-draft" | "musteroffice.timeline/0.2-draft";
-/**
- * Signed int64 ticks. Range requires semantic validation.
- *
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "Ticks".
- */
-export type Ticks = string;
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "Timescale".
- */
-export type Timescale = number;
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
  * via the `definition` "ObjectId".
  */
 export type ObjectId = string;
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "TimeCondition".
+ * via the `definition` "TableOperation".
  */
-export type TimeCondition =
+export type TableOperation =
   | {
-      kind: "at";
-      offset: RationalTime;
+      kind: "replace";
+      table: Table;
     }
   | {
-      delay: RationalTime;
-      event: NodeEvent;
-      kind: "after";
-      node: TimingNodeId;
+      cell: CellId;
+      kind: "setCellText";
+      text?: TextBody | null;
     }
   | {
-      delay: RationalTime;
-      kind: "click";
-      target?: ObjectId | null;
+      cell: CellId;
+      kind: "setCellStyle";
+      style: TableCellStyle1;
+    }
+  | {
+      column: ColumnId;
+      kind: "setColumnWidth";
+      width: Emu;
+    }
+  | {
+      height: Emu;
+      kind: "setRowHeight";
+      row: RowId;
+    }
+  | {
+      columns: number;
+      kind: "merge";
+      origin: CellId;
+      rows: number;
+    }
+  | {
+      cell: CellId;
+      kind: "split";
+    }
+  | {
+      index: number;
+      kind: "insertRow";
+      row: TableRow;
+    }
+  | {
+      cells: TableCell[];
+      column: TableColumn;
+      index: number;
+      kind: "insertColumn";
+    }
+  | {
+      kind: "deleteRow";
+      row: RowId;
+    }
+  | {
+      column: ColumnId;
+      kind: "deleteColumn";
+    }
+  | {
+      kind: "reorderRows";
+      order: RowId[];
+    }
+  | {
+      kind: "reorderColumns";
+      order: ColumnId[];
     };
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "NodeEvent".
+ * via the `definition` "ColumnId".
  */
-export type NodeEvent = "begin" | "end";
+export type ColumnId = string;
+/**
+ * Signed int64 EMU. 1 point = 12700 EMU. Range requires semantic validation.
+ *
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "Emu".
+ */
+export type Emu = string;
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "TimingNodeId".
+ * via the `definition` "CellId".
  */
-export type TimingNodeId = string;
+export type CellId = string;
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "FillMode".
+ * via the `definition` "Stroke".
  */
-export type FillMode = ("remove" | "freeze") | "hold";
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "RepeatDuration".
- */
-export type RepeatDuration = "indefinite" | RationalTime;
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "ContainerDuration".
- */
-export type ContainerDuration =
-  | {
-      kind: "automatic";
-    }
-  | {
-      duration: RationalTime;
-      kind: "fixed";
-    }
-  | {
-      kind: "indefinite";
-    };
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "ContainerKind".
- */
-export type ContainerKind = "parallel" | "sequence";
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "Inherited".
- */
-export type Inherited =
-  | {
-      kind: "inherit";
-    }
-  | {
-      kind: "value";
-      value: Fill;
-    };
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "Fill".
- */
-export type Fill =
+export type Stroke =
   | {
       kind: "none";
     }
   | {
+      /**
+       * Absent retains an unresolved declaration, not an implicit flat cap.
+       */
+      cap?: LineCap | null;
       color: Color;
+      /**
+       * Absent retains the source/default distinction.
+       */
+      join?: LineJoin | null;
       kind: "solid";
+      width: Emu;
     };
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "LineCap".
+ */
+export type LineCap = "flat" | "round" | "square";
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
  * via the `definition` "Color".
@@ -257,6 +270,352 @@ export type ThemeColor =
   | "followedHyperlink";
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "LineJoin".
+ */
+export type LineJoin =
+  | {
+      kind: "round";
+    }
+  | {
+      kind: "bevel";
+    }
+  | {
+      kind: "miter";
+      /**
+       * Ratio in 1/100000 units: 400000 denotes four times line width.
+       * The ratio compares full miter length with the full stroke width.
+       */
+      limit?: number | null;
+    };
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "Fill".
+ */
+export type Fill =
+  | {
+      kind: "none";
+    }
+  | {
+      color: Color;
+      kind: "solid";
+    };
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "TableVerticalAlignment".
+ */
+export type TableVerticalAlignment = "top" | "center" | "bottom" | "justified" | "distributed";
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "OverflowPolicy".
+ */
+export type OverflowPolicy = "report" | "clip" | "growShape";
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "FontId".
+ */
+export type FontId = string;
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "ParagraphId".
+ */
+export type ParagraphId = string;
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "InlineContent".
+ */
+export type InlineContent =
+  | {
+      kind: "text";
+      text: string;
+    }
+  | {
+      kind: "break";
+    }
+  | {
+      kind: "tab";
+    };
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "RunId".
+ */
+export type RunId = string;
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "Alignment".
+ */
+export type Alignment = "start" | "center" | "end" | "justify";
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "TextDirection".
+ */
+export type TextDirection = "leftToRight" | "rightToLeft" | "verticalRightToLeft" | "verticalLeftToRight";
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "RowId".
+ */
+export type RowId = string;
+/**
+ * Signed int64 ticks. Range requires semantic validation.
+ *
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "Ticks".
+ */
+export type Ticks = string;
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "Timescale".
+ */
+export type Timescale = number;
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "Effect".
+ */
+export type Effect =
+  | {
+      composition?: RotationComposition;
+      from: number;
+      kind: "rotation";
+      target: ObjectId;
+      to: number;
+    }
+  | {
+      from: ScaleValue;
+      kind: "scale";
+      target: ObjectId;
+      to: ScaleValue;
+    }
+  | {
+      kind: "setVisibility";
+      target: ObjectId;
+      value: Visibility;
+    }
+  | {
+      from: MotionPoint;
+      kind: "motionLine";
+      target: ObjectId;
+      to: MotionPoint;
+    }
+  | {
+      kind: "motionPath";
+      path: MotionPath;
+      target: ObjectId;
+    }
+  | {
+      kind: "fade";
+      target: ObjectId;
+      transition: FadeTransition;
+    };
+/**
+ * Rotation is composed before object/group placement. Layout replaces earlier
+ * animation offsets while preserving the document's local orientation. Add
+ * sums the sampled offset with the lower-priority visible rotation stack.
+ *
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "RotationComposition".
+ */
+export type RotationComposition = "absolute" | "layout" | "add";
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "Visibility".
+ */
+export type Visibility = "visible" | "hidden";
+/**
+ * Exact decimal fraction of the slide dimension; canonicalized without rounding.
+ *
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "MotionCoordinate".
+ */
+export type MotionCoordinate = string;
+/**
+ * Source control points remain editable; subdivision belongs only to the
+ * immutable playback plan. Close returns to the initial `from` point.
+ *
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "MotionSegment".
+ */
+export type MotionSegment =
+  | {
+      kind: "line";
+      to: MotionPoint;
+    }
+  | {
+      control1: MotionPoint;
+      control2: MotionPoint;
+      kind: "cubic";
+      to: MotionPoint;
+    }
+  | {
+      kind: "close";
+    };
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "FadeTransition".
+ */
+export type FadeTransition = "in" | "out";
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "FillMode".
+ */
+export type FillMode = ("remove" | "freeze") | "hold";
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "RepeatDuration".
+ */
+export type RepeatDuration = "indefinite" | RationalTime2;
+/**
+ * Finite values retain the existing integer wire form. Infinity is a named
+ * alternative, never a sentinel count or a pre-expanded list of iterations.
+ *
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "RepeatCount".
+ */
+export type RepeatCount = "indefinite" | number;
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "SlideId".
+ */
+export type SlideId = string;
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "TimelineVersion".
+ */
+export type TimelineVersion = "musteroffice.timeline/0.1-draft" | "musteroffice.timeline/0.2-draft";
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "TimeCondition".
+ */
+export type TimeCondition =
+  | {
+      kind: "never";
+    }
+  | {
+      kind: "at";
+      offset: RationalTime2;
+    }
+  | {
+      delay: RationalTime2;
+      event: NodeEvent;
+      kind: "after";
+      node: TimingNodeId;
+    }
+  | {
+      delay: RationalTime2;
+      kind: "click";
+      target?: ObjectId | null;
+    }
+  | {
+      delay: RationalTime2;
+      direction: NavigationDirection;
+      kind: "navigation";
+      target?: ObjectId | null;
+    };
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "NodeEvent".
+ */
+export type NodeEvent = ("end" | "onEnd") | "begin" | "onBegin";
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "TimingNodeId".
+ */
+export type TimingNodeId = string;
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "NavigationDirection".
+ */
+export type NavigationDirection = "next" | "previous";
+/**
+ * Admission of new begin instances within one parent activation. Ancestor
+ * reactivation resets this policy, including `Never`. Omission preserves the
+ * existing draft's once-per-parent behavior, independently of native defaults.
+ *
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "RestartMode".
+ */
+export type RestartMode = "never" | "always" | "whenNotActive";
+/**
+ * A flat disjunction of native begin conditions. The single-condition wire
+ * representation remains unchanged; alternatives cannot recursively nest.
+ *
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "StartCondition".
+ */
+export type StartCondition =
+  | {
+      /**
+       * @minItems 1
+       */
+      conditions: [TimeCondition, ...TimeCondition[]];
+      kind: "anyOf";
+    }
+  | TimeCondition;
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "ContainerDuration".
+ */
+export type ContainerDuration =
+  | {
+      kind: "automatic";
+    }
+  | {
+      duration: RationalTime2;
+      kind: "fixed";
+    }
+  | {
+      kind: "indefinite";
+    };
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "ContainerKind".
+ */
+export type ContainerKind = "parallel" | "sequence";
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "NextAction".
+ */
+export type NextAction = "none" | "seek";
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "PreviousAction".
+ */
+export type PreviousAction = "none" | "skipTimed";
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "PresentationRole".
+ */
+export type PresentationRole =
+  | {
+      kind: "mainSequence";
+    }
+  | {
+      kind: "effect";
+      preset: PresentationPreset;
+      trigger: PresentationTrigger;
+    };
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "PresentationPreset".
+ */
+export type PresentationPreset = "appear" | "disappear" | "spin" | "growShrink" | "customMotion" | "fadeIn" | "fadeOut";
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "PresentationTrigger".
+ */
+export type PresentationTrigger = "click" | "withPrevious" | "afterPrevious";
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "Inherited8".
+ */
+export type Inherited8 =
+  | {
+      kind: "inherit";
+    }
+  | {
+      kind: "value";
+      value: Fill;
+    };
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
  * via the `definition` "LayoutId".
  */
 export type LayoutId = string;
@@ -265,18 +624,6 @@ export type LayoutId = string;
  * via the `definition` "DeletePolicy".
  */
 export type DeletePolicy = "rejectDependencies" | "cascade";
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "FontId".
- */
-export type FontId = string;
-/**
- * Signed int64 EMU. 1 point = 12700 EMU. Range requires semantic validation.
- *
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "Emu".
- */
-export type Emu = string;
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
  * via the `definition` "ThemeId".
@@ -299,54 +646,13 @@ export type ResourceId = string;
 export type ResourceKind = "font" | "picture" | "audio" | "video" | "sourcePackage" | "embeddedWorkbook" | "model3d";
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "Stroke".
- */
-export type Stroke =
-  | {
-      kind: "none";
-    }
-  | {
-      /**
-       * Absent retains an unresolved declaration, not an implicit flat cap.
-       */
-      cap?: LineCap | null;
-      color: Color;
-      /**
-       * Absent retains the source/default distinction.
-       */
-      join?: LineJoin | null;
-      kind: "solid";
-      width: Emu;
-    };
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "LineCap".
- */
-export type LineCap = "flat" | "round" | "square";
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "LineJoin".
- */
-export type LineJoin =
-  | {
-      kind: "round";
-    }
-  | {
-      kind: "bevel";
-    }
-  | {
-      kind: "miter";
-      /**
-       * Ratio in 1/100000 units: 400000 denotes four times line width.
-       * The ratio compares full miter length with the full stroke width.
-       */
-      limit?: number | null;
-    };
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
  * via the `definition` "ObjectContent".
  */
 export type ObjectContent =
+  | {
+      kind: "table";
+      table: Table;
+    }
   | {
       children: ObjectId[];
       kind: "retainedSource";
@@ -378,16 +684,6 @@ export type ObjectContent =
  * via the `definition` "RetainedObjectKind".
  */
 export type RetainedObjectKind = "shape" | "picture" | "group" | "connector" | "graphicFrame";
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "ParagraphId".
- */
-export type ParagraphId = string;
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "RunId".
- */
-export type RunId = string;
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
  * via the `definition` "RetainedRunKind".
@@ -442,36 +738,6 @@ export type PathCommand =
     };
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "OverflowPolicy".
- */
-export type OverflowPolicy = "report" | "clip" | "growShape";
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "InlineContent".
- */
-export type InlineContent =
-  | {
-      kind: "text";
-      text: string;
-    }
-  | {
-      kind: "break";
-    }
-  | {
-      kind: "tab";
-    };
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "Alignment".
- */
-export type Alignment = "start" | "center" | "end" | "justify";
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "TextDirection".
- */
-export type TextDirection = "leftToRight" | "rightToLeft" | "verticalRightToLeft" | "verticalLeftToRight";
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
  * via the `definition` "ConnectorEndpoint".
  */
 export type ConnectorEndpoint =
@@ -517,14 +783,28 @@ export type OperationId = string;
 export type RequestId = string;
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "Effect".
+ * via the `definition` "Inherited".
  */
-export type Effect = {
-  from: number;
-  kind: "rotation";
-  target: ObjectId;
-  to: number;
-};
+export type Inherited =
+  | {
+      kind: "inherit";
+    }
+  | {
+      kind: "value";
+      value: Alignment;
+    };
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "Inherited10".
+ */
+export type Inherited10 =
+  | {
+      kind: "inherit";
+    }
+  | {
+      kind: "value";
+      value: TableVerticalAlignment;
+    };
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
  * via the `definition` "Inherited2".
@@ -535,7 +815,7 @@ export type Inherited2 =
     }
   | {
       kind: "value";
-      value: FontId;
+      value: TextDirection;
     };
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
@@ -559,7 +839,7 @@ export type Inherited4 =
     }
   | {
       kind: "value";
-      value: Color;
+      value: FontId;
     };
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
@@ -571,7 +851,7 @@ export type Inherited5 =
     }
   | {
       kind: "value";
-      value: boolean;
+      value: Color;
     };
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
@@ -583,7 +863,7 @@ export type Inherited6 =
     }
   | {
       kind: "value";
-      value: string;
+      value: boolean;
     };
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
@@ -595,19 +875,7 @@ export type Inherited7 =
     }
   | {
       kind: "value";
-      value: Stroke;
-    };
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "Inherited8".
- */
-export type Inherited8 =
-  | {
-      kind: "inherit";
-    }
-  | {
-      kind: "value";
-      value: Alignment;
+      value: string;
     };
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
@@ -619,16 +887,27 @@ export type Inherited9 =
     }
   | {
       kind: "value";
-      value: TextDirection;
+      value: Stroke;
     };
 /**
- * Finite values retain the existing integer wire form. Infinity is a named
- * alternative, never a sentinel count or a pre-expanded list of iterations.
- *
  * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "RepeatCount".
+ * via the `definition` "PresentationGroupStart".
  */
-export type RepeatCount = "indefinite" | number;
+export type PresentationGroupStart = "automatic" | "next";
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "TableCellMerge".
+ */
+export type TableCellMerge =
+  | {
+      columns: number;
+      kind: "span";
+      rows: number;
+    }
+  | {
+      kind: "covered";
+      origin: CellId;
+    };
 
 export interface Transaction {
   baseRevision: Digest;
@@ -645,104 +924,124 @@ export interface OperationEntry {
   operationId: OperationId;
 }
 /**
- * Behaviors plus an optional explicit timing forest. The legacy graph retains
- * its byte representation; version 0.2 owns every behavior through tree roots.
- *
  * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "Timeline".
+ * via the `definition` "Table".
  */
-export interface Timeline {
-  format: TimelineVersion;
-  nodes: TimingNode[];
-  tree?: TimingTree | null;
+export interface Table {
+  columns: TableColumn[];
+  rows: TableRow[];
 }
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "TimingNode".
+ * via the `definition` "TableColumn".
  */
-export interface TimingNode {
-  duration: RationalTime;
+export interface TableColumn {
+  id: ColumnId;
+  width: Emu;
+}
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "TableRow".
+ */
+export interface TableRow {
   /**
-   * The current graph activates each node once (native restart="never").
+   * One entry per grid column, even when covered by another cell.
    */
-  effect: {
-    from: number;
-    kind: "rotation";
-    target: ObjectId;
-    to: number;
-  };
+  cells: TableCell[];
+  height: Emu;
+  id: RowId;
+}
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "TableCell".
+ */
+export interface TableCell {
   /**
-   * Earliest resolved eligible end; absent conditions add no end constraint.
+   * Row/column/cell identities are table-scoped. Text identities remain
+   * document-scoped so existing anchors retain their unambiguous meaning.
    */
-  endConditions?: TimeCondition[];
-  fill: FillMode;
-  id: TimingNodeId;
-  /**
-   * Additional bound in local active time, before speed scaling.
-   */
-  repeatDuration?: RepeatDuration | null;
-  /**
-   * Native count in thousandths, or explicit indefinite repetition.
-   */
-  repeatMilli: "indefinite" | number;
-  start: TimeCondition;
-  timeTransform?: TimeTransform | null;
+  id: string;
+  merge?:
+    | {
+        columns: number;
+        kind: "span";
+        rows: number;
+      }
+    | {
+        kind: "covered";
+        origin: CellId;
+      };
+  style?: TableCellStyle;
+  text?: TextBody | null;
 }
-/**
- * Exact wire representation. Equality compares author values; compare_time compares instants.
- *
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "RationalTime".
- */
-export interface RationalTime {
-  ticks: Ticks;
-  timescale: Timescale;
+export interface TableCellStyle {
+  borders?: TableCellBorders;
+  fill?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Fill;
+      };
+  verticalAlignment?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: TableVerticalAlignment;
+      };
 }
-/**
- * Local behavior clock. Percentages use native thousandths of one percent;
- * 100000 speed is normal playback. The clock is independent of effect values.
- *
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "TimeTransform".
- */
-export interface TimeTransform {
-  accelerationMilliPercent: number;
-  autoReverse: boolean;
-  decelerationMilliPercent: number;
-  speedMilliPercent: number;
-}
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "TimingTree".
- */
-export interface TimingTree {
-  containers: TimingContainer[];
-  roots: TimingNodeId[];
-}
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "TimingContainer".
- */
-export interface TimingContainer {
-  children: TimingNodeId[];
-  duration: ContainerDuration;
-  endConditions?: TimeCondition[];
-  fill: FillMode;
-  id: TimingNodeId;
-  kind: ContainerKind;
-  start: TimeCondition;
-}
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "Slide".
- */
-export interface Slide {
-  background: Inherited;
-  hidden: boolean;
-  id: SlideId;
-  layout?: LayoutId | null;
-  name: string;
-  objects: ObjectId[];
+export interface TableCellBorders {
+  bottom?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  bottomLeftToTopRight?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  left?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  right?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  top?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  topLeftToBottomRight?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
 }
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
@@ -756,26 +1055,34 @@ export interface Rgba {
 }
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "Theme".
+ * via the `definition` "TextBody".
  */
-export interface Theme {
-  colors: {
-    accent1?: Rgba;
-    accent2?: Rgba;
-    accent3?: Rgba;
-    accent4?: Rgba;
-    accent5?: Rgba;
-    accent6?: Rgba;
-    dark1?: Rgba;
-    dark2?: Rgba;
-    followedHyperlink?: Rgba;
-    hyperlink?: Rgba;
-    light1?: Rgba;
-    light2?: Rgba;
-  };
-  defaultText: CharacterStyle;
-  id: ThemeId;
-  name: string;
+export interface TextBody {
+  insets: Insets;
+  overflow: OverflowPolicy;
+  paragraphs: Paragraph[];
+  style: CharacterStyle;
+  wrap: boolean;
+}
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "Insets".
+ */
+export interface Insets {
+  bottom: Emu;
+  left: Emu;
+  right: Emu;
+  top: Emu;
+}
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "Paragraph".
+ */
+export interface Paragraph {
+  defaultRunStyle: CharacterStyle;
+  id: ParagraphId;
+  runs: TextRun[];
+  style: ParagraphStyle;
 }
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
@@ -841,10 +1148,309 @@ export interface CharacterStyle {
 }
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "TextRun".
+ */
+export interface TextRun {
+  content: InlineContent;
+  id: RunId;
+  style: CharacterStyle;
+}
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "ParagraphStyle".
+ */
+export interface ParagraphStyle {
+  alignment?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Alignment;
+      };
+  direction?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: TextDirection;
+      };
+  spaceAfter?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Emu;
+      };
+  spaceBefore?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Emu;
+      };
+}
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "TableCellStyle".
+ */
+export interface TableCellStyle1 {
+  borders?: TableCellBorders;
+  fill?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Fill;
+      };
+  verticalAlignment?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: TableVerticalAlignment;
+      };
+}
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "PresentationSequence".
+ */
+export interface PresentationSequence {
+  groups: PresentationGroup[];
+}
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "PresentationGroup".
+ */
+export interface PresentationGroup {
+  batches: PresentationBatch[];
+  /**
+   * Automatic is valid only for the first group; Next waits for navigation.
+   */
+  start: "automatic" | "next";
+}
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "PresentationBatch".
+ */
+export interface PresentationBatch {
+  delay: RationalTime;
+  effects: PresentationEffect[];
+}
+/**
+ * Additional delay after the preceding batch ends (or group activation).
+ */
+export interface RationalTime {
+  ticks: Ticks;
+  timescale: Timescale;
+}
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "PresentationEffect".
+ */
+export interface PresentationEffect {
+  delay: RationalTime1;
+  duration: RationalTime2;
+  effect: Effect;
+  fill: FillMode;
+  /**
+   * Stable behavior identity. Container identities are allocated separately.
+   */
+  id: string;
+  repeatDuration?: RepeatDuration | null;
+  repeatMilli: RepeatCount;
+  timeTransform?: TimeTransform | null;
+}
+/**
+ * Offset from this batch's activation, not from the preceding effect.
+ */
+export interface RationalTime1 {
+  ticks: Ticks;
+  timescale: Timescale;
+}
+/**
+ * Exact wire representation. Equality compares author values; compare_time compares instants.
+ *
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "RationalTime".
+ */
+export interface RationalTime2 {
+  ticks: Ticks;
+  timescale: Timescale;
+}
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "ScaleValue".
+ */
+export interface ScaleValue {
+  x: number;
+  y: number;
+}
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "MotionPoint".
+ */
+export interface MotionPoint {
+  x: MotionCoordinate;
+  y: MotionCoordinate;
+}
+/**
+ * Connected native path. Coordinates are absolute offsets from the original
+ * layout center, measured in slide fractions. Pacing uses length in this
+ * normalized coordinate space, before scaling the axes to slide dimensions.
+ *
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "MotionPath".
+ */
+export interface MotionPath {
+  from: MotionPoint;
+  segments: MotionSegment[];
+}
+/**
+ * Local behavior clock. Percentages use native thousandths of one percent;
+ * 100000 speed is normal playback. The clock is independent of effect values.
+ *
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "TimeTransform".
+ */
+export interface TimeTransform {
+  accelerationMilliPercent: number;
+  autoReverse: boolean;
+  decelerationMilliPercent: number;
+  speedMilliPercent: number;
+}
+/**
+ * Behaviors plus an optional explicit timing forest. The legacy graph retains
+ * its byte representation; version 0.2 owns every behavior through tree roots.
+ *
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "Timeline".
+ */
+export interface Timeline {
+  format: TimelineVersion;
+  nodes: TimingNode[];
+  tree?: TimingTree | null;
+}
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "TimingNode".
+ */
+export interface TimingNode {
+  duration: RationalTime2;
+  effect: Effect;
+  /**
+   * Earliest resolved eligible end; absent conditions add no end constraint.
+   */
+  endConditions?: TimeCondition[];
+  fill: FillMode;
+  id: TimingNodeId;
+  /**
+   * Additional bound in local active time, before speed scaling.
+   */
+  repeatDuration?: RepeatDuration | null;
+  /**
+   * Finite values retain the existing integer wire form. Infinity is a named
+   * alternative, never a sentinel count or a pre-expanded list of iterations.
+   */
+  repeatMilli: "indefinite" | number;
+  restart?: RestartMode;
+  start: StartCondition;
+  timeTransform?: TimeTransform | null;
+}
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "TimingTree".
+ */
+export interface TimingTree {
+  containers: TimingContainer[];
+  roots: TimingNodeId[];
+}
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "TimingContainer".
+ */
+export interface TimingContainer {
+  children: TimingNodeId[];
+  duration: ContainerDuration;
+  endConditions?: TimeCondition[];
+  fill: FillMode;
+  id: TimingNodeId;
+  kind: ContainerKind;
+  navigation?: SequenceNavigation | null;
+  /**
+   * Native presentation identity. It participates in initial playback state
+   * and editable export; it never changes the container's declared clock.
+   */
+  presentation?: PresentationRole | null;
+  restart?: RestartMode;
+  start: StartCondition;
+  /**
+   * Filter the container's simple time before its descendants consume it.
+   * Compilation validates the supported clock domain; this is never copied
+   * into the leaves or interpreted as an independent per-effect easing.
+   */
+  timeTransform?: TimeTransform | null;
+}
+/**
+ * Sequence controls are document computation, independent of host buttons or
+ * keyboard bindings. Conditions are disjunctions, like begin/end conditions.
+ *
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "SequenceNavigation".
+ */
+export interface SequenceNavigation {
+  concurrent: boolean;
+  nextAction: NextAction;
+  nextConditions: TimeCondition[];
+  previousAction: PreviousAction;
+  previousConditions: TimeCondition[];
+}
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "Slide".
+ */
+export interface Slide {
+  background: Inherited8;
+  hidden: boolean;
+  id: SlideId;
+  layout?: LayoutId | null;
+  name: string;
+  objects: ObjectId[];
+}
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "Theme".
+ */
+export interface Theme {
+  colors: {
+    accent1?: Rgba;
+    accent2?: Rgba;
+    accent3?: Rgba;
+    accent4?: Rgba;
+    accent5?: Rgba;
+    accent6?: Rgba;
+    dark1?: Rgba;
+    dark2?: Rgba;
+    followedHyperlink?: Rgba;
+    hyperlink?: Rgba;
+    light1?: Rgba;
+    light2?: Rgba;
+  };
+  defaultText: CharacterStyle;
+  id: ThemeId;
+  name: string;
+}
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
  * via the `definition` "Master".
  */
 export interface Master {
-  background: Inherited;
+  background: Inherited8;
   defaultText: CharacterStyle;
   id: MasterId;
   objects: ObjectId[];
@@ -855,7 +1461,7 @@ export interface Master {
  * via the `definition` "Layout".
  */
 export interface Layout {
-  background: Inherited;
+  background: Inherited8;
   defaultText: CharacterStyle;
   id: LayoutId;
   master: MasterId;
@@ -968,84 +1574,6 @@ export interface Size {
 }
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "TextBody".
- */
-export interface TextBody {
-  insets: Insets;
-  overflow: OverflowPolicy;
-  paragraphs: Paragraph[];
-  style: CharacterStyle;
-  wrap: boolean;
-}
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "Insets".
- */
-export interface Insets {
-  bottom: Emu;
-  left: Emu;
-  right: Emu;
-  top: Emu;
-}
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "Paragraph".
- */
-export interface Paragraph {
-  defaultRunStyle: CharacterStyle;
-  id: ParagraphId;
-  runs: TextRun[];
-  style: ParagraphStyle;
-}
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "TextRun".
- */
-export interface TextRun {
-  content: InlineContent;
-  id: RunId;
-  style: CharacterStyle;
-}
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "ParagraphStyle".
- */
-export interface ParagraphStyle {
-  alignment?:
-    | {
-        kind: "inherit";
-      }
-    | {
-        kind: "value";
-        value: Alignment;
-      };
-  direction?:
-    | {
-        kind: "inherit";
-      }
-    | {
-        kind: "value";
-        value: TextDirection;
-      };
-  spaceAfter?:
-    | {
-        kind: "inherit";
-      }
-    | {
-        kind: "value";
-        value: Emu;
-      };
-  spaceBefore?:
-    | {
-        kind: "inherit";
-      }
-    | {
-        kind: "value";
-        value: Emu;
-      };
-}
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
  * via the `definition` "Crop".
  */
 export interface Crop {
@@ -1067,4 +1595,58 @@ export interface Transform {
    */
   rotation: number;
   size: Size;
+}
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "TableCellBorders".
+ */
+export interface TableCellBorders1 {
+  bottom?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  bottomLeftToTopRight?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  left?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  right?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  top?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  topLeftToBottomRight?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
 }

@@ -2,7 +2,7 @@
 use super::{PageFailure, TimelineEvaluateRequest, TimelineFailure, TimelineFailureCode};
 use mo_common::from_json_str;
 pub use mo_presentation_compile::playback::{
-    PLAYBACK_PAGE_PROFILE, PlaybackCompiledFrame, PlaybackRasterInfo,
+    PLAYBACK_PAGE_PROFILE, PlaybackCompiledFrame, PlaybackRasterInfo, frame_profile,
 };
 use mo_presentation_compile::{
     PagePaintDefaults, PagePlacementRequest, PageRenderRequest,

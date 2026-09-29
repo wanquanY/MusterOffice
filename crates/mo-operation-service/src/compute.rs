@@ -58,6 +58,7 @@ pub fn compute_mutation(
     base: Option<SnapshotRecord>,
     check: &dyn Fn() -> bool,
 ) -> Result<MutationCandidate, Failure> {
+    request.validate_profile()?;
     let computed =
         computation::compute_mutation(&crate::compatibility::input(request), base, check)?;
     bind(request, computed, check)

@@ -178,6 +178,18 @@ fn actual_two_page_delivery_and_hidden_page_cover_every_bound_artifact() {
             artifact.asset().byte_length.get(),
             artifact.reader().len() as u64
         );
+        if artifact.asset().role == AssetRole::QualityReport
+            && artifact.asset().media_type == "application/json"
+        {
+            let value: serde_json::Value = serde_json::from_slice(artifact.reader()).unwrap();
+            let info: mo_presentation_compile::source_resource_page::SourceResourcePageRasterInfo =
+                serde_json::from_value(value["render"].clone()).unwrap();
+            info.text_capacity
+                .as_ref()
+                .expect("new worker measures text capacity")
+                .validate(info.text_frames, &|| false)
+                .unwrap();
+        }
     }
     snapshot.document.slides.values_mut().last().unwrap().hidden = true;
     let hidden = Snapshot::new(snapshot.document, Default::default())
@@ -222,6 +234,8 @@ impl PreviewRenderer for FaultRenderer {
                     1 => image.pixels[0] ^= 1,
                     2 => image.info.page.scene.profile = "wrong".into(),
                     3 => image.info.page.page.hidden_slide = !image.info.page.page.hidden_slide,
+                    4 => image.info.text_frames += 1,
+                    5 => image.info.text_capacity.as_mut().unwrap().profile = "unverified".into(),
                     _ => unreachable!(),
                 }
                 emit(ordinal, image)
@@ -233,7 +247,7 @@ impl PreviewRenderer for FaultRenderer {
 #[ignore = "requires MO_DELIVERY_WORKER and its explicitly verified SHA256"]
 fn failed_or_mismatched_components_never_return_a_complete_candidate() {
     let (snapshot, settings) = input();
-    for fault in 0..4 {
+    for fault in 0..6 {
         let mut renderer = FaultRenderer {
             inner: renderer(),
             fault,

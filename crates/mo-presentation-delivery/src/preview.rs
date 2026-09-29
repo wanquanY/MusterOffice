@@ -131,6 +131,7 @@ pub(crate) fn validate(
     let page = &info.page.page;
     let raster = &info.page.scene.raster;
     let vp = &request.page.viewport;
+    validate_capacity(info, check)?;
     if info.profile != RESOURCE_PROFILE
         || info.page.scene.profile != mo_render::PROFILE
         || page.source_sha256 != request.page.expected_source_sha256
@@ -150,6 +151,24 @@ pub(crate) fn validate(
     }
     if raster.sha256 != Digest::from_sha256(hash.finalize().into()) {
         return Err(DeliveryError::Invalid("preview pixel digest"));
+    }
+    Ok(())
+}
+
+pub(crate) fn validate_capacity(
+    info: &mo_presentation_compile::source_resource_page::SourceResourcePageRasterInfo,
+    check: &dyn Fn() -> bool,
+) -> Result<(), DeliveryError> {
+    cancel(check)?;
+    if let Some(capacity) = &info.text_capacity {
+        capacity
+            .validate(info.text_frames, check)
+            .map_err(|error| match error {
+                mo_presentation_compile::source_frame::SourceFrameError::Cancelled => {
+                    DeliveryError::Cancelled
+                }
+                _ => DeliveryError::Invalid("preview text capacity"),
+            })?;
     }
     Ok(())
 }

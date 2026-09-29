@@ -76,6 +76,11 @@ export type SourcePageIssue =
       kind: "pathFillModifier";
     }
   | {
+      first: TableBorderTarget;
+      kind: "tableBorderConflict";
+      second: TableBorderTarget;
+    }
+  | {
       kind: "fillSpace";
       redirects: FillRedirect[];
     };
@@ -385,11 +390,18 @@ export type NativeShapeType =
   | "wedgeRectCallout"
   | "wedgeRoundRectCallout";
 export type FormulaIssue = "unknownOperation" | "arity" | "divisionByZero" | "undefinedDirection" | "tangentPole";
+export type TableCellEdge = "left" | "right" | "top" | "bottom" | "topLeftToBottomRight" | "bottomLeftToTopRight";
 export type FillOrigin =
   | {
       kind: "declaration";
       owner: FillOwner;
       sourceOrdinal: number;
+    }
+  | {
+      kind: "tableStyle";
+      part: string;
+      sourceOrdinal: number;
+      via: FillOwner;
     }
   | {
       kind: "theme";
@@ -421,11 +433,60 @@ export type FillTarget =
       nativeId: number;
     }
   | {
+      cell: SourceCellAddress;
+      kind: "tableCell";
+      nativeId: number;
+    }
+  | {
+      cell: SourceCellAddress;
+      edge: TableCellEdge;
+      kind: "tableCellBorder";
+      nativeId: number;
+    }
+  | {
+      kind: "tableBackground";
+      nativeId: number;
+    }
+  | {
+      kind: "tableStyleFill";
+      nativeId: number;
+      region?: TableStyleRegion | null;
+    }
+  | {
+      edge: TableStyleEdge;
+      kind: "tableStyleBorder";
+      nativeId: number;
+      region: TableStyleRegion;
+    }
+  | {
       kind: "rootGroup";
     }
   | {
       kind: "background";
     };
+export type TableStyleRegion =
+  | "wholeTbl"
+  | "band1H"
+  | "band2H"
+  | "band1V"
+  | "band2V"
+  | "lastCol"
+  | "firstCol"
+  | "lastRow"
+  | "seCell"
+  | "swCell"
+  | "firstRow"
+  | "neCell"
+  | "nwCell";
+export type TableStyleEdge =
+  | "left"
+  | "right"
+  | "top"
+  | "bottom"
+  | "insideHorizontal"
+  | "insideVertical"
+  | "topLeftToBottomRight"
+  | "topRightToBottomLeft";
 
 export interface SourcePageRasterInfo {
   downstreamCoordinateErrorBound: FixedQ32;
@@ -505,6 +566,7 @@ export interface RasterWork {
    * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
    */
   miterLimitErrorBound: string;
+  opacityGroups?: OpacityGroupWork | null;
   paths: number;
   strokeDraws: number;
   strokeStyles: number;
@@ -556,6 +618,18 @@ export interface EllipticGradientWork {
    */
   parameterErrorBounds: [FixedQ32, FixedQ32, FixedQ32, FixedQ32, FixedQ32, FixedQ32];
 }
+export interface OpacityGroupWork {
+  groups: number;
+  maximumDepth: number;
+  /**
+   * Peak simultaneously live intermediate pixels, excluding output/snapshots.
+   */
+  peakPixelBytes: number;
+  /**
+   * Pixels cleared plus pixels composited, including fully transparent groups.
+   */
+  pixelWork: number;
+}
 export interface SceneWork {
   clips?: SceneClipWork | null;
   /**
@@ -606,6 +680,15 @@ export interface SourceObjectRef {
 export interface PlacementUnresolved {
   cause: PlacementCause;
   object: SourceObjectRef;
+}
+export interface TableBorderTarget {
+  cell: SourceCellAddress;
+  edge: TableCellEdge;
+  nativeId: number;
+}
+export interface SourceCellAddress {
+  column: number;
+  row: number;
 }
 export interface FillRedirect {
   declaredBy: FillOrigin;

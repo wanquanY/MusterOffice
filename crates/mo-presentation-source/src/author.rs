@@ -7,6 +7,7 @@ mod geometry;
 mod paint;
 mod resources;
 mod surface;
+mod table;
 mod text;
 mod theme;
 use crate::{PptxError, cancelled, source::*, value as value_error};
@@ -64,6 +65,7 @@ impl<'a> AuthorPlan<'a> {
         let mut main_text = text::TextBuilder::new(&mut ord);
         main_text.defaults(defaults)?;
         let mut index = SourceIndex {
+            table_styles: None,
             text: main_text.catalog,
             compatibility_profile: "musteroffice.pml-source-mce/1".into(),
             main_compatibility: Default::default(),

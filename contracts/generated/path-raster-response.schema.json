@@ -170,6 +170,40 @@
       "x-integer-maximum": "170141183460469231731687303715884105727",
       "x-integer-minimum": "-170141183460469231731687303715884105728"
     },
+    "OpacityGroupWork": {
+      "type": "object",
+      "properties": {
+        "groups": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "maximumDepth": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "peakPixelBytes": {
+          "description": "Peak simultaneously live intermediate pixels, excluding output/snapshots.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "pixelWork": {
+          "description": "Pixels cleared plus pixels composited, including fully transparent groups.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "groups",
+        "maximumDepth",
+        "peakPixelBytes",
+        "pixelWork"
+      ]
+    },
     "RasterFailure": {
       "type": "object",
       "properties": {
@@ -320,6 +354,16 @@
         "miterLimitErrorBound": {
           "description": "Dimensionless raw Q32; not added to pixel coordinate budgets.",
           "$ref": "#/$defs/FixedQ32"
+        },
+        "opacityGroups": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpacityGroupWork"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "paths": {
           "type": "integer",

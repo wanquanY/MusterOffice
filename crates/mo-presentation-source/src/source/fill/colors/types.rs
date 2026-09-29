@@ -66,7 +66,7 @@ pub enum FillPaintColors {
 pub struct FillColorEvaluation {
     pub outcome: ColorSample,
     /// Present only when evaluation actually consulted a native reference.
-    pub placeholder: Option<FillPlaceholderBinding>,
+    pub placeholder: Option<Box<FillPlaceholderBinding>>,
     pub dependencies: Vec<ColorDependency>,
     pub notices: Vec<ColorNotice>,
 }
@@ -74,6 +74,9 @@ pub struct FillColorEvaluation {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct FillPlaceholderBinding {
     pub owner: FillOwner,
+    /// Shared table declarations live outside the consuming object's surface.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_part: Option<String>,
     pub reference_ordinal: u32,
     pub color_ordinal: Option<u32>,
 }

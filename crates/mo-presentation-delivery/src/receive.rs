@@ -54,6 +54,19 @@ pub struct ReceiptInspection {
 pub struct ReceivedDelivery {
     report: ReceiptInspection,
     snapshot: SnapshotRecord,
+    previews: Vec<PreviewMeasurements>,
+    pub(crate) playback: crate::playback::PlaybackSource,
+}
+/// Measurements read from evidence whose byte, page, plan and image bindings
+/// were checked by `inspect`. They remain the producing renderer's observations;
+/// receipt inspection does not independently rerender or prove visual quality.
+#[derive(Debug, Clone, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct PreviewMeasurements {
+    pub page_id: mo_common::SlideId,
+    pub evidence_asset_id: RequestId,
+    /// Historical evidence may be unmeasured, including pages with no text.
+    pub text_capacity: Option<mo_presentation_compile::source_frame::capacity::TextCapacity>,
 }
 impl ReceivedDelivery {
     pub fn report(&self) -> &ReceiptInspection {
@@ -61,6 +74,10 @@ impl ReceivedDelivery {
     }
     pub fn snapshot(&self) -> &SnapshotRecord {
         &self.snapshot
+    }
+    /// Deck-ordered observations from the exact evidence already inspected.
+    pub fn preview_measurements(&self) -> &[PreviewMeasurements] {
+        &self.previews
     }
 }
 
@@ -227,13 +244,30 @@ pub fn inspect(
     {
         return Err(DeliveryError::Invalid("PPTX page coverage"));
     }
-    evidence::validate(&mut input, bundle, &snapshot, &context, &index)?;
+    let previews = evidence::validate(&mut input, bundle, &snapshot, &context, &index)?;
     if input.used.len() != input.assets.len() {
         return Err(DeliveryError::Invalid("unreferenced delivery asset"));
     }
     cancel(check)?;
     let bundle_digest = mo_common::digest("musteroffice.delivery-bundle/1", bundle)
         .map_err(|_| DeliveryError::Serialization)?;
+    let playback = crate::playback::PlaybackSource {
+        source: input.assets[&bundle.pptx_asset_id].0.clone(),
+        font_bundle: context
+            .value
+            .font_bundle_asset_id
+            .as_ref()
+            .map(|id| input.assets[id].0.clone()),
+        settings: context.value.settings,
+        size: snapshot.document.page_size,
+        pages: snapshot
+            .document
+            .slide_order
+            .iter()
+            .cloned()
+            .zip(index.slides.iter().map(|slide| slide.part.clone()))
+            .collect(),
+    };
     Ok(ReceivedDelivery {
         report: ReceiptInspection {
             profile: "delivery-bytes-reference-binding-v1-draft".into(),
@@ -248,5 +282,7 @@ pub fn inspect(
             declared_claims: bundle.claims.clone(),
         },
         snapshot,
+        previews,
+        playback,
     })
 }

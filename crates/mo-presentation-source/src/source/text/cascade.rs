@@ -2,10 +2,14 @@
 //! field evaluation or drawing takes place here. See cascade::PROFILE.
 mod chain;
 mod properties;
+mod table_text;
 mod types;
 use super::*;
 use crate::{PptxError, cancelled, source::*, value};
 pub use properties::{CharacterProperty, ParagraphProperty};
+pub use table_text::{
+    TableTextBinding, TableTextDeclaration, TableTextResolver, color_element, table_declaration,
+};
 pub use types::*;
 
 /// Look up a selected declaration in the same inspected source. This intentionally
@@ -219,12 +223,23 @@ fn declarations<S: Ord>(
     }
     Ok(())
 }
+#[derive(Clone)]
+enum Layer<'a> {
+    Native(Location<'a>),
+    Table(table_text::CharacterLayer<'a>),
+}
 fn character(
-    locations: &[Location<'_>],
+    locations: &[Layer<'_>],
     budget: &mut Budget<'_>,
 ) -> Result<CascadedCharacterStyle, Failure> {
     let mut style = CascadedCharacterStyle::default();
-    for at in locations {
+    for layer in locations {
+        let Layer::Native(at) = layer else {
+            if let Layer::Table(table) = layer {
+                table.apply(&mut style, budget)?;
+            }
+            continue;
+        };
         let n = at.checked(budget)?;
         let SourceTextValue::Character { attributes } = &n.value else {
             return Err(conflict().into());
@@ -253,12 +268,17 @@ fn character(
     )?;
     Ok(style)
 }
+struct Scope<'a> {
+    cell: Option<table::SourceCellAddress>,
+    table: Option<table_text::CharacterLayer<'a>>,
+}
 fn paragraph<'a>(
     location: &Location<'a>,
     object: &SourceObject,
     paragraph_index: usize,
     context: &chain::Context<'a>,
-    levels: &mut BTreeMap<i32, Vec<Location<'a>>>,
+    scope: &Scope<'a>,
+    levels: &mut BTreeMap<i32, Vec<Layer<'a>>>,
     budget: &mut Budget<'_>,
 ) -> Result<CascadedParagraph, Failure> {
     location.checked(budget)?;
@@ -276,20 +296,27 @@ fn paragraph<'a>(
     }
     let mut parents = vec![];
     if let Some(p) = local {
-        parents.push(p);
+        parents.push(Layer::Native(p));
     }
     if let std::collections::btree_map::Entry::Vacant(e) = levels.entry(level) {
-        e.insert(context.level(level, budget)?);
+        e.insert(context.level(level, scope.cell, scope.table.as_ref(), budget)?);
     }
     for at in &levels[&level] {
-        budget.bytes(at.origin.bytes() + 32)?;
+        budget.bytes(match at {
+            Layer::Native(at) => at.origin.bytes() + 32,
+            Layer::Table(t) => t.source.lexical_bytes() + 128,
+        })?;
         parents.push(at.clone());
     }
     let mut attributes = SourceTextParagraphAttributes::default();
     let mut origins = BTreeMap::new();
     let mut selected = BTreeMap::new();
     let mut characters = vec![];
-    for at in &parents {
+    for layer in &parents {
+        let Layer::Native(at) = layer else {
+            characters.push(layer.clone());
+            continue;
+        };
         let n = at.checked(budget)?;
         let SourceTextValue::Paragraph { attributes: from } = &n.value else {
             return Err(conflict().into());
@@ -305,7 +332,7 @@ fn paragraph<'a>(
         properties::paragraph(&mut attributes, &from, &mut origins, &at.origin, budget)?;
         declarations(at, &mut selected, properties::paragraph_slot, budget)?;
         if let Some(c) = at.child(NativeTextElement::DefRPr, budget)? {
-            characters.push(c);
+            characters.push(Layer::Native(c));
         }
     }
     properties::paragraph(
@@ -350,7 +377,7 @@ fn paragraph<'a>(
             t.checked(budget)?;
         }
         let local = c.child(NativeTextElement::RPr, budget)?;
-        let mut chain = local.into_iter().collect::<Vec<_>>();
+        let mut chain = local.into_iter().map(Layer::Native).collect::<Vec<_>>();
         chain.extend(characters.iter().cloned());
         let style = character(&chain, budget)?;
         runs.push(CascadedTextRun {
@@ -366,6 +393,7 @@ fn paragraph<'a>(
     let mut end = location
         .child(NativeTextElement::EndParaRPr, budget)?
         .into_iter()
+        .map(Layer::Native)
         .collect::<Vec<_>>();
     end.extend(characters);
     let end_style = character(&end, budget)?;
@@ -406,7 +434,7 @@ pub fn resolve(
         let context = chain::Context::new(index, object, &mut budget)?;
         let root = context
             .target
-            .body()?
+            .body(None)?
             .ok_or(TextCascadeUnresolved::NoTextBody {})?;
         root.checked(&mut budget)?;
         let font_reference = context.font_reference(&mut budget)?;
@@ -427,6 +455,10 @@ pub fn resolve(
                 context.target.object,
                 paragraphs.len(),
                 &context,
+                &Scope {
+                    cell: None,
+                    table: None,
+                },
                 &mut levels,
                 &mut budget,
             )?);
@@ -439,6 +471,8 @@ pub fn resolve(
             profile: PROFILE.into(),
             source_sha256: index.source_sha256.clone(),
             object: object.clone(),
+            cell: None,
+            paragraph_start: 0,
             font_reference,
             paragraphs,
         })

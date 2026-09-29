@@ -116,6 +116,78 @@
         "other"
       ]
     },
+    "BindingValue": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "text"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "resource"
+            },
+            "value": {
+              "$ref": "#/$defs/Resource"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "color"
+            },
+            "value": {
+              "$ref": "#/$defs/Rgba"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "transform"
+            },
+            "value": {
+              "$ref": "#/$defs/Transform"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        }
+      ]
+    },
     "ByteLength": {
       "description": "Canonical uint64 byte length. Range requires semantic validation.",
       "type": "string",
@@ -125,6 +197,14 @@
       "pattern": "^(0|[1-9][0-9]{0,19})$",
       "x-integer-maximum": "18446744073709551615",
       "x-integer-minimum": "0"
+    },
+    "CellId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
     },
     "ChangeSet": {
       "type": "object",
@@ -399,8 +479,33 @@
         }
       ]
     },
+    "ColumnId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
     "ComputationResult": {
       "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "description": {
+              "$ref": "#/$defs/TemplateDescription"
+            },
+            "kind": {
+              "type": "string",
+              "const": "describedTemplate"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "description"
+          ]
+        },
         {
           "type": "object",
           "properties": {
@@ -877,12 +982,36 @@
       },
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
     },
+    "DocumentScopeMap": {
+      "description": "Total mapping for whole-document instantiation: (source document, local ID)\nbecomes (instance document, same local ID). This preserves every internal\nreference, including opaque native relationships, without an O(n) identity\ntable. It is not a mapping for copying a page into an existing document.",
+      "type": "object",
+      "properties": {
+        "instanceDocument": {
+          "$ref": "#/$defs/DocumentId"
+        },
+        "localIdPolicy": {
+          "$ref": "#/$defs/LocalIdPolicy"
+        },
+        "sourceDocument": {
+          "$ref": "#/$defs/DocumentId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceDocument",
+        "instanceDocument",
+        "localIdPolicy"
+      ]
+    },
     "Effect": {
       "oneOf": [
         {
           "description": "Absolute local rotation in native 1/60000 degree units, including multi-turn.\nReplacement behavior; later activation wins, author order breaks ties.",
           "type": "object",
           "properties": {
+            "composition": {
+              "$ref": "#/$defs/RotationComposition"
+            },
             "from": {
               "type": "integer",
               "format": "int32"
@@ -905,6 +1034,124 @@
             "target",
             "from",
             "to"
+          ]
+        },
+        {
+          "description": "Object-local scale factors in thousandths of a percent. 100000 is\nidentity, zero collapses an axis. Independent of the rotation channel.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "$ref": "#/$defs/ScaleValue"
+            },
+            "kind": {
+              "type": "string",
+              "const": "scale"
+            },
+            "target": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "to": {
+              "$ref": "#/$defs/ScaleValue"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "target",
+            "from",
+            "to"
+          ]
+        },
+        {
+          "description": "Fixed property replacement while active or held. Before activation and\nafter removal, the underlying document/animation value is unchanged.\nThis does not imply the initial-hidden state of an entrance preset.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "setVisibility"
+            },
+            "target": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "value": {
+              "$ref": "#/$defs/Visibility"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "target",
+            "value"
+          ]
+        },
+        {
+          "description": "Straight native motion path, in slide fractions relative to the original\nlayout center. Translation is in slide axes, independent of local scale\nand rotation. This is not a multi-segment/curve path approximation.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "$ref": "#/$defs/MotionPoint"
+            },
+            "kind": {
+              "type": "string",
+              "const": "motionLine"
+            },
+            "target": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "to": {
+              "$ref": "#/$defs/MotionPoint"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "target",
+            "from",
+            "to"
+          ]
+        },
+        {
+          "description": "Connected lines and cubic Beziers, paced by normalized path length.\nThe original control points are retained for native editable export.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "motionPath"
+            },
+            "path": {
+              "$ref": "#/$defs/MotionPath"
+            },
+            "target": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "target",
+            "path"
+          ]
+        },
+        {
+          "description": "Native whole-object fade filter. Progress is supplied by the behavior\nclock; visibility remains an independent channel, including preset helpers.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "fade"
+            },
+            "target": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "transition": {
+              "$ref": "#/$defs/FadeTransition"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "target",
+            "transition"
           ]
         }
       ]
@@ -941,6 +1188,13 @@
         "revision",
         "semanticDigest",
         "bundle"
+      ]
+    },
+    "FadeTransition": {
+      "type": "string",
+      "enum": [
+        "in",
+        "out"
       ]
     },
     "Fill": {
@@ -1133,6 +1387,40 @@
             },
             "value": {
               "$ref": "#/$defs/Fill"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        }
+      ]
+    },
+    "Inherited10": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "inherit"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "value"
+            },
+            "value": {
+              "$ref": "#/$defs/TableVerticalAlignment"
             }
           },
           "additionalProperties": false,
@@ -1486,6 +1774,61 @@
         "bottom"
       ]
     },
+    "InstantiationReceipt": {
+      "type": "object",
+      "properties": {
+        "bindingTransaction": {
+          "description": "Pure parameter computation against the immutable source. This is not a\ncommit to the template or the instance. Scope mapping follows binding.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TransactionReceipt"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "boundParameters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TemplateParameterId"
+          },
+          "uniqueItems": true
+        },
+        "requestDigest": {
+          "$ref": "#/$defs/Digest"
+        },
+        "requestId": {
+          "$ref": "#/$defs/RequestId"
+        },
+        "revision": {
+          "$ref": "#/$defs/Digest"
+        },
+        "scopeMap": {
+          "$ref": "#/$defs/DocumentScopeMap"
+        },
+        "semanticDigest": {
+          "$ref": "#/$defs/Digest"
+        },
+        "source": {
+          "$ref": "#/$defs/TemplateSource"
+        },
+        "templateDigest": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "requestDigest",
+        "templateDigest",
+        "source",
+        "scopeMap",
+        "boundParameters",
+        "revision",
+        "semanticDigest"
+      ]
+    },
     "Layout": {
       "type": "object",
       "properties": {
@@ -1589,6 +1932,12 @@
         }
       ]
     },
+    "LocalIdPolicy": {
+      "type": "string",
+      "enum": [
+        "preserve"
+      ]
+    },
     "Master": {
       "type": "object",
       "properties": {
@@ -1634,6 +1983,111 @@
         "musteroffice.presentation/0.1-draft"
       ]
     },
+    "MotionCoordinate": {
+      "description": "Exact decimal fraction of the slide dimension; canonicalized without rounding.",
+      "type": "string",
+      "maxLength": 29,
+      "not": {
+        "pattern": "[^0-9.\\-]"
+      },
+      "pattern": "^-?(0|[1-9][0-9]{0,8})(\\.[0-9]{1,18})?$"
+    },
+    "MotionPath": {
+      "description": "Connected native path. Coordinates are absolute offsets from the original\nlayout center, measured in slide fractions. Pacing uses length in this\nnormalized coordinate space, before scaling the axes to slide dimensions.",
+      "type": "object",
+      "properties": {
+        "from": {
+          "$ref": "#/$defs/MotionPoint"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MotionSegment"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "from",
+        "segments"
+      ]
+    },
+    "MotionPoint": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/MotionCoordinate"
+        },
+        "y": {
+          "$ref": "#/$defs/MotionCoordinate"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "MotionSegment": {
+      "description": "Source control points remain editable; subdivision belongs only to the\nimmutable playback plan. Close returns to the initial `from` point.",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "line"
+            },
+            "to": {
+              "$ref": "#/$defs/MotionPoint"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "control1": {
+              "$ref": "#/$defs/MotionPoint"
+            },
+            "control2": {
+              "$ref": "#/$defs/MotionPoint"
+            },
+            "kind": {
+              "type": "string",
+              "const": "cubic"
+            },
+            "to": {
+              "$ref": "#/$defs/MotionPoint"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "control1",
+            "control2",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "close"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
     "MutationReceipt": {
       "type": "object",
       "properties": {
@@ -1645,6 +2099,17 @@
         },
         "semanticDigest": {
           "$ref": "#/$defs/Digest"
+        },
+        "template": {
+          "description": "Source and parameter evidence for a new independent document. It is not\na transaction committed against the source, nor the new document's base.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/InstantiationReceipt"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "transaction": {
           "anyOf": [
@@ -1745,11 +2210,39 @@
         "run"
       ]
     },
-    "NodeEvent": {
+    "NavigationDirection": {
       "type": "string",
       "enum": [
-        "begin",
-        "end"
+        "next",
+        "previous"
+      ]
+    },
+    "NextAction": {
+      "type": "string",
+      "enum": [
+        "none",
+        "seek"
+      ]
+    },
+    "NodeEvent": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "end",
+            "onEnd"
+          ]
+        },
+        {
+          "description": "A dependency on the referenced node's interval boundary.",
+          "type": "string",
+          "const": "begin"
+        },
+        {
+          "description": "A lifecycle notification delivered by the referenced timing node.\nThis is not an event on a shape or another external event target.\nPreserve the native distinction: presentation editors use onBegin to\nrecognize an automatic group attached to a main sequence.",
+          "type": "string",
+          "const": "onBegin"
+        }
       ]
     },
     "Object": {
@@ -1793,6 +2286,23 @@
     },
     "ObjectContent": {
       "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "table"
+            },
+            "table": {
+              "$ref": "#/$defs/Table"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "table"
+          ]
+        },
         {
           "description": "Original geometry, styles, relationships and unknown extension semantics\nremain in the bound source. This is not a generic path/text promotion.",
           "type": "object",
@@ -2001,6 +2511,132 @@
       },
       "additionalProperties": false
     },
+    "Parameter": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "target": {
+          "$ref": "#/$defs/ParameterTarget"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "required",
+        "target"
+      ]
+    },
+    "ParameterTarget": {
+      "oneOf": [
+        {
+          "description": "Replaces one complete run, preserving its style, paragraph and identity.\nNewlines/structured runs still obey the original editor/source rules.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "textRun"
+            },
+            "maxScalars": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "minScalars": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "paragraph": {
+              "$ref": "#/$defs/ParagraphId"
+            },
+            "run": {
+              "$ref": "#/$defs/RunId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "paragraph",
+            "run",
+            "minScalars",
+            "maxScalars"
+          ]
+        },
+        {
+          "description": "Replaces this declaration for every consumer of this resource identity.\nNever rewrites source-package provenance or authorizes resource bytes.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "resource"
+            },
+            "mediaTypes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            },
+            "resource": {
+              "$ref": "#/$defs/ResourceId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "resource",
+            "mediaTypes"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "themeColor"
+            },
+            "slot": {
+              "$ref": "#/$defs/ThemeColor"
+            },
+            "theme": {
+              "$ref": "#/$defs/ThemeId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "theme",
+            "slot"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "transform"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object"
+          ]
+        }
+      ]
+    },
     "PathCommand": {
       "oneOf": [
         {
@@ -2114,6 +2750,64 @@
         "y"
       ]
     },
+    "PresentationPreset": {
+      "type": "string",
+      "enum": [
+        "appear",
+        "disappear",
+        "spin",
+        "growShrink",
+        "customMotion",
+        "fadeIn",
+        "fadeOut"
+      ]
+    },
+    "PresentationRole": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "mainSequence"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "effect"
+            },
+            "preset": {
+              "$ref": "#/$defs/PresentationPreset"
+            },
+            "trigger": {
+              "$ref": "#/$defs/PresentationTrigger"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "preset",
+            "trigger"
+          ]
+        }
+      ]
+    },
+    "PresentationTrigger": {
+      "type": "string",
+      "enum": [
+        "click",
+        "withPrevious",
+        "afterPrevious"
+      ]
+    },
     "Preview": {
       "type": "object",
       "properties": {
@@ -2161,6 +2855,13 @@
             "mode"
           ]
         }
+      ]
+    },
+    "PreviousAction": {
+      "type": "string",
+      "enum": [
+        "none",
+        "skipTimed"
       ]
     },
     "RationalTime": {
@@ -2262,6 +2963,15 @@
         "model3d"
       ]
     },
+    "RestartMode": {
+      "description": "Admission of new begin instances within one parent activation. Ancestor\nreactivation resets this policy, including `Never`. Omission preserves the\nexisting draft's once-per-parent behavior, independently of native defaults.",
+      "type": "string",
+      "enum": [
+        "never",
+        "always",
+        "whenNotActive"
+      ]
+    },
     "RetainedObjectKind": {
       "type": "string",
       "enum": [
@@ -2355,6 +3065,23 @@
         "alpha"
       ]
     },
+    "RotationComposition": {
+      "description": "Rotation is composed before object/group placement. Layout replaces earlier\nanimation offsets while preserving the document's local orientation. Add\nsums the sampled offset with the lower-priority visible rotation stack.",
+      "type": "string",
+      "enum": [
+        "absolute",
+        "layout",
+        "add"
+      ]
+    },
+    "RowId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
     "RunId": {
       "type": "string",
       "maxLength": 128,
@@ -2362,6 +3089,61 @@
         "pattern": "[^A-Za-z0-9_.:-]"
       },
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ScaleValue": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "y": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "SequenceNavigation": {
+      "description": "Sequence controls are document computation, independent of host buttons or\nkeyboard bindings. Conditions are disjunctions, like begin/end conditions.",
+      "type": "object",
+      "properties": {
+        "concurrent": {
+          "type": "boolean"
+        },
+        "nextAction": {
+          "$ref": "#/$defs/NextAction"
+        },
+        "nextConditions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimeCondition"
+          }
+        },
+        "previousAction": {
+          "$ref": "#/$defs/PreviousAction"
+        },
+        "previousConditions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimeCondition"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "concurrent",
+        "nextAction",
+        "previousAction",
+        "nextConditions",
+        "previousConditions"
+      ]
     },
     "Size": {
       "type": "object",
@@ -2450,14 +3232,39 @@
       ]
     },
     "SourceBindingProfile": {
-      "type": "string",
-      "enum": [
-        "presentationml-retained-fields-v1-draft"
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "presentationml-retained-fields-v1-draft"
+          ]
+        },
+        {
+          "description": "Includes the package core title. V1 remains readable with its original\nunprojected metadata semantics, so old snapshots cannot erase a title.",
+          "type": "string",
+          "const": "presentationml-retained-fields-v2-draft"
+        },
+        {
+          "description": "Includes physical table-cell text. V1/V2 keep tables opaque in their\neditable document projection, while preserving their native bytes.",
+          "type": "string",
+          "const": "presentationml-retained-fields-v3-draft"
+        }
       ]
     },
     "SourceBindings": {
       "type": "object",
       "properties": {
+        "identityScope": {
+          "description": "Immutable origin namespace used to derive source-local IDs. Absence\nretains the original document-ID-derived representation. A whole-deck\ninstance pins this namespace before changing its document identity.\nThis is provenance for calculation, never host access authority.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DocumentId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "layouts": {
           "type": "object",
           "additionalProperties": false,
@@ -2521,6 +3328,35 @@
         "objects"
       ]
     },
+    "StartCondition": {
+      "description": "A flat disjunction of native begin conditions. The single-condition wire\nrepresentation remains unchanged; alternatives cannot recursively nest.",
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "conditions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/TimeCondition"
+              },
+              "minItems": 1
+            },
+            "kind": {
+              "type": "string",
+              "const": "anyOf"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "conditions"
+          ]
+        },
+        {
+          "$ref": "#/$defs/TimeCondition"
+        }
+      ]
+    },
     "Stroke": {
       "oneOf": [
         {
@@ -2579,6 +3415,358 @@
             "width"
           ]
         }
+      ]
+    },
+    "Table": {
+      "type": "object",
+      "properties": {
+        "columns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TableColumn"
+          }
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TableRow"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "columns",
+        "rows"
+      ]
+    },
+    "TableCell": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Row/column/cell identities are table-scoped. Text identities remain\ndocument-scoped so existing anchors retain their unambiguous meaning.",
+          "$ref": "#/$defs/CellId"
+        },
+        "merge": {
+          "$ref": "#/$defs/TableCellMerge",
+          "default": {
+            "columns": 1,
+            "kind": "span",
+            "rows": 1
+          }
+        },
+        "style": {
+          "$ref": "#/$defs/TableCellStyle",
+          "default": {
+            "borders": {
+              "bottom": {
+                "kind": "inherit"
+              },
+              "bottomLeftToTopRight": {
+                "kind": "inherit"
+              },
+              "left": {
+                "kind": "inherit"
+              },
+              "right": {
+                "kind": "inherit"
+              },
+              "top": {
+                "kind": "inherit"
+              },
+              "topLeftToBottomRight": {
+                "kind": "inherit"
+              }
+            },
+            "fill": {
+              "kind": "inherit"
+            },
+            "verticalAlignment": {
+              "kind": "inherit"
+            }
+          }
+        },
+        "text": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TextBody"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id"
+      ]
+    },
+    "TableCellBorders": {
+      "type": "object",
+      "properties": {
+        "bottom": {
+          "$ref": "#/$defs/Inherited2",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "bottomLeftToTopRight": {
+          "$ref": "#/$defs/Inherited2",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "left": {
+          "$ref": "#/$defs/Inherited2",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "right": {
+          "$ref": "#/$defs/Inherited2",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "top": {
+          "$ref": "#/$defs/Inherited2",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "topLeftToBottomRight": {
+          "$ref": "#/$defs/Inherited2",
+          "default": {
+            "kind": "inherit"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "TableCellMerge": {
+      "oneOf": [
+        {
+          "description": "The origin is the upper-left cell. Counts include the origin.",
+          "type": "object",
+          "properties": {
+            "columns": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "span"
+            },
+            "rows": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "rows",
+            "columns"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "covered"
+            },
+            "origin": {
+              "$ref": "#/$defs/CellId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin"
+          ]
+        }
+      ]
+    },
+    "TableCellStyle": {
+      "type": "object",
+      "properties": {
+        "borders": {
+          "$ref": "#/$defs/TableCellBorders",
+          "default": {
+            "bottom": {
+              "kind": "inherit"
+            },
+            "bottomLeftToTopRight": {
+              "kind": "inherit"
+            },
+            "left": {
+              "kind": "inherit"
+            },
+            "right": {
+              "kind": "inherit"
+            },
+            "top": {
+              "kind": "inherit"
+            },
+            "topLeftToBottomRight": {
+              "kind": "inherit"
+            }
+          }
+        },
+        "fill": {
+          "$ref": "#/$defs/Inherited",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "verticalAlignment": {
+          "$ref": "#/$defs/Inherited10",
+          "default": {
+            "kind": "inherit"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "TableColumn": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ColumnId"
+        },
+        "width": {
+          "$ref": "#/$defs/Emu"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "width"
+      ]
+    },
+    "TableRow": {
+      "type": "object",
+      "properties": {
+        "cells": {
+          "description": "One entry per grid column, even when covered by another cell.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TableCell"
+          }
+        },
+        "height": {
+          "$ref": "#/$defs/Emu"
+        },
+        "id": {
+          "$ref": "#/$defs/RowId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "height",
+        "cells"
+      ]
+    },
+    "TableVerticalAlignment": {
+      "type": "string",
+      "enum": [
+        "top",
+        "center",
+        "bottom",
+        "justified",
+        "distributed"
+      ]
+    },
+    "TemplateDefinition": {
+      "description": "A template is an exact document revision plus typed editable parameters.\nCatalog identity, ownership, storage and inference are outside this contract.",
+      "type": "object",
+      "properties": {
+        "format": {
+          "$ref": "#/$defs/TemplateVersion"
+        },
+        "parameters": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "$ref": "#/$defs/Parameter"
+            }
+          }
+        },
+        "source": {
+          "$ref": "#/$defs/TemplateSource"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "format",
+        "source",
+        "parameters"
+      ]
+    },
+    "TemplateDescription": {
+      "type": "object",
+      "properties": {
+        "definition": {
+          "$ref": "#/$defs/TemplateDefinition"
+        },
+        "examples": {
+          "description": "Examples are the real values of the pinned source, never inferred text.",
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "$ref": "#/$defs/BindingValue"
+            }
+          }
+        },
+        "templateDigest": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "templateDigest",
+        "definition",
+        "examples"
+      ]
+    },
+    "TemplateParameterId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "TemplateSource": {
+      "type": "object",
+      "properties": {
+        "documentId": {
+          "$ref": "#/$defs/DocumentId"
+        },
+        "revision": {
+          "$ref": "#/$defs/Digest"
+        },
+        "semanticDigest": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "documentId",
+        "revision",
+        "semanticDigest"
+      ]
+    },
+    "TemplateVersion": {
+      "type": "string",
+      "enum": [
+        "musteroffice.presentation-template/1-draft"
       ]
     },
     "TextBody": {
@@ -2742,6 +3930,20 @@
     "TimeCondition": {
       "oneOf": [
         {
+          "description": "An explicitly indefinite condition, never a fabricated zero-time event.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "never"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
           "type": "object",
           "properties": {
             "kind": {
@@ -2807,6 +4009,37 @@
           "additionalProperties": false,
           "required": [
             "kind",
+            "delay"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "delay": {
+              "$ref": "#/$defs/RationalTime"
+            },
+            "direction": {
+              "$ref": "#/$defs/NavigationDirection"
+            },
+            "kind": {
+              "type": "string",
+              "const": "navigation"
+            },
+            "target": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/ObjectId"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "direction",
             "delay"
           ]
         }
@@ -2911,8 +4144,43 @@
         "kind": {
           "$ref": "#/$defs/ContainerKind"
         },
+        "navigation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SequenceNavigation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "presentation": {
+          "description": "Native presentation identity. It participates in initial playback state\nand editable export; it never changes the container's declared clock.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PresentationRole"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "restart": {
+          "$ref": "#/$defs/RestartMode"
+        },
         "start": {
-          "$ref": "#/$defs/TimeCondition"
+          "$ref": "#/$defs/StartCondition"
+        },
+        "timeTransform": {
+          "description": "Filter the container's simple time before its descendants consume it.\nCompilation validates the supported clock domain; this is never copied\ninto the leaves or interpreted as an independent per-effect easing.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TimeTransform"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "additionalProperties": false,
@@ -2932,7 +4200,6 @@
           "$ref": "#/$defs/RationalTime"
         },
         "effect": {
-          "description": "The current graph activates each node once (native restart=\"never\").",
           "$ref": "#/$defs/Effect"
         },
         "endConditions": {
@@ -2963,8 +4230,11 @@
           "description": "Native count in thousandths, or explicit indefinite repetition.",
           "$ref": "#/$defs/RepeatCount"
         },
+        "restart": {
+          "$ref": "#/$defs/RestartMode"
+        },
         "start": {
-          "$ref": "#/$defs/TimeCondition"
+          "$ref": "#/$defs/StartCondition"
         },
         "timeTransform": {
           "anyOf": [
@@ -3113,6 +4383,13 @@
         "rules",
         "featureRegistrySha256",
         "fontProfileSha256"
+      ]
+    },
+    "Visibility": {
+      "type": "string",
+      "enum": [
+        "visible",
+        "hidden"
       ]
     }
   }

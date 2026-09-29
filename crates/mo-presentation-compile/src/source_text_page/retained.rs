@@ -10,15 +10,19 @@ struct Draw {
     rgba: [u8; 4],
     uncertainty: Fixed,
 }
-struct Object {
+struct Frame {
     paths: Vec<Vec<PathCommand>>,
     draws: Vec<Draw>,
+    work: FrameWork,
+    clip: Option<clip::LocalClip>,
 }
 pub(crate) struct RetainedText {
-    objects: BTreeMap<(String, u32), Object>,
+    objects: BTreeMap<(String, u32), std::ops::Range<usize>>,
+    frames: Vec<Frame>,
     pub work: FrameWork,
     /// Logical element storage; excludes allocator, index and transient scene memory.
     pub path_bytes: u64,
+    pub capacity: crate::source_frame::capacity::TextCapacity,
 }
 impl RetainedText {
     pub fn new(
@@ -26,7 +30,10 @@ impl RetainedText {
         bindings: &[SourcePagePaintBinding],
         check: &dyn Fn() -> bool,
     ) -> Result<Self, SourcePageError> {
-        let mut objects = BTreeMap::new();
+        let capacity = super::capacity(&content.texts, check)?;
+        let mut objects: BTreeMap<(String, u32), std::ops::Range<usize>> = BTreeMap::new();
+        let mut frames = Vec::with_capacity(content.texts.len());
+        let mut cells = BTreeSet::new();
         let mut bytes = 0usize;
         let mut admit = |n: usize| -> Result<(), SourcePageError> {
             bytes = bytes
@@ -42,11 +49,55 @@ impl RetainedText {
         }
         for (i, text) in content.texts.into_iter().enumerate() {
             cancel(check)?;
-            let at = &bindings[text.binding as usize].location;
-            let mut object = Object {
+            let at = &bindings
+                .get(text.binding as usize)
+                .ok_or(SourcePageError::Invalid("retained text binding"))?
+                .location;
+            let key = (
+                at.part.clone(),
+                at.object
+                    .ok_or(SourcePageError::Invalid("retained text object"))?,
+            );
+            if text.frame.text.object.part != at.part
+                || Some(text.frame.text.object.native_id) != at.object
+            {
+                return Err(SourcePageError::Invalid(
+                    "retained text object differs from source",
+                ));
+            }
+            let cell = text.frame.text.cell;
+            let region_cell = match text.frame.region.source {
+                TextRectangleSource::TableCell { cell, .. } => Some(cell),
+                _ => None,
+            };
+            if cell != region_cell || !cells.insert((key.clone(), cell)) {
+                return Err(SourcePageError::Invalid(
+                    "duplicate or mismatched retained text frame",
+                ));
+            }
+            if let Some(range) = objects.get_mut(&key) {
+                if range.end != i || cell.is_none() || cells.contains(&(key.clone(), None)) {
+                    return Err(SourcePageError::Invalid(
+                        "noncontiguous or mixed retained text frames",
+                    ));
+                }
+                range.end += 1;
+            } else {
+                objects.insert(key, i..i + 1);
+            }
+            let mut object = Frame {
                 paths: vec![],
                 draws: vec![],
+                work: text.frame.work.clone(),
+                clip: clip::LocalClip::for_frame(
+                    &text.frame,
+                    &text.decorations,
+                    precision::frame_bound(&text.frame)?,
+                )?,
             };
+            if object.clip.is_some() {
+                admit(std::mem::size_of::<clip::LocalClip>())?;
+            }
             let mut paths = BTreeMap::new();
             let uncertainty = precision::frame_bound(&text.frame)?;
             for source in painted.remove(&(i as u32)).unwrap_or_default() {
@@ -96,49 +147,67 @@ impl RetainedText {
                     .paths
                     .push(decorations::commands(decoration.rect).to_vec());
             }
-            if objects
-                .insert((at.part.clone(), at.object.expect("text object")), object)
-                .is_some()
-            {
-                return Err(SourcePageError::Invalid("duplicate retained text object"));
-            }
+            frames.push(object);
         }
         cancel(check)?;
         Ok(Self {
             objects,
+            frames,
             work: content.text_work,
             path_bytes: bytes as u64,
+            capacity,
         })
     }
     pub fn frames(&self) -> u32 {
-        self.objects.len() as u32
+        self.frames.len() as u32
     }
-    pub fn painter(&self) -> RetainedPainter<'_> {
+    pub fn painter(&self, visible: &BTreeSet<(String, Option<u32>)>) -> RetainedPainter<'_> {
         RetainedPainter {
             text: self,
             seen: BTreeSet::new(),
-        }
-    }
-    pub fn sample_work(&self) -> FrameWork {
-        FrameWork {
-            component_calls: 0,
-            font_upload_bytes: 0,
-            request_words: 0,
-            glyphs: self.work.glyphs,
-            path_commands: self.work.path_commands,
+            failed: false,
+            expected: self
+                .objects
+                .keys()
+                .filter(|(part, id)| visible.contains(&(part.clone(), Some(*id))))
+                .cloned()
+                .collect(),
         }
     }
 }
 pub(crate) struct RetainedPainter<'a> {
     text: &'a RetainedText,
     seen: BTreeSet<(String, u32)>,
+    expected: BTreeSet<(String, u32)>,
+    // Failure invalidates this painter, not the immutable retained plan.
+    failed: bool,
 }
 impl RetainedPainter<'_> {
-    pub fn finish(self) -> Result<(), SourcePageError> {
-        if self.seen.len() != self.text.objects.len() {
+    pub fn finish(
+        self,
+    ) -> Result<(FrameWork, crate::source_frame::capacity::TextCapacity), SourcePageError> {
+        if self.failed || self.seen != self.expected {
             return Err(SourcePageError::Invalid("unpainted retained text"));
         }
-        Ok(())
+        let mut work = FrameWork::default();
+        for key in &self.seen {
+            for frame in &self.text.frames[self.text.objects[key].clone()] {
+                work.glyphs = work
+                    .glyphs
+                    .checked_add(frame.work.glyphs)
+                    .ok_or(RasterError::Limit("retained text glyphs"))?;
+                work.path_commands = work
+                    .path_commands
+                    .checked_add(frame.work.path_commands)
+                    .ok_or(RasterError::Limit("retained text paths"))?;
+            }
+        }
+        let mut capacity = self.text.capacity.clone();
+        capacity.frames.retain(|f| {
+            self.seen
+                .contains(&(f.object.part.clone(), f.object.native_id))
+        });
+        Ok((work, capacity))
     }
 }
 impl Painter for RetainedPainter<'_> {
@@ -150,11 +219,29 @@ impl Painter for RetainedPainter<'_> {
         viewport: &RasterViewport,
         check: &dyn Fn() -> bool,
     ) -> Result<(Fixed, Fixed), SourcePageError> {
+        if self.failed {
+            return Err(SourcePageError::Invalid("failed retained text paint"));
+        }
+        self.failed = true;
+        let result = self.append_object(binding, object, builder, viewport, check);
+        self.failed = result.is_err();
+        result
+    }
+}
+impl RetainedPainter<'_> {
+    fn append_object(
+        &mut self,
+        binding: u32,
+        object: &SourcePagePaintBinding,
+        builder: &mut SceneBuilder<SourcePagePaintSource>,
+        viewport: &RasterViewport,
+        check: &dyn Fn() -> bool,
+    ) -> Result<(Fixed, Fixed), SourcePageError> {
         let key = (
             object.location.part.clone(),
             object.location.object.expect("object"),
         );
-        let Some(local) = self.text.objects.get(&key) else {
+        let Some(range) = self.text.objects.get(&key) else {
             return Ok((Fixed::ZERO, Fixed::ZERO));
         };
         if !self.seen.insert(key) {
@@ -162,23 +249,30 @@ impl Painter for RetainedPainter<'_> {
         }
         let mut position = Fixed::ZERO;
         let mut geometry = Fixed::ZERO;
-        for draw in &local.draws {
+        for local in &self.text.frames[range.clone()] {
             cancel(check)?;
-            let (_, p, g) = placement::paint(
-                binding,
-                object,
-                builder,
-                viewport,
-                placement::LocalPath {
-                    commands: &local.paths[draw.path],
-                    origin: draw.origin,
-                    rgba: draw.rgba,
-                    uncertainty: draw.uncertainty,
-                },
-                check,
-            )?;
+            let (clip, p, g) = clip::append(local.clip, object, builder, viewport, check)?;
             position = position.max(p);
             geometry = geometry.max(g);
+            for draw in &local.draws {
+                cancel(check)?;
+                let (_, p, g) = placement::paint(
+                    binding,
+                    object,
+                    builder,
+                    viewport,
+                    placement::LocalPath {
+                        commands: &local.paths[draw.path],
+                        origin: draw.origin,
+                        rgba: draw.rgba,
+                        uncertainty: draw.uncertainty,
+                        clip,
+                    },
+                    check,
+                )?;
+                position = position.max(p);
+                geometry = geometry.max(g);
+            }
         }
         Ok((position, geometry))
     }

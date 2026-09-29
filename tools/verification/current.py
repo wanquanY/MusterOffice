@@ -90,6 +90,9 @@ def plan(groups, output, bindgen, python):
         thin = ROOT / "tools/mo-mcp/target/debug/mo-mcp"
         add("mcp-agent-package", python, "tools/agent-package/check.py", output / "mcp-agent-package", thin, ROOT / "target/debug/mo-export-worker")
         add("mcp-computation", python, "tools/mo-mcp/compute_check.py", output / "mcp-computation", thin, ROOT / "target/debug/mo-export-worker")
+        add("mcp-templates", python, "tools/mo-mcp/template_check.py", output / "mcp-templates", thin, ROOT / "target/debug/mo-export-worker")
+        if "wasm" in groups:
+            add("template-protocol-parity", "node", "tools/verification/template-protocol-parity.mjs", output / "mcp-templates/2026-07-28/parity.json", ROOT / "target/debug/mo-cli", output / "wasm/mo_wasm.js", output / "template-protocol-parity")
         add("mcp-computation-lifecycle", python, "tools/mo-mcp/compute_lifecycle.py", output / "mcp-computation-lifecycle", thin)
         http = ROOT / "tools/mo-mcp/target/debug/mo-mcp-http"
         add("mcp-http-protocol", python, "tools/mo-mcp/http_check.py", output / "mcp-http-protocol", http, ROOT / "target/debug/mo-export-worker")

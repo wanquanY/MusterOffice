@@ -108,6 +108,24 @@ fn font_color<'a>(
     index: &'a SourceIndex,
     r: &TextStyleDeclaration,
 ) -> Result<(TextStyleDeclaration, &'a SourceColor), TextPaintError> {
+    if matches!(r.origin, TextStyleOrigin::TableStyle { .. }) {
+        let TableTextDeclaration::Font(
+            crate::source::table::styles::SourceTableFontStyle::Reference {
+                color: Some(color),
+                ..
+            },
+        ) = table_declaration(index, r)?
+        else {
+            return Err(unsupported(r));
+        };
+        return Ok((
+            TextStyleDeclaration {
+                element: color_element(color),
+                origin: r.origin.at(color.source_ordinal),
+            },
+            color,
+        ));
+    }
     let n = cascade::declaration(index, r)?;
     if !matches!(n.value, SourceTextValue::FontReference { .. })
         || !n.retained_ordinals.is_empty()
@@ -157,8 +175,14 @@ pub fn resolve(
             cancelled(check)?;
             charge(&mut remaining)?;
             paints.push(
-                resolve_run(index, text, &run.style, &mut session, &mut remaining)
-                    .map_err(|e| e.at_run(TextPaintLocation::at(paragraph as u32, run)))?,
+                resolve_run(index, text, &run.style, &mut session, &mut remaining).map_err(
+                    |e| {
+                        e.at_run(TextPaintLocation::at(
+                            text.paragraph_start + paragraph as u32,
+                            run,
+                        ))
+                    },
+                )?,
             );
         }
         result.push(paints);
@@ -278,6 +302,12 @@ fn resolve_fill(
     r: &TextStyleDeclaration,
     session: &mut Session<'_>,
 ) -> Result<TextPaint, TextPaintError> {
+    if matches!(r.origin, TextStyleOrigin::TableStyle { .. }) {
+        let TableTextDeclaration::Color(color) = table_declaration(index, r)? else {
+            return Err(unsupported(r));
+        };
+        return solid(index, text, r.clone(), color, session);
+    }
     let node = cascade::declaration(index, r)?;
     let SourceTextValue::Fill { fill } = &node.value else {
         return Err(unsupported(r));
@@ -318,7 +348,8 @@ fn solid(
                 ColorUnresolved::RetainedPlaceholderContext {
                     part: text.object.part.clone(),
                     source_ordinal: match r.origin {
-                        TextStyleOrigin::Object { source_ordinal, .. }
+                        TextStyleOrigin::TableStyle { source_ordinal, .. }
+                        | TextStyleOrigin::Object { source_ordinal, .. }
                         | TextStyleOrigin::Master { source_ordinal, .. }
                         | TextStyleOrigin::Presentation { source_ordinal, .. }
                         | TextStyleOrigin::Theme { source_ordinal, .. } => source_ordinal,

@@ -16,15 +16,21 @@ pub enum SchemaId {
     ComputationExportReceipt,
     ComputationInvocation,
     ComputationReceipt,
+    TemplateDefinition,
+    TemplateRequest,
+    TemplateResponse,
 }
 impl SchemaId {
-    pub const ALL: [Self; 6] = [
+    pub const ALL: [Self; 9] = [
         Self::ComputationRequest,
         Self::ComputationFailure,
         Self::ComputationMutationReceipt,
         Self::ComputationExportReceipt,
         Self::ComputationInvocation,
         Self::ComputationReceipt,
+        Self::TemplateDefinition,
+        Self::TemplateRequest,
+        Self::TemplateResponse,
     ];
     pub fn schema(self) -> schemars::Schema {
         let schema = match self {
@@ -34,6 +40,9 @@ impl SchemaId {
             Self::ComputationExportReceipt => schema_for!(ExportReceipt),
             Self::ComputationInvocation => schema_for!(Invocation),
             Self::ComputationReceipt => schema_for!(ComputationReceipt),
+            Self::TemplateDefinition => schema_for!(mo_presentation_template::TemplateDefinition),
+            Self::TemplateRequest => schema_for!(mo_presentation_template::TemplateRequest),
+            Self::TemplateResponse => schema_for!(mo_presentation_template::TemplateResponse),
         };
         let name = serde_json::to_value(self).expect("static schema identifier");
         mo_common::runtime_schema(name.as_str().expect("string schema identifier"), schema)

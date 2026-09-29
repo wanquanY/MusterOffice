@@ -1,6 +1,7 @@
 //! Consume one private compiled batch after an external component execution.
 use crate::{
-    BackendReply, CompiledRaster, RasterError, RasterImage, RasterInfo, cancel, profile_for_frame,
+    CompiledRaster, RasterCompletionReply, RasterError, RasterImage, RasterInfo, cancel,
+    profile_for_frame,
 };
 use mo_common::{ByteLength, Digest};
 use sha2::{Digest as _, Sha256};
@@ -12,25 +13,16 @@ impl CompiledRaster {
     /// This consumes the batch, preventing a second completion in safe Rust.
     pub fn complete(
         self,
-        reply: BackendReply,
+        reply: impl Into<RasterCompletionReply>,
         check: &dyn Fn() -> bool,
     ) -> Result<RasterImage, RasterError> {
         cancel(check)?;
+        let reply = reply.into();
         reply.check_status()?;
-        if reply.pixels.len() != self.pixel_bytes() {
+        if reply.pixel_bytes() != self.pixel_bytes() {
             return Err(RasterError::ComponentInvalid("pixel length"));
         }
-        let mut hash = Sha256::new();
-        for chunk in reply.pixels.chunks(16384) {
-            cancel(check)?;
-            if chunk
-                .chunks_exact(4)
-                .any(|p| p[..3].iter().any(|v| *v > p[3]))
-            {
-                return Err(RasterError::ComponentInvalid("premultiplied channels"));
-            }
-            hash.update(chunk);
-        }
+        let reply = reply.validate(check)?;
         cancel(check)?;
         let mut frame_hash = Sha256::new();
         for words in self.frame().chunks(4096) {
@@ -48,7 +40,7 @@ impl CompiledRaster {
                 width: self.width(),
                 height: self.height(),
                 byte_length: ByteLength::new(reply.pixels.len() as u64),
-                sha256: Digest::from_sha256(hash.finalize().into()),
+                sha256: reply.sha256,
                 frame_sha256: Digest::from_sha256(frame_hash.finalize().into()),
                 work: self.work,
             },

@@ -23,6 +23,15 @@ pub struct SourceTextBodyQuery {
     deny_unknown_fields
 )]
 pub enum TextBodyOrigin {
+    Cell {
+        object: SourceObjectRef,
+        cell: crate::source::table::SourceCellAddress,
+        source_ordinal: u32,
+    },
+    CellDefault {
+        object: SourceObjectRef,
+        cell: crate::source::table::SourceCellAddress,
+    },
     Object {
         object: SourceObjectRef,
         source_ordinal: u32,
@@ -38,9 +47,9 @@ impl TextBodyOrigin {
     pub(super) fn at(&self, ordinal: u32) -> Self {
         let mut r = self.clone();
         match &mut r {
-            Self::Object { source_ordinal, .. } | Self::Theme { source_ordinal, .. } => {
-                *source_ordinal = ordinal
-            }
+            Self::Object { source_ordinal, .. }
+            | Self::Theme { source_ordinal, .. }
+            | Self::Cell { source_ordinal, .. } => *source_ordinal = ordinal,
             _ => (),
         }
         r

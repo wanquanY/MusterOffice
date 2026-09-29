@@ -59,6 +59,18 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
     let schemas = [
         (
+            "template-definition",
+            schema::<mo_presentation_template::TemplateDefinition>(),
+        ),
+        (
+            "template-request",
+            schema::<mo_presentation_template::TemplateRequest>(),
+        ),
+        (
+            "template-response",
+            schema::<mo_presentation_template::TemplateResponse>(),
+        ),
+        (
             "computation-invocation",
             schema::<mo_presentation_operations::Invocation>(),
         ),
@@ -89,6 +101,14 @@ fn main() -> Result<(), Box<dyn Error>> {
         (
             "delivery-inspect-response",
             schema::<mo_kernel_api::DeliveryInspectResponse>(),
+        ),
+        (
+            "delivery-playback-request",
+            schema::<mo_kernel_api::DeliveryPlaybackRequest>(),
+        ),
+        (
+            "delivery-playback-response",
+            schema::<mo_kernel_api::DeliveryPlaybackResponse>(),
         ),
         (
             "host-capabilities",
@@ -292,6 +312,14 @@ fn main() -> Result<(), Box<dyn Error>> {
         ("pptx-text-edits", schema::<SourceTextEdits>()),
         ("pptx-transform-edits", schema::<SourceTransformEdits>()),
         ("pptx-fill-color-query", schema::<SourceFillColorQuery>()),
+        (
+            "pptx-table-border-query",
+            schema::<mo_kernel_api::SourceTableBorderQuery>(),
+        ),
+        (
+            "pptx-table-border-response",
+            schema::<mo_kernel_api::PptxTableBorderResponse>(),
+        ),
         (
             "pptx-fill-color-response",
             schema::<PptxFillColorResponse>(),

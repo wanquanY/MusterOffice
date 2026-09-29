@@ -8,6 +8,7 @@ use mo_raster::{
     Gradient, GradientAlpha, GradientAxisTile, GradientField, GradientGeometry,
     GradientInterpolation, GradientPlane, GradientPlaneUncertainty, GradientStop, GradientTile,
 };
+use num_bigint::BigInt;
 type E = SourcePageError;
 pub(super) fn numeric(error: crate::CompileError) -> E {
     if matches!(error, crate::CompileError::Cancelled) {
@@ -72,6 +73,7 @@ pub(super) fn compile(
     placement: Option<&NativePlacement>,
     page_size: Size,
     radial: Option<&crate::radial_layout::NativeRadialLayout>,
+    region: Option<&SourcePaintRegion>,
     check: &dyn Fn() -> bool,
 ) -> Result<Gradient, E> {
     cancel(check)?;
@@ -93,8 +95,19 @@ pub(super) fn compile(
         super::gradient_circle::geometry(layout)?
     } else {
         let size = placement.map_or(page_size, |p| p.source_size);
-        let width = I::integer(size.width.get());
-        let height = I::integer(size.height.get());
+        let (base, width, height) = match region {
+            Some(r) => {
+                let e = r.coordinate_error_bound;
+                let min = [enclose(r.bounds.min.x, e), enclose(r.bounds.min.y, e)];
+                let max = [enclose(r.bounds.max.x, e), enclose(r.bounds.max.y, e)];
+                (min.clone(), max[0].sub(&min[0]), max[1].sub(&min[1]))
+            }
+            None => (
+                [I::integer(0), I::integer(0)],
+                I::integer(size.width.get()),
+                I::integer(size.height.get()),
+            ),
+        };
         let r = &g.tile_rect;
         let pct = |v| {
             percentage_interval(v)
@@ -143,16 +156,25 @@ pub(super) fn compile(
             }
             _ => return Err(E::Invalid("native path gradient evaluation required")),
         };
-        ([width.mul(&l), height.mul(&t)], w, h, field)
+        (
+            [base[0].add(&width.mul(&l)), base[1].add(&height.mul(&t))],
+            w,
+            h,
+            field,
+        )
     };
     let (affine, linear_error, translation_error, anchor) = match placement {
         Some(p) => (
             p.affine,
             p.uncertainty.linear,
             p.uncertainty.translation,
-            Point {
-                x: p.anchor.x.checked_sub(Fixed::emu(p.source_origin.x))?,
-                y: p.anchor.y.checked_sub(Fixed::emu(p.source_origin.y))?,
+            if region.is_some() {
+                p.anchor
+            } else {
+                Point {
+                    x: p.anchor.x.checked_sub(Fixed::emu(p.source_origin.x))?,
+                    y: p.anchor.y.checked_sub(Fixed::emu(p.source_origin.y))?,
+                }
             },
         ),
         None => (Affine::IDENTITY, [Fixed::ZERO; 4], ZERO, ZERO),

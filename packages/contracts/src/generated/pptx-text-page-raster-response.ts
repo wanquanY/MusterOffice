@@ -95,6 +95,11 @@ export type SourcePageIssue =
       kind: "pathFillModifier";
     }
   | {
+      first: TableBorderTarget;
+      kind: "tableBorderConflict";
+      second: TableBorderTarget;
+    }
+  | {
       kind: "fillSpace";
       redirects: FillRedirect[];
     };
@@ -404,11 +409,18 @@ export type NativeShapeType =
   | "wedgeRectCallout"
   | "wedgeRoundRectCallout";
 export type FormulaIssue = "unknownOperation" | "arity" | "divisionByZero" | "undefinedDirection" | "tangentPole";
+export type TableCellEdge = "left" | "right" | "top" | "bottom" | "topLeftToBottomRight" | "bottomLeftToTopRight";
 export type FillOrigin =
   | {
       kind: "declaration";
       owner: FillOwner;
       sourceOrdinal: number;
+    }
+  | {
+      kind: "tableStyle";
+      part: string;
+      sourceOrdinal: number;
+      via: FillOwner;
     }
   | {
       kind: "theme";
@@ -440,11 +452,60 @@ export type FillTarget =
       nativeId: number;
     }
   | {
+      cell: SourceCellAddress;
+      kind: "tableCell";
+      nativeId: number;
+    }
+  | {
+      cell: SourceCellAddress;
+      edge: TableCellEdge;
+      kind: "tableCellBorder";
+      nativeId: number;
+    }
+  | {
+      kind: "tableBackground";
+      nativeId: number;
+    }
+  | {
+      kind: "tableStyleFill";
+      nativeId: number;
+      region?: TableStyleRegion | null;
+    }
+  | {
+      edge: TableStyleEdge;
+      kind: "tableStyleBorder";
+      nativeId: number;
+      region: TableStyleRegion;
+    }
+  | {
       kind: "rootGroup";
     }
   | {
       kind: "background";
     };
+export type TableStyleRegion =
+  | "wholeTbl"
+  | "band1H"
+  | "band2H"
+  | "band1V"
+  | "band2V"
+  | "lastCol"
+  | "firstCol"
+  | "lastRow"
+  | "seCell"
+  | "swCell"
+  | "firstRow"
+  | "neCell"
+  | "nwCell";
+export type TableStyleEdge =
+  | "left"
+  | "right"
+  | "top"
+  | "bottom"
+  | "insideHorizontal"
+  | "insideVertical"
+  | "topLeftToBottomRight"
+  | "topRightToBottomLeft";
 export type ShapeFailureCode =
   | "INPUT_INVALID"
   | "FONT_INVALID"
@@ -523,82 +584,91 @@ export type FontMetric =
   | "underlineSize"
   | "underlineOffset";
 export type NativeTextElement =
-  | "txBody"
-  | "txStyles"
-  | "defaultTextStyle"
-  | "titleStyle"
-  | "bodyStyle"
-  | "otherStyle"
-  | "lstStyle"
-  | "bodyPr"
-  | "p"
-  | "pPr"
-  | "defPPr"
-  | "lvl1pPr"
-  | "lvl2pPr"
-  | "lvl3pPr"
-  | "lvl4pPr"
-  | "lvl5pPr"
-  | "lvl6pPr"
-  | "lvl7pPr"
-  | "lvl8pPr"
-  | "lvl9pPr"
-  | "r"
-  | "br"
-  | "fld"
-  | "t"
-  | "rPr"
-  | "defRPr"
-  | "endParaRPr"
-  | "noAutofit"
-  | "normAutofit"
-  | "spAutoFit"
-  | "lnSpc"
-  | "spcBef"
-  | "spcAft"
-  | "spcPct"
-  | "spcPts"
-  | "buClrTx"
-  | "buClr"
-  | "buSzTx"
-  | "buSzPct"
-  | "buSzPts"
-  | "buFontTx"
-  | "buFont"
-  | "buNone"
-  | "buAutoNum"
-  | "buChar"
-  | "tabLst"
-  | "tab"
-  | "latin"
-  | "ea"
-  | "cs"
-  | "sym"
-  | "fontRef"
-  | "highlight"
-  | "uLnTx"
-  | "uLn"
-  | "uFillTx"
-  | "uFill"
-  | "hlinkClick"
-  | "hlinkMouseOver"
-  | "rtl"
-  | "noFill"
-  | "solidFill"
-  | "gradFill"
-  | "blipFill"
-  | "pattFill"
-  | "grpFill"
-  | "ln"
-  | "effectLst"
-  | "effectDag"
-  | "srgbClr"
-  | "scrgbClr"
-  | "hslClr"
-  | "sysClr"
-  | "schemeClr"
-  | "prstClr";
+  | (
+      | "txBody"
+      | "txStyles"
+      | "defaultTextStyle"
+      | "titleStyle"
+      | "bodyStyle"
+      | "otherStyle"
+      | "lstStyle"
+      | "bodyPr"
+      | "p"
+      | "pPr"
+      | "defPPr"
+      | "lvl1pPr"
+      | "lvl2pPr"
+      | "lvl3pPr"
+      | "lvl4pPr"
+      | "lvl5pPr"
+      | "lvl6pPr"
+      | "lvl7pPr"
+      | "lvl8pPr"
+      | "lvl9pPr"
+      | "r"
+      | "br"
+      | "fld"
+      | "t"
+      | "rPr"
+      | "defRPr"
+      | "endParaRPr"
+      | "noAutofit"
+      | "normAutofit"
+      | "spAutoFit"
+      | "lnSpc"
+      | "spcBef"
+      | "spcAft"
+      | "spcPct"
+      | "spcPts"
+      | "buClrTx"
+      | "buClr"
+      | "buSzTx"
+      | "buSzPct"
+      | "buSzPts"
+      | "buFontTx"
+      | "buFont"
+      | "buNone"
+      | "buAutoNum"
+      | "buChar"
+      | "tabLst"
+      | "tab"
+      | "latin"
+      | "ea"
+      | "cs"
+      | "sym"
+      | "fontRef"
+      | "highlight"
+      | "uLnTx"
+      | "uLn"
+      | "uFillTx"
+      | "uFill"
+      | "hlinkClick"
+      | "hlinkMouseOver"
+      | "rtl"
+      | "noFill"
+      | "solidFill"
+      | "gradFill"
+      | "blipFill"
+      | "pattFill"
+      | "grpFill"
+      | "ln"
+      | "effectLst"
+      | "effectDag"
+      | "srgbClr"
+      | "scrgbClr"
+      | "hslClr"
+      | "sysClr"
+      | "schemeClr"
+      | "prstClr"
+    )
+  | "font";
 export type TextStyleOrigin =
+  | {
+      kind: "tableStyle";
+      region: TableStyleRegion;
+      source: TableTextStyleSource;
+      sourceOrdinal: number;
+    }
   | {
       kind: "object";
       object: SourceObjectRef;
@@ -623,10 +693,25 @@ export type TextStyleOrigin =
   | {
       kind: "profileDefault";
     };
+export type TableTextStyleSource =
+  | {
+      kind: "inline";
+      object: SourceObjectRef;
+    }
+  | {
+      kind: "catalog";
+      part: string;
+      styleId: string;
+    };
 export type SourceThemeDefaultKind = "txDef" | "lnDef" | "spDef";
-export type NativeFontCollectionIndex = "major" | "minor" | "none";
 export type NativeFontSlot = "latin" | "eastAsian" | "complexScript" | "symbol";
+export type NativeFontCollectionIndex = "major" | "minor" | "none";
 export type SourceFrameIssue =
+  | {
+      cell: SourceCellAddress;
+      kind: "coveredCell";
+      origin: SourceCellAddress;
+    }
   | {
       kind: "body";
       reason: TextBodyUnresolved;
@@ -680,6 +765,17 @@ export type TextBodyUnresolved =
       origin: TextBodyOrigin;
     };
 export type TextBodyOrigin =
+  | {
+      cell: SourceCellAddress;
+      kind: "cell";
+      object: SourceObjectRef;
+      sourceOrdinal: number;
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "cellDefault";
+      object: SourceObjectRef;
+    }
   | {
       kind: "object";
       object: SourceObjectRef;
@@ -752,6 +848,14 @@ export type SourceTextIssue =
     };
 export type TextCascadeUnresolved =
   | {
+      kind: "tableGrid";
+      reason: NativeTableGridIssue;
+    }
+  | {
+      kind: "tableStyle";
+      reason: TableStyleSelectionError;
+    }
+  | {
       kind: "noTextBody";
     }
   | {
@@ -771,6 +875,69 @@ export type TextCascadeUnresolved =
   | {
       kind: "fieldParagraph";
       origin: TextStyleOrigin;
+    };
+export type NativeTableGridIssue =
+  | {
+      kind: "emptyGrid";
+    }
+  | {
+      actual: number;
+      expected: number;
+      kind: "rowWidth";
+      row: number;
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "duplicateCellId";
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "invalidSpan";
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "missingNeighbour";
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "conflictingNeighbours";
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "outsideMerge";
+      origin: SourceCellAddress;
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "conflictingSpan";
+      origin: SourceCellAddress;
+    }
+  | {
+      kind: "incompleteMerge";
+      origin: SourceCellAddress;
+    };
+export type TableStyleSelectionError =
+  | {
+      kind: "conflictingStyles";
+    }
+  | {
+      kind: "invalidIdentity";
+    }
+  | {
+      kind: "missingDefinition";
+    }
+  | {
+      kind: "gridMismatch";
+    }
+  | {
+      kind: "cellOutsideGrid";
+    }
+  | {
+      kind: "retainedDeclaration";
+      sourceOrdinal: number;
+    }
+  | {
+      kind: "cancelled";
     };
 export type CharacterProperty =
   | "kumimoji"
@@ -1003,6 +1170,10 @@ export type SystemColor =
 export interface SourceTextPageRasterInfo {
   page: SourcePageRasterInfo;
   profile: string;
+  /**
+   * Missing in historical responses; absence never means measured to fit.
+   */
+  textCapacity?: TextCapacity | null;
   textFrames: number;
   textWork: FrameWork;
 }
@@ -1084,6 +1255,7 @@ export interface RasterWork {
    * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
    */
   miterLimitErrorBound: string;
+  opacityGroups?: OpacityGroupWork | null;
   paths: number;
   strokeDraws: number;
   strokeStyles: number;
@@ -1135,6 +1307,18 @@ export interface EllipticGradientWork {
    */
   parameterErrorBounds: [FixedQ32, FixedQ32, FixedQ32, FixedQ32, FixedQ32, FixedQ32];
 }
+export interface OpacityGroupWork {
+  groups: number;
+  maximumDepth: number;
+  /**
+   * Peak simultaneously live intermediate pixels, excluding output/snapshots.
+   */
+  peakPixelBytes: number;
+  /**
+   * Pixels cleared plus pixels composited, including fully transparent groups.
+   */
+  pixelWork: number;
+}
 export interface SceneWork {
   clips?: SceneClipWork | null;
   /**
@@ -1166,6 +1350,66 @@ export interface SceneClipWork {
   compiledNodes: number;
   sourceNodes: number;
 }
+export interface TextCapacity {
+  /**
+   * Complete frame coverage in paint order, including empty text frames.
+   */
+  frames: FrameCapacity[];
+  profile: string;
+}
+export interface FrameCapacity {
+  cell?: SourceCellAddress | null;
+  contentHeight: FixedQ32;
+  emergencyLines: number;
+  firstHorizontalOverflow?: FrameLine | null;
+  /**
+   * Counts the actual line search decisions, without rounding to integer EMU.
+   */
+  horizontalOverflowLines: number;
+  /**
+   * Unpainted glyph ink, including overhang; not a clipping/overlap verdict.
+   */
+  inkBounds?: Rect | null;
+  inner: Rect1;
+  lineCount: number;
+  /**
+   * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
+   */
+  maximumLeftExcess: string;
+  maximumRightExcess: FixedQ32;
+  object: SourceObjectRef;
+  /**
+   * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
+   */
+  verticalExcess: string;
+}
+export interface SourceCellAddress {
+  column: number;
+  row: number;
+}
+export interface FrameLine {
+  line: number;
+  paragraph: number;
+}
+export interface Rect {
+  max: Point;
+  min: Point;
+}
+export interface Point {
+  x: FixedQ32;
+  y: FixedQ32;
+}
+/**
+ * Q32 EMU before page/group/animation placement. Insets are already applied.
+ */
+export interface Rect1 {
+  max: Point;
+  min: Point;
+}
+export interface SourceObjectRef {
+  nativeId: number;
+  part: string;
+}
 export interface FrameWork {
   componentCalls: number;
   fontUploadBytes: number;
@@ -1185,13 +1429,14 @@ export interface SourceVisualIssue {
   namespace: string;
   sourceOrdinal: number;
 }
-export interface SourceObjectRef {
-  nativeId: number;
-  part: string;
-}
 export interface PlacementUnresolved {
   cause: PlacementCause;
   object: SourceObjectRef;
+}
+export interface TableBorderTarget {
+  cell: SourceCellAddress;
+  edge: TableCellEdge;
+  nativeId: number;
 }
 export interface FillRedirect {
   declaredBy: FillOrigin;
@@ -1255,10 +1500,14 @@ export interface SourceFontBinding {
 }
 export interface NativeTypeface {
   /**
-   * Original run font declaration; absent for a shape fontRef fallback.
+   * Original selected font declaration; absent for a fontRef fallback.
    */
   authoredFont?: SourceTextFont | null;
   declaredBy: TextStyleDeclaration;
+  /**
+   * Script/collection location for an explicit table a:font declaration.
+   */
+  tableFont?: TableFontBinding | null;
   theme?: ThemeFontBinding | null;
   /**
    * Selected named theme font preserves its own metadata, independently of author hints.
@@ -1280,6 +1529,13 @@ export interface SourceTextFont {
 export interface TextStyleDeclaration {
   element: NativeTextElement;
   origin: TextStyleOrigin;
+}
+export interface TableFontBinding {
+  slot: NativeFontSlot;
+  /**
+   * Index into the table font collection's ordered supplemental list.
+   */
+  supplemental?: number | null;
 }
 export interface ThemeFontBinding {
   collection: NativeFontCollectionIndex;

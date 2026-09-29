@@ -179,11 +179,61 @@ export type FillTarget =
       nativeId: number;
     }
   | {
+      cell: SourceCellAddress;
+      kind: "tableCell";
+      nativeId: number;
+    }
+  | {
+      cell: SourceCellAddress;
+      edge: TableCellEdge;
+      kind: "tableCellBorder";
+      nativeId: number;
+    }
+  | {
+      kind: "tableBackground";
+      nativeId: number;
+    }
+  | {
+      kind: "tableStyleFill";
+      nativeId: number;
+      region?: TableStyleRegion | null;
+    }
+  | {
+      edge: TableStyleEdge;
+      kind: "tableStyleBorder";
+      nativeId: number;
+      region: TableStyleRegion;
+    }
+  | {
       kind: "rootGroup";
     }
   | {
       kind: "background";
     };
+export type TableCellEdge = "left" | "right" | "top" | "bottom" | "topLeftToBottomRight" | "bottomLeftToTopRight";
+export type TableStyleRegion =
+  | "wholeTbl"
+  | "band1H"
+  | "band2H"
+  | "band1V"
+  | "band2V"
+  | "lastCol"
+  | "firstCol"
+  | "lastRow"
+  | "seCell"
+  | "swCell"
+  | "firstRow"
+  | "neCell"
+  | "nwCell";
+export type TableStyleEdge =
+  | "left"
+  | "right"
+  | "top"
+  | "bottom"
+  | "insideHorizontal"
+  | "insideVertical"
+  | "topLeftToBottomRight"
+  | "topRightToBottomLeft";
 export type FillOutcome =
   | {
       fill: EffectiveFill;
@@ -224,6 +274,12 @@ export type FillOrigin =
       kind: "declaration";
       owner: FillOwner;
       sourceOrdinal: number;
+    }
+  | {
+      kind: "tableStyle";
+      part: string;
+      sourceOrdinal: number;
+      via: FillOwner;
     }
   | {
       kind: "theme";
@@ -689,6 +745,16 @@ export type NativeFillAlignment = "tl" | "t" | "tr" | "l" | "ctr" | "r" | "bl" |
 export type NativeCoordinate = string;
 export type FillUnresolved =
   | {
+      kind: "tableGrid";
+      owner: FillOwner;
+      reason: NativeTableGridIssue;
+    }
+  | {
+      kind: "tableStyle";
+      owner: FillOwner;
+      reason: TableStyleSelectionError;
+    }
+  | {
       kind: "unsupportedTarget";
       owner: FillOwner;
     }
@@ -726,6 +792,69 @@ export type FillUnresolved =
   | {
       kind: "unsupportedBackgroundMode";
       owner: FillOwner;
+    };
+export type NativeTableGridIssue =
+  | {
+      kind: "emptyGrid";
+    }
+  | {
+      actual: number;
+      expected: number;
+      kind: "rowWidth";
+      row: number;
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "duplicateCellId";
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "invalidSpan";
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "missingNeighbour";
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "conflictingNeighbours";
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "outsideMerge";
+      origin: SourceCellAddress;
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "conflictingSpan";
+      origin: SourceCellAddress;
+    }
+  | {
+      kind: "incompleteMerge";
+      origin: SourceCellAddress;
+    };
+export type TableStyleSelectionError =
+  | {
+      kind: "conflictingStyles";
+    }
+  | {
+      kind: "invalidIdentity";
+    }
+  | {
+      kind: "missingDefinition";
+    }
+  | {
+      kind: "gridMismatch";
+    }
+  | {
+      kind: "cellOutsideGrid";
+    }
+  | {
+      kind: "retainedDeclaration";
+      sourceOrdinal: number;
+    }
+  | {
+      kind: "cancelled";
     };
 export type SourcePlaceholderMatch =
   | {
@@ -804,10 +933,18 @@ export interface FillPlaceholderBinding {
   colorOrdinal?: number | null;
   owner: FillOwner;
   referenceOrdinal: number;
+  /**
+   * Shared table declarations live outside the consuming object's surface.
+   */
+  sourcePart?: string | null;
 }
 export interface FillOwner {
   part: string;
   target: FillTarget;
+}
+export interface SourceCellAddress {
+  column: number;
+  row: number;
 }
 export interface FillColorSurface {
   colorMapping?: SourceColorMapRef | null;

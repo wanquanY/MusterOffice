@@ -1,5 +1,6 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { EffectiveFillRect, EffectiveFillTile, EffectiveGradientFill, EffectiveImageFill, EffectiveLine, EffectivePatternFill, FillColorEvaluation, FillColorExpression, FillOwner, FillRedirect, FillValue3, FillValue4, FillValue5, GradientField, GradientPlane, LineColorExpression, LineValue5, LineValue6, Point1, PptxPageFailure, SourceDashStop, SourceObjectRef, SourcePagePlan } from './part-002.js';
+import type { EffectiveFillRect, EffectiveFillTile, EffectiveGradientFill, EffectiveImageFill, EffectiveLine, EffectiveLineGeometry, EffectivePatternFill, FillColorEvaluation, FillColorExpression, FillOwner, FillRedirect, FillValue3, FillValue4, FillValue5, LineColorExpression, LineValue5, LineValue6, NativeShapeType, SourceCellAddress, SourceDashStop, SourceObjectRef, SourcePagePlan } from './part-002.js';
+import type { PptxPageFailure } from './part-003.js';
 
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
 
@@ -182,11 +183,64 @@ export type FillTarget =
       nativeId: number;
     }
   | {
+      cell: SourceCellAddress;
+      kind: "tableCell";
+      nativeId: number;
+    }
+  | {
+      cell: SourceCellAddress;
+      edge: TableCellEdge;
+      kind: "tableCellBorder";
+      nativeId: number;
+    }
+  | {
+      kind: "tableBackground";
+      nativeId: number;
+    }
+  | {
+      kind: "tableStyleFill";
+      nativeId: number;
+      region?: TableStyleRegion | null;
+    }
+  | {
+      edge: TableStyleEdge;
+      kind: "tableStyleBorder";
+      nativeId: number;
+      region: TableStyleRegion;
+    }
+  | {
       kind: "rootGroup";
     }
   | {
       kind: "background";
     };
+
+export type TableCellEdge = "left" | "right" | "top" | "bottom" | "topLeftToBottomRight" | "bottomLeftToTopRight";
+
+export type TableStyleRegion =
+  | "wholeTbl"
+  | "band1H"
+  | "band2H"
+  | "band1V"
+  | "band2V"
+  | "lastCol"
+  | "firstCol"
+  | "lastRow"
+  | "seCell"
+  | "swCell"
+  | "firstRow"
+  | "neCell"
+  | "nwCell";
+
+export type TableStyleEdge =
+  | "left"
+  | "right"
+  | "top"
+  | "bottom"
+  | "insideHorizontal"
+  | "insideVertical"
+  | "topLeftToBottomRight"
+  | "topRightToBottomLeft";
 
 export type FillOutcome =
   | {
@@ -230,6 +284,12 @@ export type FillOrigin =
       kind: "declaration";
       owner: FillOwner;
       sourceOrdinal: number;
+    }
+  | {
+      kind: "tableStyle";
+      part: string;
+      sourceOrdinal: number;
+      via: FillOwner;
     }
   | {
       kind: "theme";
@@ -709,6 +769,16 @@ export type NativeCoordinate = string;
 
 export type FillUnresolved =
   | {
+      kind: "tableGrid";
+      owner: FillOwner;
+      reason: NativeTableGridIssue;
+    }
+  | {
+      kind: "tableStyle";
+      owner: FillOwner;
+      reason: TableStyleSelectionError;
+    }
+  | {
       kind: "unsupportedTarget";
       owner: FillOwner;
     }
@@ -746,6 +816,71 @@ export type FillUnresolved =
   | {
       kind: "unsupportedBackgroundMode";
       owner: FillOwner;
+    };
+
+export type NativeTableGridIssue =
+  | {
+      kind: "emptyGrid";
+    }
+  | {
+      actual: number;
+      expected: number;
+      kind: "rowWidth";
+      row: number;
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "duplicateCellId";
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "invalidSpan";
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "missingNeighbour";
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "conflictingNeighbours";
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "outsideMerge";
+      origin: SourceCellAddress;
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "conflictingSpan";
+      origin: SourceCellAddress;
+    }
+  | {
+      kind: "incompleteMerge";
+      origin: SourceCellAddress;
+    };
+
+export type TableStyleSelectionError =
+  | {
+      kind: "conflictingStyles";
+    }
+  | {
+      kind: "invalidIdentity";
+    }
+  | {
+      kind: "missingDefinition";
+    }
+  | {
+      kind: "gridMismatch";
+    }
+  | {
+      kind: "cellOutsideGrid";
+    }
+  | {
+      kind: "retainedDeclaration";
+      sourceOrdinal: number;
+    }
+  | {
+      kind: "cancelled";
     };
 
 export type SourcePlaceholderMatch =
@@ -802,6 +937,31 @@ export type LineOutcome =
     };
 
 export type LineOrigin =
+  | {
+      cell: SourceCellAddress;
+      edge: TableCellEdge;
+      kind: "tableCell";
+      object: SourceObjectRef;
+      sourceOrdinal: number;
+    }
+  | {
+      edge: TableStyleEdge;
+      kind: "tableStyle";
+      object: SourceObjectRef;
+      part: string;
+      region: TableStyleRegion;
+      sourceOrdinal: number;
+    }
+  | {
+      edge: TableStyleEdge;
+      kind: "tableTheme";
+      part: string;
+      referenceOrdinal: number;
+      region: TableStyleRegion;
+      sourceOrdinal: number;
+      styleIndex: number;
+      via: SourceObjectRef;
+    }
   | {
       kind: "object";
       object: SourceObjectRef;
@@ -887,6 +1047,16 @@ export type Emu = string;
 
 export type LineUnresolved =
   | {
+      kind: "tableGrid";
+      object: SourceObjectRef;
+      reason: NativeTableGridIssue;
+    }
+  | {
+      kind: "tableStyle";
+      object: SourceObjectRef;
+      reason: TableStyleSelectionError;
+    }
+  | {
       kind: "unsupportedObject";
       object: SourceObjectRef;
     }
@@ -932,6 +1102,16 @@ export type TransformValueSource =
       object: SourceObjectRef;
     };
 
+export type LineGeometryOutcome =
+  | {
+      geometry: EffectiveLineGeometry;
+      status: "resolved";
+    }
+  | {
+      reason: LineUnresolved;
+      status: "unresolved";
+    };
+
 export type SurfaceKind = "slide" | "master" | "layout";
 
 export type SourcePageProfile = "drawingml-static-solid-page-v1-draft";
@@ -954,217 +1134,4 @@ export type GeometryOrigin =
       definitionOrdinal: number;
       kind: "preset";
       preset: NativeShapeType;
-    };
-
-export type NativeShapeType =
-  | "accentBorderCallout1"
-  | "accentBorderCallout2"
-  | "accentBorderCallout3"
-  | "accentCallout1"
-  | "accentCallout2"
-  | "accentCallout3"
-  | "actionButtonBackPrevious"
-  | "actionButtonBeginning"
-  | "actionButtonBlank"
-  | "actionButtonDocument"
-  | "actionButtonEnd"
-  | "actionButtonForwardNext"
-  | "actionButtonHelp"
-  | "actionButtonHome"
-  | "actionButtonInformation"
-  | "actionButtonMovie"
-  | "actionButtonReturn"
-  | "actionButtonSound"
-  | "arc"
-  | "bentArrow"
-  | "bentConnector2"
-  | "bentConnector3"
-  | "bentConnector4"
-  | "bentConnector5"
-  | "bentUpArrow"
-  | "bevel"
-  | "blockArc"
-  | "borderCallout1"
-  | "borderCallout2"
-  | "borderCallout3"
-  | "bracePair"
-  | "bracketPair"
-  | "callout1"
-  | "callout2"
-  | "callout3"
-  | "can"
-  | "chartPlus"
-  | "chartStar"
-  | "chartX"
-  | "chevron"
-  | "chord"
-  | "circularArrow"
-  | "cloud"
-  | "cloudCallout"
-  | "corner"
-  | "cornerTabs"
-  | "cube"
-  | "curvedConnector2"
-  | "curvedConnector3"
-  | "curvedConnector4"
-  | "curvedConnector5"
-  | "curvedDownArrow"
-  | "curvedLeftArrow"
-  | "curvedRightArrow"
-  | "curvedUpArrow"
-  | "decagon"
-  | "diagStripe"
-  | "diamond"
-  | "dodecagon"
-  | "donut"
-  | "doubleWave"
-  | "downArrow"
-  | "downArrowCallout"
-  | "ellipse"
-  | "ellipseRibbon"
-  | "ellipseRibbon2"
-  | "flowChartAlternateProcess"
-  | "flowChartCollate"
-  | "flowChartConnector"
-  | "flowChartDecision"
-  | "flowChartDelay"
-  | "flowChartDisplay"
-  | "flowChartDocument"
-  | "flowChartExtract"
-  | "flowChartInputOutput"
-  | "flowChartInternalStorage"
-  | "flowChartMagneticDisk"
-  | "flowChartMagneticDrum"
-  | "flowChartMagneticTape"
-  | "flowChartManualInput"
-  | "flowChartManualOperation"
-  | "flowChartMerge"
-  | "flowChartMultidocument"
-  | "flowChartOfflineStorage"
-  | "flowChartOffpageConnector"
-  | "flowChartOnlineStorage"
-  | "flowChartOr"
-  | "flowChartPredefinedProcess"
-  | "flowChartPreparation"
-  | "flowChartProcess"
-  | "flowChartPunchedCard"
-  | "flowChartPunchedTape"
-  | "flowChartSort"
-  | "flowChartSummingJunction"
-  | "flowChartTerminator"
-  | "foldedCorner"
-  | "frame"
-  | "funnel"
-  | "gear6"
-  | "gear9"
-  | "halfFrame"
-  | "heart"
-  | "heptagon"
-  | "hexagon"
-  | "homePlate"
-  | "horizontalScroll"
-  | "irregularSeal1"
-  | "irregularSeal2"
-  | "leftArrow"
-  | "leftArrowCallout"
-  | "leftBrace"
-  | "leftBracket"
-  | "leftCircularArrow"
-  | "leftRightArrow"
-  | "leftRightArrowCallout"
-  | "leftRightCircularArrow"
-  | "leftRightRibbon"
-  | "leftRightUpArrow"
-  | "leftUpArrow"
-  | "lightningBolt"
-  | "line"
-  | "lineInv"
-  | "mathDivide"
-  | "mathEqual"
-  | "mathMinus"
-  | "mathMultiply"
-  | "mathNotEqual"
-  | "mathPlus"
-  | "moon"
-  | "noSmoking"
-  | "nonIsoscelesTrapezoid"
-  | "notchedRightArrow"
-  | "octagon"
-  | "parallelogram"
-  | "pentagon"
-  | "pie"
-  | "pieWedge"
-  | "plaque"
-  | "plaqueTabs"
-  | "plus"
-  | "quadArrow"
-  | "quadArrowCallout"
-  | "rect"
-  | "ribbon"
-  | "ribbon2"
-  | "rightArrow"
-  | "rightArrowCallout"
-  | "rightBrace"
-  | "rightBracket"
-  | "round1Rect"
-  | "round2DiagRect"
-  | "round2SameRect"
-  | "roundRect"
-  | "rtTriangle"
-  | "smileyFace"
-  | "snip1Rect"
-  | "snip2DiagRect"
-  | "snip2SameRect"
-  | "snipRoundRect"
-  | "squareTabs"
-  | "star10"
-  | "star12"
-  | "star16"
-  | "star24"
-  | "star32"
-  | "star4"
-  | "star5"
-  | "star6"
-  | "star7"
-  | "star8"
-  | "straightConnector1"
-  | "stripedRightArrow"
-  | "sun"
-  | "swooshArrow"
-  | "teardrop"
-  | "trapezoid"
-  | "triangle"
-  | "upArrow"
-  | "upArrowCallout"
-  | "upDownArrow"
-  | "upDownArrowCallout"
-  | "uturnArrow"
-  | "verticalScroll"
-  | "wave"
-  | "wedgeEllipseCallout"
-  | "wedgeRectCallout"
-  | "wedgeRoundRectCallout";
-
-/**
- * Porter-Duff composition, separate from the source brush and geometry mask.
- */
-export type BlendMode = "sourceOver" | "source";
-
-export type GradientAlpha = "straight" | "premultiplied";
-
-export type GradientGeometry =
-  | {
-      end: Point1;
-      kind: "linear";
-      start: Point1;
-    }
-  | {
-      center: Point1;
-      kind: "radial";
-      radius: FixedQ32;
-    }
-  | {
-      field: GradientField;
-      kind: "plane";
-      plane: GradientPlane;
     };

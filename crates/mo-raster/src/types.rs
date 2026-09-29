@@ -85,6 +85,9 @@ pub struct PathDraw {
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct PathRasterRequest {
+    /// Isolated, nested draw intervals, in preorder. Empty preserves legacy ABI.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub opacity_groups: Vec<OpacityGroup>,
     pub viewport: RasterViewport,
     pub paths: Vec<FillPath>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -94,6 +97,8 @@ pub struct PathRasterRequest {
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct RasterWork {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub opacity_groups: Option<OpacityGroupWork>,
     /// Only present for V12 ellipse fields. Geometry and solver errors are separate.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub elliptic_gradients: Option<EllipticGradientWork>,
@@ -122,6 +127,29 @@ pub struct RasterWork {
     /// Maximum stop/color conversion or linear/rectangular field error.
     /// Elliptic parameter and root bounds are reported separately.
     pub gradient_value_error_bound: f64,
+}
+
+/// Render the complete interval onto transparent pixels, then source-over it
+/// onto its parent with a single opacity. This is not per-paint alpha.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct OpacityGroup {
+    pub first_draw: u32,
+    /// Exclusive, and strictly greater than first_draw.
+    pub end_draw: u32,
+    /// 0 is transparent; 65535 is opaque. Linear coverage of premultiplied sRGB.
+    pub opacity: u16,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct OpacityGroupWork {
+    pub groups: u32,
+    pub maximum_depth: u32,
+    /// Peak simultaneously live intermediate pixels, excluding output/snapshots.
+    pub peak_pixel_bytes: u32,
+    /// Pixels cleared plus pixels composited, including fully transparent groups.
+    pub pixel_work: u32,
 }
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

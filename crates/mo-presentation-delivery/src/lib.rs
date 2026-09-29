@@ -4,6 +4,7 @@ mod artifact;
 mod build;
 mod contract;
 mod integrity;
+mod playback;
 mod preview;
 mod receive;
 mod registry;
@@ -11,9 +12,11 @@ pub use artifact::{OutputStore, ProducedArtifact};
 pub use build::{DeliveryCandidate, DeliveryInputs, build};
 pub use contract::*;
 use mo_opc::ReaderAt;
+pub use playback::{DeliveryPlaybackInputs, DeliveryPlaybackPage};
 pub use preview::{PreviewFonts, PreviewInput, PreviewRenderer, PreviewRequest};
 pub use receive::{
-    DeliveryExpectation, DeliverySource, ReceiptInspection, ReceivedDelivery, inspect,
+    DeliveryExpectation, DeliverySource, PreviewMeasurements, ReceiptInspection, ReceivedDelivery,
+    inspect,
 };
 
 #[derive(Debug, thiserror::Error)]

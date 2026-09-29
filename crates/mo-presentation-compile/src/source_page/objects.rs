@@ -1,13 +1,13 @@
 use super::*;
 pub(crate) struct Object {
     pub(crate) binding: SourcePagePaintBinding,
-    pub(super) geometry: Box<EvaluatedGeometry>,
+    pub(super) geometry: Option<Box<EvaluatedGeometry>>,
 }
-pub(super) fn objects(
+fn drawings(
     index: &SourceIndex,
     q: &SourcePageRequest,
     layers: &[SourcePageLayer],
-    rotations: Option<&crate::source_placement::SourceRotations>,
+    transforms: Option<&crate::source_placement::SourceProperties>,
     check: &dyn Fn() -> bool,
 ) -> Result<Vec<Object>, SourcePageError> {
     let mut objects = vec![];
@@ -29,7 +29,7 @@ pub(super) fn objects(
                 max_queries: 8192,
                 ..Default::default()
             },
-            rotations,
+            transforms,
             check,
         )?;
         let geometry = mo_presentation_source::source::geometry::evaluate::query(
@@ -169,8 +169,10 @@ pub(super) fn objects(
                     picture_fill,
                     line: Some(line),
                     placement: Some(*placement),
+                    region: None,
+                    table_stroke: None,
                 },
-                geometry,
+                geometry: Some(geometry),
             });
         }
         if !fills.is_empty() {
@@ -178,4 +180,66 @@ pub(super) fn objects(
         }
     }
     Ok(objects)
+}
+
+pub(super) fn objects(
+    index: &SourceIndex,
+    q: &SourcePageRequest,
+    layers: &[SourcePageLayer],
+    transforms: Option<&crate::source_placement::SourceProperties>,
+    preparation: Option<&mut mo_presentation_source::source::prepared::SourcePreparation<'_>>,
+    check: &dyn Fn() -> bool,
+) -> Result<Vec<Object>, SourcePageError> {
+    use std::collections::{BTreeMap, BTreeSet};
+    let mut ordinary = layers.to_vec();
+    let mut tables = layers.to_vec();
+    for (i, layer) in layers.iter().enumerate() {
+        cancel(check)?;
+        let ids: BTreeSet<_> = index.surfaces[&layer.part]
+            .objects
+            .iter()
+            .filter(|o| o.table.is_some())
+            .map(|o| o.native_id)
+            .collect();
+        ordinary[i].objects.retain(|id| !ids.contains(id));
+        tables[i].objects.retain(|id| ids.contains(id));
+    }
+    let ordinary = drawings(index, q, &ordinary, transforms, check)?;
+    let tables = if tables.iter().all(|l| l.objects.is_empty()) {
+        Vec::new()
+    } else {
+        super::table::objects(
+            index,
+            q,
+            &tables,
+            transforms,
+            preparation.ok_or(SourcePageError::Invalid("missing table preparation"))?,
+            check,
+        )?
+    };
+    let mut by_id = BTreeMap::new();
+    for object in ordinary.into_iter().chain(tables) {
+        let key = (
+            object.binding.location.part.clone(),
+            object.binding.location.object,
+        );
+        if by_id.insert(key, object).is_some() {
+            return Err(SourcePageError::Invalid("duplicate page object"));
+        }
+    }
+    let mut output = Vec::with_capacity(by_id.len());
+    for layer in layers {
+        for id in &layer.objects {
+            cancel(check)?;
+            output.push(
+                by_id
+                    .remove(&(layer.part.clone(), Some(*id)))
+                    .ok_or(SourcePageError::Invalid("page object ordering"))?,
+            );
+        }
+    }
+    if !by_id.is_empty() {
+        return Err(SourcePageError::Invalid("unbound page objects"));
+    }
+    Ok(output)
 }

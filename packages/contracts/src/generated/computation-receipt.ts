@@ -16,6 +16,10 @@ export type RequestId = string;
  */
 export type ComputationResult =
   | {
+      description: TemplateDescription;
+      kind: "describedTemplate";
+    }
+  | {
       kind: "mutated";
       receipt: MutationReceipt;
       snapshot: SnapshotRecord;
@@ -26,14 +30,119 @@ export type ComputationResult =
     };
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
- * via the `definition` "DocumentId".
+ * via the `definition` "TemplateVersion".
  */
-export type DocumentId = string;
+export type TemplateVersion = "musteroffice.presentation-template/1-draft";
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "ParameterTarget".
+ */
+export type ParameterTarget =
+  | {
+      kind: "textRun";
+      maxScalars: number;
+      minScalars: number;
+      object: ObjectId;
+      paragraph: ParagraphId;
+      run: RunId;
+    }
+  | {
+      kind: "resource";
+      mediaTypes: string[];
+      resource: ResourceId;
+    }
+  | {
+      kind: "themeColor";
+      slot: ThemeColor;
+      theme: ThemeId;
+    }
+  | {
+      kind: "transform";
+      object: ObjectId;
+    };
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "ObjectId".
+ */
+export type ObjectId = string;
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
  * via the `definition` "ParagraphId".
  */
 export type ParagraphId = string;
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "RunId".
+ */
+export type RunId = string;
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "ResourceId".
+ */
+export type ResourceId = string;
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "ThemeColor".
+ */
+export type ThemeColor =
+  | "dark1"
+  | "light1"
+  | "dark2"
+  | "light2"
+  | "accent1"
+  | "accent2"
+  | "accent3"
+  | "accent4"
+  | "accent5"
+  | "accent6"
+  | "hyperlink"
+  | "followedHyperlink";
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "ThemeId".
+ */
+export type ThemeId = string;
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "DocumentId".
+ */
+export type DocumentId = string;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema definition
+ * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+ *
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "BindingValue".
+ */
+export type BindingValue =
+  | {
+      kind: "text";
+      value: string;
+    }
+  | {
+      kind: "resource";
+      value: Resource;
+    }
+  | {
+      kind: "color";
+      value: Rgba;
+    }
+  | {
+      kind: "transform";
+      value: Transform;
+    };
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "ResourceKind".
+ */
+export type ResourceKind = "font" | "picture" | "audio" | "video" | "sourcePackage" | "embeddedWorkbook" | "model3d";
+/**
+ * Signed int64 EMU. 1 point = 12700 EMU. Range requires semantic validation.
+ *
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "Emu".
+ */
+export type Emu = string;
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
  * via the `definition` "FontId".
@@ -51,24 +160,19 @@ export type LayoutId = string;
 export type MasterId = string;
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
- * via the `definition` "ResourceId".
- */
-export type ResourceId = string;
-/**
- * This interface was referenced by `ComputationReceipt`'s JSON-Schema
- * via the `definition` "ThemeId".
- */
-export type ThemeId = string;
-/**
- * This interface was referenced by `ComputationReceipt`'s JSON-Schema
  * via the `definition` "SlideId".
  */
 export type SlideId = string;
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
- * via the `definition` "ObjectId".
+ * via the `definition` "TemplateParameterId".
  */
-export type ObjectId = string;
+export type TemplateParameterId = string;
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "LocalIdPolicy".
+ */
+export type LocalIdPolicy = "preserve";
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
  * via the `definition` "ModelVersion".
@@ -111,30 +215,6 @@ export type Color =
       kind: "theme";
       slot: ThemeColor;
     };
-/**
- * This interface was referenced by `ComputationReceipt`'s JSON-Schema
- * via the `definition` "ThemeColor".
- */
-export type ThemeColor =
-  | "dark1"
-  | "light1"
-  | "dark2"
-  | "light2"
-  | "accent1"
-  | "accent2"
-  | "accent3"
-  | "accent4"
-  | "accent5"
-  | "accent6"
-  | "hyperlink"
-  | "followedHyperlink";
-/**
- * Signed int64 EMU. 1 point = 12700 EMU. Range requires semantic validation.
- *
- * This interface was referenced by `ComputationReceipt`'s JSON-Schema
- * via the `definition` "Emu".
- */
-export type Emu = string;
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
  * via the `definition` "Stroke".
@@ -186,6 +266,10 @@ export type LineJoin =
  */
 export type ObjectContent =
   | {
+      kind: "table";
+      table: Table;
+    }
+  | {
       children: ObjectId[];
       kind: "retainedSource";
       native_kind: RetainedObjectKind;
@@ -213,14 +297,59 @@ export type ObjectContent =
     };
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "ColumnId".
+ */
+export type ColumnId = string;
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "CellId".
+ */
+export type CellId = string;
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "TableVerticalAlignment".
+ */
+export type TableVerticalAlignment = "top" | "center" | "bottom" | "justified" | "distributed";
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "OverflowPolicy".
+ */
+export type OverflowPolicy = "report" | "clip" | "growShape";
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "InlineContent".
+ */
+export type InlineContent =
+  | {
+      kind: "text";
+      text: string;
+    }
+  | {
+      kind: "break";
+    }
+  | {
+      kind: "tab";
+    };
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "Alignment".
+ */
+export type Alignment = "start" | "center" | "end" | "justify";
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "TextDirection".
+ */
+export type TextDirection = "leftToRight" | "rightToLeft" | "verticalRightToLeft" | "verticalLeftToRight";
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "RowId".
+ */
+export type RowId = string;
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
  * via the `definition` "RetainedObjectKind".
  */
 export type RetainedObjectKind = "shape" | "picture" | "group" | "connector" | "graphicFrame";
-/**
- * This interface was referenced by `ComputationReceipt`'s JSON-Schema
- * via the `definition` "RunId".
- */
-export type RunId = string;
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
  * via the `definition` "RetainedRunKind".
@@ -275,36 +404,6 @@ export type PathCommand =
     };
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
- * via the `definition` "OverflowPolicy".
- */
-export type OverflowPolicy = "report" | "clip" | "growShape";
-/**
- * This interface was referenced by `ComputationReceipt`'s JSON-Schema
- * via the `definition` "InlineContent".
- */
-export type InlineContent =
-  | {
-      kind: "text";
-      text: string;
-    }
-  | {
-      kind: "break";
-    }
-  | {
-      kind: "tab";
-    };
-/**
- * This interface was referenced by `ComputationReceipt`'s JSON-Schema
- * via the `definition` "Alignment".
- */
-export type Alignment = "start" | "center" | "end" | "justify";
-/**
- * This interface was referenced by `ComputationReceipt`'s JSON-Schema
- * via the `definition` "TextDirection".
- */
-export type TextDirection = "leftToRight" | "rightToLeft" | "verticalRightToLeft" | "verticalLeftToRight";
-/**
- * This interface was referenced by `ComputationReceipt`'s JSON-Schema
  * via the `definition` "ConnectorEndpoint".
  */
 export type ConnectorEndpoint =
@@ -340,11 +439,6 @@ export type ContainerId =
     };
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
- * via the `definition` "ResourceKind".
- */
-export type ResourceKind = "font" | "picture" | "audio" | "video" | "sourcePackage" | "embeddedWorkbook" | "model3d";
-/**
- * This interface was referenced by `ComputationReceipt`'s JSON-Schema
  * via the `definition` "NativeEditConstraint".
  */
 export type NativeEditConstraint =
@@ -359,7 +453,10 @@ export type NativeEditConstraint =
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
  * via the `definition` "SourceBindingProfile".
  */
-export type SourceBindingProfile = "presentationml-retained-fields-v1-draft";
+export type SourceBindingProfile =
+  | "presentationml-retained-fields-v1-draft"
+  | "presentationml-retained-fields-v2-draft"
+  | "presentationml-retained-fields-v3-draft";
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
  * via the `definition` "TimelineVersion".
@@ -379,9 +476,98 @@ export type Ticks = string;
 export type Timescale = number;
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "Effect".
+ */
+export type Effect =
+  | {
+      composition?: RotationComposition;
+      from: number;
+      kind: "rotation";
+      target: ObjectId;
+      to: number;
+    }
+  | {
+      from: ScaleValue;
+      kind: "scale";
+      target: ObjectId;
+      to: ScaleValue;
+    }
+  | {
+      kind: "setVisibility";
+      target: ObjectId;
+      value: Visibility;
+    }
+  | {
+      from: MotionPoint;
+      kind: "motionLine";
+      target: ObjectId;
+      to: MotionPoint;
+    }
+  | {
+      kind: "motionPath";
+      path: MotionPath;
+      target: ObjectId;
+    }
+  | {
+      kind: "fade";
+      target: ObjectId;
+      transition: FadeTransition;
+    };
+/**
+ * Rotation is composed before object/group placement. Layout replaces earlier
+ * animation offsets while preserving the document's local orientation. Add
+ * sums the sampled offset with the lower-priority visible rotation stack.
+ *
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "RotationComposition".
+ */
+export type RotationComposition = "absolute" | "layout" | "add";
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "Visibility".
+ */
+export type Visibility = "visible" | "hidden";
+/**
+ * Exact decimal fraction of the slide dimension; canonicalized without rounding.
+ *
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "MotionCoordinate".
+ */
+export type MotionCoordinate = string;
+/**
+ * Source control points remain editable; subdivision belongs only to the
+ * immutable playback plan. Close returns to the initial `from` point.
+ *
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "MotionSegment".
+ */
+export type MotionSegment =
+  | {
+      kind: "line";
+      to: MotionPoint;
+    }
+  | {
+      control1: MotionPoint;
+      control2: MotionPoint;
+      kind: "cubic";
+      to: MotionPoint;
+    }
+  | {
+      kind: "close";
+    };
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "FadeTransition".
+ */
+export type FadeTransition = "in" | "out";
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
  * via the `definition` "TimeCondition".
  */
 export type TimeCondition =
+  | {
+      kind: "never";
+    }
   | {
       kind: "at";
       offset: RationalTime;
@@ -396,17 +582,28 @@ export type TimeCondition =
       delay: RationalTime;
       kind: "click";
       target?: ObjectId | null;
+    }
+  | {
+      delay: RationalTime;
+      direction: NavigationDirection;
+      kind: "navigation";
+      target?: ObjectId | null;
     };
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
  * via the `definition` "NodeEvent".
  */
-export type NodeEvent = "begin" | "end";
+export type NodeEvent = ("end" | "onEnd") | "begin" | "onBegin";
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
  * via the `definition` "TimingNodeId".
  */
 export type TimingNodeId = string;
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "NavigationDirection".
+ */
+export type NavigationDirection = "next" | "previous";
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
  * via the `definition` "FillMode".
@@ -417,6 +614,31 @@ export type FillMode = ("remove" | "freeze") | "hold";
  * via the `definition` "RepeatDuration".
  */
 export type RepeatDuration = "indefinite" | RationalTime;
+/**
+ * Admission of new begin instances within one parent activation. Ancestor
+ * reactivation resets this policy, including `Never`. Omission preserves the
+ * existing draft's once-per-parent behavior, independently of native defaults.
+ *
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "RestartMode".
+ */
+export type RestartMode = "never" | "always" | "whenNotActive";
+/**
+ * A flat disjunction of native begin conditions. The single-condition wire
+ * representation remains unchanged; alternatives cannot recursively nest.
+ *
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "StartCondition".
+ */
+export type StartCondition =
+  | {
+      /**
+       * @minItems 1
+       */
+      conditions: [TimeCondition, ...TimeCondition[]];
+      kind: "anyOf";
+    }
+  | TimeCondition;
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
  * via the `definition` "ContainerDuration".
@@ -437,6 +659,39 @@ export type ContainerDuration =
  * via the `definition` "ContainerKind".
  */
 export type ContainerKind = "parallel" | "sequence";
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "NextAction".
+ */
+export type NextAction = "none" | "seek";
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "PreviousAction".
+ */
+export type PreviousAction = "none" | "skipTimed";
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "PresentationRole".
+ */
+export type PresentationRole =
+  | {
+      kind: "mainSequence";
+    }
+  | {
+      kind: "effect";
+      preset: PresentationPreset;
+      trigger: PresentationTrigger;
+    };
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "PresentationPreset".
+ */
+export type PresentationPreset = "appear" | "disappear" | "spin" | "growShrink" | "customMotion" | "fadeIn" | "fadeOut";
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "PresentationTrigger".
+ */
+export type PresentationTrigger = "click" | "withPrevious" | "afterPrevious";
 /**
  * Canonical uint64 byte length. Range requires semantic validation.
  *
@@ -485,14 +740,16 @@ export type PreviewSample = {
 };
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
- * via the `definition` "Effect".
+ * via the `definition` "Inherited10".
  */
-export type Effect = {
-  from: number;
-  kind: "rotation";
-  target: ObjectId;
-  to: number;
-};
+export type Inherited10 =
+  | {
+      kind: "inherit";
+    }
+  | {
+      kind: "value";
+      value: TableVerticalAlignment;
+    };
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
  * via the `definition` "Inherited2".
@@ -597,6 +854,20 @@ export type Inherited9 =
  * via the `definition` "RepeatCount".
  */
 export type RepeatCount = "indefinite" | number;
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "TableCellMerge".
+ */
+export type TableCellMerge =
+  | {
+      columns: number;
+      kind: "span";
+      rows: number;
+    }
+  | {
+      kind: "covered";
+      origin: CellId;
+    };
 
 /**
  * A completed computation, never a durable task or a product publication.
@@ -608,13 +879,141 @@ export interface ComputationReceipt {
 }
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "TemplateDescription".
+ */
+export interface TemplateDescription {
+  definition: TemplateDefinition;
+  /**
+   * Examples are the real values of the pinned source, never inferred text.
+   */
+  examples: {
+    [k: string]: BindingValue | undefined;
+  };
+  templateDigest: Digest;
+}
+/**
+ * A template is an exact document revision plus typed editable parameters.
+ * Catalog identity, ownership, storage and inference are outside this contract.
+ *
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "TemplateDefinition".
+ */
+export interface TemplateDefinition {
+  format: TemplateVersion;
+  parameters: {
+    [k: string]: Parameter | undefined;
+  };
+  source: TemplateSource;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema definition
+ * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+ *
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "Parameter".
+ */
+export interface Parameter {
+  label: string;
+  required: boolean;
+  target: ParameterTarget;
+}
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "TemplateSource".
+ */
+export interface TemplateSource {
+  documentId: DocumentId;
+  revision: Digest;
+  semanticDigest: Digest;
+}
+/**
+ * Opaque authorized handle and declared content identity; byte verification belongs to the host.
+ *
+ * This interface was referenced by `undefined`'s JSON-Schema definition
+ * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+ *
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "Resource".
+ */
+export interface Resource {
+  id: ResourceId;
+  kind: ResourceKind;
+  mediaType: string;
+  sha256: Digest;
+}
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "Rgba".
+ */
+export interface Rgba {
+  alpha: number;
+  blue: number;
+  green: number;
+  red: number;
+}
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "Transform".
+ */
+export interface Transform {
+  flipHorizontal: boolean;
+  flipVertical: boolean;
+  origin: Point;
+  /**
+   * Units of 1/60000 degree. Author direction is preserved.
+   */
+  rotation: number;
+  size: Size;
+}
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "Point".
+ */
+export interface Point {
+  x: Emu;
+  y: Emu;
+}
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "Size".
+ */
+export interface Size {
+  height: Emu;
+  width: Emu;
+}
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
  * via the `definition` "MutationReceipt".
  */
 export interface MutationReceipt {
   documentId: DocumentId;
   revision: Digest;
   semanticDigest: Digest;
+  /**
+   * Source and parameter evidence for a new independent document. It is not
+   * a transaction committed against the source, nor the new document's base.
+   */
+  template?: InstantiationReceipt | null;
   transaction?: TransactionReceipt | null;
+}
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "InstantiationReceipt".
+ */
+export interface InstantiationReceipt {
+  /**
+   * Pure parameter computation against the immutable source. This is not a
+   * commit to the template or the instance. Scope mapping follows binding.
+   */
+  bindingTransaction?: TransactionReceipt | null;
+  boundParameters: TemplateParameterId[];
+  requestDigest: Digest;
+  requestId: RequestId;
+  revision: Digest;
+  scopeMap: DocumentScopeMap;
+  semanticDigest: Digest;
+  source: TemplateSource;
+  templateDigest: Digest;
 }
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
@@ -668,6 +1067,20 @@ export interface AnchorMap {
   inserted: number;
   paragraph: ParagraphId;
   start: number;
+}
+/**
+ * Total mapping for whole-document instantiation: (source document, local ID)
+ * becomes (instance document, same local ID). This preserves every internal
+ * reference, including opaque native relationships, without an O(n) identity
+ * table. It is not a mapping for copying a page into an existing document.
+ *
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "DocumentScopeMap".
+ */
+export interface DocumentScopeMap {
+  instanceDocument: DocumentId;
+  localIdPolicy: LocalIdPolicy;
+  sourceDocument: DocumentId;
 }
 /**
  * Storage envelope owned by an authorized host. A digest is not an access token.
@@ -755,16 +1168,6 @@ export interface Layout {
   master: MasterId;
   name: string;
   objects: ObjectId[];
-}
-/**
- * This interface was referenced by `ComputationReceipt`'s JSON-Schema
- * via the `definition` "Rgba".
- */
-export interface Rgba {
-  alpha: number;
-  blue: number;
-  green: number;
-  red: number;
 }
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
@@ -894,36 +1297,123 @@ export interface Appearance {
 }
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
- * via the `definition` "RetainedParagraph".
+ * via the `definition` "Table".
  */
-export interface RetainedParagraph {
-  id: ParagraphId;
-  runs: RetainedTextRun[];
+export interface Table {
+  columns: TableColumn[];
+  rows: TableRow[];
 }
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
- * via the `definition` "RetainedTextRun".
+ * via the `definition` "TableColumn".
  */
-export interface RetainedTextRun {
-  id: RunId;
-  kind: RetainedRunKind;
-  text: string;
-}
-/**
- * This interface was referenced by `ComputationReceipt`'s JSON-Schema
- * via the `definition` "Point".
- */
-export interface Point {
-  x: Emu;
-  y: Emu;
-}
-/**
- * This interface was referenced by `ComputationReceipt`'s JSON-Schema
- * via the `definition` "Size".
- */
-export interface Size {
-  height: Emu;
+export interface TableColumn {
+  id: ColumnId;
   width: Emu;
+}
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "TableRow".
+ */
+export interface TableRow {
+  /**
+   * One entry per grid column, even when covered by another cell.
+   */
+  cells: TableCell[];
+  height: Emu;
+  id: RowId;
+}
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "TableCell".
+ */
+export interface TableCell {
+  /**
+   * Row/column/cell identities are table-scoped. Text identities remain
+   * document-scoped so existing anchors retain their unambiguous meaning.
+   */
+  id: string;
+  merge?:
+    | {
+        columns: number;
+        kind: "span";
+        rows: number;
+      }
+    | {
+        kind: "covered";
+        origin: CellId;
+      };
+  style?: TableCellStyle;
+  text?: TextBody | null;
+}
+export interface TableCellStyle {
+  borders?: TableCellBorders;
+  fill?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Fill;
+      };
+  verticalAlignment?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: TableVerticalAlignment;
+      };
+}
+export interface TableCellBorders {
+  bottom?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  bottomLeftToTopRight?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  left?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  right?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  top?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  topLeftToBottomRight?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
 }
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
@@ -1005,6 +1495,23 @@ export interface ParagraphStyle {
 }
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "RetainedParagraph".
+ */
+export interface RetainedParagraph {
+  id: ParagraphId;
+  runs: RetainedTextRun[];
+}
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "RetainedTextRun".
+ */
+export interface RetainedTextRun {
+  id: RunId;
+  kind: RetainedRunKind;
+  text: string;
+}
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
  * via the `definition` "Crop".
  */
 export interface Crop {
@@ -1012,35 +1519,6 @@ export interface Crop {
   left: number;
   right: number;
   top: number;
-}
-/**
- * This interface was referenced by `ComputationReceipt`'s JSON-Schema
- * via the `definition` "Transform".
- */
-export interface Transform {
-  flipHorizontal: boolean;
-  flipVertical: boolean;
-  origin: Point;
-  /**
-   * Units of 1/60000 degree. Author direction is preserved.
-   */
-  rotation: number;
-  size: Size;
-}
-/**
- * Opaque authorized handle and declared content identity; byte verification belongs to the host.
- *
- * This interface was referenced by `undefined`'s JSON-Schema definition
- * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
- *
- * This interface was referenced by `ComputationReceipt`'s JSON-Schema
- * via the `definition` "Resource".
- */
-export interface Resource {
-  id: ResourceId;
-  kind: ResourceKind;
-  mediaType: string;
-  sha256: Digest;
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema definition
@@ -1062,6 +1540,13 @@ export interface Slide {
  * via the `definition` "SourceBindings".
  */
 export interface SourceBindings {
+  /**
+   * Immutable origin namespace used to derive source-local IDs. Absence
+   * retains the original document-ID-derived representation. A whole-deck
+   * instance pins this namespace before changing its document identity.
+   * This is provenance for calculation, never host access authority.
+   */
+  identityScope?: DocumentId | null;
   layouts: {
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
@@ -1173,15 +1658,7 @@ export interface Timeline {
  */
 export interface TimingNode {
   duration: RationalTime;
-  /**
-   * The current graph activates each node once (native restart="never").
-   */
-  effect: {
-    from: number;
-    kind: "rotation";
-    target: ObjectId;
-    to: number;
-  };
+  effect: Effect;
   /**
    * Earliest resolved eligible end; absent conditions add no end constraint.
    */
@@ -1196,7 +1673,8 @@ export interface TimingNode {
    * Native count in thousandths, or explicit indefinite repetition.
    */
   repeatMilli: "indefinite" | number;
-  start: TimeCondition;
+  restart?: RestartMode;
+  start: StartCondition;
   timeTransform?: TimeTransform | null;
 }
 /**
@@ -1208,6 +1686,34 @@ export interface TimingNode {
 export interface RationalTime {
   ticks: Ticks;
   timescale: Timescale;
+}
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "ScaleValue".
+ */
+export interface ScaleValue {
+  x: number;
+  y: number;
+}
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "MotionPoint".
+ */
+export interface MotionPoint {
+  x: MotionCoordinate;
+  y: MotionCoordinate;
+}
+/**
+ * Connected native path. Coordinates are absolute offsets from the original
+ * layout center, measured in slide fractions. Pacing uses length in this
+ * normalized coordinate space, before scaling the axes to slide dimensions.
+ *
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "MotionPath".
+ */
+export interface MotionPath {
+  from: MotionPoint;
+  segments: MotionSegment[];
 }
 /**
  * Local behavior clock. Percentages use native thousandths of one percent;
@@ -1241,7 +1747,34 @@ export interface TimingContainer {
   fill: FillMode;
   id: TimingNodeId;
   kind: ContainerKind;
-  start: TimeCondition;
+  navigation?: SequenceNavigation | null;
+  /**
+   * Native presentation identity. It participates in initial playback state
+   * and editable export; it never changes the container's declared clock.
+   */
+  presentation?: PresentationRole | null;
+  restart?: RestartMode;
+  start: StartCondition;
+  /**
+   * Filter the container's simple time before its descendants consume it.
+   * Compilation validates the supported clock domain; this is never copied
+   * into the leaves or interpreted as an independent per-effect easing.
+   */
+  timeTransform?: TimeTransform | null;
+}
+/**
+ * Sequence controls are document computation, independent of host buttons or
+ * keyboard bindings. Conditions are disjunctions, like begin/end conditions.
+ *
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "SequenceNavigation".
+ */
+export interface SequenceNavigation {
+  concurrent: boolean;
+  nextAction: NextAction;
+  nextConditions: TimeCondition[];
+  previousAction: PreviousAction;
+  previousConditions: TimeCondition[];
 }
 /**
  * This interface was referenced by `ComputationReceipt`'s JSON-Schema
@@ -1322,4 +1855,81 @@ export interface Versions {
   fontProfileSha256: Digest;
   operationSchema: string;
   rules: string;
+}
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "TableCellBorders".
+ */
+export interface TableCellBorders1 {
+  bottom?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  bottomLeftToTopRight?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  left?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  right?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  top?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  topLeftToBottomRight?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+}
+/**
+ * This interface was referenced by `ComputationReceipt`'s JSON-Schema
+ * via the `definition` "TableCellStyle".
+ */
+export interface TableCellStyle1 {
+  borders?: TableCellBorders;
+  fill?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Fill;
+      };
+  verticalAlignment?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: TableVerticalAlignment;
+      };
 }

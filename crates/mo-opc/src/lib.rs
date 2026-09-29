@@ -1,4 +1,5 @@
 //! Open Packaging Conventions graph and deterministic package I/O.
+mod core_properties;
 mod metadata;
 mod names;
 mod package;
@@ -7,6 +8,9 @@ mod sink;
 mod writer;
 mod zip_structure;
 
+pub use core_properties::{
+    CORE_PROPERTIES_RELATIONSHIP, CORE_PROPERTIES_TYPE, CoreProperties, read_core_properties,
+};
 pub use metadata::{ContentTypes, Relationship, RelationshipSource, RelationshipTarget};
 use mo_xml::XmlLimits;
 pub use names::{PartName, relationship_part_name, relationship_source, resolve_internal_target};

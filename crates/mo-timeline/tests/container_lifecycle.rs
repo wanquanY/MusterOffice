@@ -6,8 +6,8 @@ fn time(n: i64, d: u32) -> RationalTime {
 fn id(s: &str) -> TimingNodeId {
     TimingNodeId::new(s).unwrap()
 }
-fn at(n: i64, d: u32) -> StartCondition {
-    StartCondition::At { offset: time(n, d) }
+fn at(n: i64, d: u32) -> TimeCondition {
+    TimeCondition::At { offset: time(n, d) }
 }
 fn exact(n: i64, d: i64) -> ExactValue {
     ExactValue {
@@ -17,8 +17,9 @@ fn exact(n: i64, d: i64) -> ExactValue {
 }
 fn node(name: &str) -> TimingNode {
     TimingNode {
+        restart: mo_timeline::RestartMode::Never,
         id: id(name),
-        start: at(0, 1),
+        start: at(0, 1).into(),
         duration: time(2, 1),
         end_conditions: vec![],
         repeat_milli: RepeatCount::Indefinite,
@@ -26,6 +27,7 @@ fn node(name: &str) -> TimingNode {
         fill: FillMode::Hold,
         time_transform: None,
         effect: Effect::Rotation {
+            composition: Default::default(),
             target: ObjectId::new(name).unwrap(),
             from: 0,
             to: 120,
@@ -45,9 +47,13 @@ fn timeline(nodes: Vec<TimingNode>, tree: Option<TimingTree>) -> Timeline {
 }
 fn container(name: &str, children: &[&str], duration: ContainerDuration) -> TimingContainer {
     TimingContainer {
+        time_transform: None,
+        presentation: None,
+        navigation: None,
+        restart: mo_timeline::RestartMode::Never,
         id: id(name),
         kind: ContainerKind::Sequence,
-        start: at(0, 1),
+        start: at(0, 1).into(),
         end_conditions: vec![],
         duration,
         fill: FillMode::Hold,
@@ -95,13 +101,13 @@ fn history(times: &[i64]) -> EventHistory {
 #[test]
 fn descendant_begin_can_stop_parent_without_creating_a_false_cycle() {
     let mut a = node("a");
-    a.start = at(1, 1);
+    a.start = at(1, 1).into();
     a.duration = time(10, 1);
     a.fill = FillMode::Remove;
     let mut p = container("p", &["a"], ContainerDuration::Indefinite);
     p.end_conditions = vec![after("a", NodeEvent::Begin, 2, 1)];
     let mut outside = node("outside");
-    outside.start = after("a", NodeEvent::End, 0, 1);
+    outside.start = after("a", NodeEvent::End, 0, 1).into();
     let t = timeline(
         vec![a, outside],
         Some(TimingTree {
@@ -119,15 +125,15 @@ fn descendant_begin_can_stop_parent_without_creating_a_false_cycle() {
 #[test]
 fn stop_cancels_future_begins_and_does_not_emit_events_for_unactivated_nodes() {
     let mut a = node("a");
-    a.start = at(2, 1);
+    a.start = at(2, 1).into();
     let b = node("b");
     let mut p = container("p", &["a", "b"], ContainerDuration::Indefinite);
     p.kind = ContainerKind::Parallel;
     p.end_conditions = vec![at(1, 1)];
     let mut absent = node("absent");
-    absent.start = after("a", NodeEvent::Begin, 0, 1);
+    absent.start = after("a", NodeEvent::Begin, 0, 1).into();
     let mut ended = node("ended");
-    ended.start = after("b", NodeEvent::End, 0, 1);
+    ended.start = after("b", NodeEvent::End, 0, 1).into();
     let t = timeline(
         vec![a, b, absent, ended],
         Some(TimingTree {
@@ -176,7 +182,8 @@ fn automatic_parent_chooses_child_completion_or_explicit_end_and_keeps_sequence_
     c.start = TimeCondition::Click {
         target: None,
         delay: time(0, 1),
-    };
+    }
+    .into();
     let t = timeline(
         vec![a, b, c],
         Some(TimingTree {

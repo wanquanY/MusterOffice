@@ -86,6 +86,29 @@ impl<'a> Drawing<'a> {
         let o = &self.document.objects[id];
         let native = self.objects[&self.object_ids[id]];
         match &o.content {
+            ObjectContent::Table { .. } => {
+                x.raw("<p:graphicFrame><p:nvGraphicFramePr>")?;
+                self.nonvisual(x, o)?;
+                x.raw("<p:cNvGraphicFramePr/><p:nvPr/></p:nvGraphicFramePr>")?;
+                native::frame_transform(
+                    x,
+                    native
+                        .transform
+                        .as_ref()
+                        .ok_or_else(|| value("table", "missing frame transform"))?,
+                )?;
+                native::table(
+                    x,
+                    native
+                        .table
+                        .as_ref()
+                        .ok_or_else(|| value("table", "missing table declaration"))?,
+                    &self.surface().text,
+                    &native.paragraphs,
+                    self.check,
+                )?;
+                x.raw("</p:graphicFrame>")?;
+            }
             ObjectContent::RetainedSource { .. } => {
                 return Err(PptxError::Unsupported(
                     "retained content requires source plan writer".into(),

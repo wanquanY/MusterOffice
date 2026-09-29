@@ -90,7 +90,7 @@ pub(super) fn render(
             match from_json_str::<mo_kernel_api::PptxPlaybackRasterResponse>(&metadata)? {
                 mo_kernel_api::PptxPlaybackRasterResponse::Error { .. } => None,
                 mo_kernel_api::PptxPlaybackRasterResponse::Rendered { info } => {
-                    if info.profile != mo_kernel_api::PPTX_PLAYBACK_PROFILE
+                    if info.profile != info.playback.profile()
                         || info.page.profile != "drawingml-resource-page-q32-v1-draft"
                         || !matches!(
                             info.page.page.page.profile,
@@ -157,7 +157,7 @@ pub(super) fn render(
             match from_json_str::<mo_kernel_api::PlaybackRasterResponse>(&metadata)? {
                 mo_kernel_api::PlaybackRasterResponse::Error { .. } => None,
                 mo_kernel_api::PlaybackRasterResponse::Rendered { info } => {
-                    if info.profile != mo_kernel_api::PLAYBACK_PAGE_PROFILE
+                    if info.profile != mo_kernel_api::frame_profile(&info.frame)
                         || info.page.page.profile != mo_kernel_api::PAGE_PROFILE
                         || info.page.scene.profile != mo_kernel_api::SCENE_RASTER_PROFILE
                     {

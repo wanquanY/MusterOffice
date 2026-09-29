@@ -7,7 +7,7 @@ fn id(s: &str) -> TimingNodeId {
     TimingNodeId::new(s).unwrap()
 }
 fn at(n: i64, d: u32) -> StartCondition {
-    StartCondition::At { offset: time(n, d) }
+    StartCondition::Single(TimeCondition::At { offset: time(n, d) })
 }
 fn exact(n: i64, d: i64) -> ExactValue {
     ExactValue {
@@ -17,6 +17,7 @@ fn exact(n: i64, d: i64) -> ExactValue {
 }
 fn node(name: &str) -> TimingNode {
     TimingNode {
+        restart: mo_timeline::RestartMode::Never,
         id: id(name),
         start: at(0, 1),
         duration: time(2, 1),
@@ -26,6 +27,7 @@ fn node(name: &str) -> TimingNode {
         fill: FillMode::Hold,
         time_transform: None,
         effect: Effect::Rotation {
+            composition: Default::default(),
             target: ObjectId::new(name).unwrap(),
             from: 0,
             to: 120,
@@ -45,6 +47,10 @@ fn timeline(nodes: Vec<TimingNode>, tree: Option<TimingTree>) -> Timeline {
 }
 fn container(name: &str, children: &[&str], duration: ContainerDuration) -> TimingContainer {
     TimingContainer {
+        time_transform: None,
+        presentation: None,
+        navigation: None,
+        restart: mo_timeline::RestartMode::Never,
         id: id(name),
         kind: ContainerKind::Sequence,
         start: at(0, 1),
@@ -135,18 +141,18 @@ fn infinite_repeats_seek_directly_and_keep_end_dependencies_unresolved() {
     let a = node("a");
     let mut b = node("b");
     b.repeat_milli = 1000.into();
-    b.start = StartCondition::After {
+    b.start = StartCondition::Single(TimeCondition::After {
         node: id("a"),
         event: NodeEvent::End,
         delay: time(0, 1),
-    };
+    });
     let mut c = b.clone();
     c.id = id("c");
-    c.start = StartCondition::After {
+    c.start = StartCondition::Single(TimeCondition::After {
         node: id("a"),
         event: NodeEvent::Begin,
         delay: time(1, 2),
-    };
+    });
     let t = timeline(vec![a, b, c], None);
     let p = plan(&t);
     for at in [i64::MAX, 1, 9, 0] {

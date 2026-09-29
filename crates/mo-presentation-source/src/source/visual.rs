@@ -157,6 +157,17 @@ impl Reader {
             }
         } else if parent_is(P, "nvPr") && e.name.is(P, "ph") {
             Some(&["type", "orient", "sz", "idx", "hasCustomPrompt"])
+        } else if parent_is(P, "graphicFrame")
+            && e.name.is(A, "graphic")
+            && owner.is_some_and(|(_, d)| depth == d + 1)
+        {
+            Some(&[])
+        } else if parent_is(A, "graphic")
+            && e.name.is(A, "graphicData")
+            && owner.is_some_and(|(_, d)| depth == d + 2)
+            && e.attribute("uri") == Some(super::table::TABLE_URI)
+        {
+            Some(&["uri"])
         } else if e.name.namespace == A
             && ((parent_is(P, "cNvPr") && matches!(name, "hlinkClick" | "hlinkHover"))
                 || ([
@@ -178,8 +189,7 @@ impl Reader {
                             | "stCxn"
                             | "endCxn"
                     ))
-                || (parent_is(P, "style") && name == "fontRef")
-                || (parent_is(P, "graphicFrame") && name == "graphic"))
+                || (parent_is(P, "style") && name == "fontRef"))
         {
             skip = true;
             Some(&[])

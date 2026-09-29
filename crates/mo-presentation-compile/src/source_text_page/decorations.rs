@@ -203,7 +203,7 @@ pub(super) fn build(
             if value.is_none() || (thickness && value.is_some_and(|v| v <= 0)) {
                 return Err(SourcePageError::TextDecoration(Box::new(
                     TextDecorationIssue {
-                        paragraph: g.paragraph,
+                        paragraph: frame.text.paragraph_start + g.paragraph,
                         run: c.runs[0],
                         source_ordinal: frame.text.paragraphs[g.paragraph as usize].runs
                             [c.runs[0] as usize]

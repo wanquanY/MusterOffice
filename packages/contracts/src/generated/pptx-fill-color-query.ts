@@ -37,11 +37,73 @@ export type FillTarget =
       nativeId: number;
     }
   | {
+      cell: SourceCellAddress;
+      kind: "tableCell";
+      nativeId: number;
+    }
+  | {
+      cell: SourceCellAddress;
+      edge: TableCellEdge;
+      kind: "tableCellBorder";
+      nativeId: number;
+    }
+  | {
+      kind: "tableBackground";
+      nativeId: number;
+    }
+  | {
+      kind: "tableStyleFill";
+      nativeId: number;
+      region?: TableStyleRegion | null;
+    }
+  | {
+      edge: TableStyleEdge;
+      kind: "tableStyleBorder";
+      nativeId: number;
+      region: TableStyleRegion;
+    }
+  | {
       kind: "rootGroup";
     }
   | {
       kind: "background";
     };
+/**
+ * This interface was referenced by `SourceFillColorQuery`'s JSON-Schema
+ * via the `definition` "TableCellEdge".
+ */
+export type TableCellEdge = "left" | "right" | "top" | "bottom" | "topLeftToBottomRight" | "bottomLeftToTopRight";
+/**
+ * This interface was referenced by `SourceFillColorQuery`'s JSON-Schema
+ * via the `definition` "TableStyleRegion".
+ */
+export type TableStyleRegion =
+  | "wholeTbl"
+  | "band1H"
+  | "band2H"
+  | "band1V"
+  | "band2V"
+  | "lastCol"
+  | "firstCol"
+  | "lastRow"
+  | "seCell"
+  | "swCell"
+  | "firstRow"
+  | "neCell"
+  | "nwCell";
+/**
+ * This interface was referenced by `SourceFillColorQuery`'s JSON-Schema
+ * via the `definition` "TableStyleEdge".
+ */
+export type TableStyleEdge =
+  | "left"
+  | "right"
+  | "top"
+  | "bottom"
+  | "insideHorizontal"
+  | "insideVertical"
+  | "topLeftToBottomRight"
+  | "topRightToBottomLeft";
 
 export interface SourceFillColorQuery {
   colorProfile: ColorProfile;
@@ -215,4 +277,12 @@ export interface ColorContext {
      */
     windowText?: [number, number, number];
   };
+}
+/**
+ * This interface was referenced by `SourceFillColorQuery`'s JSON-Schema
+ * via the `definition` "SourceCellAddress".
+ */
+export interface SourceCellAddress {
+  column: number;
+  row: number;
 }

@@ -116,7 +116,7 @@ pub fn render_pptx_playback_page(
             .map_err(|e| resource(crate::pptx_resource_page::page_failure(e)))?;
         Ok((
             PptxPlaybackRasterInfo {
-                profile: PPTX_PLAYBACK_PROFILE.into(),
+                profile: sample.frame().profile().into(),
                 playback: sample.frame().clone(),
                 page: page.info,
             },

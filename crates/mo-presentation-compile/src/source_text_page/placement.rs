@@ -30,6 +30,7 @@ pub(super) struct LocalPath<'a> {
     pub origin: Point,
     pub rgba: [u8; 4],
     pub uncertainty: Fixed,
+    pub clip: Option<u32>,
 }
 pub(super) fn paint(
     binding: u32,
@@ -44,7 +45,36 @@ pub(super) fn paint(
         origin,
         rgba,
         uncertainty,
+        clip,
     } = local;
+    let (affine, position, geometry) =
+        transform(commands, origin, uncertainty, object, viewport, check)?;
+    let instance = builder.scene.instances.len() as u32;
+    builder.add_clipped(
+        commands,
+        affine,
+        Brush::Solid { rgba },
+        None,
+        clip,
+        |instance| SourcePagePaintSource {
+            instance,
+            binding,
+            path: None,
+            paint: crate::PagePaintKind::Fill,
+            fill_target: None,
+        },
+    )?;
+    Ok((instance, position, geometry))
+}
+
+pub(super) fn transform(
+    commands: &[PathCommand],
+    origin: Point,
+    uncertainty: Fixed,
+    object: &SourcePagePaintBinding,
+    viewport: &RasterViewport,
+    check: &dyn Fn() -> bool,
+) -> Result<(Affine, Fixed, Fixed), SourcePageError> {
     let placement = object.placement.as_ref().expect("object placement");
     // Shape-local paths stay untransformed. Rebase and certify the sampled
     // world affine, including group sectors, on every frame.
@@ -76,15 +106,5 @@ pub(super) fn paint(
         .max(translated.error.y)
         .ratio_up(viewport.scale.numerator, viewport.scale.denominator)?;
     let geometry = bound.checked_add(translation_error)?;
-    let instance = builder.scene.instances.len() as u32;
-    builder.add(commands, affine, Brush::Solid { rgba }, None, |instance| {
-        SourcePagePaintSource {
-            instance,
-            binding,
-            path: None,
-            paint: crate::PagePaintKind::Fill,
-            fill_target: None,
-        }
-    })?;
-    Ok((instance, position, geometry))
+    Ok((affine, position, geometry))
 }

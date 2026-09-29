@@ -1,7 +1,7 @@
 use super::{super::*, LineResolveLimits};
 use crate::{PptxError, cancelled, source::drawingml::*};
 
-pub(super) struct Budget<'a> {
+pub(in crate::source) struct Budget<'a> {
     pub limits: LineResolveLimits,
     pub check: &'a dyn Fn() -> bool,
     pub steps: usize,

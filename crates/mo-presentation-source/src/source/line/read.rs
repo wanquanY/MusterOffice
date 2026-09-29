@@ -61,7 +61,12 @@ impl Reader {
                 retained_ordinals: Vec::new(),
             })
         } else {
-            if !e.name.is(A, "ln") && !e.name.is(A, "uLn") {
+            if e.name.namespace != A
+                || ![
+                    "ln", "uLn", "lnL", "lnR", "lnT", "lnB", "lnTlToBr", "lnBlToTr",
+                ]
+                .contains(&e.name.local.as_str())
+            {
                 return Err(malformed("invalid line root"));
             }
             let width: Option<u32> = e

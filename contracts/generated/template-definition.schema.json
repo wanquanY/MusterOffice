@@ -1,0 +1,258 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:template-definition",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TemplateDefinition",
+  "description": "A template is an exact document revision plus typed editable parameters.\nCatalog identity, ownership, storage and inference are outside this contract.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "$ref": "#/$defs/TemplateVersion"
+    },
+    "parameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+          "$ref": "#/$defs/Parameter"
+        }
+      }
+    },
+    "source": {
+      "$ref": "#/$defs/TemplateSource"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "source",
+    "parameters"
+  ],
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "DocumentId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ObjectId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ParagraphId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "Parameter": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "target": {
+          "$ref": "#/$defs/ParameterTarget"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "required",
+        "target"
+      ]
+    },
+    "ParameterTarget": {
+      "oneOf": [
+        {
+          "description": "Replaces one complete run, preserving its style, paragraph and identity.\nNewlines/structured runs still obey the original editor/source rules.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "textRun"
+            },
+            "maxScalars": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "minScalars": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "paragraph": {
+              "$ref": "#/$defs/ParagraphId"
+            },
+            "run": {
+              "$ref": "#/$defs/RunId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "paragraph",
+            "run",
+            "minScalars",
+            "maxScalars"
+          ]
+        },
+        {
+          "description": "Replaces this declaration for every consumer of this resource identity.\nNever rewrites source-package provenance or authorizes resource bytes.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "resource"
+            },
+            "mediaTypes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            },
+            "resource": {
+              "$ref": "#/$defs/ResourceId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "resource",
+            "mediaTypes"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "themeColor"
+            },
+            "slot": {
+              "$ref": "#/$defs/ThemeColor"
+            },
+            "theme": {
+              "$ref": "#/$defs/ThemeId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "theme",
+            "slot"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "transform"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object"
+          ]
+        }
+      ]
+    },
+    "ResourceId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "RunId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "TemplateSource": {
+      "type": "object",
+      "properties": {
+        "documentId": {
+          "$ref": "#/$defs/DocumentId"
+        },
+        "revision": {
+          "$ref": "#/$defs/Digest"
+        },
+        "semanticDigest": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "documentId",
+        "revision",
+        "semanticDigest"
+      ]
+    },
+    "TemplateVersion": {
+      "type": "string",
+      "enum": [
+        "musteroffice.presentation-template/1-draft"
+      ]
+    },
+    "ThemeColor": {
+      "type": "string",
+      "enum": [
+        "dark1",
+        "light1",
+        "dark2",
+        "light2",
+        "accent1",
+        "accent2",
+        "accent3",
+        "accent4",
+        "accent5",
+        "accent6",
+        "hyperlink",
+        "followedHyperlink"
+      ]
+    },
+    "ThemeId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    }
+  }
+}

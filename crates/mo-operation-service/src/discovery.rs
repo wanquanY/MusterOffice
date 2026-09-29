@@ -42,13 +42,20 @@ pub enum ServiceOperation {
     CancelJob,
 }
 impl ServiceOperation {
-    pub fn for_action(action: &DocumentAction) -> Self {
-        match action {
+    pub fn for_action(action: &DocumentAction) -> Result<Self, Failure> {
+        Ok(match action {
             DocumentAction::Import { .. } => Self::Import,
             DocumentAction::Create { .. } => Self::Create,
             DocumentAction::Apply { .. } => Self::Apply,
             DocumentAction::Export { .. } => Self::Export,
-        }
+            DocumentAction::InstantiateTemplate { .. }
+            | DocumentAction::DescribeTemplate { .. } => {
+                return Err(Failure::new(
+                    FailureCode::InputInvalid,
+                    "template computation requires the computation-only interface",
+                ));
+            }
+        })
     }
 
     pub const ALL: [Self; 16] = [

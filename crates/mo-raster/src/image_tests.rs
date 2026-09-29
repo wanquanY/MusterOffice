@@ -41,6 +41,7 @@ fn owned_pixels_move_once_and_keep_the_borrowed_validation_contract() {
 }
 fn request() -> PathRasterRequest {
     PathRasterRequest {
+        opacity_groups: vec![],
         clips: vec![],
         viewport: RasterViewport {
             width: 8,

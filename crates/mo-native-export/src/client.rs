@@ -49,6 +49,10 @@ impl NativeExportCandidate {
     pub fn inspection(&self) -> &ReceiptInspection {
         self.received.report()
     }
+    /// Bound renderer observations; these do not upgrade quality declarations.
+    pub fn preview_measurements(&self) -> &[mo_presentation_delivery::PreviewMeasurements] {
+        self.received.preview_measurements()
+    }
     pub fn assets(&self) -> &[DeliveryAsset] {
         &self.receipt.bundle.assets
     }

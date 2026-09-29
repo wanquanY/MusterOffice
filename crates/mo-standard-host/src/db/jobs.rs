@@ -12,7 +12,10 @@ pub(crate) struct StoredJob {
 
 fn base_revision(request: &OperationRequest) -> Option<&Digest> {
     match &request.action {
-        DocumentAction::Import { .. } | DocumentAction::Create { .. } => None,
+        DocumentAction::Import { .. }
+        | DocumentAction::Create { .. }
+        | DocumentAction::DescribeTemplate { .. }
+        | DocumentAction::InstantiateTemplate { .. } => None,
         DocumentAction::Apply { base_revision, .. }
         | DocumentAction::Export { base_revision, .. } => Some(base_revision),
     }

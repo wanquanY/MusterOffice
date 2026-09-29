@@ -3,6 +3,7 @@ use crate::{ClipWork, PathRasterRequest, RasterError, cancel};
 /// Bound traversal and actual raster work independently of draw command work.
 pub(crate) fn prepare(
     request: &PathRasterRequest,
+    scopes: &[u32],
     check: &dyn Fn() -> bool,
 ) -> Result<Option<ClipWork>, RasterError> {
     if request.clips.len() > 8192 {
@@ -38,8 +39,11 @@ pub(crate) fn prepare(
     };
     let mut active = [0u32; 64];
     let mut active_len = 0;
-    for draw in &request.draws {
+    for (draw_index, draw) in request.draws.iter().enumerate() {
         cancel(check)?;
+        if draw_index > 0 && scopes.get(draw_index) != scopes.get(draw_index - 1) {
+            active_len = 0;
+        }
         let mut chain = [0u32; 64];
         let mut len = 0;
         let mut next = draw.clip;

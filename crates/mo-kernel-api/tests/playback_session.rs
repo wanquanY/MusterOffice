@@ -454,3 +454,70 @@ fn prepared_frames_are_bound_to_owner_generation_and_disposal() {
         })
     ));
 }
+
+#[test]
+fn validated_pixels_cannot_bypass_owner_plan_or_generation_fences() {
+    for mode in ["valid", "other", "advance", "dispose", "cancel"] {
+        let q = prepare();
+        let binding = q["request"]["binding"].clone();
+        let sample: PlaybackSampleRequest = serde_json::from_value(
+            json!({"binding":binding,"at":{"ticks":"1","timescale":3},"history":null}),
+        )
+        .unwrap();
+        let mut owner = PlaybackSession::default();
+        let mut other = PlaybackSession::default();
+        send(&mut owner, &q);
+        send(&mut other, &q);
+        let pending = owner.prepare_render(sample.clone(), &|| false).unwrap();
+        let bytes = pending.words()[2] as usize * pending.words()[3] as usize * 4;
+        let mut validation = mo_raster::RasterReplyValidation::new(
+            mo_raster::BackendReply {
+                status: 0,
+                pixels: vec![0; bytes],
+            },
+            &|| false,
+        )
+        .unwrap();
+        while !validation.step(1, &|| false).unwrap() {}
+        let reply = validation.take().unwrap();
+        if mode == "advance" {
+            let generation = (binding["generation"]
+                .as_str()
+                .unwrap()
+                .parse::<u64>()
+                .unwrap()
+                + 1)
+            .to_string();
+            send(
+                &mut owner,
+                &json!({"operation":"advance","binding":binding,"generation":generation}),
+            );
+        } else if mode == "dispose" {
+            send(
+                &mut owner,
+                &json!({"operation":"dispose","binding":binding}),
+            );
+        }
+        let receiver = if mode == "other" {
+            &mut other
+        } else {
+            &mut owner
+        };
+        let result =
+            receiver.complete_render_reply(pending, Ok(reply.into()), &|| mode == "cancel");
+        if mode == "valid" {
+            assert_eq!(result.unwrap().pixels.len(), bytes);
+        } else {
+            let error = result.err().unwrap();
+            assert!(!error.invalidate_backend);
+            let code = match mode {
+                "dispose" => PlaybackSessionFailureCode::Disposed,
+                "cancel" => PlaybackSessionFailureCode::Cancelled,
+                _ => PlaybackSessionFailureCode::BindingConflict,
+            };
+            assert!(
+                matches!(error.error, PlaybackSessionFailure::Session {code: found, ..} if found == code)
+            );
+        }
+    }
+}

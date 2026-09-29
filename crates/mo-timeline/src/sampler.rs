@@ -89,8 +89,9 @@ impl CachedIntervals {
     }
 }
 /// Owns its immutable plan so interval schedules cannot be reused with another
-/// graph. One consumed event prefix and one interval per entry bound memory by
-/// TimelineLimits; seeking to a different prefix replaces the previous entry.
+/// graph. One consumed event prefix and a bounded activation arena belong to
+/// this owner. Restarting plans also key reuse by the exact sample horizon;
+/// future feedback is never expanded speculatively or borrowed on a seek.
 pub struct TimelineSampler {
     plan: TimelinePlan,
     cached: Option<CachedIntervals>,
@@ -134,6 +135,7 @@ impl TimelineSampler {
     ) -> Result<EvaluatedFrame, TimelineError> {
         let events = self.plan.validate_events(binding, at, history, check)?;
         if let Some(cached) = &self.cached
+            && cached.intervals.covers(at)
             && cached.matches(binding, &events, check)?
         {
             let reused = self.reused.next()?;
@@ -150,7 +152,7 @@ impl TimelineSampler {
             return Ok(frame);
         }
         let built = self.built.next()?;
-        let intervals = tree::schedule(&self.plan, &events.clicks(check)?, check)?;
+        let intervals = tree::schedule(&self.plan, &events.inputs(check)?, at, check)?;
         let frame = tree::sample(&self.plan, &intervals, binding, at, events.cursor(), check)?;
         let stamps = events
             .iter()

@@ -30,6 +30,9 @@ pub struct PathInstance {
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct DrawScene {
+    /// Intervals refer to instances; lowering preserves their order and count.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub opacity_groups: Vec<mo_raster::OpacityGroup>,
     pub paths: Vec<FillPath>,
     pub transforms: Vec<TransformNode>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]

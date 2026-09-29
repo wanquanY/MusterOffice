@@ -1,9 +1,12 @@
 //! Provenance-preserving line property resolution over an immutable source index.
 mod budget;
+mod geometry;
 mod merge;
 mod types;
 use crate::{PptxError, source::*, value};
 use budget::Budget;
+pub(in crate::source) use budget::Budget as LineBudget;
+pub(in crate::source) use geometry::GeometryPartial;
 use std::collections::BTreeMap;
 pub use types::*;
 

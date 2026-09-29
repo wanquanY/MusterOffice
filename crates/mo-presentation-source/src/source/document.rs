@@ -14,7 +14,9 @@ pub fn import_document(
     check: &dyn Fn() -> bool,
 ) -> Result<Document, PptxError> {
     let bound = presentation::read(source, limits, check)?;
-    let d = import::project(&bound, id, resource, check)?;
+    let title = mo_opc::read_core_properties(source, limits.package.xml, check)?
+        .map_or_else(String::new, |p| p.title);
+    let d = import::project(&bound, id, resource, title, check)?;
     validate(&d)?;
     Ok(d)
 }
@@ -55,12 +57,38 @@ impl<'a> SourcePlan<'a> {
             return Err(conflict("source resource identity changed"));
         }
         let bound = presentation::read(source, limits, check)?;
-        let mut baseline = import::project(
+        let title = match bindings.profile {
+            mo_presentation_model::SourceBindingProfile::PresentationmlRetainedFieldsV1 => {
+                String::new()
+            }
+            mo_presentation_model::SourceBindingProfile::PresentationmlRetainedFieldsV2
+            | mo_presentation_model::SourceBindingProfile::PresentationmlRetainedFieldsV3 => {
+                mo_opc::read_core_properties(source, limits.package.xml, check)?
+                    .map_or_else(String::new, |p| p.title)
+            }
+        };
+        let mut baseline = import::project_scoped(
             &bound,
             document.id.clone(),
             bindings.resource.clone(),
+            import::Projection {
+                identity_scope: bindings.identity_scope.clone(),
+                profile: bindings.profile,
+                title,
+            },
             check,
         )?;
+        let title_edit = if matches!(
+            bindings.profile,
+            mo_presentation_model::SourceBindingProfile::PresentationmlRetainedFieldsV2
+                | mo_presentation_model::SourceBindingProfile::PresentationmlRetainedFieldsV3
+        ) && baseline.title != document.title
+        {
+            baseline.title.clone_from(&document.title);
+            Some(document.title.clone())
+        } else {
+            None
+        };
         let mut text = SourceTextEdits {
             expected_source_sha256: source.sha256().clone(),
             edits: vec![],
@@ -166,6 +194,7 @@ impl<'a> SourcePlan<'a> {
         let identity = digest("musteroffice.source-native-plan/1", document)
             .map_err(|_| conflict("source plan identity"))?;
         let mut plan = super::preserve::prepare_bound(bound, &text, &transforms, limits, check)?;
+        plan.core_title = title_edit;
         plan.index.source_sha256 = identity.clone();
         Ok(Self {
             document,

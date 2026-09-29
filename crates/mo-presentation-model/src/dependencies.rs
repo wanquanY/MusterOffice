@@ -123,6 +123,16 @@ impl<'a> PageDependencies<'a> {
                 },
             );
             match &object.content {
+                ObjectContent::Table { table } => {
+                    for text in table
+                        .rows
+                        .iter()
+                        .flat_map(|r| &r.cells)
+                        .filter_map(|c| c.text.as_ref())
+                    {
+                        text_fonts(text, &mut fonts);
+                    }
+                }
                 ObjectContent::Group { children, .. }
                 | ObjectContent::RetainedSource { children, .. } => pending.extend(children),
                 ObjectContent::Picture { resource, .. } => {
@@ -133,13 +143,7 @@ impl<'a> PageDependencies<'a> {
                 ObjectContent::Shape {
                     text: Some(text), ..
                 } => {
-                    font(&text.style, &mut fonts);
-                    for paragraph in &text.paragraphs {
-                        font(&paragraph.default_run_style, &mut fonts);
-                        for run in &paragraph.runs {
-                            font(&run.style, &mut fonts);
-                        }
-                    }
+                    text_fonts(text, &mut fonts);
                 }
                 ObjectContent::Connector { start, end } => {
                     for endpoint in [start, end] {
@@ -177,6 +181,15 @@ impl<'a> PageDependencies<'a> {
 fn font<'a>(style: &'a CharacterStyle, fonts: &mut BTreeSet<&'a FontId>) {
     if let Inherited::Value(id) = &style.font {
         fonts.insert(id);
+    }
+}
+fn text_fonts<'a>(text: &'a TextBody, fonts: &mut BTreeSet<&'a FontId>) {
+    font(&text.style, fonts);
+    for paragraph in &text.paragraphs {
+        font(&paragraph.default_run_style, fonts);
+        for run in &paragraph.runs {
+            font(&run.style, fonts);
+        }
     }
 }
 

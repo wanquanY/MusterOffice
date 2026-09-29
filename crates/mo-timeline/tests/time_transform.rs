@@ -14,8 +14,9 @@ fn exact(n: i64, d: i64) -> ExactValue {
 }
 fn node() -> TimingNode {
     TimingNode {
+        restart: mo_timeline::RestartMode::Never,
         id: id("a"),
-        start: StartCondition::At { offset: time(0, 1) },
+        start: StartCondition::Single(TimeCondition::At { offset: time(0, 1) }),
         duration: time(1, 1),
         end_conditions: vec![],
         repeat_milli: 1000.into(),
@@ -23,6 +24,7 @@ fn node() -> TimingNode {
         fill: FillMode::Hold,
         time_transform: Some(TimeTransform::default()),
         effect: Effect::Rotation {
+            composition: Default::default(),
             target: ObjectId::new("shape").unwrap(),
             from: 0,
             to: 120,
@@ -53,15 +55,15 @@ fn sample(t: &Timeline, n: i64, d: u32) -> EvaluatedFrame {
 fn rate_changes_duration_and_end_dependencies_without_scaling_start_offsets() {
     let mut a = node();
     a.duration = time(2, 1);
-    a.start = StartCondition::At { offset: time(1, 2) };
+    a.start = StartCondition::Single(TimeCondition::At { offset: time(1, 2) });
     a.time_transform.as_mut().unwrap().speed_milli_percent = 200_000;
     let mut b = node();
     b.id = id("b");
-    b.start = StartCondition::After {
+    b.start = StartCondition::Single(TimeCondition::After {
         node: id("a"),
         event: NodeEvent::End,
         delay: time(1, 4),
-    };
+    });
     let mut t = timeline(a);
     t.nodes.push(b);
     let f = sample(&t, 1, 1);
@@ -185,9 +187,13 @@ fn fixed_ancestor_clips_the_transformed_clock_without_restarting_or_shortening_i
     t.tree = Some(TimingTree {
         roots: vec![id("p")],
         containers: vec![TimingContainer {
+            time_transform: None,
+            presentation: None,
+            navigation: None,
+            restart: mo_timeline::RestartMode::Never,
             id: id("p"),
             kind: ContainerKind::Sequence,
-            start: StartCondition::At { offset: time(0, 1) },
+            start: StartCondition::Single(TimeCondition::At { offset: time(0, 1) }),
             end_conditions: vec![],
             duration: ContainerDuration::Fixed {
                 duration: time(3, 2),

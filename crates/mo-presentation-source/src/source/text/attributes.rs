@@ -43,7 +43,7 @@ pub(super) fn range(s: &str, min: i32, max: i32) -> Result<i32, XmlError> {
     }
     Ok(n)
 }
-pub(super) fn coordinate32(s: &str) -> Result<NativeCoordinate, XmlError> {
+pub(in crate::source) fn coordinate32(s: &str) -> Result<NativeCoordinate, XmlError> {
     let s = s.trim();
     if s.bytes().last().is_some_and(|b| b.is_ascii_digit()) {
         int(s)?;

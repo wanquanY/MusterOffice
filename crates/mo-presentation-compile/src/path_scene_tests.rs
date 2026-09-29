@@ -1,6 +1,66 @@
 use super::path_scene::*;
 use mo_geometry::{Affine, Fixed, PathCommand as C, Point};
 use mo_raster::*;
+
+#[test]
+fn page_boundary_contains_ordinary_draws_and_independent_image_or_text_clips() {
+    let path = FillPath {
+        fill_rule: FillRule::Nonzero,
+        commands: vec![
+            C::Move {
+                to: Point {
+                    x: Fixed::ZERO,
+                    y: Fixed::ZERO,
+                },
+            },
+            C::Close,
+        ],
+    };
+    let mut scene = SceneBuilder::new();
+    scene.set_page_clip(&path.commands).unwrap();
+    let nested = scene.clip(&path, Affine::IDENTITY).unwrap();
+    assert_eq!(scene.scene.clips[0].parent, None);
+    assert_eq!(scene.scene.clips[nested as usize].parent, Some(0));
+    scene
+        .add(
+            &path.commands,
+            Affine::IDENTITY,
+            Brush::Solid { rgba: [255; 4] },
+            None,
+            |_| (),
+        )
+        .unwrap();
+    scene
+        .add_clipped(
+            &path.commands,
+            Affine::IDENTITY,
+            Brush::Solid { rgba: [255; 4] },
+            None,
+            Some(nested),
+            |_| (),
+        )
+        .unwrap();
+    assert_eq!(scene.scene.instances[0].clip, Some(0));
+    assert_eq!(scene.scene.instances[1].clip, Some(nested));
+    assert_eq!(
+        scene.scene.paths.len(),
+        1,
+        "clip and paint share exact geometry"
+    );
+    assert!(scene.set_page_clip(&path.commands).is_err());
+    let mut existing = SceneBuilder::new();
+    existing
+        .add(
+            &path.commands,
+            Affine::IDENTITY,
+            Brush::Solid { rgba: [255; 4] },
+            None,
+            |_| (),
+        )
+        .unwrap();
+    assert!(existing.set_page_clip(&path.commands).is_err());
+}
+
 fn brush() -> Brush {
     Brush::Gradient {
         gradient: Gradient {

@@ -14,7 +14,8 @@ use mo_presentation_source::source::{
 };
 use std::collections::{BTreeMap, BTreeSet};
 /// Only produced by a bound native timeline sample inside this crate.
-pub(crate) type SourceRotations = BTreeMap<(String, u32), crate::angle::Angle>;
+pub(crate) type SourceProperties =
+    BTreeMap<(String, u32), crate::sampled_properties::SampledProperties>;
 pub use types::*;
 struct Work<'a> {
     limits: SourcePlacementLimits,
@@ -126,6 +127,8 @@ fn frame(t: &ResolvedNativeTransform) -> Frame {
         } else {
             i64::from(t.rotation.value)
         }),
+        scale: None,
+        motion: None,
         flips: if t.graphic_frame_orientation_ignored {
             [false; 2]
         } else {
@@ -137,19 +140,34 @@ fn place(
     engine: &mut Engine,
     t: ResolvedNativeTransform,
     parent: &State,
+    page_size: Option<mo_presentation_model::Size>,
     owner: &SourceObjectRef,
-    rotation: Option<&crate::angle::Angle>,
+    transform: Option<&crate::sampled_properties::SampledProperties>,
     check: &dyn Fn() -> bool,
 ) -> Result<(NativePlacement, Option<State>), Failure> {
     let mut f = frame(&t);
-    if let Some(rotation) = rotation {
-        if t.graphic_frame_orientation_ignored {
+    if let Some(transform) = transform {
+        if t.graphic_frame_orientation_ignored
+            && (transform.rotation.is_some() || transform.scale.is_some())
+        {
             return Err(SourcePlacementError::Invalid(
-                "graphic-frame animated orientation not implemented",
+                "graphic-frame animated transform not implemented",
             )
             .into());
         }
-        f.rotation = rotation.clone();
+        if let Some(rotation) = &transform.rotation {
+            f.rotation = rotation.resolve(f.rotation).map_err(|error| match error {
+                CompileError::Cancelled => Failure::Abort(SourcePlacementError::Cancelled),
+                CompileError::Limit(reason) => Failure::Abort(SourcePlacementError::Limit(reason)),
+                _ => Failure::Abort(SourcePlacementError::Invalid("rotation composition")),
+            })?;
+        }
+        f.scale = transform.scale.clone();
+        if transform.motion.is_some() {
+            f.motion = transform.motion_emu(page_size.ok_or(SourcePlacementError::Invalid(
+                "motion requires a slide size",
+            ))?);
+        }
     }
     let result = engine
         .place(&f, parent, t.child_size.is_some(), check)
@@ -186,7 +204,7 @@ pub(crate) fn source_placements_sampled(
     index: &SourceIndex,
     request: &SourcePlacementQuery,
     limits: SourcePlacementLimits,
-    rotations: Option<&SourceRotations>,
+    transforms: Option<&SourceProperties>,
     check: &dyn Fn() -> bool,
 ) -> Result<SourcePlacements, SourcePlacementError> {
     let mut ctx = Context {
@@ -282,8 +300,9 @@ pub(crate) fn source_placements_sampled(
                 &mut engine,
                 t,
                 state,
+                index.page_size,
                 &owner,
-                rotations.and_then(|r| r.get(&(owner.part.clone(), owner.native_id))),
+                transforms.and_then(|r| r.get(&(owner.part.clone(), owner.native_id))),
                 check,
             )
         });

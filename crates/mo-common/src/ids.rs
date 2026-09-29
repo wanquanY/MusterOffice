@@ -72,6 +72,7 @@ identity!(
     RequestId,
     OperationId,
     SectionId,
+    TemplateParameterId,
 );
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]

@@ -66,6 +66,9 @@ pub struct SourceResourcePageRasterInfo {
     pub page: SourcePageRasterInfo,
     pub text_frames: u32,
     pub text_work: crate::source_frame::FrameWork,
+    /// Shape-local capacity from the painted frame; None is historical/unmeasured.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub text_capacity: Option<crate::source_frame::capacity::TextCapacity>,
     pub images: mo_raster::ImageWork,
     pub resources_sha256: mo_common::Digest,
     pub decoded_images: Vec<DecodedImageInfo>,

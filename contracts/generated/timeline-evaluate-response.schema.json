@@ -64,8 +64,62 @@
         "sha256"
       ]
     },
+    "ExactMotion": {
+      "description": "Position offsets in fractions of the slide width/height. Ratios encode the\ncomputed position exactly; the frame profile states any path approximation.",
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/ExactValue"
+        },
+        "y": {
+          "$ref": "#/$defs/ExactValue"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "ExactRotation": {
+      "description": "An exact angle with its document dependency still explicit. The layout\norientation is resolved only at placement, after source inheritance.",
+      "type": "object",
+      "properties": {
+        "basis": {
+          "$ref": "#/$defs/RotationBasis"
+        },
+        "denominator": {
+          "type": "string"
+        },
+        "numerator": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "numerator",
+        "denominator"
+      ]
+    },
+    "ExactScale": {
+      "description": "Scale values remain thousandths of a percent until the placement boundary.",
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/ExactValue"
+        },
+        "y": {
+          "$ref": "#/$defs/ExactValue"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
     "ExactValue": {
-      "description": "Output-only exact reduced ratio. Rotation units remain 1/60000 degree.",
+      "description": "Output-only exact reduced ratio. Units are defined by each property channel.",
       "type": "object",
       "properties": {
         "denominator": {
@@ -98,10 +152,30 @@
           "format": "uint32",
           "minimum": 0
         },
+        "motion": {
+          "description": "Exact slide-relative offsets from the original layout center.",
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "$ref": "#/$defs/ExactMotion"
+            }
+          }
+        },
         "nodes": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/NodeFrame"
+          }
+        },
+        "opacity": {
+          "description": "Exact whole-object opacity in [0, 1], before one render-boundary rounding.",
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "$ref": "#/$defs/ExactValue"
+            }
           }
         },
         "profile": {
@@ -112,8 +186,23 @@
           "additionalProperties": false,
           "patternProperties": {
             "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
-              "$ref": "#/$defs/ExactValue"
+              "$ref": "#/$defs/ExactRotation"
             }
+          }
+        },
+        "scales": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "$ref": "#/$defs/ExactScale"
+            }
+          }
+        },
+        "sequences": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SequenceFrame"
           }
         },
         "time": {
@@ -121,6 +210,15 @@
         },
         "timelineSha256": {
           "$ref": "#/$defs/Digest"
+        },
+        "visibility": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "$ref": "#/$defs/Visibility"
+            }
+          }
         }
       },
       "additionalProperties": false,
@@ -251,6 +349,42 @@
         "timescale"
       ]
     },
+    "RotationBasis": {
+      "type": "string",
+      "enum": [
+        "absolute",
+        "layout"
+      ]
+    },
+    "SequenceFrame": {
+      "type": "object",
+      "properties": {
+        "current": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TimingNodeId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "node": {
+          "$ref": "#/$defs/TimingNodeId"
+        },
+        "position": {
+          "description": "Zero-based cursor. The child count denotes the position after the end.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "node",
+        "position"
+      ]
+    },
     "Ticks": {
       "description": "Signed int64 ticks. Range requires semantic validation.",
       "type": "string",
@@ -300,6 +434,13 @@
         "pattern": "[^A-Za-z0-9_.:-]"
       },
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "Visibility": {
+      "type": "string",
+      "enum": [
+        "visible",
+        "hidden"
+      ]
     }
   }
 }

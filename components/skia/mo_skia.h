@@ -29,6 +29,14 @@ uint32_t mo_skia_gradient_planes_abi(void);
 uint32_t mo_skia_office_gradients_abi(void);
 // V11 adds rectangular scalar fields while keeping prior geometry and ramps.
 uint32_t mo_skia_rect_gradients_abi(void);
+// V13 adds isolated opacity intervals (first draw, exclusive end, alpha/65535).
+// Transparent surfaces have explicit shared memory and pixel-work limits.
+uint32_t mo_skia_opacity_groups_abi(void);
+// V14 keeps the V13 header and replaces each snapshot word with
+// (draw prefix, canvas scope): 0 is output, positive scope is group index + 1.
+// Captures occur after closing/opening groups at the prefix. The chosen group
+// must be active there; immutable captured pixels may be used after it closes.
+uint32_t mo_skia_snapshot_scopes_abi(void);
 // V12 adds bounded elliptic fields. Status 3 also covers numerical precision
 // exhaustion. All failures retain zero output ownership; instance stays valid.
 uint32_t mo_skia_elliptic_gradients_abi(void);

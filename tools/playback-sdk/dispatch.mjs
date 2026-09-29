@@ -8,6 +8,10 @@ export function createDispatcher(runtime) {
   };
   return q => {
     switch (q.operation) {
+      case 'prepareDeliveryInputs': {
+        if (owner) throw Error('Dispose existing owner first');
+        return runtime.playback.prepareDeliveryInputs(q.request, q.contents);
+      }
       case 'prepare': {
         if (owner) throw Error('Dispose existing owner first');
         if (q.kind !== 'author' && q.kind !== 'source') throw Error('Unknown prepare kind');

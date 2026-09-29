@@ -158,7 +158,7 @@ pub(crate) fn slide(
     ctx.tree(&mut x, &slide.objects)?;
     x.raw("</p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>")?;
     if let Some(timeline) = ctx.document.timelines.get(&slide.id) {
-        crate::timing::write(&mut x, timeline, ctx.object_ids, ctx.check)?;
+        crate::timing::write(&mut x, timeline, ctx.object_ids, ctx.document, ctx.check)?;
     }
     x.raw("</p:sld>")?;
     Ok(x.finish())

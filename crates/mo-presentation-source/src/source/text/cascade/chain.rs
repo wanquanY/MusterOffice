@@ -37,28 +37,20 @@ impl<'a> Object<'a> {
         }
         Ok(found)
     }
-    fn reference(&self) -> SourceObjectRef {
+    pub fn reference(&self) -> SourceObjectRef {
         SourceObjectRef {
             part: self.part.into(),
             native_id: self.object.native_id,
         }
     }
-    pub fn body(&self) -> Result<Option<Location<'a>>, PptxError> {
-        let Some(id) = self.object.text_body_ordinal else {
+    pub fn body(
+        &self,
+        cell: Option<table::SourceCellAddress>,
+    ) -> Result<Option<Location<'a>>, PptxError> {
+        let Some(body) = bind_body(self.object, &self.surface.text, cell)? else {
             return Ok(None);
         };
-        let n = self.surface.text.nodes.get(&id).ok_or_else(conflict)?;
-        if n.element != N::TxBody
-            || n.parent.is_some()
-            || !self
-                .surface
-                .text
-                .roots
-                .iter()
-                .any(|r| r.source_ordinal == id && r.owner == Some(self.object.native_id))
-        {
-            return Err(conflict());
-        }
+        let id = body.root.source_ordinal;
         Ok(Some(Location {
             catalog: &self.surface.text,
             id,
@@ -72,9 +64,10 @@ impl<'a> Object<'a> {
         &self,
         level: i32,
         template: bool,
+        cell: Option<table::SourceCellAddress>,
         budget: &mut Budget<'_>,
     ) -> Result<Vec<Location<'a>>, Failure> {
-        let Some(body) = self.body()? else {
+        let Some(body) = self.body(cell)? else {
             return Ok(vec![]);
         };
         body.checked(budget)?;
@@ -281,7 +274,33 @@ impl<'a> Context<'a> {
         budget: &mut Budget<'_>,
     ) -> Result<Self, Failure> {
         let target = object(index, reference, budget)?;
-        let inherited = parent(index, &target, budget)?;
+        Self::from_target(index, target, budget)
+    }
+    pub fn prepared_table(
+        table: &crate::source::prepared::PreparedSourceTable<'a>,
+        budget: &mut Budget<'_>,
+    ) -> Result<Self, Failure> {
+        budget.step()?;
+        Self::from_target(
+            table.index(),
+            Object {
+                part: table.part(),
+                surface: table.surface(),
+                object: table.object(),
+            },
+            budget,
+        )
+    }
+    fn from_target(
+        index: &'a SourceIndex,
+        target: Object<'a>,
+        budget: &mut Budget<'_>,
+    ) -> Result<Self, Failure> {
+        let inherited = if target.object.table.is_some() {
+            None
+        } else {
+            parent(index, &target, budget)?
+        };
         let (layout, master_object) = if target.surface.kind == SurfaceKind::Slide {
             let master = inherited
                 .as_ref()
@@ -324,10 +343,26 @@ impl<'a> Context<'a> {
             master,
         })
     }
-    pub fn level(&self, level: i32, budget: &mut Budget<'_>) -> Result<Vec<Location<'a>>, Failure> {
-        let mut result = self.target.styles(level, false, budget)?;
+    pub fn level(
+        &self,
+        level: i32,
+        cell: Option<table::SourceCellAddress>,
+        table: Option<&table_text::CharacterLayer<'a>>,
+        budget: &mut Budget<'_>,
+    ) -> Result<Vec<Layer<'a>>, Failure> {
+        let mut result: Vec<Layer<'a>> = self
+            .target
+            .styles(level, false, cell, budget)?
+            .into_iter()
+            .map(Layer::Native)
+            .collect();
+        if let Some(table) = table {
+            budget.bytes(table.source.lexical_bytes() + 128)?;
+            result.push(Layer::Table(table.clone()));
+        }
+        let mut inherited = vec![];
         if let Some(layout) = &self.layout {
-            result.extend(layout.styles(level, true, budget)?);
+            inherited.extend(layout.styles(level, true, None, budget)?);
         }
         if let Some(base) = &self.target.surface.effective_theme.base {
             let theme = self.index.themes.get(&base.part).ok_or_else(conflict)?;
@@ -357,14 +392,14 @@ impl<'a> Context<'a> {
                             .into());
                         }
                         if let Some(list) = root(&entry.text, N::LstStyle, origin, budget)? {
-                            result.extend(list_level(&list, level, budget)?);
+                            inherited.extend(list_level(&list, level, budget)?);
                         }
                     }
                 }
             }
         }
         if let Some(master) = &self.master_object {
-            result.extend(master.styles(level, true, budget)?);
+            inherited.extend(master.styles(level, true, None, budget)?);
         }
         if let Some((part, master)) = self.master
             && let Some(styles) = root(
@@ -378,20 +413,25 @@ impl<'a> Context<'a> {
             )?
         {
             styles.checked(budget)?;
-            let kind = match self
-                .target
-                .object
-                .placeholder
-                .as_ref()
-                .map(SourcePlaceholder::effective_kind)
-                .and_then(crate::source::inheritance::master_kind)
-            {
-                Some(PlaceholderKind::Title) => N::TitleStyle,
-                Some(PlaceholderKind::Body) => N::BodyStyle,
-                _ => N::OtherStyle,
+            let kind = if cell.is_some() {
+                // A cell never inherits a shape placeholder's template body.
+                N::OtherStyle
+            } else {
+                match self
+                    .target
+                    .object
+                    .placeholder
+                    .as_ref()
+                    .map(SourcePlaceholder::effective_kind)
+                    .and_then(crate::source::inheritance::master_kind)
+                {
+                    Some(PlaceholderKind::Title) => N::TitleStyle,
+                    Some(PlaceholderKind::Body) => N::BodyStyle,
+                    _ => N::OtherStyle,
+                }
             };
             if let Some(list) = styles.child(kind, budget)? {
-                result.extend(list_level(&list, level, budget)?);
+                inherited.extend(list_level(&list, level, budget)?);
             }
         }
         if let Some(list) = root(
@@ -403,8 +443,9 @@ impl<'a> Context<'a> {
             },
             budget,
         )? {
-            result.extend(list_level(&list, level, budget)?);
+            inherited.extend(list_level(&list, level, budget)?);
         }
+        result.extend(inherited.into_iter().map(Layer::Native));
         Ok(result)
     }
 }

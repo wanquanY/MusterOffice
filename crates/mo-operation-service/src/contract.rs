@@ -25,11 +25,13 @@ pub struct OperationRequest {
     pub request_id: RequestId,
     pub profile_id: OperationProfile,
     pub output_mode: OutputMode,
+    #[serde(deserialize_with = "crate::legacy_action::deserialize")]
+    #[schemars(with = "crate::legacy_action::LegacyAction")]
     pub action: DocumentAction,
 }
 impl OperationRequest {
     pub fn validate_profile(&self) -> Result<(), Failure> {
-        let valid = ServiceOperation::for_action(&self.action).profile() == Some(self.profile_id);
+        let valid = ServiceOperation::for_action(&self.action)?.profile() == Some(self.profile_id);
         if valid {
             Ok(())
         } else {
@@ -87,7 +89,7 @@ impl CallContext {
     }
     pub fn authorize(&self, request: &OperationRequest) -> Result<(), Failure> {
         request.validate_profile()?;
-        ServiceOperation::for_action(&request.action).authorize(self)
+        ServiceOperation::for_action(&request.action)?.authorize(self)
     }
 }
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]

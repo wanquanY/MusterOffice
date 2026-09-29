@@ -1,7 +1,7 @@
 use crate::{DeletePolicy, EditError};
 use mo_common::ObjectId;
 use mo_presentation_model::Document;
-use mo_timeline::{StartCondition, Timeline};
+use mo_timeline::{TimeCondition, Timeline};
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 pub(crate) fn delete_references(
@@ -11,7 +11,8 @@ pub(crate) fn delete_references(
 ) -> Result<(), EditError> {
     let mut empty = Vec::new();
     for (slide, timeline) in &mut document.timelines {
-        let clicked = |start: &StartCondition| matches!(start, StartCondition::Click { target: Some(id), .. } if objects.contains(id));
+        let clicked =
+            |condition: &TimeCondition| condition.target().is_some_and(|id| objects.contains(id));
         let mut remove: BTreeSet<_> = timeline
             .nodes
             .iter()
@@ -53,6 +54,16 @@ pub(crate) fn delete_references(
             tree.containers.retain(|c| !remove.contains(&c.id));
             for c in &mut tree.containers {
                 c.children.retain(|id| !remove.contains(id));
+                if c.children.is_empty()
+                    && matches!(
+                        c.presentation,
+                        Some(mo_timeline::PresentationRole::Effect { .. })
+                    )
+                {
+                    // Retain the timing identity for surviving dependencies,
+                    // but an emptied effect no longer has an editorial preset.
+                    c.presentation = None;
+                }
             }
         }
         timeline.nodes.retain(|n| !remove.contains(&n.id));

@@ -94,6 +94,15 @@ pub fn layout_source(
             FillTarget::RootGroup {} => {
                 return Err(E::Invalid("root group has no standalone image paint box"));
             }
+            FillTarget::TableCell { .. }
+            | FillTarget::TableCellBorder { .. }
+            | FillTarget::TableBackground { .. }
+            | FillTarget::TableStyleFill { .. }
+            | FillTarget::TableStyleBorder { .. } => {
+                return Err(E::Invalid(
+                    "table image paint requires a bound native table region",
+                ));
+            }
         }
     }
     let placements = if ids.is_empty() {
@@ -148,7 +157,12 @@ pub fn layout_source(
                     }
                 }
                 FillTarget::Background {} => None,
-                FillTarget::RootGroup {} => unreachable!("root preflight"),
+                FillTarget::RootGroup {}
+                | FillTarget::TableCell { .. }
+                | FillTarget::TableCellBorder { .. }
+                | FillTarget::TableBackground { .. }
+                | FillTarget::TableStyleFill { .. }
+                | FillTarget::TableStyleBorder { .. } => unreachable!("paint box preflight"),
             };
             let size = match &placement {
                 Some(p) => p.source_size,

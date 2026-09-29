@@ -262,7 +262,9 @@ pub enum NativeFontCollectionIndex {
     None,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, JsonSchema,
+)]
 pub enum NativeTextElement {
     #[serde(rename = "txBody")]
     TxBody,
@@ -368,6 +370,9 @@ pub enum NativeTextElement {
     Sym,
     #[serde(rename = "fontRef")]
     FontRef,
+    /// Native table-style font collection; stored in the table style catalog.
+    #[serde(rename = "font")]
+    Font,
     #[serde(rename = "highlight")]
     Highlight,
     #[serde(rename = "uLnTx")]

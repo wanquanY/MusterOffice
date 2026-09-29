@@ -11,7 +11,7 @@ if(!isMainThread) {
   const {createPlaybackRuntime}=await import(workerData.entry);
   const runtime=await createPlaybackRuntime(workerData.code);
   const kernel=await import(workerData.kernel);
-  const {kind,mode,request,sample}=workerData;
+  const {kind,mode,request,sample,completion}=workerData;
   const inputs={source:workerData.source,fonts:workerData.fonts,decoder:runtime.raster,shaping:runtime.shaping};
   function rawOwner() {
     const owner=kind==='author'?new kernel.PlaybackSession():new kernel.PptxPlaybackSession();
@@ -30,12 +30,23 @@ if(!isMainThread) {
     return {pending,reply};
   }
   function finish(owner,pending,reply) {
-    const result=owner.complete_render(pending,reply);
+    let result;
+    if(completion==='validation'){
+      const validation=pending.begin_validation(reply);
+      assert.throws(()=>pending.free());
+      if(mode==='snapshot-mutation')reply.pixels.fill(255);
+      assert.throws(()=>validation.step(0),/work units/);
+      assert.throws(()=>validation.step(4097),/work units/);
+      if(mode!=='early-take')while(!validation.step(1)) {}
+      result=owner.complete_validation(validation);
+      assert.throws(()=>validation.free());
+    } else result=owner.complete_render(pending,reply);
     const invalidates=result.invalidates_backend;
     const response=JSON.parse(result.metadata),pixels=result.take_pixels();
     assert.throws(()=>pending.free()); // wasm-bindgen consumed this exact allocation.
     if(response.status==='error')assert.equal(pixels.length,0);
     if(invalidates)runtime.raster.invalidate();
+    if(mode==='snapshot-mutation')assert.equal(sha(pixels),workerData.pixelSha256);
     return {response,invalidates};
   }
   if(mode==='cancel') {
@@ -53,6 +64,37 @@ if(!isMainThread) {
       assert(next.closed);count++;
     }
     owner.dispose();parentPort.postMessage({passed:true,cancellations:count});
+  } else if(mode==='validation-cancel') {
+    const owner=kind==='author'?runtime.playback.prepareAuthor(request):runtime.playback.prepareSource(request,inputs);
+    let count=0;
+    for(const after of [0,1,3]){
+      let taken=false;
+      const raster={invalidate:()=>runtime.raster.invalidate(),beginRaster:(...args)=>{
+        const result=runtime.raster.beginRaster(...args);assert.equal(result.status,0);
+        const task=result.execution;
+        return {status:0,execution:{step:n=>task.step(n),take:()=>{taken=true;return task.take();},close:()=>task.close()}};
+      }};
+      const execution=owner.beginSample(sample.at,raster,sample.history);
+      while(!taken)assert.equal(execution.step(1),false);
+      for(let i=0;i<after;i++)assert.equal(execution.step(1),false);
+      assert.throws(()=>execution.take(),/incomplete/);
+      execution.close();execution.close();assert(execution.closed&&!owner.closed&&!runtime.raster.invalid);
+      const next=owner.beginSample(sample.at,runtime.raster,sample.history);
+      while(!next.step(7)) {} assert.equal(sha(next.take().pixels),workerData.pixelSha256);count++;
+    }
+    owner.dispose();parentPort.postMessage({passed:true,cancellations:count});
+  } else if(mode==='typed-alpha-tail') {
+    const owner=kind==='author'?runtime.playback.prepareAuthor(request):runtime.playback.prepareSource(request,inputs);
+    const raster={invalidate:()=>runtime.raster.invalidate(),beginRaster:(...args)=>{
+      const result=runtime.raster.beginRaster(...args);assert.equal(result.status,0);const task=result.execution;
+      return {status:0,execution:{step:n=>task.step(n),close:()=>task.close(),take:()=>{
+        const reply=task.take();reply.pixels[reply.pixels.length-4]=255;reply.pixels[reply.pixels.length-1]=0;return reply;
+      }}};
+    }};
+    const execution=owner.beginSample(sample.at,raster,sample.history);
+    assert.throws(()=>{while(!execution.step(1)) {}},e=>e.invalidatesBackend===true);
+    assert(execution.closed&&owner.closed&&runtime.raster.invalid);execution.close();
+    parentPort.postMessage({passed:true,quarantined:true});
   } else {
     const owner=rawOwner();
     if(mode==='prepare-error') {
@@ -72,6 +114,8 @@ if(!isMainThread) {
         assert.equal(result.status,mode==='advance'?'advanced':'disposed');
         const completed=finish(owner,pending,reply);assert(!completed.invalidates);
         assert.equal(completed.response.error.code,mode==='advance'?'BINDING_CONFLICT':'DISPOSED');
+      } else if(mode==='snapshot-mutation') {
+        assert.equal(finish(owner,pending,reply).response.status,'rendered');
       } else {
         let incoming=reply;
         if(mode==='status')incoming={status:NaN,pixels:reply.pixels};
@@ -80,6 +124,7 @@ if(!isMainThread) {
         if(mode==='type')incoming={status:0,pixels:{length:2**32}};
         if(mode==='length')incoming={status:0,pixels:new Uint8Array()};
         if(mode==='alpha'){reply.pixels[0]=255;reply.pixels[3]=0;}
+        if(mode==='alpha-tail'){reply.pixels[reply.pixels.length-4]=255;reply.pixels[reply.pixels.length-1]=0;}
         if(mode==='failure-bytes')incoming={status:1,pixels:reply.pixels};
         if(mode==='recoverable')incoming={status:3,pixels:new Uint8Array()};
         const result=finish(owner,pending,incoming);
@@ -93,7 +138,7 @@ if(!isMainThread) {
     owner.free();parentPort.postMessage({passed:true,quarantined:runtime.raster.invalid});
   }
 } else {
-  const [output,bundle,pin,reference]=process.argv.slice(2);assert(output&&bundle&&pin&&reference);
+  const [output,bundle,pin,reference,completion='legacy']=process.argv.slice(2);assert(['legacy','validation'].includes(completion));assert(output&&bundle&&pin&&reference);
   await fs.mkdir(output,{recursive:false});const inputs={};
   async function read(name){const bytes=await fs.readFile(name);inputs[name]=sha(bytes);return bytes;}
   const manifest=JSON.parse(await read(path.join(bundle,'bundle-manifest.json')));
@@ -110,8 +155,8 @@ if(!isMainThread) {
     const pixels=await read(path.join(directory,'output/0000.rgba'));
     const source=kind==='source'?await read(path.join(directory,'source.bin')):null;
     const fonts=kind==='source'?await read(path.join(directory,'fonts.bin')):null;
-    for(const mode of ['cancel','prepare-error','other-owner','advance','dispose','status','status-getter','pixels-getter','type','length','alpha','failure-bytes','recoverable']) {
-      const worker=new Worker(new URL(import.meta.url),{workerData:{kind,mode,request,sample,source,fonts,code,pixelSha256:sha(pixels),
+    for(const mode of ['cancel','prepare-error','other-owner','advance','dispose','status','status-getter','pixels-getter','type','length','alpha','failure-bytes','recoverable',...(completion==='validation'?['snapshot-mutation','early-take','alpha-tail','validation-cancel','typed-alpha-tail']:[])]) {
+      const worker=new Worker(new URL(import.meta.url),{workerData:{kind,mode,completion,request,sample,source,fonts,code,pixelSha256:sha(pixels),
         entry:pathToFileURL(path.resolve(bundle,'index.mjs')).href,kernel:pathToFileURL(path.resolve(bundle,'runtime/mo_wasm.js')).href}});
       let timer,result,exitCode;
       try {result=await new Promise((resolve,reject)=>{
@@ -123,7 +168,7 @@ if(!isMainThread) {
   }
   for(const [name,digest]of Object.entries(inputs))assert.equal(sha(await fs.readFile(name)),digest);
   const report={status:'passed',observations,inputs,bundleManifestSha256:pin,
-    scope:'26 fresh real WASM Workers; injected output faults test validation/quarantine, not alternate rendering or complete cancellation SLA.'};
+    completion,scope:'Fresh real WASM Workers; injected output faults and validation cancellation. Not complete cancellation SLA.'};
   await fs.writeFile(path.join(output,'report.json'),JSON.stringify(report,null,2)+'\n',{flag:'wx'});
   console.log(JSON.stringify({status:report.status,cases:observations.length}));
 }

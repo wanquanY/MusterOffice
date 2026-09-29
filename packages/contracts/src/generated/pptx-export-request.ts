@@ -157,6 +157,10 @@ export type LineJoin =
  */
 export type ObjectContent =
   | {
+      kind: "table";
+      table: Table;
+    }
+  | {
       children: ObjectId[];
       kind: "retainedSource";
       native_kind: RetainedObjectKind;
@@ -184,9 +188,24 @@ export type ObjectContent =
     };
 /**
  * This interface was referenced by `PptxExportRequest`'s JSON-Schema
- * via the `definition` "RetainedObjectKind".
+ * via the `definition` "ColumnId".
  */
-export type RetainedObjectKind = "shape" | "picture" | "group" | "connector" | "graphicFrame";
+export type ColumnId = string;
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "CellId".
+ */
+export type CellId = string;
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "TableVerticalAlignment".
+ */
+export type TableVerticalAlignment = "top" | "center" | "bottom" | "justified" | "distributed";
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "OverflowPolicy".
+ */
+export type OverflowPolicy = "report" | "clip" | "growShape";
 /**
  * This interface was referenced by `PptxExportRequest`'s JSON-Schema
  * via the `definition` "ParagraphId".
@@ -194,9 +213,44 @@ export type RetainedObjectKind = "shape" | "picture" | "group" | "connector" | "
 export type ParagraphId = string;
 /**
  * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "InlineContent".
+ */
+export type InlineContent =
+  | {
+      kind: "text";
+      text: string;
+    }
+  | {
+      kind: "break";
+    }
+  | {
+      kind: "tab";
+    };
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
  * via the `definition` "RunId".
  */
 export type RunId = string;
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "Alignment".
+ */
+export type Alignment = "start" | "center" | "end" | "justify";
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "TextDirection".
+ */
+export type TextDirection = "leftToRight" | "rightToLeft" | "verticalRightToLeft" | "verticalLeftToRight";
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "RowId".
+ */
+export type RowId = string;
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "RetainedObjectKind".
+ */
+export type RetainedObjectKind = "shape" | "picture" | "group" | "connector" | "graphicFrame";
 /**
  * This interface was referenced by `PptxExportRequest`'s JSON-Schema
  * via the `definition` "RetainedRunKind".
@@ -249,36 +303,6 @@ export type PathCommand =
   | {
       kind: "close";
     };
-/**
- * This interface was referenced by `PptxExportRequest`'s JSON-Schema
- * via the `definition` "OverflowPolicy".
- */
-export type OverflowPolicy = "report" | "clip" | "growShape";
-/**
- * This interface was referenced by `PptxExportRequest`'s JSON-Schema
- * via the `definition` "InlineContent".
- */
-export type InlineContent =
-  | {
-      kind: "text";
-      text: string;
-    }
-  | {
-      kind: "break";
-    }
-  | {
-      kind: "tab";
-    };
-/**
- * This interface was referenced by `PptxExportRequest`'s JSON-Schema
- * via the `definition` "Alignment".
- */
-export type Alignment = "start" | "center" | "end" | "justify";
-/**
- * This interface was referenced by `PptxExportRequest`'s JSON-Schema
- * via the `definition` "TextDirection".
- */
-export type TextDirection = "leftToRight" | "rightToLeft" | "verticalRightToLeft" | "verticalLeftToRight";
 /**
  * This interface was referenced by `PptxExportRequest`'s JSON-Schema
  * via the `definition` "ConnectorEndpoint".
@@ -345,7 +369,10 @@ export type NativeEditConstraint =
  * This interface was referenced by `PptxExportRequest`'s JSON-Schema
  * via the `definition` "SourceBindingProfile".
  */
-export type SourceBindingProfile = "presentationml-retained-fields-v1-draft";
+export type SourceBindingProfile =
+  | "presentationml-retained-fields-v1-draft"
+  | "presentationml-retained-fields-v2-draft"
+  | "presentationml-retained-fields-v3-draft";
 /**
  * This interface was referenced by `PptxExportRequest`'s JSON-Schema
  * via the `definition` "TimelineVersion".
@@ -365,9 +392,98 @@ export type Ticks = string;
 export type Timescale = number;
 /**
  * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "Effect".
+ */
+export type Effect =
+  | {
+      composition?: RotationComposition;
+      from: number;
+      kind: "rotation";
+      target: ObjectId;
+      to: number;
+    }
+  | {
+      from: ScaleValue;
+      kind: "scale";
+      target: ObjectId;
+      to: ScaleValue;
+    }
+  | {
+      kind: "setVisibility";
+      target: ObjectId;
+      value: Visibility;
+    }
+  | {
+      from: MotionPoint;
+      kind: "motionLine";
+      target: ObjectId;
+      to: MotionPoint;
+    }
+  | {
+      kind: "motionPath";
+      path: MotionPath;
+      target: ObjectId;
+    }
+  | {
+      kind: "fade";
+      target: ObjectId;
+      transition: FadeTransition;
+    };
+/**
+ * Rotation is composed before object/group placement. Layout replaces earlier
+ * animation offsets while preserving the document's local orientation. Add
+ * sums the sampled offset with the lower-priority visible rotation stack.
+ *
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "RotationComposition".
+ */
+export type RotationComposition = "absolute" | "layout" | "add";
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "Visibility".
+ */
+export type Visibility = "visible" | "hidden";
+/**
+ * Exact decimal fraction of the slide dimension; canonicalized without rounding.
+ *
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "MotionCoordinate".
+ */
+export type MotionCoordinate = string;
+/**
+ * Source control points remain editable; subdivision belongs only to the
+ * immutable playback plan. Close returns to the initial `from` point.
+ *
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "MotionSegment".
+ */
+export type MotionSegment =
+  | {
+      kind: "line";
+      to: MotionPoint;
+    }
+  | {
+      control1: MotionPoint;
+      control2: MotionPoint;
+      kind: "cubic";
+      to: MotionPoint;
+    }
+  | {
+      kind: "close";
+    };
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "FadeTransition".
+ */
+export type FadeTransition = "in" | "out";
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
  * via the `definition` "TimeCondition".
  */
 export type TimeCondition =
+  | {
+      kind: "never";
+    }
   | {
       kind: "at";
       offset: RationalTime;
@@ -382,17 +498,28 @@ export type TimeCondition =
       delay: RationalTime;
       kind: "click";
       target?: ObjectId | null;
+    }
+  | {
+      delay: RationalTime;
+      direction: NavigationDirection;
+      kind: "navigation";
+      target?: ObjectId | null;
     };
 /**
  * This interface was referenced by `PptxExportRequest`'s JSON-Schema
  * via the `definition` "NodeEvent".
  */
-export type NodeEvent = "begin" | "end";
+export type NodeEvent = ("end" | "onEnd") | "begin" | "onBegin";
 /**
  * This interface was referenced by `PptxExportRequest`'s JSON-Schema
  * via the `definition` "TimingNodeId".
  */
 export type TimingNodeId = string;
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "NavigationDirection".
+ */
+export type NavigationDirection = "next" | "previous";
 /**
  * This interface was referenced by `PptxExportRequest`'s JSON-Schema
  * via the `definition` "FillMode".
@@ -403,6 +530,31 @@ export type FillMode = ("remove" | "freeze") | "hold";
  * via the `definition` "RepeatDuration".
  */
 export type RepeatDuration = "indefinite" | RationalTime;
+/**
+ * Admission of new begin instances within one parent activation. Ancestor
+ * reactivation resets this policy, including `Never`. Omission preserves the
+ * existing draft's once-per-parent behavior, independently of native defaults.
+ *
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "RestartMode".
+ */
+export type RestartMode = "never" | "always" | "whenNotActive";
+/**
+ * A flat disjunction of native begin conditions. The single-condition wire
+ * representation remains unchanged; alternatives cannot recursively nest.
+ *
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "StartCondition".
+ */
+export type StartCondition =
+  | {
+      /**
+       * @minItems 1
+       */
+      conditions: [TimeCondition, ...TimeCondition[]];
+      kind: "anyOf";
+    }
+  | TimeCondition;
 /**
  * This interface was referenced by `PptxExportRequest`'s JSON-Schema
  * via the `definition` "ContainerDuration".
@@ -424,6 +576,39 @@ export type ContainerDuration =
  */
 export type ContainerKind = "parallel" | "sequence";
 /**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "NextAction".
+ */
+export type NextAction = "none" | "seek";
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "PreviousAction".
+ */
+export type PreviousAction = "none" | "skipTimed";
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "PresentationRole".
+ */
+export type PresentationRole =
+  | {
+      kind: "mainSequence";
+    }
+  | {
+      kind: "effect";
+      preset: PresentationPreset;
+      trigger: PresentationTrigger;
+    };
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "PresentationPreset".
+ */
+export type PresentationPreset = "appear" | "disappear" | "spin" | "growShrink" | "customMotion" | "fadeIn" | "fadeOut";
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "PresentationTrigger".
+ */
+export type PresentationTrigger = "click" | "withPrevious" | "afterPrevious";
+/**
  * Canonical uint64 byte length. Range requires semantic validation.
  *
  * This interface was referenced by `PptxExportRequest`'s JSON-Schema
@@ -432,14 +617,16 @@ export type ContainerKind = "parallel" | "sequence";
 export type ByteLength = string;
 /**
  * This interface was referenced by `PptxExportRequest`'s JSON-Schema
- * via the `definition` "Effect".
+ * via the `definition` "Inherited10".
  */
-export type Effect = {
-  from: number;
-  kind: "rotation";
-  target: ObjectId;
-  to: number;
-};
+export type Inherited10 =
+  | {
+      kind: "inherit";
+    }
+  | {
+      kind: "value";
+      value: TableVerticalAlignment;
+    };
 /**
  * This interface was referenced by `PptxExportRequest`'s JSON-Schema
  * via the `definition` "Inherited2".
@@ -544,6 +731,20 @@ export type Inherited9 =
  * via the `definition` "RepeatCount".
  */
 export type RepeatCount = "indefinite" | number;
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "TableCellMerge".
+ */
+export type TableCellMerge =
+  | {
+      columns: number;
+      kind: "span";
+      rows: number;
+    }
+  | {
+      kind: "covered";
+      origin: CellId;
+    };
 
 /**
  * Development bridge. Production hosts can directly supply streamed Resources.
@@ -798,36 +999,123 @@ export interface Appearance {
 }
 /**
  * This interface was referenced by `PptxExportRequest`'s JSON-Schema
- * via the `definition` "RetainedParagraph".
+ * via the `definition` "Table".
  */
-export interface RetainedParagraph {
-  id: ParagraphId;
-  runs: RetainedTextRun[];
+export interface Table {
+  columns: TableColumn[];
+  rows: TableRow[];
 }
 /**
  * This interface was referenced by `PptxExportRequest`'s JSON-Schema
- * via the `definition` "RetainedTextRun".
+ * via the `definition` "TableColumn".
  */
-export interface RetainedTextRun {
-  id: RunId;
-  kind: RetainedRunKind;
-  text: string;
-}
-/**
- * This interface was referenced by `PptxExportRequest`'s JSON-Schema
- * via the `definition` "Point".
- */
-export interface Point {
-  x: Emu;
-  y: Emu;
-}
-/**
- * This interface was referenced by `PptxExportRequest`'s JSON-Schema
- * via the `definition` "Size".
- */
-export interface Size {
-  height: Emu;
+export interface TableColumn {
+  id: ColumnId;
   width: Emu;
+}
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "TableRow".
+ */
+export interface TableRow {
+  /**
+   * One entry per grid column, even when covered by another cell.
+   */
+  cells: TableCell[];
+  height: Emu;
+  id: RowId;
+}
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "TableCell".
+ */
+export interface TableCell {
+  /**
+   * Row/column/cell identities are table-scoped. Text identities remain
+   * document-scoped so existing anchors retain their unambiguous meaning.
+   */
+  id: string;
+  merge?:
+    | {
+        columns: number;
+        kind: "span";
+        rows: number;
+      }
+    | {
+        kind: "covered";
+        origin: CellId;
+      };
+  style?: TableCellStyle;
+  text?: TextBody | null;
+}
+export interface TableCellStyle {
+  borders?: TableCellBorders;
+  fill?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Fill;
+      };
+  verticalAlignment?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: TableVerticalAlignment;
+      };
+}
+export interface TableCellBorders {
+  bottom?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  bottomLeftToTopRight?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  left?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  right?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  top?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  topLeftToBottomRight?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
 }
 /**
  * This interface was referenced by `PptxExportRequest`'s JSON-Schema
@@ -909,6 +1197,39 @@ export interface ParagraphStyle {
 }
 /**
  * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "RetainedParagraph".
+ */
+export interface RetainedParagraph {
+  id: ParagraphId;
+  runs: RetainedTextRun[];
+}
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "RetainedTextRun".
+ */
+export interface RetainedTextRun {
+  id: RunId;
+  kind: RetainedRunKind;
+  text: string;
+}
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "Point".
+ */
+export interface Point {
+  x: Emu;
+  y: Emu;
+}
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "Size".
+ */
+export interface Size {
+  height: Emu;
+  width: Emu;
+}
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
  * via the `definition` "Crop".
  */
 export interface Crop {
@@ -966,6 +1287,13 @@ export interface Slide {
  * via the `definition` "SourceBindings".
  */
 export interface SourceBindings {
+  /**
+   * Immutable origin namespace used to derive source-local IDs. Absence
+   * retains the original document-ID-derived representation. A whole-deck
+   * instance pins this namespace before changing its document identity.
+   * This is provenance for calculation, never host access authority.
+   */
+  identityScope?: DocumentId | null;
   layouts: {
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
@@ -1077,15 +1405,7 @@ export interface Timeline {
  */
 export interface TimingNode {
   duration: RationalTime;
-  /**
-   * The current graph activates each node once (native restart="never").
-   */
-  effect: {
-    from: number;
-    kind: "rotation";
-    target: ObjectId;
-    to: number;
-  };
+  effect: Effect;
   /**
    * Earliest resolved eligible end; absent conditions add no end constraint.
    */
@@ -1100,7 +1420,8 @@ export interface TimingNode {
    * Native count in thousandths, or explicit indefinite repetition.
    */
   repeatMilli: "indefinite" | number;
-  start: TimeCondition;
+  restart?: RestartMode;
+  start: StartCondition;
   timeTransform?: TimeTransform | null;
 }
 /**
@@ -1112,6 +1433,34 @@ export interface TimingNode {
 export interface RationalTime {
   ticks: Ticks;
   timescale: Timescale;
+}
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "ScaleValue".
+ */
+export interface ScaleValue {
+  x: number;
+  y: number;
+}
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "MotionPoint".
+ */
+export interface MotionPoint {
+  x: MotionCoordinate;
+  y: MotionCoordinate;
+}
+/**
+ * Connected native path. Coordinates are absolute offsets from the original
+ * layout center, measured in slide fractions. Pacing uses length in this
+ * normalized coordinate space, before scaling the axes to slide dimensions.
+ *
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "MotionPath".
+ */
+export interface MotionPath {
+  from: MotionPoint;
+  segments: MotionSegment[];
 }
 /**
  * Local behavior clock. Percentages use native thousandths of one percent;
@@ -1145,7 +1494,34 @@ export interface TimingContainer {
   fill: FillMode;
   id: TimingNodeId;
   kind: ContainerKind;
-  start: TimeCondition;
+  navigation?: SequenceNavigation | null;
+  /**
+   * Native presentation identity. It participates in initial playback state
+   * and editable export; it never changes the container's declared clock.
+   */
+  presentation?: PresentationRole | null;
+  restart?: RestartMode;
+  start: StartCondition;
+  /**
+   * Filter the container's simple time before its descendants consume it.
+   * Compilation validates the supported clock domain; this is never copied
+   * into the leaves or interpreted as an independent per-effect easing.
+   */
+  timeTransform?: TimeTransform | null;
+}
+/**
+ * Sequence controls are document computation, independent of host buttons or
+ * keyboard bindings. Conditions are disjunctions, like begin/end conditions.
+ *
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "SequenceNavigation".
+ */
+export interface SequenceNavigation {
+  concurrent: boolean;
+  nextAction: NextAction;
+  nextConditions: TimeCondition[];
+  previousAction: PreviousAction;
+  previousConditions: TimeCondition[];
 }
 /**
  * This interface was referenced by `PptxExportRequest`'s JSON-Schema
@@ -1155,4 +1531,81 @@ export interface InlineResourceBinding {
   byteLength: ByteLength;
   byteOffset: ByteLength;
   resourceId: ResourceId;
+}
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "TableCellBorders".
+ */
+export interface TableCellBorders1 {
+  bottom?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  bottomLeftToTopRight?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  left?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  right?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  top?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  topLeftToBottomRight?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+}
+/**
+ * This interface was referenced by `PptxExportRequest`'s JSON-Schema
+ * via the `definition` "TableCellStyle".
+ */
+export interface TableCellStyle1 {
+  borders?: TableCellBorders;
+  fill?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Fill;
+      };
+  verticalAlignment?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: TableVerticalAlignment;
+      };
 }

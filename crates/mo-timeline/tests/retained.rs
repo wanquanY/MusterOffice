@@ -248,7 +248,7 @@ fn semantic_sample_failure_never_publishes_a_new_prefix_or_corrupts_a_hit() {
     timeline.format = TimelineVersion::V01;
     timeline.tree = None;
     timeline.nodes.truncate(1);
-    timeline.nodes[0].start = TimeCondition::At { offset: t(1, 1) };
+    timeline.nodes[0].start = TimeCondition::At { offset: t(1, 1) }.into();
     timeline.nodes[0].time_transform = Some(TimeTransform {
         speed_milli_percent: -100000,
         ..Default::default()

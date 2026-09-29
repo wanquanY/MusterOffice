@@ -32,6 +32,7 @@ pub(super) fn request() -> SceneRasterRequest {
             background: [0; 4],
         },
         scene: DrawScene {
+            opacity_groups: vec![],
             clips: vec![],
             paths: vec![FillPath {
                 fill_rule: FillRule::Nonzero,

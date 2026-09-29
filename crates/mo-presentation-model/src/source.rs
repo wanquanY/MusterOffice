@@ -11,11 +11,25 @@ use std::collections::BTreeMap;
 pub enum SourceBindingProfile {
     #[serde(rename = "presentationml-retained-fields-v1-draft")]
     PresentationmlRetainedFieldsV1,
+    /// Includes the package core title. V1 remains readable with its original
+    /// unprojected metadata semantics, so old snapshots cannot erase a title.
+    #[serde(rename = "presentationml-retained-fields-v2-draft")]
+    PresentationmlRetainedFieldsV2,
+    /// Includes physical table-cell text. V1/V2 keep tables opaque in their
+    /// editable document projection, while preserving their native bytes.
+    #[serde(rename = "presentationml-retained-fields-v3-draft")]
+    PresentationmlRetainedFieldsV3,
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct SourceBindings {
     pub profile: SourceBindingProfile,
+    /// Immutable origin namespace used to derive source-local IDs. Absence
+    /// retains the original document-ID-derived representation. A whole-deck
+    /// instance pins this namespace before changing its document identity.
+    /// This is provenance for calculation, never host access authority.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub identity_scope: Option<DocumentId>,
     pub resource: ResourceId,
     pub slides: BTreeMap<SlideId, String>,
     pub masters: BTreeMap<MasterId, String>,

@@ -1,3 +1,6 @@
+#[path = "support/rotation.rs"]
+mod rotation;
+use rotation::unrotated_values;
 mod support;
 use mo_common::*;
 use mo_opc::{Package, PackageLimits, PartName};
@@ -18,24 +21,25 @@ fn fixture() -> (mo_presentation_model::Document, ExportDefaults, SlideId) {
     let target = doc.slides[&slide].objects[0].clone();
     let nodes = (0..4)
         .map(|i| TimingNode {
+            restart: mo_timeline::RestartMode::Never,
             id: TimingNodeId::new(format!("a{i}")).unwrap(),
             start: match i {
-                0 => StartCondition::At {
+                0 => StartCondition::Single(TimeCondition::At {
                     offset: t(125, 1000),
-                },
-                1 => StartCondition::After {
+                }),
+                1 => StartCondition::Single(TimeCondition::After {
                     node: TimingNodeId::new("a0").unwrap(),
                     event: NodeEvent::End,
                     delay: t(1, 4),
-                },
-                2 => StartCondition::Click {
+                }),
+                2 => StartCondition::Single(TimeCondition::Click {
                     target: Some(target.clone()),
                     delay: t(0, 1),
-                },
-                _ => StartCondition::Click {
+                }),
+                _ => StartCondition::Single(TimeCondition::Click {
                     target: None,
                     delay: t(1, 2),
-                },
+                }),
             },
             duration: t(2, 1),
             end_conditions: vec![],
@@ -48,6 +52,7 @@ fn fixture() -> (mo_presentation_model::Document, ExportDefaults, SlideId) {
                 FillMode::Freeze
             },
             effect: Effect::Rotation {
+                composition: Default::default(),
                 target: target.clone(),
                 from: -43200000,
                 to: 64800000,
@@ -143,13 +148,22 @@ fn native_roundtrip_preserves_multiturn_behavior_and_explicit_bindings() {
         assert_eq!(actual.repeat_milli, expected.repeat_milli);
         assert_eq!(actual.fill, expected.fill);
         let (
-            Effect::Rotation { target, from, to },
             Effect::Rotation {
+                composition: RotationComposition::Layout,
+                target,
+                from,
+                to,
+            },
+            Effect::Rotation {
+                composition: RotationComposition::Absolute,
                 target: original,
                 from: f,
                 to: t,
             },
-        ) = (&actual.effect, &expected.effect);
+        ) = (&actual.effect, &expected.effect)
+        else {
+            panic!("expected rotations")
+        };
         assert_eq!((from, to), (f, t));
         let shape = index.surfaces[&request.slide]
             .objects
@@ -159,7 +173,7 @@ fn native_roundtrip_preserves_multiturn_behavior_and_explicit_bindings() {
         assert_eq!(shape.name, original.as_str());
     }
     assert!(
-        matches!(&native.timeline.nodes[1].start,StartCondition::After{node,event:NodeEvent::End,..} if *node==native.timeline.nodes[0].id)
+        matches!(&native.timeline.nodes[1].start,StartCondition::Single(TimeCondition::After{node,event:NodeEvent::End,..}) if *node==native.timeline.nodes[0].id)
     );
     let binding = PlaybackBinding {
         session: PlaybackSessionId::new("test").unwrap(),
@@ -181,8 +195,8 @@ fn native_roundtrip_preserves_multiturn_behavior_and_explicit_bindings() {
         .evaluate(&binding, t(6, 1), Some(&history), &|| false)
         .unwrap();
     assert_eq!(
-        original.state.rotations.values().collect::<Vec<_>>(),
-        decoded.state.rotations.values().collect::<Vec<_>>()
+        unrotated_values(&original.state, RotationBasis::Absolute),
+        unrotated_values(&decoded.state, RotationBasis::Layout)
     );
     let mut stale = request;
     stale.expected_source_sha256 = Digest::from_sha256([0; 32]);
@@ -267,7 +281,6 @@ fn unmapped_semantics_and_invalid_references_are_never_flattened() {
         source.replacen("fill=\"freeze\"", "fill=\"transition\"", 1),
         source.replacen("additive=\"repl\"", "additive=\"sum\"", 1),
         source.replacen("restart=\"never\"", "restart=\"always\"", 1),
-        source.replacen("<p:animRot", "<p:animRot by=\"100\"", 1),
         source.replacen("<p:childTnLst>", "<p:childTnLst><p:seq/>", 1),
         source.replacen(
             "<p:attrName>r</p:attrName>",
@@ -276,7 +289,7 @@ fn unmapped_semantics_and_invalid_references_are_never_flattened() {
         ),
         source.replacen(
             "<p:cond delay=\"125\"/>",
-            "<p:cond delay=\"125\"/><p:cond delay=\"250\"/>",
+            "<p:cond delay=\"125\"/><p:cond evt=\"onNext\" delay=\"250\"/>",
             1,
         ),
         source.replacen("<p:tn val=\"2\"/>", "<p:tn val=\"999\"/>", 1),
@@ -336,7 +349,7 @@ fn tree_fixture() -> (mo_presentation_model::Document, ExportDefaults, SlideId) 
     let timing = doc.timelines.get_mut(&slide).unwrap();
     timing.format = TimelineVersion::V02;
     for node in &mut timing.nodes {
-        node.start = StartCondition::At { offset: t(1, 4) };
+        node.start = StartCondition::Single(TimeCondition::At { offset: t(1, 4) });
         node.duration = t(1, 1);
         node.repeat_milli = 1000.into();
     }
@@ -346,18 +359,26 @@ fn tree_fixture() -> (mo_presentation_model::Document, ExportDefaults, SlideId) 
         roots: vec![root.clone()],
         containers: vec![
             TimingContainer {
+                time_transform: None,
+                presentation: None,
+                navigation: None,
+                restart: mo_timeline::RestartMode::Never,
                 id: root,
                 kind: ContainerKind::Parallel,
-                start: StartCondition::At { offset: t(1, 2) },
+                start: StartCondition::Single(TimeCondition::At { offset: t(1, 2) }),
                 end_conditions: vec![],
                 duration: ContainerDuration::Fixed { duration: t(4, 1) },
                 fill: FillMode::Hold,
                 children: vec![inner.clone(), timing.nodes[3].id.clone()],
             },
             TimingContainer {
+                time_transform: None,
+                presentation: None,
+                navigation: None,
+                restart: mo_timeline::RestartMode::Never,
                 id: inner,
                 kind: ContainerKind::Sequence,
-                start: StartCondition::At { offset: t(0, 1) },
+                start: StartCondition::Single(TimeCondition::At { offset: t(0, 1) }),
                 end_conditions: vec![],
                 duration: ContainerDuration::Automatic,
                 fill: FillMode::Freeze,
@@ -420,8 +441,8 @@ fn native_tree_preserves_scoped_intervals_and_fill_at_boundaries() {
             .evaluate(&binding, t(n, 4), None, &|| false)
             .unwrap();
         assert_eq!(
-            a.state.rotations.values().collect::<Vec<_>>(),
-            b.state.rotations.values().collect::<Vec<_>>()
+            unrotated_values(&a.state, RotationBasis::Absolute),
+            unrotated_values(&b.state, RotationBasis::Layout)
         );
         let strip = |f: &NodeFrame| {
             (
@@ -452,10 +473,65 @@ fn native_tree_preserves_scoped_intervals_and_fill_at_boundaries() {
     )
     .unwrap();
     let known = native.object_bindings.values().copied().collect();
+    for attribute in [
+        "concurrent=\"1\"",
+        "prevAc=\"skipTimed\"",
+        "nextAc=\"seek\"",
+    ] {
+        let changed = xml.replacen("<p:seq>", &format!("<p:seq {attribute}>"), 1);
+        let parsed = read_slide_timing(
+            changed.as_bytes(),
+            &known,
+            XmlLimits::default(),
+            TimelineLimits::default(),
+            &|| false,
+        )
+        .unwrap()
+        .unwrap();
+        let controls = parsed
+            .timeline
+            .tree
+            .as_ref()
+            .unwrap()
+            .containers
+            .iter()
+            .find_map(|c| c.navigation.as_ref())
+            .unwrap();
+        assert_eq!(controls.concurrent, attribute.starts_with("concurrent"));
+        assert_eq!(
+            controls.next_action,
+            if attribute.starts_with("nextAc") {
+                NextAction::Seek
+            } else {
+                NextAction::None
+            }
+        );
+        assert_eq!(
+            controls.previous_action,
+            if attribute.starts_with("prevAc") {
+                PreviousAction::SkipTimed
+            } else {
+                PreviousAction::None
+            }
+        );
+        // Policy declarations change the graph digest and the amount of future
+        // lifecycle projection. With no conditions they cannot change pixels.
+        let plan =
+            TimelinePlan::compile(&parsed.timeline, TimelineLimits::default(), &|| false).unwrap();
+        for n in 0..20 {
+            let a = plan
+                .evaluate(&binding, t(n, 4), None, &|| false)
+                .unwrap()
+                .state;
+            let b = decoded
+                .evaluate(&binding, t(n, 4), None, &|| false)
+                .unwrap()
+                .state;
+            assert_eq!(a.rotations, b.rotations);
+            assert_eq!(a.scales, b.scales);
+        }
+    }
     for changed in [
-        xml.replacen("<p:seq>", "<p:seq concurrent=\"1\">", 1),
-        xml.replacen("<p:seq>", "<p:seq nextAc=\"seek\">", 1),
-        xml.replacen("<p:seq>", "<p:seq prevAc=\"skipTimed\">", 1),
         xml.replacen("<p:endSync evt=\"end\"", "<p:endSync evt=\"begin\"", 1),
         xml.replacen("<p:rtn val=\"all\"/>", "<p:rtn val=\"first\"/>", 1),
     ] {
@@ -609,8 +685,8 @@ fn transformed_behavior_roundtrip_preserves_native_clock_and_sampled_values() {
         let x = a.evaluate(&binding, at, None, &|| false).unwrap();
         let y = b.evaluate(&binding, at, None, &|| false).unwrap();
         assert_eq!(
-            x.state.rotations.values().collect::<Vec<_>>(),
-            y.state.rotations.values().collect::<Vec<_>>()
+            unrotated_values(&x.state, RotationBasis::Absolute),
+            unrotated_values(&y.state, RotationBasis::Layout)
         );
         for (x, y) in x.state.nodes.iter().zip(&y.state.nodes) {
             assert_eq!(
@@ -772,8 +848,8 @@ fn repeat_bounds_roundtrip_preserves_native_duration_count_and_sampled_values() 
         let x = a.evaluate(&binding, at, None, &|| false).unwrap();
         let y = b.evaluate(&binding, at, None, &|| false).unwrap();
         assert_eq!(
-            x.state.rotations.values().collect::<Vec<_>>(),
-            y.state.rotations.values().collect::<Vec<_>>()
+            unrotated_values(&x.state, RotationBasis::Absolute),
+            unrotated_values(&y.state, RotationBasis::Layout)
         );
         for (x, y) in x.state.nodes.iter().zip(&y.state.nodes) {
             assert_eq!(
@@ -965,8 +1041,8 @@ fn end_conditions_roundtrip_preserves_native_references_and_sampled_values() {
         let x = a.evaluate(&binding, at, None, &|| false).unwrap();
         let y = b.evaluate(&binding, at, None, &|| false).unwrap();
         assert_eq!(
-            x.state.rotations.values().collect::<Vec<_>>(),
-            y.state.rotations.values().collect::<Vec<_>>()
+            unrotated_values(&x.state, RotationBasis::Absolute),
+            unrotated_values(&y.state, RotationBasis::Layout)
         );
         for (x, y) in x.state.nodes.iter().zip(&y.state.nodes) {
             assert_eq!(
@@ -980,7 +1056,14 @@ fn end_conditions_roundtrip_preserves_native_references_and_sampled_values() {
 #[test]
 fn native_end_condition_lists_keep_order_and_reject_unmapped_or_invalid_contents() {
     let (source, known) = xml();
-    let input = |list: &str| source.replacen("</p:stCondLst>", &format!("</p:stCondLst>{list}"), 1);
+    let input = |list: &str| {
+        let behavior = source.find("<p:animRot").unwrap();
+        let end =
+            behavior + source[behavior..].find("</p:stCondLst>").unwrap() + "</p:stCondLst>".len();
+        let mut changed = source.clone();
+        changed.insert_str(end, list);
+        changed
+    };
     let text = input(
         "<p:endCondLst><p:cond delay=\"5000\"/><p:cond evt=\"onClick\" delay=\"250\"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond><p:cond evt=\"onBegin\" delay=\"500\"><p:tn val=\"2\"/></p:cond></p:endCondLst>",
     );
@@ -999,7 +1082,7 @@ fn native_end_condition_lists_keep_order_and_reject_unmapped_or_invalid_contents
     assert!(matches!(ends[0],TimeCondition::At {offset} if offset==t(5000,1000)));
     assert!(matches!(ends[1],TimeCondition::Click {target:None,delay} if delay==t(250,1000)));
     assert!(
-        matches!(&ends[2],TimeCondition::After {node,event:NodeEvent::Begin,..} if node==&n.timeline.nodes[0].id)
+        matches!(&ends[2],TimeCondition::After {node,event:NodeEvent::OnBegin,..} if node==&n.timeline.nodes[0].id)
     );
     assert!(
         read(
@@ -1017,7 +1100,7 @@ fn native_end_condition_lists_keep_order_and_reject_unmapped_or_invalid_contents
         "<p:endCondLst><p:cond evt=\"onStopAudio\" delay=\"0\"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:endCondLst>",
         "<p:endCondLst><p:cond evt=\"onEnd\" delay=\"0\"><p:tn val=\"2\"/></p:cond></p:endCondLst>",
         "<p:endCondLst><p:cond evt=\"onBegin\" delay=\"0\"><p:tn val=\"99999\"/></p:cond></p:endCondLst>",
-        "<p:endCondLst><p:cond delay=\"indefinite\"/></p:endCondLst>",
+        "<p:endCondLst><p:cond evt=\"onBegin\" delay=\"indefinite\"/></p:endCondLst>",
         "<p:endCondLst><p:cond delay=\"0\"/></p:endCondLst><p:endCondLst><p:cond delay=\"0\"/></p:endCondLst>",
     ] {
         assert!(
@@ -1072,7 +1155,7 @@ fn native_container_ends_keep_child_references_and_real_clipped_intervals() {
             .unwrap(),
     )
     .unwrap();
-    assert!(source.contains("<p:endCondLst><p:cond evt=\"onBegin\" delay=\"500\"><p:tn val=\"2\"/></p:cond></p:endCondLst>"));
+    assert!(source.contains("<p:endCondLst><p:cond evt=\"begin\" delay=\"500\"><p:tn val=\"2\"/></p:cond></p:endCondLst>"));
     let known = index.surfaces[part]
         .objects
         .iter()
@@ -1132,7 +1215,7 @@ fn native_container_ends_keep_child_references_and_real_clipped_intervals() {
     for bad in [
         "<p:endCondLst/>",
         "<p:endCondLst><p:cond evt=\"onStopAudio\" delay=\"0\"/></p:endCondLst>",
-        "<p:endCondLst><p:cond delay=\"indefinite\"/></p:endCondLst>",
+        "<p:endCondLst><p:cond evt=\"onBegin\" delay=\"indefinite\"/></p:endCondLst>",
     ] {
         let start = source.find("<p:endCondLst>").unwrap();
         let end =

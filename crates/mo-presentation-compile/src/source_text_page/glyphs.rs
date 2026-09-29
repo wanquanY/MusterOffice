@@ -144,13 +144,13 @@ pub(super) fn bind(
             let value =
                 colors(&paints[glyph.paragraph as usize][range.run as usize]).map_err(|e| {
                     e.at_run(paint::TextPaintLocation::at(
-                        glyph.paragraph,
+                        frame.text.paragraph_start + glyph.paragraph,
                         &frame.text.paragraphs[glyph.paragraph as usize].runs[range.run as usize],
                     ))
                 })?;
             if selected.is_some_and(|previous| previous != value) {
                 return Err(SourcePageError::GlyphPaintConflict {
-                    paragraph: glyph.paragraph,
+                    paragraph: frame.text.paragraph_start + glyph.paragraph,
                     start,
                     end,
                 });

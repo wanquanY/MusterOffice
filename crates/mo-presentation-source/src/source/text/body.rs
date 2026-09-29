@@ -1,7 +1,9 @@
 //! Per-property text body inheritance. Does not perform text layout or fitting.
+mod cell;
 mod types;
 use super::*;
 use crate::{PptxError, cancelled, source::*, value};
+pub use cell::CellTextBodyResolver;
 use theme::SourceThemeDefaultKind;
 pub use types::*;
 
@@ -97,7 +99,9 @@ impl Partial {
             .into());
         }
         let part = match &origin {
-            TextBodyOrigin::Object { object, .. } => object.part.len(),
+            TextBodyOrigin::Object { object, .. }
+            | TextBodyOrigin::Cell { object, .. }
+            | TextBodyOrigin::CellDefault { object, .. } => object.part.len(),
             TextBodyOrigin::Theme { part, .. } => part.len(),
             _ => 0,
         };

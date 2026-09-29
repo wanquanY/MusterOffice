@@ -22,7 +22,7 @@ impl CompiledScene {
     /// Complete the exact prepared scene without rerunning geometry lowering.
     pub fn complete(
         self,
-        reply: mo_raster::BackendReply,
+        reply: impl Into<mo_raster::RasterCompletionReply>,
         check: &dyn Fn() -> bool,
     ) -> Result<SceneImage, RasterError> {
         let image = self.raster.complete(reply, check)?;

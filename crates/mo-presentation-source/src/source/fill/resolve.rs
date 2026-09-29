@@ -1,11 +1,16 @@
 //! Pure, provenance-preserving native fill inheritance over an immutable index.
 mod budget;
 mod merge;
+mod table;
+mod table_border;
 mod types;
 use super::*;
 use crate::{PptxError, cancelled, source::*, value};
 use budget::Budget;
 use std::collections::{BTreeMap, BTreeSet};
+pub(in crate::source) use table::{
+    BindIssue as TablePaintBindIssue, Binding as TablePaintBinding, Bindings as TablePaintBindings,
+};
 pub use types::*;
 
 enum Failure {
@@ -33,7 +38,8 @@ struct Resolver<'a> {
     index: &'a SourceIndex,
     background_part: &'a str,
     view: &'a SourceSurface,
-    objects: BTreeMap<(&'a str, u32), &'a SourceObject>,
+    objects: crate::source::prepared::ObjectBindings<'a>,
+    tables: table::Bindings<'a>,
 }
 fn conflict(message: &str) -> PptxError {
     PptxError::SourceConflict(message.into())
@@ -42,7 +48,12 @@ fn native_id(target: &FillTarget) -> Option<u32> {
     match target {
         FillTarget::Object { native_id }
         | FillTarget::Line { native_id }
-        | FillTarget::Picture { native_id } => Some(*native_id),
+        | FillTarget::Picture { native_id }
+        | FillTarget::TableCell { native_id, .. }
+        | FillTarget::TableCellBorder { native_id, .. }
+        | FillTarget::TableBackground { native_id }
+        | FillTarget::TableStyleFill { native_id, .. }
+        | FillTarget::TableStyleBorder { native_id, .. } => Some(*native_id),
         _ => None,
     }
 }
@@ -72,7 +83,7 @@ impl Resolver<'_> {
     }
     fn object(&self, owner: &FillOwner) -> Result<&SourceObject, PptxError> {
         native_id(&owner.target)
-            .and_then(|id| self.objects.get(&(owner.part.as_str(), id)).copied())
+            .and_then(|id| self.objects.get(&(owner.part.as_str(), id)))
             .ok_or_else(|| conflict("fill object binding is missing"))
     }
     fn declaration(
@@ -198,7 +209,7 @@ impl Resolver<'_> {
         budget: &mut Budget<'_>,
     ) -> Result<(), Failure> {
         budget.step()?;
-        let origin = self.declaration(owner, reference.ordinal, budget)?;
+        let origin = self.reference_origin(owner, reference.ordinal, budget)?;
         if let Some(ordinal) = reference.retained.first() {
             return Err(FillUnresolved::RetainedContent {
                 origin: budget.at(&origin, *ordinal)?,
@@ -334,6 +345,9 @@ impl Resolver<'_> {
         start: FillOwner,
         budget: &mut Budget<'_>,
     ) -> Result<(EffectiveFill, Vec<FillRedirect>), Failure> {
+        if table::is_target(&start.target) {
+            return self.table_fill(&start, budget).map(|fill| (fill, vec![]));
+        }
         // A picture placeholder can match a p:sp on its layout/master. That
         // ancestor has no picture payload, but its placeholder chain is valid.
         // Only the requested object itself must be a picture for this target.
@@ -535,6 +549,66 @@ pub fn query_on_page(
     limits: FillResolveLimits,
     check: &dyn Fn() -> bool,
 ) -> Result<SourceFillStyles, PptxError> {
+    query_on_page_prepared(
+        index,
+        request,
+        drawing_surface,
+        background_surface,
+        limits,
+        check,
+    )
+    .map(|(styles, _)| styles)
+}
+
+pub(in crate::source) fn query_on_page_prepared<'a>(
+    index: &'a SourceIndex,
+    request: &SourceFillQuery,
+    drawing_surface: &str,
+    background_surface: &str,
+    limits: FillResolveLimits,
+    check: &dyn Fn() -> bool,
+) -> Result<(SourceFillStyles, TablePaintBindings<'a>), PptxError> {
+    query_on_page_with_preparation(
+        index,
+        request,
+        drawing_surface,
+        background_surface,
+        limits,
+        None,
+        check,
+    )
+}
+
+/// Reuses an immutable source's object index, native table grids and styles.
+pub fn query_in_preparation(
+    preparation: &mut crate::source::prepared::SourcePreparation<'_>,
+    request: &SourceFillQuery,
+    drawing_surface: &str,
+    background_surface: &str,
+    limits: FillResolveLimits,
+    check: &dyn Fn() -> bool,
+) -> Result<SourceFillStyles, PptxError> {
+    query_on_page_with_preparation(
+        preparation.index(),
+        request,
+        drawing_surface,
+        background_surface,
+        limits,
+        Some(preparation),
+        check,
+    )
+    .map(|(styles, _)| styles)
+}
+
+pub(in crate::source) fn query_on_page_with_preparation<'a>(
+    index: &'a SourceIndex,
+    request: &SourceFillQuery,
+    drawing_surface: &str,
+    background_surface: &str,
+    limits: FillResolveLimits,
+    preparation: Option<&mut crate::source::prepared::SourcePreparation<'a>>,
+    check: &dyn Fn() -> bool,
+) -> Result<(SourceFillStyles, TablePaintBindings<'a>), PptxError> {
     cancelled(check)?;
     if index.source_sha256 != request.expected_source_sha256 {
         return Err(conflict("fill query source digest differs"));
@@ -555,23 +629,35 @@ pub fn query_on_page(
         .get(drawing_surface)
         .ok_or_else(|| value("fillQuery.surface", "surface is not in inspected source"))?;
     let mut budget = Budget::new(limits, check);
-    let mut objects = BTreeMap::new();
-    for (part, surface) in &index.surfaces {
-        for object in &surface.objects {
-            budget.step()?;
-            if objects
-                .insert((part.as_str(), object.native_id), object)
-                .is_some()
-            {
-                return Err(conflict("duplicate fill object binding"));
-            }
+    let objects = if let Some(prepared) = preparation.as_ref() {
+        if !std::ptr::eq(prepared.index(), index) {
+            return Err(conflict("fill preparation source differs"));
         }
-    }
+        let objects = prepared.bindings()?;
+        budget.steps(objects.len())?;
+        objects
+    } else {
+        crate::source::prepared::ObjectBindings::new(index, &mut || budget.step())?
+    };
+    let tables = table::prepare(
+        index,
+        &request.surface,
+        &request.targets,
+        &objects,
+        preparation,
+        &mut budget,
+    )?;
     let resolver = Resolver {
         index,
-        background_part: background_surface,
+        background_part: index
+            .surfaces
+            .get_key_value(background_surface)
+            .expect("validated background surface")
+            .0
+            .as_str(),
         view,
         objects,
+        tables,
     };
     let mut targets = Vec::with_capacity(request.targets.len());
     for target in &request.targets {
@@ -604,10 +690,13 @@ pub fn query_on_page(
             outcome,
         });
     }
-    Ok(SourceFillStyles {
-        source_sha256: index.source_sha256.clone(),
-        surface: request.surface.clone(),
-        profile: request.profile,
-        targets,
-    })
+    Ok((
+        SourceFillStyles {
+            source_sha256: index.source_sha256.clone(),
+            surface: request.surface.clone(),
+            profile: request.profile,
+            targets,
+        },
+        resolver.tables,
+    ))
 }

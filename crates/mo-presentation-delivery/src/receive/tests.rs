@@ -99,6 +99,23 @@ fn owned_native_delivery_is_received_with_original_claims() {
     let report = received.report();
     assert_eq!(report.assets_verified, 12);
     assert_eq!(report.pages, 2);
+    assert_eq!(received.preview_measurements().len(), report.pages);
+    for (measurement, page) in received
+        .preview_measurements()
+        .iter()
+        .zip(&f.bundle.previews)
+    {
+        assert_eq!(measurement.page_id, page.page_id);
+        assert!(measurement.text_capacity.is_none());
+        assert!(
+            f.bundle
+                .assets
+                .iter()
+                .any(|asset| asset.id == measurement.evidence_asset_id
+                    && asset.role == AssetRole::QualityReport
+                    && asset.media_type == "application/json")
+        );
+    }
     assert_eq!(report.total_bytes.get(), 69623);
     assert_eq!(
         report.bundle_digest.to_string(),
@@ -109,6 +126,83 @@ fn owned_native_delivery_is_received_with_original_claims() {
         serde_json::to_value(&f.bundle.claims).unwrap()
     );
     assert_eq!(received.snapshot().document.title, "SDK real integration");
+}
+
+#[test]
+fn playback_inputs_reuse_verified_fonts_geometry_and_actual_page_order() {
+    let f = Fixture::new();
+    let received = f.run().unwrap();
+    let opened = f.source.opens.get();
+    let claims = serde_json::to_value(&received.report().declared_claims).unwrap();
+    let inputs = received.playback_inputs(641, &|| false).unwrap();
+    assert_eq!(f.source.opens.get(), opened, "must not reopen any asset");
+    assert_eq!(inputs.revision, f.expected.revision);
+    assert_eq!(inputs.document_id, f.expected.document_id);
+    assert_eq!(inputs.source.id, f.bundle.pptx_asset_id);
+    assert_eq!(inputs.source.role, AssetRole::Pptx);
+    assert_eq!(inputs.pages.len(), 2);
+    assert_eq!(inputs.pages[0].page_id, f.bundle.previews[0].page_id);
+    assert_eq!(inputs.pages[1].page_id, f.bundle.previews[1].page_id);
+    for (i, page) in inputs.pages.iter().enumerate() {
+        assert_eq!(
+            page.request.page.slide,
+            format!("/ppt/slides/slide{}.xml", i + 1)
+        );
+        assert_eq!(
+            page.request.page.expected_source_sha256,
+            inputs.source.sha256
+        );
+        assert_eq!(page.request.page.viewport.width, 641);
+        assert_eq!(page.request.page.viewport.height, 361);
+    }
+    let ctx: Value = serde_json::from_slice(&f.source.bytes[&f.id(CONTEXT_MIME)]).unwrap();
+    assert_eq!(
+        serde_json::to_value(&inputs.fonts).unwrap(),
+        ctx["settings"]["fonts"]
+    );
+    let font = inputs.font_bundle.unwrap();
+    assert_eq!(
+        font.id.to_string(),
+        ctx["fontBundleAssetId"].as_str().unwrap()
+    );
+    assert_eq!(
+        font.sha256,
+        artifact::digest(&f.source.bytes[&font.id], font.byte_length.get(), &|| false).unwrap()
+    );
+    assert_eq!(
+        serde_json::to_value(&received.report().declared_claims).unwrap(),
+        claims
+    );
+    assert!(received.playback_inputs(0, &|| false).is_err());
+    assert!(received.playback_inputs(8193, &|| false).is_err());
+    assert!(matches!(
+        received.playback_inputs(640, &|| true),
+        Err(DeliveryError::Cancelled)
+    ));
+    assert_eq!(f.source.opens.get(), opened);
+}
+
+#[test]
+fn optional_capacity_evidence_preserves_history_but_rejects_false_coverage() {
+    let mut f = Fixture::new();
+    let evidence = f
+        .bundle
+        .assets
+        .iter()
+        .find(|a| a.role == AssetRole::QualityReport && a.media_type == "application/json")
+        .unwrap()
+        .id
+        .clone();
+    let original: Value = serde_json::from_slice(&f.source.bytes[&evidence]).unwrap();
+    assert!(original["render"].get("textCapacity").is_none());
+    assert!(original["render"]["textFrames"].as_u64().unwrap() > 0);
+    f.run().unwrap(); // Historical missing measurements retain original claims.
+    f.json(&evidence, |v| {
+        v["render"]["textCapacity"] = json!({
+            "profile":"drawingml-text-capacity-q32-v1-draft", "frames":[],
+        })
+    });
+    f.rejects("preview text capacity");
 }
 
 #[test]

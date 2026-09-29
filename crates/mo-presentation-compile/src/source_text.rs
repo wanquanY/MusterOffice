@@ -6,10 +6,12 @@ mod budget;
 mod number;
 mod script;
 mod style;
+mod table;
 mod types;
 use mo_common::Digest;
 use mo_presentation_source::source::{SourceIndex, SourceObjectRef, text::cascade};
 use mo_text::{backend::TextBackend, manifest::*};
+pub use table::{TableTextCompiler, TableTextPreparation};
 pub use types::*;
 
 pub const PROFILE: &str = "drawingml-source-glyph-input-draft-v1";
@@ -49,7 +51,7 @@ impl PreparedSourceText {
         SourceTextError::FontSelection(Box::new(SourceFontSelectionFailure {
             source_sha256: self.source.source_sha256.clone(),
             object: self.source.object.clone(),
-            paragraph,
+            paragraph: self.source.paragraph_start + paragraph,
             source_ordinal: p.source_ordinal,
             selection,
             uses,
@@ -122,7 +124,7 @@ impl PreparedSourceText {
             profile: PROFILE.into(),
             source_sha256: self.source.source_sha256.clone(),
             object: self.source.object.clone(),
-            paragraph,
+            paragraph: self.source.paragraph_start + paragraph,
             source_ordinal: self.paragraphs[paragraph as usize].source_ordinal,
             computation,
         }
@@ -154,13 +156,30 @@ pub fn prepare(
         .iter()
         .find(|o| o.native_id == object.native_id)
         .ok_or(SourceTextError::Invalid("source object binding"))?;
-    if native.paragraphs.len() != source.paragraphs.len() {
+    prepare_bound(index, native, source, limits, check)
+}
+fn prepare_bound(
+    index: &SourceIndex,
+    native: &mo_presentation_source::source::SourceObject,
+    source: cascade::CascadedText,
+    limits: SourceTextLimits,
+    check: &dyn Fn() -> bool,
+) -> Result<SourceTextPreparation, SourceTextError> {
+    let body = mo_presentation_source::source::text::bind_body(
+        native,
+        &index.surfaces[&source.object.part].text,
+        source.cell,
+    )?
+    .ok_or(SourceTextError::Invalid("source body binding"))?;
+    if body.range.start != source.paragraph_start as usize
+        || body.paragraphs.len() != source.paragraphs.len()
+    {
         return Err(SourceTextError::Invalid("source paragraph binding"));
     }
     let mut paragraphs = Vec::new();
     let mut budget = budget::Budget::new(limits);
     let mut bytes = 0usize;
-    for (i, runs) in native.paragraphs.iter().enumerate() {
+    for (i, runs) in body.paragraphs.iter().enumerate() {
         cancel(check)?;
         for run in runs {
             bytes = bytes

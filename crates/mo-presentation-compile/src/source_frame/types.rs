@@ -1,3 +1,4 @@
+use super::FrameClip;
 use crate::source_text::{SourceParagraphPlan, SourceTextIssue};
 use mo_common::Digest;
 use mo_geometry::{Fixed, Point, Rect};
@@ -27,6 +28,10 @@ pub struct SourceFrameRequest {
     rename_all_fields = "camelCase"
 )]
 pub enum SourceFrameIssue {
+    CoveredCell {
+        cell: mo_presentation_source::source::table::SourceCellAddress,
+        origin: mo_presentation_source::source::table::SourceCellAddress,
+    },
     Body {
         reason: TextBodyUnresolved,
     },
@@ -70,6 +75,8 @@ pub enum SourceFrameError {
     Geometry(#[from] mo_geometry::GeometryError),
     #[error(transparent)]
     Coordinate(#[from] crate::CompileError),
+    #[error(transparent)]
+    Table(#[from] crate::source_table::TableGeometryError),
     #[error("native text frame limit exceeded: {0}")]
     Limit(&'static str),
     #[error("native text frame cancelled")]
@@ -82,6 +89,11 @@ pub enum SourceFrameError {
     rename_all_fields = "camelCase"
 )]
 pub enum TextRectangleSource {
+    TableCell {
+        cell: mo_presentation_source::source::table::SourceCellAddress,
+        source_ordinal: u32,
+        region: mo_presentation_source::source::table::grid::NativeTableRegion,
+    },
     Declaration {
         origin: GeometryOrigin,
     },
@@ -95,6 +107,8 @@ pub struct SourceFrameRegion {
     pub source: TextRectangleSource,
     /// Shape-local Q32 text rectangle after native insets, before world placement.
     pub inner: Rect,
+    /// Native rectangle before insets, used by overflow clipping.
+    pub outer: Rect,
     /// Conversion from evaluated binary64 geometry/exact lexical insets to Q32.
     /// Does not certify native formula evaluation or a final raster coordinate.
     pub conversion_error_bound: Fixed,
@@ -160,6 +174,8 @@ pub struct SourceFramePlan {
     pub inputs: Vec<SourceParagraphPlan>,
     pub body: EffectiveTextBody,
     pub region: SourceFrameRegion,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub clip: Option<FrameClip>,
     pub paragraphs: Vec<FrameParagraph>,
     pub content_height: Fixed,
     pub glyphs: Vec<FrameGlyph>,

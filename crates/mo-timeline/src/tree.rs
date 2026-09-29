@@ -1,5 +1,8 @@
-//! Structural ownership and event dependency DAG. Containers never flatten into
+//! Structural ownership and causal condition graph. Containers never flatten into
 //! synthetic absolute leaf offsets; begin/end events retain their native scopes.
+mod causality;
+pub(crate) mod container_clock;
+mod presentation;
 mod sample;
 use crate::*;
 pub(crate) use sample::{Intervals, sample, schedule};
@@ -11,10 +14,18 @@ pub(crate) struct Hierarchy {
     previous: Vec<Option<usize>>,
     next: Vec<Option<usize>>,
     children: Vec<Vec<usize>>,
-    dependencies: Vec<Option<usize>>,
-    end_dependencies: Vec<Vec<Option<usize>>>,
+    dependencies: Vec<BTreeMap<ConditionIndex, usize>>,
+    positions: Vec<usize>,
     traversal: Vec<usize>,
-    listeners: Vec<Vec<(usize, Option<usize>)>>,
+    listeners: Vec<Vec<(usize, ConditionIndex)>>,
+    input_listeners: BTreeMap<InputEvent, Vec<(usize, ConditionIndex)>>,
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+enum ConditionIndex {
+    Start(usize),
+    End(usize),
+    Next(usize),
+    Previous(usize),
 }
 #[derive(Clone, Copy)]
 enum Entry<'a> {
@@ -45,6 +56,53 @@ impl<'a> Entry<'a> {
         match self {
             Self::Leaf(n) => n.fill,
             Self::Container(n) => n.fill,
+        }
+    }
+    fn restart(self) -> RestartMode {
+        match self {
+            Self::Leaf(n) => n.restart,
+            Self::Container(n) => n.restart,
+        }
+    }
+    fn navigation(self) -> Option<&'a SequenceNavigation> {
+        match self {
+            Self::Leaf(_) => None,
+            Self::Container(c) => c.navigation.as_ref(),
+        }
+    }
+    fn conditions(self) -> impl Iterator<Item = (ConditionIndex, &'a TimeCondition)> {
+        self.start()
+            .conditions()
+            .iter()
+            .enumerate()
+            .map(|(k, c)| (ConditionIndex::Start(k), c))
+            .chain(
+                self.ends()
+                    .iter()
+                    .enumerate()
+                    .map(|(k, c)| (ConditionIndex::End(k), c)),
+            )
+            .chain(self.navigation().into_iter().flat_map(|n| {
+                n.next_conditions
+                    .iter()
+                    .enumerate()
+                    .map(|(k, c)| (ConditionIndex::Next(k), c))
+            }))
+            .chain(self.navigation().into_iter().flat_map(|n| {
+                n.previous_conditions
+                    .iter()
+                    .enumerate()
+                    .map(|(k, c)| (ConditionIndex::Previous(k), c))
+            }))
+    }
+    fn condition(self, index: ConditionIndex) -> &'a TimeCondition {
+        match index {
+            ConditionIndex::Start(k) => &self.start().conditions()[k],
+            ConditionIndex::End(k) => &self.ends()[k],
+            ConditionIndex::Next(k) => &self.navigation().expect("sequence").next_conditions[k],
+            ConditionIndex::Previous(k) => {
+                &self.navigation().expect("sequence").previous_conditions[k]
+            }
         }
     }
     fn ends(self) -> &'a [TimeCondition] {
@@ -83,21 +141,32 @@ pub(crate) fn compile(
             }
             _ => (),
         }
-        conditions = conditions
-            .saturating_add(1)
-            .saturating_add(entry.ends().len());
+        let starts = entry.start().conditions();
+        if starts.is_empty() {
+            return Err(invalid(Some(entry.id()), "empty start condition list"));
+        }
+        if entry.navigation().is_some()
+            && !matches!(
+                entry,
+                Entry::Container(TimingContainer {
+                    kind: ContainerKind::Sequence,
+                    ..
+                })
+            )
+        {
+            return Err(invalid(Some(entry.id()), "navigation requires a sequence"));
+        }
+        conditions = conditions.saturating_add(entry.conditions().count());
         if conditions > limits.max_conditions {
             return Err(TimelineError::Limit("timing condition count"));
         }
-        for (position, condition) in std::iter::once(entry.start())
-            .chain(entry.ends())
-            .enumerate()
-        {
+        for (position, condition) in entry.conditions() {
             cancel(check)?;
             let delay = match condition {
+                TimeCondition::Never {} => continue,
                 TimeCondition::At { offset } => offset,
                 TimeCondition::After { delay, .. } => delay,
-                TimeCondition::Click { delay, .. } => {
+                TimeCondition::Click { delay, .. } | TimeCondition::Navigation { delay, .. } => {
                     interactive = true;
                     delay
                 }
@@ -105,10 +174,10 @@ pub(crate) fn compile(
             if delay.ticks.get() < 0 {
                 return Err(invalid(
                     Some(entry.id()),
-                    if position == 0 {
+                    if matches!(position, ConditionIndex::Start(_)) {
                         "negative start offset"
                     } else {
-                        "negative end offset"
+                        "negative condition offset"
                     },
                 ));
             }
@@ -119,10 +188,11 @@ pub(crate) fn compile(
         previous: vec![None; count],
         next: vec![None; count],
         children: vec![vec![]; count],
-        dependencies: vec![None; count],
-        end_dependencies: vec![vec![]; count],
+        dependencies: vec![BTreeMap::new(); count],
+        positions: vec![0; count],
         traversal: vec![],
         listeners: vec![vec![]; count * 2],
+        input_listeners: BTreeMap::new(),
     };
     let mut owned = vec![false; count];
     let mut references = tree.map_or(t.nodes.len(), |tree| tree.roots.len());
@@ -159,11 +229,21 @@ pub(crate) fn compile(
         .enumerate()
     {
         let i = t.nodes.len() + c;
-        for id in &container.children {
+        for (position, id) in container.children.iter().enumerate() {
             cancel(check)?;
-            h.children[i].push(assign(id, Some(i))?);
+            let child = assign(id, Some(i))?;
+            h.positions[child] = position;
+            h.children[i].push(child);
         }
         if container.kind == ContainerKind::Sequence {
+            for &child in &h.children[i] {
+                if container.navigation.is_none() && !Entry::at(t, child).restart().is_never() {
+                    return Err(invalid(
+                        Some(Entry::at(t, child).id()),
+                        "restarting sequence entries require the navigation event profile",
+                    ));
+                }
+            }
             for pair in h.children[i].windows(2) {
                 h.previous[pair[1]] = Some(pair[0]);
                 h.next[pair[0]] = Some(pair[1]);
@@ -184,42 +264,47 @@ pub(crate) fn compile(
     }
     // Validate causal declarations without ancestor clipping edges. Runtime
     // termination stops descendants; it is not a prerequisite for their begin.
-    let mut incoming = vec![0usize; count * 2];
-    let mut dependents = vec![vec![]; count * 2];
+    let mut causal = causality::Causality::new(count * 2);
     for i in 0..count {
         cancel(check)?;
         let entry = Entry::at(t, i);
-        let mut begin = vec![];
         if let Some(p) = h.parents[i] {
-            begin.push(p * 2);
+            causal.require(i * 2, p * 2);
         }
-        if let Some(p) = h.previous[i] {
-            begin.push(p * 2 + 1);
+        let navigable = h.parents[i].is_some_and(|p| Entry::at(t, p).navigation().is_some());
+        if let Some(p) = h.previous[i]
+            && !navigable
+        {
+            causal.require(i * 2, p * 2 + 1);
         }
-        if let StartCondition::After { node, event, .. } = entry.start() {
-            let d = *ids
-                .get(node)
-                .ok_or_else(|| invalid(Some(entry.id()), "missing timing dependency"))?;
-            h.dependencies[i] = Some(d);
-            let vertex = d * 2 + usize::from(*event == NodeEvent::End);
-            begin.push(vertex);
-            h.listeners[vertex].push((i, None));
-        }
+        let mut alternatives = vec![];
+        let mut independent = navigable;
         let mut end = vec![i * 2];
-        for (position, condition) in entry.ends().iter().enumerate() {
+        for (index, condition) in entry.conditions() {
             cancel(check)?;
-            let dependency = if let TimeCondition::After { node, event, .. } = condition {
+            if let Some(input) = condition.input() {
+                h.input_listeners.entry(input).or_default().push((i, index));
+            }
+            if let TimeCondition::After { node, event, .. } = condition {
                 let d = *ids
                     .get(node)
-                    .ok_or_else(|| invalid(Some(entry.id()), "missing end timing dependency"))?;
-                let vertex = d * 2 + usize::from(*event == NodeEvent::End);
-                end.push(vertex);
-                h.listeners[vertex].push((i, Some(position)));
-                Some(d)
-            } else {
-                None
-            };
-            h.end_dependencies[i].push(dependency);
+                    .ok_or_else(|| invalid(Some(entry.id()), "missing timing dependency"))?;
+                let vertex = d * 2 + event.edge_index();
+                h.dependencies[i].insert(index, d);
+                h.listeners[vertex].push((i, index));
+                match index {
+                    ConditionIndex::Start(_) => alternatives.push(vertex),
+                    ConditionIndex::End(_) => end.push(vertex),
+                    _ => (), // navigation is an input, not a requirement for the first begin/end
+                }
+            } else if matches!(index, ConditionIndex::Start(_))
+                && !matches!(condition, TimeCondition::Never {})
+            {
+                independent = true;
+            }
+        }
+        if !independent {
+            causal.any(i * 2, &alternatives);
         }
         if matches!(
             entry,
@@ -230,49 +315,37 @@ pub(crate) fn compile(
         ) {
             end.extend(h.children[i].iter().map(|c| c * 2 + 1));
         }
-        for (v, mut deps) in [(i * 2, begin), (i * 2 + 1, end)] {
-            deps.sort_unstable();
-            deps.dedup();
-            incoming[v] = deps.len();
-            for d in deps {
-                dependents[d].push(v);
-            }
+        end.sort_unstable();
+        end.dedup();
+        for d in end {
+            causal.require(i * 2 + 1, d);
         }
     }
-    let mut ready: VecDeque<_> = incoming
-        .iter()
-        .enumerate()
-        .filter(|(_, n)| **n == 0)
-        .map(|(i, _)| i)
-        .collect();
-    let mut visited = 0;
-    while let Some(v) = ready.pop_front() {
-        cancel(check)?;
-        visited += 1;
-        for &d in &dependents[v] {
-            incoming[d] -= 1;
-            if incoming[d] == 0 {
-                ready.push_back(d);
-            }
-        }
-    }
-    if visited != count * 2 {
-        return Err(invalid(None, "cyclic timing begin/end dependencies"));
-    }
+    causal.validate(check)?;
     let domain = if tree.is_some() {
         "musteroffice.timeline-plan/0.2-draft"
     } else {
         "musteroffice.timeline-plan/0.1-draft"
     };
     let digest = mo_common::digest(domain, t)?;
+    let initial_visibility = presentation::compile(t, &h, check)?;
+    let motion_paths = crate::motion_path::compile(t, limits, check)?;
     let clocks = crate::plan::clocks(t, limits.max_exact_bits, check)?;
+    let container_clocks = container_clock::compile(t, &h, &clocks, limits.max_exact_bits, check)?;
     cancel(check)?;
     Ok(TimelinePlan {
         timeline: t.clone(),
         interactive,
+        restarting: (0..count).any(|i| {
+            let e = Entry::at(t, i);
+            !e.restart().is_never() || e.navigation().is_some()
+        }),
         digest,
         limits,
         hierarchy: h,
         clocks,
+        motion_paths,
+        container_clocks,
+        initial_visibility,
     })
 }

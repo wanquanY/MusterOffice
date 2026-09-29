@@ -174,8 +174,32 @@ fn source_resources_survive_input_release_and_match_actual_one_shot_pixels() {
         "../../../fixtures/presentations/delivery/input.json"
     ))
     .unwrap();
+    let mut document: mo_presentation_model::Document =
+        serde_json::from_value(v["document"].clone()).unwrap();
+    let slide = document.slide_order[0].clone();
+    let mut timeline = author()
+        .snapshot
+        .document
+        .timelines
+        .values()
+        .next()
+        .unwrap()
+        .clone();
+    timeline.nodes.truncate(1);
+    timeline.nodes[0].effect = mo_timeline::Effect::Scale {
+        target: document.slides[&slide].objects[0].clone(),
+        from: mo_timeline::ScaleValue {
+            x: 100000,
+            y: 100000,
+        },
+        to: mo_timeline::ScaleValue {
+            x: 200000,
+            y: 50000,
+        },
+    };
+    document.timelines.insert(slide, timeline);
     let source = mo_pptx::export(
-        &serde_json::from_value(v["document"].clone()).unwrap(),
+        &document,
         &serde_json::from_value(v["settings"]["defaults"].clone()).unwrap(),
         &Images,
         Default::default(),
@@ -269,4 +293,51 @@ fn cancellation_invalidates_the_owner_and_configuration_rejects_wrong_worker() {
     ));
     let worker = std::env::var_os("MO_DELIVERY_WORKER").unwrap().into();
     assert!(NativePlayback::new(worker, hash(b"different"), Duration::from_secs(2)).is_err());
+}
+
+#[test]
+#[ignore = "requires explicitly pinned MO_DELIVERY_WORKER"]
+fn scale_animation_crosses_typed_sdk_without_relaxing_frame_identity() {
+    let mut prepare = author();
+    let mut document = prepare.snapshot.document.clone();
+    let node = &mut document.timelines.values_mut().next().unwrap().nodes[0];
+    node.effect = mo_timeline::Effect::Scale {
+        target: node.target().clone(),
+        from: mo_timeline::ScaleValue { x: 0, y: 0 },
+        to: mo_timeline::ScaleValue {
+            x: 200000,
+            y: 100000,
+        },
+    };
+    prepare.snapshot = Snapshot::new(document, Default::default())
+        .unwrap()
+        .into_record();
+    prepare.binding.revision = prepare.snapshot.revision.clone();
+    let mut owner = config().prepare_author(prepare.clone(), &|| false).unwrap();
+    let mut pixels_seen = std::collections::BTreeSet::new();
+    for at in [time(0, 1), time(1, 7), time(1, 1), time(2, 1), time(1, 7)] {
+        let frame = owner.sample(at, None, &|| false).unwrap();
+        assert_eq!(
+            frame.info.profile,
+            mo_presentation_compile::playback::TRANSFORM_PLAYBACK_PAGE_PROFILE
+        );
+        assert!(!frame.info.frame.state.scales.is_empty());
+        let q = PlaybackPageRequest {
+            playback: TimelineEvaluateRequest {
+                snapshot: prepare.snapshot.clone(),
+                slide: prepare.slide.clone(),
+                binding: prepare.binding.clone(),
+                at,
+                history: None,
+            },
+            viewport: prepare.viewport.clone(),
+            defaults: prepare.defaults.clone(),
+        };
+        let (one_shot, pixels) = raw("--playback-page", &q, &[], &[]);
+        assert_eq!(one_shot["info"], serde_json::to_value(&frame.info).unwrap());
+        assert_eq!(pixels, frame.pixels);
+        pixels_seen.insert(hash(&pixels));
+    }
+    assert!(pixels_seen.len() > 1);
+    owner.dispose(&|| false).unwrap();
 }

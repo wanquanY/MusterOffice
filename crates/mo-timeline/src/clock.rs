@@ -15,7 +15,7 @@ pub(crate) struct BehaviorClock {
     easing: Option<Easing>,
 }
 #[derive(Debug, Clone)]
-struct Easing {
+pub(crate) struct Easing {
     acceleration: Ratio,
     deceleration: Ratio,
     run_rate: Ratio,
@@ -30,18 +30,21 @@ pub(crate) fn validate(node: &TimingNode) -> Result<(), TimelineError> {
     if matches!(node.repeat_duration, Some(RepeatDuration::Finite(t)) if t.ticks.get() < 0) {
         return Err(invalid(Some(&node.id), "negative repeat duration"));
     }
-    let Some(t) = node.time_transform else {
+    validate_transform(node.time_transform, &node.id)
+}
+pub(crate) fn validate_transform(
+    transform: Option<TimeTransform>,
+    id: &mo_common::TimingNodeId,
+) -> Result<(), TimelineError> {
+    let Some(t) = transform else {
         return Ok(());
     };
     if t.speed_milli_percent == 0 {
-        return Err(invalid(
-            Some(&node.id),
-            "time transform speed must be nonzero",
-        ));
+        return Err(invalid(Some(id), "time transform speed must be nonzero"));
     }
     if u64::from(t.acceleration_milli_percent) + u64::from(t.deceleration_milli_percent) > 100_000 {
         return Err(invalid(
-            Some(&node.id),
+            Some(id),
             "acceleration and deceleration must sum to at most 100000",
         ));
     }
@@ -87,6 +90,9 @@ impl BehaviorClock {
     pub(crate) fn parent_duration(&self) -> Option<&Ratio> {
         self.parent_duration.as_ref()
     }
+    pub(crate) fn first_cycle_duration(&self, bits: u64) -> Result<Ratio, TimelineError> {
+        self.cycle.div(&self.rate, bits)
+    }
     pub(crate) fn needs_endpoint(&self, has_end_conditions: bool) -> bool {
         self.backwards && (self.active.is_none() || has_end_conditions)
     }
@@ -94,6 +100,8 @@ impl BehaviorClock {
         &self,
         elapsed: &Ratio,
         ended: bool,
+        parent_backwards: bool,
+        entering: bool,
         cutoff: Option<&Ratio>,
         bits: u64,
     ) -> Result<(String, Ratio), TimelineError> {
@@ -122,12 +130,13 @@ impl BehaviorClock {
         let position = local.div(&self.cycle, bits)?;
         let mut iteration = &position.n / &position.d;
         let mut progress = position.fraction(bits)?;
-        // Forward fill retains the left limit at a final/cut cycle boundary.
-        // Reverse activation begins at the resolved active endpoint. Interior
-        // reverse boundaries (and reverse fill) use the simple-time zero value.
+        // Endpoint sides depend on the cascaded direction, not only this leaf's
+        // speed. Two reversals restore forward fill; a reversed ancestor enters
+        // this leaf at its upper endpoint even though elapsed is not zero.
+        let backwards = self.backwards ^ parent_backwards;
         if !progress.positive()
             && position.positive()
-            && ((!self.backwards && ended) || (self.backwards && !elapsed.positive()))
+            && ((!backwards && ended) || (backwards && entering))
         {
             iteration -= 1;
             progress = Ratio::integer(1);
@@ -145,7 +154,7 @@ impl BehaviorClock {
     }
 }
 impl Easing {
-    fn new(t: TimeTransform, bits: u64) -> Result<Option<Self>, TimelineError> {
+    pub(crate) fn new(t: TimeTransform, bits: u64) -> Result<Option<Self>, TimelineError> {
         if t.acceleration_milli_percent == 0 && t.deceleration_milli_percent == 0 {
             return Ok(None);
         }
@@ -163,7 +172,7 @@ impl Easing {
             run_rate,
         }))
     }
-    fn apply(&self, p: &Ratio, bits: u64) -> Result<Ratio, TimelineError> {
+    pub(crate) fn apply(&self, p: &Ratio, bits: u64) -> Result<Ratio, TimelineError> {
         let two = Ratio::integer(2);
         if p.cmp(&self.acceleration).is_lt() {
             p.mul(p, bits)?

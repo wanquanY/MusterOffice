@@ -17,6 +17,8 @@ const PROFILES: &[(u32, &str, Resources)] = &[
     (10, OFFICE_GRADIENT_PROFILE, Resources::Either),
     (11, RECT_GRADIENT_PROFILE, Resources::Either),
     (12, ELLIPTIC_GRADIENT_PROFILE, Resources::Either),
+    (13, OPACITY_GROUP_PROFILE, Resources::Either),
+    (14, SNAPSHOT_SCOPE_PROFILE, Resources::Either),
 ];
 /// Known wire version to metadata profile. Unknown versions fail closed.
 pub fn profile_for_frame(version: u32) -> Option<&'static str> {
@@ -39,9 +41,9 @@ mod tests {
     use super::*;
     #[test]
     fn publication_modes_share_the_emitted_profile_registry() {
-        for version in 0..=13 {
+        for version in 0..=15 {
             let p = profile_for_frame(version);
-            assert_eq!(p.is_some(), (4..=12).contains(&version));
+            assert_eq!(p.is_some(), (4..=14).contains(&version));
             if let Some(p) = p {
                 assert_eq!(accepts_profile(p, false), version == 4 || version >= 7);
                 assert_eq!(accepts_profile(p, true), version >= 5);

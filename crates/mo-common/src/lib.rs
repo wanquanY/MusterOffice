@@ -4,12 +4,14 @@ mod byte_length;
 mod canonical;
 mod ids;
 mod integer_json;
+mod json_budget;
 mod strict_json;
 mod units;
 
 pub use byte_length::{ByteLength, ByteLengthError};
 pub use canonical::{CanonicalError, canonical_bytes, digest};
 pub use ids::*;
+pub use json_budget::{JsonBudgetError, check_json_size};
 pub use strict_json::from_json_str;
 pub use units::*;
 

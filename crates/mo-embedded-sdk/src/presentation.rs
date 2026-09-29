@@ -100,6 +100,38 @@ impl Presentation {
         self.snapshot
     }
 
+    /// Pins this value as a reusable, immutable computation source. The caller
+    /// supplies its own catalog/selection and owns the resulting template.
+    pub fn prepare_template(
+        &self,
+        definition: crate::template::TemplateDefinition,
+        limits: crate::template::TemplateLimits,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<crate::template::Template, crate::template::TemplateError> {
+        if cancelled() {
+            return Err(crate::template::TemplateError::Cancelled);
+        }
+        mo_common::check_json_size(&(&self.snapshot, &definition), limits.max_bytes, cancelled)?;
+        let source = Snapshot::restore(self.snapshot.clone(), limits.document)?;
+        crate::template::Template::new(source, definition, limits, cancelled)
+    }
+
+    /// Produces an independent value; it neither edits this template's source
+    /// nor creates a durable document, task or resource record in the host.
+    pub fn instantiate_template(
+        template: &crate::template::Template,
+        request: &crate::template::InstantiateRequest,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(Self, crate::template::InstantiationReceipt), crate::template::TemplateError> {
+        let instance = template.instantiate(request, cancelled)?;
+        Ok((
+            Self {
+                snapshot: instance.snapshot,
+            },
+            instance.receipt,
+        ))
+    }
+
     pub fn prepare_author_playback(
         &self,
         runtime: &crate::playback::NativePlayback,

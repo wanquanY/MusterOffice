@@ -20,7 +20,11 @@ impl Binding {
         arguments.insert("operation".into(), self.host_tag.into());
         let request: HostRequest = serde_json::from_value(Value::Object(arguments))
             .map_err(|_| "invalid operation arguments")?;
-        if request.service_operation() != self.operation {
+        if request
+            .service_operation()
+            .map_err(|_| "action is outside the legacy host")?
+            != self.operation
+        {
             return Err("action does not match tool name");
         }
         Ok(request)

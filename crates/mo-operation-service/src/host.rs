@@ -85,8 +85,8 @@ pub trait OperationHost {
     ) -> Result<SnapshotRecord, Failure>;
 }
 impl HostRequest {
-    pub fn service_operation(&self) -> ServiceOperation {
-        match self {
+    pub fn service_operation(&self) -> Result<ServiceOperation, Failure> {
+        Ok(match self {
             Self::Capabilities {} => ServiceOperation::Capabilities,
             Self::GetSchema { .. } => ServiceOperation::Schema,
             Self::BeginUpload { .. } => ServiceOperation::BeginUpload,
@@ -94,11 +94,11 @@ impl HostRequest {
             Self::SealUpload { .. } => ServiceOperation::SealUpload,
             Self::CancelUpload { .. } => ServiceOperation::CancelUpload,
             Self::ReadAsset { .. } => ServiceOperation::ReadAsset,
-            Self::Submit { request } => ServiceOperation::for_action(&request.action),
+            Self::Submit { request } => return ServiceOperation::for_action(&request.action),
             Self::GetJob { .. } => ServiceOperation::GetJob,
             Self::CancelJob { .. } => ServiceOperation::CancelJob,
             Self::ReadDocument { .. } => ServiceOperation::ReadDocument,
-        }
+        })
     }
 }
 pub fn dispatch_host<H: OperationHost>(
@@ -114,7 +114,7 @@ pub fn dispatch_host<H: OperationHost>(
         if let HostRequest::Submit { request } = &request {
             context.authorize(request)?;
         } else {
-            request.service_operation().authorize(context)?;
+            request.service_operation()?.authorize(context)?;
         }
         match request {
             HostRequest::Capabilities {} => Ok(HostResponse::Succeeded {

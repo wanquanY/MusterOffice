@@ -38,8 +38,13 @@ pub(super) fn read_tree(
             return Err(PptxError::Limit("timing tree nesting"));
         }
         let node = &tree[index];
-        let id = if node.element.name.is(P, "animRot") {
-            let n = read_rotation(
+        let id = if node.element.name.is(P, "animRot")
+            || node.element.name.is(P, "animScale")
+            || node.element.name.is(P, "set")
+            || node.element.name.is(P, "animEffect")
+            || node.element.name.is(P, "animMotion")
+        {
+            let n = read_behavior(
                 tree,
                 node,
                 known,
@@ -57,31 +62,30 @@ pub(super) fn read_tree(
             } else {
                 ContainerKind::Parallel
             };
-            if kind == ContainerKind::Sequence {
-                attrs(node, &["concurrent", "nextAc", "prevAc"])?;
-                if node
-                    .element
-                    .attribute("concurrent")
-                    .is_some_and(|v| v != "0" && v != "false")
-                    || node
-                        .element
-                        .attribute("nextAc")
-                        .is_some_and(|v| v != "none")
-                    || node
-                        .element
-                        .attribute("prevAc")
-                        .is_some_and(|v| v != "none")
-                {
-                    return Err(unsupported(
-                        "sequence navigation/concurrency requires its event profile",
-                    ));
-                }
+            let (common, navigation) = if kind == ContainerKind::Sequence {
+                sequence::read(tree, node, known, &mut object_bindings, check)?
             } else {
                 attrs(node, &[])?;
-            }
-            let common = single(tree, node, "cTn")?;
-            attrs(common, &["id", "dur", "restart", "fill"])?;
-            value(common, "restart", "never")?;
+                (single(tree, node, "cTn")?, None)
+            };
+            attrs(
+                common,
+                &[
+                    "id",
+                    "dur",
+                    "restart",
+                    "fill",
+                    "nodeType",
+                    "presetID",
+                    "presetClass",
+                    "presetSubtype",
+                    "spd",
+                    "autoRev",
+                    "accel",
+                    "decel",
+                ],
+            )?;
+            let restart = read_restart(common)?;
             let native = integer(common, "id")?;
             let id = n_id(native);
             if native == root_id || node_bindings.insert(id.clone(), native).is_some() {
@@ -98,11 +102,11 @@ pub(super) fn read_tree(
                 }
             };
             let start = take("stCondLst")
-                .map(|s| read_start(tree, s, known, &mut object_bindings))
+                .map(|s| read_start(tree, s, known, &mut object_bindings, check))
                 .transpose()?
-                .unwrap_or(StartCondition::At { offset: ms(0) });
+                .unwrap_or_else(|| TimeCondition::At { offset: ms(0) }.into());
             let end_conditions = take("endCondLst")
-                .map(|list| read_ends(tree, list, known, &mut object_bindings, check))
+                .map(|list| read_conditions(tree, list, known, &mut object_bindings, check))
                 .transpose()?
                 .unwrap_or_default();
             let sync = take("endSync");
@@ -110,7 +114,11 @@ pub(super) fn read_tree(
             if position != common.children.len() || !common.text.trim().is_empty() {
                 return Err(unsupported("container common content"));
             }
+            let presentation = presentation::validate(tree, common, kind, children)?;
             let duration = match (common.element.attribute("dur"), sync) {
+                // A presentation container without an explicit duration owns
+                // the active span of its children, including delayed children.
+                (None, None) => ContainerDuration::Automatic,
                 (Some("indefinite"), Some(sync)) => {
                     attrs(sync, &["evt", "delay"])?;
                     value(sync, "evt", "end")?;
@@ -128,13 +136,30 @@ pub(super) fn read_tree(
                 _ => return Err(unsupported("container duration/endSync combination")),
             };
             let owner = containers.len();
+            // An unending root main sequence has no observable post-end fill.
+            // Normalize only that provably equivalent case; omitted fill on a
+            // finite or nested container remains unsupported.
+            let fill = if common.element.attribute("fill").is_none()
+                && presentation == Some(mo_timeline::PresentationRole::MainSequence)
+                && parent.is_none()
+                && duration == ContainerDuration::Indefinite
+                && end_conditions.is_empty()
+            {
+                FillMode::Remove
+            } else {
+                fill(common)?
+            };
             containers.push(TimingContainer {
+                presentation,
+                navigation,
                 id: id.clone(),
+                restart,
                 kind,
                 start,
                 end_conditions,
                 duration,
-                fill: fill(common)?,
+                time_transform: time_transform::read(common)?,
+                fill,
                 children: vec![],
             });
             if let Some(children) = children {

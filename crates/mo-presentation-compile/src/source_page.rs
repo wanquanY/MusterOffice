@@ -6,8 +6,10 @@ mod gradient_circle;
 mod gradient_rect;
 mod layers;
 mod objects;
+mod opacity;
 mod paint;
 mod prepared;
+mod table;
 mod types;
 use crate::{
     coordinate_budget::{axes, geometry_budget, matrix_budget},
@@ -26,7 +28,6 @@ use mo_presentation_source::source::{
 };
 use mo_raster::{Brush, PathRasterRequest, RasterBackend, RasterError};
 use mo_render::SceneRasterRequest;
-use num_bigint::BigInt;
 use objects::Object;
 pub(crate) use prepared::{BuiltPage, PreparedPage};
 pub use types::*;
@@ -47,31 +48,20 @@ fn mapping(location: &SourcePageLocation, issue: SourcePageIssue) -> SourcePageE
         issue: Box::new(issue),
     }
 }
-fn local_tolerance(objects: &[Object], q: &SourcePageRequest) -> Result<Fixed, SourcePageError> {
-    let mut norm = BigInt::from(1u64 << 32);
-    for object in objects {
+fn local_tolerance(
+    objects: &[Object],
+    q: &SourcePageRequest,
+    check: &dyn Fn() -> bool,
+) -> Result<Fixed, SourcePageError> {
+    let placements = objects.iter().map(|object| {
         let p = object.binding.placement.as_ref().expect("object placement");
-        for row in 0..2 {
-            let mut value = BigInt::from(0);
-            for col in 0..2 {
-                let i = 2 * row + col;
-                let a = BigInt::from(p.affine.linear[i].raw());
-                value += if a < BigInt::from(0) { -a } else { a };
-                value += p.uncertainty.linear[i].raw();
-            }
-            norm = norm.max(value);
-        }
-    }
-    // At most 1/4 of requested device tolerance, rounded down in local Q32.
-    let raw = ((BigInt::from(q.viewport.coordinate_tolerance.raw())
-        * q.viewport.scale.denominator)
-        << 32usize)
-        / (norm * q.viewport.scale.numerator * 4u32);
-    let raw = i128::try_from(raw).map_err(|_| RasterError::Range)?;
-    if raw <= 0 {
-        return Err(RasterError::Precision.into());
-    }
-    Ok(Fixed::from_raw(raw))
+        (&p.affine, &p.uncertainty)
+    });
+    Ok(crate::coordinate_budget::local_tolerance(
+        placements,
+        &q.viewport,
+        check,
+    )?)
 }
 fn shifted(
     commands: &mut [C],
@@ -119,10 +109,18 @@ pub(crate) fn prepare(
     mut text: Option<&mut crate::source_text_page::Compiler<'_, '_, '_>>,
     check: &dyn Fn() -> bool,
 ) -> Result<(SourcePagePlan, mo_render::CompiledScene), SourcePageError> {
-    let prepared = prepared::preflight(index, q, text.is_some(), false, check)?;
+    let mut prepared = prepared::preflight(index, q, text.is_some(), false, check)?;
     if let Some(text) = text.as_deref_mut() {
-        text.preflight(index, q, prepared.objects.iter().map(|o| &o.binding), check)?;
+        text.preflight_shared(
+            index,
+            q,
+            prepared.objects.iter().map(|o| &o.binding),
+            &prepared.tables,
+            check,
+        )?;
     }
+    prepared.tables.clear();
+    prepared.source = None;
     let built = emit::build(
         prepared,
         text.map(|t| t as &mut dyn crate::source_text_page::Painter),
@@ -135,7 +133,7 @@ pub(crate) fn prepare(
     Ok((plan, compiled))
 }
 pub(crate) use emit::build;
-pub(crate) use prepared::preflight_sampled;
+pub(crate) use prepared::{preflight_retained, preflight_sampled};
 pub fn compile(
     index: &SourceIndex,
     request: &SourcePageRequest,

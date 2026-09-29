@@ -8,6 +8,7 @@ use std::collections::BTreeSet;
 pub(super) struct PreservedPlan {
     pub index: SourceIndex,
     pub original: Digest,
+    pub core_title: Option<String>,
     text: BTreeMap<PartName, Vec<TextReplacement>>,
     transforms: BTreeMap<PartName, BTreeMap<u32, SourceTransformEdit>>,
 }
@@ -45,6 +46,7 @@ pub(super) fn prepare_bound(
     Ok(PreservedPlan {
         index: bound.index,
         original,
+        core_title: None,
         text,
         transforms,
     })
@@ -116,6 +118,9 @@ impl PreservedPlan {
             ));
         }
         let mut plan = RewritePlan::new();
+        if let Some(title) = &self.core_title {
+            plan.set_core_title(source, title, check)?;
+        }
         let parts: BTreeSet<_> = self.text.keys().chain(self.transforms.keys()).collect();
         for part in parts {
             cancelled(check)?;

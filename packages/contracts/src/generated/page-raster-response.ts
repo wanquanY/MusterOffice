@@ -30,6 +30,7 @@ export type PageFailureCode =
   | "COMPONENT_INVALID"
   | "HOST_FAILURE";
 export type PageFeature =
+  | "table"
   | "shapeText"
   | "picture"
   | "connector"
@@ -127,6 +128,7 @@ export interface RasterWork {
    * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
    */
   miterLimitErrorBound: string;
+  opacityGroups?: OpacityGroupWork | null;
   paths: number;
   strokeDraws: number;
   strokeStyles: number;
@@ -179,6 +181,18 @@ export interface EllipticGradientWork {
    * @maxItems 6
    */
   parameterErrorBounds: [FixedQ32, FixedQ32, FixedQ32, FixedQ32, FixedQ32, FixedQ32];
+}
+export interface OpacityGroupWork {
+  groups: number;
+  maximumDepth: number;
+  /**
+   * Peak simultaneously live intermediate pixels, excluding output/snapshots.
+   */
+  peakPixelBytes: number;
+  /**
+   * Pixels cleared plus pixels composited, including fully transparent groups.
+   */
+  pixelWork: number;
 }
 export interface SceneWork {
   clips?: SceneClipWork | null;

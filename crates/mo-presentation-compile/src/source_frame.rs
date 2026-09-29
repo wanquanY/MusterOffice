@@ -2,11 +2,14 @@
 //! shape-local geometry; page transforms, paint, clipping and publication remain
 //! the page compiler's responsibility.
 pub(crate) mod backend;
+pub mod capacity;
+mod clip;
 mod number;
 mod properties;
 mod spacing;
 mod types;
 use crate::source_text::{self, SourceParagraphPlan, SourceTextLimits, SourceTextPreparation};
+pub use clip::FrameClip;
 use mo_geometry::{Fixed, Point, Rect};
 use mo_presentation_source::source::{
     SourceIndex,
@@ -129,6 +132,29 @@ pub(crate) fn prepare(
         }
     };
     let region = number::region(&geometry, &body)?;
+    prepare_bound(
+        index,
+        prepared,
+        body,
+        region,
+        q.bounds_tolerance,
+        manifest,
+        check,
+    )
+}
+pub(crate) fn prepare_bound(
+    index: &SourceIndex,
+    prepared: crate::source_text::PreparedSourceText,
+    body: EffectiveTextBody,
+    region: SourceFrameRegion,
+    bounds_tolerance: Fixed,
+    manifest: &PreparedManifest<'_, '_>,
+    check: &dyn Fn() -> bool,
+) -> Result<PreparedFrame, SourceFrameError> {
+    properties::body(&body)?;
+    if !(256..=1i128 << 32).contains(&bounds_tolerance.raw()) {
+        return Err(mo_text::TextError::Invalid("path bounds tolerance").into());
+    }
     let mut specs = Vec::new();
     for (i, (native, p)) in prepared
         .source()
@@ -139,7 +165,12 @@ pub(crate) fn prepare(
     {
         cancel(check)?;
         specs.push(properties::paragraph(
-            index, i as u32, native, p, &region, check,
+            index,
+            prepared.source().paragraph_start + i as u32,
+            native,
+            p,
+            &region,
+            check,
         )?);
         manifest
             .validate_paragraph(input(p), check)
@@ -151,7 +182,7 @@ pub(crate) fn prepare(
         body,
         region,
         specs,
-        bounds_tolerance: q.bounds_tolerance,
+        bounds_tolerance,
     })
 }
 pub(crate) fn compute(
@@ -194,7 +225,7 @@ pub(crate) fn compute(
             .map_err(|e| prepared.text_error(i as u32, e))?;
         let incomplete = || {
             mapping(SourceFrameIssue::IncompleteParagraph {
-                paragraph: i as u32,
+                paragraph: prepared.source().paragraph_start + i as u32,
                 flow: computed.geometry.paths.layout.issues.clone(),
                 geometry: computed
                     .geometry
@@ -349,6 +380,7 @@ pub(crate) fn compute(
         profile: PROFILE.into(),
         text,
         inputs,
+        clip: FrameClip::from_body(&body, &region),
         body,
         region,
         paragraphs,
@@ -358,4 +390,59 @@ pub(crate) fn compute(
         alignment_rounding_bound: align,
         work: worker.work,
     })
+}
+
+impl super::source_table::TableFrameCompiler<'_> {
+    pub(crate) fn prepare_frame(
+        &self,
+        cell: mo_presentation_source::source::table::SourceCellAddress,
+        manifest: &PreparedManifest<'_, '_>,
+        limits: SourceFrameLimits,
+        bounds_tolerance: Fixed,
+        check: &dyn Fn() -> bool,
+    ) -> Result<PreparedFrame, SourceFrameError> {
+        cancel(check)?;
+        let geometry = self
+            .geometry
+            .cell(cell)
+            .ok_or_else(|| mapping(SourceFrameIssue::InvalidRegion))?;
+        if geometry.region.origin != cell {
+            return Err(mapping(SourceFrameIssue::CoveredCell {
+                cell,
+                origin: geometry.region.origin,
+            }));
+        }
+        let text = match self.text.prepare(
+            cell,
+            SourceTextLimits {
+                cascade: mo_presentation_source::source::text::cascade::TextCascadeLimits {
+                    max_paragraphs: limits.max_paragraphs,
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
+            check,
+        )? {
+            SourceTextPreparation::Prepared { text } => text,
+            SourceTextPreparation::Unresolved { issue } => {
+                return Err(mapping(SourceFrameIssue::Text { reason: issue }));
+            }
+        };
+        let body = match self.body.resolve(cell, TextBodyLimits::default(), check)? {
+            TextBodyOutcome::Resolved { body } => *body,
+            TextBodyOutcome::Unresolved { reason } => {
+                return Err(mapping(SourceFrameIssue::Body { reason }));
+            }
+        };
+        let region = number::cell(&geometry, &body)?;
+        prepare_bound(
+            self.index,
+            text,
+            body,
+            region,
+            bounds_tolerance,
+            manifest,
+            check,
+        )
+    }
 }

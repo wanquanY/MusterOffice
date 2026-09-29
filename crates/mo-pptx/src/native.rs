@@ -2,11 +2,13 @@
 //! native defaults and author-unit conversion belong to the shared plan.
 mod geometry;
 mod paint;
+mod table;
 mod text;
 use crate::{PptxError, value, xml::Xml};
-pub(crate) use geometry::{geometry, transform};
+pub(crate) use geometry::{frame_transform, geometry, transform};
 pub(crate) use paint::{background, color, fill, line};
 use serde::Serialize;
+pub(crate) use table::table;
 pub(crate) use text::{font, text};
 
 pub(crate) fn lexical(value: &impl Serialize) -> Result<String, PptxError> {

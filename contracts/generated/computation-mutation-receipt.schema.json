@@ -13,6 +13,17 @@
     "semanticDigest": {
       "$ref": "#/$defs/Digest"
     },
+    "template": {
+      "description": "Source and parameter evidence for a new independent document. It is not\na transaction committed against the source, nor the new document's base.",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/InstantiationReceipt"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "transaction": {
       "anyOf": [
         {
@@ -196,6 +207,27 @@
       },
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
     },
+    "DocumentScopeMap": {
+      "description": "Total mapping for whole-document instantiation: (source document, local ID)\nbecomes (instance document, same local ID). This preserves every internal\nreference, including opaque native relationships, without an O(n) identity\ntable. It is not a mapping for copying a page into an existing document.",
+      "type": "object",
+      "properties": {
+        "instanceDocument": {
+          "$ref": "#/$defs/DocumentId"
+        },
+        "localIdPolicy": {
+          "$ref": "#/$defs/LocalIdPolicy"
+        },
+        "sourceDocument": {
+          "$ref": "#/$defs/DocumentId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceDocument",
+        "instanceDocument",
+        "localIdPolicy"
+      ]
+    },
     "FontId": {
       "type": "string",
       "maxLength": 128,
@@ -204,6 +236,61 @@
       },
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
     },
+    "InstantiationReceipt": {
+      "type": "object",
+      "properties": {
+        "bindingTransaction": {
+          "description": "Pure parameter computation against the immutable source. This is not a\ncommit to the template or the instance. Scope mapping follows binding.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TransactionReceipt"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "boundParameters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TemplateParameterId"
+          },
+          "uniqueItems": true
+        },
+        "requestDigest": {
+          "$ref": "#/$defs/Digest"
+        },
+        "requestId": {
+          "$ref": "#/$defs/RequestId"
+        },
+        "revision": {
+          "$ref": "#/$defs/Digest"
+        },
+        "scopeMap": {
+          "$ref": "#/$defs/DocumentScopeMap"
+        },
+        "semanticDigest": {
+          "$ref": "#/$defs/Digest"
+        },
+        "source": {
+          "$ref": "#/$defs/TemplateSource"
+        },
+        "templateDigest": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "requestDigest",
+        "templateDigest",
+        "source",
+        "scopeMap",
+        "boundParameters",
+        "revision",
+        "semanticDigest"
+      ]
+    },
     "LayoutId": {
       "type": "string",
       "maxLength": 128,
@@ -211,6 +298,12 @@
         "pattern": "[^A-Za-z0-9_.:-]"
       },
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "LocalIdPolicy": {
+      "type": "string",
+      "enum": [
+        "preserve"
+      ]
     },
     "MasterId": {
       "type": "string",
@@ -259,6 +352,34 @@
         "pattern": "[^A-Za-z0-9_.:-]"
       },
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "TemplateParameterId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "TemplateSource": {
+      "type": "object",
+      "properties": {
+        "documentId": {
+          "$ref": "#/$defs/DocumentId"
+        },
+        "revision": {
+          "$ref": "#/$defs/Digest"
+        },
+        "semanticDigest": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "documentId",
+        "revision",
+        "semanticDigest"
+      ]
     },
     "ThemeId": {
       "type": "string",

@@ -13,7 +13,7 @@ pub(super) struct Context {
     model_asset_id: RequestId,
     pub resource_assets: BTreeMap<ResourceId, RequestId>,
     font_profile_asset_id: RequestId,
-    font_bundle_asset_id: Option<RequestId>,
+    pub font_bundle_asset_id: Option<RequestId>,
     registry_asset_id: RequestId,
 }
 #[derive(Deserialize)]

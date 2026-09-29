@@ -1,6 +1,27 @@
 use super::*;
+use crate::source::table::{SourceCellAddress, styles::TableStyleRegion};
 use crate::source::theme::SourceThemeDefaultKind;
 use mo_common::Digest;
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(
+    tag = "kind",
+    rename_all = "camelCase",
+    rename_all_fields = "camelCase",
+    deny_unknown_fields
+)]
+pub enum TableTextStyleSource {
+    Inline { object: SourceObjectRef },
+    Catalog { part: String, style_id: String },
+}
+impl TableTextStyleSource {
+    pub fn lexical_bytes(&self) -> usize {
+        match self {
+            Self::Inline { object } => object.part.len(),
+            Self::Catalog { part, style_id } => part.len() + style_id.len(),
+        }
+    }
+}
 
 /// This is a declaration cascade, not Office/WPS visual conformance or font binding.
 pub const PROFILE: &str = "drawingml-text-cascade-draft-v1";
@@ -13,6 +34,11 @@ pub const PROFILE: &str = "drawingml-text-cascade-draft-v1";
     deny_unknown_fields
 )]
 pub enum TextStyleOrigin {
+    TableStyle {
+        source: TableTextStyleSource,
+        region: TableStyleRegion,
+        source_ordinal: u32,
+    },
     Object {
         object: SourceObjectRef,
         source_ordinal: u32,
@@ -40,12 +66,14 @@ impl TextStyleOrigin {
             | Self::Master { source_ordinal, .. }
             | Self::Presentation { source_ordinal, .. }
             | Self::Theme { source_ordinal, .. } => *source_ordinal = ordinal,
+            Self::TableStyle { source_ordinal, .. } => *source_ordinal = ordinal,
             Self::ProfileDefault {} => (),
         }
         result
     }
     pub(super) fn bytes(&self) -> usize {
         match self {
+            Self::TableStyle { source, .. } => source.lexical_bytes() + 128,
             Self::Object { object, .. } => object.part.len() + 64,
             Self::Master { part, .. }
             | Self::Presentation { part, .. }
@@ -135,10 +163,24 @@ pub struct CascadedText {
     pub profile: String,
     pub source_sha256: Digest,
     pub object: SourceObjectRef,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cell: Option<SourceCellAddress>,
+    /// Offset into SourceObject.paragraphs; result paragraph vectors are local.
+    #[serde(default, skip_serializing_if = "is_zero")]
+    pub paragraph_start: u32,
     /// Shape/default style fallback, independent of explicit per-script fonts.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub font_reference: Option<TextStyleDeclaration>,
     pub paragraphs: Vec<CascadedParagraph>,
+}
+fn is_zero(v: &u32) -> bool {
+    *v == 0
+}
+impl CascadedText {
+    pub fn native_paragraph(&self, local: u32) -> Option<u32> {
+        ((local as usize) < self.paragraphs.len()).then_some(())?;
+        self.paragraph_start.checked_add(local)
+    }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(
@@ -148,6 +190,12 @@ pub struct CascadedText {
     deny_unknown_fields
 )]
 pub enum TextCascadeUnresolved {
+    TableGrid {
+        reason: crate::source::table::grid::NativeTableGridIssue,
+    },
+    TableStyle {
+        reason: crate::source::table::styles::TableStyleSelectionError,
+    },
     NoTextBody {},
     Placeholder {
         object: SourceObjectRef,

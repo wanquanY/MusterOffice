@@ -93,8 +93,9 @@ pub(crate) fn compile_inner(
             return Err(RasterError::Limit("drawn commands"));
         }
     }
-    let clip_work = crate::clip::prepare(request, check)?;
-    let composite = crate::composite::prepare(request, check)?;
+    let groups = crate::opacity::prepare(request, check)?;
+    let composite = crate::composite::prepare(request, &groups, check)?;
+    let clip_work = crate::clip::prepare(request, &groups.scopes, check)?;
     let mut strokes = crate::stroke::Strokes::default();
     let mut paints = Vec::with_capacity(request.draws.len());
     let mut gradients = crate::gradient::Gradients::default();
@@ -105,14 +106,15 @@ pub(crate) fn compile_inner(
     let mut stroke_draws = 0;
     for draw in &request.draws {
         cancel(check)?;
-        let brush = if let Brush::Snapshot { after_draws } = &draw.brush {
+        let brush = if let Brush::Snapshot { after_draws, scope } = &draw.brush {
+            let capture = crate::composite::capture(request, &groups.scopes, *after_draws, *scope)?;
             (
                 0,
                 0,
                 0,
                 composite
-                    .prefixes
-                    .binary_search(after_draws)
+                    .captures
+                    .binary_search(&capture)
                     .expect("admitted snapshot") as u32
                     + 1,
             )
@@ -133,8 +135,10 @@ pub(crate) fn compile_inner(
             0
         });
     }
-    let has_composite =
-        composite.work.is_some() || gradients.has_planes || gradients.has_office_gamma;
+    let has_composite = groups.work.is_some()
+        || composite.work.is_some()
+        || gradients.has_planes
+        || gradients.has_office_gamma;
     let has_clips = clip_work.is_some() || has_composite;
     let brush_words = if image_brushes.has_domains || has_clips {
         14
@@ -145,8 +149,14 @@ pub(crate) fn compile_inner(
         2 + i.len() * 4 + image_brushes.words.len() * brush_words
     });
     let count = 10
+        + if groups.work.is_some() {
+            1 + request.opacity_groups.len() * 3
+        } else {
+            0
+        }
         + if has_composite {
-            1 + composite.prefixes.len() + request.draws.len()
+            1 + composite.captures.len() * if composite.scoped { 2 } else { 1 }
+                + request.draws.len()
         } else {
             0
         }
@@ -167,7 +177,11 @@ pub(crate) fn compile_inner(
         .map_err(|_| RasterError::Host("draw frame allocation"))?;
     frame.extend_from_slice(&[
         0x4d4f534b,
-        if gradients.elliptic.is_some() {
+        if composite.scoped {
+            14
+        } else if groups.work.is_some() {
+            13
+        } else if gradients.elliptic.is_some() {
             12
         } else if gradients.has_rectangular {
             11
@@ -205,7 +219,10 @@ pub(crate) fn compile_inner(
         frame.push(request.clips.len() as u32);
     }
     if has_composite {
-        frame.push(composite.prefixes.len() as u32);
+        frame.push(composite.captures.len() as u32);
+    }
+    if groups.work.is_some() {
+        frame.push(request.opacity_groups.len() as u32);
     }
     let mut origins = Vec::new();
     origins
@@ -287,7 +304,15 @@ pub(crate) fn compile_inner(
             device[1].to_bits(),
         ]);
     }
-    frame.extend_from_slice(&composite.prefixes);
+    for capture in &composite.captures {
+        frame.push(capture.after_draws);
+        if composite.scoped {
+            frame.push(capture.scope);
+        }
+    }
+    for group in &request.opacity_groups {
+        frame.extend_from_slice(&[group.first_draw, group.end_draw, u32::from(group.opacity)]);
+    }
     for ((draw, paint), (color, gradient, image, snapshot)) in
         request.draws.iter().zip(paints).zip(brushes)
     {
@@ -331,6 +356,7 @@ pub(crate) fn compile_inner(
             frame,
             pixel_bytes: v.width as usize * v.height as usize * 4,
             work: RasterWork {
+                opacity_groups: groups.work,
                 elliptic_gradients: gradients.elliptic,
                 compositing: composite.work,
                 clips: clip_work,

@@ -67,7 +67,8 @@ impl AuthorPlayback {
         let reply = self.pipe.call(&request, empty(), empty(), check)?;
         match reply.info {
             R::Rendered { info }
-                if info.profile == mo_kernel_api::PLAYBACK_PAGE_PROFILE
+                if info.profile
+                    == mo_presentation_compile::playback::frame_profile(&info.frame)
                     && info.frame.state.binding == self.info.binding
                     && info.frame.state.time == at.normalized() =>
             {

@@ -1,9 +1,9 @@
-use crate::angle::Angle;
 use crate::{
     CompileError, ObjectPlacement, PROFILE, PagePlacementRequest, PagePlacements, PlacementSurface,
     cancel,
     placement_core::{Engine, Frame, State},
 };
+use crate::{angle::Angle, sampled_properties::SampledProperties};
 use mo_common::{Digest, Emu, ObjectId};
 use mo_presentation_model::{self as model, ContainerId, ObjectContent, ValidationLimits};
 use std::collections::BTreeMap;
@@ -33,7 +33,7 @@ pub fn page_placements(
 pub(crate) fn place_validated(
     request: &PagePlacementRequest,
     document_sha256: &Digest,
-    rotations: &BTreeMap<ObjectId, Angle>,
+    transforms: &BTreeMap<ObjectId, SampledProperties>,
     check: &dyn Fn() -> bool,
 ) -> Result<PagePlacements, CompileError> {
     cancel(check)?;
@@ -67,6 +67,13 @@ pub(crate) fn place_validated(
             .collect();
         while let Some((id, parent, depth)) = pending.pop() {
             cancel(check)?;
+            // A hidden group suppresses its subtree. Child visibility cannot
+            // punch through an invisible ancestor; geometry is unchanged.
+            if transforms.get(id).and_then(|v| v.visibility)
+                == Some(mo_timeline::Visibility::Hidden)
+            {
+                continue;
+            }
             let o = &d.objects[id];
             let t = o
                 .transform
@@ -89,10 +96,14 @@ pub(crate) fn place_validated(
                         y: Emu::new(0),
                     },
                     source_size,
-                    rotation: rotations
+                    rotation: transforms
                         .get(id)
-                        .cloned()
+                        .and_then(|v| v.rotation.as_ref())
+                        .map(|v| v.resolve(Angle::integer(i64::from(t.normalized_rotation()))))
+                        .transpose()?
                         .unwrap_or_else(|| Angle::integer(i64::from(t.normalized_rotation()))),
+                    scale: transforms.get(id).and_then(|v| v.scale.clone()),
+                    motion: transforms.get(id).and_then(|v| v.motion_emu(d.page_size)),
                     flips: [t.flip_horizontal, t.flip_vertical],
                 },
                 &parent,

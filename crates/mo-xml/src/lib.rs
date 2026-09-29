@@ -1,5 +1,6 @@
 //! Bounded, namespace-aware XML events. No external entities or host I/O.
 mod attribute_edit;
+mod child_edit;
 mod edit_bytes;
 mod encoding;
 pub mod mce;
@@ -13,6 +14,7 @@ pub fn is_ncname(value: &str) -> bool {
     names::ncname(value)
 }
 pub use attribute_edit::{AttributeEdit, AttributeRewriteLimits, rewrite_attributes};
+pub use child_edit::append_child;
 pub use scan::{scan, scan_with_control};
 use std::ops::Range;
 pub use text_edit::{TextReplacement, TextRewriteLimits, rewrite_text};

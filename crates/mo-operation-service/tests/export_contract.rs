@@ -53,6 +53,7 @@ fn mutation_receipt_and_failure_wire_shapes_remain_compatible() {
         receipt: &'a MutationReceipt,
     }
     let mutation = MutationReceipt {
+        template: None,
         document_id: DocumentId::new("doc").unwrap(),
         revision: Digest::from_sha256([1; 32]),
         semantic_digest: Digest::from_sha256([2; 32]),

@@ -89,6 +89,9 @@ pub struct SourceTextPageRasterInfo {
     pub page: SourcePageRasterInfo,
     pub text_frames: u32,
     pub text_work: FrameWork,
+    /// Missing in historical responses; absence never means measured to fit.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub text_capacity: Option<crate::source_frame::capacity::TextCapacity>,
 }
 #[derive(Debug, Clone, Copy)]
 pub struct TextPageLimits {
@@ -98,6 +101,9 @@ pub struct TextPageLimits {
     /// Conservative source computation-plan accounting, not total heap/RSS.
     /// Source catalogs, cascade and the in-flight frame have separate bounds.
     pub max_prepared_plan_bytes: usize,
+    /// Aggregate physical table topology and coordinate declarations per page.
+    /// Covered cells are charged even though only merge origins paint text.
+    pub tables: crate::source_table::TableGeometryLimits,
     /// Work allowances are shared by all frames, never reset per object.
     pub work: SourceFrameLimits,
 }
@@ -108,6 +114,7 @@ impl Default for TextPageLimits {
             max_paragraphs: 512,
             max_runs: 4096,
             max_prepared_plan_bytes: 64 * 1024 * 1024,
+            tables: crate::source_table::TableGeometryLimits::default(),
             work: SourceFrameLimits::default(),
         }
     }
@@ -121,4 +128,19 @@ pub struct TextPageContent {
     pub text_sources: Vec<TextPagePaintSource>,
     pub decoration_sources: Vec<TextDecorationSource>,
     pub text_work: FrameWork,
+}
+
+pub(crate) fn capacity(
+    texts: &[TextPageBinding],
+    check: &dyn Fn() -> bool,
+) -> Result<crate::source_frame::capacity::TextCapacity, SourcePageError> {
+    use crate::source_frame::capacity;
+    let frames = texts
+        .iter()
+        .map(|text| capacity::measure(&text.frame, check).map_err(SourcePageError::from))
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(capacity::TextCapacity {
+        profile: capacity::PROFILE.into(),
+        frames,
+    })
 }

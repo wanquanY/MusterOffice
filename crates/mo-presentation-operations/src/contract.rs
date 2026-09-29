@@ -1,9 +1,11 @@
 use crate::{AssetBinding, ExportSettings, Failure, FailureCode};
-use mo_common::{Digest, DocumentId, RequestId};
+use mo_common::{Digest, DocumentId, RequestId, TemplateParameterId};
 use mo_presentation_edit::{OperationEntry, TransactionReceipt};
 use mo_presentation_model::Document;
+use mo_presentation_template::{BindingValue, InstantiationReceipt, TemplateDefinition};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
 
 pub const MAX_OPERATION_BYTES: usize = 32 * 1024 * 1024;
 
@@ -36,6 +38,19 @@ pub enum DocumentAction {
     Create {
         document: Box<Document>,
     },
+    /// Validates the caller's pinned source and parameter targets. The result
+    /// contains real source values and a digest, without creating a document.
+    DescribeTemplate {
+        definition: Box<TemplateDefinition>,
+    },
+    /// The invocation snapshot is the immutable template source, not a base
+    /// revision of the new document. Catalog ownership remains with the caller.
+    InstantiateTemplate {
+        document_id: DocumentId,
+        definition: Box<TemplateDefinition>,
+        template_digest: Digest,
+        bindings: BTreeMap<TemplateParameterId, BindingValue>,
+    },
     Apply {
         document_id: DocumentId,
         base_revision: Digest,
@@ -51,9 +66,11 @@ pub enum DocumentAction {
 impl DocumentAction {
     pub fn profile(&self) -> OperationProfile {
         match self {
-            Self::Import { .. } | Self::Create { .. } | Self::Apply { .. } => {
-                OperationProfile::AuthorModel
-            }
+            Self::Import { .. }
+            | Self::Create { .. }
+            | Self::Apply { .. }
+            | Self::DescribeTemplate { .. }
+            | Self::InstantiateTemplate { .. } => OperationProfile::AuthorModel,
             Self::Export { .. } => OperationProfile::ResourceDelivery,
         }
     }
@@ -61,6 +78,8 @@ impl DocumentAction {
         match self {
             Self::Import { .. } => "presentations.import",
             Self::Create { .. } => "presentations.create",
+            Self::DescribeTemplate { .. } => "templates.describe",
+            Self::InstantiateTemplate { .. } => "templates.instantiate",
             Self::Apply { .. } => "presentations.apply",
             Self::Export { .. } => "presentations.export",
         }
@@ -68,7 +87,9 @@ impl DocumentAction {
     pub fn document_id(&self) -> &DocumentId {
         match self {
             Self::Create { document } => &document.id,
+            Self::DescribeTemplate { definition } => &definition.source.document_id,
             Self::Import { document_id, .. }
+            | Self::InstantiateTemplate { document_id, .. }
             | Self::Apply { document_id, .. }
             | Self::Export { document_id, .. } => document_id,
         }
@@ -137,4 +158,8 @@ pub struct MutationReceipt {
     pub revision: Digest,
     pub semantic_digest: Digest,
     pub transaction: Option<Box<TransactionReceipt>>,
+    /// Source and parameter evidence for a new independent document. It is not
+    /// a transaction committed against the source, nor the new document's base.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub template: Option<Box<InstantiationReceipt>>,
 }

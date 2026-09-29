@@ -20,6 +20,92 @@ fn time(n: i64, d: u32) -> RationalTime {
     RationalTime::new(n, d).unwrap()
 }
 #[test]
+fn composed_angles_resolve_against_original_local_rotation_inside_groups() {
+    let mut q = request();
+    let slide = q.page.document.slide_order[0].clone();
+    let group = ObjectId::new("group:1").unwrap();
+    let child = ObjectId::new("shape:1").unwrap();
+    let g = q
+        .page
+        .document
+        .objects
+        .get_mut(&group)
+        .unwrap()
+        .transform
+        .as_mut()
+        .unwrap();
+    g.rotation = 1200000;
+    g.flip_horizontal = true;
+    q.page
+        .document
+        .objects
+        .get_mut(&child)
+        .unwrap()
+        .transform
+        .as_mut()
+        .unwrap()
+        .rotation = 600000;
+    let timeline = q.page.document.timelines.get_mut(&slide).unwrap();
+    for node in &mut timeline.nodes {
+        node.duration = time(2, 1);
+        node.fill = FillMode::Hold;
+        if let Effect::Rotation {
+            from,
+            to,
+            composition,
+            ..
+        } = &mut node.effect
+        {
+            *from = 0;
+            *to = 3600000;
+            *composition = RotationComposition::Layout;
+        }
+    }
+    let mut added = timeline.nodes[1].clone();
+    added.id = TimingNodeId::new("additional-spin").unwrap();
+    added.start = StartCondition::Single(TimeCondition::At { offset: time(1, 1) });
+    if let Effect::Rotation {
+        to, composition, ..
+    } = &mut added.effect
+    {
+        *to = -1200000;
+        *composition = RotationComposition::Add;
+    }
+    timeline.nodes.push(added);
+    let mut plan =
+        PlaybackPagePlan::new(q.clone(), binding(), TimelineLimits::default(), &|| false).unwrap();
+    // Independent integer-angle static geometry, including a reflected parent.
+    for (at, group_angle, child_angle) in [
+        (0, 1200000, 600000),
+        (1, 3000000, 2400000),
+        (2, 4800000, 3600000),
+        (3, 4800000, 3000000),
+        (1, 3000000, 2400000),
+    ] {
+        let frame = plan.compile_frame(time(at, 1), None, &|| false).unwrap();
+        let mut control = q.clone();
+        control.page.document.timelines.clear();
+        for (id, angle) in [(&group, group_angle), (&child, child_angle)] {
+            control
+                .page
+                .document
+                .objects
+                .get_mut(id)
+                .unwrap()
+                .transform
+                .as_mut()
+                .unwrap()
+                .rotation = angle;
+        }
+        let expected = compile_page(&control, &|| false).unwrap();
+        assert_eq!(
+            serde_json::to_value(&frame.page.raster).unwrap(),
+            serde_json::to_value(&expected.raster).unwrap(),
+            "{at}"
+        );
+    }
+}
+#[test]
 fn integer_samples_share_static_geometry_without_mutating_the_plan() {
     let q = request();
     let original = q.page.document.semantic_digest().unwrap();
@@ -96,10 +182,11 @@ impl RasterBackend for Never {
 #[test]
 fn event_gaps_and_unimplemented_paint_never_reach_the_backend() {
     let mut q = request();
-    q.page.document.timelines.values_mut().next().unwrap().nodes[0].start = StartCondition::Click {
-        target: None,
-        delay: time(0, 1),
-    };
+    q.page.document.timelines.values_mut().next().unwrap().nodes[0].start =
+        StartCondition::Single(TimeCondition::Click {
+            target: None,
+            delay: time(0, 1),
+        });
     let mut plan =
         PlaybackPagePlan::new(q, binding(), TimelineLimits::default(), &|| false).unwrap();
     assert!(matches!(

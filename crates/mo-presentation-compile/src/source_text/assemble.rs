@@ -18,7 +18,11 @@ pub(super) fn paragraph(
     check: &dyn Fn() -> bool,
 ) -> Result<PreparedParagraph, SourceTextError> {
     budget.charge(2048)?;
-    let p = &source.paragraphs[paragraph as usize];
+    let local_paragraph = paragraph;
+    let paragraph = source
+        .native_paragraph(local_paragraph)
+        .ok_or(SourceTextError::Invalid("source paragraph scope"))?;
+    let p = &source.paragraphs[local_paragraph as usize];
     if p.runs.len() != runs.len() {
         return Err(SourceTextError::Invalid("source run count"));
     }
@@ -112,7 +116,7 @@ pub(super) fn paragraph(
     let mut compiler = Compiler {
         index,
         source,
-        paragraph,
+        paragraph: local_paragraph,
         budget,
         check,
         cache: BTreeMap::new(),
@@ -219,7 +223,7 @@ impl Compiler<'_> {
             style.attributes.alternative_language.as_deref(),
         ) else {
             return Ok(Err(SourceTextIssue::Script {
-                paragraph: self.paragraph,
+                paragraph: self.source.paragraph_start + self.paragraph,
                 start,
                 end,
                 script: script.into(),
@@ -238,7 +242,7 @@ impl Compiler<'_> {
             TypefaceOutcome::Named { font } => *font,
             TypefaceOutcome::Unresolved { reason } => {
                 return Ok(Err(SourceTextIssue::Typeface {
-                    paragraph: self.paragraph,
+                    paragraph: self.source.paragraph_start + self.paragraph,
                     run,
                     slot,
                     reason,
@@ -252,7 +256,7 @@ impl Compiler<'_> {
             .any(|f| f.charset == Some(2))
         {
             return Ok(Err(SourceTextIssue::SymbolFont {
-                paragraph: self.paragraph,
+                paragraph: self.source.paragraph_start + self.paragraph,
                 run,
             }));
         }

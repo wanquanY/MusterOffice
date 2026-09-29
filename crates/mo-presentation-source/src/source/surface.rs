@@ -9,6 +9,7 @@ struct Frame {
     depth: usize,
     has_id: bool,
     has_text: bool,
+    table_data: bool,
 }
 enum FillOwner {
     Effects(usize),
@@ -19,15 +20,6 @@ enum FillOwner {
     Picture(usize),
     Background,
     RootGroup,
-}
-struct TextCapture {
-    object: usize,
-    paragraph: usize,
-    run: usize,
-    depth: usize,
-    ordinal: usize,
-    in_alternate: bool,
-    physical_children: bool,
 }
 pub(super) struct ReadResult {
     pub surface: SourceSurface,
@@ -49,6 +41,7 @@ pub(super) fn read(
     geometry_budget: &mut geometry::Budget,
     paint_budget: &mut paint::Budget,
     text_budget: &mut text::Budget,
+    table_budget: &mut table::Budget,
     check: &dyn Fn() -> bool,
 ) -> Result<ReadResult, crate::PptxError> {
     let mut surface = SourceSurface {
@@ -75,6 +68,7 @@ pub(super) fn read(
         text_edit_barriers: Vec::new(),
         notices: Vec::new(),
     };
+    let mut text_roots = text::CatalogRoots::default();
     let mut stack: Vec<ExpandedName> = Vec::new();
     let mut frames: Vec<Frame> = Vec::new();
     let mut seen_ids = BTreeSet::new();
@@ -82,8 +76,8 @@ pub(super) fn read(
     let mut common = false;
     let mut tree = false;
     let mut surface_root_seen = false;
-    let mut capture: Option<TextCapture> = None;
-    let mut run_text_seen = BTreeSet::new();
+    let mut content_capture: Option<(usize, text::ContentReader)> = None;
+    let mut table_capture: Option<(usize, table::Reader)> = None;
     let mut bindings = BTreeMap::new();
     let mut transforms = BTreeMap::new();
     let mut notices = BTreeSet::new();
@@ -109,8 +103,11 @@ pub(super) fn read(
                         barriers
                             .insert("timing references require text-range retargeting".to_owned());
                     }
-                    if let Some(c) = &mut capture {
-                        c.physical_children = true;
+                    if let Some((_, reader)) = &mut content_capture {
+                        reader.physical_element();
+                    }
+                    if let Some((_, reader)) = &mut table_capture {
+                        reader.physical_element();
                     }
                     return Ok(());
                 }
@@ -131,6 +128,30 @@ pub(super) fn read(
                 XmlEvent::Start { element, .. } => {
                     let depth = stack.len();
                     let node_ordinal = source_ordinal.expect("projected start has source ordinal");
+                    if let Some((_, reader)) = &mut content_capture {
+                        reader.start(
+                            element,
+                            depth,
+                            node_ordinal,
+                            !alternate_ancestors.is_empty(),
+                        )?;
+                    }
+                    if let Some((_, reader)) = &mut table_capture {
+                        reader.start(
+                            element,
+                            depth,
+                            node_ordinal
+                                .try_into()
+                                .map_err(|_| XmlError::Limit("table ordinal"))?,
+                            extension,
+                            !alternate_ancestors.is_empty(),
+                            table_budget,
+                            text_budget,
+                            line_budget,
+                            paint_budget,
+                            limits,
+                        )?;
+                    }
                     if let Some(reader) = &mut style_capture {
                         reader.start(
                             element,
@@ -215,9 +236,6 @@ pub(super) fn read(
                             )?,
                         ));
                     }
-                    if capture.is_some() {
-                        return Err(malformed("native text leaf contains an element"));
-                    }
                     if depth == 0 {
                         if surface_root_seen || !element.name.is(P, root) {
                             return Err(malformed("surface root mismatch"));
@@ -287,6 +305,7 @@ pub(super) fn read(
                         }
                         let index = surface.objects.len();
                         surface.objects.push(SourceObject {
+                            table: None,
                             hidden: None,
                             text_body_ordinal: None,
                             visual_issues: Vec::new(),
@@ -327,12 +346,8 @@ pub(super) fn read(
                             depth,
                             has_id: false,
                             has_text: false,
+                            table_data: false,
                         });
-                        if kind == SourceObjectKind::GraphicFrame {
-                            notices.insert(
-                                "graphicFrame content retained; semantic import pending".to_owned(),
-                            );
-                        }
                     }
                     if !extension {
                         let owner = if depth == 2
@@ -557,72 +572,50 @@ pub(super) fn read(
                             if frame.has_text || object.kind != SourceObjectKind::Shape {
                                 return Err(malformed("invalid or duplicate native text body"));
                             }
+                            if !frame.has_id {
+                                return Err(malformed("text before object identity"));
+                            }
                             frame.has_text = true;
+                            content_capture = Some((frame.index, text::ContentReader::new(depth)));
                             object.text_body_ordinal = Some(
                                 node_ordinal
                                     .try_into()
                                     .map_err(|_| XmlError::Limit("text body ordinal"))?,
                             );
                         }
-                        if depth == frame.depth + 2
-                            && stack.last().is_some_and(|n| n.is(P, "txBody"))
-                            && element.name.is(A, "p")
-                        {
-                            object.paragraphs.push(Vec::new());
-                        }
-                        let in_paragraph = depth == frame.depth + 3
-                            && stack.last().is_some_and(|n| n.is(A, "p"))
-                            && stack[frame.depth + 1].is(P, "txBody");
-                        if in_paragraph && element.name.namespace == A {
-                            let kind = match element.name.local.as_str() {
-                                "r" => Some(SourceRunKind::Text),
-                                "br" => Some(SourceRunKind::Break),
-                                "fld" => Some(SourceRunKind::Field),
-                                _ => None,
-                            };
-                            if let Some(kind) = kind {
-                                object
-                                    .paragraphs
-                                    .last_mut()
-                                    .ok_or_else(|| malformed("run outside paragraph"))?
-                                    .push(SourceRun {
-                                        kind,
-                                        text: String::new(),
-                                        editable: false,
-                                        edit_constraint: (kind == SourceRunKind::Field)
-                                            .then_some(SourceTextConstraint::DynamicField),
-                                    });
+                        if !extension && object.kind == SourceObjectKind::GraphicFrame {
+                            if depth == frame.depth + 2
+                                && stack[frame.depth + 1].is(A, "graphic")
+                                && element.name.is(A, "graphicData")
+                            {
+                                frame.table_data =
+                                    element.attribute("uri") == Some(table::TABLE_URI);
                             }
-                        }
-                        if depth == frame.depth + 4
-                            && element.name.is(A, "t")
-                            && stack[frame.depth + 1].is(P, "txBody")
-                            && stack.last().is_some_and(|n| n.is(A, "r") || n.is(A, "fld"))
-                        {
-                            if !frame.has_id {
-                                return Err(malformed("text before object identity"));
+                            if frame.table_data
+                                && depth == frame.depth + 3
+                                && stack.last().is_some_and(|n| n.is(A, "graphicData"))
+                                && element.name.is(A, "tbl")
+                            {
+                                if !frame.has_id
+                                    || object.table.is_some()
+                                    || table_capture.is_some()
+                                {
+                                    return Err(malformed("invalid or duplicate native table"));
+                                }
+                                table_capture = Some((
+                                    frame.index,
+                                    table::Reader::new(
+                                        element,
+                                        depth,
+                                        node_ordinal
+                                            .try_into()
+                                            .map_err(|_| XmlError::Limit("table ordinal"))?,
+                                        object.native_id,
+                                        table_budget,
+                                        limits,
+                                    )?,
+                                ));
                             }
-                            let paragraph = object
-                                .paragraphs
-                                .len()
-                                .checked_sub(1)
-                                .ok_or_else(|| malformed("text outside paragraph"))?;
-                            let run = object.paragraphs[paragraph]
-                                .len()
-                                .checked_sub(1)
-                                .ok_or_else(|| malformed("text outside run"))?;
-                            if !run_text_seen.insert((frame.index, paragraph, run)) {
-                                return Err(malformed("duplicate native run text"));
-                            }
-                            capture = Some(TextCapture {
-                                object: frame.index,
-                                paragraph,
-                                run,
-                                depth,
-                                ordinal: node_ordinal,
-                                in_alternate: !alternate_ancestors.is_empty(),
-                                physical_children: false,
-                            });
                         }
                     }
                     if element.name.local == "extLst" {
@@ -678,6 +671,7 @@ pub(super) fn read(
                             .map_err(|_| XmlError::Limit("visual source ordinal"))?,
                         frames.last().map(|f| (f.index, f.depth)),
                         style_capture.is_some()
+                            || table_capture.is_some()
                             || fill_capture.is_some()
                             || line_capture.is_some()
                             || geometry_capture.is_some()
@@ -694,6 +688,7 @@ pub(super) fn read(
                     visual.text(
                         text,
                         style_capture.is_some()
+                            || table_capture.is_some()
                             || fill_capture.is_some()
                             || line_capture.is_some()
                             || geometry_capture.is_some()
@@ -712,16 +707,11 @@ pub(super) fn read(
                     if let Some((_, reader)) = &line_capture {
                         reader.text(text)?;
                     }
-                    if let Some(c) = &capture {
-                        *text_bytes = text_bytes
-                            .checked_add(text.len())
-                            .ok_or(XmlError::Limit("source text bytes"))?;
-                        if *text_bytes > limits.max_text_bytes {
-                            return Err(XmlError::Limit("source text bytes"));
-                        }
-                        surface.objects[c.object].paragraphs[c.paragraph][c.run]
-                            .text
-                            .push_str(text);
+                    if let Some((_, reader)) = &mut content_capture {
+                        reader.text(text, text_bytes, limits)?;
+                    }
+                    if let Some((_, reader)) = &mut table_capture {
+                        reader.text(text, text_bytes, table_budget, limits)?;
                     }
                 }
                 XmlEvent::End { .. } => {
@@ -733,7 +723,7 @@ pub(super) fn read(
                         style_capture
                             .take()
                             .expect("checked text style capture")
-                            .finish(&mut surface.text)?;
+                            .finish_indexed(&mut surface.text, &mut text_roots)?;
                     }
                     if transform_capture
                         .as_ref()
@@ -812,35 +802,47 @@ pub(super) fn read(
                     } else if let Some((_, reader)) = &mut line_capture {
                         reader.end(depth)?;
                     }
-                    if capture.as_ref().is_some_and(|c| c.depth == depth) {
-                        let c = capture.take().expect("checked capture");
-                        let object = &mut surface.objects[c.object];
-                        let run = &mut object.paragraphs[c.paragraph][c.run];
-                        if run.kind == SourceRunKind::Text {
-                            run.edit_constraint = if c.in_alternate {
-                                Some(SourceTextConstraint::CompatibilityBranch)
-                            } else if c.physical_children {
-                                Some(SourceTextConstraint::StructuredLeaf)
-                            } else {
-                                None
-                            };
-                            run.editable = run.edit_constraint.is_none();
-                            bindings.insert(
-                                SourceTextTarget {
-                                    part: part.to_string(),
-                                    object_id: object.native_id,
-                                    paragraph: c
-                                        .paragraph
-                                        .try_into()
-                                        .map_err(|_| XmlError::Limit("paragraph index"))?,
-                                    run: c
-                                        .run
-                                        .try_into()
-                                        .map_err(|_| XmlError::Limit("run index"))?,
-                                },
-                                c.ordinal,
-                            );
+                    if let Some((_, reader)) = &mut content_capture {
+                        reader.end(depth);
+                    }
+                    if content_capture
+                        .as_ref()
+                        .is_some_and(|(_, r)| r.depth == depth)
+                    {
+                        let (owner, reader) = content_capture.take().expect("text content capture");
+                        reader.finish()?.publish(
+                            part.as_str(),
+                            &mut surface.objects[owner],
+                            &mut bindings,
+                        )?;
+                    }
+                    if let Some((_, reader)) = &mut table_capture {
+                        reader.end(depth)?;
+                    }
+                    if table_capture
+                        .as_ref()
+                        .is_some_and(|(_, r)| r.depth == depth)
+                    {
+                        let (owner, reader) = table_capture.take().expect("table capture");
+                        let read = reader.finish()?;
+                        read.content.publish(
+                            part.as_str(),
+                            &mut surface.objects[owner],
+                            &mut bindings,
+                        )?;
+                        surface.objects[owner].table = Some(read.table);
+                        text_roots.append(&mut surface.text, read.text)?;
+                        for (id, node) in read.effects {
+                            if surface.effect_nodes.insert(id, node).is_some() {
+                                return Err(malformed("duplicate table effect ordinal"));
+                            }
                         }
+                    }
+                    if let Some(frame) = frames.last_mut()
+                        && depth == frame.depth + 2
+                        && stack.last().is_some_and(|n| n.is(A, "graphicData"))
+                    {
+                        frame.table_data = false;
                     }
                     if frames.last().is_some_and(|f| f.depth == depth) {
                         let frame = frames.pop().expect("checked frame");
@@ -851,13 +853,10 @@ pub(super) fn read(
                         if frame.has_text && object.paragraphs.is_empty() {
                             return Err(malformed("text body has no paragraph"));
                         }
-                        if object.paragraphs.iter().enumerate().any(|(p, runs)| {
-                            runs.iter().enumerate().any(|(r, run)| {
-                                run.kind == SourceRunKind::Text
-                                    && !run_text_seen.contains(&(frame.index, p, r))
-                            })
-                        }) {
-                            return Err(malformed("regular text run has no text leaf"));
+                        if object.kind == SourceObjectKind::GraphicFrame && object.table.is_none() {
+                            notices.insert(
+                                "graphicFrame content retained; semantic import pending".to_owned(),
+                            );
                         }
                     }
                     visual.end(stack.len() - 1);

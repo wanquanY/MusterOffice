@@ -60,6 +60,7 @@ pub(super) fn read(
     let mut text_budget = text::Budget::default();
     let mut line_budget = line::Budget::default();
     let mut paint_budget = paint::Budget::default();
+    let mut table_budget = table::Budget::default();
     let mce_summary = mo_xml::mce::scan(
         &bytes,
         limits.package.xml,
@@ -260,6 +261,7 @@ pub(super) fn read(
             &mut geometry_budget,
             &mut paint_budget,
             &mut text_budget,
+            &mut table_budget,
             check,
         )?;
         read.surface.links = links::read(source, &part, kind)?;
@@ -297,6 +299,15 @@ pub(super) fn read(
         &mut text_budget,
         check,
     )?;
+    let table_styles = table::styles::load(
+        source,
+        &main,
+        &mut table_budget,
+        &mut line_budget,
+        &mut paint_budget,
+        limits,
+        check,
+    )?;
     notices.insert(
         "partial native projection; styles, layout, advanced objects and playback unresolved"
             .into(),
@@ -318,6 +329,7 @@ pub(super) fn read(
     Ok(BoundIndex {
         object_positions,
         index: SourceIndex {
+            table_styles,
             text: text_catalog,
             compatibility_profile: compatibility::PROFILE_ID.into(),
             main_compatibility: compatibility::record(mce_summary)?,

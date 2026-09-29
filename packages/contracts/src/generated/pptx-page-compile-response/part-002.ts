@@ -1,5 +1,219 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { BlendMode, ColorDependency, ColorNotice, ColorSample, Digest, EffectiveGradientShade, EffectiveImageMode, EffectiveLineDash, EffectiveLineFill, EffectiveLineJoin, Emu, FillOrigin, FillOutcome, FillPaintColors, FillTarget, FixedQ32, GeometryOrigin, GradientAlpha, GradientGeometry, LineOrigin, LineOutcome, LinePaintColor, NativeBlipCompression, NativeCompoundLine, NativeCoordinate, NativeFillAlignment, NativeLineCap, NativeLineEnd, NativeLineEndSize, NativePathShade, NativePattern, NativePenAlignment, NativePercentage, NativePresetDash, NativeTileFlip, PagePaintKind, SourceColorTransform, SourceColorValue, SourcePageProfile, SourcePlaceholderMatch, SurfaceKind, TransformValueSource } from './part-001.js';
+import type { ColorDependency, ColorNotice, ColorSample, Digest, EffectiveGradientShade, EffectiveImageMode, EffectiveLineDash, EffectiveLineFill, EffectiveLineJoin, Emu, FillOrigin, FillOutcome, FillPaintColors, FillTarget, FixedQ32, GeometryOrigin, LineGeometryOutcome, LineOrigin, LineOutcome, LinePaintColor, NativeBlipCompression, NativeCompoundLine, NativeCoordinate, NativeFillAlignment, NativeLineCap, NativeLineEnd, NativeLineEndSize, NativePathShade, NativePattern, NativePenAlignment, NativePercentage, NativePresetDash, NativeTileFlip, PagePaintKind, SourceColorTransform, SourceColorValue, SourcePageProfile, SourcePlaceholderMatch, SurfaceKind, TransformValueSource } from './part-001.js';
+import type { FillPath, OpacityGroup, PlacementUnresolved, Point10, Point8, Point9, RasterViewport, SourceVisualIssue, StrokeStyle, TableBorderTarget, TransformNode } from './part-003.js';
+
+export type NativeShapeType =
+  | "accentBorderCallout1"
+  | "accentBorderCallout2"
+  | "accentBorderCallout3"
+  | "accentCallout1"
+  | "accentCallout2"
+  | "accentCallout3"
+  | "actionButtonBackPrevious"
+  | "actionButtonBeginning"
+  | "actionButtonBlank"
+  | "actionButtonDocument"
+  | "actionButtonEnd"
+  | "actionButtonForwardNext"
+  | "actionButtonHelp"
+  | "actionButtonHome"
+  | "actionButtonInformation"
+  | "actionButtonMovie"
+  | "actionButtonReturn"
+  | "actionButtonSound"
+  | "arc"
+  | "bentArrow"
+  | "bentConnector2"
+  | "bentConnector3"
+  | "bentConnector4"
+  | "bentConnector5"
+  | "bentUpArrow"
+  | "bevel"
+  | "blockArc"
+  | "borderCallout1"
+  | "borderCallout2"
+  | "borderCallout3"
+  | "bracePair"
+  | "bracketPair"
+  | "callout1"
+  | "callout2"
+  | "callout3"
+  | "can"
+  | "chartPlus"
+  | "chartStar"
+  | "chartX"
+  | "chevron"
+  | "chord"
+  | "circularArrow"
+  | "cloud"
+  | "cloudCallout"
+  | "corner"
+  | "cornerTabs"
+  | "cube"
+  | "curvedConnector2"
+  | "curvedConnector3"
+  | "curvedConnector4"
+  | "curvedConnector5"
+  | "curvedDownArrow"
+  | "curvedLeftArrow"
+  | "curvedRightArrow"
+  | "curvedUpArrow"
+  | "decagon"
+  | "diagStripe"
+  | "diamond"
+  | "dodecagon"
+  | "donut"
+  | "doubleWave"
+  | "downArrow"
+  | "downArrowCallout"
+  | "ellipse"
+  | "ellipseRibbon"
+  | "ellipseRibbon2"
+  | "flowChartAlternateProcess"
+  | "flowChartCollate"
+  | "flowChartConnector"
+  | "flowChartDecision"
+  | "flowChartDelay"
+  | "flowChartDisplay"
+  | "flowChartDocument"
+  | "flowChartExtract"
+  | "flowChartInputOutput"
+  | "flowChartInternalStorage"
+  | "flowChartMagneticDisk"
+  | "flowChartMagneticDrum"
+  | "flowChartMagneticTape"
+  | "flowChartManualInput"
+  | "flowChartManualOperation"
+  | "flowChartMerge"
+  | "flowChartMultidocument"
+  | "flowChartOfflineStorage"
+  | "flowChartOffpageConnector"
+  | "flowChartOnlineStorage"
+  | "flowChartOr"
+  | "flowChartPredefinedProcess"
+  | "flowChartPreparation"
+  | "flowChartProcess"
+  | "flowChartPunchedCard"
+  | "flowChartPunchedTape"
+  | "flowChartSort"
+  | "flowChartSummingJunction"
+  | "flowChartTerminator"
+  | "foldedCorner"
+  | "frame"
+  | "funnel"
+  | "gear6"
+  | "gear9"
+  | "halfFrame"
+  | "heart"
+  | "heptagon"
+  | "hexagon"
+  | "homePlate"
+  | "horizontalScroll"
+  | "irregularSeal1"
+  | "irregularSeal2"
+  | "leftArrow"
+  | "leftArrowCallout"
+  | "leftBrace"
+  | "leftBracket"
+  | "leftCircularArrow"
+  | "leftRightArrow"
+  | "leftRightArrowCallout"
+  | "leftRightCircularArrow"
+  | "leftRightRibbon"
+  | "leftRightUpArrow"
+  | "leftUpArrow"
+  | "lightningBolt"
+  | "line"
+  | "lineInv"
+  | "mathDivide"
+  | "mathEqual"
+  | "mathMinus"
+  | "mathMultiply"
+  | "mathNotEqual"
+  | "mathPlus"
+  | "moon"
+  | "noSmoking"
+  | "nonIsoscelesTrapezoid"
+  | "notchedRightArrow"
+  | "octagon"
+  | "parallelogram"
+  | "pentagon"
+  | "pie"
+  | "pieWedge"
+  | "plaque"
+  | "plaqueTabs"
+  | "plus"
+  | "quadArrow"
+  | "quadArrowCallout"
+  | "rect"
+  | "ribbon"
+  | "ribbon2"
+  | "rightArrow"
+  | "rightArrowCallout"
+  | "rightBrace"
+  | "rightBracket"
+  | "round1Rect"
+  | "round2DiagRect"
+  | "round2SameRect"
+  | "roundRect"
+  | "rtTriangle"
+  | "smileyFace"
+  | "snip1Rect"
+  | "snip2DiagRect"
+  | "snip2SameRect"
+  | "snipRoundRect"
+  | "squareTabs"
+  | "star10"
+  | "star12"
+  | "star16"
+  | "star24"
+  | "star32"
+  | "star4"
+  | "star5"
+  | "star6"
+  | "star7"
+  | "star8"
+  | "straightConnector1"
+  | "stripedRightArrow"
+  | "sun"
+  | "swooshArrow"
+  | "teardrop"
+  | "trapezoid"
+  | "triangle"
+  | "upArrow"
+  | "upArrowCallout"
+  | "upDownArrow"
+  | "upDownArrowCallout"
+  | "uturnArrow"
+  | "verticalScroll"
+  | "wave"
+  | "wedgeEllipseCallout"
+  | "wedgeRectCallout"
+  | "wedgeRoundRectCallout";
+
+/**
+ * Porter-Duff composition, separate from the source brush and geometry mask.
+ */
+export type BlendMode = "sourceOver" | "source";
+
+export type GradientAlpha = "straight" | "premultiplied";
+
+export type GradientGeometry =
+  | {
+      end: Point1;
+      kind: "linear";
+      start: Point1;
+    }
+  | {
+      center: Point1;
+      kind: "radial";
+      radius: FixedQ32;
+    }
+  | {
+      field: GradientField;
+      kind: "plane";
+      plane: GradientPlane;
+    };
 
 export type GradientField =
   | {
@@ -68,6 +282,22 @@ export type GradientTile = "clamp" | "repeat" | "mirror" | "decal";
 export type ImageSampling = "nearest" | "linear";
 
 export type ImageTile = "clamp" | "repeat" | "mirror" | "decal";
+
+/**
+ * The source canvas at a capture point. Explicit captures may be consumed
+ * later in any group; their pixels remain immutable after the source closes.
+ */
+export type SnapshotScope =
+  | {
+      kind: "current";
+    }
+  | {
+      kind: "output";
+    }
+  | {
+      index: number;
+      kind: "group";
+    };
 
 export type StrokeCap = "butt" | "round" | "square";
 
@@ -168,6 +398,11 @@ export type SourcePageIssue =
     }
   | {
       kind: "pathFillModifier";
+    }
+  | {
+      first: TableBorderTarget;
+      kind: "tableBorderConflict";
+      second: TableBorderTarget;
     }
   | {
       kind: "fillSpace";
@@ -279,6 +514,14 @@ export interface SourcePagePaintBinding {
    */
   pictureFill?: SourceFillColorResult | null;
   placement?: NativePlacement | null;
+  /**
+   * Explicit native receiver rectangle, in object-local coordinates.
+   */
+  region?: SourcePaintRegion | null;
+  /**
+   * Independent native edge geometry; fill.target identifies the cell/edge.
+   */
+  tableStroke?: LineGeometryOutcome | null;
 }
 
 export interface SourceFillColorResult {
@@ -306,11 +549,20 @@ export interface FillPlaceholderBinding {
   colorOrdinal?: number | null;
   owner: FillOwner;
   referenceOrdinal: number;
+  /**
+   * Shared table declarations live outside the consuming object's surface.
+   */
+  sourcePart?: string | null;
 }
 
 export interface FillOwner {
   part: string;
   target: FillTarget;
+}
+
+export interface SourceCellAddress {
+  column: number;
+  row: number;
 }
 
 export interface FillColorSurface {
@@ -667,6 +919,32 @@ export interface Point3 {
   y: FixedQ32;
 }
 
+export interface SourcePaintRegion {
+  bounds: Rect;
+  coordinateErrorBound: FixedQ32;
+}
+
+export interface Rect {
+  max: Point1;
+  min: Point1;
+}
+
+/**
+ * Stroke geometry is independent of paint. Table lines can therefore use the
+ * complete fill engine, including gradient/pattern paint, without losing dash,
+ * compound, alignment, cap, join or endpoint declarations.
+ */
+export interface EffectiveLineGeometry {
+  alignment: LineValue4;
+  cap: LineValue2;
+  compound: LineValue3;
+  dash: EffectiveLineDash;
+  head: EffectiveLineEnd;
+  join: EffectiveLineJoin;
+  tail: EffectiveLineEnd;
+  width: LineValue;
+}
+
 export interface SceneWork {
   clips?: SceneClipWork | null;
   /**
@@ -751,6 +1029,10 @@ export interface SceneRasterRequest {
 export interface DrawScene {
   clips?: ClipNode[];
   instances: PathInstance[];
+  /**
+   * Intervals refer to instances; lowering preserves their order and count.
+   */
+  opacityGroups?: OpacityGroup[];
   paths: FillPath[];
   transforms: TransformNode[];
 }
@@ -790,6 +1072,7 @@ export interface PathInstance {
     | {
         afterDraws: number;
         kind: "snapshot";
+        scope?: SnapshotScope;
       };
   clip?: number | null;
   path: number;
@@ -913,120 +1196,4 @@ export interface ImageBrushUncertainty {
   sourceDomain: [FixedQ32, FixedQ32, FixedQ32, FixedQ32];
   xStep: Point9;
   yStep: Point1;
-}
-
-/**
- * Nonnegative Q32 world EMU errors; rebase never changes these bounds.
- */
-export interface Point8 {
-  x: FixedQ32;
-  y: FixedQ32;
-}
-
-/**
- * Nonnegative Q32 world EMU per source pixel.
- */
-export interface Point9 {
-  x: FixedQ32;
-  y: FixedQ32;
-}
-
-/**
- * World Q32 EMU displacement per source pixel, not endpoint coordinates.
- */
-export interface Point10 {
-  x: FixedQ32;
-  y: FixedQ32;
-}
-
-export interface StrokeStyle {
-  cap: StrokeCap;
-  join: StrokeJoin;
-  /**
-   * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
-   */
-  width: string;
-}
-
-export interface FillPath {
-  /**
-   * Local Q32 EMU; open contours are implicitly closed for filling.
-   */
-  commands: PathCommand[];
-  fillRule: FillRule;
-}
-
-export interface TransformNode {
-  affine: Affine1;
-  /**
-   * Optional outer transform. Parents must precede children.
-   */
-  parent?: number | null;
-}
-
-/**
- * Evaluated affine transform, not author rotation/flip/viewport semantics.
- */
-export interface Affine1 {
-  /**
-   * Dimensionless Q32 in row-major order: xx, xy, yx, yy.
-   *
-   * @minItems 4
-   * @maxItems 4
-   */
-  linear: [FixedQ32, FixedQ32, FixedQ32, FixedQ32];
-  translation: Point;
-}
-
-export interface RasterViewport {
-  /**
-   * Straight sRGB RGBA8; output is premultiplied.
-   *
-   * @minItems 4
-   * @maxItems 4
-   */
-  background: [number, number, number, number];
-  /**
-   * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
-   */
-  coordinateTolerance: string;
-  height: number;
-  origin: Point11;
-  scale: PixelScale;
-  width: number;
-}
-
-/**
- * Q32 EMU. Subtracted before converting to device-space float32.
- */
-export interface Point11 {
-  x: FixedQ32;
-  y: FixedQ32;
-}
-
-export interface PixelScale {
-  denominator: number;
-  /**
-   * Positive rational pixels per EMU; normalized internally.
-   */
-  numerator: number;
-}
-
-export interface PptxPageFailure {
-  code: PptxPageFailureCode;
-  issue?: SourcePageIssue | null;
-  location?: SourcePageLocation | null;
-  message: string;
-}
-
-export interface SourceVisualIssue {
-  kind: SourceVisualIssueKind;
-  localName: string;
-  namespace: string;
-  sourceOrdinal: number;
-}
-
-export interface PlacementUnresolved {
-  cause: PlacementCause;
-  object: SourceObjectRef;
 }

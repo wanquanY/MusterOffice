@@ -25,7 +25,7 @@ int main(int argc, char** argv) {
     const auto cancel_at = argc == 4 ? uint32_t(std::strtoul(argv[3], nullptr, 10)) : 0;
     if (images > 1 || !budget || budget > 4096 || mo_skia_execution_abi() != 1) return 11;
     uint32_t count;
-    if (!read_word(count) || count > 2895950) return 12;
+    if (!read_word(count) || count > 2908303) return 12;
     std::vector<uint32_t> frame(count);
     for (auto& word : frame) if (!read_word(word)) return 13;
     uint32_t image_bytes = 0;

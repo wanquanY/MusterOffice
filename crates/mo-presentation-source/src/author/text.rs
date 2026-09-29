@@ -86,6 +86,7 @@ impl<'a, 'c> TextBuilder<'a, 'c> {
     fn root(&mut self, element: N, owner: Option<u32>) -> Result<u32, PptxError> {
         let id = self.container(element, None)?;
         self.catalog.roots.push(SourceTextRoot {
+            cell: None,
             source_ordinal: id,
             owner,
         });
@@ -212,6 +213,51 @@ impl<'a, 'c> TextBuilder<'a, 'c> {
             }
         }
         Ok(())
+    }
+    pub fn cell_body(
+        &mut self,
+        owner: u32,
+        cell: crate::source::table::SourceCellAddress,
+        body: Option<&TextBody>,
+        document: &Document,
+    ) -> Result<(u32, Vec<Vec<SourceRun>>), PptxError> {
+        let result = if let Some(body) = body {
+            self.body(owner, body, document)?
+        } else {
+            let root = self.root(N::TxBody, Some(owner))?;
+            self.node(
+                N::BodyPr,
+                Some(root),
+                SourceTextValue::Body {
+                    attributes: Box::default(),
+                },
+            )?;
+            self.container(N::LstStyle, Some(root))?;
+            self.container(N::P, Some(root))?;
+            (root, vec![vec![]])
+        };
+        self.catalog
+            .roots
+            .iter_mut()
+            .find(|r| r.source_ordinal == result.0)
+            .expect("created cell root")
+            .cell = Some(cell);
+        let children = self.catalog.nodes[&result.0].children.clone();
+        for child in children {
+            if let SourceTextValue::Body { attributes } = &mut self
+                .catalog
+                .nodes
+                .get_mut(&child)
+                .expect("body child")
+                .value
+            {
+                attributes.left_inset = None;
+                attributes.top_inset = None;
+                attributes.right_inset = None;
+                attributes.bottom_inset = None;
+            }
+        }
+        Ok(result)
     }
     pub fn body(
         &mut self,

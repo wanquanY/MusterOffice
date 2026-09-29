@@ -29,6 +29,15 @@ pub enum DeletePolicy {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "kind", rename_all = "camelCase", deny_unknown_fields)]
 pub enum Operation {
+    EditTable {
+        object: ObjectId,
+        operation: crate::TableOperation,
+    },
+    /// Compile native editorial groups and replace this slide's whole timeline.
+    SetPresentationSequence {
+        slide: SlideId,
+        sequence: mo_timeline::PresentationSequence,
+    },
     SetTimeline {
         slide: SlideId,
         timeline: Option<mo_timeline::Timeline>,

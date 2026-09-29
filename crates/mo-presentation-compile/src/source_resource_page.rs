@@ -32,13 +32,15 @@ fn cancel(check: &dyn Fn() -> bool) -> Result<(), SourcePageError> {
 /// from host-provided substitute metadata. Final lowering and result validation
 /// happen exactly once in either plan() or render(); no partial page escapes.
 pub struct PreparedResourcePage {
+    tables: Option<crate::source_table::RetainedTables>,
     built: source_page::BuiltPage,
     text: Option<source_text_page::TextPageContent>,
     images: resources::Resources,
 }
 pub(crate) struct PageView<'a> {
+    pub source_owner: Option<&'a std::sync::Arc<SourceIndex>>,
     pub request: &'a SourcePageRequest,
-    pub rotations: Option<&'a crate::source_placement::SourceRotations>,
+    pub transforms: Option<&'a crate::source_placement::SourceProperties>,
 }
 pub fn prepare(
     package: &dyn PackageRead,
@@ -53,8 +55,9 @@ pub fn prepare(
         package,
         index,
         PageView {
+            source_owner: None,
             request: q,
-            rotations: None,
+            transforms: None,
         },
         decoder,
         text,
@@ -97,8 +100,9 @@ pub fn prepare_input(
         input,
         index,
         PageView {
+            source_owner: None,
             request: q,
-            rotations: None,
+            transforms: None,
         },
         decoder,
         text,
@@ -121,13 +125,29 @@ fn prepare_input_view(
         return Err(SourcePageError::SourceConflict);
     }
     let q = view.request;
-    let prepared =
-        source_page::preflight_sampled(index, q, text.is_some(), true, view.rotations, check)?;
+    let mut prepared =
+        source_page::preflight_sampled(index, q, text.is_some(), true, view.transforms, check)?;
     let mut text =
         text.map(|t| source_text_page::Compiler::new(t.manifest, t.backend, options.text_limits));
     if let Some(text) = &mut text {
-        text.preflight(index, q, prepared.objects.iter().map(|o| &o.binding), check)?;
+        text.preflight_shared(
+            index,
+            q,
+            prepared.objects.iter().map(|o| &o.binding),
+            &prepared.tables,
+            check,
+        )?;
     }
+    let tables = match (view.source_owner, prepared.source.take()) {
+        (Some(owner), Some(source)) => Some(crate::source_table::RetainedTables::capture(
+            std::sync::Arc::clone(owner),
+            source,
+            &prepared.tables,
+            check,
+        )?),
+        _ => None,
+    };
+    prepared.tables.clear();
     let images = resources::prepare(input, index, &prepared, options, decoder, check)?;
     let built = source_page::build(
         prepared,
@@ -139,6 +159,7 @@ fn prepare_input_view(
     let text = text.map(source_text_page::Compiler::finish).transpose()?;
     cancel(check)?;
     Ok(PreparedResourcePage {
+        tables,
         built,
         text,
         images,
@@ -176,6 +197,10 @@ impl PreparedResourcePage {
             )?;
             (page.info, page.downstream_coordinate_error_bound)
         };
+        let text_capacity = source_text_page::capacity(
+            self.text.as_ref().map_or(&[], |text| text.texts.as_slice()),
+            check,
+        )?;
         let (text_frames, text_work) = self
             .text
             .map(|t| (t.texts.len() as u32, t.text_work))
@@ -196,6 +221,7 @@ impl PreparedResourcePage {
                 },
                 text_frames,
                 text_work,
+                text_capacity: Some(text_capacity),
                 images: image.info.images,
                 resources_sha256: image.info.resources_sha256,
                 decoded_images: resource_info.decoded,

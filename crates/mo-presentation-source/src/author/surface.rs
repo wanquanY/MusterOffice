@@ -218,6 +218,7 @@ fn objects(
         }
         let native_id = bindings.object_ids[id];
         let mut object = SourceObject {
+            table: None,
             hidden: None,
             text_body_ordinal: None,
             visual_issues: vec![],
@@ -242,10 +243,29 @@ fn objects(
         if let Inherited::Value(fill) = &model.appearance.fill {
             object.fill = Some(paint::fill(fill, ord)?);
         }
-        if let Inherited::Value(line) = &model.appearance.stroke {
-            object.line = Some(paint::line(line, ord)?);
-        }
+        object.line = paint::object_line(model, ord)?;
         match &model.content {
+            ObjectContent::Table { table } => {
+                // Graphic frames have no spPr fill/line. Cell styles own these
+                // declarations; never drop an authored object-level appearance.
+                if matches!(model.appearance.fill, Inherited::Value(Fill::None)) {
+                    object.fill = None;
+                }
+                if object.fill.is_some() || object.line.is_some() {
+                    return Err(PptxError::Unsupported(
+                        "table frame fill/stroke; use cell styles".into(),
+                    ));
+                }
+                object.kind = SourceObjectKind::GraphicFrame;
+                object.table = Some(super::table::build(
+                    table,
+                    native_id,
+                    document,
+                    surface,
+                    &mut object.paragraphs,
+                    ord,
+                )?);
+            }
             ObjectContent::RetainedSource { .. } => {
                 return Err(PptxError::Unsupported(
                     "retained content requires a source plan".into(),
@@ -275,9 +295,6 @@ fn objects(
                 object.picture_fill = Some(paint::image(reference, *crop, ord)?);
             }
             ObjectContent::Group { children, viewport } => {
-                if model.appearance.stroke != Inherited::Inherit {
-                    return Err(PptxError::Unsupported("group stroke semantics".into()));
-                }
                 object.kind = SourceObjectKind::Group;
                 object.transform = Some(transform(direct, Some(*viewport))?);
                 pending.extend(children.iter().rev().map(|id| (id, Some(native_id))));

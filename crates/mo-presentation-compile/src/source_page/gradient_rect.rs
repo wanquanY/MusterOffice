@@ -2,6 +2,7 @@
 use super::*;
 use crate::{interval_extended::floor_ratio, source_number::percentage_ratio};
 use mo_raster::GradientField;
+use num_bigint::BigInt;
 
 pub(super) fn field(rect: &EffectiveFillRect) -> Result<GradientField, SourcePageError> {
     let values = [&rect.left, &rect.top, &rect.right, &rect.bottom]

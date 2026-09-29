@@ -4,6 +4,8 @@ use super::{cascade::*, *};
 use crate::{PptxError, cancelled, source::*, value};
 use theme::{SourceFontCollection, SourceThemeSchemeRef};
 
+mod selection;
+
 pub const FONT_PROFILE: &str = "drawingml-explicit-theme-typeface-draft-v1";
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
@@ -42,10 +44,20 @@ pub struct ThemeFontBinding {
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct TableFontBinding {
+    pub slot: NativeFontSlot,
+    /// Index into the table font collection's ordered supplemental list.
+    pub supplemental: Option<u32>,
+}
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct NativeTypeface {
     pub typeface: String,
     pub declared_by: TextStyleDeclaration,
-    /// Original run font declaration; absent for a shape fontRef fallback.
+    /// Script/collection location for an explicit table a:font declaration.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub table_font: Option<TableFontBinding>,
+    /// Original selected font declaration; absent for a fontRef fallback.
     pub authored_font: Option<SourceTextFont>,
     pub theme: Option<ThemeFontBinding>,
     /// Selected named theme font preserves its own metadata, independently of author hints.
@@ -177,59 +189,53 @@ pub fn resolve(
                 .style
         }
     };
-    let (reference, authored, choice) =
-        if let Some(reference) = style.declarations.get(&slot.character()) {
-            let node = declaration(index, reference)?;
-            if let Some(at) = node.retained_ordinals.first() {
-                return unresolved(TypefaceUnresolved::RetainedDeclaration {
-                    origin: reference.origin.at(*at),
-                });
-            }
-            let SourceTextValue::Font { font } = &node.value else {
-                return Err(conflict());
-            };
+    let Some(reference) = style
+        .declarations
+        .get(&slot.character())
+        .or(text.font_reference.as_ref())
+    else {
+        return unresolved(TypefaceUnresolved::MissingDeclaration {});
+    };
+    let input = match selection::declaration(index, reference, slot, script, limits, check)? {
+        Ok(input) => input,
+        Err(reason) => return unresolved(reason),
+    };
+    let (authored, table_font, choice) = match input {
+        selection::Input::Font { font, table_font } => {
             check_name(&font.typeface, limits)?;
             if font.typeface.is_empty() {
                 return unresolved(TypefaceUnresolved::EmptyTypeface {});
             }
-            let choice = token(&font.typeface);
-            if choice.is_none() {
+            if let Some(choice) = token(&font.typeface) {
+                (Some(font), table_font, choice)
+            } else {
                 if font.typeface.starts_with("+mj-") || font.typeface.starts_with("+mn-") {
                     return unresolved(TypefaceUnresolved::UnknownThemeToken {
-                        token: font.typeface.clone(),
+                        token: font.typeface,
                     });
                 }
                 return Ok(TypefaceOutcome::Named {
                     font: Box::new(NativeTypeface {
                         typeface: font.typeface.clone(),
                         declared_by: reference.clone(),
-                        authored_font: Some(*font.clone()),
+                        authored_font: Some(font),
+                        table_font,
                         theme: None,
                         theme_font: None,
                     }),
                 });
             }
-            (reference, Some(*font.clone()), choice.expect("theme token"))
-        } else if let Some(reference) = &text.font_reference {
-            let node = declaration(index, reference)?;
-            if let Some(at) = node.retained_ordinals.first() {
-                return unresolved(TypefaceUnresolved::RetainedDeclaration {
-                    origin: reference.origin.at(*at),
-                });
-            }
-            let SourceTextValue::FontReference { index } = node.value else {
-                return Err(conflict());
-            };
-            if index == NativeFontCollectionIndex::None {
+        }
+        selection::Input::Reference(collection) => {
+            if collection == NativeFontCollectionIndex::None {
                 return unresolved(TypefaceUnresolved::DisabledThemeFont {});
             }
             if slot == NativeFontSlot::Symbol {
                 return unresolved(TypefaceUnresolved::SymbolThemeFont {});
             }
-            (reference, None, (index, slot))
-        } else {
-            return unresolved(TypefaceUnresolved::MissingDeclaration {});
-        };
+            (None, None, (collection, slot))
+        }
+    };
     let Some(selection) = &surface.theme_selection.fonts else {
         return unresolved(TypefaceUnresolved::NoThemeFont {});
     };
@@ -250,48 +256,11 @@ pub fn resolve(
         NativeFontCollectionIndex::Minor => &scheme.minor,
         _ => return Err(conflict()),
     };
-    let font = choice.1.font(collection);
-    let (font, supplemental) = if let Some(font) = font.filter(|f| !f.typeface.is_empty()) {
-        check_name(&font.typeface, limits)?;
-        (font.clone(), None)
-    } else {
-        let Some(script) = script else {
-            return unresolved(TypefaceUnresolved::ScriptRequired {});
+    let (font, supplemental) =
+        match selection::collection(collection, choice.1, script, limits, check)? {
+            Ok(value) => value,
+            Err(reason) => return unresolved(reason),
         };
-        if collection.supplemental.len() > limits.max_supplements {
-            return Err(PptxError::Limit("theme supplemental fonts"));
-        }
-        let mut found = None;
-        for (i, font) in collection.supplemental.iter().enumerate() {
-            cancelled(check)?;
-            if font.script == script {
-                if found.is_some() {
-                    return unresolved(TypefaceUnresolved::AmbiguousSupplemental {
-                        script: script.into(),
-                    });
-                }
-                check_name(&font.typeface, limits)?;
-                found = Some((
-                    SourceTextFont {
-                        typeface: font.typeface.clone(),
-                        panose: None,
-                        pitch_family: None,
-                        charset: None,
-                    },
-                    Some(i as u32),
-                ));
-            }
-        }
-        let Some(value) = found else {
-            return unresolved(TypefaceUnresolved::MissingSupplemental {
-                script: script.into(),
-            });
-        };
-        if value.0.typeface.is_empty() {
-            return unresolved(TypefaceUnresolved::EmptyTypeface {});
-        }
-        value
-    };
     if token(&font.typeface).is_some()
         || font.typeface.starts_with("+mj-")
         || font.typeface.starts_with("+mn-")
@@ -306,6 +275,7 @@ pub fn resolve(
             typeface: font.typeface.clone(),
             declared_by: reference.clone(),
             authored_font: authored,
+            table_font,
             theme: Some(ThemeFontBinding {
                 scheme: selection.clone(),
                 collection: choice.0,

@@ -82,7 +82,7 @@ impl SourcePlayback {
         let reply = self.pipe.call(&request, empty(), empty(), check)?;
         match reply.info {
             R::Rendered { info }
-                if info.profile == mo_kernel_api::PPTX_PLAYBACK_PROFILE
+                if info.profile == info.playback.profile()
                     && info.playback.evaluated.state.binding == self.info.binding
                     && info.playback.evaluated.state.time == at.normalized()
                     && info.playback.source_sha256 == self.info.source_sha256

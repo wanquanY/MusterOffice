@@ -68,6 +68,79 @@ fn change(bytes: &[u8], mutate: impl FnOnce(String) -> String) -> Vec<u8> {
     plan.to_bytes(&p, &|| false).unwrap()
 }
 #[test]
+fn native_title_is_revisioned_and_writes_only_core_properties() {
+    let bytes = fixture();
+    let p = package(&bytes);
+    let d = import(&p);
+    assert_eq!(d.title, support::input().0.title);
+    assert!(!d.title.is_empty());
+    assert_eq!(
+        d.source_bindings.as_ref().unwrap().profile,
+        SourceBindingProfile::PresentationmlRetainedFieldsV3
+    );
+    let snapshot = Snapshot::new(d, Default::default()).unwrap();
+    let title = "标题 <&>\r\n🚀";
+    let result = prepare(
+        &snapshot,
+        &transaction(
+            &snapshot,
+            vec![Operation::SetTitle {
+                title: title.into(),
+            }],
+        ),
+        Default::default(),
+    )
+    .unwrap();
+    assert_ne!(result.snapshot.revision(), snapshot.revision());
+    let output = SourcePlan::new(result.snapshot.document(), &p, Default::default(), &|| {
+        false
+    })
+    .unwrap()
+    .write(&p, &|| false)
+    .unwrap();
+    let actual = package(&output);
+    assert_eq!(import(&actual).title, title);
+    assert_eq!(actual.relationships(), p.relationships());
+    let core = mo_opc::read_core_properties(&p, Default::default(), &|| false)
+        .unwrap()
+        .unwrap()
+        .part;
+    for (part, info) in p.parts() {
+        if *part == core {
+            assert_ne!(info.sha256, actual.parts()[part].sha256);
+        } else {
+            assert_eq!(info.sha256, actual.parts()[part].sha256, "{part}");
+        }
+    }
+    // Historical V1 never projected title. Loading one must not interpret its
+    // empty domain field as a request to erase the source metadata.
+    let mut legacy = snapshot.document().clone();
+    legacy.source_bindings.as_mut().unwrap().profile =
+        SourceBindingProfile::PresentationmlRetainedFieldsV1;
+    legacy.title.clear();
+    assert_eq!(
+        SourcePlan::new(&legacy, &p, Default::default(), &|| false)
+            .unwrap()
+            .write(&p, &|| false)
+            .unwrap(),
+        bytes
+    );
+    let legacy = Snapshot::new(legacy, Default::default()).unwrap();
+    assert!(
+        prepare(
+            &legacy,
+            &transaction(
+                &legacy,
+                vec![Operation::SetTitle {
+                    title: "cannot reinterpret V1".into()
+                }]
+            ),
+            Default::default()
+        )
+        .is_err()
+    );
+}
+#[test]
 fn text_and_transform_share_revision_and_one_preserving_candidate() {
     let bytes = change(&fixture(), |s| {
         s.replace("</p:sld>", "<p:extLst><p:ext uri=\"owned-test\"><x:opaque xmlns:x=\"urn:owned\" value=\"keep &amp; preserve\"/></p:ext></p:extLst></p:sld>")
@@ -187,6 +260,8 @@ fn structural_or_forged_source_edits_fail_and_do_not_change_the_snapshot() {
         .native_id += 999;
     assert!(SourcePlan::new(&forged, &p, Default::default(), &|| false).is_err());
     let mut changed = d;
+    changed.source_bindings.as_mut().unwrap().profile =
+        SourceBindingProfile::PresentationmlRetainedFieldsV1;
     changed.title = "unmapped".into();
     assert!(SourcePlan::new(&changed, &p, Default::default(), &|| false).is_err());
     assert!(SourcePlan::new(s.document(), &p, Default::default(), &|| true).is_err());

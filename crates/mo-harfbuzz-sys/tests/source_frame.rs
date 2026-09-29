@@ -500,7 +500,7 @@ fn selected_cancellation_and_unsupported_native_properties_fail_explicitly() {
         "vert=\"vert\"",
         "anchorCtr=\"1\"",
         "wrap=\"none\"",
-        "vertOverflow=\"clip\"",
+        "vertOverflow=\"ellipsis\"",
     ] {
         let i = read(&fixture("<a:p><a:r><a:t>A</a:t></a:r></a:p>", attrs));
         let mut backend = Counting::default();

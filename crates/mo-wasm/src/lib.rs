@@ -1,6 +1,23 @@
 mod image_decode;
 mod playback;
 use wasm_bindgen::prelude::*;
+
+#[wasm_bindgen]
+pub fn compute_template(request: &str) -> String {
+    mo_presentation_template::compute_template_json(request, Default::default(), &|| false)
+}
+
+/// Create, atomically edit or instantiate a template with the same computation
+/// receipt as native callers. Import/export use the separate binary channels.
+#[wasm_bindgen]
+pub fn compute_document(invocation: &str) -> Result<String, String> {
+    let result = mo_presentation_operations::decode_invocation(invocation)
+        .and_then(|input| mo_presentation_operations::compute_inline(input, &|| false));
+    match result {
+        Ok(receipt) => Ok(serde_json::to_string(&receipt).expect("typed computation receipt")),
+        Err(error) => Err(serde_json::to_string(&error).expect("typed computation failure")),
+    }
+}
 mod raster;
 mod text;
 
@@ -15,6 +32,11 @@ pub fn computation_schema_json(id_json: &str) -> Result<String, String> {
 #[wasm_bindgen]
 pub fn inspect_delivery(request: &str, contents: &[u8]) -> String {
     mo_kernel_api::inspect_delivery_json(request, contents)
+}
+
+#[wasm_bindgen]
+pub fn prepare_delivery_playback(request: &str, contents: &[u8]) -> String {
+    mo_kernel_api::prepare_delivery_playback_json(request, contents)
 }
 
 #[wasm_bindgen]
@@ -117,6 +139,11 @@ pub fn analyze_line_breaks(request: &str) -> String {
 #[wasm_bindgen]
 pub fn resolve_pptx_fill_colors(request: &str, source: &[u8]) -> String {
     mo_kernel_api::resolve_pptx_fill_colors_json(request, source)
+}
+
+#[wasm_bindgen]
+pub fn resolve_pptx_table_borders(request: &str, source: &[u8]) -> String {
+    mo_kernel_api::resolve_pptx_table_borders_json(request, source)
 }
 
 #[wasm_bindgen]

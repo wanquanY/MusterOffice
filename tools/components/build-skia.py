@@ -138,7 +138,7 @@ if a.target == 'native':
 else:
     library = output / 'libskia.wasm.a'
     module = directory / 'mo-skia.mjs'
-    exports = ['_mo_skia_elliptic_gradients_abi', '_mo_skia_rect_gradients_abi', '_mo_skia_office_gradients_abi', '_mo_skia_gradient_planes_abi', '_mo_skia_compositing_abi', '_mo_skia_clips_abi', '_mo_skia_raster_images', '_mo_skia_images_abi', '_mo_skia_raster', '_mo_skia_free', '_mo_skia_abi', '_malloc', '_free']
+    exports = ['_mo_skia_snapshot_scopes_abi', '_mo_skia_opacity_groups_abi', '_mo_skia_elliptic_gradients_abi', '_mo_skia_rect_gradients_abi', '_mo_skia_office_gradients_abi', '_mo_skia_gradient_planes_abi', '_mo_skia_compositing_abi', '_mo_skia_clips_abi', '_mo_skia_raster_images', '_mo_skia_images_abi', '_mo_skia_raster', '_mo_skia_free', '_mo_skia_abi', '_malloc', '_free']
     exports += ['_mo_skia_execution_abi', '_mo_skia_raster_begin', '_mo_skia_raster_step', '_mo_skia_raster_take', '_mo_skia_raster_drop']
     if codec_sources:
         exports += ['_mo_image_decode', '_mo_image_decode_abi']

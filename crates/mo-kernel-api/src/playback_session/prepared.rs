@@ -70,6 +70,15 @@ impl PlaybackSession {
         reply: Result<BackendReply, mo_raster::RasterError>,
         check: &dyn Fn() -> bool,
     ) -> Result<PlaybackImage, PlaybackCompletionFailure<PlaybackSessionFailure>> {
+        self.complete_render_reply(prepared, reply.map(Into::into), check)
+    }
+    /// Accepts a sealed pixel validation proof; owner/plan/generation checks still run.
+    pub fn complete_render_reply(
+        &mut self,
+        prepared: PreparedPlaybackRender,
+        reply: Result<mo_raster::RasterCompletionReply, mo_raster::RasterError>,
+        check: &dyn Fn() -> bool,
+    ) -> Result<PlaybackImage, PlaybackCompletionFailure<PlaybackSessionFailure>> {
         let reject = |error| PlaybackCompletionFailure {
             error,
             invalidate_backend: match &reply {

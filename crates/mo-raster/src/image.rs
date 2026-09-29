@@ -131,7 +131,7 @@ impl CompiledImageRaster<'_> {
     }
     pub fn complete(
         self,
-        reply: crate::BackendReply,
+        reply: impl Into<crate::RasterCompletionReply>,
         check: &dyn Fn() -> bool,
     ) -> Result<ImageRasterImage, RasterError> {
         Ok(ImageRasterImage {

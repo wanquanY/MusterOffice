@@ -242,7 +242,7 @@ impl PptxPlaybackSession {
                 return Ok((
                     R::Rendered {
                         info: Box::new(PptxPlaybackRasterInfo {
-                            profile: PPTX_PLAYBACK_PROFILE.into(),
+                            profile: playback.profile().into(),
                             playback,
                             page: page.info,
                         }),

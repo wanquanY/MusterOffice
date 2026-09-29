@@ -648,6 +648,33 @@
           "required": [
             "kind"
           ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "direction": {
+              "$ref": "#/$defs/NavigationDirection"
+            },
+            "kind": {
+              "type": "string",
+              "const": "navigation"
+            },
+            "target": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/ObjectId"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "direction"
+          ]
         }
       ]
     },
@@ -760,6 +787,13 @@
       "required": [
         "typeface",
         "policy"
+      ]
+    },
+    "NavigationDirection": {
+      "type": "string",
+      "enum": [
+        "next",
+        "previous"
       ]
     },
     "ObjectId": {

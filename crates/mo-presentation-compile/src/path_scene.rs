@@ -15,6 +15,7 @@ pub(crate) struct SceneBuilder<S> {
     transforms: BTreeMap<([Fixed; 4], Point), u32>,
     source_commands: u32,
     paint_budget: mo_raster::PaintBudget,
+    page_clip: Option<u32>,
     pub sources: Vec<S>,
     pub generated_commands: u32,
 }
@@ -22,6 +23,7 @@ impl<S> SceneBuilder<S> {
     pub fn new() -> Self {
         Self {
             scene: DrawScene {
+                opacity_groups: vec![],
                 clips: vec![],
                 paths: vec![],
                 transforms: vec![],
@@ -31,9 +33,27 @@ impl<S> SceneBuilder<S> {
             transforms: BTreeMap::new(),
             source_commands: 0,
             paint_budget: Default::default(),
+            page_clip: None,
             sources: vec![],
             generated_commands: 0,
         }
+    }
+    pub fn set_page_clip(&mut self, commands: &[C]) -> Result<(), RasterError> {
+        if self.page_clip.is_some()
+            || !self.scene.instances.is_empty()
+            || !self.scene.clips.is_empty()
+        {
+            return Err(RasterError::Invalid("page clip must precede page content"));
+        }
+        let clip = self.clip(
+            &FillPath {
+                fill_rule: FillRule::Nonzero,
+                commands: commands.to_vec(),
+            },
+            Affine::IDENTITY,
+        )?;
+        self.page_clip = Some(clip);
+        Ok(())
     }
     pub fn add(
         &mut self,
@@ -89,7 +109,7 @@ impl<S> SceneBuilder<S> {
         let instance = self.scene.instances.len() as u32;
         self.scene.instances.push(PathInstance {
             blend,
-            clip,
+            clip: clip.or(self.page_clip),
             path,
             transform,
             brush,
@@ -109,7 +129,7 @@ impl<S> SceneBuilder<S> {
         // transforms use exactly the same interning and limits as draw paths.
         let index = self.scene.clips.len() as u32;
         self.scene.clips.push(ClipNode {
-            parent: None,
+            parent: self.page_clip,
             path,
             transform,
         });

@@ -2,7 +2,7 @@
 +++ b/src/core/SkBitmapDevice.cpp
 @@ -376,13 +376,20 @@
  }
- 
+
  void SkBitmapDevice::drawPath(const SkPath& path, const SkPaint& paint) {
 +    mo::RasterStorage localStorage;
 +    auto task = this->makePathTask(fMoTaskSink ? fMoStorage : &localStorage, path, paint);
@@ -21,7 +21,7 @@
 +        co_await draw->makePathTask(storage, path, paint, nullptr, SkDrawCoverage::kNo, nullptr);
      }
  }
- 
+
 --- a/src/core/SkBitmapDevice.h
 +++ b/src/core/SkBitmapDevice.h
 @@ -15,6 +15,7 @@
@@ -34,32 +34,32 @@
  #include "src/core/SkRasterClipStack.h"
 @@ -80,6 +81,11 @@
      void drawRRect(const SkRRect& rr, const SkPaint& paint) override;
- 
+
      void drawPath(const SkPath&, const SkPaint&) override;
 +    // Private CPU adapter seam. The caller keeps this device/state alive and
 +    // unchanged until the captured task completes or is destroyed.
 +    void setMoRasterTaskSink(mo::RasterTask* task, mo::RasterStorage* storage = nullptr) {
 +        fMoTaskSink = task; fMoStorage = storage;
 +    }
- 
+
      void drawImageRect(const SkImage*, const SkRect* src, const SkRect& dst,
                         const SkSamplingOptions&, const SkPaint&,
 @@ -132,6 +138,9 @@
      SkRecorder* baseRecorder() const override;
- 
+
  private:
 +    mo::RasterTask* fMoTaskSink = nullptr;
 +    mo::RasterStorage* fMoStorage = nullptr;
 +    mo::RasterTask makePathTask(mo::RasterStorage* storage, SkPath, SkPaint);
      friend class SkDrawTiler;
      friend class SkSurface_Raster;
- 
+
 --- a/src/core/SkDraw.cpp
 +++ b/src/core/SkDraw.cpp
 @@ -901,13 +901,13 @@
      return false;
  }
- 
+
 -void Draw::drawDevPath(const SkPathRaw& raw,
 +mo::RasterTask Draw::makeDevPathTask(mo::RasterStorage* storage, const SkPathRaw& raw,
                         const SkPaint& paint,
@@ -70,7 +70,7 @@
 -        return;
 +        co_return;
      }
- 
+
      SkBlitter* blitter = nullptr;
 @@ -923,7 +923,7 @@
                                                : SkStrokeRec::kHairline_InitStyle;
@@ -80,7 +80,7 @@
 +            co_return;  // filterPath() called the blitter, so we're done
          }
      }
- 
+
 @@ -961,7 +961,11 @@
              }
          }
@@ -92,7 +92,7 @@
 +        proc(raw, *fRC, blitter);
 +    }
  }
- 
+
  /*
 @@ -1011,11 +1015,20 @@
                      const SkMatrix* prePathMatrix,
@@ -108,13 +108,13 @@
 +                    SkDrawCoverage drawCoverage,
 +                    SkBlitter* customBlitter) const {
      SkDEBUGCODE(this->validate();)
- 
+
      // nothing to draw
      if (fRC->isEmpty()) {
 -        return;
 +        co_return;
      }
- 
+
      std::optional<SkPaint> newPaint = modifyPaintForHairlines(origPaint, *fCTM);
 @@ -1042,7 +1055,7 @@
          if (prePathMatrix) {
@@ -134,23 +134,23 @@
              }
          }
      }
- 
+
      if (!raw) {
 -        return;
 +        co_return;
      }
- 
+
  #if defined(SK_BUILD_FOR_FUZZER)
      if (raw->points().size() > 1000) {
 -        return;
 +        co_return;
      }
  #endif
- 
+
 -    this->drawDevPath(*raw, *paint, drawCoverage, customBlitter, doFill);
 +    co_await this->makeDevPathTask(storage, *raw, *paint, drawCoverage, customBlitter, doFill);
  }
- 
+
  ////////////////////////////////////////////////////////////////////////////////////////////////
 --- a/src/core/SkDraw.h
 +++ b/src/core/SkDraw.h
@@ -173,9 +173,9 @@
                    const SkPaint& paint,
                    const SkMatrix* prePathMatrix) const {
 @@ -219,7 +223,7 @@
- 
+
      void drawLine(const SkPoint[2], const SkPaint&) const;
- 
+
 -    void drawDevPath(const SkPathRaw&,
 +    mo::RasterTask makeDevPathTask(mo::RasterStorage* storage, const SkPathRaw&,
                       const SkPaint& paint,
@@ -184,28 +184,29 @@
 --- a/src/core/SkScan.h
 +++ b/src/core/SkScan.h
 @@ -11,6 +11,7 @@
- 
+
  #include "include/core/SkPoint.h"
  #include "include/core/SkRect.h"
 +#include "src/core/mo_raster_task.h"
  #include "include/private/SkFixed.h"
- 
+
  class SkBlitter;
 @@ -53,6 +54,7 @@
      static void FillPath(const SkPathRaw&, const SkRasterClip&, SkBlitter*);
      static void FillPath(const SkPathRaw&, const SkRegion& clip, SkBlitter*);
      static void AntiFillPath(const SkPathRaw&, const SkRasterClip&, SkBlitter*);
 +    static mo::RasterTask AntiFillPathTask(mo::RasterStorage* storage, const SkPathRaw&, const SkRasterClip&, SkBlitter*);
- 
+
      static void FrameRect(const SkRect&, const SkPoint& strokeSize,
                            const SkRasterClip&, SkBlitter*);
-@@ -81,13 +83,14 @@
+@@ -81,13 +83,15 @@
      static void AntiFillRect(const SkRect&, const SkRegion* clip, SkBlitter*);
      static void AntiFillXRect(const SkXRect&, const SkRegion*, SkBlitter*);
      static void AntiFillPath(const SkPathRaw&, const SkRegion& clip, SkBlitter*, bool forceRLE);
 +    static mo::RasterTask AntiFillPathTask(mo::RasterStorage* storage, const SkPathRaw&, const SkRegion&, SkBlitter*, bool);
++    static mo::RasterTask AntiFillAAClipTask(mo::RasterStorage*, const SkPathRaw&, const SkRasterClip&, SkBlitter*);
      static void FillTriangle(const SkPoint pts[], const SkRegion*, SkBlitter*);
- 
+
      static void AntiFrameRect(const SkRect&, const SkPoint& strokeSize,
                                const SkRegion*, SkBlitter*);
      static void HairLineRgn(SkSpan<const SkPoint>, const SkRegion*, SkBlitter*);
@@ -214,13 +215,13 @@
 +    static mo::RasterTask AAAFillPathTask(mo::RasterStorage* storage, const SkPathRaw&, SkBlitter* blitter, const SkIRect& pathIR,
                              const SkIRect& clipBounds, bool forceRLE);
  };
- 
+
 --- a/src/core/SkScan_AAAPath.cpp
 +++ b/src/core/SkScan_AAAPath.cpp
 @@ -1035,7 +1035,7 @@
      return is_smooth_enough(leftE, currE, stop_y) && is_smooth_enough(riteE, nextCurrE, stop_y);
  }
- 
+
 -static void aaa_walk_convex_edges(SkAnalyticEdge*  prevHead,
 +static mo::RasterTask aaa_walk_convex_edges(mo::RasterStorage* storage, SkAnalyticEdge*  prevHead,
                                    AdditiveBlitter* blitter,
@@ -243,7 +244,7 @@
 +                        co_yield 0;
 +                    }
                  }
- 
+
                  if (partialBot > 0) {  // blit last partial row
 @@ -1174,8 +1174,10 @@
                          blitter->flush_if_y_changed(y, y + partialTop);
@@ -264,7 +265,7 @@
                      y    = nextY;
 +                    co_yield 0;
                  }
- 
+
                  while (count > 1) {  // Full rows in the middle
 @@ -1261,6 +1264,7 @@
                      left = nextLeft;
@@ -273,26 +274,26 @@
 +                    co_yield 0;
                  }
              }
- 
+
 @@ -1299,6 +1303,7 @@
          leftE->fX = left;
          riteE->fX = rite;
          leftE->fY = riteE->fY = y;
 +        co_yield 0;
      }
- 
+
  END_WALK:;
 @@ -1402,7 +1407,7 @@
      return prevRite > SkFixedFloorToInt(ul) || prevRite > SkFixedFloorToInt(ll);
  }
- 
+
 -static void aaa_walk_edges(SkAnalyticEdge*  prevHead,
 +static mo::RasterTask aaa_walk_edges(mo::RasterStorage* storage, SkAnalyticEdge*  prevHead,
                             SkAnalyticEdge*  nextTail,
                             SkPathFillType   fillType,
                             AdditiveBlitter* blitter,
 @@ -1598,10 +1603,11 @@
- 
+
          // now currE points to the first edge with a fUpperY larger than the previous y
          insert_new_edges(currE, y, &nextNextY);
 -    }
@@ -314,11 +315,11 @@
 -        return;
 +        co_return;
      }
- 
+
      SkAnalyticEdge headEdge, tailEdge, *last;
 @@ -1681,14 +1687,14 @@
      }
- 
+
      if (!path.isInverseFillType() && path.isKnownToBeConvex() && count >= 2) {
 -        aaa_walk_convex_edges(
 +        co_await aaa_walk_convex_edges(storage,
@@ -327,31 +328,60 @@
          // We skip intersection computation if there are many points which probably already
          // give us enough fractional scan lines.
          bool skipIntersect = path.points().size() > SkToSizeT((stop_y - start_y) * 2);
- 
+
 -        aaa_walk_edges(&headEdge,
 +        co_await aaa_walk_edges(storage, &headEdge,
                         &tailEdge,
                         path.fillType(),
                         blitter,
-@@ -1721,7 +1727,7 @@
+@@ -1721,42 +1727,31 @@
      return true;
  }
- 
+
 -void SkScan::AAAFillPath(const SkPathRaw&  path,
-+mo::RasterTask SkScan::AAAFillPathTask(mo::RasterStorage* storage, const SkPathRaw&  path,
++static mo::RasterTask aaa_retained_fill_task(mo::RasterStorage* storage, const SkPathRaw&  path,
                           SkBlitter*     blitter,
                           const SkIRect& ir,
                           const SkIRect& clipBounds,
-@@ -1741,7 +1747,7 @@
-         // Hence only tryBlitFatAntiRect when MaskAdditiveBlitter would have been used.
-         if (!try_blit_fat_anti_rect(blitter, path, clipBounds)) {
-             MaskAdditiveBlitter additiveBlitter(blitter, ir, clipBounds, isInverse);
+-                         bool           forceRLE) {
++                         bool           forceRLE, bool useMask) {
+     bool containedInClip = clipBounds.contains(ir);
+     bool isInverse       = path.isInverseFillType();
+
+-    // The mask blitter (where we store intermediate alpha values directly in a mask, and then call
+-    // the real blitter once in the end to blit the whole mask) is faster than the RLE blitter when
+-    // the blit region is small enough (i.e., CanHandleRect(ir)). When isInverse is true, the blit
+-    // region is no longer the rectangle ir so we won't use the mask blitter. The caller may also
+-    // use the forceRLE flag to force not using the mask blitter. Also, when the path is a simple
+-    // rect, preparing a mask and blitting it might have too much overhead. Hence we'll use
+-    // blitFatAntiRect to avoid the mask and its overhead.
+-    if (MaskAdditiveBlitter::CanHandleRect(ir) && !isInverse && !forceRLE) {
+-        // blitFatAntiRect is slower than the normal AAA flow without MaskAdditiveBlitter.
+-        // Hence only tryBlitFatAntiRect when MaskAdditiveBlitter would have been used.
+-        if (!try_blit_fat_anti_rect(blitter, path, clipBounds)) {
+-            MaskAdditiveBlitter additiveBlitter(blitter, ir, clipBounds, isInverse);
 -            aaa_fill_path(path,
-+            co_await aaa_fill_path(storage, path,
-                           clipBounds,
-                           &additiveBlitter,
-                           ir.fTop,
-@@ -1756,7 +1762,7 @@
+-                          clipBounds,
+-                          &additiveBlitter,
+-                          ir.fTop,
+-                          ir.fBottom,
+-                          containedInClip,
+-                          true,
+-                          forceRLE);
+-        }
++    if (useMask) {
++        MaskAdditiveBlitter additiveBlitter(blitter, ir, clipBounds, isInverse);
++        co_await aaa_fill_path(storage, path,
++                              clipBounds,
++                              &additiveBlitter,
++                              ir.fTop,
++                              ir.fBottom,
++                              containedInClip,
++                              true,
++                              forceRLE);
+     } else if (!isInverse && path.isKnownToBeConvex()) {
+         // If the filling area is convex (i.e., path.isConvex && !isInverse), our simpler
+         // aaa_walk_convex_edges won't generate alphas above 255. Hence we don't need
          // SafeRLEAdditiveBlitter (which is slow due to clamping). The basic RLE blitter
          // RunBasedAdditiveBlitter would suffice.
          RunBasedAdditiveBlitter additiveBlitter(blitter, ir, clipBounds, isInverse);
@@ -360,7 +390,7 @@
                        clipBounds,
                        &additiveBlitter,
                        ir.fTop,
-@@ -1769,7 +1775,7 @@
+@@ -1769,7 +1764,7 @@
          // be called and we have to clamp the alpha downto 255. The SafeRLEAdditiveBlitter
          // does that at a cost of performance.
          SafeRLEAdditiveBlitter additiveBlitter(blitter, ir, clipBounds, isInverse);
@@ -369,10 +399,27 @@
                        clipBounds,
                        &additiveBlitter,
                        ir.fTop,
+@@ -1779,3 +1774,16 @@
+                       forceRLE);
+     }
+ }
++
++// Preserve the original bounded mask/rectangle dispatch before allocating a
++// continuation. Only branches with retained scan state need a coroutine frame.
++mo::RasterTask SkScan::AAAFillPathTask(mo::RasterStorage* storage, const SkPathRaw& path,
++                                    SkBlitter* blitter, const SkIRect& ir,
++                                    const SkIRect& clipBounds, bool forceRLE) {
++    const bool useMask = MaskAdditiveBlitter::CanHandleRect(ir) &&
++                         !path.isInverseFillType() && !forceRLE;
++    // This is the upstream fast rectangle algorithm and eligibility rule. Its
++    // bounded blit already completed synchronously in the previous continuation.
++    if (useMask && try_blit_fat_anti_rect(blitter, path, clipBounds)) return {};
++    return aaa_retained_fill_task(storage, path, blitter, ir, clipBounds, forceRLE, useMask);
++}
 --- a/src/core/SkScan_AntiPath.cpp
 +++ b/src/core/SkScan_AntiPath.cpp
 @@ -58,8 +58,14 @@
- 
+
  void SkScan::AntiFillPath(const SkPathRaw& path, const SkRegion& origClip,
                            SkBlitter* blitter, bool forceRLE) {
 +    mo::RasterStorage storage;
@@ -385,7 +432,7 @@
 -        return;
 +        co_return;
      }
- 
+
      const bool isInverse = path.isInverseFillType();
 @@ -68,7 +74,7 @@
          if (isInverse) {
@@ -394,7 +441,7 @@
 -        return;
 +        co_return;
      }
- 
+
      // If the intersection of the path bounds and the clip bounds
 @@ -81,12 +87,12 @@
         clippedIR = origClip.getBounds();
@@ -409,7 +456,7 @@
 -        return;
 +        co_return;
      }
- 
+
      // Our antialiasing can't handle a clip larger than 32767, so we restrict
 @@ -114,7 +120,7 @@
          if (isInverse) {
@@ -418,42 +465,56 @@
 -        return;
 +        co_return;
      }
- 
+
      SkASSERT(clipper.getClipRect() == nullptr ||
 @@ -127,7 +133,7 @@
          sk_blit_above(blitter, ir, *clipRgn);
      }
- 
+
 -    SkScan::AAAFillPath(path, blitter, ir, clipRgn->getBounds(), forceRLE);
 +    co_await SkScan::AAAFillPathTask(storage, path, blitter, ir, clipRgn->getBounds(), forceRLE);
- 
+
      if (isInverse) {
          sk_blit_below(blitter, ir, *clipRgn);
-@@ -137,19 +143,24 @@
+@@ -137,19 +143,28 @@
  ///////////////////////////////////////////////////////////////////////////////
- 
+
  void SkScan::AntiFillPath(const SkPathRaw& raw, const SkRasterClip& clip, SkBlitter* blitter) {
 +    mo::RasterStorage storage;
 +    AntiFillPathTask(&storage, raw, clip, blitter).drain();
 +}
 +
-+mo::RasterTask SkScan::AntiFillPathTask(mo::RasterStorage* storage, const SkPathRaw& raw, const SkRasterClip& clip, SkBlitter* blitter) {
++// Only the AA clip branch owns wrappers that must survive suspension. A BW
++// clip borrows the caller's region and can forward the computation directly.
++mo::RasterTask SkScan::AntiFillAAClipTask(mo::RasterStorage* storage, const SkPathRaw& raw,
++                                       const SkRasterClip& clip, SkBlitter* blitter) {
++    SkRegion tmp;
++    SkAAClipBlitter aaBlitter;
++    tmp.setRect(clip.getBounds());
++    aaBlitter.init(blitter, &clip.aaRgn());
++    // SkAAClipBlitter can blitMask, why forceRLE? Preserve upstream policy.
++    co_await AntiFillPathTask(storage, raw, tmp, &aaBlitter, true);
++}
++
++mo::RasterTask SkScan::AntiFillPathTask(mo::RasterStorage* storage, const SkPathRaw& raw,
++                                     const SkRasterClip& clip, SkBlitter* blitter) {
      SkASSERT(raw.bounds().isFinite());
-     if (clip.isEmpty()) {
+-    if (clip.isEmpty()) {
 -        return;
-+        co_return;
++    if (clip.isEmpty()) return {};
++    if (clip.isBW()) {
++        return AntiFillPathTask(storage, raw, clip.bwRgn(), blitter, false);
      }
- 
-     if (clip.isBW()) {
+-
+-    if (clip.isBW()) {
 -        AntiFillPath(raw, clip.bwRgn(), blitter, false);
-+        co_await AntiFillPathTask(storage, raw, clip.bwRgn(), blitter, false);
-     } else {
-         SkRegion        tmp;
-         SkAAClipBlitter aaBlitter;
- 
-         tmp.setRect(clip.getBounds());
-         aaBlitter.init(blitter, &clip.aaRgn());
+-    } else {
+-        SkRegion        tmp;
+-        SkAAClipBlitter aaBlitter;
+-
+-        tmp.setRect(clip.getBounds());
+-        aaBlitter.init(blitter, &clip.aaRgn());
 -        AntiFillPath(raw, tmp, &aaBlitter, true); // SkAAClipBlitter can blitMask, why forceRLE?
-+        co_await AntiFillPathTask(storage, raw, tmp, &aaBlitter, true); // SkAAClipBlitter can blitMask, why forceRLE?
-     }
+-    }
++    return AntiFillAAClipTask(storage, raw, clip, blitter);
  }

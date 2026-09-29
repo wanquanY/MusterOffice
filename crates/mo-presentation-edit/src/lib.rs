@@ -8,4 +8,6 @@ mod transaction;
 pub use operations::*;
 pub use transaction::*;
 
+mod table;
 mod timing;
+pub use table::TableOperation;

@@ -50,6 +50,17 @@ export type EffectiveTextAutofit =
     };
 export type TextBodyOrigin =
   | {
+      cell: SourceCellAddress;
+      kind: "cell";
+      object: SourceObjectRef;
+      sourceOrdinal: number;
+    }
+  | {
+      cell: SourceCellAddress;
+      kind: "cellDefault";
+      object: SourceObjectRef;
+    }
+  | {
       kind: "object";
       object: SourceObjectRef;
       sourceOrdinal: number;
@@ -178,6 +189,10 @@ export interface SourceTextBodyAttributes {
   vertical?: NativeTextVertical | null;
   verticalOverflow?: NativeTextVerticalOverflow | null;
   wrap?: NativeTextWrap | null;
+}
+export interface SourceCellAddress {
+  column: number;
+  row: number;
 }
 export interface SourceObjectRef {
   nativeId: number;

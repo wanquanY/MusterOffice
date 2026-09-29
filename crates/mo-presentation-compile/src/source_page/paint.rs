@@ -21,6 +21,7 @@ impl FillPaint {
         }
     }
 }
+#[allow(clippy::too_many_arguments)]
 pub(super) fn fill(
     result: &mo_presentation_source::source::fill::colors::SourceFillColorResult,
     at: &SourcePageLocation,
@@ -28,6 +29,7 @@ pub(super) fn fill(
     placement: Option<&NativePlacement>,
     page_size: mo_presentation_model::Size,
     radial: Option<&crate::radial_layout::NativeRadialLayout>,
+    region: Option<&SourcePaintRegion>,
     check: &dyn Fn() -> bool,
 ) -> Result<Option<FillPaint>, SourcePageError> {
     // Background windows consume the already resolved page background. Their
@@ -42,11 +44,14 @@ pub(super) fn fill(
             _ => Err(mapping(at, SourcePageIssue::Fill {})),
         },
         FillPaintColors::Gradient { .. } => {
-            let gradient = super::gradient::compile(result, placement, page_size, radial, check)
-                .map_err(|e| e.at(at))?;
+            let gradient =
+                super::gradient::compile(result, placement, page_size, radial, region, check)
+                    .map_err(|e| e.at(at))?;
             Ok(Some(FillPaint::Gradient(Box::new(gradient))))
         }
-        FillPaintColors::ImageResourcesRequired {} if images_enabled => Ok(Some(FillPaint::Image)),
+        FillPaintColors::ImageResourcesRequired {} if images_enabled && region.is_none() => {
+            Ok(Some(FillPaint::Image))
+        }
         _ => Err(mapping(at, SourcePageIssue::Fill {})),
     }
 }
@@ -67,32 +72,76 @@ pub(super) fn line(
     let LineOutcome::Resolved { line } = &result.style else {
         return Err(mapping(at, SourcePageIssue::Line {}));
     };
-    if line.compound.value != NativeCompoundLine::Single
-        || line.alignment.value != NativePenAlignment::Center
-        || !matches!(line.dash, EffectiveLineDash::Preset { ref value, .. } if value.value == NativePresetDash::Solid)
-        || line.head.kind.value != NativeLineEnd::None
-        || line.tail.kind.value != NativeLineEnd::None
+    Ok(Some((rgba8, stroke(StrokeInput::from(line.as_ref()), at)?)))
+}
+
+struct StrokeInput<'a> {
+    width: mo_common::Emu,
+    cap: NativeLineCap,
+    compound: NativeCompoundLine,
+    alignment: NativePenAlignment,
+    dash: &'a EffectiveLineDash,
+    join: &'a EffectiveLineJoin,
+    head: NativeLineEnd,
+    tail: NativeLineEnd,
+}
+impl<'a> From<&'a EffectiveLine> for StrokeInput<'a> {
+    fn from(v: &'a EffectiveLine) -> Self {
+        Self {
+            width: v.width.value,
+            cap: v.cap.value,
+            compound: v.compound.value,
+            alignment: v.alignment.value,
+            dash: &v.dash,
+            join: &v.join,
+            head: v.head.kind.value,
+            tail: v.tail.kind.value,
+        }
+    }
+}
+impl<'a> From<&'a EffectiveLineGeometry> for StrokeInput<'a> {
+    fn from(v: &'a EffectiveLineGeometry) -> Self {
+        Self {
+            width: v.width.value,
+            cap: v.cap.value,
+            compound: v.compound.value,
+            alignment: v.alignment.value,
+            dash: &v.dash,
+            join: &v.join,
+            head: v.head.kind.value,
+            tail: v.tail.kind.value,
+        }
+    }
+}
+fn stroke(line: StrokeInput<'_>, at: &SourcePageLocation) -> Result<StrokeStyle, SourcePageError> {
+    if line.compound != NativeCompoundLine::Single
+        || line.alignment != NativePenAlignment::Center
+        || !matches!(line.dash, EffectiveLineDash::Preset {value,..} if value.value==NativePresetDash::Solid)
+        || line.head != NativeLineEnd::None
+        || line.tail != NativeLineEnd::None
     {
         return Err(mapping(at, SourcePageIssue::Line {}));
     }
     let join = match line.join {
         EffectiveLineJoin::Round { .. } => StrokeJoin::Round {},
         EffectiveLineJoin::Bevel { .. } => StrokeJoin::Bevel {},
-        // Native miter policy still needs its own end-to-end connection.
         EffectiveLineJoin::Miter { .. } => return Err(mapping(at, SourcePageIssue::Line {})),
     };
-    Ok(Some((
-        rgba8,
-        StrokeStyle {
-            width: Fixed::emu(line.width.value),
-            join,
-            cap: match line.cap.value {
-                NativeLineCap::Flat => StrokeCap::Butt,
-                NativeLineCap::Round => StrokeCap::Round,
-                NativeLineCap::Square => StrokeCap::Square,
-            },
+    Ok(StrokeStyle {
+        width: Fixed::emu(line.width),
+        join,
+        cap: match line.cap {
+            NativeLineCap::Flat => StrokeCap::Butt,
+            NativeLineCap::Round => StrokeCap::Round,
+            NativeLineCap::Square => StrokeCap::Square,
         },
-    )))
+    })
+}
+pub(super) fn table_stroke(
+    geometry: &EffectiveLineGeometry,
+    at: &SourcePageLocation,
+) -> Result<StrokeStyle, SourcePageError> {
+    stroke(StrokeInput::from(geometry), at)
 }
 
 pub(super) fn background_redirect(result: &SourceFillColorResult, at: &SourcePageLocation) -> bool {

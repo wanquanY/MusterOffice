@@ -103,6 +103,8 @@ try {
   assert.equal(response.status, 'imported');
   cases.push({ name: 'real-source-import', input, response });
   const snapshot = response.snapshot;
+  assert.equal(snapshot.document.title, JSON.parse(exportRequest).document.title);
+  assert.equal(snapshot.document.sourceBindings.profile, 'presentationml-retained-fields-v2-draft');
   const object = Object.values(snapshot.document.objects).find(o => o.parent.kind === 'slide' && o.content.paragraphs.length && o.content.paragraphs[0].runs.length && o.transform);
   const p = object.content.paragraphs[0];
   const splice = { kind: 'spliceText', object: object.id, paragraph: p.id, run: p.runs[0].id, start: 0, delete: 0, insert: '中文🚀' };
@@ -112,7 +114,14 @@ try {
   assert.deepEqual(compare('retained-deterministic-replay', inputEdit, 'prepared'), edited);
   const stale = structuredClone(inputEdit); stale.snapshot = edited.snapshot;
   compare('retained-stale-revision', stale, 'error', 'REVISION_CONFLICT');
-  compare('retained-protected-structural-edit', transaction([splice, { kind: 'setTitle', title: 'blocked' }], snapshot), 'error', 'INPUT_INVALID');
+  compare('retained-protected-structural-edit', transaction([splice, { kind: 'deleteObject', object: object.id, policy: 'rejectDependencies' }], snapshot), 'error', 'INPUT_INVALID');
+  const title = compare('retained-title-edit', transaction([{ kind: 'setTitle', title: '原生 <&> title' }], snapshot), 'prepared');
+  assert.equal(title.snapshot.document.title, '原生 <&> title');
+  const legacyDocument = structuredClone(snapshot.document);
+  legacyDocument.sourceBindings.profile = 'presentationml-retained-fields-v1-draft';
+  legacyDocument.title = '';
+  const legacy = compare('initialize-retained-v1', { operation: 'initialize', document: legacyDocument }, 'initialized').snapshot;
+  compare('retained-v1-title-stays-unprojected', transaction([{ kind: 'setTitle', title: 'blocked' }], legacy), 'error', 'INPUT_INVALID');
 } finally { rmSync(temporary, { recursive: true, force: true }); }
 
 function sha256(path) { return createHash('sha256').update(readFileSync(path)).digest('hex'); }

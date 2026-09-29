@@ -1,10 +1,14 @@
 //! Write explicit native par/seq nesting, with checked exact millisecond values.
 use super::*;
-use mo_timeline::{ContainerDuration, ContainerKind};
+use mo_timeline::{
+    ContainerDuration, ContainerKind, NextAction, PresentationRole, PresentationTrigger,
+    PreviousAction, TimingContainer,
+};
 pub(super) fn write(
     x: &mut Xml,
     t: &Timeline,
     objects: &BTreeMap<ObjectId, u32>,
+    document: &mo_presentation_model::Document,
     check: &dyn Fn() -> bool,
 ) -> Result<(), PptxError> {
     let tree = t.tree.as_ref().expect("tree writer");
@@ -25,40 +29,84 @@ pub(super) fn write(
     let containers: BTreeMap<_, _> = tree.containers.iter().map(|c| (&c.id, c)).collect();
     enum Task<'a> {
         Open(&'a TimingNodeId),
-        Close(ContainerKind, bool),
+        Close(&'a TimingContainer),
     }
     let mut stack: Vec<_> = tree.roots.iter().rev().map(Task::Open).collect();
     x.raw("<p:timing><p:tnLst><p:par><p:cTn id=\"1\" dur=\"indefinite\" restart=\"never\" nodeType=\"tmRoot\"><p:childTnLst>")?;
     while let Some(task) = stack.pop() {
         crate::cancelled(check)?;
         match task {
-            Task::Close(kind, children) => {
-                if children {
+            Task::Close(c) => {
+                if !c.children.is_empty() {
                     x.raw("</p:childTnLst>")?;
                 }
-                x.raw(match kind {
-                    ContainerKind::Parallel => "</p:cTn></p:par>",
-                    ContainerKind::Sequence => "</p:cTn></p:seq>",
+                x.raw("</p:cTn>")?;
+                if let Some(nav) = &c.navigation {
+                    write_conditions(x, "prevCondLst", &nav.previous_conditions, &ids, objects)?;
+                    write_conditions(x, "nextCondLst", &nav.next_conditions, &ids, objects)?;
+                }
+                x.raw(match c.kind {
+                    ContainerKind::Parallel => "</p:par>",
+                    ContainerKind::Sequence => "</p:seq>",
                 })?;
             }
             Task::Open(id) => {
                 if let Some(n) = leaves.get(id) {
-                    write_behavior(x, n, &ids, objects)?;
+                    write_behavior(x, n, &ids, objects, document)?;
                     continue;
                 }
                 let c = containers[id];
-                x.raw(match c.kind {
-                    ContainerKind::Parallel => "<p:par><p:cTn",
-                    ContainerKind::Sequence => "<p:seq><p:cTn",
-                })?;
+                match c.kind {
+                    ContainerKind::Parallel => x.raw("<p:par><p:cTn")?,
+                    ContainerKind::Sequence => {
+                        x.raw("<p:seq")?;
+                        if let Some(nav) = &c.navigation {
+                            x.attr("concurrent", if nav.concurrent { "1" } else { "0" })?;
+                            x.attr(
+                                "nextAc",
+                                match nav.next_action {
+                                    NextAction::None => "none",
+                                    NextAction::Seek => "seek",
+                                },
+                            )?;
+                            x.attr(
+                                "prevAc",
+                                match nav.previous_action {
+                                    PreviousAction::None => "none",
+                                    PreviousAction::SkipTimed => "skipTimed",
+                                },
+                            )?;
+                        }
+                        x.raw("><p:cTn")?;
+                    }
+                }
                 x.attr("id", ids[id])?;
+                match c.presentation {
+                    None => (),
+                    Some(PresentationRole::MainSequence) => x.attr("nodeType", "mainSeq")?,
+                    Some(PresentationRole::Effect { preset, trigger }) => {
+                        let (id, class) = mo_presentation_source::timing::native_preset(preset);
+                        x.attr("presetID", id)?;
+                        x.attr("presetClass", class)?;
+                        x.attr("presetSubtype", "0")?;
+                        x.attr(
+                            "nodeType",
+                            match trigger {
+                                PresentationTrigger::Click => "clickEffect",
+                                PresentationTrigger::WithPrevious => "withEffect",
+                                PresentationTrigger::AfterPrevious => "afterEffect",
+                            },
+                        )?;
+                    }
+                }
                 match c.duration {
                     ContainerDuration::Fixed { duration } => {
                         x.attr("dur", milliseconds(duration)?)?
                     }
                     _ => x.attr("dur", "indefinite")?,
                 }
-                x.attr("restart", "never")?;
+                x.attr("restart", restart(c.restart))?;
+                write_time_transform(x, c.time_transform)?;
                 x.attr(
                     "fill",
                     match c.fill {
@@ -75,7 +123,7 @@ pub(super) fn write(
                 if !c.children.is_empty() {
                     x.raw("<p:childTnLst>")?;
                 }
-                stack.push(Task::Close(c.kind, !c.children.is_empty()));
+                stack.push(Task::Close(c));
                 stack.extend(c.children.iter().rev().map(Task::Open));
             }
         }

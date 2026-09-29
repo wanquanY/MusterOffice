@@ -8,7 +8,7 @@ fn time(n: i64, d: u32) -> RationalTime {
     RationalTime::new(n, d).unwrap()
 }
 fn at(n: i64, d: u32) -> StartCondition {
-    StartCondition::At { offset: time(n, d) }
+    StartCondition::Single(TimeCondition::At { offset: time(n, d) })
 }
 fn exact(n: i64, d: i64) -> ExactValue {
     ExactValue {
@@ -18,6 +18,7 @@ fn exact(n: i64, d: i64) -> ExactValue {
 }
 fn leaf(name: &str, duration: i64, fill: FillMode) -> TimingNode {
     TimingNode {
+        restart: mo_timeline::RestartMode::Never,
         id: id(name),
         start: at(0, 1),
         duration: time(duration, 1),
@@ -27,6 +28,7 @@ fn leaf(name: &str, duration: i64, fill: FillMode) -> TimingNode {
         time_transform: None,
         fill,
         effect: Effect::Rotation {
+            composition: Default::default(),
             target: ObjectId::new(name).unwrap(),
             from: 0,
             to: 120,
@@ -41,6 +43,10 @@ fn container(
     children: &[&str],
 ) -> TimingContainer {
     TimingContainer {
+        time_transform: None,
+        presentation: None,
+        navigation: None,
+        restart: mo_timeline::RestartMode::Never,
         id: id(name),
         kind,
         start: at(0, 1),
@@ -77,7 +83,10 @@ fn rotation(f: &EvaluatedFrame, target: &str) -> Option<ExactValue> {
     f.state
         .rotations
         .get(&ObjectId::new(target).unwrap())
-        .cloned()
+        .map(|r| {
+            assert_eq!(r.basis, RotationBasis::Absolute);
+            r.value()
+        })
 }
 #[test]
 fn nested_sequence_offsets_and_freeze_hold_have_distinct_lifetimes() {
@@ -169,10 +178,10 @@ fn fractional_repeats_cutoff_uses_exact_last_boundary_and_backward_sampling() {
 }
 #[test]
 fn clicks_wait_for_scope_and_do_not_reuse_the_activation_event() {
-    let click = StartCondition::Click {
+    let click = StartCondition::Single(TimeCondition::Click {
         target: None,
         delay: time(0, 1),
-    };
+    });
     let mut a = leaf("a", 1, FillMode::Freeze);
     a.start = click.clone();
     let mut b = leaf("b", 1, FillMode::Freeze);
@@ -234,11 +243,11 @@ fn tree_ownership_event_cycles_depth_and_cancellation_are_checked() {
     t.tree.as_mut().unwrap().containers[0].children[0] = id("missing");
     malformed.push(t);
     let mut t = base.clone();
-    t.nodes[0].start = StartCondition::After {
+    t.nodes[0].start = StartCondition::Single(TimeCondition::After {
         node: id("p"),
         event: NodeEvent::End,
         delay: time(0, 1),
-    };
+    });
     malformed.push(t);
     let mut t = base.clone();
     t.format = TimelineVersion::V01;
@@ -282,10 +291,10 @@ fn tree_ownership_event_cycles_depth_and_cancellation_are_checked() {
 
 #[test]
 fn empty_timer_completion_carries_the_click_order_through_automatic_ancestors() {
-    let click = StartCondition::Click {
+    let click = StartCondition::Single(TimeCondition::Click {
         target: None,
         delay: time(0, 1),
-    };
+    });
     let mut timer = container(
         "timer",
         ContainerKind::Parallel,
@@ -350,10 +359,10 @@ fn dependency_events_before_scope_activation_are_not_replayed_at_the_same_timest
         FillMode::Hold,
         &[],
     );
-    early.start = StartCondition::Click {
+    early.start = StartCondition::Single(TimeCondition::Click {
         target: Some(ObjectId::new("early").unwrap()),
         delay: time(0, 1),
-    };
+    });
     let mut scope = container(
         "scope",
         ContainerKind::Parallel,
@@ -361,16 +370,16 @@ fn dependency_events_before_scope_activation_are_not_replayed_at_the_same_timest
         FillMode::Hold,
         &["a"],
     );
-    scope.start = StartCondition::Click {
+    scope.start = StartCondition::Single(TimeCondition::Click {
         target: Some(ObjectId::new("late").unwrap()),
         delay: time(0, 1),
-    };
+    });
     let mut a = leaf("a", 1, FillMode::Hold);
-    a.start = StartCondition::After {
+    a.start = StartCondition::Single(TimeCondition::After {
         node: id("early"),
         event: NodeEvent::Begin,
         delay: time(0, 1),
-    };
+    });
     let t = tree(vec![a], vec![early, scope], &["early", "scope"]);
     let history = EventHistory {
         binding: binding(),
@@ -398,6 +407,7 @@ fn structural_order_controls_simultaneous_replacement_and_container_freeze_relea
     let a = leaf("a", 1, FillMode::Hold);
     let mut b = leaf("b", 1, FillMode::Hold);
     b.effect = Effect::Rotation {
+        composition: Default::default(),
         target: ObjectId::new("a").unwrap(),
         from: 120,
         to: 240,

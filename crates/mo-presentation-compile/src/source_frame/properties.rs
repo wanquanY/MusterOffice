@@ -23,11 +23,17 @@ pub(super) fn body(body: &EffectiveTextBody) -> Result<(), SourceFrameError> {
         ),
         (
             VerticalOverflow,
-            a.vertical_overflow == Some(NativeTextVerticalOverflow::Overflow),
+            matches!(
+                a.vertical_overflow,
+                Some(NativeTextVerticalOverflow::Overflow | NativeTextVerticalOverflow::Clip)
+            ),
         ),
         (
             HorizontalOverflow,
-            a.horizontal_overflow == Some(NativeTextHorizontalOverflow::Overflow),
+            matches!(
+                a.horizontal_overflow,
+                Some(NativeTextHorizontalOverflow::Overflow | NativeTextHorizontalOverflow::Clip)
+            ),
         ),
         (
             Anchor,

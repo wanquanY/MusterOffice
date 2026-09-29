@@ -46,6 +46,28 @@ pub enum LineOutcome {
     deny_unknown_fields
 )]
 pub enum LineOrigin {
+    TableCell {
+        object: SourceObjectRef,
+        cell: crate::source::table::SourceCellAddress,
+        edge: crate::source::table::TableCellEdge,
+        source_ordinal: u32,
+    },
+    TableStyle {
+        part: String,
+        object: SourceObjectRef,
+        region: crate::source::table::styles::TableStyleRegion,
+        edge: crate::source::table::TableStyleEdge,
+        source_ordinal: u32,
+    },
+    TableTheme {
+        part: String,
+        source_ordinal: u32,
+        via: SourceObjectRef,
+        region: crate::source::table::styles::TableStyleRegion,
+        edge: crate::source::table::TableStyleEdge,
+        reference_ordinal: u32,
+        style_index: u32,
+    },
     Object {
         object: SourceObjectRef,
         source_ordinal: u32,
@@ -63,9 +85,11 @@ impl LineOrigin {
     pub(super) fn at(&self, ordinal: u32) -> Self {
         let mut result = self.clone();
         match &mut result {
-            Self::Object { source_ordinal, .. } | Self::Theme { source_ordinal, .. } => {
-                *source_ordinal = ordinal
-            }
+            Self::Object { source_ordinal, .. }
+            | Self::Theme { source_ordinal, .. }
+            | Self::TableCell { source_ordinal, .. }
+            | Self::TableStyle { source_ordinal, .. }
+            | Self::TableTheme { source_ordinal, .. } => *source_ordinal = ordinal,
             Self::ProfileDefault {} => (),
         }
         result
@@ -165,6 +189,46 @@ pub struct EffectiveLine {
     pub head: EffectiveLineEnd,
     pub tail: EffectiveLineEnd,
 }
+/// Stroke geometry is independent of paint. Table lines can therefore use the
+/// complete fill engine, including gradient/pattern paint, without losing dash,
+/// compound, alignment, cap, join or endpoint declarations.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct EffectiveLineGeometry {
+    pub width: LineValue<Emu>,
+    pub cap: LineValue<NativeLineCap>,
+    pub compound: LineValue<NativeCompoundLine>,
+    pub alignment: LineValue<NativePenAlignment>,
+    pub dash: EffectiveLineDash,
+    pub join: EffectiveLineJoin,
+    pub head: EffectiveLineEnd,
+    pub tail: EffectiveLineEnd,
+}
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[serde(tag = "status", rename_all = "camelCase", deny_unknown_fields)]
+pub enum LineGeometryOutcome {
+    Resolved {
+        geometry: Box<EffectiveLineGeometry>,
+    },
+    Unresolved {
+        reason: LineUnresolved,
+    },
+}
+impl EffectiveLineGeometry {
+    pub(super) fn with_fill(self, fill: EffectiveLineFill) -> EffectiveLine {
+        EffectiveLine {
+            width: self.width,
+            cap: self.cap,
+            compound: self.compound,
+            alignment: self.alignment,
+            dash: self.dash,
+            join: self.join,
+            head: self.head,
+            tail: self.tail,
+            fill,
+        }
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(
     tag = "kind",
@@ -173,6 +237,14 @@ pub struct EffectiveLine {
     deny_unknown_fields
 )]
 pub enum LineUnresolved {
+    TableGrid {
+        object: SourceObjectRef,
+        reason: crate::source::table::grid::NativeTableGridIssue,
+    },
+    TableStyle {
+        object: SourceObjectRef,
+        reason: crate::source::table::styles::TableStyleSelectionError,
+    },
     UnsupportedObject {
         object: SourceObjectRef,
     },

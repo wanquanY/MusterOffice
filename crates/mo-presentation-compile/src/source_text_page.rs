@@ -1,11 +1,15 @@
 //! Text-enabled source page compilation. The existing source-page engine owns
 //! layer order, shape paint and raster publication; this adds native text at each
 //! object's paint position, using source-bound preparation and explicit fonts.
+mod clip;
 mod decorations;
 mod glyphs;
 mod placement;
 mod precision;
+mod prepare;
 pub(crate) mod retained;
+#[cfg(all(test, any(target_os = "macos", target_os = "linux")))]
+mod table_tests;
 pub(crate) use placement::Painter;
 mod types;
 use crate::{
@@ -38,7 +42,10 @@ pub(crate) struct Compiler<'a, 'm, 'font> {
     manifest: &'a PreparedManifest<'m, 'font>,
     backend: &'a mut dyn TextBackend,
     limits: TextPageLimits,
-    pending: BTreeMap<(String, u32), Pending>,
+    pending: BTreeMap<(String, u32), Vec<Pending>>,
+    preparation: prepare::PreparationBudget,
+    // A failed multi-frame transaction cannot publish its already-computed prefix.
+    failed: bool,
     bindings: Vec<TextPageBinding>,
     sources: Vec<TextPagePaintSource>,
     decoration_sources: Vec<TextDecorationSource>,
@@ -55,6 +62,8 @@ impl<'a, 'm, 'font> Compiler<'a, 'm, 'font> {
             backend,
             limits,
             pending: BTreeMap::new(),
+            preparation: prepare::PreparationBudget::new(limits),
+            failed: false,
             bindings: vec![],
             sources: vec![],
             decoration_sources: vec![],
@@ -62,6 +71,7 @@ impl<'a, 'm, 'font> Compiler<'a, 'm, 'font> {
         }
     }
     pub(crate) fn finish(self) -> Result<TextPageContent, SourcePageError> {
+        self.ensure_ready()?;
         if !self.pending.is_empty() {
             return Err(SourcePageError::Invalid("unpainted prepared source text"));
         }
@@ -73,93 +83,29 @@ impl<'a, 'm, 'font> Compiler<'a, 'm, 'font> {
         })
     }
 
-    pub(crate) fn preflight<'b>(
-        &mut self,
-        index: &SourceIndex,
-        q: &SourcePageRequest,
-        objects: impl Iterator<Item = &'b SourcePagePaintBinding>,
-        check: &dyn Fn() -> bool,
-    ) -> Result<(), SourcePageError> {
-        let mut paragraphs = 0usize;
-        let mut runs = 0usize;
-        let mut plan_bytes = 0usize;
-        let mut indexed =
-            BTreeMap::<&str, BTreeMap<u32, &mo_presentation_source::source::SourceObject>>::new();
-        for object in objects {
-            cancel(check)?;
-            let at = &object.location;
-            let native_id = at.object.expect("object location");
-            if let std::collections::btree_map::Entry::Vacant(entry) = indexed.entry(&at.part) {
-                let mut objects = BTreeMap::new();
-                for object in &index.surfaces[&at.part].objects {
-                    cancel(check)?;
-                    objects.insert(object.native_id, object);
-                }
-                entry.insert(objects);
-            }
-            let native = indexed[at.part.as_str()][&native_id];
-            if native.text_body_ordinal.is_none() {
-                continue;
-            }
-            paragraphs = paragraphs
-                .checked_add(native.paragraphs.len())
-                .ok_or(RasterError::Limit("page paragraphs"))?;
-            runs = native
-                .paragraphs
-                .iter()
-                .try_fold(runs, |n, p| n.checked_add(p.len()))
-                .ok_or(RasterError::Limit("page text runs"))?;
-            if self.pending.len() >= self.limits.max_frames
-                || paragraphs > self.limits.max_paragraphs
-                || runs > self.limits.max_runs
-            {
-                return Err(RasterError::Limit("page text preflight").into());
-            }
-            let frame = source_frame::prepare(
-                index,
-                &SourceFrameRequest {
-                    expected_source_sha256: q.expected_source_sha256.clone(),
-                    object: SourceObjectRef {
-                        part: at.part.clone(),
-                        native_id,
-                    },
-                    bounds_tolerance: Fixed::from_raw(1 << 24),
-                },
-                self.manifest,
-                self.limits.work,
-                check,
-            )
-            .map_err(|e| SourcePageError::from(e).at(at))?;
-            plan_bytes = plan_bytes
-                .checked_add(frame.accounted_plan_bytes())
-                .filter(|n| *n <= self.limits.max_prepared_plan_bytes)
-                .ok_or(RasterError::Limit("page prepared text plans"))?;
-            let paints = paint::resolve(
-                index,
-                frame.source(),
-                &q.color_context,
-                mo_presentation_source::source::color::ColorLimits::default(),
-                check,
-            )
-            .map_err(|e| SourcePageError::from(e).at(at))?;
-            // Unknown working colors are a prerequisite failure, never black.
-            for (paragraph, runs) in paints.iter().enumerate() {
-                for (run, value) in runs.iter().enumerate() {
-                    glyphs::colors(value).map_err(|e| {
-                        SourcePageError::from(e.at_run(paint::TextPaintLocation::at(
-                            paragraph as u32,
-                            &frame.source().paragraphs[paragraph].runs[run],
-                        )))
-                        .at(at)
-                    })?;
-                }
-            }
-            self.pending
-                .insert((at.part.clone(), native_id), Pending { frame, paints });
+    fn ensure_ready(&self) -> Result<(), SourcePageError> {
+        if self.failed {
+            Err(SourcePageError::Invalid("failed source text computation"))
+        } else {
+            Ok(())
         }
-        cancel(check)
     }
+
     pub(crate) fn append(
+        &mut self,
+        binding: u32,
+        object: &SourcePagePaintBinding,
+        builder: &mut SceneBuilder<SourcePagePaintSource>,
+        viewport: &RasterViewport,
+        check: &dyn Fn() -> bool,
+    ) -> Result<(Fixed, Fixed), SourcePageError> {
+        self.ensure_ready()?;
+        self.failed = true;
+        let result = self.append_object(binding, object, builder, viewport, check);
+        self.failed = result.is_err();
+        result
+    }
+    fn append_object(
         &mut self,
         binding: u32,
         object: &SourcePagePaintBinding,
@@ -174,6 +120,25 @@ impl<'a, 'm, 'font> Compiler<'a, 'm, 'font> {
         let Some(pending) = self.pending.remove(&key) else {
             return Ok((Fixed::ZERO, Fixed::ZERO));
         };
+        let mut position = Fixed::ZERO;
+        let mut geometry = Fixed::ZERO;
+        for frame in pending {
+            let (p, g) = self.append_frame(frame, binding, object, builder, viewport, check)?;
+            position = position.max(p);
+            geometry = geometry.max(g);
+        }
+        Ok((position, geometry))
+    }
+    fn append_frame(
+        &mut self,
+        pending: Pending,
+        binding: u32,
+        object: &SourcePagePaintBinding,
+        builder: &mut SceneBuilder<SourcePagePaintSource>,
+        viewport: &RasterViewport,
+        check: &dyn Fn() -> bool,
+    ) -> Result<(Fixed, Fixed), SourcePageError> {
+        cancel(check)?;
         let mut limits = self.limits.work;
         limits.max_component_calls -= self.work.component_calls;
         limits.max_font_upload_bytes -= self.work.font_upload_bytes;
@@ -214,8 +179,9 @@ impl<'a, 'm, 'font> Compiler<'a, 'm, 'font> {
         self.work.glyphs += work.glyphs;
         self.work.path_commands += work.path_commands;
         let uncertainty = precision::frame_bound(&frame)?;
-        let mut position_error = Fixed::ZERO;
-        let mut geometry_error = Fixed::ZERO;
+        let clip = clip::LocalClip::for_frame(&frame, &decorations, uncertainty)?;
+        let (clip, mut position_error, mut geometry_error) =
+            clip::append(clip, object, builder, viewport, check)?;
         let text_binding = self.bindings.len() as u32;
         let mut paint_path = |commands: &[mo_geometry::PathCommand],
                               origin: Point,
@@ -232,6 +198,7 @@ impl<'a, 'm, 'font> Compiler<'a, 'm, 'font> {
                     origin,
                     rgba,
                     uncertainty,
+                    clip,
                 },
                 check,
             )?;
@@ -340,14 +307,24 @@ pub fn render(
 ) -> Result<SourceTextPageImage, SourcePageError> {
     // Detailed provenance and shaping plans are a compile product, not a
     // mandatory raster payload. Release them before entering the raster host.
-    let (profile, page, downstream_coordinate_error_bound, text_frames, text_work, compiled) = {
+    let (
+        profile,
+        page,
+        downstream_coordinate_error_bound,
+        text_frames,
+        text_work,
+        text_capacity,
+        compiled,
+    ) = {
         let (plan, compiled) = prepare(index, q, manifest, text_backend, limits, check)?;
+        let text_capacity = capacity(&plan.texts, check)?;
         (
             plan.profile,
             plan.page.info,
             plan.page.downstream_coordinate_error_bound,
             plan.texts.len() as u32,
             plan.text_work,
+            text_capacity,
             compiled,
         )
     };
@@ -357,6 +334,7 @@ pub fn render(
             profile,
             text_frames,
             text_work,
+            text_capacity: Some(text_capacity),
             page: SourcePageRasterInfo {
                 page,
                 scene: image.info,

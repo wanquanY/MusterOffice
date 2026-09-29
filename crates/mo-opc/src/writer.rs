@@ -13,6 +13,7 @@ use std::{
     collections::{BTreeMap, BTreeSet},
     io::Write,
 };
+mod core_properties;
 
 enum PartData<'a> {
     Bytes(Cow<'a, [u8]>),
@@ -241,6 +242,7 @@ impl<'a> PackageBuilder<'a> {
 #[derive(Debug, Default)]
 pub struct RewritePlan {
     replacements: BTreeMap<PartName, Vec<u8>>,
+    core_title: Option<core_properties::CoreTitleEdit>,
 }
 
 impl RewritePlan {
@@ -266,7 +268,7 @@ impl RewritePlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<WriteReceipt, OpcError> {
         check_cancel(cancelled)?;
-        if self.replacements.is_empty() {
+        if self.replacements.is_empty() && self.core_title.is_none() {
             let mut output = Output::new(writer, source.limits.max_package_bytes);
             package::stream_range(
                 source.archive.get_ref(),
@@ -288,7 +290,34 @@ impl RewritePlan {
                 "signed package mutation needs an explicit remove/re-sign policy".into(),
             ));
         }
-        let mut total = source.types_entry.byte_length;
+        if self
+            .core_title
+            .as_ref()
+            .is_some_and(|e| e.source != source.sha256)
+        {
+            return Err(OpcError::Preservation(
+                "core title source package changed".into(),
+            ));
+        }
+        let mut overlays: BTreeMap<_, _> = self
+            .replacements
+            .iter()
+            .map(|(p, b)| (p, b.as_slice()))
+            .collect();
+        if let Some(edit) = &self.core_title {
+            for (part, bytes) in &edit.parts {
+                if overlays.insert(part, bytes.as_slice()).is_some() {
+                    return Err(OpcError::Preservation(
+                        "part has two coordinated edits".into(),
+                    ));
+                }
+            }
+        }
+        let types = self.core_title.as_ref().and_then(|e| e.types.as_deref());
+        let mut total = types.map_or(source.types_entry.byte_length, |b| b.len() as u64);
+        if total > source.limits.max_part_bytes {
+            return Err(OpcError::Limit("content types bytes"));
+        }
         for name in self.replacements.keys() {
             if !source.entries.contains_key(name) {
                 return Err(OpcError::Preservation(format!(
@@ -296,19 +325,26 @@ impl RewritePlan {
                 )));
             }
         }
-        for (name, entry) in &source.entries {
-            let size = self
-                .replacements
+        let names: BTreeSet<_> = source
+            .entries
+            .keys()
+            .chain(overlays.keys().copied())
+            .collect();
+        for name in &names {
+            let size = overlays
                 .get(name)
-                .map_or(entry.byte_length, |b| b.len() as u64);
+                .map_or_else(|| source.entries[*name].byte_length, |b| b.len() as u64);
             if size > source.limits.max_part_bytes {
                 return Err(OpcError::Limit("replacement part bytes"));
             }
             total = total
                 .checked_add(size)
                 .ok_or(OpcError::Limit("total inflated bytes"))?;
-            if let Some(bytes) = self.replacements.get(name)
-                && metadata::is_xml(&source.parts[name].content_type)
+            if let Some(bytes) = overlays.get(name)
+                && source
+                    .parts
+                    .get(*name)
+                    .is_none_or(|p| metadata::is_xml(&p.content_type))
             {
                 mo_xml::scan_with_control(bytes, source.limits.xml, cancelled, |_| Ok(()))
                     .map_err(|error| {
@@ -327,12 +363,16 @@ impl RewritePlan {
             return Err(OpcError::Limit("total inflated bytes"));
         }
         let mut zip = ZipArchiveWriter::new(Output::new(writer, source.limits.max_package_bytes));
-        copy_compressed(&mut zip, source, &source.types_entry, cancelled)?;
-        for (name, entry) in &source.entries {
-            if let Some(bytes) = self.replacements.get(name) {
-                write_bytes(&mut zip, &entry.name, bytes, cancelled)?;
+        if let Some(types) = types {
+            write_bytes(&mut zip, CONTENT_TYPES_NAME, types, cancelled)?;
+        } else {
+            copy_compressed(&mut zip, source, &source.types_entry, cancelled)?;
+        }
+        for name in names {
+            if let Some(bytes) = overlays.get(name) {
+                write_bytes(&mut zip, name.zip_name(), bytes, cancelled)?;
             } else {
-                copy_compressed(&mut zip, source, entry, cancelled)?;
+                copy_compressed(&mut zip, source, &source.entries[name], cancelled)?;
             }
         }
         check_cancel(cancelled)?;
@@ -345,7 +385,17 @@ impl RewritePlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<VerifiedPackage<S::Reader>, OpcError> {
         let receipt = self.write_to(source, &mut sink, cancelled)?;
-        crate::sink::seal_and_verify(sink, receipt, source.limits, cancelled)
+        let verified = crate::sink::seal_and_verify(sink, receipt, source.limits, cancelled)?;
+        if let Some(edit) = &self.core_title {
+            let observed =
+                crate::read_core_properties(verified.package(), source.limits.xml, cancelled)?;
+            if observed.as_ref().map(|v| v.title.as_str()) != Some(edit.title.as_str()) {
+                return Err(OpcError::Preservation(
+                    "stored core title differs from intended value".into(),
+                ));
+            }
+        }
+        Ok(verified)
     }
     pub fn to_bytes<R: ReaderAt>(
         &self,

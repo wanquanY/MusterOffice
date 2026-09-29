@@ -5,8 +5,8 @@ pub struct PreparedResourceFrame {
     pub(super) compiled: mo_render::CompiledImageScene<'static>,
     pub(super) page: SourcePageInfo,
     pub(super) downstream: mo_geometry::Fixed,
-    pub(super) text_frames: u32,
     pub(super) text_work: crate::source_frame::FrameWork,
+    pub(super) text_capacity: crate::source_frame::capacity::TextCapacity,
     pub(super) decoded: Vec<mo_image::DecodedImageInfo>,
     pub(super) encoded_bytes: u64,
 }
@@ -16,15 +16,15 @@ impl PreparedResourceFrame {
     }
     pub fn complete(
         self,
-        reply: mo_raster::BackendReply,
+        reply: impl Into<mo_raster::RasterCompletionReply>,
         check: &dyn Fn() -> bool,
     ) -> Result<SourceResourcePageImage, SourcePageError> {
         let Self {
             compiled,
             page,
             downstream,
-            text_frames,
             text_work,
+            text_capacity,
             decoded,
             encoded_bytes,
         } = self;
@@ -32,8 +32,8 @@ impl PreparedResourceFrame {
         Ok(finish(
             page,
             downstream,
-            text_frames,
             text_work,
+            text_capacity,
             decoded,
             encoded_bytes,
             image,
@@ -48,8 +48,8 @@ impl PreparedResourceFrame {
             compiled,
             page,
             downstream,
-            text_frames,
             text_work,
+            text_capacity,
             decoded,
             encoded_bytes,
         } = self;
@@ -57,8 +57,8 @@ impl PreparedResourceFrame {
         Ok(finish(
             page,
             downstream,
-            text_frames,
             text_work,
+            text_capacity,
             decoded,
             encoded_bytes,
             image,
@@ -68,8 +68,8 @@ impl PreparedResourceFrame {
 fn finish(
     page: SourcePageInfo,
     downstream: mo_geometry::Fixed,
-    text_frames: u32,
     text_work: crate::source_frame::FrameWork,
+    text_capacity: crate::source_frame::capacity::TextCapacity,
     decoded: Vec<mo_image::DecodedImageInfo>,
     encoded_bytes: u64,
     image: mo_render::ImageSceneRaster,
@@ -82,8 +82,9 @@ fn finish(
                 scene: image.info.scene,
                 downstream_coordinate_error_bound: downstream,
             },
-            text_frames,
+            text_frames: text_capacity.frames.len() as u32,
             text_work,
+            text_capacity: Some(text_capacity),
             decoded_images: decoded,
             encoded_bytes,
             gather_copy_bytes: 0,

@@ -6,6 +6,16 @@ use crate::{AffineUncertainty, CompileError, angle::Angle, interval::Interval};
 use mo_geometry::{Affine, Fixed, Point};
 use mo_presentation_model::{Point as ModelPoint, Size};
 use std::collections::BTreeMap;
+/// A certified collapsed local axis has no filled area. Testing the nominal
+/// determinant alone is unsafe: a nonzero exact scale may round to zero in Q32.
+/// Keep the uncertainty proof, and never use an epsilon to hide thin objects.
+pub(crate) fn empty_fill(affine: &Affine, error: &AffineUncertainty) -> bool {
+    [[0, 2], [1, 3]].into_iter().any(|column| {
+        column
+            .into_iter()
+            .all(|i| affine.linear[i] == Fixed::ZERO && error.linear[i] == Fixed::ZERO)
+    })
+}
 #[derive(Clone)]
 struct Matrix {
     a: [Interval; 4],
@@ -93,6 +103,9 @@ pub(crate) struct Frame {
     pub source_origin: ModelPoint,
     pub source_size: Size,
     pub rotation: Angle,
+    pub scale: Option<[Interval; 2]>,
+    /// Motion is applied to the center in slide axes, after group placement.
+    pub motion: Option<[Interval; 2]>,
     pub flips: [bool; 2],
 }
 pub(crate) struct PlacedFrame {
@@ -129,13 +142,16 @@ impl Engine {
             frame.target_size.width.get(),
             frame.target_size.height.get(),
         ];
-        let own_scale: [Interval; 2] = std::array::from_fn(|i| {
+        let mut own_scale: [Interval; 2] = std::array::from_fn(|i| {
             if source[i] == 0 {
                 Interval::integer(1)
             } else {
                 Interval::ratio(target[i], source[i])
             }
         });
+        if let Some(sampled) = &frame.scale {
+            own_scale = std::array::from_fn(|i| own_scale[i].mul(&sampled[i]));
+        }
         let own_angle = &frame.rotation;
         let swap = own_angle.exchanges_parent_axes();
         let scale =
@@ -152,7 +168,10 @@ impl Engine {
             Interval::integer(frame.origin.x.get()).add(&Interval::integer(target[0]).divide(2)),
             Interval::integer(frame.origin.y.get()).add(&Interval::integer(target[1]).divide(2)),
         ];
-        let center = parent.center_map.map(&own_center);
+        let mut center = parent.center_map.map(&own_center);
+        if let Some(motion) = &frame.motion {
+            center = std::array::from_fn(|i| center[i].add(&motion[i]));
+        }
         let signed_scale = std::array::from_fn(|i| scale[i].clone().signed(flips[i]));
         let a = linear(&self.angles.get(&angle, check)?, &signed_scale);
         let (affine, uncertainty) = evaluated(a.clone(), center.clone())?;

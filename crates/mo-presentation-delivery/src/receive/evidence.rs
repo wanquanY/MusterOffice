@@ -44,7 +44,7 @@ pub(super) fn validate(
     snapshot: &SnapshotRecord,
     context: &context::BoundContext,
     index: &SourceIndex,
-) -> Result<(), DeliveryError> {
+) -> Result<Vec<PreviewMeasurements>, DeliveryError> {
     let asset = input.unique(
         AssetRole::QualityReport,
         "application/vnd.musteroffice.quality+json",
@@ -108,6 +108,7 @@ pub(super) fn validate(
         .clone()
     };
     let mut evidence_ids = BTreeSet::new();
+    let mut measurements = Vec::with_capacity(bundle.previews.len());
     for ((preview, evidence_id), slide) in bundle
         .previews
         .iter()
@@ -120,6 +121,7 @@ pub(super) fn validate(
         }
         input.role(evidence_id, AssetRole::QualityReport, "application/json")?;
         let evidence: PreviewEvidence = input.json(evidence_id)?;
+        preview::validate_capacity(&evidence.render, input.check)?;
         let image = input.role(&preview.image_asset_id, AssetRole::Preview, "image/png")?;
         let page = &evidence.render.page.page;
         let raster = &evidence.render.page.scene.raster;
@@ -171,8 +173,13 @@ pub(super) fn validate(
             &raster.sha256,
             input.check,
         )?;
+        measurements.push(PreviewMeasurements {
+            page_id: preview.page_id.clone(),
+            evidence_asset_id: evidence_id.clone(),
+            text_capacity: evidence.render.text_capacity,
+        });
     }
-    Ok(())
+    Ok(measurements)
 }
 
 struct ReceivedResources<'a, 'b> {

@@ -91,7 +91,7 @@
           ]
         },
         {
-          "description": "Immutable full-viewport pixels after this many preceding draws. Zero\ncaptures the clear color. Device-aligned; path/view transforms do not\nmove it. Draw order is part of the reference, not a host resource ID.",
+          "description": "Immutable full-viewport pixels before draw `after_draws`, after group\nboundaries at that position. Device-aligned; path/view transforms do not\nmove it. Scope selects a canvas, never an implicit host resource.",
           "type": "object",
           "properties": {
             "afterDraws": {
@@ -102,6 +102,9 @@
             "kind": {
               "type": "string",
               "const": "snapshot"
+            },
+            "scope": {
+              "$ref": "#/$defs/SnapshotScope"
             }
           },
           "additionalProperties": false,
@@ -679,6 +682,36 @@
         "decal"
       ]
     },
+    "OpacityGroup": {
+      "description": "Render the complete interval onto transparent pixels, then source-over it\nonto its parent with a single opacity. This is not per-paint alpha.",
+      "type": "object",
+      "properties": {
+        "endDraw": {
+          "description": "Exclusive, and strictly greater than first_draw.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "firstDraw": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "opacity": {
+          "description": "0 is transparent; 65535 is opaque. Linear coverage of premultiplied sRGB.",
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "firstDraw",
+        "endDraw",
+        "opacity"
+      ]
+    },
     "PathClip": {
       "description": "A reusable intersection of a filled path with its parent or the viewport.\nEmpty paths clip everything. Origin is world Q32 EMU, independent of draws.",
       "type": "object",
@@ -864,6 +897,13 @@
             "$ref": "#/$defs/PathDraw"
           }
         },
+        "opacityGroups": {
+          "description": "Isolated, nested draw intervals, in preorder. Empty preserves legacy ABI.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/OpacityGroup"
+          }
+        },
         "paths": {
           "type": "array",
           "items": {
@@ -963,6 +1003,59 @@
         "scale",
         "coordinateTolerance",
         "background"
+      ]
+    },
+    "SnapshotScope": {
+      "description": "The source canvas at a capture point. Explicit captures may be consumed\nlater in any group; their pixels remain immutable after the source closes.",
+      "oneOf": [
+        {
+          "description": "Legacy local capture: use must stay in its original innermost group.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "current"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "description": "Root output, excluding any unmerged active group surfaces.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "output"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "description": "Zero-based opacity-group index; must be active at the capture point.",
+          "type": "object",
+          "properties": {
+            "index": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "group"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "index"
+          ]
+        }
       ]
     },
     "StrokeCap": {

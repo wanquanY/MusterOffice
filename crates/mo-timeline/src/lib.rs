@@ -1,10 +1,15 @@
 //! Deterministic presentation time and property evaluation. No clocks or host state.
+mod authoring;
 mod clock;
+pub use authoring::*;
 mod evaluate;
 mod events;
 mod exact;
 mod generation;
 mod model;
+mod motion;
+mod motion_path;
+pub use motion::*;
 mod plan;
 mod sampler;
 mod tree;

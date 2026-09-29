@@ -3,6 +3,7 @@ use crate::{
 };
 use mo_common::{Digest, RequestId};
 use mo_presentation_edit::SnapshotRecord;
+use mo_presentation_template::TemplateDescription;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -28,9 +29,16 @@ impl Invocation {
                     "new document has no base snapshot",
                 ))
             }
-            (DocumentAction::Apply { .. } | DocumentAction::Export { .. }, None) => Err(
-                Failure::new(FailureCode::NotFound, "base snapshot must be provided"),
-            ),
+            (
+                DocumentAction::Apply { .. }
+                | DocumentAction::Export { .. }
+                | DocumentAction::DescribeTemplate { .. }
+                | DocumentAction::InstantiateTemplate { .. },
+                None,
+            ) => Err(Failure::new(
+                FailureCode::NotFound,
+                "base snapshot must be provided",
+            )),
             _ => Ok(()),
         }?;
         crate::budget::check_size(
@@ -67,6 +75,9 @@ pub struct ComputationReceipt {
     deny_unknown_fields
 )]
 pub enum ComputationResult {
+    DescribedTemplate {
+        description: Box<TemplateDescription>,
+    },
     Mutated {
         snapshot: Box<SnapshotRecord>,
         receipt: MutationReceipt,

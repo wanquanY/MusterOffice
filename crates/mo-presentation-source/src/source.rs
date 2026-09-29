@@ -14,9 +14,11 @@ mod inheritance;
 pub mod line;
 mod links;
 mod paint;
+pub mod prepared;
 mod presentation;
 mod preserve;
 mod surface;
+pub mod table;
 pub mod text;
 pub mod theme;
 mod transform;
@@ -52,6 +54,10 @@ pub struct SourceLimits {
     pub max_text_bytes: usize,
     pub max_text_style_elements: usize,
     pub max_text_style_attribute_bytes: usize,
+    pub max_table_cells: usize,
+    pub max_table_styles: usize,
+    pub max_table_elements: usize,
+    pub max_table_attribute_bytes: usize,
     pub max_edits: usize,
     pub max_theme_parts: usize,
     pub max_theme_elements: usize,
@@ -72,6 +78,10 @@ impl Default for SourceLimits {
             max_text_bytes: 64 * 1024 * 1024,
             max_text_style_elements: 1_000_000,
             max_text_style_attribute_bytes: 32 * 1024 * 1024,
+            max_table_cells: 1_000_000,
+            max_table_styles: 4096,
+            max_table_elements: 2_000_000,
+            max_table_attribute_bytes: 32 * 1024 * 1024,
             max_edits: 10_000,
             max_theme_parts: 4_096,
             max_theme_elements: 1_000_000,
@@ -89,6 +99,8 @@ impl Default for SourceLimits {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct SourceIndex {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub table_styles: Option<Box<table::styles::SourceTableStylePart>>,
     #[serde(default, skip_serializing_if = "text::SourceTextCatalog::is_empty")]
     pub text: text::SourceTextCatalog,
     pub compatibility_profile: String,
@@ -175,6 +187,8 @@ pub enum SourceObjectKind {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct SourceObject {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub table: Option<table::SourceTable>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hidden: Option<bool>,
     #[serde(default, skip_serializing_if = "Option::is_none")]

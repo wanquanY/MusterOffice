@@ -3,6 +3,9 @@ import type { PptxPlaybackPrepareRequest } from '../../contracts/src/generated/p
 import type { PlaybackModule } from './ports.js';
 import { AuthorPlayback } from './author.js';
 import { SourcePlayback, type SourceInputs } from './source.js';
+import { prepareDeliveryInputs, type DeliveryPlaybackRequest, type DeliveryPlaybackInputs } from './delivery.js';
+export { DeliveryPlaybackError } from './delivery.js';
+export type { DeliveryPlaybackRequest, DeliveryPlaybackInputs } from './delivery.js';
 export { AuthorPlayback, SourcePlayback };
 export { PlaybackExecution } from './execution.js';
 export type { SourceInputs };
@@ -24,5 +27,8 @@ export class WasmPlayback {
   }
   prepareSource(request: PptxPlaybackPrepareRequest, inputs: SourceInputs): SourcePlayback {
     return SourcePlayback.prepare(this.module, request, inputs);
+  }
+  prepareDeliveryInputs(request: DeliveryPlaybackRequest, contents: Uint8Array): DeliveryPlaybackInputs {
+    return prepareDeliveryInputs(this.module, request, contents);
   }
 }

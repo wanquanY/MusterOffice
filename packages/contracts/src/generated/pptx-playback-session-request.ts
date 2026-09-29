@@ -63,11 +63,18 @@ export type ImageSampling = "nearest" | "linear";
  */
 export type Ticks = string;
 export type Timescale = number;
-export type InputEvent = {
-  kind: "click";
-  target?: ObjectId | null;
-};
+export type InputEvent =
+  | {
+      kind: "click";
+      target?: ObjectId | null;
+    }
+  | {
+      direction: NavigationDirection;
+      kind: "navigation";
+      target?: ObjectId | null;
+    };
 export type ObjectId = string;
+export type NavigationDirection = "next" | "previous";
 
 export interface PptxPlaybackPrepareRequest {
   binding: PlaybackBinding;

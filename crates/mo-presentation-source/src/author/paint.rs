@@ -47,6 +47,35 @@ pub(super) fn fill(value: &model::Fill, ord: &mut Ordinals) -> Result<SourceFill
         retained_ordinals: vec![],
     })
 }
+pub(super) fn object_line(
+    object: &model::Object,
+    ord: &mut Ordinals,
+) -> Result<Option<SourceLine>, PptxError> {
+    let model::Inherited::Value(stroke) = &object.appearance.stroke else {
+        return Ok(None);
+    };
+    if matches!(
+        object.content,
+        model::ObjectContent::Group { .. } | model::ObjectContent::Table { .. }
+    ) {
+        // CT_GroupShapeProperties has no line or geometry. An explicit absence
+        // describes the group's own outline, not a style mutation of its children.
+        // Normalize only the native projection; the author declaration and its
+        // identity remain intact. A visible stroke still needs a defined mapping.
+        return match stroke {
+            model::Stroke::None {} => Ok(None),
+            model::Stroke::Solid { .. } => Err(PptxError::Unsupported(
+                if matches!(object.content, model::ObjectContent::Group { .. }) {
+                    "group stroke semantics"
+                } else {
+                    "table frame stroke semantics"
+                }
+                .into(),
+            )),
+        };
+    }
+    line(stroke, ord).map(Some)
+}
 pub(super) fn line(value: &model::Stroke, ord: &mut Ordinals) -> Result<SourceLine, PptxError> {
     let source_ordinal = ord.next()?;
     let mut out = SourceLine {

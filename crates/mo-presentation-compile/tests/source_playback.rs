@@ -172,11 +172,39 @@ fn missing_timing_is_static_and_unknown_native_timing_is_never_ignored() {
             .rotations
             .is_empty()
     );
-    let bad = animated(&base, 42, 0, 21600000, "freeze");
-    let bad = rewrite(&bad, SLIDE, |s| {
+    let animated = animated(&base, 42, 0, 21600000, "freeze");
+    let supported = rewrite(&animated, SLIDE, |s| {
         s.replace(
             "restart=\"never\" fill=\"freeze\"",
             "restart=\"always\" fill=\"freeze\"",
+        )
+    });
+    let p = package(&supported);
+    let index = read(&supported);
+    let mut plan = SourcePlaybackPlan::new(
+        &p,
+        &index,
+        request(&index),
+        binding(&supported),
+        SourceLimits::default(),
+        TimelineLimits::default(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(
+        plan.sample(time(1, 2), None, &|| false)
+            .unwrap()
+            .frame()
+            .evaluated
+            .state
+            .nodes[0]
+            .phase,
+        mo_timeline::NodePhase::Active
+    );
+    let bad = rewrite(&animated, SLIDE, |s| {
+        s.replace(
+            "restart=\"never\" fill=\"freeze\"",
+            "restart=\"default\" fill=\"freeze\"",
         )
     });
     let p = package(&bad);

@@ -6,8 +6,40 @@ pub(super) fn project(
     bound: &BoundIndex,
     id: DocumentId,
     resource: ResourceId,
+    title: String,
     check: &dyn Fn() -> bool,
 ) -> Result<Document, PptxError> {
+    project_scoped(
+        bound,
+        id,
+        resource,
+        Projection {
+            identity_scope: None,
+            profile: SourceBindingProfile::PresentationmlRetainedFieldsV3,
+            title,
+        },
+        check,
+    )
+}
+
+pub(super) struct Projection {
+    pub identity_scope: Option<DocumentId>,
+    pub profile: SourceBindingProfile,
+    pub title: String,
+}
+
+pub(super) fn project_scoped(
+    bound: &BoundIndex,
+    id: DocumentId,
+    resource: ResourceId,
+    projection: Projection,
+    check: &dyn Fn() -> bool,
+) -> Result<Document, PptxError> {
+    let Projection {
+        identity_scope,
+        profile,
+        title,
+    } = projection;
     let index = &bound.index;
     if index.main_content_type
         != "application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"
@@ -16,7 +48,7 @@ pub(super) fn project(
             "revisioned import currently requires a PPTX presentation package".into(),
         ));
     }
-    let seed = (&id, &index.source_sha256);
+    let seed = (identity_scope.as_ref().unwrap_or(&id), &index.source_sha256);
     let stable = |kind: &str, address: &str| -> String {
         digest("musteroffice.source-domain-id/1", &(&seed, kind, address))
             .expect("finite native identity")
@@ -35,6 +67,7 @@ pub(super) fn project(
             PptxError::Unsupported("source document without explicit page size".into())
         })?,
     );
+    d.title = title;
     d.resources.insert(
         resource.clone(),
         Resource {
@@ -46,7 +79,8 @@ pub(super) fn project(
         },
     );
     let mut bindings = SourceBindings {
-        profile: SourceBindingProfile::PresentationmlRetainedFieldsV1,
+        profile,
+        identity_scope: identity_scope.clone(),
         resource,
         slides: BTreeMap::new(),
         masters: BTreeMap::new(),
@@ -181,7 +215,14 @@ pub(super) fn project(
                 runs: BTreeMap::new(),
             };
             let mut paragraphs = Vec::new();
-            for (pi, runs) in object.paragraphs.iter().enumerate() {
+            let projected_paragraphs = if object.table.is_some()
+                && profile != SourceBindingProfile::PresentationmlRetainedFieldsV3
+            {
+                &[][..]
+            } else {
+                object.paragraphs.as_slice()
+            };
+            for (pi, runs) in projected_paragraphs.iter().enumerate() {
                 let mut paragraph = RetainedParagraph {
                     id: ParagraphId::new(stable(
                         "paragraph",

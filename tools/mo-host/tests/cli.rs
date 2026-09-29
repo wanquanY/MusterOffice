@@ -1,4 +1,6 @@
 use serde_json::{Value, json};
+#[path = "../../test-support/temporary_directory.rs"]
+mod directory;
 use std::{
     io::Write,
     path::{Path, PathBuf},
@@ -8,13 +10,7 @@ use std::{
 struct Directory(PathBuf);
 impl Directory {
     fn new() -> Self {
-        let nonce = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap()
-            .as_nanos();
-        let path = std::env::temp_dir().join(format!("mo-cli-test-{}-{nonce}", std::process::id()));
-        std::fs::create_dir(&path).unwrap();
-        Self(path)
+        Self(directory::temporary_directory("mo-cli-test"))
     }
 }
 impl Drop for Directory {

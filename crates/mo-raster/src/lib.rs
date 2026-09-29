@@ -5,6 +5,10 @@ mod clip;
 mod clip_tests;
 mod compile;
 mod completion;
+mod reply_validation;
+pub use reply_validation::{
+    RasterCompletionReply, RasterReplyValidation, VALIDATION_BYTES_PER_UNIT, ValidatedRasterReply,
+};
 #[cfg(test)]
 mod completion_tests;
 mod composite;
@@ -12,6 +16,9 @@ mod composite;
 mod composite_tests;
 mod gradient;
 mod office_gradient;
+mod opacity;
+#[cfg(test)]
+mod opacity_tests;
 pub use office_gradient::office_gamma_eligible;
 mod gradient_stops;
 pub use gradient_stops::GradientStops;
@@ -56,6 +63,11 @@ pub const MAX_CLIP_FRAME_WORDS: usize = 2789389;
 pub const MAX_COMPOSITE_FRAME_WORDS: usize = 2854990;
 pub const MAX_GRADIENT_PLANE_FRAME_WORDS: usize = 2883662;
 pub const MAX_ELLIPTIC_GRADIENT_FRAME_WORDS: usize = 2895950;
+pub const MAX_OPACITY_GROUP_FRAME_WORDS: usize = MAX_ELLIPTIC_GRADIENT_FRAME_WORDS + 1 + 4096 * 3;
+pub const MAX_SNAPSHOT_SCOPE_FRAME_WORDS: usize = MAX_OPACITY_GROUP_FRAME_WORDS + 64;
+pub const SNAPSHOT_SCOPE_PROFILE: &str =
+    "skia-8d6d37b-scoped-snapshots-srgb-premul-rgba8-v14-draft";
+pub const OPACITY_GROUP_PROFILE: &str = "skia-8d6d37b-isolated-opacity-srgb-premul-rgba8-v13-draft";
 pub const ELLIPTIC_GRADIENT_PROFILE: &str =
     "skia-8d6d37b-elliptic-gradient-fields-srgb-premul-rgba8-v12-draft";
 pub const MAX_RECT_GRADIENT_FRAME_WORDS: usize = 2887758;

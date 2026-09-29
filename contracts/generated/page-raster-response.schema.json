@@ -178,6 +178,40 @@
       },
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
     },
+    "OpacityGroupWork": {
+      "type": "object",
+      "properties": {
+        "groups": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "maximumDepth": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "peakPixelBytes": {
+          "description": "Peak simultaneously live intermediate pixels, excluding output/snapshots.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "pixelWork": {
+          "description": "Pixels cleared plus pixels composited, including fully transparent groups.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "groups",
+        "maximumDepth",
+        "peakPixelBytes",
+        "pixelWork"
+      ]
+    },
     "PageFailure": {
       "type": "object",
       "properties": {
@@ -241,6 +275,7 @@
     "PageFeature": {
       "type": "string",
       "enum": [
+        "table",
         "shapeText",
         "picture",
         "connector",
@@ -454,6 +489,16 @@
         "miterLimitErrorBound": {
           "description": "Dimensionless raw Q32; not added to pixel coordinate budgets.",
           "$ref": "#/$defs/FixedQ32"
+        },
+        "opacityGroups": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpacityGroupWork"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "paths": {
           "type": "integer",

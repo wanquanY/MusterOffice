@@ -7,9 +7,43 @@ pub(crate) fn apply(
     document: &mut Document,
     operation: &Operation,
     anchors: &mut Vec<AnchorMap>,
+    limits: ValidationLimits,
+    check: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
     source_operation(document, operation)?;
     match operation {
+        Operation::EditTable { object, operation } => {
+            let object = object_mut(document, object)?;
+            let ObjectContent::Table { table } = &mut object.content else {
+                return Err(EditError::input("object is not a table"));
+            };
+            let size = crate::table::apply(table, operation, limits.max_table_cells, check)?;
+            if let Some(transform) = &mut object.transform {
+                transform.size = size;
+            }
+        }
+        Operation::SetPresentationSequence { slide, sequence } => {
+            if !document.slides.contains_key(slide) {
+                return Err(EditError::input("timeline slide does not exist"));
+            }
+            let timeline = sequence
+                .compile(
+                    mo_timeline::TimelineLimits {
+                        max_nodes: limits.max_timing_nodes,
+                        ..mo_timeline::TimelineLimits::default()
+                    },
+                    check,
+                )
+                .map_err(|error| match error {
+                    mo_timeline::TimelineError::Cancelled => EditError::Cancelled,
+                    error => EditError::input(error.to_string()),
+                })?;
+            if timeline.nodes.is_empty() {
+                document.timelines.remove(slide);
+            } else {
+                document.timelines.insert(slide.clone(), timeline);
+            }
+        }
         Operation::SetTimeline { slide, timeline } => {
             if !document.slides.contains_key(slide) {
                 return Err(EditError::input("timeline slide does not exist"));
@@ -136,23 +170,16 @@ pub(crate) fn apply(
             let (text, prefix) = match content {
                 ObjectContent::Shape {
                     text: Some(body), ..
-                } => {
-                    let p = body
-                        .paragraphs
+                } => authored_splice(body, paragraph, run)?,
+                ObjectContent::Table { table } => {
+                    let body = table
+                        .rows
                         .iter_mut()
-                        .find(|p| &p.id == paragraph)
-                        .ok_or_else(|| EditError::input("paragraph does not exist in object"))?;
-                    let index = p
-                        .runs
-                        .iter()
-                        .position(|r| &r.id == run)
-                        .ok_or_else(|| EditError::input("run does not exist in paragraph"))?;
-                    let prefix =
-                        scalar_prefix(p.runs[..index].iter().map(|r| r.content.scalar_len()))?;
-                    let InlineContent::Text { text } = &mut p.runs[index].content else {
-                        return Err(EditError::input("splice requires a text run"));
-                    };
-                    (text, prefix)
+                        .flat_map(|row| &mut row.cells)
+                        .filter_map(|cell| cell.text.as_mut())
+                        .find(|body| body.paragraphs.iter().any(|p| &p.id == paragraph))
+                        .ok_or_else(|| EditError::input("paragraph does not exist in table"))?;
+                    authored_splice(body, paragraph, run)?
                 }
                 ObjectContent::RetainedSource { paragraphs, .. } => {
                     let p = paragraphs
@@ -203,6 +230,28 @@ fn scalar_to_byte(text: &str, offset: usize) -> usize {
     text.char_indices()
         .nth(offset)
         .map_or(text.len(), |(i, _)| i)
+}
+
+fn authored_splice<'a>(
+    body: &'a mut TextBody,
+    paragraph: &ParagraphId,
+    run: &RunId,
+) -> Result<(&'a mut String, u32), EditError> {
+    let p = body
+        .paragraphs
+        .iter_mut()
+        .find(|p| &p.id == paragraph)
+        .ok_or_else(|| EditError::input("paragraph does not exist in object"))?;
+    let index = p
+        .runs
+        .iter()
+        .position(|r| &r.id == run)
+        .ok_or_else(|| EditError::input("run does not exist in paragraph"))?;
+    let prefix = scalar_prefix(p.runs[..index].iter().map(|r| r.content.scalar_len()))?;
+    let InlineContent::Text { text } = &mut p.runs[index].content else {
+        return Err(EditError::input("splice requires a text run"));
+    };
+    Ok((text, prefix))
 }
 
 fn insert<T>(list: &mut Vec<T>, index: u32, value: T) -> Result<(), EditError> {
@@ -317,6 +366,15 @@ fn source_operation(d: &Document, operation: &Operation) -> Result<(), EditError
         return Ok(());
     };
     let constraint = match operation {
+        Operation::SetTitle { .. }
+            if matches!(
+                bindings.profile,
+                mo_presentation_model::SourceBindingProfile::PresentationmlRetainedFieldsV2
+                    | mo_presentation_model::SourceBindingProfile::PresentationmlRetainedFieldsV3
+            ) =>
+        {
+            None
+        }
         Operation::SetTransform { object, .. } => {
             bindings
                 .objects

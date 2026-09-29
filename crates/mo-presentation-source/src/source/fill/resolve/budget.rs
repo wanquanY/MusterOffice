@@ -50,10 +50,13 @@ impl<'a> Budget<'a> {
         }
     }
     pub fn step(&mut self) -> Result<(), PptxError> {
+        self.steps(1)
+    }
+    pub fn steps(&mut self, n: usize) -> Result<(), PptxError> {
         cancelled(self.check)?;
         self.steps = self
             .steps
-            .checked_add(1)
+            .checked_add(n)
             .ok_or(PptxError::Limit("fill resolution steps"))?;
         if self.steps > self.limits.max_steps {
             return Err(PptxError::Limit("fill resolution steps"));
@@ -91,7 +94,7 @@ impl<'a> Budget<'a> {
         self.values(1)?;
         match origin {
             FillOrigin::Declaration { owner, .. } => self.bytes(owner.part.len())?,
-            FillOrigin::Theme { part, via, .. } => {
+            FillOrigin::Theme { part, via, .. } | FillOrigin::TableStyle { part, via, .. } => {
                 self.bytes(part.len())?;
                 self.bytes(via.part.len())?;
             }
@@ -105,6 +108,7 @@ impl<'a> Budget<'a> {
         let mut origin = self.origin(origin)?;
         match &mut origin {
             FillOrigin::Declaration { source_ordinal, .. }
+            | FillOrigin::TableStyle { source_ordinal, .. }
             | FillOrigin::Theme { source_ordinal, .. }
             | FillOrigin::SchemaDefault { source_ordinal, .. } => *source_ordinal = ordinal,
             FillOrigin::ProfileDefault {} => (),

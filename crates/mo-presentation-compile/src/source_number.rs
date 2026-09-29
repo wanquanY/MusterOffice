@@ -1,7 +1,7 @@
-//! Exact source percentage arithmetic shared by baseline and paragraph spacing.
+//! Exact native numbers shared by text and table geometry.
 use mo_common::Emu;
 use mo_geometry::Fixed;
-use mo_presentation_source::source::drawingml::NativePercentage;
+use mo_presentation_source::source::drawingml::{NativeCoordinate, NativePercentage};
 use num_bigint::BigInt;
 
 pub(crate) enum PercentageError {
@@ -78,6 +78,35 @@ pub(crate) fn percentage_interval(
 ) -> Result<crate::interval::Interval, PercentageError> {
     let (n, d) = percentage_ratio(value)?;
     let n = n << 96usize;
+    Ok(crate::interval::Interval::raw(
+        crate::interval_extended::floor_ratio(&n, &d),
+        -crate::interval_extended::floor_ratio(&(-n), &d),
+    ))
+}
+
+/// Native coordinates remain exact until the consumer chooses its output
+/// precision. In particular, table edges must sum these intervals before Q32
+/// conversion rather than accumulate already rounded column widths.
+pub(crate) fn coordinate_interval(
+    value: &NativeCoordinate,
+) -> Result<crate::interval::Interval, PercentageError> {
+    let s = value.lexical();
+    if s.len() > 256 {
+        return Err(PercentageError::LexicalLimit);
+    }
+    let (s, factor) = [
+        ("mm", 36_000),
+        ("cm", 360_000),
+        ("in", 914_400),
+        ("pt", 12_700),
+        ("pc", 152_400),
+        ("pi", 152_400),
+    ]
+    .into_iter()
+    .find_map(|(unit, factor)| s.strip_suffix(unit).map(|n| (n, factor)))
+    .unwrap_or((s, 1));
+    let (n, d) = decimal_ratio(s, 1)?;
+    let n = (n * factor) << 96usize;
     Ok(crate::interval::Interval::raw(
         crate::interval_extended::floor_ratio(&n, &d),
         -crate::interval_extended::floor_ratio(&(-n), &d),

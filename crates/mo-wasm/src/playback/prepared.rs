@@ -62,6 +62,67 @@ impl PreparedPlaybackRaster {
             Frame::Source(frame) => component.begin_images(frame.words(), frame.images()),
         }
     }
+    /// Copies the complete bounded reply before yielding. The JS producer may
+    /// subsequently release or mutate its buffer without changing validation.
+    pub fn begin_validation(self, reply: &crate::raster::Reply) -> PlaybackRasterValidation {
+        let validation = decode(&self, reply)
+            .and_then(|reply| mo_raster::RasterReplyValidation::new(reply, &|| false));
+        PlaybackRasterValidation {
+            prepared: self,
+            validation,
+            complete: false,
+        }
+    }
+}
+
+/// Explicit work cursor, owned by the host's sampled-frame execution. No timers,
+/// async callbacks, partial pixels, or external mutable buffers are retained.
+#[wasm_bindgen]
+pub struct PlaybackRasterValidation {
+    prepared: PreparedPlaybackRaster,
+    validation: Result<mo_raster::RasterReplyValidation, mo_raster::RasterError>,
+    complete: bool,
+}
+#[wasm_bindgen]
+impl PlaybackRasterValidation {
+    /// An observed component/bridge failure must not be hidden by a later cancel.
+    #[wasm_bindgen(getter)]
+    pub fn failed(&self) -> bool {
+        self.validation.is_err()
+    }
+    pub fn step(&mut self, work_units: u32) -> Result<bool, JsValue> {
+        if !(1..=4096).contains(&work_units) {
+            return Err(JsValue::from_str("invalid validation work units"));
+        }
+        if self.complete {
+            return Ok(true);
+        }
+        match &mut self.validation {
+            Ok(validation) => match validation.step(work_units, &|| false) {
+                Ok(complete) => self.complete = complete,
+                Err(error) => {
+                    self.validation = Err(error);
+                    self.complete = true;
+                }
+            },
+            Err(_) => self.complete = true,
+        }
+        Ok(self.complete)
+    }
+}
+impl PlaybackRasterValidation {
+    fn into_reply(
+        self,
+    ) -> (
+        PreparedPlaybackRaster,
+        Result<mo_raster::RasterCompletionReply, mo_raster::RasterError>,
+    ) {
+        let reply = self
+            .validation
+            .and_then(|validation| validation.take())
+            .map(Into::into);
+        (self.prepared, reply)
+    }
 }
 #[wasm_bindgen]
 pub struct CompletedPlaybackRaster {
@@ -92,7 +153,7 @@ fn decode(
         None => Err(mo_raster::RasterError::Invalid("frame preparation failed")),
     }
 }
-fn invalidates(reply: &Result<mo_raster::BackendReply, mo_raster::RasterError>) -> bool {
+fn invalidates(reply: &Result<mo_raster::RasterCompletionReply, mo_raster::RasterError>) -> bool {
     match reply {
         Ok(reply) => reply.check_status().is_err_and(|e| e.invalidates_backend()),
         Err(error) => error.invalidates_backend(),
@@ -119,11 +180,27 @@ impl PlaybackSession {
         prepared: PreparedPlaybackRaster,
         reply: &crate::raster::Reply,
     ) -> CompletedPlaybackRaster {
-        let reply = decode(&prepared, reply);
+        let reply = decode(&prepared, reply).map(Into::into);
+        self.complete_inner(prepared, reply)
+    }
+    pub fn complete_validation(
+        &mut self,
+        validation: PlaybackRasterValidation,
+    ) -> CompletedPlaybackRaster {
+        let (prepared, reply) = validation.into_reply();
+        self.complete_inner(prepared, reply)
+    }
+}
+impl PlaybackSession {
+    fn complete_inner(
+        &mut self,
+        prepared: PreparedPlaybackRaster,
+        reply: Result<mo_raster::RasterCompletionReply, mo_raster::RasterError>,
+    ) -> CompletedPlaybackRaster {
         let mut invalidate = invalidates(&reply);
         let result = match prepared.frame {
             Some(Frame::Author(frame)) if prepared.started => {
-                self.inner.complete_render_result(*frame, reply, &|| false)
+                self.inner.complete_render_reply(*frame, reply, &|| false)
             }
             _ => Err(mo_kernel_api::PlaybackCompletionFailure {
                 error: mo_kernel_api::PlaybackSessionFailure::Session {
@@ -173,11 +250,27 @@ impl PptxPlaybackSession {
         prepared: PreparedPlaybackRaster,
         reply: &crate::raster::Reply,
     ) -> CompletedPlaybackRaster {
-        let reply = decode(&prepared, reply);
+        let reply = decode(&prepared, reply).map(Into::into);
+        self.complete_inner(prepared, reply)
+    }
+    pub fn complete_validation(
+        &mut self,
+        validation: PlaybackRasterValidation,
+    ) -> CompletedPlaybackRaster {
+        let (prepared, reply) = validation.into_reply();
+        self.complete_inner(prepared, reply)
+    }
+}
+impl PptxPlaybackSession {
+    fn complete_inner(
+        &mut self,
+        prepared: PreparedPlaybackRaster,
+        reply: Result<mo_raster::RasterCompletionReply, mo_raster::RasterError>,
+    ) -> CompletedPlaybackRaster {
         let mut invalidate = invalidates(&reply);
         let result = match prepared.frame {
             Some(Frame::Source(frame)) if prepared.started => {
-                self.inner.complete_render_result(*frame, reply, &|| false)
+                self.inner.complete_render_reply(*frame, reply, &|| false)
             }
             _ => Err(mo_kernel_api::PlaybackCompletionFailure {
                 error: mo_kernel_api::PptxPlaybackSessionFailure::Session {

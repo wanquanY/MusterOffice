@@ -43,6 +43,7 @@ export type Brush =
   | {
       afterDraws: number;
       kind: "snapshot";
+      scope?: SnapshotScope;
     };
 /**
  * This interface was referenced by `ImageRasterRequest`'s JSON-Schema
@@ -156,6 +157,24 @@ export type ImageSampling = "nearest" | "linear";
  */
 export type ImageTile = "clamp" | "repeat" | "mirror" | "decal";
 /**
+ * The source canvas at a capture point. Explicit captures may be consumed
+ * later in any group; their pixels remain immutable after the source closes.
+ *
+ * This interface was referenced by `ImageRasterRequest`'s JSON-Schema
+ * via the `definition` "SnapshotScope".
+ */
+export type SnapshotScope =
+  | {
+      kind: "current";
+    }
+  | {
+      kind: "output";
+    }
+  | {
+      index: number;
+      kind: "group";
+    };
+/**
  * This interface was referenced by `ImageRasterRequest`'s JSON-Schema
  * via the `definition` "StrokeCap".
  */
@@ -244,6 +263,10 @@ export interface ImageResource {
 export interface PathRasterRequest {
   clips?: PathClip[];
   draws: PathDraw[];
+  /**
+   * Isolated, nested draw intervals, in preorder. Empty preserves legacy ABI.
+   */
+  opacityGroups?: OpacityGroup[];
   paths: FillPath[];
   viewport: RasterViewport;
 }
@@ -449,6 +472,24 @@ export interface StrokeStyle {
    * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
    */
   width: string;
+}
+/**
+ * Render the complete interval onto transparent pixels, then source-over it
+ * onto its parent with a single opacity. This is not per-paint alpha.
+ *
+ * This interface was referenced by `ImageRasterRequest`'s JSON-Schema
+ * via the `definition` "OpacityGroup".
+ */
+export interface OpacityGroup {
+  /**
+   * Exclusive, and strictly greater than first_draw.
+   */
+  endDraw: number;
+  firstDraw: number;
+  /**
+   * 0 is transparent; 65535 is opaque. Linear coverage of premultiplied sRGB.
+   */
+  opacity: number;
 }
 /**
  * This interface was referenced by `ImageRasterRequest`'s JSON-Schema

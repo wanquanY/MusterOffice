@@ -119,6 +119,21 @@ export type GradientInterpolation = ("srgb" | "linearSrgb") | "officeGamma1875";
 export type GradientTile = "clamp" | "repeat" | "mirror" | "decal";
 export type ImageSampling = "nearest" | "linear";
 export type ImageTile = "clamp" | "repeat" | "mirror" | "decal";
+/**
+ * The source canvas at a capture point. Explicit captures may be consumed
+ * later in any group; their pixels remain immutable after the source closes.
+ */
+export type SnapshotScope =
+  | {
+      kind: "current";
+    }
+  | {
+      kind: "output";
+    }
+  | {
+      index: number;
+      kind: "group";
+    };
 export type StrokeCap = "butt" | "round" | "square";
 export type StrokeJoin =
   | {
@@ -170,6 +185,7 @@ export type PageFailureCode =
   | "COMPONENT_INVALID"
   | "HOST_FAILURE";
 export type PageFeature =
+  | "table"
   | "shapeText"
   | "picture"
   | "connector"
@@ -269,6 +285,10 @@ export interface SceneRasterRequest {
 export interface DrawScene {
   clips?: ClipNode[];
   instances: PathInstance[];
+  /**
+   * Intervals refer to instances; lowering preserves their order and count.
+   */
+  opacityGroups?: OpacityGroup[];
   paths: FillPath[];
   transforms: TransformNode[];
 }
@@ -306,6 +326,7 @@ export interface PathInstance {
     | {
         afterDraws: number;
         kind: "snapshot";
+        scope?: SnapshotScope;
       };
   clip?: number | null;
   path: number;
@@ -451,6 +472,21 @@ export interface StrokeStyle {
    * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
    */
   width: string;
+}
+/**
+ * Render the complete interval onto transparent pixels, then source-over it
+ * onto its parent with a single opacity. This is not per-paint alpha.
+ */
+export interface OpacityGroup {
+  /**
+   * Exclusive, and strictly greater than first_draw.
+   */
+  endDraw: number;
+  firstDraw: number;
+  /**
+   * 0 is transparent; 65535 is opaque. Linear coverage of premultiplied sRGB.
+   */
+  opacity: number;
 }
 export interface FillPath {
   /**

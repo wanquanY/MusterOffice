@@ -20,6 +20,23 @@ pub(crate) fn text(
     root: u32,
     paragraphs: &[Vec<SourceRun>],
 ) -> Result<(), PptxError> {
+    text_namespaced(x, catalog, root, paragraphs, false)
+}
+pub(super) fn cell_text(
+    x: &mut Xml,
+    catalog: &SourceTextCatalog,
+    root: u32,
+    paragraphs: &[Vec<SourceRun>],
+) -> Result<(), PptxError> {
+    text_namespaced(x, catalog, root, paragraphs, true)
+}
+fn text_namespaced(
+    x: &mut Xml,
+    catalog: &SourceTextCatalog,
+    root: u32,
+    paragraphs: &[Vec<SourceRun>],
+    cell: bool,
+) -> Result<(), PptxError> {
     let mut leaves = paragraphs
         .iter()
         .flatten()
@@ -35,7 +52,8 @@ pub(crate) fn text(
                 | N::TitleStyle
                 | N::BodyStyle
                 | N::OtherStyle
-        ) {
+        ) && !(cell && node.element == N::TxBody)
+        {
             "p:"
         } else {
             "a:"

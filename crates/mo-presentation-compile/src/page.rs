@@ -1,9 +1,12 @@
-use crate::coordinate_budget::{axes, geometry_budget, matrix_budget};
+use crate::coordinate_budget::{
+    axes, curve_fits_local, geometry_budget, local_tolerance, matrix_budget,
+};
 use crate::path_scene::SceneBuilder;
 use crate::{
     PAGE_PROFILE, PageError, PageFeature, PageImage, PagePaintKind, PagePaintSource, PagePlan,
     PagePlanInfo, PageRasterInfo, PageRenderRequest,
     interval::Interval as I,
+    page_geometry::{Key, LocalOutline, PageGeometry},
     page_paint::{Paint, PaintContext},
     page_placements, shape_paths,
 };
@@ -60,12 +63,14 @@ fn add_author_paint(
 fn build_page(
     request: &PageRenderRequest,
     placement: Option<&crate::PagePlacements>,
+    mut geometry_cache: Option<&mut PageGeometry>,
     check: &dyn Fn() -> bool,
 ) -> Result<(PagePlanInfo, SceneRasterRequest, Vec<PagePaintSource>), PageError> {
     cancel(check)?;
     let v = &request.viewport;
     mo_raster::compile(
         &PathRasterRequest {
+            opacity_groups: vec![],
             clips: vec![],
             viewport: v.clone(),
             paths: vec![],
@@ -82,18 +87,21 @@ fn build_page(
         }
     };
     let size = placement.page_size;
-    if v.origin != ZERO
-        || i128::from(size.width.get()) * i128::from(v.scale.numerator)
-            != i128::from(v.width) * i128::from(v.scale.denominator)
-        || i128::from(size.height.get()) * i128::from(v.scale.numerator)
-            != i128::from(v.height) * i128::from(v.scale.denominator)
-    {
-        return Err(RasterError::Invalid(
-            "page viewport must exactly cover the page at uniform scale",
-        )
-        .into());
+    if let Some(cache) = geometry_cache.as_deref() {
+        cache.verify_owner(&placement.document_sha256, &placement.slide)?;
     }
+    let clip_page = crate::page_boundary::validate(size, v)?;
     let d = &request.page.document;
+    let tolerance = local_tolerance(
+        placement
+            .surfaces
+            .iter()
+            .flat_map(|s| &s.objects)
+            .filter(|p| !matches!(d.objects[&p.object].content, ObjectContent::Group { .. }))
+            .map(|p| (&p.affine, &p.uncertainty)),
+        v,
+        check,
+    )?;
     let slide = &d.slides[&request.page.slide];
     let layout = slide.layout.as_ref().map(|id| &d.layouts[id]);
     let master = layout.map(|l| &d.masters[&l.master]);
@@ -114,6 +122,9 @@ fn build_page(
         },
     };
     let mut builder = SceneBuilder::new();
+    if clip_page {
+        builder.set_page_clip(&crate::page_boundary::path(size))?;
+    }
     let mut curve_segments = 0;
     if let Some(paint) = context.fill(background.unwrap_or(&default_background), None)? {
         let w = Fixed::emu(size.width);
@@ -174,6 +185,9 @@ fn build_page(
                     }
                     geometry
                 }
+                ObjectContent::Table { .. } => {
+                    return Err(unsupported(Some(&o.id), PageFeature::Table));
+                }
                 ObjectContent::Picture { .. } => {
                     return Err(unsupported(Some(&o.id), PageFeature::Picture));
                 }
@@ -209,13 +223,8 @@ fn build_page(
             let mut segments = 1;
             if let Some(radii) = shape_paths::radii(geometry, p.source_size) {
                 loop {
-                    let bound = geometry_budget(
-                        shape_paths::curve_remainder(&radii, segments),
-                        &p.affine,
-                        &p.uncertainty,
-                        v,
-                    )?;
-                    if bound.raw() <= v.coordinate_tolerance.raw() / 4 {
+                    let error = shape_paths::curve_remainder(&radii, segments);
+                    if curve_fits_local([error[0].upper_q32()?, error[1].upper_q32()?], tolerance) {
                         break;
                     }
                     if segments == 64 {
@@ -224,14 +233,30 @@ fn build_page(
                     segments *= 2;
                 }
             }
-            let outline = shape_paths::outline(
-                geometry,
-                p.source_size,
-                p.anchor,
-                segments,
-                &mut table,
-                check,
-            )?;
+            let mut build = || {
+                shape_paths::outline(
+                    geometry,
+                    p.source_size,
+                    p.anchor,
+                    segments,
+                    &mut table,
+                    check,
+                )
+            };
+            let outline = if let Some(cache) = geometry_cache.as_deref_mut() {
+                cache.outline(
+                    Key {
+                        object: objects,
+                        size: p.source_size,
+                        anchor: p.anchor,
+                        segments,
+                    },
+                    check,
+                    build,
+                )?
+            } else {
+                LocalOutline::Transient(build()?)
+            };
             author_error =
                 author_error.max(matrix_budget(&outline.commands, &p.uncertainty, v, check)?);
             geometry_error = geometry_error.max(geometry_budget(
@@ -289,9 +314,15 @@ fn build_page(
 pub(crate) fn prepare_page(
     request: &PageRenderRequest,
     placements: Option<&crate::PagePlacements>,
+    geometry: Option<&mut PageGeometry>,
+    opacity: Option<&std::collections::BTreeMap<ObjectId, mo_timeline::ExactValue>>,
     check: &dyn Fn() -> bool,
 ) -> Result<(PagePlan, mo_render::CompiledScene), PageError> {
-    let (info, raster, paint_sources) = build_page(request, placements, check)?;
+    let (info, mut raster, paint_sources) = build_page(request, placements, geometry, check)?;
+    if let Some(values) = opacity {
+        raster.scene.opacity_groups =
+            crate::opacity_scopes::author(&request.page.document, &paint_sources, values, check)?;
+    }
     let compiled = mo_render::compile(&raster, check)?;
     let total = info
         .author_coordinate_error_bound
@@ -317,14 +348,14 @@ pub fn compile_page(
     request: &PageRenderRequest,
     check: &dyn Fn() -> bool,
 ) -> Result<PagePlan, PageError> {
-    prepare_page(request, None, check).map(|(plan, _)| plan)
+    prepare_page(request, None, None, None, check).map(|(plan, _)| plan)
 }
 pub fn render_page(
     request: &PageRenderRequest,
     backend: &mut dyn RasterBackend,
     check: &dyn Fn() -> bool,
 ) -> Result<PageImage, PageError> {
-    let (plan, compiled) = prepare_page(request, None, check)?;
+    let (plan, compiled) = prepare_page(request, None, None, None, check)?;
     let image = mo_render::render_compiled(compiled, backend, check)?;
     Ok(PageImage {
         info: PageRasterInfo {

@@ -1,9 +1,14 @@
+mod behavior;
+mod condition;
+mod envelope;
+mod presentation;
+mod sequence;
 mod time_transform;
 mod tree;
 use crate::{P, PptxError};
 use mo_common::{ObjectId, RationalTime, TimingNodeId};
 use mo_timeline::{
-    Effect, FillMode, NodeEvent, RepeatCount, RepeatDuration, StartCondition, Timeline,
+    FillMode, NodeEvent, RepeatCount, RepeatDuration, StartCondition, TimeCondition, Timeline,
     TimelineLimits, TimelinePlan, TimelineVersion, TimingNode,
 };
 use mo_xml::{Element, XmlEvent, XmlLimits};
@@ -81,6 +86,35 @@ fn children<'a>(tree: &'a [Node], node: &Node, names: &[&str]) -> Result<Vec<&'a
 fn single<'a>(tree: &'a [Node], node: &Node, name: &str) -> Result<&'a Node, PptxError> {
     Ok(children(tree, node, &[name])?[0])
 }
+/// Optional native children are still ordered, unique, and exhaustive.
+fn ordered<'a>(
+    tree: &'a [Node],
+    node: &Node,
+    names: &[(&str, bool)],
+) -> Result<Vec<Option<&'a Node>>, PptxError> {
+    let mut position = 0;
+    let mut result = Vec::with_capacity(names.len());
+    for &(name, required) in names {
+        let child = node
+            .children
+            .get(position)
+            .map(|&i| &tree[i])
+            .filter(|n| n.element.name.is(P, name));
+        if child.is_some() {
+            position += 1;
+        } else if required {
+            return Err(unsupported(format!("missing {name}")));
+        }
+        result.push(child);
+    }
+    if position != node.children.len() || !node.text.trim().is_empty() {
+        return Err(unsupported(format!(
+            "unmapped content in {}",
+            node.element.name.local
+        )));
+    }
+    Ok(result)
+}
 fn empty(tree: &[Node], node: &Node) -> Result<(), PptxError> {
     children(tree, node, &[]).map(|_| ())
 }
@@ -115,7 +149,7 @@ fn object(
     Ok(key)
 }
 
-/// Reads the explicitly implemented once-activation rotation graph. Every
+/// Reads the implemented transform graph and scoped sequence navigation. Every
 /// unmapped timing node/attribute/condition fails the projection; original OPC
 /// content remains owned by the source layer. No private author marker required.
 pub fn read_slide_timing(
@@ -130,10 +164,22 @@ pub fn read_slide_timing(
     let mut capture = false;
     let mut unsupported_location = false;
     let mut root_seen = false;
-    let capture_limit = timing_limits
+    let structural_limit = timing_limits
         .max_nodes
-        .saturating_mul(16)
-        .saturating_add(16);
+        // Bounded XML capture includes native grouping overhead as well as
+        // behaviors. Semantic node/condition limits are checked after lifting.
+        .saturating_mul(32)
+        .saturating_add(32);
+    // Conditions cannot consume the structural quota or grant more room to
+    // unrelated XML. Allow grouping conditions before neutral envelope lifting;
+    // semantic compilation enforces the exact public condition count afterward.
+    let condition_limit = timing_limits
+        .max_conditions
+        .saturating_mul(3)
+        .saturating_add(structural_limit);
+    let mut structure_count = 0usize;
+    let mut condition_count = 0usize;
+    let mut condition_depth = None;
     mo_xml::scan_with_control(xml, xml_limits, check, |event| {
         match event {
             XmlEvent::Start { element, depth, .. } => {
@@ -153,8 +199,19 @@ pub fn read_slide_timing(
                     }
                 }
                 if capture {
-                    if tree.len() >= capture_limit {
+                    let (count, limit) = if condition_depth.is_some() {
+                        (&mut condition_count, condition_limit)
+                    } else {
+                        (&mut structure_count, structural_limit)
+                    };
+                    if *count >= limit {
                         return Err(mo_xml::XmlError::Limit("captured timing elements"));
+                    }
+                    *count += 1;
+                    if condition_depth.is_none()
+                        && (element.name.is(P, "stCondLst") || element.name.is(P, "endCondLst"))
+                    {
+                        condition_depth = Some(depth);
                     }
                     let i = tree.len();
                     tree.push(Node {
@@ -173,7 +230,10 @@ pub fn read_slide_timing(
                     tree[i].text.push_str(text);
                 }
             }
-            XmlEvent::End { .. } if capture => {
+            XmlEvent::End { depth, .. } if capture => {
+                if condition_depth == Some(depth) {
+                    condition_depth = None;
+                }
                 stack.pop();
                 if stack.is_empty() {
                     capture = false;
@@ -211,10 +271,12 @@ pub fn read_slide_timing(
     if !list.text.trim().is_empty() || list.children.is_empty() {
         return Err(unsupported("empty or textual child timing list"));
     }
-    if list
-        .children
-        .iter()
-        .any(|&i| tree[i].element.name.is(P, "par") || tree[i].element.name.is(P, "seq"))
+    let envelope = envelope::lift(&tree, list, root_id, timing_limits, check)?;
+    if envelope.is_none()
+        && list
+            .children
+            .iter()
+            .any(|&i| tree[i].element.name.is(P, "par") || tree[i].element.name.is(P, "seq"))
     {
         return tree::read_tree(&tree, list, known_objects, root_id, timing_limits, check)
             .map(Some);
@@ -222,12 +284,13 @@ pub fn read_slide_timing(
     let mut nodes = Vec::new();
     let mut node_bindings = BTreeMap::new();
     let mut object_bindings = BTreeMap::new();
-    for &index in &list.children {
+    let indices = envelope.as_ref().map_or(&list.children, |e| &e.behaviors);
+    for &index in indices {
         crate::cancelled(check)?;
         if nodes.len() >= timing_limits.max_nodes {
             return Err(PptxError::Limit("timing node count"));
         }
-        nodes.push(read_rotation(
+        let node = read_behavior(
             &tree,
             &tree[index],
             known_objects,
@@ -235,7 +298,14 @@ pub fn read_slide_timing(
             &mut node_bindings,
             &mut object_bindings,
             check,
-        )?);
+        )?;
+        if envelope
+            .as_ref()
+            .is_some_and(|e| e.ids.contains(&node_bindings[&node.id]))
+        {
+            return Err(crate::value("timing/id", "duplicate timing identity"));
+        }
+        nodes.push(node);
     }
     let timeline = Timeline {
         format: TimelineVersion::V01,
@@ -255,7 +325,7 @@ pub fn read_slide_timing(
     }))
 }
 
-fn read_rotation(
+fn read_behavior(
     tree: &[Node],
     anim: &Node,
     known_objects: &BTreeSet<u32>,
@@ -264,26 +334,14 @@ fn read_rotation(
     object_bindings: &mut BTreeMap<ObjectId, u32>,
     check: &dyn Fn() -> bool,
 ) -> Result<TimingNode, PptxError> {
-    if !anim.element.name.is(P, "animRot") {
-        return Err(unsupported(format!("behavior {}", anim.element.name.local)));
-    }
-    attrs(anim, &["from", "to"])?;
-    let angle = |name| {
-        anim.element
-            .attribute(name)
-            .ok_or_else(|| unsupported(format!("missing rotation {name}")))?
-            .parse::<i32>()
-            .map_err(|_| crate::value("timing/rotation", "invalid angle"))
-    };
-    let from = angle("from")?;
-    let to = angle("to")?;
-    let behavior = single(tree, anim, "cBhvr")?;
-    attrs(behavior, &["additive", "accumulate", "xfrmType"])?;
-    value(behavior, "additive", "repl")?;
-    value(behavior, "accumulate", "none")?;
-    value(behavior, "xfrmType", "pt")?;
-    let parts = children(tree, behavior, &["cTn", "tgtEl", "attrNameLst"])?;
-    let common = parts[0];
+    let (payload, behavior) = behavior::read(tree, anim)?;
+    payload.common_attributes(behavior)?;
+    let parts = ordered(
+        tree,
+        behavior,
+        &[("cTn", true), ("tgtEl", true), ("attrNameLst", false)],
+    )?;
+    let common = parts[0].expect("required common behavior");
     attrs(
         common,
         &[
@@ -299,7 +357,7 @@ fn read_rotation(
             "decel",
         ],
     )?;
-    value(common, "restart", "never")?;
+    let restart = read_restart(common)?;
     let native = integer(common, "id")?;
     let id = n_id(native);
     if native == root_id || node_bindings.insert(id.clone(), native).is_some() {
@@ -320,33 +378,34 @@ fn read_rotation(
         Some("remove") => FillMode::Remove,
         Some("freeze") => FillMode::Freeze,
         Some("hold") => FillMode::Hold,
+        // Native fade filters have a finite duration and ordinary producer
+        // output omits fill: the filter is removed, independent of Set helpers.
+        None if matches!(payload, behavior::Payload::Fade(_)) => FillMode::Remove,
         _ => return Err(unsupported("fill mode")),
     };
-    let lists = children(
-        tree,
-        common,
-        if common.children.len() == 2 {
-            &["stCondLst", "endCondLst"]
-        } else {
-            &["stCondLst"]
-        },
-    )?;
-    let start_list = lists[0];
-    let start = read_start(tree, start_list, known_objects, object_bindings)?;
-    let end_conditions = lists
-        .get(1)
-        .map(|list| read_ends(tree, list, known_objects, object_bindings, check))
+    let lists = ordered(tree, common, &[("stCondLst", false), ("endCondLst", false)])?;
+    let start = lists[0]
+        .map(|list| read_start(tree, list, known_objects, object_bindings, check))
+        .transpose()?
+        .unwrap_or_else(|| TimeCondition::At { offset: ms(0) }.into());
+    let end_conditions = lists[1]
+        .map(|list| read_conditions(tree, list, known_objects, object_bindings, check))
         .transpose()?
         .unwrap_or_default();
-    let target = object(tree, parts[1], known_objects, object_bindings)?;
-    attrs(parts[2], &[])?;
-    let property = single(tree, parts[2], "attrName")?;
-    attrs(property, &[])?;
-    if !property.children.is_empty() || property.text.trim() != "r" {
-        return Err(unsupported("rotation property name"));
+    let target = object(
+        tree,
+        parts[1].expect("required target"),
+        known_objects,
+        object_bindings,
+    )?;
+    if let Some(properties) = parts[2] {
+        payload.properties(tree, properties)?;
+    } else if matches!(payload, behavior::Payload::Visibility(_)) {
+        return Err(unsupported("set requires an explicit visibility property"));
     }
     Ok(TimingNode {
         id,
+        restart,
         start,
         duration,
         repeat_milli,
@@ -354,21 +413,36 @@ fn read_rotation(
         repeat_duration,
         fill,
         time_transform: time_transform::read(common)?,
-        effect: Effect::Rotation { target, from, to },
+        effect: payload.effect(target),
     })
 }
 
+fn read_restart(common: &Node) -> Result<mo_timeline::RestartMode, PptxError> {
+    match common.element.attribute("restart") {
+        Some("never") => Ok(mo_timeline::RestartMode::Never),
+        // Native missing restart is always; the author API default is separate.
+        None | Some("always") => Ok(mo_timeline::RestartMode::Always),
+        Some("whenNotActive") => Ok(mo_timeline::RestartMode::WhenNotActive),
+        _ => Err(unsupported(
+            "restart mode requires an explicit supported value",
+        )),
+    }
+}
 fn read_start(
     tree: &[Node],
     start_list: &Node,
     known_objects: &BTreeSet<u32>,
     object_bindings: &mut BTreeMap<ObjectId, u32>,
+    check: &dyn Fn() -> bool,
 ) -> Result<StartCondition, PptxError> {
-    attrs(start_list, &[])?;
-    let condition = single(tree, start_list, "cond")?;
-    read_condition(tree, condition, known_objects, object_bindings)
+    let mut conditions = read_conditions(tree, start_list, known_objects, object_bindings, check)?;
+    Ok(if conditions.len() == 1 {
+        conditions.pop().expect("one condition").into()
+    } else {
+        StartCondition::AnyOf { conditions }
+    })
 }
-fn read_ends(
+fn read_conditions(
     tree: &[Node],
     list: &Node,
     known_objects: &BTreeSet<u32>,
@@ -377,62 +451,16 @@ fn read_ends(
 ) -> Result<Vec<mo_timeline::TimeCondition>, PptxError> {
     attrs(list, &[])?;
     if list.children.is_empty() || !list.text.trim().is_empty() {
-        return Err(unsupported("empty or textual end condition list"));
+        return Err(unsupported("empty or textual condition list"));
     }
     list.children
         .iter()
         .map(|&i| {
             crate::cancelled(check)?;
             if !tree[i].element.name.is(P, "cond") {
-                return Err(unsupported("end condition child"));
+                return Err(unsupported("condition list child"));
             }
-            read_condition(tree, &tree[i], known_objects, object_bindings)
+            condition::read(tree, &tree[i], known_objects, object_bindings)
         })
         .collect()
-}
-
-fn read_condition(
-    tree: &[Node],
-    condition: &Node,
-    known_objects: &BTreeSet<u32>,
-    object_bindings: &mut BTreeMap<ObjectId, u32>,
-) -> Result<mo_timeline::TimeCondition, PptxError> {
-    attrs(condition, &["evt", "delay"])?;
-    let delay = ms(integer(condition, "delay")?);
-    Ok(match condition.element.attribute("evt") {
-        None => {
-            empty(tree, condition)?;
-            StartCondition::At { offset: delay }
-        }
-        Some("onBegin" | "onEnd") => {
-            let target = single(tree, condition, "tn")?;
-            attrs(target, &["val"])?;
-            empty(tree, target)?;
-            StartCondition::After {
-                node: n_id(integer(target, "val")?),
-                event: if condition.element.attribute("evt") == Some("onBegin") {
-                    NodeEvent::Begin
-                } else {
-                    NodeEvent::End
-                },
-                delay,
-            }
-        }
-        Some("onClick") => {
-            let target = single(tree, condition, "tgtEl")?;
-            attrs(target, &[])?;
-            let slide_target =
-                target.children.len() == 1 && tree[target.children[0]].element.name.is(P, "sldTgt");
-            let target = if slide_target {
-                let s = single(tree, target, "sldTgt")?;
-                attrs(s, &[])?;
-                empty(tree, s)?;
-                None
-            } else {
-                Some(object(tree, target, known_objects, object_bindings)?)
-            };
-            StartCondition::Click { target, delay }
-        }
-        Some(_) => return Err(unsupported("start event")),
-    })
 }

@@ -33,6 +33,7 @@ impl Budget {
             return Err(SourceTextError::Limit("source object font bindings"));
         }
         let path = match &font.declared_by.origin {
+            TextStyleOrigin::TableStyle { source, .. } => source.lexical_bytes(),
             TextStyleOrigin::Object { object, .. } => object.part.len(),
             TextStyleOrigin::Master { part, .. }
             | TextStyleOrigin::Presentation { part, .. }

@@ -1,36 +1,16 @@
 use super::*;
-use crate::{interval::Interval as I, interval_extended::floor_ratio};
+use crate::interval::Interval as I;
 use mo_presentation_source::source::{
     drawingml::NativeCoordinate, geometry::evaluate::EvaluatedGeometry,
 };
-use num_bigint::BigInt;
 
 fn coordinate(value: &NativeCoordinate) -> Result<I, SourceFrameError> {
-    let s = value.lexical();
-    if s.len() > 256 {
-        return Err(SourceFrameError::Limit("frame coordinate lexical bytes"));
-    }
-    let unit = [
-        ("mm", 36000),
-        ("cm", 360000),
-        ("in", 914400),
-        ("pt", 12700),
-        ("pc", 152400),
-        ("pi", 152400),
-    ];
-    let (s, factor) = unit
-        .iter()
-        .find_map(|(u, f)| s.strip_suffix(u).map(|n| (n, *f)))
-        .unwrap_or((s, 1));
-    let (whole, fraction) = s.split_once('.').unwrap_or((s, ""));
-    let digits = format!("{whole}{fraction}");
-    let n = digits
-        .parse::<BigInt>()
-        .map_err(|_| crate::CompileError::Range)?
-        * factor;
-    let d = BigInt::from(10).pow(fraction.len() as u32);
-    let n = n << 96usize;
-    Ok(I::raw(floor_ratio(&n, &d), -floor_ratio(&(-n), &d)))
+    crate::source_number::coordinate_interval(value).map_err(|e| match e {
+        crate::source_number::PercentageError::LexicalLimit => {
+            SourceFrameError::Limit("frame coordinate lexical bytes")
+        }
+        crate::source_number::PercentageError::Range => crate::CompileError::Range.into(),
+    })
 }
 pub(super) fn region(
     geometry: &EvaluatedGeometry,
@@ -60,10 +40,46 @@ pub(super) fn region(
             ],
         )
     };
+    from_values(source, values, body, Fixed::ZERO)
+}
+pub(super) fn cell(
+    geometry: &crate::source_table::TableCellGeometry,
+    body: &EffectiveTextBody,
+) -> Result<SourceFrameRegion, SourceFrameError> {
+    let r = geometry.merged;
+    from_values(
+        TextRectangleSource::TableCell {
+            cell: geometry.address,
+            source_ordinal: geometry.source_ordinal,
+            region: geometry.region,
+        },
+        [
+            I::fixed(r.min.x),
+            I::fixed(r.min.y),
+            I::fixed(r.max.x),
+            I::fixed(r.max.y),
+        ],
+        body,
+        geometry.conversion_error_bound,
+    )
+}
+fn from_values(
+    source: TextRectangleSource,
+    values: [I; 4],
+    body: &EffectiveTextBody,
+    base_error: Fixed,
+) -> Result<SourceFrameRegion, SourceFrameError> {
+    let mut outer = [Fixed::ZERO; 4];
+    let mut outer_error = Fixed::ZERO;
+    for (i, v) in values.iter().enumerate() {
+        let (at, error) = v.q32()?;
+        outer[i] = at;
+        outer_error = outer_error.max(error);
+    }
     let a = &body.attributes;
     let insets = [&a.left_inset, &a.top_inset, &a.right_inset, &a.bottom_inset];
     let mut out = [Fixed::ZERO; 4];
-    let mut error = Fixed::ZERO;
+    let mut error = outer_error;
     for i in 0..4 {
         let inset = coordinate(
             insets[i]
@@ -94,6 +110,16 @@ pub(super) fn region(
                 y: out[3],
             },
         },
-        conversion_error_bound: error,
+        outer: Rect {
+            min: Point {
+                x: outer[0],
+                y: outer[1],
+            },
+            max: Point {
+                x: outer[2],
+                y: outer[3],
+            },
+        },
+        conversion_error_bound: error.checked_add(base_error)?,
     })
 }

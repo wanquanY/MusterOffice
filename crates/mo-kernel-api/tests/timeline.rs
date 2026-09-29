@@ -19,10 +19,11 @@ fn request() -> TimelineEvaluateRequest {
             format: TimelineVersion::V01,
             tree: None,
             nodes: vec![TimingNode {
+                restart: mo_timeline::RestartMode::Never,
                 id: TimingNodeId::new("a").unwrap(),
-                start: StartCondition::At {
+                start: StartCondition::Single(TimeCondition::At {
                     offset: RationalTime::new(0, 1).unwrap(),
-                },
+                }),
                 duration: RationalTime::new(1, 1).unwrap(),
                 end_conditions: vec![],
                 repeat_milli: 1000.into(),
@@ -30,6 +31,7 @@ fn request() -> TimelineEvaluateRequest {
                 time_transform: None,
                 fill: FillMode::Freeze,
                 effect: Effect::Rotation {
+                    composition: Default::default(),
                     target: document.slides[&slide].objects[0].clone(),
                     from: 0,
                     to: 100,

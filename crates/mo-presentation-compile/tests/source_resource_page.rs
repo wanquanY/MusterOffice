@@ -227,7 +227,10 @@ fn background_image_window_reuses_one_decoded_background() {
     let window = p.page.raster.scene.instances.last().unwrap();
     assert!(matches!(
         window.brush,
-        mo_raster::Brush::Snapshot { after_draws: 1 }
+        mo_raster::Brush::Snapshot {
+            after_draws: 1,
+            scope: mo_raster::SnapshotScope::Output
+        }
     ));
     assert_eq!(window.blend, mo_raster::BlendMode::Source);
 }
@@ -248,7 +251,10 @@ fn translucent_background_window_is_not_an_ordinary_source_over_fill() {
     let window = p.raster.scene.instances.last().unwrap();
     assert!(matches!(
         window.brush,
-        mo_raster::Brush::Snapshot { after_draws: 1 }
+        mo_raster::Brush::Snapshot {
+            after_draws: 1,
+            scope: mo_raster::SnapshotScope::Output
+        }
     ));
     assert_eq!(window.blend, mo_raster::BlendMode::Source);
     let mut d = Decoder::default();

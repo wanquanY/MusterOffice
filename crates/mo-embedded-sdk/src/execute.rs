@@ -1,7 +1,7 @@
 use crate::{NativeExportCandidate, NativeExporter};
 use mo_presentation_operations::{
     ComputationReceipt, ComputationResult, DocumentAction, ExportAssets, Failure, FailureCode,
-    Invocation, compute_import, compute_mutation,
+    Invocation, compute_import, compute_inline,
 };
 
 /// Owns one computed response and, for exports, its retained binary outputs.
@@ -38,6 +38,15 @@ pub fn execute(
             "computation cancelled",
         ));
     }
+    if !matches!(
+        invocation.request.action,
+        DocumentAction::Import { .. } | DocumentAction::Export { .. }
+    ) {
+        return Ok(Execution {
+            receipt: compute_inline(invocation, cancelled)?,
+            export: None,
+        });
+    }
     invocation.validate_cancellable(cancelled)?;
     let Invocation { request, snapshot } = invocation;
     let computation = request.computation();
@@ -62,13 +71,9 @@ pub fn execute(
             };
             (digest, result, Some(candidate))
         }
-        action => {
-            let candidate = match action {
-                DocumentAction::Import { source, .. } => {
-                    compute_import(&computation, base, assets.get(&source.asset_id)?, cancelled)?
-                }
-                _ => compute_mutation(&computation, base, cancelled)?,
-            };
+        DocumentAction::Import { source, .. } => {
+            let candidate =
+                compute_import(&computation, base, assets.get(&source.asset_id)?, cancelled)?;
             let digest = candidate.request_digest().clone();
             let (snapshot, receipt) = candidate.into_parts();
             let result = ComputationResult::Mutated {
@@ -77,6 +82,7 @@ pub fn execute(
             };
             (digest, result, None)
         }
+        _ => unreachable!("inline computation dispatched above"),
     };
     if cancelled() {
         return Err(Failure::new(

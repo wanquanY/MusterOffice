@@ -2,7 +2,14 @@ use super::*;
 use crate::source::{SourceTransform, geometry::*};
 
 pub(crate) fn transform(x: &mut Xml, value: &SourceTransform) -> Result<(), PptxError> {
-    x.raw("<a:xfrm")?;
+    transform_tag(x, value, "a:xfrm")
+}
+pub(crate) fn frame_transform(x: &mut Xml, value: &SourceTransform) -> Result<(), PptxError> {
+    transform_tag(x, value, "p:xfrm")
+}
+fn transform_tag(x: &mut Xml, value: &SourceTransform, tag: &str) -> Result<(), PptxError> {
+    x.raw("<")?;
+    x.raw(tag)?;
     attribute(x, "rot", &value.rotation)?;
     attribute(x, "flipH", &value.flip_horizontal)?;
     attribute(x, "flipV", &value.flip_vertical)?;
@@ -28,7 +35,9 @@ pub(crate) fn transform(x: &mut Xml, value: &SourceTransform) -> Result<(), Pptx
             x.raw("/>")?;
         }
     }
-    x.raw("</a:xfrm>")
+    x.raw("</")?;
+    x.raw(tag)?;
+    x.raw(">")
 }
 fn guides(
     x: &mut Xml,

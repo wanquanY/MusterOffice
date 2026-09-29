@@ -58,6 +58,22 @@ pub(in crate::source) struct Reader {
     capture: Option<Capture>,
 }
 impl Reader {
+    pub fn cell_body(
+        e: &Element,
+        depth: usize,
+        ordinal: u32,
+        owner: u32,
+        cell: crate::source::table::SourceCellAddress,
+        budget: &mut Budget,
+        limits: SourceLimits,
+    ) -> Result<Self, XmlError> {
+        if !e.name.is(A, "txBody") {
+            return Err(malformed("invalid table text body root"));
+        }
+        let mut reader = Self::new(e, depth, ordinal, Some(owner), budget, limits)?;
+        reader.catalog.roots[0].cell = Some(cell);
+        Ok(reader)
+    }
     pub fn new(
         e: &Element,
         depth: usize,
@@ -83,6 +99,7 @@ impl Reader {
             depth,
             catalog: SourceTextCatalog {
                 roots: vec![SourceTextRoot {
+                    cell: None,
                     source_ordinal: ordinal,
                     owner,
                 }],
@@ -261,10 +278,10 @@ impl Reader {
             };
         }
         if self.opaque.is_none()
-            && !self
+            && self
                 .frames
                 .last()
-                .is_some_and(|f| f.node.element == NativeTextElement::T)
+                .is_none_or(|f| f.node.element != NativeTextElement::T)
             && !text.trim().is_empty()
         {
             return Err(malformed("text outside native text leaf"));
@@ -328,29 +345,17 @@ impl Reader {
         Ok(())
     }
     pub fn finish(self, target: &mut SourceTextCatalog) -> Result<(), XmlError> {
+        let mut roots = CatalogRoots::existing(target)?;
+        self.finish_indexed(target, &mut roots)
+    }
+    pub fn finish_indexed(
+        self,
+        target: &mut SourceTextCatalog,
+        roots: &mut CatalogRoots,
+    ) -> Result<(), XmlError> {
         if !self.frames.is_empty() || self.capture.is_some() || self.opaque.is_some() {
             return Err(malformed("unclosed native text declarations"));
         }
-        for root in &self.catalog.roots {
-            if target.roots.iter().any(|r| {
-                r.owner == root.owner
-                    && target.nodes[&r.source_ordinal].element
-                        == self.catalog.nodes[&root.source_ordinal].element
-            }) {
-                return Err(malformed("duplicate native text style root"));
-            }
-        }
-        for (id, node) in self.catalog.nodes {
-            if target.nodes.insert(id, node).is_some() {
-                return Err(malformed("duplicate text part binding"));
-            }
-        }
-        for (id, node) in self.catalog.effect_nodes {
-            if target.effect_nodes.insert(id, node).is_some() {
-                return Err(malformed("duplicate text effect binding"));
-            }
-        }
-        target.roots.extend(self.catalog.roots);
-        Ok(())
+        roots.append(target, self.catalog)
     }
 }

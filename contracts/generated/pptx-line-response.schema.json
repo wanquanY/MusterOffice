@@ -327,6 +327,119 @@
         {
           "type": "object",
           "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "edge": {
+              "$ref": "#/$defs/TableCellEdge"
+            },
+            "kind": {
+              "type": "string",
+              "const": "tableCell"
+            },
+            "object": {
+              "$ref": "#/$defs/SourceObjectRef"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "cell",
+            "edge",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "edge": {
+              "$ref": "#/$defs/TableStyleEdge"
+            },
+            "kind": {
+              "type": "string",
+              "const": "tableStyle"
+            },
+            "object": {
+              "$ref": "#/$defs/SourceObjectRef"
+            },
+            "part": {
+              "type": "string"
+            },
+            "region": {
+              "$ref": "#/$defs/TableStyleRegion"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part",
+            "object",
+            "region",
+            "edge",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "edge": {
+              "$ref": "#/$defs/TableStyleEdge"
+            },
+            "kind": {
+              "type": "string",
+              "const": "tableTheme"
+            },
+            "part": {
+              "type": "string"
+            },
+            "referenceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "region": {
+              "$ref": "#/$defs/TableStyleRegion"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "styleIndex": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "via": {
+              "$ref": "#/$defs/SourceObjectRef"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part",
+            "sourceOrdinal",
+            "via",
+            "region",
+            "edge",
+            "referenceOrdinal",
+            "styleIndex"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
             "kind": {
               "type": "string",
               "const": "object"
@@ -448,6 +561,48 @@
     },
     "LineUnresolved": {
       "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "tableGrid"
+            },
+            "object": {
+              "$ref": "#/$defs/SourceObjectRef"
+            },
+            "reason": {
+              "$ref": "#/$defs/NativeTableGridIssue"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "reason"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "tableStyle"
+            },
+            "object": {
+              "$ref": "#/$defs/SourceObjectRef"
+            },
+            "reason": {
+              "$ref": "#/$defs/TableStyleSelectionError"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "reason"
+          ]
+        },
         {
           "type": "object",
           "properties": {
@@ -775,6 +930,172 @@
         "pattern"
       ]
     },
+    "NativeTableGridIssue": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "emptyGrid"
+            }
+          },
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "actual": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "expected": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "rowWidth"
+            },
+            "row": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "kind",
+            "row",
+            "actual",
+            "expected"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "duplicateCellId"
+            }
+          },
+          "required": [
+            "kind",
+            "cell"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "invalidSpan"
+            }
+          },
+          "required": [
+            "kind",
+            "cell"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "missingNeighbour"
+            }
+          },
+          "required": [
+            "kind",
+            "cell"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "conflictingNeighbours"
+            }
+          },
+          "required": [
+            "kind",
+            "cell"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "outsideMerge"
+            },
+            "origin": {
+              "$ref": "#/$defs/SourceCellAddress"
+            }
+          },
+          "required": [
+            "kind",
+            "cell",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "conflictingSpan"
+            },
+            "origin": {
+              "$ref": "#/$defs/SourceCellAddress"
+            }
+          },
+          "required": [
+            "kind",
+            "cell",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "incompleteMerge"
+            },
+            "origin": {
+              "$ref": "#/$defs/SourceCellAddress"
+            }
+          },
+          "required": [
+            "kind",
+            "origin"
+          ]
+        }
+      ]
+    },
     "PlaceholderMatchRule": {
       "type": "string",
       "enum": [
@@ -1026,6 +1347,26 @@
         "lt1",
         "dk2",
         "lt2"
+      ]
+    },
+    "SourceCellAddress": {
+      "type": "object",
+      "properties": {
+        "column": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "row": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "row",
+        "column"
       ]
     },
     "SourceColorTransform": {
@@ -1869,6 +2210,149 @@
         "gradientInactiveCaption",
         "menuHighlight",
         "menuBar"
+      ]
+    },
+    "TableCellEdge": {
+      "type": "string",
+      "enum": [
+        "left",
+        "right",
+        "top",
+        "bottom",
+        "topLeftToBottomRight",
+        "bottomLeftToTopRight"
+      ]
+    },
+    "TableStyleEdge": {
+      "type": "string",
+      "enum": [
+        "left",
+        "right",
+        "top",
+        "bottom",
+        "insideHorizontal",
+        "insideVertical",
+        "topLeftToBottomRight",
+        "topRightToBottomLeft"
+      ]
+    },
+    "TableStyleRegion": {
+      "type": "string",
+      "enum": [
+        "wholeTbl",
+        "band1H",
+        "band2H",
+        "band1V",
+        "band2V",
+        "lastCol",
+        "firstCol",
+        "lastRow",
+        "seCell",
+        "swCell",
+        "firstRow",
+        "neCell",
+        "nwCell"
+      ]
+    },
+    "TableStyleSelectionError": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "conflictingStyles"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "invalidIdentity"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingDefinition"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "gridMismatch"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "cellOutsideGrid"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "retainedDeclaration"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "cancelled"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
       ]
     }
   }

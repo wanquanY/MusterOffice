@@ -260,6 +260,33 @@
           "properties": {
             "kind": {
               "type": "string",
+              "const": "tableStyle"
+            },
+            "part": {
+              "type": "string"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "via": {
+              "$ref": "#/$defs/FillOwner"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part",
+            "sourceOrdinal",
+            "via"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
               "const": "theme"
             },
             "part": {
@@ -424,6 +451,133 @@
           ]
         },
         {
+          "description": "Physical cell formatting. Covered cells remain queryable; page painting\nselects merge origins separately.",
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "tableCell"
+            },
+            "nativeId": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nativeId",
+            "cell"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "edge": {
+              "$ref": "#/$defs/TableCellEdge"
+            },
+            "kind": {
+              "type": "string",
+              "const": "tableCellBorder"
+            },
+            "nativeId": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nativeId",
+            "cell",
+            "edge"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "tableBackground"
+            },
+            "nativeId": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nativeId"
+          ]
+        },
+        {
+          "description": "A real table-style declaration instantiated by this native table. None\nselects tblBg. Also identifies the exact lazy phClr reference context.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "tableStyleFill"
+            },
+            "nativeId": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "region": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/TableStyleRegion"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nativeId"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "edge": {
+              "$ref": "#/$defs/TableStyleEdge"
+            },
+            "kind": {
+              "type": "string",
+              "const": "tableStyleBorder"
+            },
+            "nativeId": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "region": {
+              "$ref": "#/$defs/TableStyleRegion"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nativeId",
+            "region",
+            "edge"
+          ]
+        },
+        {
           "type": "object",
           "properties": {
             "kind": {
@@ -453,6 +607,48 @@
     },
     "FillUnresolved": {
       "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "tableGrid"
+            },
+            "owner": {
+              "$ref": "#/$defs/FillOwner"
+            },
+            "reason": {
+              "$ref": "#/$defs/NativeTableGridIssue"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "owner",
+            "reason"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "tableStyle"
+            },
+            "owner": {
+              "$ref": "#/$defs/FillOwner"
+            },
+            "reason": {
+              "$ref": "#/$defs/TableStyleSelectionError"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "owner",
+            "reason"
+          ]
+        },
         {
           "type": "object",
           "properties": {
@@ -929,6 +1125,172 @@
       },
       "pattern": "^([+-]?[0-9]+|-?[0-9]+(\\.[0-9]+)?%)$"
     },
+    "NativeTableGridIssue": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "emptyGrid"
+            }
+          },
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "actual": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "expected": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "rowWidth"
+            },
+            "row": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "kind",
+            "row",
+            "actual",
+            "expected"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "duplicateCellId"
+            }
+          },
+          "required": [
+            "kind",
+            "cell"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "invalidSpan"
+            }
+          },
+          "required": [
+            "kind",
+            "cell"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "missingNeighbour"
+            }
+          },
+          "required": [
+            "kind",
+            "cell"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "conflictingNeighbours"
+            }
+          },
+          "required": [
+            "kind",
+            "cell"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "outsideMerge"
+            },
+            "origin": {
+              "$ref": "#/$defs/SourceCellAddress"
+            }
+          },
+          "required": [
+            "kind",
+            "cell",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "conflictingSpan"
+            },
+            "origin": {
+              "$ref": "#/$defs/SourceCellAddress"
+            }
+          },
+          "required": [
+            "kind",
+            "cell",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "incompleteMerge"
+            },
+            "origin": {
+              "$ref": "#/$defs/SourceCellAddress"
+            }
+          },
+          "required": [
+            "kind",
+            "origin"
+          ]
+        }
+      ]
+    },
     "NativeTileFlip": {
       "type": "string",
       "enum": [
@@ -972,6 +1334,26 @@
         "LIMIT_EXCEEDED",
         "CANCELLED",
         "READ_FAILED"
+      ]
+    },
+    "SourceCellAddress": {
+      "type": "object",
+      "properties": {
+        "column": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "row": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "row",
+        "column"
       ]
     },
     "SourceImageBinding": {
@@ -1300,6 +1682,149 @@
           "additionalProperties": false,
           "required": [
             "status"
+          ]
+        }
+      ]
+    },
+    "TableCellEdge": {
+      "type": "string",
+      "enum": [
+        "left",
+        "right",
+        "top",
+        "bottom",
+        "topLeftToBottomRight",
+        "bottomLeftToTopRight"
+      ]
+    },
+    "TableStyleEdge": {
+      "type": "string",
+      "enum": [
+        "left",
+        "right",
+        "top",
+        "bottom",
+        "insideHorizontal",
+        "insideVertical",
+        "topLeftToBottomRight",
+        "topRightToBottomLeft"
+      ]
+    },
+    "TableStyleRegion": {
+      "type": "string",
+      "enum": [
+        "wholeTbl",
+        "band1H",
+        "band2H",
+        "band1V",
+        "band2V",
+        "lastCol",
+        "firstCol",
+        "lastRow",
+        "seCell",
+        "swCell",
+        "firstRow",
+        "neCell",
+        "nwCell"
+      ]
+    },
+    "TableStyleSelectionError": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "conflictingStyles"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "invalidIdentity"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingDefinition"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "gridMismatch"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "cellOutsideGrid"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "retainedDeclaration"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "cancelled"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
           ]
         }
       ]

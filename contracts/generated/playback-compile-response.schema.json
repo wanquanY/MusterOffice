@@ -156,7 +156,7 @@
           ]
         },
         {
-          "description": "Immutable full-viewport pixels after this many preceding draws. Zero\ncaptures the clear color. Device-aligned; path/view transforms do not\nmove it. Draw order is part of the reference, not a host resource ID.",
+          "description": "Immutable full-viewport pixels before draw `after_draws`, after group\nboundaries at that position. Device-aligned; path/view transforms do not\nmove it. Scope selects a canvas, never an implicit host resource.",
           "type": "object",
           "properties": {
             "afterDraws": {
@@ -167,6 +167,9 @@
             "kind": {
               "type": "string",
               "const": "snapshot"
+            },
+            "scope": {
+              "$ref": "#/$defs/SnapshotScope"
             }
           },
           "additionalProperties": false,
@@ -305,6 +308,13 @@
             "$ref": "#/$defs/PathInstance"
           }
         },
+        "opacityGroups": {
+          "description": "Intervals refer to instances; lowering preserves their order and count.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/OpacityGroup"
+          }
+        },
         "paths": {
           "type": "array",
           "items": {
@@ -351,8 +361,62 @@
         "sha256"
       ]
     },
+    "ExactMotion": {
+      "description": "Position offsets in fractions of the slide width/height. Ratios encode the\ncomputed position exactly; the frame profile states any path approximation.",
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/ExactValue"
+        },
+        "y": {
+          "$ref": "#/$defs/ExactValue"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "ExactRotation": {
+      "description": "An exact angle with its document dependency still explicit. The layout\norientation is resolved only at placement, after source inheritance.",
+      "type": "object",
+      "properties": {
+        "basis": {
+          "$ref": "#/$defs/RotationBasis"
+        },
+        "denominator": {
+          "type": "string"
+        },
+        "numerator": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "numerator",
+        "denominator"
+      ]
+    },
+    "ExactScale": {
+      "description": "Scale values remain thousandths of a percent until the placement boundary.",
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/ExactValue"
+        },
+        "y": {
+          "$ref": "#/$defs/ExactValue"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
     "ExactValue": {
-      "description": "Output-only exact reduced ratio. Rotation units remain 1/60000 degree.",
+      "description": "Output-only exact reduced ratio. Units are defined by each property channel.",
       "type": "object",
       "properties": {
         "denominator": {
@@ -422,10 +486,30 @@
           "format": "uint32",
           "minimum": 0
         },
+        "motion": {
+          "description": "Exact slide-relative offsets from the original layout center.",
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "$ref": "#/$defs/ExactMotion"
+            }
+          }
+        },
         "nodes": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/NodeFrame"
+          }
+        },
+        "opacity": {
+          "description": "Exact whole-object opacity in [0, 1], before one render-boundary rounding.",
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "$ref": "#/$defs/ExactValue"
+            }
           }
         },
         "profile": {
@@ -436,8 +520,23 @@
           "additionalProperties": false,
           "patternProperties": {
             "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
-              "$ref": "#/$defs/ExactValue"
+              "$ref": "#/$defs/ExactRotation"
             }
+          }
+        },
+        "scales": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "$ref": "#/$defs/ExactScale"
+            }
+          }
+        },
+        "sequences": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SequenceFrame"
           }
         },
         "time": {
@@ -445,6 +544,15 @@
         },
         "timelineSha256": {
           "$ref": "#/$defs/Digest"
+        },
+        "visibility": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "$ref": "#/$defs/Visibility"
+            }
+          }
         }
       },
       "additionalProperties": false,
@@ -1072,6 +1180,36 @@
         "uncertainty"
       ]
     },
+    "OpacityGroup": {
+      "description": "Render the complete interval onto transparent pixels, then source-over it\nonto its parent with a single opacity. This is not per-paint alpha.",
+      "type": "object",
+      "properties": {
+        "endDraw": {
+          "description": "Exclusive, and strictly greater than first_draw.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "firstDraw": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "opacity": {
+          "description": "0 is transparent; 65535 is opaque. Linear coverage of premultiplied sRGB.",
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "firstDraw",
+        "endDraw",
+        "opacity"
+      ]
+    },
     "PageFailure": {
       "type": "object",
       "properties": {
@@ -1135,6 +1273,7 @@
     "PageFeature": {
       "type": "string",
       "enum": [
+        "table",
         "shapeText",
         "picture",
         "connector",
@@ -1687,6 +1826,13 @@
         "timescale"
       ]
     },
+    "RotationBasis": {
+      "type": "string",
+      "enum": [
+        "absolute",
+        "layout"
+      ]
+    },
     "SceneClipWork": {
       "type": "object",
       "properties": {
@@ -1807,6 +1953,35 @@
         "combinedCoordinateErrorBound"
       ]
     },
+    "SequenceFrame": {
+      "type": "object",
+      "properties": {
+        "current": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TimingNodeId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "node": {
+          "$ref": "#/$defs/TimingNodeId"
+        },
+        "position": {
+          "description": "Zero-based cursor. The child count denotes the position after the end.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "node",
+        "position"
+      ]
+    },
     "Size": {
       "type": "object",
       "properties": {
@@ -1830,6 +2005,59 @@
         "pattern": "[^A-Za-z0-9_.:-]"
       },
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "SnapshotScope": {
+      "description": "The source canvas at a capture point. Explicit captures may be consumed\nlater in any group; their pixels remain immutable after the source closes.",
+      "oneOf": [
+        {
+          "description": "Legacy local capture: use must stay in its original innermost group.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "current"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "description": "Root output, excluding any unmerged active group surfaces.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "output"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "description": "Zero-based opacity-group index; must be active at the capture point.",
+          "type": "object",
+          "properties": {
+            "index": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "group"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "index"
+          ]
+        }
+      ]
     },
     "StrokeCap": {
       "type": "string",
@@ -2045,6 +2273,13 @@
       "required": [
         "issues",
         "truncated"
+      ]
+    },
+    "Visibility": {
+      "type": "string",
+      "enum": [
+        "visible",
+        "hidden"
       ]
     }
   }

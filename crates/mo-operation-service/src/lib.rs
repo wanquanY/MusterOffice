@@ -7,6 +7,7 @@ mod discovery;
 mod export;
 mod host;
 mod identity;
+mod legacy_action;
 mod schemas;
 pub use assets::*;
 pub use compute::*;

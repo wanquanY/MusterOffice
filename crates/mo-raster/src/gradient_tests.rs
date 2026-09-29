@@ -10,6 +10,7 @@ fn p(x: i128, y: i128) -> Point {
 }
 pub(super) fn request() -> PathRasterRequest {
     PathRasterRequest {
+        opacity_groups: vec![],
         clips: vec![],
         viewport: RasterViewport {
             width: 32,

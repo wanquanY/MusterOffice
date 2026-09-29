@@ -10,10 +10,11 @@ fn timeline() -> Timeline {
         format: TimelineVersion::V01,
         tree: None,
         nodes: vec![TimingNode {
+            restart: mo_timeline::RestartMode::Never,
             id: TimingNodeId::new("anim").unwrap(),
-            start: StartCondition::At {
+            start: StartCondition::Single(TimeCondition::At {
                 offset: RationalTime::new(0, 1).unwrap(),
-            },
+            }),
             duration: RationalTime::new(2, 1).unwrap(),
             end_conditions: vec![],
             repeat_milli: 1000.into(),
@@ -21,6 +22,7 @@ fn timeline() -> Timeline {
             time_transform: None,
             fill: FillMode::Freeze,
             effect: Effect::Rotation {
+                composition: Default::default(),
                 target: id(),
                 from: 0,
                 to: 21600000,
@@ -48,6 +50,160 @@ fn edit(s: &Snapshot, operations: Vec<Operation>) -> Result<PreparedTransaction,
     )
 }
 #[test]
+fn presentation_sequence_compiles_in_the_atomic_transaction_and_reports_timeline_change() {
+    let s = Snapshot::new(document(), ValidationLimits::default()).unwrap();
+    let n = timeline().nodes.remove(0);
+    let effect = PresentationEffect {
+        id: n.id,
+        delay: RationalTime::new(0, 1).unwrap(),
+        duration: n.duration,
+        repeat_milli: n.repeat_milli,
+        repeat_duration: None,
+        time_transform: None,
+        fill: n.fill,
+        effect: n.effect,
+    };
+    let sequence = PresentationSequence {
+        groups: vec![PresentationGroup {
+            start: PresentationGroupStart::Automatic,
+            batches: vec![PresentationBatch {
+                delay: RationalTime::new(0, 1).unwrap(),
+                effects: vec![effect],
+            }],
+        }],
+    };
+    let operation = Operation::SetPresentationSequence {
+        slide: slide_id(),
+        sequence: sequence.clone(),
+    };
+    let json = serde_json::to_value(&operation).unwrap();
+    assert_eq!(json["kind"], "setPresentationSequence");
+    let operation = serde_json::from_value(json).unwrap();
+    let edited = edit(&s, vec![operation]).unwrap();
+    assert_eq!(edited.receipt.changes.changed_timelines, vec![slide_id()]);
+    assert_eq!(
+        edited.snapshot.document().timelines[&slide_id()].node_count(),
+        5
+    );
+    assert!(s.document().timelines.is_empty());
+    let mut invalid = sequence;
+    invalid.groups[0].batches[0].effects[0].effect = Effect::Rotation {
+        composition: Default::default(),
+        target: ObjectId::new("missing").unwrap(),
+        from: 0,
+        to: 1,
+    };
+    assert!(
+        edit(
+            &s,
+            vec![
+                Operation::SetTitle {
+                    title: "uncommitted".into()
+                },
+                Operation::SetPresentationSequence {
+                    slide: slide_id(),
+                    sequence: invalid,
+                }
+            ]
+        )
+        .is_err()
+    );
+    assert_eq!(s.document().title, "");
+    let cleared = edit(
+        &edited.snapshot,
+        vec![Operation::SetPresentationSequence {
+            slide: slide_id(),
+            sequence: PresentationSequence { groups: vec![] },
+        }],
+    )
+    .unwrap();
+    assert_eq!(cleared.snapshot.document(), s.document());
+}
+#[test]
+fn losing_start_alternatives_still_own_targets_and_dependencies() {
+    let mut doc = document();
+    let (surviving, scope) = hierarchy(&mut doc);
+    let t = doc.timelines.get_mut(&slide_id()).unwrap();
+    t.nodes[0].effect = Effect::Rotation {
+        composition: Default::default(),
+        target: surviving.clone(),
+        from: 0,
+        to: 120,
+    };
+    let at = TimeCondition::At {
+        offset: RationalTime::new(0, 1).unwrap(),
+    };
+    let click = TimeCondition::Click {
+        target: Some(id()),
+        delay: RationalTime::new(0, 1).unwrap(),
+    };
+    t.tree.as_mut().unwrap().containers[0].start = StartCondition::AnyOf {
+        conditions: vec![at.clone(), click],
+    };
+    let mut outside = t.nodes[0].clone();
+    outside.id = TimingNodeId::new("outside").unwrap();
+    outside.start = StartCondition::AnyOf {
+        conditions: vec![
+            at,
+            TimeCondition::After {
+                node: scope,
+                event: NodeEvent::End,
+                delay: RationalTime::new(0, 1).unwrap(),
+            },
+        ],
+    };
+    t.tree.as_mut().unwrap().roots.push(outside.id.clone());
+    t.nodes.push(outside);
+    let s = Snapshot::new(doc, ValidationLimits::default()).unwrap();
+    assert!(
+        edit(
+            &s,
+            vec![
+                Operation::SetTitle {
+                    title: "must not publish".into()
+                },
+                Operation::DeleteObject {
+                    object: id(),
+                    policy: DeletePolicy::RejectDependencies
+                }
+            ]
+        )
+        .is_err()
+    );
+    assert_eq!(s.document().title, "");
+    let out = edit(
+        &s,
+        vec![Operation::DeleteObject {
+            object: id(),
+            policy: DeletePolicy::Cascade,
+        }],
+    )
+    .unwrap();
+    assert!(out.snapshot.document().timelines.is_empty());
+    assert!(out.snapshot.document().objects.contains_key(&surviving));
+    assert_eq!(s.document().timelines[&slide_id()].nodes.len(), 2);
+    let mut invalid = timeline();
+    invalid.nodes[0].start = StartCondition::AnyOf {
+        conditions: vec![
+            TimeCondition::Never {},
+            TimeCondition::Click {
+                target: Some(ObjectId::new("missing").unwrap()),
+                delay: RationalTime::new(0, 1).unwrap(),
+            },
+        ],
+    };
+    assert!(
+        edit(
+            &s,
+            vec![Operation::SetTimeline {
+                slide: slide_id(),
+                timeline: Some(invalid)
+            }]
+        )
+        .is_err()
+    );
+}
+#[test]
 fn empty_documents_keep_their_existing_wire_form_and_timeline_edits_are_atomic() {
     let doc = document();
     let value = serde_json::to_value(&doc).unwrap();
@@ -73,6 +229,7 @@ fn empty_documents_keep_their_existing_wire_form_and_timeline_edits_are_atomic()
     assert!(s.document().timelines.is_empty());
     let mut invalid = timeline();
     invalid.nodes[0].effect = Effect::Rotation {
+        composition: Default::default(),
         target: ObjectId::new("missing").unwrap(),
         from: 0,
         to: 1,
@@ -124,15 +281,16 @@ fn deleting_a_target_rejects_or_removes_transitive_behaviors() {
         let mut n = timing.nodes[0].clone();
         n.id = TimingNodeId::new(format!("n{i}")).unwrap();
         n.effect = Effect::Rotation {
+            composition: Default::default(),
             target: second.clone(),
             from: 0,
             to: 100,
         };
-        n.start = StartCondition::After {
+        n.start = StartCondition::Single(TimeCondition::After {
             node: timing.nodes.last().unwrap().id.clone(),
             event: NodeEvent::End,
             delay: RationalTime::new(0, 1).unwrap(),
-        };
+        });
         timing.nodes.push(n);
     }
     doc.timelines.insert(slide_id(), timing);
@@ -173,10 +331,10 @@ fn click_trigger_ownership_and_slide_deletion_are_validated() {
     assert!(!validate(&doc, ValidationLimits::default()).is_valid());
     doc.timelines.clear();
     let mut timing = timeline();
-    timing.nodes[0].start = StartCondition::Click {
+    timing.nodes[0].start = StartCondition::Single(TimeCondition::Click {
         target: Some(ObjectId::new("missing").unwrap()),
         delay: RationalTime::new(0, 1).unwrap(),
-    };
+    });
     doc.timelines.insert(slide_id(), timing);
     assert!(!validate(&doc, ValidationLimits::default()).is_valid());
     doc.timelines.insert(slide_id(), timeline());
@@ -212,12 +370,16 @@ fn hierarchy(doc: &mut Document) -> (ObjectId, TimingNodeId) {
     t.tree = Some(TimingTree {
         roots: vec![container.clone()],
         containers: vec![TimingContainer {
+            time_transform: None,
+            presentation: None,
+            navigation: None,
+            restart: mo_timeline::RestartMode::Never,
             id: container.clone(),
             kind: ContainerKind::Sequence,
             end_conditions: vec![],
-            start: StartCondition::At {
+            start: StartCondition::Single(TimeCondition::At {
                 offset: RationalTime::new(0, 1).unwrap(),
-            },
+            }),
             duration: ContainerDuration::Fixed {
                 duration: RationalTime::new(9, 1).unwrap(),
             },
@@ -229,32 +391,74 @@ fn hierarchy(doc: &mut Document) -> (ObjectId, TimingNodeId) {
     (surviving, container)
 }
 #[test]
+fn cascading_target_deletion_retires_preset_but_preserves_its_timer_identity() {
+    let mut doc = document();
+    let (_, scope) = hierarchy(&mut doc);
+    let t = doc.timelines.get_mut(&slide_id()).unwrap();
+    let c = &mut t.tree.as_mut().unwrap().containers[0];
+    c.kind = ContainerKind::Parallel;
+    c.presentation = Some(PresentationRole::Effect {
+        preset: PresentationPreset::Spin,
+        trigger: PresentationTrigger::Click,
+    });
+    let s = Snapshot::new(doc, ValidationLimits::default()).unwrap();
+    let out = edit(
+        &s,
+        vec![Operation::DeleteObject {
+            object: id(),
+            policy: DeletePolicy::Cascade,
+        }],
+    )
+    .unwrap();
+    let t = &out.snapshot.document().timelines[&slide_id()];
+    assert!(t.nodes.is_empty());
+    let c = &t.tree.as_ref().unwrap().containers[0];
+    assert_eq!(c.id, scope);
+    assert_eq!(
+        c.duration,
+        ContainerDuration::Fixed {
+            duration: RationalTime::new(9, 1).unwrap()
+        }
+    );
+    assert!(c.presentation.is_none());
+    assert!(
+        s.document().timelines[&slide_id()]
+            .tree
+            .as_ref()
+            .unwrap()
+            .containers[0]
+            .presentation
+            .is_some()
+    );
+}
+#[test]
 fn deleting_container_trigger_removes_descendants_and_cross_scope_dependents_atomically() {
     let mut doc = document();
     let (surviving, container) = hierarchy(&mut doc);
     let t = doc.timelines.get_mut(&slide_id()).unwrap();
     t.nodes[0].effect = Effect::Rotation {
+        composition: Default::default(),
         target: surviving,
         from: 0,
         to: 120,
     };
     let mut dependent = t.nodes[0].clone();
     dependent.id = TimingNodeId::new("dependent").unwrap();
-    dependent.start = StartCondition::After {
+    dependent.start = StartCondition::Single(TimeCondition::After {
         node: dependent.id.clone(),
         event: NodeEvent::End,
         delay: RationalTime::new(0, 1).unwrap(),
-    };
+    });
     // The dependency crosses out of the removed subtree.
-    if let StartCondition::After { node, .. } = &mut dependent.start {
+    if let StartCondition::Single(TimeCondition::After { node, .. }) = &mut dependent.start {
         *node = t.nodes[0].id.clone();
     }
     let tree = t.tree.as_mut().unwrap();
     tree.roots.push(dependent.id.clone());
-    tree.containers[0].start = StartCondition::Click {
+    tree.containers[0].start = StartCondition::Single(TimeCondition::Click {
         target: Some(id()),
         delay: RationalTime::new(0, 1).unwrap(),
-    };
+    });
     t.nodes.push(dependent);
     let snapshot = Snapshot::new(doc, ValidationLimits::default()).unwrap();
     assert!(
@@ -294,15 +498,16 @@ fn removing_a_leaf_preserves_an_empty_timer_and_its_event_dependents() {
     let mut dependent = t.nodes[0].clone();
     dependent.id = TimingNodeId::new("dependent").unwrap();
     dependent.effect = Effect::Rotation {
+        composition: Default::default(),
         target: surviving,
         from: 0,
         to: 120,
     };
-    dependent.start = StartCondition::After {
+    dependent.start = StartCondition::Single(TimeCondition::After {
         node: container,
         event: NodeEvent::End,
         delay: RationalTime::new(0, 1).unwrap(),
-    };
+    });
     t.tree.as_mut().unwrap().roots.push(dependent.id.clone());
     t.nodes.push(dependent);
     let snapshot = Snapshot::new(doc, ValidationLimits::default()).unwrap();
@@ -342,6 +547,7 @@ fn end_trigger_ownership_and_transitive_end_dependencies_are_atomic() {
     let (surviving, _) = hierarchy(&mut doc);
     let timing = doc.timelines.get_mut(&slide_id()).unwrap();
     timing.nodes[0].effect = Effect::Rotation {
+        composition: Default::default(),
         target: surviving.clone(),
         from: 0,
         to: 120,
@@ -403,6 +609,7 @@ fn removing_container_end_target_atomically_removes_its_scope_and_external_depen
     let (surviving, scope) = hierarchy(&mut doc);
     let timing = doc.timelines.get_mut(&slide_id()).unwrap();
     timing.nodes[0].effect = Effect::Rotation {
+        composition: Default::default(),
         target: surviving.clone(),
         from: 0,
         to: 120,
@@ -417,7 +624,8 @@ fn removing_container_end_target_atomically_removes_its_scope_and_external_depen
         node: scope,
         event: NodeEvent::End,
         delay: RationalTime::new(0, 1).unwrap(),
-    };
+    }
+    .into();
     timing.tree.as_mut().unwrap().roots.push(outside.id.clone());
     timing.nodes.push(outside);
     let snapshot = Snapshot::new(doc, ValidationLimits::default()).unwrap();

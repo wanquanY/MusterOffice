@@ -38,6 +38,15 @@ impl Emitter<'_> {
         paint: &FillPaint,
         picture: bool,
     ) -> Result<(), SourcePageError> {
+        // Preflight has already admitted the geometry, fill and resource
+        // bindings. A proven zero-area fill needs no inverse paint matrix.
+        // Keep the object/resource binding and text traversal for this frame.
+        if b.placement
+            .as_ref()
+            .is_some_and(|p| crate::placement_core::empty_fill(&p.affine, &p.uncertainty))
+        {
+            return Ok(());
+        }
         let target = if picture {
             b.picture_fill
                 .as_ref()
@@ -60,6 +69,7 @@ impl Emitter<'_> {
                     blend = mo_raster::BlendMode::Source;
                     Brush::Snapshot {
                         after_draws: self.background_prefix,
+                        scope: mo_raster::SnapshotScope::Output,
                     }
                 }
             },
@@ -105,7 +115,7 @@ impl Emitter<'_> {
                 binding,
                 path: path.origin,
                 paint: crate::PagePaintKind::Fill,
-                fill_target: picture.then_some(target),
+                fill_target: (picture || b.region.is_some()).then_some(target),
             },
         )?;
         Ok(())
@@ -115,6 +125,7 @@ impl Emitter<'_> {
         path: &CompiledNativePath,
         affine: Affine,
         binding: u32,
+        target: &SourcePagePaintBinding,
         line: Option<([u8; 4], StrokeStyle)>,
     ) -> Result<(), SourcePageError> {
         if let Some((rgba, stroke)) = line.filter(|_| path.stroke != Some(false)) {
@@ -128,7 +139,10 @@ impl Emitter<'_> {
                     binding,
                     path: Some(path.origin),
                     paint: crate::PagePaintKind::Stroke,
-                    fill_target: None,
+                    fill_target: target
+                        .table_stroke
+                        .as_ref()
+                        .map(|_| target.fill.target.clone()),
                 },
             )?;
         }
@@ -136,7 +150,7 @@ impl Emitter<'_> {
     }
 }
 pub(crate) fn build(
-    mut page: PreparedPage,
+    mut page: PreparedPage<'_>,
     mut text: Option<&mut dyn crate::source_text_page::Painter>,
     images: &ImagePaints,
     check: &dyn Fn() -> bool,
@@ -157,6 +171,9 @@ pub(crate) fn build(
             _ => None,
         },
     };
+    if page.clip_page {
+        emit.builder.set_page_clip(&page.background_path)?;
+    }
     if let Some(paint) = &page.background_paint {
         emit.fill(
             PaintPath {
@@ -172,47 +189,60 @@ pub(crate) fn build(
     }
     emit.background_prefix = emit.builder.scene.instances.len() as u32;
     let mut bindings = vec![page.background];
+    let mut scopes = crate::opacity_scopes::OpacityScopes::new();
     for object in page.objects {
         cancel(check)?;
-        let b = object.binding;
-        let affine = b.placement.as_ref().expect("object placement").affine;
+        scopes.enter(&object.opacity, emit.builder.scene.instances.len() as u32)?;
         let binding = bindings.len() as u32;
-        // ECMA-376-1 19.3.1.4 shows the spPr fill through transparent pixels of
-        // p:blipFill. Preserve both; do not replace either declaration. Picture
-        // fill is above the shape fill and below its outline.
-        if b.picture_fill.is_some() {
-            for (paint, picture) in [(&object.fill, false), (&object.picture_fill, true)] {
-                if let Some(paint) = paint {
-                    for path in object.paths.iter().filter(|p| filled(p)) {
-                        cancel(check)?;
-                        emit.fill(PaintPath::native(path, affine), binding, &b, paint, picture)?;
+        bindings.push(object.binding);
+        for receiver in object.paints {
+            let binding = if let Some(owner) = receiver.binding {
+                let id = bindings.len() as u32;
+                bindings.push(owner);
+                id
+            } else {
+                binding
+            };
+            let b = &bindings[binding as usize];
+            let affine = b.placement.as_ref().expect("object placement").affine;
+            // ECMA-376-1 19.3.1.4 shows the spPr fill through transparent pixels of
+            // p:blipFill. Preserve both; do not replace either declaration. Picture
+            // fill is above the shape fill and below its outline.
+            if b.picture_fill.is_some() {
+                for (paint, picture) in [(&receiver.fill, false), (&receiver.picture_fill, true)] {
+                    if let Some(paint) = paint {
+                        for path in receiver.paths.iter().filter(|p| filled(p)) {
+                            cancel(check)?;
+                            emit.fill(PaintPath::native(path, affine), binding, b, paint, picture)?;
+                        }
                     }
                 }
-            }
-            for path in &object.paths {
-                emit.stroke(path, affine, binding, object.line)?;
-            }
-        } else {
-            // Retain native path-local fill/outline order for ordinary shapes.
-            for path in &object.paths {
-                cancel(check)?;
-                if let Some(paint) = object.fill.as_ref().filter(|_| filled(path)) {
-                    emit.fill(PaintPath::native(path, affine), binding, &b, paint, false)?;
+                for path in &receiver.paths {
+                    emit.stroke(path, affine, binding, b, receiver.line)?;
                 }
-                emit.stroke(path, affine, binding, object.line)?;
+            } else {
+                // Retain native path-local fill/outline order for ordinary shapes.
+                for path in &receiver.paths {
+                    cancel(check)?;
+                    if let Some(paint) = receiver.fill.as_ref().filter(|_| filled(path)) {
+                        emit.fill(PaintPath::native(path, affine), binding, b, paint, false)?;
+                    }
+                    emit.stroke(path, affine, binding, b, receiver.line)?;
+                }
             }
         }
+        let b = &bindings[binding as usize];
         if let Some(text) = text.as_deref_mut() {
             let (position, geometry) = text
-                .append(binding, &b, &mut emit.builder, &page.viewport, check)
+                .append(binding, b, &mut emit.builder, &page.viewport, check)
                 .map_err(|e| e.at(&b.location))?;
             page.info.placement_coordinate_error_bound =
                 page.info.placement_coordinate_error_bound.max(position);
             page.info.path_coordinate_error_bound =
                 page.info.path_coordinate_error_bound.max(geometry);
         }
-        bindings.push(b);
     }
+    emit.builder.scene.opacity_groups = scopes.finish(emit.builder.scene.instances.len() as u32);
     let remaining = page
         .viewport
         .coordinate_tolerance

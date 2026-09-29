@@ -107,7 +107,7 @@ impl Builder<'_, '_> {
                     .upper_q32()
                     .map_err(|_| self.work.numeric())?,
             ];
-            if error.iter().all(|v| v.raw() <= self.tolerance.raw() / 4) {
+            if crate::coordinate_budget::curve_fits_local(error, self.tolerance) {
                 break;
             }
             n = n

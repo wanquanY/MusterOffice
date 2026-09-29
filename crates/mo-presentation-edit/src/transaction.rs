@@ -275,12 +275,12 @@ pub fn prepare_cancellable(
     } in &transaction.operations
     {
         cancelled()?;
-        apply::apply(&mut document, operation, &mut anchor_maps).map_err(|source| {
-            EditError::Operation {
+        apply::apply(&mut document, operation, &mut anchor_maps, limits, check).map_err(
+            |source| EditError::Operation {
                 operation_id: operation_id.clone(),
                 source: Box::new(source),
-            }
-        })?;
+            },
+        )?;
     }
     cancelled()?;
     ensure_valid(&document, limits)?;

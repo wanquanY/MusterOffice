@@ -13,6 +13,8 @@ export interface RasterModule {
   _mo_skia_office_gradients_abi?(): number;
   _mo_skia_rect_gradients_abi?(): number;
   _mo_skia_elliptic_gradients_abi?(): number;
+  _mo_skia_opacity_groups_abi?(): number;
+  _mo_skia_snapshot_scopes_abi?(): number;
   _mo_skia_compositing_abi?(): number;
   _mo_skia_images_abi?(): number;
   _mo_skia_raster_images?(request: number, words: number, images: number, imageBytes: number, output: number, bytes: number): number;
@@ -102,12 +104,24 @@ export class RasterComponent {
         throw Error('Execution inputs must use independent host ArrayBuffers');
       }
     }
-    if (frame.length < 10 || frame.length > 2895950 || (images && images.byteLength > 67108864)) {
+    if ((frame[1] === 13 || frame[1] === 14) && !this.supportsOpacityGroups) throw Error("Raster opacity group extension unavailable");
+    if (frame[1] === 14 && !this.supportsSnapshotScopes) throw Error("Raster snapshot scope extension unavailable");
+    if (frame.length < 10 || frame.length > 2908303 || (images && images.byteLength > 67108864)) {
       return {status: 1, pixels: new Uint8Array(0)};
     }
     this.#busy = true;
     return RasterExecution.begin(m, frame, images, () => this.#module === m,
       () => this.invalidate(), () => {this.#busy = false;});
+  }
+  get supportsSnapshotScopes(): boolean {
+    const m = this.#module;
+    try { return !!m && m._mo_skia_snapshot_scopes_abi?.() === 1; }
+    catch (error) { this.invalidate(); throw error; }
+  }
+  get supportsOpacityGroups(): boolean {
+    const m = this.#module;
+    try { return !!m && m._mo_skia_opacity_groups_abi?.() === 1; }
+    catch (error) { this.invalidate(); throw error; }
   }
   get supportsClips(): boolean {
     const m = this.#module;
@@ -221,7 +235,11 @@ export class RasterComponent {
         throw new Error("Raster inputs must use independent host ArrayBuffers");
       }
     }
-    const elliptic = frame[1] === 12;
+    const scoped = frame[1] === 14;
+    if (scoped && !this.supportsSnapshotScopes) throw new Error("Raster snapshot scope extension unavailable");
+    const opacity = frame[1] === 13 || scoped;
+    if (opacity && !this.supportsOpacityGroups) throw new Error("Raster opacity group extension unavailable");
+    const elliptic = frame[1] === 12 || opacity;
     if (elliptic && !this.supportsEllipticGradients) throw new Error("Raster elliptic gradient extension unavailable");
     const rect = frame[1] === 11;
     if (rect && !this.supportsRectGradients) throw new Error("Raster rectangular gradient extension unavailable");
@@ -233,7 +251,7 @@ export class RasterComponent {
     const clipping = frame[1] === 7;
     if (composite && !this.supportsCompositing) throw new Error("Raster compositing extension unavailable");
     if (clipping && !this.supportsClips) throw new Error("Raster clip extension unavailable");
-    if (frame.length < (planes || composite ? 14 : clipping ? 13 : images ? 12 : 10) || frame.length > (elliptic ? 2895950 : rect ? 2887758 : planes ? 2883662 : composite ? 2854990 : clipping ? 2789389 : images ? 2691084 : 2617354) ||
+    if (frame.length < (opacity ? 15 : planes || composite ? 14 : clipping ? 13 : images ? 12 : 10) || frame.length > (scoped ? 2908303 : opacity ? 2908239 : elliptic ? 2895950 : rect ? 2887758 : planes ? 2883662 : composite ? 2854990 : clipping ? 2789389 : images ? 2691084 : 2617354) ||
         (images && images.byteLength > 67108864)) return {status: 1, pixels: new Uint8Array(0)};
     this.#busy = true;
     const allocations: number[] = [];

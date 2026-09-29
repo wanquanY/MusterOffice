@@ -77,6 +77,18 @@ impl PptxPlaybackSession {
         (PptxPlaybackRasterInfo, Vec<u8>),
         PlaybackCompletionFailure<PptxPlaybackSessionFailure>,
     > {
+        self.complete_render_reply(prepared, reply.map(Into::into), check)
+    }
+    /// Accepts a sealed pixel validation proof; owner/plan/generation checks still run.
+    pub fn complete_render_reply(
+        &mut self,
+        prepared: PreparedPptxPlaybackRender,
+        reply: Result<mo_raster::RasterCompletionReply, mo_raster::RasterError>,
+        check: &dyn Fn() -> bool,
+    ) -> Result<
+        (PptxPlaybackRasterInfo, Vec<u8>),
+        PlaybackCompletionFailure<PptxPlaybackSessionFailure>,
+    > {
         let reject = |error| PlaybackCompletionFailure {
             error,
             invalidate_backend: match &reply {
@@ -122,7 +134,7 @@ impl PptxPlaybackSession {
             })?;
         Ok((
             PptxPlaybackRasterInfo {
-                profile: PPTX_PLAYBACK_PROFILE.into(),
+                profile: prepared.playback.profile().into(),
                 playback: prepared.playback,
                 page: page.info,
             },

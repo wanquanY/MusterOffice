@@ -19,8 +19,9 @@ fn binding() -> PlaybackBinding {
 }
 fn node(s: &str) -> TimingNode {
     TimingNode {
+        restart: mo_timeline::RestartMode::Never,
         id: id(s),
-        start: StartCondition::At { offset: t(0, 1) },
+        start: StartCondition::Single(TimeCondition::At { offset: t(0, 1) }),
         duration: t(1, 1),
         end_conditions: vec![],
         repeat_milli: 1000.into(),
@@ -28,6 +29,7 @@ fn node(s: &str) -> TimingNode {
         time_transform: None,
         fill: FillMode::Freeze,
         effect: Effect::Rotation {
+            composition: Default::default(),
             target: object(),
             from: -21600000,
             to: 43200000,
@@ -58,13 +60,16 @@ fn rational_sample_is_exact_and_multiturn_is_not_wrapped() {
     let p = plan(vec![node("a")]);
     let f = sample(&p, t(1001, 30000));
     assert_eq!(f.state.nodes[0].progress, Some(ratio("1001", "30000")));
-    assert_eq!(f.state.rotations[&object()], ratio("-19437840", "1"));
     assert_eq!(
-        sample(&p, t(1, 1)).state.rotations[&object()],
+        f.state.rotations[&object()].value(),
+        ratio("-19437840", "1")
+    );
+    assert_eq!(
+        sample(&p, t(1, 1)).state.rotations[&object()].value(),
         ratio("43200000", "1")
     );
     assert_eq!(
-        sample(&p, t(100, 1)).state.rotations[&object()],
+        sample(&p, t(100, 1)).state.rotations[&object()].value(),
         ratio("43200000", "1")
     );
     assert_eq!(sample(&p, t(1001, 30000)), f); // seek backwards through immutable plan
@@ -94,12 +99,13 @@ fn repeat_boundaries_distinguish_active_cycle_and_frozen_endpoint() {
 fn dependencies_are_exact_and_author_order_breaks_activation_ties() {
     let a = node("a");
     let mut b = node("b");
-    b.start = StartCondition::After {
+    b.start = StartCondition::Single(TimeCondition::After {
         node: id("a"),
         event: NodeEvent::Begin,
         delay: t(0, 1),
-    };
+    });
     b.effect = Effect::Rotation {
+        composition: Default::default(),
         target: object(),
         from: 0,
         to: 100,
@@ -107,15 +113,15 @@ fn dependencies_are_exact_and_author_order_breaks_activation_ties() {
     // Topological computation visits a then b; output/order must remain b then a.
     let f = sample(&plan(vec![b.clone(), a.clone()]), t(1, 2));
     assert_eq!(f.state.nodes[0].node, id("b"));
-    assert_eq!(f.state.rotations[&object()], ratio("10800000", "1"));
-    b.start = StartCondition::After {
+    assert_eq!(f.state.rotations[&object()].value(), ratio("10800000", "1"));
+    b.start = StartCondition::Single(TimeCondition::After {
         node: id("a"),
         event: NodeEvent::End,
         delay: t(1, 3),
-    };
+    });
     let f = sample(&plan(vec![b, a]), t(3, 2));
     assert_eq!(f.state.nodes[0].start, Some(ratio("4", "3")));
-    assert_eq!(f.state.rotations[&object()], ratio("50", "3"));
+    assert_eq!(f.state.rotations[&object()].value(), ratio("50", "3"));
 }
 fn click(at: RationalTime, sequence: u32) -> PlaybackEvent {
     PlaybackEvent {
@@ -127,16 +133,16 @@ fn click(at: RationalTime, sequence: u32) -> PlaybackEvent {
 }
 fn interactive() -> TimelinePlan {
     let mut a = node("a");
-    a.start = StartCondition::Click {
+    a.start = StartCondition::Single(TimeCondition::Click {
         target: None,
         delay: t(1, 4),
-    };
+    });
     let mut b = node("b");
-    b.start = StartCondition::After {
+    b.start = StartCondition::Single(TimeCondition::After {
         node: id("a"),
         event: NodeEvent::End,
         delay: t(0, 1),
-    };
+    });
     plan(vec![a, b])
 }
 #[test]
@@ -235,10 +241,10 @@ fn conflicting_stale_or_incomplete_logs_are_rejected() {
 #[test]
 fn only_matching_target_triggers_a_shape_click() {
     let mut n = node("a");
-    n.start = StartCondition::Click {
+    n.start = StartCondition::Single(TimeCondition::Click {
         target: Some(object()),
         delay: t(0, 1),
-    };
+    });
     let p = plan(vec![n]);
     let mut h = EventHistory {
         binding: binding(),
@@ -271,11 +277,11 @@ fn only_matching_target_triggers_a_shape_click() {
 #[test]
 fn graph_and_resource_limits_fail_before_a_frame_is_published() {
     let mut a = node("a");
-    a.start = StartCondition::After {
+    a.start = StartCondition::Single(TimeCondition::After {
         node: id("b"),
         event: NodeEvent::End,
         delay: t(0, 1),
-    };
+    });
     assert!(
         TimelinePlan::compile(
             &timeline(vec![a.clone()]),
@@ -285,11 +291,11 @@ fn graph_and_resource_limits_fail_before_a_frame_is_published() {
         .is_err()
     );
     let mut b = node("b");
-    b.start = StartCondition::After {
+    b.start = StartCondition::Single(TimeCondition::After {
         node: id("a"),
         event: NodeEvent::Begin,
         delay: t(0, 1),
-    };
+    });
     assert!(
         TimelinePlan::compile(&timeline(vec![a, b]), TimelineLimits::default(), &|| false).is_err()
     );
@@ -321,7 +327,7 @@ fn graph_and_resource_limits_fail_before_a_frame_is_published() {
         let mut n = node("a");
         n.duration = duration;
         n.repeat_milli = repeat.into();
-        n.start = StartCondition::At { offset };
+        n.start = StartCondition::Single(TimeCondition::At { offset });
         assert!(
             TimelinePlan::compile(&timeline(vec![n]), TimelineLimits::default(), &|| false)
                 .is_err()
@@ -345,11 +351,11 @@ fn denominator_growth_has_a_hard_exact_arithmetic_budget() {
         let mut n = node(&format!("n{i}"));
         n.duration = t(1, d);
         if i > 0 {
-            n.start = StartCondition::After {
+            n.start = StartCondition::Single(TimeCondition::After {
                 node: id(&format!("n{}", i - 1)),
                 event: NodeEvent::End,
                 delay: t(0, 1),
-            }
+            })
         }
         n
     })

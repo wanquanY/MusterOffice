@@ -16,4 +16,6 @@ pub use mo_presentation_delivery as delivery;
 pub use mo_presentation_edit as edit;
 pub use mo_presentation_model as model;
 pub use mo_presentation_operations as operation;
+pub use mo_presentation_template as template;
+pub use mo_timeline as timeline;
 pub use presentation::{ExportOptions, PlaybackOptions, Presentation};

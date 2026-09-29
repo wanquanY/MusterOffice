@@ -67,6 +67,10 @@ pub enum SourcePageIssue {
     Fill {},
     Line {},
     PathFillModifier {},
+    TableBorderConflict {
+        first: mo_presentation_source::source::table::borders::TableBorderTarget,
+        second: mo_presentation_source::source::table::borders::TableBorderTarget,
+    },
     FillSpace {
         redirects: Vec<mo_presentation_source::source::fill::resolve::FillRedirect>,
     },
@@ -159,6 +163,18 @@ pub struct SourcePagePaintBinding {
     pub picture_fill: Option<SourceFillColorResult>,
     pub line: Option<SourceLineColorResult>,
     pub placement: Option<NativePlacement>,
+    /// Explicit native receiver rectangle, in object-local coordinates.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub region: Option<SourcePaintRegion>,
+    /// Independent native edge geometry; fill.target identifies the cell/edge.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub table_stroke: Option<mo_presentation_source::source::line::resolve::LineGeometryOutcome>,
+}
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct SourcePaintRegion {
+    pub bounds: mo_geometry::Rect,
+    pub coordinate_error_bound: Fixed,
 }
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

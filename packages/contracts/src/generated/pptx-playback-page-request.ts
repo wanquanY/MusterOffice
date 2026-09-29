@@ -88,15 +88,26 @@ export type PlaybackSessionId = string;
  * This interface was referenced by `PptxPlaybackPageRequest`'s JSON-Schema
  * via the `definition` "InputEvent".
  */
-export type InputEvent = {
-  kind: "click";
-  target?: ObjectId | null;
-};
+export type InputEvent =
+  | {
+      kind: "click";
+      target?: ObjectId | null;
+    }
+  | {
+      direction: NavigationDirection;
+      kind: "navigation";
+      target?: ObjectId | null;
+    };
 /**
  * This interface was referenced by `PptxPlaybackPageRequest`'s JSON-Schema
  * via the `definition` "ObjectId".
  */
 export type ObjectId = string;
+/**
+ * This interface was referenced by `PptxPlaybackPageRequest`'s JSON-Schema
+ * via the `definition` "NavigationDirection".
+ */
+export type NavigationDirection = "next" | "previous";
 
 export interface PptxPlaybackPageRequest {
   page: PptxResourcePageRequest;

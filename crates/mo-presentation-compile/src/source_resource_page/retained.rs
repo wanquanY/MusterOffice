@@ -3,7 +3,7 @@
 use super::*;
 use crate::{
     source_image_layout::ImageSourceLayoutPlan, source_image_paint,
-    source_placement::SourceRotations, source_text_page::retained::RetainedText,
+    source_placement::SourceProperties, source_text_page::retained::RetainedText,
 };
 use mo_common::Digest;
 use mo_presentation_source::source::fill::resolve::FillOwner;
@@ -16,7 +16,7 @@ use std::{collections::BTreeMap, sync::Arc};
 pub struct ResourcePreparationInfo {
     pub text_frames: u32,
     pub text_work: crate::source_frame::FrameWork,
-    /// Logical paths/draw elements; not heap capacity or process RSS.
+    /// Logical paths, draw elements and optional clip metadata; not heap capacity or RSS.
     pub text_path_bytes: u64,
     pub decoded_images: u32,
     pub decoded_pixel_bytes: u64,
@@ -25,12 +25,13 @@ pub struct ResourcePreparationInfo {
     pub resources_sha256: Digest,
 }
 struct ImageUse {
-    binding: u32,
+    object: Option<u32>,
     layout: ImageSourceLayoutPlan,
 }
 pub struct ResourcePagePlan {
     request: SourcePageRequest,
-    index: SourceIndex,
+    index: Arc<SourceIndex>,
+    tables: Option<crate::source_table::RetainedTables>,
     text_enabled: bool,
     text: Option<RetainedText>,
     images: Arc<PreparedImages<'static>>,
@@ -51,9 +52,47 @@ impl ResourcePagePlan {
         options: ResourcePageOptions,
         check: &dyn Fn() -> bool,
     ) -> Result<Self, SourcePageError> {
+        Self::new_visible_union(
+            package,
+            index,
+            request,
+            &SourceProperties::new(),
+            decoder,
+            text,
+            options,
+            check,
+        )
+    }
+    /// Prepares all resources that the admitted timing graph can reveal.
+    /// The visibility union only affects preparation, never the stored index.
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn new_visible_union(
+        package: &dyn PackageRead,
+        index: SourceIndex,
+        request: SourcePageRequest,
+        visibility: &SourceProperties,
+        decoder: &mut dyn ImageDecoder,
+        text: Option<TextPageContext<'_, '_, '_>>,
+        options: ResourcePageOptions,
+        check: &dyn Fn() -> bool,
+    ) -> Result<Self, SourcePageError> {
         let text_enabled = text.is_some();
-        let prepared = prepare(package, &index, &request, decoder, text, options, check)?;
+        let index = Arc::new(index);
+        let prepared = prepare_view(
+            package,
+            &index,
+            PageView {
+                source_owner: Some(&index),
+                request: &request,
+                transforms: Some(visibility),
+            },
+            decoder,
+            text,
+            options,
+            check,
+        )?;
         let PreparedResourcePage {
+            tables,
             built,
             text,
             images,
@@ -80,7 +119,7 @@ impl ResourcePagePlan {
                 .insert(
                     key,
                     ImageUse {
-                        binding: b.binding,
+                        object: built.bindings[b.binding as usize].location.object,
                         layout: b.layout,
                     },
                 )
@@ -109,6 +148,7 @@ impl ResourcePagePlan {
         Ok(Self {
             request,
             index,
+            tables,
             text_enabled,
             text,
             images: Arc::new(images),
@@ -123,19 +163,24 @@ impl ResourcePagePlan {
     }
     pub(crate) fn prepare_sampled(
         &self,
-        rotations: &SourceRotations,
+        transforms: &SourceProperties,
         check: &dyn Fn() -> bool,
     ) -> Result<PreparedResourceFrame, SourcePageError> {
-        let prepared = source_page::preflight_sampled(
+        let mut prepared = source_page::preflight_retained(
             &self.index,
             &self.request,
             self.text_enabled,
             true,
-            Some(rotations),
+            Some(transforms),
+            self.tables.as_ref(),
             check,
         )?;
+        // Retained text already owns its prepared frames; source grids are no
+        // longer needed after this sample's paint geometry has been compiled.
+        prepared.tables.clear();
+        prepared.source = None;
         let mut paints = BTreeMap::new();
-        for (binding, owner, fill) in prepared.image_uses() {
+        for (_, owner, fill) in prepared.image_uses() {
             cancel(check)?;
             let key = FillOwner {
                 part: owner.location.part.clone(),
@@ -144,7 +189,7 @@ impl ResourcePagePlan {
             let usage = self
                 .uses
                 .get(&key)
-                .filter(|u| u.binding == binding)
+                .filter(|u| u.object == owner.location.object)
                 .ok_or(SourcePageError::Invalid("retained image source binding"))?;
             let mut layout = usage.layout.clone();
             if layout.placement.as_ref().map(|p| p.source_size)
@@ -161,10 +206,26 @@ impl ResourcePagePlan {
                 return Err(SourcePageError::Invalid("duplicate retained image paint"));
             }
         }
-        if paints.len() != self.uses.len() {
+        // Compare against visible stable source identities. Paint-array
+        // ordinals change as objects disappear; they are not resource IDs.
+        let visible: std::collections::BTreeSet<_> =
+            std::iter::once((prepared.background.location.part.clone(), None))
+                .chain(
+                    prepared
+                        .objects
+                        .iter()
+                        .map(|o| (o.binding.location.part.clone(), o.binding.location.object)),
+                )
+                .collect();
+        let expected = self
+            .uses
+            .iter()
+            .filter(|(key, usage)| visible.contains(&(key.part.clone(), usage.object)))
+            .count();
+        if paints.len() != expected {
             return Err(SourcePageError::Invalid("unpainted retained image"));
         }
-        let mut text = self.text.as_ref().map(RetainedText::painter);
+        let mut text = self.text.as_ref().map(|text| text.painter(&visible));
         let built = source_page::build(
             prepared,
             text.as_mut()
@@ -172,9 +233,16 @@ impl ResourcePagePlan {
             &paints,
             check,
         )?;
-        if let Some(text) = text {
-            text.finish()?;
-        }
+        let (text_work, text_capacity) = match text {
+            Some(text) => text.finish()?,
+            None => (
+                Default::default(),
+                crate::source_frame::capacity::TextCapacity {
+                    profile: crate::source_frame::capacity::PROFILE.into(),
+                    frames: vec![],
+                },
+            ),
+        };
         let compiled =
             mo_render::compile_shared_images(&built.raster, Arc::clone(&self.images), check)?;
         let (info, downstream) = {
@@ -189,12 +257,8 @@ impl ResourcePagePlan {
             compiled,
             page: info,
             downstream,
-            text_frames: self.info.text_frames,
-            text_work: self
-                .text
-                .as_ref()
-                .map(RetainedText::sample_work)
-                .unwrap_or_default(),
+            text_capacity,
+            text_work,
             decoded: self.decoded.clone(),
             encoded_bytes: self.info.encoded_bytes,
         })

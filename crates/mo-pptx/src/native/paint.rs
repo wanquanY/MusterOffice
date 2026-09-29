@@ -44,7 +44,11 @@ pub(crate) fn fill(x: &mut Xml, value: &SourceFill) -> Result<(), PptxError> {
     }
 }
 pub(crate) fn line(x: &mut Xml, value: &SourceLine) -> Result<(), PptxError> {
-    x.raw("<a:ln")?;
+    line_tag(x, value, "ln")
+}
+pub(super) fn line_tag(x: &mut Xml, value: &SourceLine, tag: &str) -> Result<(), PptxError> {
+    x.raw("<a:")?;
+    x.raw(tag)?;
     if let Some(width) = value.width {
         x.attr("w", width.get())?;
     }
@@ -77,7 +81,9 @@ pub(crate) fn line(x: &mut Xml, value: &SourceLine) -> Result<(), PptxError> {
         }
         None => (),
     }
-    x.raw("</a:ln>")
+    x.raw("</a:")?;
+    x.raw(tag)?;
+    x.raw(">")
 }
 pub(crate) fn background(x: &mut Xml, value: &Option<SourceBackground>) -> Result<(), PptxError> {
     if let Some(value) = value {

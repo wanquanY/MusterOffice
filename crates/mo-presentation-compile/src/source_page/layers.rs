@@ -22,6 +22,7 @@ pub(super) fn select(
     q: &SourcePageRequest,
     text_enabled: bool,
     images_enabled: bool,
+    properties: Option<&crate::source_placement::SourceProperties>,
     check: &dyn Fn() -> bool,
 ) -> Result<Vec<SourcePageLayer>, SourcePageError> {
     if !index.slides.iter().any(|s| s.part == q.slide) {
@@ -96,7 +97,13 @@ pub(super) fn select(
                         "source parent is not an earlier group",
                     ))?,
                 };
-                let hidden = parent_hidden || o.hidden == Some(true);
+                let own_hidden = properties
+                    .and_then(|p| p.get(&(part.clone(), o.native_id)))
+                    .and_then(|p| p.visibility)
+                    .map_or(o.hidden == Some(true), |v| {
+                        v == mo_timeline::Visibility::Hidden
+                    });
+                let hidden = parent_hidden || own_hidden;
                 if o.kind == SourceObjectKind::Group {
                     groups.insert(o.native_id, hidden);
                 }
@@ -155,8 +162,14 @@ fn audit(
         part: part.into(),
         object: Some(object.native_id),
     };
-    if let Some(source_ordinal) = object.text_body_ordinal
-        && !text_enabled
+    if let Some(source_ordinal) = object.text_body_ordinal.or_else(|| {
+        object.table.as_ref().and_then(|t| {
+            t.rows
+                .iter()
+                .flat_map(|r| &r.cells)
+                .find_map(|c| c.text_body_ordinal)
+        })
+    }) && !text_enabled
     {
         if images_enabled {
             return Err(SourcePageError::TextContextRequired {
@@ -169,7 +182,8 @@ fn audit(
     if !(matches!(
         object.kind,
         SourceObjectKind::Shape | SourceObjectKind::Connector | SourceObjectKind::Group
-    ) || images_enabled && object.kind == SourceObjectKind::Picture)
+    ) || images_enabled && object.kind == SourceObjectKind::Picture
+        || object.kind == SourceObjectKind::GraphicFrame && object.table.is_some())
     {
         return Err(mapping(
             &location,

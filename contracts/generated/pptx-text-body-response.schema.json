@@ -297,6 +297,26 @@
         "READ_FAILED"
       ]
     },
+    "SourceCellAddress": {
+      "type": "object",
+      "properties": {
+        "column": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "row": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "row",
+        "column"
+      ]
+    },
     "SourceObjectRef": {
       "type": "object",
       "properties": {
@@ -647,6 +667,54 @@
     },
     "TextBodyOrigin": {
       "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "cell"
+            },
+            "object": {
+              "$ref": "#/$defs/SourceObjectRef"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "cell",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "cellDefault"
+            },
+            "object": {
+              "$ref": "#/$defs/SourceObjectRef"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "cell"
+          ]
+        },
         {
           "type": "object",
           "properties": {

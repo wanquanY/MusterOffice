@@ -226,6 +226,7 @@ fn frame_failure(e: mo_presentation_compile::source_frame::SourceFrameError) -> 
     let message = e.to_string();
     let code = match e {
         E::Source(e) | E::SourceText(S::Source(e)) => return source_failure(e),
+        E::Table(e) => return table_frame_failure(e),
         E::SourceText(S::FontSelection(_)) => ResourceRequired,
         E::Text(e) | E::SourceText(S::Text(e)) => {
             use crate::text::ShapeFailureCode as F;
@@ -251,6 +252,24 @@ fn frame_failure(e: mo_presentation_compile::source_frame::SourceFrameError) -> 
         E::Limit(_)
         | E::SourceText(S::Limit(_))
         | E::Coordinate(mo_presentation_compile::CompileError::Limit(_)) => LimitExceeded,
+    };
+    basic(code, message)
+}
+fn table_frame_failure(
+    e: mo_presentation_compile::source_table::TableGeometryError,
+) -> PptxPageFailure {
+    use PptxPageFailureCode::*;
+    use mo_pptx::source::table::grid::NativeTableGridError as G;
+    use mo_presentation_compile::{CompileError as C, source_table::TableGeometryError as E};
+    let message = e.to_string();
+    let code = match e {
+        E::Source(e) => return source_failure(e),
+        E::Coordinate(C::Range) => CoordinateRange,
+        E::Cancelled | E::Grid(G::Cancelled) | E::Coordinate(C::Cancelled) => Cancelled,
+        E::Limit(_) | E::Grid(G::Limit) | E::Coordinate(C::Limit(_)) => LimitExceeded,
+        E::NegativeDimension { .. }
+        | E::Grid(G::Invalid(_))
+        | E::Coordinate(C::Invalid(_) | C::Document(_)) => InputInvalid,
     };
     basic(code, message)
 }
@@ -338,4 +357,38 @@ pub fn render_pptx_page_json(
         serde_json::to_string(&response).expect("typed source page raster response"),
         pixels,
     )
+}
+
+#[cfg(test)]
+mod table_frame_failure_tests {
+    use super::*;
+    use mo_pptx::source::table::grid::{NativeTableGridError as G, NativeTableGridIssue};
+    use mo_presentation_compile::{
+        CompileError as C, source_frame::SourceFrameError, source_table::TableGeometryError as E,
+    };
+    #[test]
+    fn nested_table_errors_keep_cancellation_limit_conflict_and_input_categories() {
+        for (e, expected) in [
+            (E::Cancelled, "CANCELLED"),
+            (E::Grid(G::Cancelled), "CANCELLED"),
+            (E::Coordinate(C::Cancelled), "CANCELLED"),
+            (E::Limit("table"), "LIMIT_EXCEEDED"),
+            (E::Grid(G::Limit), "LIMIT_EXCEEDED"),
+            (E::Coordinate(C::Limit("number")), "LIMIT_EXCEEDED"),
+            (E::Coordinate(C::Range), "COORDINATE_RANGE"),
+            (E::Coordinate(C::Invalid("dimension")), "INPUT_INVALID"),
+            (
+                E::Grid(G::Invalid(NativeTableGridIssue::EmptyGrid)),
+                "INPUT_INVALID",
+            ),
+            (E::NegativeDimension { source_ordinal: 12 }, "INPUT_INVALID"),
+            (
+                E::Source(PptxError::SourceConflict("stale source".into())),
+                "SOURCE_CONFLICT",
+            ),
+        ] {
+            let result = failure(SourcePageError::Text(SourceFrameError::Table(e)));
+            assert_eq!(serde_json::to_value(result.code).unwrap(), expected);
+        }
+    }
 }

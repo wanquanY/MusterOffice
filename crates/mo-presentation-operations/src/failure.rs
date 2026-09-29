@@ -153,3 +153,25 @@ impl From<mo_presentation_edit::EditError> for Failure {
         }
     }
 }
+
+impl From<mo_presentation_template::TemplateError> for Failure {
+    fn from(error: mo_presentation_template::TemplateError) -> Self {
+        use mo_presentation_template::TemplateError as Error;
+        let code = match &error {
+            Error::Cancelled => FailureCode::Cancelled,
+            Error::LimitExceeded(_) => FailureCode::LimitExceeded,
+            Error::SourceConflict | Error::TemplateConflict { .. } => FailureCode::RevisionConflict,
+            _ => FailureCode::InputInvalid,
+        };
+        if let Error::Edit(error) = error {
+            return error.into();
+        }
+        Self {
+            code,
+            message: error.to_string(),
+            detail: Some(Box::new(
+                serde_json::to_value(error.diagnostic()).expect("typed template diagnostic"),
+            )),
+        }
+    }
+}

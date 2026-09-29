@@ -139,6 +139,9 @@ pub struct Accessibility {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "kind", rename_all = "camelCase", deny_unknown_fields)]
 pub enum ObjectContent {
+    Table {
+        table: Table,
+    },
     /// Original geometry, styles, relationships and unknown extension semantics
     /// remain in the bound source. This is not a generic path/text promotion.
     RetainedSource {

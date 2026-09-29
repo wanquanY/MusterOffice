@@ -19,14 +19,15 @@ pub struct PagePaintDefaults {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct PageRenderRequest {
     pub page: PagePlacementRequest,
-    /// Current page profile requires the viewport to exactly cover the page at
-    /// uniform scale and zero origin. Frame clipping then equals page clipping.
+    /// Zero origin, uniform scale, and dimensions rounded up to whole pixels.
+    /// A fractional final pixel retains the exact document boundary clip.
     pub viewport: RasterViewport,
     pub defaults: PagePaintDefaults,
 }
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum PageFeature {
+    Table,
     ShapeText,
     Picture,
     Connector,

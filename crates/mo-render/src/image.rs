@@ -19,7 +19,7 @@ impl CompiledImageScene<'_> {
     }
     pub fn complete(
         self,
-        reply: mo_raster::BackendReply,
+        reply: impl Into<mo_raster::RasterCompletionReply>,
         check: &dyn Fn() -> bool,
     ) -> Result<ImageSceneRaster, RasterError> {
         let image = self.raster.complete(reply, check)?;

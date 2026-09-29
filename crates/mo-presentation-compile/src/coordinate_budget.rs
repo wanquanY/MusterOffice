@@ -2,10 +2,48 @@
 use crate::interval::Interval as I;
 use mo_geometry::{Affine, Fixed, PathCommand as C, Point};
 use mo_raster::{RasterError, RasterViewport};
+use num_bigint::BigInt;
 const ZERO: Point = Point {
     x: Fixed::ZERO,
     y: Fixed::ZERO,
 };
+/// Shared page-path budget in local Q32 EMU. Geometry compilation reserves a
+/// quarter of the device tolerance; curve interpolation uses a quarter of this
+/// local budget, leaving room for numeric conversion and downstream lowering.
+pub(crate) fn local_tolerance<'a>(
+    placements: impl Iterator<Item = (&'a Affine, &'a crate::AffineUncertainty)>,
+    viewport: &RasterViewport,
+    check: &dyn Fn() -> bool,
+) -> Result<Fixed, RasterError> {
+    let mut norm = BigInt::from(1u64 << 32);
+    for (affine, uncertainty) in placements {
+        if check() {
+            return Err(RasterError::Cancelled);
+        }
+        for row in 0..2 {
+            let mut value = BigInt::from(0);
+            for col in 0..2 {
+                let i = 2 * row + col;
+                let a = BigInt::from(affine.linear[i].raw());
+                value += if a < BigInt::from(0) { -a } else { a };
+                value += uncertainty.linear[i].raw();
+            }
+            norm = norm.max(value);
+        }
+    }
+    let raw = ((BigInt::from(viewport.coordinate_tolerance.raw()) * viewport.scale.denominator)
+        << 32usize)
+        / (norm * viewport.scale.numerator * 4u32);
+    let raw = i128::try_from(raw).map_err(|_| RasterError::Range)?;
+    if raw <= 0 {
+        return Err(RasterError::Precision);
+    }
+    Ok(Fixed::from_raw(raw))
+}
+
+pub(crate) fn curve_fits_local(error: [Fixed; 2], tolerance: Fixed) -> bool {
+    error.iter().all(|v| v.raw() <= tolerance.raw() / 4)
+}
 fn absolute(v: Fixed) -> I {
     let value = I::fixed(v);
     if v.raw() < 0 { value.neg() } else { value }

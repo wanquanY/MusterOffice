@@ -1,5 +1,6 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
 import type { ByteLength, ColorSlot, Digest, Emu, NativeBlackWhiteMode, NativeBlipCompression, NativeCompoundLine, NativeCoordinate, NativeLineCap, NativeLineEnd, NativeLineEndSize, NativePathFill, NativePattern, NativePenAlignment, NativePercentage, NativeTileFlip, PlaceholderKind, PlaceholderOrientation, PlaceholderSize, SourceAdjustHandle, SourceBackgroundDefinition, SourceColorMapping, SourceColorTransform, SourceColorValue, SourceEffectDefinition, SourceEffectPropertiesDefinition, SourceFillDefinition, SourceGeometryCommand, SourceGeometryDefinition, SourceGradientShade, SourceLineDash, SourceLineFill, SourceLineJoin, SourceObjectKind, SourceRunKind, SourceTextConstraint, SurfaceKind } from './part-001.js';
+import type { SourceColorScheme, SourceFontScheme, SourceFormatScheme, SourceThemeTextDefaults } from './part-003.js';
 
 export type SourcePlaceholderMatch =
   | {
@@ -29,6 +30,60 @@ export type SourcePlaceholderMatch =
     };
 
 export type PlaceholderMatchRule = "slideIndex" | "masterType";
+
+export type SourceTableStyleEffects =
+  | {
+      effects: SourceEffectProperties;
+      kind: "direct";
+    }
+  | {
+      kind: "reference";
+      reference: SourceEffectReference;
+    };
+
+export type SourceTableStyleFill =
+  | {
+      fill: SourceFill;
+      kind: "direct";
+    }
+  | {
+      kind: "reference";
+      reference: SourceFillReference;
+    };
+
+export type SourceTableStyleLine =
+  | {
+      kind: "direct";
+      line: SourceLine;
+    }
+  | {
+      kind: "reference";
+      reference: SourceLineReference;
+    };
+
+export type TableOnOff = "on" | "off" | "def";
+
+export type SourceTableFontStyle =
+  | {
+      fonts: SourceFontCollection;
+      kind: "collection";
+      sourceOrdinal: number;
+    }
+  | {
+      color?: SourceColor | null;
+      index: NativeFontCollectionIndex;
+      kind: "reference";
+      sourceOrdinal: number;
+    };
+
+export type NativeFontCollectionIndex = "major" | "minor" | "none";
+
+export type NativeTextHorizontalOverflow = "overflow" | "clip";
+
+export type NativeTextVertical =
+  "horz" | "vert" | "vert270" | "wordArtVert" | "eaVert" | "mongolianVert" | "wordArtVertRtl";
+
+export type NativeTextAnchor = "t" | "ctr" | "b" | "just" | "dist";
 
 export type SourceVisualIssueKind = "element" | "attribute";
 
@@ -113,13 +168,6 @@ export type SourceTextValue =
       kind: "color";
     };
 
-export type NativeTextAnchor = "t" | "ctr" | "b" | "just" | "dist";
-
-export type NativeTextHorizontalOverflow = "overflow" | "clip";
-
-export type NativeTextVertical =
-  "horz" | "vert" | "vert270" | "wordArtVert" | "eaVert" | "mongolianVert" | "wordArtVertRtl";
-
 export type NativeTextVerticalOverflow = "overflow" | "ellipsis" | "clip";
 
 export type NativeTextWrap = "none" | "square";
@@ -161,8 +209,6 @@ export type NativeTextUnderline =
   | "wavy"
   | "wavyHeavy"
   | "wavyDbl";
-
-export type NativeFontCollectionIndex = "major" | "minor" | "none";
 
 export type NativeTextAutonumber =
   | "alphaLcParenBoth"
@@ -241,6 +287,7 @@ export interface SourceIndex {
   surfaces: {
     [k: string]: SourceSurface | undefined;
   };
+  tableStyles?: SourceTableStylePart | null;
   text?: SourceTextCatalog;
   themes: {
     [k: string]: SourceThemePart | undefined;
@@ -416,6 +463,9 @@ export interface SourceColorMap {
  *
  * This interface was referenced by `undefined`'s JSON-Schema definition
  * via the `patternProperty` "^\d+$".
+ *
+ * This interface was referenced by `undefined`'s JSON-Schema definition
+ * via the `patternProperty` "^\d+$".
  */
 export interface SourceEffectNode {
   definition: SourceEffectDefinition;
@@ -470,6 +520,7 @@ export interface SourceObject {
   pictureFill?: SourceFill | null;
   placeholder?: SourcePlaceholder | null;
   resolution: SourceObjectResolution;
+  table?: SourceTable | null;
   textBodyOrdinal?: number | null;
   transform?: SourceTransform | null;
   useBackgroundFill?: SourceBackgroundFillUsage | null;
@@ -695,6 +746,188 @@ export interface SourceObjectRef2 {
   part: string;
 }
 
+export interface SourceTable {
+  columns: SourceTableColumn[];
+  gridOrdinal: number;
+  properties?: SourceTableProperties | null;
+  retainedOrdinals: number[];
+  rows: SourceTableRow[];
+  sourceOrdinal: number;
+}
+
+export interface SourceTableColumn {
+  sourceOrdinal: number;
+  width: NativeCoordinate;
+}
+
+export interface SourceTableProperties {
+  bandColumns?: boolean | null;
+  bandRows?: boolean | null;
+  effects?: SourceEffectProperties | null;
+  fill?: SourceFill | null;
+  firstColumn?: boolean | null;
+  firstRow?: boolean | null;
+  inlineStyle?: SourceTableStyle | null;
+  lastColumn?: boolean | null;
+  lastRow?: boolean | null;
+  rightToLeft?: boolean | null;
+  sourceOrdinal: number;
+  styleId?: string | null;
+}
+
+export interface SourceTableStyle {
+  background?: SourceTableBackgroundStyle | null;
+  effectNodes: {
+    [k: string]: SourceEffectNode | undefined;
+  };
+  name: string;
+  parts: {
+    band1H?: SourceTablePartStyle;
+    band1V?: SourceTablePartStyle;
+    band2H?: SourceTablePartStyle;
+    band2V?: SourceTablePartStyle;
+    firstCol?: SourceTablePartStyle;
+    firstRow?: SourceTablePartStyle;
+    lastCol?: SourceTablePartStyle;
+    lastRow?: SourceTablePartStyle;
+    neCell?: SourceTablePartStyle;
+    nwCell?: SourceTablePartStyle;
+    seCell?: SourceTablePartStyle;
+    swCell?: SourceTablePartStyle;
+    wholeTbl?: SourceTablePartStyle;
+  };
+  retainedOrdinals: number[];
+  sourceOrdinal: number;
+  styleId: string;
+}
+
+export interface SourceTableBackgroundStyle {
+  effects?: SourceTableStyleEffects | null;
+  fill?: SourceTableStyleFill | null;
+  retainedOrdinals: number[];
+  sourceOrdinal: number;
+}
+
+export interface SourceTablePartStyle {
+  cell?: SourceTableCellStyle | null;
+  retainedOrdinals: number[];
+  sourceOrdinal: number;
+  text?: SourceTableTextStyle | null;
+}
+
+export interface SourceTableCellStyle {
+  borders?: SourceTableBorderStyle | null;
+  /**
+   * Preserved native 3D declaration; resolution remains explicit downstream.
+   */
+  cell3dOrdinal?: number | null;
+  fill?: SourceTableStyleFill | null;
+  sourceOrdinal: number;
+}
+
+export interface SourceTableBorderStyle {
+  /**
+   * left, right, top, bottom, insideH, insideV, tl2br, tr2bl.
+   *
+   * @minItems 8
+   * @maxItems 8
+   */
+  edges: [
+    SourceTableStyleLine | null,
+    SourceTableStyleLine | null,
+    SourceTableStyleLine | null,
+    SourceTableStyleLine | null,
+    SourceTableStyleLine | null,
+    SourceTableStyleLine | null,
+    SourceTableStyleLine | null,
+    SourceTableStyleLine | null
+  ];
+  sourceOrdinal: number;
+}
+
+export interface SourceTableTextStyle {
+  /**
+   * Absent and explicit def remain distinct declarations.
+   */
+  bold?: TableOnOff | null;
+  color?: SourceColor | null;
+  font?: SourceTableFontStyle | null;
+  italic?: TableOnOff | null;
+  sourceOrdinal: number;
+}
+
+export interface SourceFontCollection {
+  complexScript?: SourceTextFont | null;
+  eastAsian?: SourceTextFont | null;
+  latin?: SourceTextFont | null;
+  /**
+   * Preserve order and duplicate declarations for later font-profile policy.
+   */
+  supplemental: SourceSupplementalFont[];
+}
+
+export interface SourceTextFont {
+  charset?: number | null;
+  panose?: string | null;
+  pitchFamily?: number | null;
+  typeface: string;
+}
+
+export interface SourceSupplementalFont {
+  script: string;
+  typeface: string;
+}
+
+export interface SourceTableRow {
+  cells: SourceTableCell[];
+  height: NativeCoordinate;
+  sourceOrdinal: number;
+}
+
+export interface SourceTableCell {
+  gridSpan?: number | null;
+  horizontalMerge?: boolean | null;
+  nativeId?: string | null;
+  paragraphCount: number;
+  paragraphStart: number;
+  properties?: SourceTableCellProperties | null;
+  rowSpan?: number | null;
+  sourceOrdinal: number;
+  textBodyOrdinal?: number | null;
+  verticalMerge?: boolean | null;
+}
+
+export interface SourceTableCellProperties {
+  /**
+   * DrawingML order: left, right, top, bottom, TL-to-BR, BL-to-TR.
+   *
+   * @minItems 6
+   * @maxItems 6
+   */
+  borders: [
+    SourceLine | null,
+    SourceLine | null,
+    SourceLine | null,
+    SourceLine | null,
+    SourceLine | null,
+    SourceLine | null
+  ];
+  centerAnchor?: boolean | null;
+  fill?: SourceFill | null;
+  horizontalOverflow?: NativeTextHorizontalOverflow | null;
+  margins: SourceTableMargins;
+  sourceOrdinal: number;
+  vertical?: NativeTextVertical | null;
+  verticalAlignment?: NativeTextAnchor | null;
+}
+
+export interface SourceTableMargins {
+  bottom?: NativeCoordinate | null;
+  left?: NativeCoordinate | null;
+  right?: NativeCoordinate | null;
+  top?: NativeCoordinate | null;
+}
+
 export interface SourceTransform {
   childOrigin?: Point | null;
   childSize?: Size | null;
@@ -751,81 +984,84 @@ export interface SourceTextNode {
    * Native local name. Reader grammar validates its namespace and context.
    */
   element:
-    | "txBody"
-    | "txStyles"
-    | "defaultTextStyle"
-    | "titleStyle"
-    | "bodyStyle"
-    | "otherStyle"
-    | "lstStyle"
-    | "bodyPr"
-    | "p"
-    | "pPr"
-    | "defPPr"
-    | "lvl1pPr"
-    | "lvl2pPr"
-    | "lvl3pPr"
-    | "lvl4pPr"
-    | "lvl5pPr"
-    | "lvl6pPr"
-    | "lvl7pPr"
-    | "lvl8pPr"
-    | "lvl9pPr"
-    | "r"
-    | "br"
-    | "fld"
-    | "t"
-    | "rPr"
-    | "defRPr"
-    | "endParaRPr"
-    | "noAutofit"
-    | "normAutofit"
-    | "spAutoFit"
-    | "lnSpc"
-    | "spcBef"
-    | "spcAft"
-    | "spcPct"
-    | "spcPts"
-    | "buClrTx"
-    | "buClr"
-    | "buSzTx"
-    | "buSzPct"
-    | "buSzPts"
-    | "buFontTx"
-    | "buFont"
-    | "buNone"
-    | "buAutoNum"
-    | "buChar"
-    | "tabLst"
-    | "tab"
-    | "latin"
-    | "ea"
-    | "cs"
-    | "sym"
-    | "fontRef"
-    | "highlight"
-    | "uLnTx"
-    | "uLn"
-    | "uFillTx"
-    | "uFill"
-    | "hlinkClick"
-    | "hlinkMouseOver"
-    | "rtl"
-    | "noFill"
-    | "solidFill"
-    | "gradFill"
-    | "blipFill"
-    | "pattFill"
-    | "grpFill"
-    | "ln"
-    | "effectLst"
-    | "effectDag"
-    | "srgbClr"
-    | "scrgbClr"
-    | "hslClr"
-    | "sysClr"
-    | "schemeClr"
-    | "prstClr";
+    | (
+        | "txBody"
+        | "txStyles"
+        | "defaultTextStyle"
+        | "titleStyle"
+        | "bodyStyle"
+        | "otherStyle"
+        | "lstStyle"
+        | "bodyPr"
+        | "p"
+        | "pPr"
+        | "defPPr"
+        | "lvl1pPr"
+        | "lvl2pPr"
+        | "lvl3pPr"
+        | "lvl4pPr"
+        | "lvl5pPr"
+        | "lvl6pPr"
+        | "lvl7pPr"
+        | "lvl8pPr"
+        | "lvl9pPr"
+        | "r"
+        | "br"
+        | "fld"
+        | "t"
+        | "rPr"
+        | "defRPr"
+        | "endParaRPr"
+        | "noAutofit"
+        | "normAutofit"
+        | "spAutoFit"
+        | "lnSpc"
+        | "spcBef"
+        | "spcAft"
+        | "spcPct"
+        | "spcPts"
+        | "buClrTx"
+        | "buClr"
+        | "buSzTx"
+        | "buSzPct"
+        | "buSzPts"
+        | "buFontTx"
+        | "buFont"
+        | "buNone"
+        | "buAutoNum"
+        | "buChar"
+        | "tabLst"
+        | "tab"
+        | "latin"
+        | "ea"
+        | "cs"
+        | "sym"
+        | "fontRef"
+        | "highlight"
+        | "uLnTx"
+        | "uLn"
+        | "uFillTx"
+        | "uFill"
+        | "hlinkClick"
+        | "hlinkMouseOver"
+        | "rtl"
+        | "noFill"
+        | "solidFill"
+        | "gradFill"
+        | "blipFill"
+        | "pattFill"
+        | "grpFill"
+        | "ln"
+        | "effectLst"
+        | "effectDag"
+        | "srgbClr"
+        | "scrgbClr"
+        | "hslClr"
+        | "sysClr"
+        | "schemeClr"
+        | "prstClr"
+      )
+    | "font";
   parent?: number | null;
   /**
    * Uninterpreted attributes/subtrees cannot become resolved text semantics.
@@ -892,13 +1128,6 @@ export interface SourceTextCharacterAttributes {
   underline?: NativeTextUnderline | null;
 }
 
-export interface SourceTextFont {
-  charset?: number | null;
-  panose?: string | null;
-  pitchFamily?: number | null;
-  typeface: string;
-}
-
 export interface SourceTextHyperlinkAttributes {
   action?: string | null;
   endSound?: boolean | null;
@@ -911,11 +1140,17 @@ export interface SourceTextHyperlinkAttributes {
 }
 
 export interface SourceTextRoot {
+  cell?: SourceCellAddress | null;
   /**
    * Physical shape ID in this part; None for presentation/master defaults.
    */
   owner?: number | null;
   sourceOrdinal: number;
+}
+
+export interface SourceCellAddress {
+  column: number;
+  row: number;
 }
 
 export interface SourceThemeSelection {
@@ -927,6 +1162,21 @@ export interface SourceThemeSelection {
 export interface SourceThemeSchemeRef {
   part: string;
   sourceOrdinal: number;
+}
+
+export interface SourceTableStylePart {
+  compatibility: SourceCompatibility;
+  defaultStyleId: string;
+  part: string;
+  retainedOrdinals: number[];
+  sha256: Digest;
+  sourceOrdinal: number;
+  /**
+   * Keys normalize GUID letter case; style_id preserves the declaration.
+   */
+  styles: {
+    [k: string]: SourceTableStyle | undefined;
+  };
 }
 
 export interface SourceThemePart {
@@ -942,102 +1192,4 @@ export interface SourceThemePart {
   notices: string[];
   sha256: Digest;
   textDefaults?: SourceThemeTextDefaults | null;
-}
-
-export interface SourceColorScheme {
-  colors: {
-    accent1?: SourceColor;
-    accent2?: SourceColor;
-    accent3?: SourceColor;
-    accent4?: SourceColor;
-    accent5?: SourceColor;
-    accent6?: SourceColor;
-    dk1?: SourceColor;
-    dk2?: SourceColor;
-    folHlink?: SourceColor;
-    hlink?: SourceColor;
-    lt1?: SourceColor;
-    lt2?: SourceColor;
-  };
-  name: string;
-  sourceOrdinal: number;
-}
-
-export interface SourceFontScheme {
-  major: SourceFontCollection;
-  minor: SourceFontCollection;
-  name: string;
-  /**
-   * Unknown font-scheme declarations prevent claiming resolved font semantics.
-   */
-  retainedOrdinals?: number[];
-  sourceOrdinal: number;
-}
-
-export interface SourceFontCollection {
-  complexScript?: SourceTextFont | null;
-  eastAsian?: SourceTextFont | null;
-  latin?: SourceTextFont | null;
-  /**
-   * Preserve order and duplicate declarations for later font-profile policy.
-   */
-  supplemental: SourceSupplementalFont[];
-}
-
-export interface SourceSupplementalFont {
-  script: string;
-  typeface: string;
-}
-
-export interface SourceFormatScheme {
-  backgroundFills: SourceStyleEntry[];
-  effects: SourceStyleEntry[];
-  fills: SourceStyleEntry[];
-  lines: SourceStyleEntry[];
-  name?: string | null;
-  sourceOrdinal: number;
-}
-
-export interface SourceStyleEntry {
-  effectStyle?: SourceEffectStyle | null;
-  fill?: SourceFill | null;
-  /**
-   * Parsed line style declaration.
-   */
-  line?: SourceLine | null;
-  /**
-   * DrawingML kind; content remains in the digest-bound source part.
-   */
-  localName: string;
-  sourceOrdinal: number;
-}
-
-export interface SourceEffectStyle {
-  effects: SourceEffectProperties;
-  /**
-   * Includes 3D properties until their independent source family is parsed.
-   */
-  retainedOrdinals: number[];
-  sourceOrdinal: number;
-}
-
-export interface SourceThemeTextDefaults {
-  entries: {
-    lnDef?: SourceThemeTextDefault;
-    spDef?: SourceThemeTextDefault;
-    txDef?: SourceThemeTextDefault;
-  };
-  retainedOrdinals: number[];
-  sourceOrdinal: number;
-}
-
-export interface SourceThemeTextDefault {
-  retainedOrdinals: number[];
-  sourceOrdinal: number;
-  text: SourceTextCatalog;
-}
-
-export interface PptxFailure {
-  code: PptxFailureCode;
-  message: string;
 }

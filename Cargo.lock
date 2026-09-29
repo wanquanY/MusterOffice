@@ -331,6 +331,7 @@ dependencies = [
  "mo-presentation-edit",
  "mo-presentation-model",
  "mo-presentation-operations",
+ "mo-presentation-template",
  "schemars",
  "serde_json",
 ]
@@ -348,6 +349,8 @@ dependencies = [
  "mo-presentation-edit",
  "mo-presentation-model",
  "mo-presentation-operations",
+ "mo-presentation-template",
+ "mo-timeline",
  "serde_json",
  "sha2",
 ]
@@ -523,6 +526,7 @@ name = "mo-native-render"
 version = "0.1.0"
 dependencies = [
  "mo-common",
+ "mo-geometry",
  "mo-kernel-api",
  "mo-native-io",
  "mo-native-worker",
@@ -533,6 +537,7 @@ dependencies = [
  "mo-presentation-edit",
  "mo-presentation-model",
  "mo-raster",
+ "mo-text",
  "mo-timeline",
  "serde",
  "serde_json",
@@ -598,6 +603,7 @@ version = "0.1.0"
 dependencies = [
  "mo-common",
  "mo-geometry",
+ "mo-harfbuzz-sys",
  "mo-image",
  "mo-opc",
  "mo-pptx",
@@ -605,6 +611,7 @@ dependencies = [
  "mo-presentation-source",
  "mo-raster",
  "mo-render",
+ "mo-skia-sys",
  "mo-text",
  "mo-timeline",
  "mo-unicode",
@@ -663,6 +670,7 @@ dependencies = [
  "schemars",
  "serde",
  "serde_json",
+ "thiserror",
 ]
 
 [[package]]
@@ -676,6 +684,7 @@ dependencies = [
  "mo-presentation-delivery",
  "mo-presentation-edit",
  "mo-presentation-model",
+ "mo-presentation-template",
  "mo-xml",
  "schemars",
  "serde",
@@ -699,6 +708,22 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
+ "thiserror",
+]
+
+[[package]]
+name = "mo-presentation-template"
+version = "0.1.0"
+dependencies = [
+ "mo-common",
+ "mo-opc",
+ "mo-pptx",
+ "mo-presentation-edit",
+ "mo-presentation-model",
+ "mo-timeline",
+ "schemars",
+ "serde",
+ "serde_json",
  "thiserror",
 ]
 
@@ -828,6 +853,7 @@ dependencies = [
  "mo-image",
  "mo-kernel-api",
  "mo-presentation-operations",
+ "mo-presentation-template",
  "mo-raster",
  "mo-text",
  "serde_json",

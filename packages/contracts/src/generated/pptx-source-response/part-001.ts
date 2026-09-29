@@ -1,5 +1,6 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { PptxFailure, SourceColor, SourceColorMap, SourceDashStop, SourceEffectProperties, SourceFill, SourceFillBlip, SourceFillColor, SourceFillRect, SourceGeometryList, SourceGeometryList2, SourceGeometryList3, SourceGeometryList4, SourceGeometryPoint, SourceGeometryRect, SourceGradientFill, SourceGradientStops, SourceIndex, SourcePatternFill } from './part-002.js';
+import type { SourceColor, SourceColorMap, SourceDashStop, SourceEffectProperties, SourceFill, SourceFillBlip, SourceFillColor, SourceFillRect, SourceGeometryList, SourceGeometryList2, SourceGeometryList3, SourceGeometryList4, SourceGeometryPoint, SourceGeometryRect, SourceGradientFill, SourceGradientStops, SourceIndex, SourcePatternFill } from './part-002.js';
+import type { PptxFailure } from './part-003.js';
 
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
 

@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
     const bool images_mode = argc == 2 && std::strcmp(argv[1], "--images") == 0;
     if (argc != 1 && !images_mode) return 2;
     uint32_t count;
-    if (!read_word(count) || count > 2895950u) return 2;
+    if (!read_word(count) || count > 2908303u) return 2;
     std::vector<uint32_t> request(count);
     for (auto& word : request) if (!read_word(word)) return 2;
     uint32_t input_bytes = 0;

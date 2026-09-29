@@ -1,7 +1,8 @@
 use mo_raster::{
     BackendReply, MAX_CLIP_FRAME_WORDS, MAX_COMPOSITE_FRAME_WORDS,
     MAX_ELLIPTIC_GRADIENT_FRAME_WORDS, MAX_FRAME_WORDS, MAX_GRADIENT_PLANE_FRAME_WORDS,
-    MAX_IMAGE_FRAME_WORDS, MAX_PIXEL_BYTES, MAX_RECT_GRADIENT_FRAME_WORDS, RasterError,
+    MAX_IMAGE_FRAME_WORDS, MAX_OPACITY_GROUP_FRAME_WORDS, MAX_PIXEL_BYTES,
+    MAX_RECT_GRADIENT_FRAME_WORDS, RasterError,
 };
 use std::{ffi::c_void, ptr, slice};
 unsafe extern "C" {
@@ -11,6 +12,8 @@ unsafe extern "C" {
     fn mo_skia_office_gradients_abi() -> u32;
     fn mo_skia_rect_gradients_abi() -> u32;
     fn mo_skia_elliptic_gradients_abi() -> u32;
+    fn mo_skia_opacity_groups_abi() -> u32;
+    fn mo_skia_snapshot_scopes_abi() -> u32;
     fn mo_skia_compositing_abi() -> u32;
     fn mo_skia_raster(
         request: *const u32,
@@ -100,7 +103,11 @@ impl Drop for Output {
 }
 pub(super) fn raster(frame: &[u32], images: Option<&[u8]>) -> Result<BackendReply, RasterError> {
     if frame.len()
-        > if frame.get(1) == Some(&12) {
+        > if frame.get(1) == Some(&14) {
+            mo_raster::MAX_SNAPSHOT_SCOPE_FRAME_WORDS
+        } else if frame.get(1) == Some(&13) {
+            MAX_OPACITY_GROUP_FRAME_WORDS
+        } else if frame.get(1) == Some(&12) {
             MAX_ELLIPTIC_GRADIENT_FRAME_WORDS
         } else if frame.get(1) == Some(&11) {
             MAX_RECT_GRADIENT_FRAME_WORDS
@@ -121,6 +128,14 @@ pub(super) fn raster(frame: &[u32], images: Option<&[u8]>) -> Result<BackendRepl
     // SAFETY: pure no-argument ABI query.
     if unsafe { mo_skia_abi() } != 4 {
         return Err(RasterError::Host("raster ABI mismatch"));
+    }
+    // SAFETY: pure no-argument query on the pinned component.
+    if frame.get(1) == Some(&14) && unsafe { mo_skia_snapshot_scopes_abi() } != 1 {
+        return Err(RasterError::Host("raster snapshot scope ABI mismatch"));
+    }
+    // SAFETY: pure no-argument query on the pinned component.
+    if matches!(frame.get(1), Some(13 | 14)) && unsafe { mo_skia_opacity_groups_abi() } != 1 {
+        return Err(RasterError::Host("raster opacity group ABI mismatch"));
     }
     // SAFETY: pure no-argument query on the pinned component.
     if frame.get(1) == Some(&7) && unsafe { mo_skia_clips_abi() } != 1 {

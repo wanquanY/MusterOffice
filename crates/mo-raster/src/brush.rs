@@ -17,13 +17,33 @@ pub enum Brush {
     Image {
         image: crate::ImageBrush,
     },
-    /// Immutable full-viewport pixels after this many preceding draws. Zero
-    /// captures the clear color. Device-aligned; path/view transforms do not
-    /// move it. Draw order is part of the reference, not a host resource ID.
+    /// Immutable full-viewport pixels before draw `after_draws`, after group
+    /// boundaries at that position. Device-aligned; path/view transforms do not
+    /// move it. Scope selects a canvas, never an implicit host resource.
     Snapshot {
         #[serde(rename = "afterDraws")]
         after_draws: u32,
+        #[serde(default, skip_serializing_if = "SnapshotScope::is_current")]
+        scope: SnapshotScope,
     },
+}
+/// The source canvas at a capture point. Explicit captures may be consumed
+/// later in any group; their pixels remain immutable after the source closes.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(tag = "kind", rename_all = "camelCase", deny_unknown_fields)]
+pub enum SnapshotScope {
+    /// Legacy local capture: use must stay in its original innermost group.
+    #[default]
+    Current,
+    /// Root output, excluding any unmerged active group surfaces.
+    Output,
+    /// Zero-based opacity-group index; must be active at the capture point.
+    Group { index: u32 },
+}
+impl SnapshotScope {
+    pub fn is_current(&self) -> bool {
+        *self == Self::Current
+    }
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

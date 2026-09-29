@@ -4,10 +4,10 @@ use crate::{
     EventHistory, InputEvent, PlaybackBinding, PlaybackEvent, TimelineError, TimelinePlan, cancel,
     exact::Ratio,
 };
-use mo_common::{ObjectId, RationalTime};
+use mo_common::RationalTime;
 use std::collections::BTreeMap;
 
-pub(crate) type Clicks = BTreeMap<Option<ObjectId>, Vec<(Ratio, u32)>>;
+pub(crate) type Inputs = BTreeMap<InputEvent, Vec<(Ratio, u32)>>;
 pub(crate) struct ValidatedEvents<'a> {
     prefix: &'a [PlaybackEvent],
     cursor: u32,
@@ -24,20 +24,16 @@ impl ValidatedEvents<'_> {
             unique
         })
     }
-    pub(crate) fn clicks(&self, check: &dyn Fn() -> bool) -> Result<Clicks, TimelineError> {
-        let mut clicks = Clicks::new();
+    pub(crate) fn inputs(&self, check: &dyn Fn() -> bool) -> Result<Inputs, TimelineError> {
+        let mut inputs = Inputs::new();
         for event in self.iter() {
             cancel(check)?;
-            match &event.event {
-                InputEvent::Click { target } => {
-                    clicks
-                        .entry(target.clone())
-                        .or_default()
-                        .push((Ratio::time(event.at), event.sequence));
-                }
-            }
+            inputs
+                .entry(event.event.clone())
+                .or_default()
+                .push((Ratio::time(event.at), event.sequence));
         }
-        Ok(clicks)
+        Ok(inputs)
     }
 }
 impl TimelinePlan {

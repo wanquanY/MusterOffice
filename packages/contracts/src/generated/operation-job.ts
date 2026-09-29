@@ -92,6 +92,16 @@ export type SlideId = string;
  */
 export type ObjectId = string;
 /**
+ * This interface was referenced by `JobInfo`'s JSON-Schema
+ * via the `definition` "TemplateParameterId".
+ */
+export type TemplateParameterId = string;
+/**
+ * This interface was referenced by `JobInfo`'s JSON-Schema
+ * via the `definition` "LocalIdPolicy".
+ */
+export type LocalIdPolicy = "preserve";
+/**
  * Canonical uint64 byte length. Range requires semantic validation.
  *
  * This interface was referenced by `JobInfo`'s JSON-Schema
@@ -198,7 +208,31 @@ export interface MutationReceipt {
   documentId: DocumentId;
   revision: Digest;
   semanticDigest: Digest;
+  /**
+   * Source and parameter evidence for a new independent document. It is not
+   * a transaction committed against the source, nor the new document's base.
+   */
+  template?: InstantiationReceipt | null;
   transaction?: TransactionReceipt | null;
+}
+/**
+ * This interface was referenced by `JobInfo`'s JSON-Schema
+ * via the `definition` "InstantiationReceipt".
+ */
+export interface InstantiationReceipt {
+  /**
+   * Pure parameter computation against the immutable source. This is not a
+   * commit to the template or the instance. Scope mapping follows binding.
+   */
+  bindingTransaction?: TransactionReceipt | null;
+  boundParameters: TemplateParameterId[];
+  requestDigest: Digest;
+  requestId: RequestId;
+  revision: Digest;
+  scopeMap: DocumentScopeMap;
+  semanticDigest: Digest;
+  source: TemplateSource;
+  templateDigest: Digest;
 }
 /**
  * This interface was referenced by `JobInfo`'s JSON-Schema
@@ -252,6 +286,29 @@ export interface AnchorMap {
   inserted: number;
   paragraph: ParagraphId;
   start: number;
+}
+/**
+ * Total mapping for whole-document instantiation: (source document, local ID)
+ * becomes (instance document, same local ID). This preserves every internal
+ * reference, including opaque native relationships, without an O(n) identity
+ * table. It is not a mapping for copying a page into an existing document.
+ *
+ * This interface was referenced by `JobInfo`'s JSON-Schema
+ * via the `definition` "DocumentScopeMap".
+ */
+export interface DocumentScopeMap {
+  instanceDocument: DocumentId;
+  localIdPolicy: LocalIdPolicy;
+  sourceDocument: DocumentId;
+}
+/**
+ * This interface was referenced by `JobInfo`'s JSON-Schema
+ * via the `definition` "TemplateSource".
+ */
+export interface TemplateSource {
+  documentId: DocumentId;
+  revision: Digest;
+  semanticDigest: Digest;
 }
 /**
  * This interface was referenced by `JobInfo`'s JSON-Schema

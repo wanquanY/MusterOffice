@@ -30,6 +30,13 @@ function fixture(kind='author') {
     prepare_render(text){
       observed.pendingCreated=(observed.pendingCreated??0)+1;
       return {request:text,failure:observed.prepareFailure??'',begin:raster=>raster.beginRaster(new Uint32Array(4)),
+        begin_validation(reply){
+          observed.pendingConsumed=(observed.pendingConsumed??0)+1;
+          if(observed.validationBeginError)throw observed.validationBeginError;
+          let steps=0;
+          return {request:text,reply,get failed(){return observed.validationFailed??false;},step(){observed.validationCallback?.();if(observed.validationStepError)throw observed.validationStepError;return ++steps>=2;},
+            free(){observed.validationFreed=(observed.validationFreed??0)+1;if(observed.validationFreeError)throw observed.validationFreeError;}};
+        },
         free(){observed.pendingFreed=(observed.pendingFreed??0)+1;if(observed.pendingFreeError)throw observed.pendingFreeError;}};
     }
     complete_render(pending,reply){
@@ -37,6 +44,13 @@ function fixture(kind='author') {
       if(reply.status!==0)return {metadata:JSON.stringify(failure),invalidates_backend:reply.status===2||reply.status===4,
         take_pixels:()=>new Uint8Array(0),free:()=>observed.frameFree++};
       return Object.assign(this.render(pending.request),{invalidates_backend:observed.invalidates??false});
+    }
+    complete_validation(validation){
+      observed.validationConsumed=(observed.validationConsumed??0)+1;
+      if(observed.validationCompleteError)throw observed.validationCompleteError;
+      if(observed.validationFailed)return {metadata:JSON.stringify(failure),invalidates_backend:true,
+        take_pixels:()=>new Uint8Array(0),free:()=>observed.frameFree++};
+      return Object.assign(this.render(validation.request),{invalidates_backend:observed.invalidates??false});
     }
     render(text){
       const q=JSON.parse(text);observed.commands.push(q);observed.callback?.();
@@ -155,7 +169,11 @@ for(const kind of ['author','source']) {
       assert.throws(action,e=>e.code==='BUSY');
     assert.throws(()=>frame.take(),/incomplete/);assert.throws(()=>frame.step(0),RangeError);
     f.reenter=()=>assert.throws(()=>frame.step(),e=>e.code==='BUSY');
-    assert.equal(frame.step(),false);assert.equal(frame.step(7),true);
+    assert.equal(frame.step(),false);assert.equal(frame.step(7),false);
+    assert.throws(()=>frame.take(),/incomplete/);
+    f.observed.validationCallback=()=>assert.throws(()=>frame.step(),e=>e.code==='BUSY');
+    assert.equal(frame.step(7),false);assert.equal(frame.step(7),true);
+    assert.equal(frame.step(1),true);
     assert.deepEqual(frame.take().pixels,Uint8Array.of(4,3,2,5));
     assert(frame.closed);frame.close();assert.throws(()=>frame.take(),e=>e.code==='CLOSED');
     assert.equal(f.observed.pendingConsumed,1);assert.equal(f.observed.pendingFreed??0,0);
@@ -163,12 +181,15 @@ for(const kind of ['author','source']) {
     assert(!owner.closed);owner.dispose();assert.equal(f.observed.free,1);
   });
   test(`${kind}: cancellation before, during and after component completion releases without invalidation`,()=>{
-    for(const steps of [0,1,2]) {
+    for(const steps of [0,1,2,3,4]) {
       const f=stepped(kind),owner=f.open(),frame=owner.beginSample(zero,f.raster);
       for(let n=0;n<steps;n++)frame.step();
-      frame.close();frame.close();assert.equal(f.counts.close,1);assert.equal(f.observed.pendingFreed,1);
-      assert.equal(f.observed.pendingConsumed??0,0);assert.equal(f.counts.invalidate,0);
-      const next=owner.beginSample(zero,f.raster);next.step();next.step();next.take();
+      frame.close();frame.close();assert.equal(f.counts.close,1);
+      assert.equal(f.observed.pendingFreed??0,steps<2?1:0);
+      assert.equal(f.observed.validationFreed??0,steps>=2?1:0);
+      assert.equal(f.observed.validationConsumed??0,0);
+      assert.equal(f.observed.pendingConsumed??0,steps>=2?1:0);assert.equal(f.counts.invalidate,0);
+      const next=owner.beginSample(zero,f.raster);while(!next.step()) {} next.take();
       owner.close();assert.equal(f.observed.free,1);
     }
   });
@@ -194,8 +215,35 @@ test('prepare errors release pending frame without touching raster; traps and cl
     if(mode==='take')f.takeError=Error('take trap');
     if(mode==='cleanup'){f.closeError=Error('component close');f.observed.pendingFreeError=Error('frame free');}
     if(mode==='metadata')f.observed.badFrame={metadata:'{',take_pixels(){assert.fail();},free(){f.observed.frameFree++;}};
-    assert.throws(()=>{const task=owner.beginSample(zero,f.raster);if(mode==='cleanup')task.close();else{task.step();task.step();task.take();}},mode==='cleanup'?AggregateError:Error);
+    assert.throws(()=>{const task=owner.beginSample(zero,f.raster);if(mode==='cleanup')task.close();else{while(!task.step()) {} task.take();}},mode==='cleanup'?AggregateError:Error);
     assert(owner.closed);assert(f.counts.invalidate>0);assert.equal(f.observed.free,1);
     assert.equal((f.observed.pendingFreed??0)+(f.observed.pendingConsumed??0),1);
+  }
+});
+
+test('validation traps and failed cleanup release each consumed handle and quarantine the backend',()=>{
+  for(const mode of ['begin','step','complete','free']){
+    const f=stepped(),owner=f.open();
+    f.observed[{begin:'validationBeginError',step:'validationStepError',complete:'validationCompleteError',free:'validationFreeError'}[mode]]=Error('validation '+mode);
+    assert.throws(()=>{
+      const frame=owner.beginSample(zero,f.raster);
+      frame.step();frame.step();
+      if(mode==='free')frame.close();else {while(!frame.step()) {} frame.take();}
+    });
+    assert(owner.closed);assert.equal(f.observed.free,1);assert.equal(f.counts.invalidate,1);
+    assert.equal(f.observed.pendingConsumed,1);assert.equal(f.observed.pendingFreed??0,0);
+    assert.equal(f.counts.close,1);
+    assert.equal((f.observed.validationFreed??0)+(f.observed.validationConsumed??0),mode==='begin'?0:1);
+  }
+});
+
+test('observed validation faults quarantine immediately, even if a caller would abandon the frame',()=>{
+  for(const stage of ['snapshot','step']){
+    const f=stepped(),owner=f.open(),frame=owner.beginSample(zero,f.raster);
+    if(stage==='snapshot')f.observed.validationFailed=true;
+    else f.observed.validationCallback=()=>{f.observed.validationFailed=true;};
+    assert.throws(()=>{while(!frame.step()) {}},e=>e instanceof PlaybackComputationError&&e.invalidatesBackend);
+    assert(frame.closed);frame.close();assert(owner.closed);assert.equal(f.counts.invalidate,1);
+    assert.equal(f.observed.validationConsumed,1);assert.equal(f.observed.validationFreed??0,0);
   }
 });

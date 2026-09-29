@@ -45,6 +45,7 @@ pub struct ValidationLimits {
     pub max_text_scalars: usize,
     pub max_group_depth: usize,
     pub max_timing_nodes: usize,
+    pub max_table_cells: usize,
     pub max_issues: usize,
 }
 
@@ -56,6 +57,7 @@ impl Default for ValidationLimits {
             max_text_scalars: 64_000_000,
             max_group_depth: 128,
             max_timing_nodes: 10_000,
+            max_table_cells: 1_000_000,
             max_issues: 1_024,
         }
     }
@@ -70,6 +72,7 @@ pub fn validate(document: &Document, limits: ValidationLimits) -> ValidationRepo
         paragraphs: BTreeSet::new(),
         runs: BTreeSet::new(),
         text_scalars: 0,
+        table_cells: 0,
     }
     .run()
 }
@@ -82,6 +85,7 @@ struct Validator<'a> {
     paragraphs: BTreeSet<ParagraphId>,
     runs: BTreeSet<RunId>,
     text_scalars: usize,
+    table_cells: usize,
 }
 
 impl Validator<'_> {
@@ -298,6 +302,11 @@ impl Validator<'_> {
                 );
             }
             match &object.content {
+                ObjectContent::Table { table } => self.table(
+                    table,
+                    object.transform.map(|t| t.size),
+                    &format!("{path}/content/table"),
+                ),
                 ObjectContent::RetainedSource {
                     native_kind,
                     children,
@@ -522,6 +531,57 @@ impl Validator<'_> {
                 &format!("{path}/size"),
                 "font size must be positive",
             );
+        }
+    }
+    fn table(&mut self, table: &Table, frame: Option<Size>, path: &str) {
+        let remaining = self.limits.max_table_cells.saturating_sub(self.table_cells);
+        match TableGrid::compile(table, remaining, &|| false) {
+            Ok(grid) => {
+                self.table_cells += grid.cell_count();
+                if let Some(frame) = frame {
+                    self.value(
+                        frame == grid.size(),
+                        path,
+                        "table frame size must equal grid extents",
+                    );
+                }
+            }
+            Err(TableGridError::Invalid {
+                path: relative,
+                message,
+            }) => {
+                self.issue(
+                    ValidationCode::InvalidValue,
+                    format!("{path}{relative}"),
+                    message,
+                );
+                return;
+            }
+            Err(_) => {
+                self.issue(
+                    ValidationCode::LimitExceeded,
+                    path,
+                    "table grid exceeds document cell budget",
+                );
+                return;
+            }
+        }
+        for (r, row) in table.rows.iter().enumerate() {
+            for (c, cell) in row.cells.iter().enumerate() {
+                let path = format!("{path}/rows/{r}/cells/{c}");
+                if let Some(text) = &cell.text {
+                    self.text(text, &format!("{path}/text"));
+                }
+                for (name, edge) in cell.style.borders.edges() {
+                    if let Inherited::Value(Stroke::Solid { width, .. }) = edge {
+                        self.value(
+                            width.get() >= 0,
+                            &format!("{path}/style/borders/{name}"),
+                            "border width is negative",
+                        );
+                    }
+                }
+            }
         }
     }
     fn text(&mut self, body: &TextBody, path: &str) {

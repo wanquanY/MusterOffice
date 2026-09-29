@@ -79,8 +79,15 @@ for(const c of old.cases) {
 
 // Cancel at preparation and drawing boundaries, then actually reuse the healthy
 // component. Input and C++ task loans must be balanced on every early close.
-const first=old.cases.find(c=>c.name==='source/new/group-inherited-control')??
-  old.cases.find(c=>c.name==='prefix/1024x1024');
+let first;
+for (const candidate of old.cases) {
+  if (candidate.status || candidate.images || !candidate.frame) continue;
+  const bytes=await load(candidate.frame);
+  const words=new Uint32Array(Uint8Array.from(bytes).buffer);
+  // Select by actual copy/composite work, independent of fixture naming.
+  if (words[1]>=8 && words[1]<=14 && words[2]*words[3]>=512*512 &&
+      (words[13]>0 || (words[1]>=13 && words[14]>0))) { first=candidate;break; }
+}
 assert(first,'A real composite frame is required for cancellation checks');
 const frameBytes=await load(first.frame),expected=await load(first.currentPixels);
 const frame=new Uint32Array(Uint8Array.from(frameBytes).buffer),cancellations=[];

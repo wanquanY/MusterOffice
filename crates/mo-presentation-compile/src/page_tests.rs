@@ -5,6 +5,35 @@ use serde_json::{Value, json};
 use std::cell::Cell;
 
 #[test]
+fn fractional_page_edges_keep_original_dimensions_and_clip_every_paint() {
+    let mut q = request(value());
+    assert!(
+        compile_page(&q, &|| false)
+            .unwrap()
+            .raster
+            .scene
+            .clips
+            .is_empty()
+    );
+    q.page.document.page_size.width = mo_common::Emu::new(7995);
+    q.page.document.page_size.height = mo_common::Emu::new(5998);
+    q.viewport.scale.denominator = 10;
+    let plan = compile_page(&q, &|| false).unwrap();
+    let scene = plan.raster.scene;
+    assert_eq!(scene.clips.len(), 1);
+    assert_eq!(
+        scene.paths[scene.clips[0].path as usize].commands,
+        crate::page_boundary::path(q.page.document.page_size)
+    );
+    assert!(scene.instances.iter().all(|i| i.clip == Some(0)));
+    assert_eq!(q.page.document.page_size.width.get(), 7995);
+    assert_eq!(plan.raster.viewport.width, 800);
+    assert_eq!(plan.raster.viewport.height, 600);
+    q.viewport.width = 799;
+    assert!(compile_page(&q, &|| false).is_err());
+}
+
+#[test]
 fn incremental_plans_equal_full_compilation_across_visual_and_metadata_edits() {
     use crate::incremental::PagePlanCache;
     let mut q = request(value());

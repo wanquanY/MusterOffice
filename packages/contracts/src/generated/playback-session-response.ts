@@ -46,11 +46,17 @@ export type SlideId = string;
 export type TimelineWorkCount = string;
 export type TimingNodeId = string;
 export type NodePhase = "waiting" | "scheduled" | "active" | "frozen" | "finished" | "suppressed";
+export type RotationBasis = "absolute" | "layout";
 /**
  * Signed int64 ticks. Range requires semantic validation.
  */
 export type Ticks = string;
 export type Timescale = number;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema definition
+ * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+ */
+export type Visibility = "visible" | "hidden";
 /**
  * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
  */
@@ -159,6 +165,21 @@ export type GradientInterpolation = ("srgb" | "linearSrgb") | "officeGamma1875";
 export type GradientTile = "clamp" | "repeat" | "mirror" | "decal";
 export type ImageSampling = "nearest" | "linear";
 export type ImageTile = "clamp" | "repeat" | "mirror" | "decal";
+/**
+ * The source canvas at a capture point. Explicit captures may be consumed
+ * later in any group; their pixels remain immutable after the source closes.
+ */
+export type SnapshotScope =
+  | {
+      kind: "current";
+    }
+  | {
+      kind: "output";
+    }
+  | {
+      index: number;
+      kind: "group";
+    };
 export type StrokeCap = "butt" | "round" | "square";
 export type StrokeJoin =
   | {
@@ -254,6 +275,7 @@ export type PageFailureCode =
   | "COMPONENT_INVALID"
   | "HOST_FAILURE";
 export type PageFeature =
+  | "table"
   | "shapeText"
   | "picture"
   | "connector"
@@ -320,13 +342,32 @@ export interface FrameState {
   binding: PlaybackBinding;
   containers?: NodeFrame[];
   eventCursor: number;
+  /**
+   * Exact slide-relative offsets from the original layout center.
+   */
+  motion?: {
+    [k: string]: ExactMotion | undefined;
+  };
   nodes: NodeFrame[];
-  profile: string;
-  rotations: {
+  /**
+   * Exact whole-object opacity in [0, 1], before one render-boundary rounding.
+   */
+  opacity?: {
     [k: string]: ExactValue | undefined;
   };
+  profile: string;
+  rotations: {
+    [k: string]: ExactRotation | undefined;
+  };
+  scales?: {
+    [k: string]: ExactScale | undefined;
+  };
+  sequences?: SequenceFrame[];
   time: RationalTime;
   timelineSha256: Digest;
+  visibility?: {
+    [k: string]: Visibility | undefined;
+  };
 }
 export interface NodeFrame {
   end?: ExactValue | null;
@@ -337,7 +378,7 @@ export interface NodeFrame {
   start?: ExactValue | null;
 }
 /**
- * Output-only exact reduced ratio. Rotation units remain 1/60000 degree.
+ * Output-only exact reduced ratio. Units are defined by each property channel.
  *
  * This interface was referenced by `undefined`'s JSON-Schema definition
  * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
@@ -345,6 +386,47 @@ export interface NodeFrame {
 export interface ExactValue {
   denominator: string;
   numerator: string;
+}
+/**
+ * Position offsets in fractions of the slide width/height. Ratios encode the
+ * computed position exactly; the frame profile states any path approximation.
+ *
+ * This interface was referenced by `undefined`'s JSON-Schema definition
+ * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+ */
+export interface ExactMotion {
+  x: ExactValue;
+  y: ExactValue;
+}
+/**
+ * An exact angle with its document dependency still explicit. The layout
+ * orientation is resolved only at placement, after source inheritance.
+ *
+ * This interface was referenced by `undefined`'s JSON-Schema definition
+ * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+ */
+export interface ExactRotation {
+  basis?: RotationBasis;
+  denominator: string;
+  numerator: string;
+}
+/**
+ * Scale values remain thousandths of a percent until the placement boundary.
+ *
+ * This interface was referenced by `undefined`'s JSON-Schema definition
+ * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+ */
+export interface ExactScale {
+  x: ExactValue;
+  y: ExactValue;
+}
+export interface SequenceFrame {
+  current?: TimingNodeId | null;
+  node: TimingNodeId;
+  /**
+   * Zero-based cursor. The child count denotes the position after the end.
+   */
+  position: number;
 }
 /**
  * Exact wire representation. Equality compares author values; compare_time compares instants.
@@ -435,6 +517,10 @@ export interface SceneRasterRequest {
 export interface DrawScene {
   clips?: ClipNode[];
   instances: PathInstance[];
+  /**
+   * Intervals refer to instances; lowering preserves their order and count.
+   */
+  opacityGroups?: OpacityGroup[];
   paths: FillPath[];
   transforms: TransformNode[];
 }
@@ -472,6 +558,7 @@ export interface PathInstance {
     | {
         afterDraws: number;
         kind: "snapshot";
+        scope?: SnapshotScope;
       };
   clip?: number | null;
   path: number;
@@ -617,6 +704,21 @@ export interface StrokeStyle {
    * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
    */
   width: string;
+}
+/**
+ * Render the complete interval onto transparent pixels, then source-over it
+ * onto its parent with a single opacity. This is not per-paint alpha.
+ */
+export interface OpacityGroup {
+  /**
+   * Exclusive, and strictly greater than first_draw.
+   */
+  endDraw: number;
+  firstDraw: number;
+  /**
+   * 0 is transparent; 65535 is opaque. Linear coverage of premultiplied sRGB.
+   */
+  opacity: number;
 }
 export interface FillPath {
   /**
@@ -825,6 +927,7 @@ export interface RasterWork {
    * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
    */
   miterLimitErrorBound: string;
+  opacityGroups?: OpacityGroupWork | null;
   paths: number;
   strokeDraws: number;
   strokeStyles: number;
@@ -875,6 +978,18 @@ export interface EllipticGradientWork {
    * @maxItems 6
    */
   parameterErrorBounds: [FixedQ32, FixedQ32, FixedQ32, FixedQ32, FixedQ32, FixedQ32];
+}
+export interface OpacityGroupWork {
+  groups: number;
+  maximumDepth: number;
+  /**
+   * Peak simultaneously live intermediate pixels, excluding output/snapshots.
+   */
+  peakPixelBytes: number;
+  /**
+   * Pixels cleared plus pixels composited, including fully transparent groups.
+   */
+  pixelWork: number;
 }
 export interface TimelineFailure {
   code: TimelineFailureCode;

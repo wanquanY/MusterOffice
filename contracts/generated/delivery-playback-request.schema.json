@@ -1,0 +1,419 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:delivery-playback-request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DeliveryPlaybackRequest",
+  "type": "object",
+  "properties": {
+    "delivery": {
+      "$ref": "#/$defs/DeliveryInspectRequest"
+    },
+    "width": {
+      "description": "Pixel width; height/scale preserve the inspected document's geometry.",
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "delivery",
+    "width"
+  ],
+  "$defs": {
+    "AssetRole": {
+      "type": "string",
+      "enum": [
+        "editable-document",
+        "pptx",
+        "preview",
+        "quality-report",
+        "image",
+        "font",
+        "audio",
+        "video",
+        "model3d",
+        "embedded",
+        "source",
+        "other"
+      ]
+    },
+    "ByteLength": {
+      "description": "Canonical uint64 byte length. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9]"
+      },
+      "pattern": "^(0|[1-9][0-9]{0,19})$",
+      "x-integer-maximum": "18446744073709551615",
+      "x-integer-minimum": "0"
+    },
+    "Claim": {
+      "type": "object",
+      "properties": {
+        "basis": {
+          "$ref": "#/$defs/ClaimBasis"
+        },
+        "evidenceAssetIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RequestId"
+          }
+        },
+        "kind": {
+          "$ref": "#/$defs/ClaimKind"
+        },
+        "profileId": {
+          "type": "string"
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "status": {
+          "$ref": "#/$defs/ClaimStatus"
+        },
+        "subjectSha256": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "status",
+        "subjectSha256",
+        "basis",
+        "profileId",
+        "evidenceAssetIds"
+      ]
+    },
+    "ClaimBasis": {
+      "type": "string",
+      "enum": [
+        "none",
+        "static-inspection",
+        "roundtrip",
+        "application-test"
+      ]
+    },
+    "ClaimKind": {
+      "type": "string",
+      "enum": [
+        "structure",
+        "layout",
+        "native-editability",
+        "playback",
+        "target-application"
+      ]
+    },
+    "ClaimStatus": {
+      "type": "string",
+      "enum": [
+        "passed",
+        "failed",
+        "not_proven",
+        "not_applicable"
+      ]
+    },
+    "DeliveredDocument": {
+      "type": "object",
+      "properties": {
+        "documentId": {
+          "$ref": "#/$defs/DocumentId"
+        },
+        "modelAssetId": {
+          "$ref": "#/$defs/RequestId"
+        },
+        "revision": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "documentId",
+        "revision",
+        "modelAssetId"
+      ]
+    },
+    "DeliveryAsset": {
+      "type": "object",
+      "properties": {
+        "byteLength": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "id": {
+          "$ref": "#/$defs/RequestId"
+        },
+        "mediaType": {
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/$defs/AssetRole"
+        },
+        "sha256": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "sha256",
+        "byteLength",
+        "mediaType",
+        "role"
+      ]
+    },
+    "DeliveryBundle": {
+      "type": "object",
+      "properties": {
+        "assets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DeliveryAsset"
+          }
+        },
+        "claims": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Claim"
+          }
+        },
+        "document": {
+          "$ref": "#/$defs/DeliveredDocument"
+        },
+        "pptxAssetId": {
+          "$ref": "#/$defs/RequestId"
+        },
+        "previews": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Preview"
+          }
+        },
+        "profileId": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "versions": {
+          "$ref": "#/$defs/Versions"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "document",
+        "profileId",
+        "versions",
+        "pptxAssetId",
+        "assets",
+        "previews",
+        "claims"
+      ]
+    },
+    "DeliveryContentRange": {
+      "type": "object",
+      "properties": {
+        "assetId": {
+          "$ref": "#/$defs/RequestId"
+        },
+        "byteLength": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "byteOffset": {
+          "$ref": "#/$defs/ByteLength"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "assetId",
+        "byteOffset",
+        "byteLength"
+      ]
+    },
+    "DeliveryExpectation": {
+      "description": "Pins come from the accepted operation, not from this delivery's own claims.\nThe product separately binds them to its invocation, generation and fence.",
+      "type": "object",
+      "properties": {
+        "documentId": {
+          "$ref": "#/$defs/DocumentId"
+        },
+        "renderer": {
+          "$ref": "#/$defs/RendererIdentity"
+        },
+        "revision": {
+          "$ref": "#/$defs/Digest"
+        },
+        "semanticDigest": {
+          "$ref": "#/$defs/Digest"
+        },
+        "settingsDigest": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "documentId",
+        "revision",
+        "semanticDigest",
+        "settingsDigest",
+        "renderer"
+      ]
+    },
+    "DeliveryInspectRequest": {
+      "type": "object",
+      "properties": {
+        "bundle": {
+          "$ref": "#/$defs/DeliveryBundle"
+        },
+        "contents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DeliveryContentRange"
+          }
+        },
+        "expected": {
+          "$ref": "#/$defs/DeliveryExpectation"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "bundle",
+        "expected",
+        "contents"
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "DocumentId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "Preview": {
+      "type": "object",
+      "properties": {
+        "height": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "imageAssetId": {
+          "$ref": "#/$defs/RequestId"
+        },
+        "pageId": {
+          "$ref": "#/$defs/SlideId"
+        },
+        "sample": {
+          "$ref": "#/$defs/PreviewSample"
+        },
+        "width": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "pageId",
+        "imageAssetId",
+        "width",
+        "height",
+        "sample"
+      ]
+    },
+    "PreviewSample": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "editor"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "mode"
+          ]
+        }
+      ]
+    },
+    "RendererIdentity": {
+      "type": "object",
+      "properties": {
+        "implementationSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "profile": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "implementationSha256",
+        "profile"
+      ]
+    },
+    "RequestId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "SlideId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "Versions": {
+      "type": "object",
+      "properties": {
+        "documentSchema": {
+          "type": "string"
+        },
+        "engine": {
+          "type": "string"
+        },
+        "featureRegistrySha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "fontProfileSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "operationSchema": {
+          "type": "string"
+        },
+        "rules": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "engine",
+        "documentSchema",
+        "operationSchema",
+        "rules",
+        "featureRegistrySha256",
+        "fontProfileSha256"
+      ]
+    }
+  }
+}

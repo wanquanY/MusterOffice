@@ -36,15 +36,16 @@ impl Evaluator<'_> {
             let Some(reference) = contexts.get(index, owner, budget)? else {
                 return Ok(None);
             };
-            binding = Some(FillPlaceholderBinding {
+            binding = Some(Box::new(FillPlaceholderBinding {
                 owner: owner.clone(),
+                source_part: reference.part.map(str::to_owned),
                 reference_ordinal: reference.ordinal,
                 color_ordinal: reference.color.map(|c| c.source_ordinal),
-            });
+            }));
             if let Some(source_ordinal) = reference.retained {
                 return Err(color::Failure::Unresolved(
                     color::ColorUnresolved::RetainedPlaceholderContext {
-                        part: owner.part.clone(),
+                        part: reference.part.unwrap_or(&owner.part).into(),
                         source_ordinal,
                     },
                 ));
@@ -151,6 +152,59 @@ pub fn query_on_page(
         limits.fills,
         check,
     )?;
+    colorize(
+        index,
+        styles,
+        request,
+        drawing_surface,
+        background_surface,
+        limits,
+        check,
+    )
+}
+
+/// Paint and text consumers share a source binding session without copying grids.
+pub fn query_in_preparation(
+    preparation: &mut crate::source::prepared::SourcePreparation<'_>,
+    request: &SourceFillColorQuery,
+    drawing_surface: &str,
+    background_surface: &str,
+    limits: FillColorLimits,
+    check: &dyn Fn() -> bool,
+) -> Result<SourceFillColors, PptxError> {
+    let styles = super::resolve::query_in_preparation(
+        preparation,
+        &SourceFillQuery {
+            expected_source_sha256: request.expected_source_sha256.clone(),
+            surface: request.surface.clone(),
+            targets: request.targets.clone(),
+            profile: request.fill_profile,
+        },
+        drawing_surface,
+        background_surface,
+        limits.fills,
+        check,
+    )?;
+    colorize(
+        preparation.index(),
+        styles,
+        request,
+        drawing_surface,
+        background_surface,
+        limits,
+        check,
+    )
+}
+
+pub(in crate::source) fn colorize(
+    index: &SourceIndex,
+    styles: SourceFillStyles,
+    request: &SourceFillColorQuery,
+    drawing_surface: &str,
+    background_surface: &str,
+    limits: FillColorLimits,
+    check: &dyn Fn() -> bool,
+) -> Result<SourceFillColors, PptxError> {
     let surface = &index.surfaces[drawing_surface];
     let mut evaluator = Evaluator {
         index,

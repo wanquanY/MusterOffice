@@ -17,9 +17,40 @@ pub enum FillProfile {
     deny_unknown_fields
 )]
 pub enum FillTarget {
-    Object { native_id: u32 },
-    Line { native_id: u32 },
-    Picture { native_id: u32 },
+    Object {
+        native_id: u32,
+    },
+    Line {
+        native_id: u32,
+    },
+    Picture {
+        native_id: u32,
+    },
+    /// Physical cell formatting. Covered cells remain queryable; page painting
+    /// selects merge origins separately.
+    TableCell {
+        native_id: u32,
+        cell: crate::source::table::SourceCellAddress,
+    },
+    TableCellBorder {
+        native_id: u32,
+        cell: crate::source::table::SourceCellAddress,
+        edge: crate::source::table::TableCellEdge,
+    },
+    TableBackground {
+        native_id: u32,
+    },
+    /// A real table-style declaration instantiated by this native table. None
+    /// selects tblBg. Also identifies the exact lazy phClr reference context.
+    TableStyleFill {
+        native_id: u32,
+        region: Option<crate::source::table::styles::TableStyleRegion>,
+    },
+    TableStyleBorder {
+        native_id: u32,
+        region: crate::source::table::styles::TableStyleRegion,
+        edge: crate::source::table::TableStyleEdge,
+    },
     RootGroup {},
     Background {},
 }
@@ -74,6 +105,11 @@ pub enum FillOrigin {
         owner: FillOwner,
         source_ordinal: u32,
     },
+    TableStyle {
+        part: String,
+        source_ordinal: u32,
+        via: FillOwner,
+    },
     Theme {
         part: String,
         source_ordinal: u32,
@@ -91,7 +127,9 @@ impl FillOrigin {
     pub(crate) fn part(&self) -> Option<&str> {
         match self {
             Self::Declaration { owner, .. } => Some(&owner.part),
-            Self::Theme { part, .. } | Self::SchemaDefault { part, .. } => Some(part),
+            Self::Theme { part, .. }
+            | Self::TableStyle { part, .. }
+            | Self::SchemaDefault { part, .. } => Some(part),
             Self::ProfileDefault {} => None,
         }
     }
@@ -249,6 +287,14 @@ pub struct EffectiveFillTile {
     deny_unknown_fields
 )]
 pub enum FillUnresolved {
+    TableGrid {
+        owner: FillOwner,
+        reason: crate::source::table::grid::NativeTableGridIssue,
+    },
+    TableStyle {
+        owner: FillOwner,
+        reason: crate::source::table::styles::TableStyleSelectionError,
+    },
     UnsupportedTarget {
         owner: FillOwner,
     },

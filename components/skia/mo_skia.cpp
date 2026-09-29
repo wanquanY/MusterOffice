@@ -5,6 +5,7 @@
 #include "mo_gradient.h"
 #include "mo_image.h"
 #include "mo_pixel_work.h"
+#include "mo_opacity.h"
 #include "include/core/SkCanvas.h"
 #include "include/core/SkColorSpace.h"
 #include "include/core/SkImageInfo.h"
@@ -35,6 +36,8 @@ constexpr uint32_t max_words_v8 = max_words_v7 + 1 + 64 + max_draws;
 constexpr uint32_t max_words_v9 = max_words_v8 + 4096 * 7;
 constexpr uint32_t max_words_v11 = max_words_v9 + 4096;
 constexpr uint32_t max_words_v12 = max_words_v11 + 4096*2;
+constexpr uint32_t max_words_v13 = max_words_v12 + 1 + 4096*3;
+constexpr uint32_t max_words_v14 = max_words_v13 + 64;
 std::atomic<bool> invalid{false};
 float scalar(uint32_t word) { return std::bit_cast<float>(word); }
 bool coordinate(uint32_t word) {
@@ -56,19 +59,23 @@ struct Plan {
     uint32_t image_count = 0, brush_count = 0;
     uint32_t brush_words = 10;
     uint32_t clips = 0, clip_count = 0, draw_words = 6;
-    uint32_t snapshots = 0, snapshot_count = 0;
+    uint32_t snapshots = 0, snapshot_count = 0, snapshot_words = 1;
+    uint32_t groups = 0, group_count = 0;
 };
 int validate(const uint32_t* r, uint32_t words, const uint8_t* data,
              uint32_t bytes, bool with_images, Plan& plan) {
-    if (!r || words < 10 || words > max_words_v12 || r[0] != magic) return 1;
-    const bool elliptic = r[1] == 12;
+    if (!r || words < 10 || words > max_words_v14 || r[0] != magic) return 1;
+    const bool scoped_snapshots = r[1] == 14;
+    const bool opacity = r[1] == 13 || scoped_snapshots;
+    plan.snapshot_words = scoped_snapshots ? 2 : 1;
+    const bool elliptic = r[1] == 12 || opacity;
     const bool rectangular = r[1] == 11 || elliptic;
     const bool office = r[1] == 10 || rectangular;
     const bool planes = r[1] == 9 || office;
     const bool composite = r[1] == 8 || planes;
     const bool clipping = r[1] == 7 || composite;
-    const uint32_t header = composite ? 14 : clipping ? 13 : with_images ? 12 : 10;
-    if (words < header || words > (elliptic ? max_words_v12 : rectangular ? max_words_v11 : planes ? max_words_v9 : composite ? max_words_v8 : clipping ? max_words_v7 : with_images ? max_words_v6 : max_words_v4) ||
+    const uint32_t header = opacity ? 15 : composite ? 14 : clipping ? 13 : with_images ? 12 : 10;
+    if (words < header || words > (scoped_snapshots ? max_words_v14 : opacity ? max_words_v13 : elliptic ? max_words_v12 : rectangular ? max_words_v11 : planes ? max_words_v9 : composite ? max_words_v8 : clipping ? max_words_v7 : with_images ? max_words_v6 : max_words_v4) ||
         (!clipping && (with_images ? (r[1] != 5 && r[1] != 6) : r[1] != 4))) return 1;
     if (with_images || clipping) {
         plan.brush_words = r[1] >= 6 ? 14 : 10;
@@ -84,6 +91,7 @@ int validate(const uint32_t* r, uint32_t words, const uint8_t* data,
         plan.snapshot_count = r[13]; plan.draw_words = 8;
         if (r[13] > 64) return 3;
     }
+    if (opacity) { plan.group_count = r[14]; if (!r[14] || r[14] > 4096) return 3; }
     if (!r[2] || !r[3]) return 1;
     if (r[2] > 8192 || r[3] > 8192 || uint64_t(r[2]) * r[3] > max_pixels ||
         r[5] > max_paths || r[6] > max_draws || r[7] > max_commands || r[8] > max_paths || r[9] > max_paths) return 3;
@@ -132,7 +140,7 @@ int validate(const uint32_t* r, uint32_t words, const uint8_t* data,
         if (const int status = mo_validate_gradient(r, words, pos, stops, planes, office, rectangular, elliptic)) return status;
     }
     if (uint64_t(pos) + uint64_t(plan.image_count)*4 + uint64_t(plan.brush_count)*plan.brush_words +
-        uint64_t(plan.clip_count)*4 + plan.snapshot_count + uint64_t(r[6])*plan.draw_words != words) return 1;
+        uint64_t(plan.clip_count)*4 + plan.snapshot_count*plan.snapshot_words + uint64_t(plan.group_count)*3 + uint64_t(r[6])*plan.draw_words != words) return 1;
     plan.images = pos;
     if (const int status = mo_validate_images(r + pos, plan.image_count, data, bytes)) return status;
     pos += plan.image_count*4;
@@ -145,14 +153,34 @@ int validate(const uint32_t* r, uint32_t words, const uint8_t* data,
     if (const int status = mo_validate_clips(r + pos, plan.clip_count, r[5], plan.counts, plan.bounds)) return status;
     pos += plan.clip_count * 4;
     plan.snapshots = pos;
-    for (uint32_t i = 0; i < plan.snapshot_count; ++i, ++pos) {
-        if (r[pos] >= r[6] || (i && r[pos - 1] >= r[pos])) return 1;
+    for (uint32_t i = 0; i < plan.snapshot_count; ++i, pos += plan.snapshot_words) {
+        if (r[pos] >= r[6]) return 1;
+        if (scoped_snapshots && r[pos + 1] > plan.group_count) return 1;
+        if (i) {
+            const auto* previous = r + pos - plan.snapshot_words;
+            if (previous[0] > r[pos] || (previous[0] == r[pos] &&
+                (!scoped_snapshots || previous[1] >= r[pos + 1]))) return 1;
+        }
+    }
+    plan.groups = pos;
+    uint16_t scopes[max_draws]{};
+    if (const int status = mo_validate_opacity(r + pos, plan.group_count, r[6], uint64_t(r[2])*r[3], plan.snapshot_count, scopes)) return status;
+    pos += plan.group_count * 3;
+    // Explicit immutable captures may be used across groups, but the chosen
+    // source canvas must be alive at capture, after all boundary transitions.
+    if (scoped_snapshots) for (uint32_t i = 0; i < plan.snapshot_count; ++i) {
+        const auto* snapshot = r + plan.snapshots + i * plan.snapshot_words;
+        if (snapshot[1]) {
+            const auto* g = r + plan.groups + (snapshot[1] - 1) * 3;
+            if (snapshot[0] < g[0] || snapshot[0] >= g[1]) return 1;
+        }
     }
     plan.draws = pos;
     uint64_t work = 0, clip_work = 0, applications = 0;
     MoClipStack clip_stack;
     for (uint32_t i = 0; i < r[6]; ++i, pos += plan.draw_words) {
         if (clipping) {
+            if (i && scopes[i] != scopes[i - 1]) clip_stack.length = 0;
             if (r[pos + 6] > plan.clip_count) return 1;
             const uint32_t common = clip_stack.transition(r + plan.clips, r[pos + 6]);
             for (uint32_t k = common; k < clip_stack.length; ++k) {
@@ -164,8 +192,11 @@ int validate(const uint32_t* r, uint32_t words, const uint8_t* data,
         if (r[pos] >= r[5] || !coordinate(r[pos + 1]) || !coordinate(r[pos + 2]) || r[pos + 4] > r[8] ||
             r[pos + 5] > r[9] + plan.brush_count + plan.snapshot_count || (r[pos + 5] && r[pos + 3])) return 1;
         if (composite && r[pos + 7] > 1) return 1;
-        if (r[pos + 5] > r[9] + plan.brush_count &&
-            r[plan.snapshots + r[pos + 5] - r[9] - plan.brush_count - 1] > i) return 1;
+        if (r[pos + 5] > r[9] + plan.brush_count) {
+            const auto* snapshot = r + plan.snapshots +
+                (r[pos + 5] - r[9] - plan.brush_count - 1) * plan.snapshot_words;
+            if (snapshot[0] > i || (!scoped_snapshots && scopes[snapshot[0]] != scopes[i])) return 1;
+        }
         double inflation = 0;
         if (r[pos + 4] && plan.counts[r[pos]]) {
             const uint32_t s = plan.strokes + (r[pos + 4] - 1) * 4;
@@ -190,6 +221,8 @@ int fail_allocation() {
 }
 }
 
+extern "C" uint32_t mo_skia_opacity_groups_abi(void) { return 1; }
+extern "C" uint32_t mo_skia_snapshot_scopes_abi(void) { return 1; }
 extern "C" uint32_t mo_skia_abi(void) { return 4; }
 extern "C" uint32_t mo_skia_clips_abi(void) { return 1; }
 extern "C" uint32_t mo_skia_gradient_planes_abi(void) { return 1; }
@@ -216,6 +249,7 @@ struct MoSkiaRasterTask {
     SkImageInfo info;
     SkPaint paint;
     MoClipStack clips;
+    MoOpacityStack groups;
     enum Phase { Gradients, Images, Brushes, Surface, Clear, Paths, Draws, Complete, Taken, Failed } phase = Gradients;
     uint32_t index = 0, command = 0, next_snapshot = 0;
     int status = 0;
@@ -227,14 +261,18 @@ struct MoSkiaRasterTask {
     mo::RasterTask drawing_task;
 
     MoSkiaRasterTask(const uint32_t* request, const uint8_t* pixels, const Plan& parsed)
-        : r(request), data(pixels), plan(parsed) {}
+        : r(request), data(pixels), plan(parsed), groups(request + parsed.groups, parsed.group_count) {}
 
     int prepare_draw() {
-        auto* canvas = surface->getCanvas();
+        auto* canvas = groups.surface(surface.get())->getCanvas();
         const uint32_t pos = plan.draws + index * plan.draw_words;
-        if (next_snapshot < plan.snapshot_count && r[plan.snapshots + next_snapshot] == index) {
+        const uint32_t snapshot = plan.snapshots + next_snapshot * plan.snapshot_words;
+        if (next_snapshot < plan.snapshot_count && r[snapshot] == index) {
             if (!transfer.active()) {
-                if (!transfer.begin(buffer.get(), size_t(r[2]) * r[3] * 4, MoPixelTransfer::Copy))
+                const auto* source = plan.snapshot_words == 2
+                    ? groups.snapshot_pixels(buffer.get(), r[snapshot + 1]) : groups.pixels(buffer.get());
+                if (!source) return 1; // guarded by complete frame validation
+                if (!transfer.begin(source, size_t(r[2]) * r[3] * 4, MoPixelTransfer::Copy))
                     return fail_allocation();
                 return 0;
             }
@@ -277,6 +315,18 @@ struct MoSkiaRasterTask {
     }
 
     int draw() {
+        if (!drawing && groups.boundary(index)) {
+            // Each surface owns its clip stack. Reset before changing scope;
+            // the next draw reapplies its full explicit clip chain once.
+            if (clips.length) {
+                auto* canvas = groups.surface(surface.get())->getCanvas();
+                for (uint32_t k = 0; k < clips.length; ++k) canvas->restore();
+                clips.length = 0;
+            }
+            const auto step = groups.advance(index, info, buffer.get());
+            if (step == MoOpacityStack::AllocationFailure) return fail_allocation();
+            if (step == MoOpacityStack::Progress) return 0;
+        }
         if (index == r[6]) {
             for (uint32_t k = 0; k < clips.length; ++k) surface->getCanvas()->restore();
             surface.reset(); // No references to the output when it is transferred.
@@ -284,7 +334,7 @@ struct MoSkiaRasterTask {
             return 0;
         }
         if (!draw_ready) return prepare_draw();
-        auto* canvas = surface->getCanvas();
+        auto* canvas = groups.surface(surface.get())->getCanvas();
         if (!drawing) {
             canvas->save();
             const uint32_t pos = plan.draws + index * plan.draw_words;

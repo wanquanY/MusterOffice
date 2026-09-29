@@ -16,20 +16,21 @@ pub(super) fn node(
     parent: Option<u32>,
 ) -> Result<SourceTextNode, XmlError> {
     let element: N = enumeration(&e.name.local)?;
-    if e.name.namespace
-        != if matches!(
-            element,
-            N::TxBody
-                | N::TxStyles
-                | N::DefaultTextStyle
-                | N::TitleStyle
-                | N::BodyStyle
-                | N::OtherStyle
-        ) {
-            P
-        } else {
-            A
-        }
+    if !(element == N::TxBody && e.name.is(A, "txBody"))
+        && e.name.namespace
+            != if matches!(
+                element,
+                N::TxBody
+                    | N::TxStyles
+                    | N::DefaultTextStyle
+                    | N::TitleStyle
+                    | N::BodyStyle
+                    | N::OtherStyle
+            ) {
+                P
+            } else {
+                A
+            }
     {
         return Err(malformed("native text namespace"));
     }
