@@ -50,6 +50,19 @@ impl<R: ReaderAt> Package<R> {
         limits: PackageLimits,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, OpcError> {
+        Self::open_for_content_type_repair(reader, byte_length, limits, false, cancelled)
+            .map(|(package, _)| package)
+    }
+
+    /// Only the explicit repair owner may admit orphan type declarations. All
+    /// other ZIP, XML, resource and relationship validation is shared with open.
+    pub(crate) fn open_for_content_type_repair(
+        reader: R,
+        byte_length: u64,
+        limits: PackageLimits,
+        repair: bool,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(Self, BTreeMap<PartName, String>), OpcError> {
         check_cancel(cancelled)?;
         if byte_length > limits.max_package_bytes {
             return Err(OpcError::Limit("package bytes"));
@@ -199,7 +212,7 @@ impl<R: ReaderAt> Package<R> {
             limits.xml.max_bytes as u64,
             cancelled,
         )?;
-        let content_types = ContentTypes::from_xml(&types_bytes, limits, cancelled)?;
+        let mut content_types = ContentTypes::from_xml(&types_bytes, limits, cancelled)?;
         let mut parts = BTreeMap::new();
         let mut relationships = BTreeMap::new();
         let mut relationship_count = 0_usize;
@@ -270,6 +283,20 @@ impl<R: ReaderAt> Package<R> {
                 },
             );
         }
+        let removed = if repair {
+            let absent: BTreeMap<_, _> = content_types
+                .overrides
+                .iter()
+                .filter(|(name, _)| !parts.contains_key(*name))
+                .map(|(name, media)| (name.clone(), media.clone()))
+                .collect();
+            content_types
+                .overrides
+                .retain(|name, _| parts.contains_key(name));
+            absent
+        } else {
+            BTreeMap::new()
+        };
         validate_graph(
             &parts.keys().cloned().collect(),
             &content_types,
@@ -280,17 +307,20 @@ impl<R: ReaderAt> Package<R> {
             hash.update(bytes);
             Ok(())
         })?;
-        Ok(Self {
-            archive,
-            entries,
-            types_entry,
-            parts,
-            content_types,
-            relationships,
-            limits,
-            byte_length,
-            sha256: Digest::from_sha256(hash.finalize().into()),
-        })
+        Ok((
+            Self {
+                archive,
+                entries,
+                types_entry,
+                parts,
+                content_types,
+                relationships,
+                limits,
+                byte_length,
+                sha256: Digest::from_sha256(hash.finalize().into()),
+            },
+            removed,
+        ))
     }
     pub fn parts(&self) -> &BTreeMap<PartName, PartInfo> {
         &self.parts

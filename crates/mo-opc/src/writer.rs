@@ -13,7 +13,9 @@ use std::{
     collections::{BTreeMap, BTreeSet},
     io::Write,
 };
+mod content_type_repair;
 mod core_properties;
+pub use content_type_repair::ContentTypeRepair;
 
 enum PartData<'a> {
     Bytes(Cow<'a, [u8]>),

@@ -1,5 +1,9 @@
 # Musterwork 独立接入工作区
 
+当前工作位置更新（2026-09-30）：独立接入已合并；用户明确要求后续实现和验收直接在
+MusterOffice 与 Musterwork 两个主工作区推进。内核保持 `main`，产品保持用户选定的
+`codex/shared-project-acceptance-20260916`，不另建 worktree。以下保留先前隔离阶段的历史记录。
+
 2026-09-27，用户要求新建 Musterwork worktree 持续完成对接，将原主工作区留给其他产品开发。此授权只改变 Musterwork 的工作位置；MusterOffice 继续使用原主工作区，完整一期、内核边界和替换验收目标不变。
 
 ## 隔离与迁移

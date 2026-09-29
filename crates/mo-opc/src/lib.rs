@@ -19,7 +19,7 @@ pub use rawzip::ReaderAt;
 pub use read::PackageRead;
 pub use sink::{ResultSink, SealedOutput, VerifiedPackage};
 use thiserror::Error;
-pub use writer::{PackageBuilder, RewritePlan, WriteReceipt};
+pub use writer::{ContentTypeRepair, PackageBuilder, RewritePlan, WriteReceipt};
 
 #[derive(Debug, Error)]
 pub enum OpcError {

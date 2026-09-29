@@ -5,6 +5,7 @@ mod edit_bytes;
 mod encoding;
 pub mod mce;
 mod names;
+mod remove_elements;
 mod scan;
 mod text_edit;
 
@@ -15,6 +16,7 @@ pub fn is_ncname(value: &str) -> bool {
 }
 pub use attribute_edit::{AttributeEdit, AttributeRewriteLimits, rewrite_attributes};
 pub use child_edit::append_child;
+pub use remove_elements::{ElementRemoval, remove_elements};
 pub use scan::{scan, scan_with_control};
 use std::ops::Range;
 pub use text_edit::{TextReplacement, TextRewriteLimits, rewrite_text};
