@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "measuredAt": "2026-09-30",
+  "scope": "Two already completed V7 runs; read-only analysis; not a new model run or kernel benchmark.",
+  "inputSha256": {
+    "state": "b66c4c39f4c7b15304c63a3ff3f07c6b1636f382836953cd48d112650e5e5b7e",
+    "projection": "f6f9fc4aaa5d8be848ea2cc054b8bbecd21aedfaa38f0c6f57c169750e54c4b0",
+    "metrics": "a043be8d839d1c3455b2d471a61644d2d8ec85d0edb4f7dcd4482ea7f176b408"
+  },
+  "clockDefinitions": {
+    "model": "Local harness observation timestamps for paired model_invocation_started/completed events; includes observation delay; not isolated provider service time.",
+    "tools": "Product projection started_at/finished_at; includes the entire host tool operation, not only kernel computation.",
+    "union": "Merge overlapping intervals within each category. Different clock sources/categories are not an exact additive partition of run time."
+  },
+  "runs": [
+    {
+      "turn": 1,
+      "runId": "4fcd194a-f9d6-55fc-9423-5d3049284d15",
+      "observedRunSeconds": 504.317,
+      "modelCalls": 11,
+      "toolCalls": 11,
+      "toolFailures": 0,
+      "modelObservedUnionSeconds": 461.526,
+      "toolExecutionUnionSeconds": 30.505,
+      "toolRequestToFinishUnionSeconds": 30.707,
+      "firstToolObservedAfterSeconds": 285.046,
+      "longestToolExecutionSeconds": 23.25,
+      "toolCounts": {
+        "tool.catalog.search@2": 1,
+        "tool.catalog.activate@2": 1,
+        "artifact.presentation.author@8": 7,
+        "files.list@2": 1,
+        "files.inspect@2": 1
+      }
+    },
+    {
+      "turn": 2,
+      "runId": "26080bd6-7b76-52a9-ad46-49a22d45ada6",
+      "observedRunSeconds": 135.322,
+      "modelCalls": 11,
+      "toolCalls": 20,
+      "toolFailures": 1,
+      "modelObservedUnionSeconds": 101.328,
+      "toolExecutionUnionSeconds": 19.593,
+      "toolRequestToFinishUnionSeconds": 19.661,
+      "firstToolObservedAfterSeconds": 24.781,
+      "longestToolExecutionSeconds": 17.833,
+      "toolCounts": {
+        "artifact.presentation.author@8": 20
+      }
+    }
+  ],
+  "limitations": [
+    "One creation and one modification; no average, percentile, speedup or cross-model claim.",
+    "The two timing categories use distinct clocks and must not be subtracted to claim exact unaccounted overhead.",
+    "No private reasoning, tool arguments, user files or credentials included.",
+    "Current model settings, frozen catalog, runtime and artifact records were not changed.",
+    "Kernel export timings are measured separately under a different workload."
+  ]
+}
