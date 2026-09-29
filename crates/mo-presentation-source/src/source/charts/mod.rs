@@ -1,10 +1,13 @@
 //! Native chart source/cache inspection. No workbook recalculation, rendering,
 //! external fetch, implicit refresh or editable-chart capability is asserted.
 mod data;
+mod layout;
+mod layout_types;
 mod tree;
 mod types;
 use super::{SourceIndex, SourceLimits, SourceObjectKind, SourceObjectRef};
 use crate::{A, P, PptxError, R, cancelled};
+pub use layout_types::*;
 use mo_common::ByteLength;
 use mo_opc::{PackageRead, PartName, Relationship, RelationshipSource, RelationshipTarget};
 use mo_xml::{Element, ExpandedName, mce};
@@ -40,6 +43,7 @@ struct Budget {
     relationships: usize,
     series: usize,
     points: usize,
+    axes: usize,
 }
 impl Budget {
     fn account(&mut self, bytes: usize) -> Result<(), mo_xml::XmlError> {
@@ -147,6 +151,7 @@ pub fn query(
         relationships: 0,
         series: 0,
         points: 0,
+        axes: 0,
     };
     let bytes = budget.read(package, &owner, check)?;
     // Keep the exact presentation MCE selection used to build SourceIndex.
@@ -235,8 +240,10 @@ pub fn query(
                 check,
             )?;
             let (plots, external_data) = data::read(package, part, &tree, &mut budget, check)?;
+            let axes = layout::axes(&tree, &mut budget, check)?;
             let i = result.charts.len() as u32;
             result.charts.push(SourceChartPart {
+                axes,
                 part: part.to_string(),
                 sha256: info.sha256.clone(),
                 byte_length: ByteLength::new(info.byte_length),

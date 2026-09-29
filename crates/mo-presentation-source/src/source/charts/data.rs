@@ -193,6 +193,7 @@ pub(super) fn read(
             .map(|i| number(&tree.nodes[i].element, "val"))
             .collect::<Result<_, _>>()?;
         plots.push(SourceChartPlot {
+            layout: layout::read(tree, plot, layout::Scope::Plot, check)?,
             source_ordinal: tree.nodes[plot].ordinal,
             native_kind: name.local.clone(),
             axis_ids,

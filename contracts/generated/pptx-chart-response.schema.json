@@ -49,6 +49,15 @@
       "x-integer-maximum": "18446744073709551615",
       "x-integer-minimum": "0"
     },
+    "ChartAxisKind": {
+      "type": "string",
+      "enum": [
+        "category",
+        "value",
+        "date",
+        "series"
+      ]
+    },
     "ChartCacheKind": {
       "type": "string",
       "enum": [
@@ -72,6 +81,56 @@
       "type": "string",
       "enum": [
         "sourceCacheSnapshot"
+      ]
+    },
+    "ChartMarkupKind": {
+      "type": "string",
+      "enum": [
+        "shapeProperties",
+        "textProperties",
+        "title",
+        "majorGridlines",
+        "minorGridlines",
+        "displayUnits",
+        "dataLabels",
+        "seriesLines"
+      ]
+    },
+    "ChartPropertyKind": {
+      "type": "string",
+      "enum": [
+        "barDirection",
+        "grouping",
+        "varyColors",
+        "gapWidth",
+        "gapDepth",
+        "overlap",
+        "firstSliceAngle",
+        "holeSize",
+        "delete",
+        "axisPosition",
+        "majorTickMark",
+        "minorTickMark",
+        "tickLabelPosition",
+        "crossAxis",
+        "crosses",
+        "crossesAt",
+        "crossBetween",
+        "majorUnit",
+        "minorUnit",
+        "auto",
+        "labelAlignment",
+        "labelOffset",
+        "tickLabelSkip",
+        "tickMarkSkip",
+        "noMultiLevelLabels",
+        "baseTimeUnit",
+        "majorTimeUnit",
+        "minorTimeUnit",
+        "logBase",
+        "orientation",
+        "minimum",
+        "maximum"
       ]
     },
     "ChartWorkbookTarget": {
@@ -160,6 +219,54 @@
         "LIMIT_EXCEEDED",
         "CANCELLED",
         "READ_FAILED"
+      ]
+    },
+    "SourceChartAxis": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "kind": {
+          "$ref": "#/$defs/ChartAxisKind"
+        },
+        "layout": {
+          "$ref": "#/$defs/SourceChartLayout"
+        },
+        "numberFormat": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceChartNumberFormat"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scaling": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceChartScaling"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "kind",
+        "id",
+        "layout"
       ]
     },
     "SourceChartBinding": {
@@ -307,9 +414,85 @@
         "target"
       ]
     },
+    "SourceChartLayout": {
+      "type": "object",
+      "properties": {
+        "markup": {
+          "description": "Complex markup remains bound to its original part and physical ordinal.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceChartMarkup"
+          }
+        },
+        "properties": {
+          "description": "Source order; missing property, missing val and explicit lexical val differ.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceChartProperty"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "properties",
+        "markup"
+      ]
+    },
+    "SourceChartMarkup": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/ChartMarkupKind"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "kind"
+      ]
+    },
+    "SourceChartNumberFormat": {
+      "type": "object",
+      "properties": {
+        "formatCode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sourceLinked": {
+          "description": "Preserve omission and the actual lexical boolean; no workbook lookup.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal"
+      ]
+    },
     "SourceChartPart": {
       "type": "object",
       "properties": {
+        "axes": {
+          "description": "Source declarations; reference resolution, defaults and geometry are separate.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceChartAxis"
+          }
+        },
         "byteLength": {
           "$ref": "#/$defs/ByteLength"
         },
@@ -350,6 +533,7 @@
         "byteLength",
         "compatibility",
         "plots",
+        "axes",
         "dataAuthority"
       ]
     },
@@ -363,6 +547,9 @@
             "format": "uint32",
             "minimum": 0
           }
+        },
+        "layout": {
+          "$ref": "#/$defs/SourceChartLayout"
         },
         "nativeKind": {
           "description": "Native local name (barChart, doughnutChart, ...), not a rendering capability.",
@@ -385,7 +572,8 @@
         "sourceOrdinal",
         "nativeKind",
         "axisIds",
-        "series"
+        "series",
+        "layout"
       ]
     },
     "SourceChartPoint": {
@@ -419,6 +607,52 @@
       "required": [
         "sourceOrdinal",
         "index"
+      ]
+    },
+    "SourceChartProperty": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/ChartPropertyKind"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "value": {
+          "description": "XML attribute value, without numeric conversion or schema defaulting.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "kind"
+      ]
+    },
+    "SourceChartScaling": {
+      "type": "object",
+      "properties": {
+        "properties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceChartProperty"
+          }
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "properties"
       ]
     },
     "SourceChartSeries": {

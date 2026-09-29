@@ -9,6 +9,49 @@ export type PptxChartsResponse =
       error: PptxFailure;
       status: "error";
     };
+export type ChartAxisKind = "category" | "value" | "date" | "series";
+export type ChartMarkupKind =
+  | "shapeProperties"
+  | "textProperties"
+  | "title"
+  | "majorGridlines"
+  | "minorGridlines"
+  | "displayUnits"
+  | "dataLabels"
+  | "seriesLines";
+export type ChartPropertyKind =
+  | "barDirection"
+  | "grouping"
+  | "varyColors"
+  | "gapWidth"
+  | "gapDepth"
+  | "overlap"
+  | "firstSliceAngle"
+  | "holeSize"
+  | "delete"
+  | "axisPosition"
+  | "majorTickMark"
+  | "minorTickMark"
+  | "tickLabelPosition"
+  | "crossAxis"
+  | "crosses"
+  | "crossesAt"
+  | "crossBetween"
+  | "majorUnit"
+  | "minorUnit"
+  | "auto"
+  | "labelAlignment"
+  | "labelOffset"
+  | "tickLabelSkip"
+  | "tickMarkSkip"
+  | "noMultiLevelLabels"
+  | "baseTimeUnit"
+  | "majorTimeUnit"
+  | "minorTimeUnit"
+  | "logBase"
+  | "orientation"
+  | "minimum"
+  | "maximum";
 /**
  * Canonical uint64 byte length. Range requires semantic validation.
  */
@@ -58,6 +101,10 @@ export interface SourceObjectRef {
   part: string;
 }
 export interface SourceChartPart {
+  /**
+   * Source declarations; reference resolution, defaults and geometry are separate.
+   */
+  axes: SourceChartAxis[];
   byteLength: ByteLength;
   compatibility: SourceCompatibility;
   /**
@@ -68,6 +115,48 @@ export interface SourceChartPart {
   part: string;
   plots: SourceChartPlot[];
   sha256: Digest;
+}
+export interface SourceChartAxis {
+  id: number;
+  kind: ChartAxisKind;
+  layout: SourceChartLayout;
+  numberFormat?: SourceChartNumberFormat | null;
+  scaling?: SourceChartScaling | null;
+  sourceOrdinal: number;
+}
+export interface SourceChartLayout {
+  /**
+   * Complex markup remains bound to its original part and physical ordinal.
+   */
+  markup: SourceChartMarkup[];
+  /**
+   * Source order; missing property, missing val and explicit lexical val differ.
+   */
+  properties: SourceChartProperty[];
+}
+export interface SourceChartMarkup {
+  kind: ChartMarkupKind;
+  sourceOrdinal: number;
+}
+export interface SourceChartProperty {
+  kind: ChartPropertyKind;
+  sourceOrdinal: number;
+  /**
+   * XML attribute value, without numeric conversion or schema defaulting.
+   */
+  value?: string | null;
+}
+export interface SourceChartNumberFormat {
+  formatCode?: string | null;
+  /**
+   * Preserve omission and the actual lexical boolean; no workbook lookup.
+   */
+  sourceLinked?: string | null;
+  sourceOrdinal: number;
+}
+export interface SourceChartScaling {
+  properties: SourceChartProperty[];
+  sourceOrdinal: number;
 }
 export interface SourceCompatibility {
   ignoredAttributes: number;
@@ -96,6 +185,7 @@ export interface SourceChartExternalData {
 }
 export interface SourceChartPlot {
   axisIds: number[];
+  layout: SourceChartLayout;
   /**
    * Native local name (barChart, doughnutChart, ...), not a rendering capability.
    */
