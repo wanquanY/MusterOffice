@@ -48,6 +48,7 @@ pub struct ManifestFlowInput<'a> {
     pub spacing: LineSpacing,
     pub widths: flow::LineWidths,
     pub overflow: OverflowPolicy,
+    pub hanging_punctuation: flow::HangingPunctuation,
 }
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -179,6 +180,7 @@ impl<'m, 'font> PreparedManifest<'m, 'font> {
                 spacing: input.spacing,
                 widths: input.widths,
                 overflow: input.overflow,
+                hanging_punctuation: input.hanging_punctuation,
             },
             bounds_tolerance,
             ResourceInput::Prepared(&self.resources),
@@ -235,6 +237,7 @@ impl<'m, 'font> PreparedManifest<'m, 'font> {
                 spacing: input.spacing,
                 width: input.width,
                 overflow: input.overflow,
+                hanging_punctuation: flow::HangingPunctuation::None,
             },
             bindings,
         ))

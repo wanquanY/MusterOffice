@@ -128,6 +128,8 @@ pub struct FrameParagraphSpec {
     pub spacing_conversion_error: Fixed,
     pub alignment: NativeTextAlign,
     pub overflow: OverflowPolicy,
+    #[serde(default)]
+    pub hanging_punctuation: mo_text::flow::HangingPunctuation,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged, deny_unknown_fields)]

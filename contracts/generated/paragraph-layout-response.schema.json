@@ -342,6 +342,16 @@
         "probedGlyphs"
       ]
     },
+    "FixedQ32": {
+      "description": "Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,38})$",
+      "x-integer-maximum": "170141183460469231731687303715884105727",
+      "x-integer-minimum": "-170141183460469231731687303715884105728"
+    },
     "FlowIssue": {
       "oneOf": [
         {
@@ -908,6 +918,31 @@
         "glyphs"
       ]
     },
+    "HangingLineEnd": {
+      "description": "Source coordinates and exact alignment bounds of the non-hanging text.\nActual glyph origins, advance and ink bounds continue to include punctuation.",
+      "type": "object",
+      "properties": {
+        "bodyPenMax": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "bodyPenMin": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "end": {
+          "$ref": "#/$defs/TextBoundary"
+        },
+        "start": {
+          "$ref": "#/$defs/TextBoundary"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end",
+        "bodyPenMin",
+        "bodyPenMax"
+      ]
+    },
     "ItemizationNotice": {
       "type": "object",
       "properties": {
@@ -998,6 +1033,16 @@
         },
         "end": {
           "$ref": "#/$defs/TextBoundary"
+        },
+        "hanging": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/HangingLineEnd"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "overflows": {
           "type": "boolean"

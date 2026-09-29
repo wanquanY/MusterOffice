@@ -217,6 +217,7 @@ pub(crate) fn compute(
                     spacing: spec.spacing.clone(),
                     widths: spec.widths,
                     overflow: spec.overflow,
+                    hanging_punctuation: spec.hanging_punctuation,
                 },
                 bounds_tolerance,
                 &mut worker,
@@ -304,13 +305,21 @@ pub(crate) fn compute(
                 .x
                 .checked_add(spec.left)?
                 .checked_add(indent)?;
+            let hanging = computed.geometry.paths.layout.decisions[line]
+                .hanging
+                .as_ref();
+            let (pen_min, pen_max) =
+                hanging.map_or((g.pen_min, g.pen_max), |h| (h.body_pen_min, h.body_pen_max));
             let offset = match spec.alignment {
-                NativeTextAlign::L => Fixed::ZERO,
-                NativeTextAlign::R => width.checked_sub(g.pen_max)?,
-                NativeTextAlign::Ctr => width
-                    .checked_sub(g.pen_max)?
-                    .checked_sub(g.pen_min)?
-                    .half()?,
+                NativeTextAlign::L => {
+                    if hanging.is_some() {
+                        Fixed::ZERO.checked_sub(pen_min)?
+                    } else {
+                        Fixed::ZERO
+                    }
+                }
+                NativeTextAlign::R => width.checked_sub(pen_max)?,
+                NativeTextAlign::Ctr => width.checked_sub(pen_max)?.checked_sub(pen_min)?.half()?,
                 _ => unreachable!("preflight alignment"),
             };
             line_offsets.push(Point {

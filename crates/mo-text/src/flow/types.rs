@@ -14,6 +14,16 @@ pub enum OverflowPolicy {
     EmergencyGrapheme,
 }
 
+/// Permit one terminal punctuation grapheme to extend beyond the line edge
+/// when its preceding text fits. This does not remove or rescale any glyph.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum HangingPunctuation {
+    #[default]
+    None,
+    End,
+}
+
 /// Exact available widths, independent of source format. First means the first
 /// visual line of this paragraph, not the first line after every explicit break.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema)]
@@ -43,6 +53,7 @@ pub struct FlowInput<'a> {
     pub spacing: LineSpacing,
     pub widths: LineWidths,
     pub overflow: OverflowPolicy,
+    pub hanging_punctuation: HangingPunctuation,
 }
 impl<'a> From<&'a ParagraphLayoutRequest> for FlowInput<'a> {
     fn from(q: &'a ParagraphLayoutRequest) -> Self {
@@ -53,6 +64,7 @@ impl<'a> From<&'a ParagraphLayoutRequest> for FlowInput<'a> {
             spacing: q.spacing.clone(),
             widths: LineWidths::uniform(Fixed::emu(q.width)),
             overflow: q.overflow,
+            hanging_punctuation: q.hanging_punctuation,
         }
     }
 }
@@ -65,6 +77,8 @@ pub struct ParagraphLayoutRequest {
     pub spacing: LineSpacing,
     pub width: Emu,
     pub overflow: OverflowPolicy,
+    #[serde(default)]
+    pub hanging_punctuation: HangingPunctuation,
 }
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "kind", rename_all = "camelCase", deny_unknown_fields)]
@@ -92,6 +106,19 @@ pub struct LineDecision {
     pub end: TextBoundary,
     pub emergency: bool,
     pub overflows: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub hanging: Option<HangingLineEnd>,
+}
+
+/// Source coordinates and exact alignment bounds of the non-hanging text.
+/// Actual glyph origins, advance and ink bounds continue to include punctuation.
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct HangingLineEnd {
+    pub start: TextBoundary,
+    pub end: TextBoundary,
+    pub body_pen_min: Fixed,
+    pub body_pen_max: Fixed,
 }
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

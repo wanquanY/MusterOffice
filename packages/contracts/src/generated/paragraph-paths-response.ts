@@ -22,6 +22,10 @@ export type PathSceneIssue =
       variations: EffectiveVariation[];
     };
 export type BreakKind = "allowed" | "mandatory";
+/**
+ * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
+ */
+export type FixedQ32 = string;
 export type GeometryIssue =
   | {
       end: number;
@@ -315,10 +319,6 @@ export type FlowIssue =
       kind: "unresolvedFont";
       start: number;
     };
-/**
- * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
- */
-export type FixedQ32 = string;
 export type PathCommand =
   | {
       kind: "move";
@@ -407,7 +407,18 @@ export interface LineBreakOpportunity {
 export interface LineDecision {
   emergency: boolean;
   end: TextBoundary;
+  hanging?: HangingLineEnd | null;
   overflows: boolean;
+}
+/**
+ * Source coordinates and exact alignment bounds of the non-hanging text.
+ * Actual glyph origins, advance and ink bounds continue to include punctuation.
+ */
+export interface HangingLineEnd {
+  bodyPenMax: FixedQ32;
+  bodyPenMin: FixedQ32;
+  end: TextBoundary;
+  start: TextBoundary;
 }
 export interface LineGeometryResult {
   issues: GeometryIssue[];

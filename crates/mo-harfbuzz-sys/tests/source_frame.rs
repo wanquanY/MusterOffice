@@ -517,7 +517,12 @@ fn selected_cancellation_and_unsupported_native_properties_fail_explicitly() {
         ));
         assert_eq!(backend.calls, 0);
     }
-    let i = read(&fixture("<a:p><a:r><a:t>A!</a:t></a:r></a:p>", ""));
+    // End punctuation now has dedicated real-shaper coverage in source_hanging.
+    // Justification is still a preflight prerequisite, before component work.
+    let i = read(&fixture(
+        "<a:p><a:pPr algn=\"just\"/><a:r><a:t>A</a:t></a:r></a:p>",
+        "",
+    ));
     let mut backend = Counting::default();
     assert!(matches!(
         compile(

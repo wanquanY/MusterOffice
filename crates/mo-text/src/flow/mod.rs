@@ -1,5 +1,8 @@
 //! Width-driven horizontal layout. Reshapes each candidate in actual line
 //! context; no monotonic-width assumption, implicit fonts or source edits.
+mod hanging;
+#[cfg(test)]
+mod hanging_tests;
 #[cfg(test)]
 mod tests;
 mod types;
@@ -27,6 +30,7 @@ struct Candidate {
     bidi: BidiLine,
     fallback: FallbackResult,
     fits: bool,
+    hanging: Option<HangingLineEnd>,
 }
 struct Search<'a, 'b> {
     q: &'a FlowInput<'a>,
@@ -104,12 +108,40 @@ impl Search<'_, '_> {
             self.q.styles,
             check,
         )?;
-        let (min, max) = geometry::order::pen_bounds(&fallback, &order, check)?;
+        let terminal = hanging::terminal(self.q, &plan, self.segmentation);
+        let bounds = geometry::order::pen_bounds(
+            &fallback,
+            &order,
+            terminal
+                .as_ref()
+                .map(|(from, to)| from.scalar_offset..to.scalar_offset),
+            check,
+        )?;
+        let width = self.q.widths.at(start);
+        let fits = bounds.min >= Position::ZERO && bounds.max <= width;
+        let hanging = if !fits {
+            match (terminal, bounds.body) {
+                (Some((start, end)), Some((min, max)))
+                    if min >= Position::ZERO && max.checked_sub(min)? <= width =>
+                {
+                    Some(HangingLineEnd {
+                        start,
+                        end,
+                        body_pen_min: min,
+                        body_pen_max: max,
+                    })
+                }
+                _ => None,
+            }
+        } else {
+            None
+        };
         Ok(Ok(Candidate {
             plan,
             bidi,
             fallback,
-            fits: min >= Position::ZERO && max <= self.q.widths.at(start),
+            fits: fits || hanging.is_some(),
+            hanging,
         }))
     }
     fn work(&self) -> FlowWork {
@@ -411,11 +443,13 @@ pub(crate) fn layout_flow(
             chosen.unwrap_or_else(|| (earliest.expect("first legal candidate evaluated"), false));
         let to = candidate.bidi.end.clone();
         let overflows = !candidate.fits;
+        let hanging = candidate.hanging.clone();
         selected.push(candidate, check)?;
         result.decisions.push(LineDecision {
             end: to.clone(),
             emergency,
             overflows,
+            hanging,
         });
         start = to.scalar_offset;
         if start == end {
@@ -436,6 +470,7 @@ pub(crate) fn layout_flow(
             end: empty.bidi.end.clone(),
             emergency: false,
             overflows: false,
+            hanging: None,
         });
         selected.push(empty, check)?;
     }

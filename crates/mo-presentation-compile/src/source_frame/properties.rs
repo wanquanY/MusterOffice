@@ -4,7 +4,7 @@ use mo_text::{
     flow::{LineWidths, OverflowPolicy},
     geometry::LineSpacing,
 };
-use mo_unicode::line_break::{LineBreakClass as B, line_break_properties};
+use mo_unicode::line_break::line_break_properties;
 
 pub(super) fn body(body: &EffectiveTextBody) -> Result<(), SourceFrameError> {
     use TextBodyProperty::*;
@@ -89,32 +89,6 @@ pub(super) fn paragraph(
         if a.east_asian_line_break == Some(false) && props.east_asian {
             return Err(fail(ParagraphProperty::EastAsianLineBreak));
         }
-        // Do not silently render hanging punctuation with ordinary line bounds.
-        if a.hanging_punctuation != Some(false)
-            && (props.initial_punctuation
-                || props.final_punctuation
-                || matches!(
-                    props.class,
-                    B::Cl
-                        | B::Cp
-                        | B::Ex
-                        | B::Is
-                        | B::Sy
-                        | B::Qu
-                        | B::Op
-                        | B::Po
-                        | B::Pr
-                        | B::Hy
-                        | B::Ba
-                        | B::Bb
-                        | B::B2
-                        | B::In
-                        | B::Ns
-                        | B::Cj
-                ))
-        {
-            return Err(fail(ParagraphProperty::HangingPunctuation));
-        }
     }
     let emu = |v: Option<i32>| Fixed::emu(mo_common::Emu::new(i64::from(v.unwrap_or(0))));
     let left = emu(a.left_margin);
@@ -142,6 +116,11 @@ pub(super) fn paragraph(
         after: ParagraphSpacing::Fixed(Fixed::ZERO),
         spacing_conversion_error: Fixed::ZERO,
         alignment: a.alignment.expect("validated alignment"),
+        hanging_punctuation: if a.hanging_punctuation == Some(true) {
+            mo_text::flow::HangingPunctuation::End
+        } else {
+            mo_text::flow::HangingPunctuation::None
+        },
         overflow: if a.latin_line_break == Some(true) {
             OverflowPolicy::EmergencyGrapheme
         } else {

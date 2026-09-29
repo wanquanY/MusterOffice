@@ -72,6 +72,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     spacing: LineSpacing::Natural,
                     width: Emu::new(width),
                     overflow: OverflowPolicy::EmergencyGrapheme,
+                    hanging_punctuation: mo_text::flow::HangingPunctuation::None,
                 },
                 bounds_tolerance: Fixed::from_raw(1 << 26),
             };

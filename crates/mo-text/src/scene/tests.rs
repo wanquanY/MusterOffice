@@ -18,6 +18,7 @@ fn q(text: &str) -> ParagraphPathsRequest {
             spacing: g.spacing,
             width: Emu::new(10000),
             overflow: flow::OverflowPolicy::KeepUnbreakable,
+            hanging_punctuation: crate::flow::HangingPunctuation::None,
         },
         bounds_tolerance: Fixed::from_raw(1 << 26),
     }

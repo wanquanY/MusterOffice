@@ -77,3 +77,6 @@ python3 tools/verification/manifest-layout-regressions.py --output-dir .codex-wo
 后续[来源文字页面](source-text-page.md)已通过新的 Rust 库入口接通纯色文字画笔、原生页面变换与实际像素；本页保留上述文本框阶段的历史范围和证据。
 
 后续[段落百分比间距](paragraph-spacing.md)已接通非零百分比及显式零行距，并修正显式 100% 沿用 Natural 的早期规则；上文属性表与拒绝范围为本阶段历史状态。
+
+后续[行尾标点悬挂](hanging-punctuation.md)已接通逐行塑形后的正文宽度判断、来源段落选择、
+实际悬挂范围及对齐后容量统计；本页悬挂标点拒绝和“没有新增字段”的描述保留历史范围。

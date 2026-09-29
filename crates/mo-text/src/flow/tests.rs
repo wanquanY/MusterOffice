@@ -2,7 +2,7 @@ use super::*;
 use crate::geometry::test_support::{Backend, FONT, request};
 use mo_common::Emu;
 use std::cell::Cell;
-fn q(text: &str, width: i64, overflow: OverflowPolicy) -> ParagraphLayoutRequest {
+pub(super) fn q(text: &str, width: i64, overflow: OverflowPolicy) -> ParagraphLayoutRequest {
     let g = request(text);
     ParagraphLayoutRequest {
         paragraph: g.shaping.paragraph,
@@ -15,6 +15,7 @@ fn q(text: &str, width: i64, overflow: OverflowPolicy) -> ParagraphLayoutRequest
         spacing: g.spacing,
         width: Emu::new(width),
         overflow,
+        hanging_punctuation: HangingPunctuation::None,
     }
 }
 fn ends(r: &ParagraphLayoutResult) -> Vec<u32> {

@@ -995,6 +995,31 @@
         "commands"
       ]
     },
+    "HangingLineEnd": {
+      "description": "Source coordinates and exact alignment bounds of the non-hanging text.\nActual glyph origins, advance and ink bounds continue to include punctuation.",
+      "type": "object",
+      "properties": {
+        "bodyPenMax": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "bodyPenMin": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "end": {
+          "$ref": "#/$defs/TextBoundary"
+        },
+        "start": {
+          "$ref": "#/$defs/TextBoundary"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end",
+        "bodyPenMin",
+        "bodyPenMax"
+      ]
+    },
     "ItemizationNotice": {
       "type": "object",
       "properties": {
@@ -1085,6 +1110,16 @@
         },
         "end": {
           "$ref": "#/$defs/TextBoundary"
+        },
+        "hanging": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/HangingLineEnd"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "overflows": {
           "type": "boolean"

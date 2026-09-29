@@ -97,12 +97,27 @@ pub fn measure(
             } else {
                 paragraph.spec.widths.rest
             };
+            let origin = frame
+                .region
+                .inner
+                .min
+                .x
+                .checked_add(paragraph.spec.left)?
+                .checked_add(if line == 0 && !paragraph.spec.indent_from_right {
+                    paragraph.spec.indent
+                } else {
+                    Fixed::ZERO
+                })?;
+            let alignment = paragraph.line_offsets[line].x.checked_sub(origin)?;
             result.maximum_left_excess = result
                 .maximum_left_excess
-                .max(Fixed::ZERO.checked_sub(geometry.pen_min)?);
-            result.maximum_right_excess = result
-                .maximum_right_excess
-                .max(geometry.pen_max.checked_sub(width)?);
+                .max(Fixed::ZERO.checked_sub(geometry.pen_min.checked_add(alignment)?)?);
+            result.maximum_right_excess = result.maximum_right_excess.max(
+                geometry
+                    .pen_max
+                    .checked_add(alignment)?
+                    .checked_sub(width)?,
+            );
             if decision.overflows {
                 result.horizontal_overflow_lines += 1;
                 result.first_horizontal_overflow.get_or_insert(FrameLine {

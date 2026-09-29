@@ -68,6 +68,14 @@ export type BaselineShift =
   | {
       q32: FixedQ32;
     };
+/**
+ * Permit one terminal punctuation grapheme to extend beyond the line edge
+ * when its preceding text fits. This does not remove or rescale any glyph.
+ *
+ * This interface was referenced by `ParagraphPathsRequest`'s JSON-Schema
+ * via the `definition` "HangingPunctuation".
+ */
+export type HangingPunctuation = "none" | "end";
 
 export interface ParagraphPathsRequest {
   /**
@@ -81,6 +89,11 @@ export interface ParagraphPathsRequest {
  * via the `definition` "ParagraphLayoutRequest".
  */
 export interface ParagraphLayoutRequest {
+  /**
+   * Permit one terminal punctuation grapheme to extend beyond the line edge
+   * when its preceding text fits. This does not remove or rescale any glyph.
+   */
+  hangingPunctuation?: "none" | "end";
   overflow: OverflowPolicy;
   paragraph: ParagraphShapeRequest;
   spacing: LineSpacing;

@@ -4,6 +4,10 @@
   "title": "ParagraphLayoutRequest",
   "type": "object",
   "properties": {
+    "hangingPunctuation": {
+      "$ref": "#/$defs/HangingPunctuation",
+      "default": "none"
+    },
     "overflow": {
       "$ref": "#/$defs/OverflowPolicy"
     },
@@ -164,6 +168,14 @@
       "required": [
         "fontSize",
         "baselineShift"
+      ]
+    },
+    "HangingPunctuation": {
+      "description": "Permit one terminal punctuation grapheme to extend beyond the line edge\nwhen its preceding text fits. This does not remove or rescale any glyph.",
+      "type": "string",
+      "enum": [
+        "none",
+        "end"
       ]
     },
     "LineSpacing": {
