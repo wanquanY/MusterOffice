@@ -16,6 +16,12 @@ export type ClaimKind = "structure" | "layout" | "native-editability" | "playbac
 export type ClaimStatus = "passed" | "failed" | "not_proven" | "not_applicable";
 export type DocumentId = string;
 /**
+ * Signed int64 EMU. 1 point = 12700 EMU. Range requires semantic validation.
+ */
+export type Emu = string;
+export type ObjectId = string;
+export type SlideId = string;
+/**
  * Canonical uint64 byte length. Range requires semantic validation.
  */
 export type ByteLength = string;
@@ -38,6 +44,11 @@ export interface ReceiptInspection {
   bundleDigest: Digest;
   declaredClaims: Claim[];
   documentId: DocumentId;
+  /**
+   * Bounded observations from the verified preview evidence. Historical
+   * reports can omit them; absence never establishes layout quality.
+   */
+  layoutDiagnostics?: LayoutDiagnostics | null;
   pages: number;
   profile: string;
   revision: Digest;
@@ -53,6 +64,64 @@ export interface Claim {
   reason?: string | null;
   status: ClaimStatus;
   subjectSha256: Digest;
+}
+export interface LayoutDiagnostics {
+  affectedFrames: number;
+  /**
+   * First 32 affected frames in page/paint order. Counts cover all frames.
+   */
+  findings: TextLayoutFinding[];
+  measuredFrames: number;
+  measuredPages: number;
+  omittedFindings: number;
+  profile: string;
+  unmeasuredPages: number;
+}
+export interface TextLayoutFinding {
+  /**
+   * Includes line leading/paragraph spacing; not necessarily visible spill.
+   */
+  capacityExcessEmu: string;
+  cell?: SourceCellAddress | null;
+  contentHeightEmu: Emu;
+  emergencyLines: number;
+  evidenceAssetId: RequestId;
+  horizontalOverflowLines: number;
+  inkExcessEmu: InkExcess;
+  innerHeightEmu: Emu;
+  /**
+   * Signed int64 EMU. 1 point = 12700 EMU. Range requires semantic validation.
+   */
+  innerWidthEmu: string;
+  lineCount: number;
+  /**
+   * The editable model identity, never guessed from the object's name.
+   */
+  objectId?: ObjectId | null;
+  pageId: SlideId;
+  /**
+   * One-based position in the delivered deck, including hidden slides.
+   */
+  pageNumber: number;
+  source: SourceObjectRef;
+}
+export interface SourceCellAddress {
+  column: number;
+  row: number;
+}
+/**
+ * Glyph outlines outside the inner text region. Intentional overhang and
+ * hanging punctuation can cause this; it is not a clipping/overlap verdict.
+ */
+export interface InkExcess {
+  bottom: Emu;
+  left: Emu;
+  right: Emu;
+  top: Emu;
+}
+export interface SourceObjectRef {
+  nativeId: number;
+  part: string;
 }
 export interface PptxFailure {
   code: PptxFailureCode;

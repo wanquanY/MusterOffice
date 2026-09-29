@@ -135,6 +135,98 @@
       },
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
     },
+    "Emu": {
+      "description": "Signed int64 EMU. 1 point = 12700 EMU. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,18})$",
+      "x-integer-maximum": "9223372036854775807",
+      "x-integer-minimum": "-9223372036854775808"
+    },
+    "InkExcess": {
+      "type": "object",
+      "properties": {
+        "bottom": {
+          "$ref": "#/$defs/Emu"
+        },
+        "left": {
+          "$ref": "#/$defs/Emu"
+        },
+        "right": {
+          "$ref": "#/$defs/Emu"
+        },
+        "top": {
+          "$ref": "#/$defs/Emu"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "left",
+        "right",
+        "top",
+        "bottom"
+      ]
+    },
+    "LayoutDiagnostics": {
+      "type": "object",
+      "properties": {
+        "affectedFrames": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "findings": {
+          "description": "First 32 affected frames in page/paint order. Counts cover all frames.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TextLayoutFinding"
+          }
+        },
+        "measuredFrames": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "measuredPages": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "omittedFindings": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "profile": {
+          "type": "string"
+        },
+        "unmeasuredPages": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "measuredPages",
+        "unmeasuredPages",
+        "measuredFrames",
+        "affectedFrames",
+        "findings",
+        "omittedFindings"
+      ]
+    },
+    "ObjectId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
     "PptxFailure": {
       "type": "object",
       "properties": {
@@ -185,6 +277,17 @@
         "documentId": {
           "$ref": "#/$defs/DocumentId"
         },
+        "layoutDiagnostics": {
+          "description": "Bounded observations from the verified preview evidence. Historical\nreports can omit them; absence never establishes layout quality.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LayoutDiagnostics"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "pages": {
           "type": "integer",
           "format": "uint",
@@ -227,6 +330,141 @@
         "pattern": "[^A-Za-z0-9_.:-]"
       },
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "SlideId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "SourceCellAddress": {
+      "type": "object",
+      "properties": {
+        "column": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "row": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "row",
+        "column"
+      ]
+    },
+    "SourceObjectRef": {
+      "type": "object",
+      "properties": {
+        "nativeId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "part": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "nativeId"
+      ]
+    },
+    "TextLayoutFinding": {
+      "type": "object",
+      "properties": {
+        "capacityExcessEmu": {
+          "description": "Includes line leading/paragraph spacing; not necessarily visible spill.",
+          "$ref": "#/$defs/Emu"
+        },
+        "cell": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "contentHeightEmu": {
+          "$ref": "#/$defs/Emu"
+        },
+        "emergencyLines": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "evidenceAssetId": {
+          "$ref": "#/$defs/RequestId"
+        },
+        "horizontalOverflowLines": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "inkExcessEmu": {
+          "description": "Glyph outlines outside the inner text region. Intentional overhang and\nhanging punctuation can cause this; it is not a clipping/overlap verdict.",
+          "$ref": "#/$defs/InkExcess"
+        },
+        "innerHeightEmu": {
+          "$ref": "#/$defs/Emu"
+        },
+        "innerWidthEmu": {
+          "description": "Shape-local dimensions after insets, rounded upward to integer EMU.",
+          "$ref": "#/$defs/Emu"
+        },
+        "lineCount": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "objectId": {
+          "description": "The editable model identity, never guessed from the object's name.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObjectId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pageId": {
+          "$ref": "#/$defs/SlideId"
+        },
+        "pageNumber": {
+          "description": "One-based position in the delivered deck, including hidden slides.",
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        },
+        "source": {
+          "$ref": "#/$defs/SourceObjectRef"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "pageId",
+        "pageNumber",
+        "evidenceAssetId",
+        "source",
+        "innerWidthEmu",
+        "innerHeightEmu",
+        "contentHeightEmu",
+        "capacityExcessEmu",
+        "inkExcessEmu",
+        "lineCount",
+        "horizontalOverflowLines",
+        "emergencyLines"
+      ]
     }
   }
 }

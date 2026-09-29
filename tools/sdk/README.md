@@ -16,6 +16,15 @@ product configures one native exporter with a pinned worker and an explicit
 protected temporary directory. No JobStore, account context or business
 committer is required for these calls.
 
+`Presentation::compose` accepts ordered native text/shape declarations and
+expands them once into the same editable Document. Full `create` and atomic
+`edit` remain available for other objects and resources. Export candidates'
+`inspection().layout_diagnostics` contains bounded, object-addressed text
+observations from verified preview evidence: line-leading capacity and glyph
+ink excess remain distinct. Missing measurements and omitted findings are
+explicit. These observations do not upgrade visual or Office/WPS claims and
+never automatically resize, clip or remove content.
+
 `execute(Invocation, inputs, optional_exporter, cancelled)` is the shared direct
 dispatch for typed callers and thin process adapters. `Invocation` carries the
 same operation plus its explicit base snapshot for edits/exports. `Execution`

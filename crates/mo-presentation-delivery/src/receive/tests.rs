@@ -99,6 +99,10 @@ fn owned_native_delivery_is_received_with_original_claims() {
     let report = received.report();
     assert_eq!(report.assets_verified, 12);
     assert_eq!(report.pages, 2);
+    let layout = report.layout_diagnostics.as_ref().unwrap();
+    assert_eq!(layout.unmeasured_pages, 2);
+    assert_eq!(layout.measured_pages, 0);
+    assert!(layout.findings.is_empty());
     assert_eq!(received.preview_measurements().len(), report.pages);
     for (measurement, page) in received
         .preview_measurements()
@@ -126,6 +130,66 @@ fn owned_native_delivery_is_received_with_original_claims() {
         serde_json::to_value(&f.bundle.claims).unwrap()
     );
     assert_eq!(received.snapshot().document.title, "SDK real integration");
+}
+
+#[test]
+fn layout_object_addresses_bind_authored_and_retained_model_identities() {
+    let f = Fixture::new();
+    let snapshot: SnapshotRecord =
+        serde_json::from_slice(&f.source.bytes[&f.bundle.document.model_asset_id]).unwrap();
+    let context: Value = serde_json::from_slice(&f.source.bytes[&f.id(CONTEXT_MIME)]).unwrap();
+    let settings: DeliverySettings = serde_json::from_value(context["settings"].clone()).unwrap();
+    let author = mo_pptx::AuthorPlan::new(
+        &snapshot.document,
+        &settings.defaults,
+        Default::default(),
+        &|| false,
+    )
+    .unwrap();
+    let expected_ids = author.bindings().object_ids.clone();
+    let authored =
+        diagnostics::object_bindings(&mo_pptx::PresentationPlan::Author(author), &|| false)
+            .unwrap();
+    assert_eq!(authored.len(), snapshot.document.objects.len());
+    for ((part, native), id) in &authored {
+        assert!(part.starts_with("/ppt/"));
+        assert_eq!(*native, expected_ids[id]);
+    }
+    // Reimport the same actual file. Native addresses stay stable, while the
+    // editable model IDs become source-bound IDs. Object names are not used.
+    let bytes = &f.source.bytes[&f.bundle.pptx_asset_id];
+    let reader: &dyn mo_opc::ReaderAt = bytes;
+    let source = Package::open(reader, bytes.len() as u64, Default::default(), &|| false).unwrap();
+    let imported = mo_pptx::source::document::import_document(
+        &source,
+        DocumentId::new("document:imported-layout").unwrap(),
+        mo_common::ResourceId::new("resource:source").unwrap(),
+        Default::default(),
+        &|| false,
+    )
+    .unwrap();
+    let retained =
+        mo_pptx::source::document::SourcePlan::new(&imported, &source, Default::default(), &|| {
+            false
+        })
+        .unwrap();
+    let retained = diagnostics::object_bindings(
+        &mo_pptx::PresentationPlan::Retained {
+            plan: Box::new(retained),
+            source,
+        },
+        &|| false,
+    )
+    .unwrap();
+    let bindings = imported.source_bindings.as_ref().unwrap();
+    assert_eq!(retained.len(), bindings.objects.len());
+    for (id, binding) in &bindings.objects {
+        assert_eq!(retained[&(binding.part.clone(), binding.native_id)], *id);
+    }
+    for address in authored.keys() {
+        assert!(retained.contains_key(address));
+        assert_ne!(retained[address], authored[address]);
+    }
 }
 
 #[test]

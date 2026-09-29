@@ -44,7 +44,7 @@ pub(super) fn validate(
     snapshot: &SnapshotRecord,
     context: &context::BoundContext,
     index: &SourceIndex,
-) -> Result<Vec<PreviewMeasurements>, DeliveryError> {
+) -> Result<(Vec<PreviewMeasurements>, LayoutDiagnostics), DeliveryError> {
     let asset = input.unique(
         AssetRole::QualityReport,
         "application/vnd.musteroffice.quality+json",
@@ -91,21 +91,23 @@ pub(super) fn validate(
         snapshot.document.page_size,
         context.value.settings.preview_width,
     )?;
-    let plan_identity = {
+    let (plan_identity, objects) = {
         let resources = ReceivedResources {
             input,
             context: &context.value,
         };
-        mo_pptx::PresentationPlan::new(
+        let plan = mo_pptx::PresentationPlan::new(
             &snapshot.document,
             &context.value.settings.defaults,
             &resources,
             Default::default(),
             Default::default(),
             input.check,
-        )?
-        .identity()
-        .clone()
+        )?;
+        (
+            plan.identity().clone(),
+            diagnostics::object_bindings(&plan, input.check)?,
+        )
     };
     let mut evidence_ids = BTreeSet::new();
     let mut measurements = Vec::with_capacity(bundle.previews.len());
@@ -179,7 +181,8 @@ pub(super) fn validate(
             text_capacity: evidence.render.text_capacity,
         });
     }
-    Ok(measurements)
+    let diagnostics = diagnostics::summarize(&measurements, &objects, input.check)?;
+    Ok((measurements, diagnostics))
 }
 
 struct ReceivedResources<'a, 'b> {

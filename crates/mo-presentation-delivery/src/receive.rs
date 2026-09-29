@@ -1,11 +1,13 @@
 //! Admission of a transported delivery. This proves byte/reference binding,
 //! never transport authority, external application quality or host publication.
 mod context;
+mod diagnostics;
 mod evidence;
 mod png;
 #[cfg(test)]
 mod tests;
 use crate::*;
+pub use diagnostics::{InkExcess, LayoutDiagnostics, TextLayoutFinding};
 use mo_common::{ByteLength, Digest, DocumentId, RequestId};
 use mo_opc::Package;
 use mo_presentation_edit::{Snapshot, SnapshotRecord};
@@ -47,6 +49,10 @@ pub struct ReceiptInspection {
     pub total_bytes: ByteLength,
     pub pages: usize,
     pub declared_claims: Vec<Claim>,
+    /// Bounded observations from the verified preview evidence. Historical
+    /// reports can omit them; absence never establishes layout quality.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub layout_diagnostics: Option<LayoutDiagnostics>,
 }
 
 /// Constructed only by the actual reader. Products must still perform their
@@ -244,7 +250,8 @@ pub fn inspect(
     {
         return Err(DeliveryError::Invalid("PPTX page coverage"));
     }
-    let previews = evidence::validate(&mut input, bundle, &snapshot, &context, &index)?;
+    let (previews, layout_diagnostics) =
+        evidence::validate(&mut input, bundle, &snapshot, &context, &index)?;
     if input.used.len() != input.assets.len() {
         return Err(DeliveryError::Invalid("unreferenced delivery asset"));
     }
@@ -280,6 +287,7 @@ pub fn inspect(
             total_bytes: ByteLength::new(total),
             pages: bundle.previews.len(),
             declared_claims: bundle.claims.clone(),
+            layout_diagnostics: Some(layout_diagnostics),
         },
         snapshot,
         previews,

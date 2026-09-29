@@ -15,8 +15,8 @@ use mo_opc::ReaderAt;
 pub use playback::{DeliveryPlaybackInputs, DeliveryPlaybackPage};
 pub use preview::{PreviewFonts, PreviewInput, PreviewRenderer, PreviewRequest};
 pub use receive::{
-    DeliveryExpectation, DeliverySource, PreviewMeasurements, ReceiptInspection, ReceivedDelivery,
-    inspect,
+    DeliveryExpectation, DeliverySource, InkExcess, LayoutDiagnostics, PreviewMeasurements,
+    ReceiptInspection, ReceivedDelivery, TextLayoutFinding, inspect,
 };
 
 #[derive(Debug, thiserror::Error)]
