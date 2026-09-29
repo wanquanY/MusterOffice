@@ -5,6 +5,14 @@ use mo_unicode::{
 };
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+/// Exhaustive scalar ranges from explicit document language metadata. Unlike
+/// computation styles, their boundaries may fall inside a grapheme; conflicting
+/// hints inside that grapheme remain unresolved. No alternative locale is inferred.
+#[derive(Debug, Clone, Copy)]
+pub struct LanguageSpan<'a> {
+    pub end: u32,
+    pub language: &'a str,
+}
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct StyleSpan {

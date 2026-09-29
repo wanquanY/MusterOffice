@@ -1,0 +1,79 @@
+{
+  "profile": "musteroffice.authored-language-verification/1",
+  "date": "2026-09-30",
+  "status": "scoped-implementation-verified",
+  "policy": {
+    "languageFreeItemization": "unicode18-script-bidi-grapheme-items-v1",
+    "languageItemization": "unicode18-script-bidi-grapheme-language-items-v2",
+    "paragraphShaping": "unicode18-auto-items-hb14.5-language-reshape-v3",
+    "explicitLanguagesOnly": true,
+    "scriptExtensionsConstrained": true,
+    "contextAndGraphemePreserved": true,
+    "implicitLocale": false,
+    "primaryCjkPolicy": {
+      "zh": "Hani",
+      "ja": "Kana",
+      "ko": "Hang"
+    }
+  },
+  "tests": {
+    "textUnit": 108,
+    "compileUnit": 91,
+    "sourceGlyphs": 11,
+    "actualNativeHangingAndLanguage": 3,
+    "kernelApiUnit": 5,
+    "strictScopedClippy": true,
+    "formatAndFirstPartyDiff": true
+  },
+  "paragraphParity": {
+    "exactFullResponses": 54,
+    "native": "7211b25192ac8346faa8854bb1f45cdefa176245ea5dd87379da7d1f0b9221dc",
+    "wasm": "57d100fafe125713c6f2fbceb8a173319538242cc8b052b2174ba1681c92afa7",
+    "component": "a9ee660dba755e41959a190db1e05522211234c2ee38215cb55dea8907a4302f",
+    "font": "dfff05d4c150956e3c1a0b869344df3bd140979e1df627e37509b843d45fadff"
+  },
+  "completePageParity": {
+    "fullDeliveryReports": 3,
+    "pages": 9,
+    "rgbaBytes": 33177600,
+    "exactMetadataCapacityAndPixels": true
+  },
+  "regression": {
+    "actualModelOutputs": [
+      {
+        "version": 1,
+        "pngFilesByteIdentical": 3,
+        "pptxByteIdentical": true
+      },
+      {
+        "version": 2,
+        "pngFilesByteIdentical": 3,
+        "pptxByteIdentical": true
+      }
+    ],
+    "workerSha256": "873e0cbb254f2b5f940ae4d492be0fce63bc8f962fc7f310dbc8e1a5bd2a61a1"
+  },
+  "failureReproduction": {
+    "text": "PPT。",
+    "authoredLanguage": "zh-CN",
+    "changedByPublicAtomicEdit": true,
+    "oldWorkerSha256": "a325bd8cbe8e3bf5eac43447f1d7256be6f612f449b952fac640dd52eedd22fe",
+    "oldFailure": "MAPPING_NOT_IMPLEMENTED: source text itemization AmbiguousScript at scalars 3..4",
+    "newExportCompleted": true,
+    "textAndFontsNotChangedBetweenWorkers": true
+  },
+  "worker": {
+    "sha256": "873e0cbb254f2b5f940ae4d492be0fce63bc8f962fc7f310dbc8e1a5bd2a61a1",
+    "byteLength": 12489648
+  },
+  "notProven": [
+    "Office/WPS language-dependent glyph and font equivalence",
+    "all language/script defaults",
+    "complete chart template rendering",
+    "complete replacement acceptance"
+  ],
+  "sources": [
+    "https://www.unicode.org/reports/tr24/tr24-41.html#Implementation_Notes",
+    "https://www.rfc-editor.org/rfc/rfc5646.html#section-2.1"
+  ]
+}

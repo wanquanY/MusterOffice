@@ -45,3 +45,9 @@ WASM 一同按摘要交付；旧适配器不能冒充新固定包。
 
 独立证据：[2026-09-30 字体驻留验证](../reviews/evidence/2026-09-30-font-residency-verification.json)。
 Office/WPS、真实模型完成创建及同工件修改、复杂模板和完整替换仍分别验收。
+
+
+后续产品激活：06:22 已通过实际二进制/Worker 摘要及认证 readiness 检查；06:36
+真实模型完成三页创建与同 Artifact 指定修改。两版资源、XML 与实际预览分别核对，
+见[真实模型验收](live-agent-acceptance.md#0636-字体复用版真实模型两轮)。这不关闭
+复杂模板或完整 Office/WPS 门禁。

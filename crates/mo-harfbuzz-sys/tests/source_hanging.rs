@@ -12,10 +12,19 @@ fn emu(value: i64) -> Fixed {
     Fixed::emu(Emu::new(value))
 }
 fn frame(text: &str, attribute: &str, alignment: &str, rtl: bool) -> SourceFramePlan {
+    frame_language(text, attribute, alignment, rtl, "en")
+}
+fn frame_language(
+    text: &str,
+    attribute: &str,
+    alignment: &str,
+    rtl: bool,
+    language: &str,
+) -> SourceFramePlan {
     // At 18pt each owned glyph advances exactly 137160 EMU. The frame has
     // room for two glyphs and 10000 EMU spare, but not three glyphs.
     let paragraphs = format!(
-        "<a:p><a:pPr {attribute} algn=\"{alignment}\" rtl=\"{}\"/><a:r><a:rPr sz=\"1800\"/><a:t>{text}</a:t></a:r></a:p>",
+        "<a:p><a:pPr {attribute} algn=\"{alignment}\" rtl=\"{}\"/><a:r><a:rPr lang=\"{language}\" sz=\"1800\"/><a:t>{text}</a:t></a:r></a:p>",
         u8::from(rtl)
     );
     let b = rewrite(&bytes(&paragraphs), SLIDE, |mut s| {
@@ -107,6 +116,26 @@ fn real_shaper_retains_punctuation_and_aligns_the_non_hanging_body() {
                 );
             }
         }
+    }
+}
+#[test]
+fn real_shaper_resolves_authored_language_in_both_source_and_layout_itemization() {
+    for language in ["zh-CN", "ja", "ko-KR", "und-Hani"] {
+        let result = frame_language("AA。", "hangingPunct=\"1\"", "l", false, language);
+        assert_eq!(result.glyphs.len(), 3);
+        let p = &result.paragraphs[0];
+        let layout = &p.computed.geometry.paths.layout;
+        assert_eq!(layout.decisions.len(), 1);
+        assert!(!layout.decisions[0].overflows);
+        let h = layout.decisions[0].hanging.as_ref().unwrap();
+        assert_eq!((h.start.scalar_offset, h.end.scalar_offset), (2, 3));
+        assert_eq!((h.body_pen_min, h.body_pen_max), (emu(0), emu(274320)));
+        assert_eq!(
+            capacity::measure(&result, &|| false)
+                .unwrap()
+                .horizontal_overflow_lines,
+            0
+        );
     }
 }
 #[test]

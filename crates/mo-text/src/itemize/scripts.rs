@@ -63,8 +63,11 @@ fn finish(
     let ambiguous = preferred.is_none() && set.is_some_and(|s| s.iter().nth(1).is_some());
     for i in pending.drain(..) {
         cancelled(check)?;
-        clusters[i].resolved = Some(script);
-        clusters[i].ambiguous = ambiguous;
+        let hint = clusters[i]
+            .language_script
+            .filter(|&hint| ambiguous && set.is_some_and(|set| set.contains(hint)));
+        clusters[i].resolved = Some(hint.unwrap_or(script));
+        clusters[i].ambiguous = ambiguous && hint.is_none();
     }
     Ok(())
 }

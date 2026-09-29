@@ -94,7 +94,21 @@ pub(super) fn paragraph(
     if let Some(issue) = style::audit(&p.end_style, paragraph, None) {
         return Ok(Err(issue));
     }
-    let items = itemize::itemize(
+    let languages: Vec<_> = plan
+        .sources
+        .iter()
+        .filter(|range| range.end > range.start)
+        .map(|range| LanguageSpan {
+            end: range.end,
+            language: p.runs[range.run as usize]
+                .style
+                .attributes
+                .language
+                .as_deref()
+                .unwrap_or("und"),
+        })
+        .collect();
+    let items = itemize::itemize_with_languages(
         &ItemizationRequest {
             text: plan.text.clone(),
             direction,
@@ -107,6 +121,7 @@ pub(super) fn paragraph(
                 }]
             },
         },
+        &languages,
         ItemizationLimits::default(),
         check,
     )?;

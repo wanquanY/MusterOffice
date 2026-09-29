@@ -136,12 +136,21 @@ pub(crate) fn prepare_items_with(
             style: style as u32,
         });
     }
-    itemize(
+    let languages: Vec<_> = request
+        .spans
+        .iter()
+        .map(|span| LanguageSpan {
+            end: span.end,
+            language: &request.styles[span.style as usize].language,
+        })
+        .collect();
+    itemize_with_languages(
         &ItemizationRequest {
             text: request.text.clone(),
             direction: request.direction,
             spans,
         },
+        &languages,
         ItemizationLimits::default(),
         check,
     )
@@ -207,7 +216,7 @@ pub(crate) fn shape_paragraph_using(
         |fonts, bindings| validate_styles(request, fonts, bindings, check),
     )?;
     Ok(ParagraphShapeResult {
-        profile: "unicode18-auto-items-hb14.5-mixed-font-reshape-v2".into(),
+        profile: "unicode18-auto-items-hb14.5-language-reshape-v3".into(),
         itemization,
         shaped_item_indices: indices,
         fallback,

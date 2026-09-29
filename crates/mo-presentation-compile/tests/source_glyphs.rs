@@ -112,6 +112,32 @@ fn mixed_scripts_resolve_native_slots_and_rtl_without_host_locale() {
     ));
 }
 #[test]
+fn explicit_language_binds_mixed_latin_and_ideographic_punctuation_without_guessing() {
+    for (language, script) in [("zh-CN", "Hani"), ("ja", "Kana"), ("ko-KR", "Hang")] {
+        let text = prepared(&bytes(&format!(
+            "<a:p><a:r><a:rPr lang=\"{language}\"/><a:t>PPT。</a:t></a:r></a:p>"
+        )));
+        let p = &text.paragraphs()[0];
+        assert_eq!(p.text, "PPT。");
+        assert_eq!(p.font_spans.len(), 2);
+        let first = &p.fonts[p.font_spans[0].binding as usize];
+        let punctuation = &p.fonts[p.font_spans[1].binding as usize];
+        assert_eq!(first.script, "Latn");
+        assert_eq!(first.slot, NativeFontSlot::Latin);
+        assert_eq!(punctuation.script, script);
+        assert_eq!(punctuation.slot, NativeFontSlot::EastAsian);
+        assert_eq!(punctuation.font.typeface, "EA");
+        assert_eq!(p.font_spans[1].start, 3);
+        assert_eq!(p.font_spans[1].end, 4);
+        assert_eq!(p.sources.len(), 1);
+    }
+    for language in ["en", "und", "en-x-Hani", "zh-Latn"] {
+        assert!(matches!(issue(&format!(
+            "<a:p><a:r><a:rPr lang=\"{language}\"/><a:t>PPT。</a:t></a:r></a:p>"
+        )), SourceTextIssue::Itemization { notice, .. } if notice.kind == mo_text::itemize::ItemizationNoticeKind::AmbiguousScript));
+    }
+}
+#[test]
 fn theme_supplements_follow_explicit_language_and_missing_language_is_diagnostic() {
     let b = bytes(
         "<a:p><a:r><a:rPr lang=\"zh-Hant\"><a:ea typeface=\"+mn-ea\"/></a:rPr><a:t>中</a:t></a:r></a:p>",

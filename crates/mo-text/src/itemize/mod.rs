@@ -1,4 +1,7 @@
 //! Logical paragraph preparation, not line fitting or glyph painting.
+mod language;
+#[cfg(test)]
+mod language_tests;
 mod scripts;
 #[cfg(test)]
 mod tests;
@@ -21,6 +24,7 @@ struct Cluster {
     preferred: Option<Script>,
     resolved: Option<Script>,
     ambiguous: bool,
+    language_script: Option<Script>,
 }
 fn kind(c: char) -> TextItemKind {
     use BidiClass::*;
@@ -44,6 +48,18 @@ pub fn itemize(
     limits: ItemizationLimits,
     check: &dyn Fn() -> bool,
 ) -> Result<ItemizationResult, TextError> {
+    itemize_with_languages(request, &[], limits, check)
+}
+
+/// Optional authored language runs refine otherwise ambiguous Script_Extensions.
+/// They never override a script established by text, split a grapheme, or use a
+/// system locale. Empty `languages` retains the original language-free policy.
+pub fn itemize_with_languages(
+    request: &ItemizationRequest,
+    languages: &[LanguageSpan<'_>],
+    limits: ItemizationLimits,
+    check: &dyn Fn() -> bool,
+) -> Result<ItemizationResult, TextError> {
     cancelled(check)?;
     if request.spans.len() > limits.max_styles {
         return Err(TextError::Limit("itemization style spans"));
@@ -54,6 +70,7 @@ pub fn itemize(
             mo_unicode::UnicodeError::Limit(m) => TextError::Limit(m),
         })?;
     let count = segmentation.boundaries.last().unwrap().scalar_offset;
+    let language_runs = language::prepare(languages, count, limits.max_items, check)?;
     let mut previous = 0;
     for span in &request.spans {
         cancelled(check)?;
@@ -89,6 +106,7 @@ pub fn itemize(
     let mut clusters = Vec::new();
     let mut notices = Vec::new();
     let mut span = 0;
+    let mut language_at = 0;
     let mut scopes = vec![Vec::new()];
     let mut scope_stack = vec![0];
     for bounds in segmentation.boundaries.windows(2) {
@@ -158,6 +176,13 @@ pub fn itemize(
             preferred,
             resolved: None,
             ambiguous: false,
+            language_script: language::for_cluster(
+                &language_runs,
+                &mut language_at,
+                start.scalar_offset,
+                end.scalar_offset,
+                check,
+            )?,
         });
         if class == BidiClass::Pdi && scope_stack.len() > 1 {
             scope_stack.pop();
@@ -206,7 +231,12 @@ pub fn itemize(
         });
     }
     Ok(ItemizationResult {
-        profile: "unicode18-script-bidi-grapheme-items-v1".into(),
+        profile: if languages.is_empty() {
+            "unicode18-script-bidi-grapheme-items-v1"
+        } else {
+            "unicode18-script-bidi-grapheme-language-items-v2"
+        }
+        .into(),
         bidi,
         items,
         notices,
