@@ -19,6 +19,10 @@ export type ChartLabelProfile = "source-chart-label-bindings-v1-draft";
 export interface SourceChartLabelRequest {
   expectedSourceSha256: Digest;
   negativeWeights: NegativeWeights;
+  /**
+   * Opt in to source numeric format evaluation with explicit display symbols.
+   */
+  numberSymbols?: NumberSymbols | null;
   object: SourceObjectRef;
   plotSourceOrdinal: number;
   profile: ChartLabelProfile;
@@ -26,6 +30,16 @@ export interface SourceChartLabelRequest {
    * Explicit stable identities; no allocation of a dense array from sparse idx.
    */
   targets: ChartLabelTarget[];
+}
+/**
+ * Explicit display symbols, independent of the machine's regional settings.
+ *
+ * This interface was referenced by `SourceChartLabelRequest`'s JSON-Schema
+ * via the `definition` "NumberSymbols".
+ */
+export interface NumberSymbols {
+  decimalSeparator: string;
+  groupSeparator: string;
 }
 /**
  * This interface was referenced by `SourceChartLabelRequest`'s JSON-Schema

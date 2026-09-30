@@ -38,6 +38,47 @@ export type ChartLabelFlag = "legendKey" | "value" | "categoryName" | "seriesNam
  * Exact finite decimal spelling, never a JSON floating point number. Semantic validation limits normalized decimal exponent to -4096..4096 and lexical UTF-8 bytes to 1024. Null, blanks, error tokens and infinities are not numeric weights.
  */
 export type ChartDecimalNumber = string;
+export type ChartLabelComponentDisplay =
+  | {
+      kind: "text";
+      value: string;
+    }
+  | {
+      display: NumberDisplay;
+      kind: "number";
+    }
+  | {
+      kind: "missingFormat";
+    }
+  | {
+      issue: NumberFormatIssue;
+      kind: "unresolved";
+    };
+export type NumberFormatColor = "black" | "blue" | "cyan" | "green" | "magenta" | "red" | "white" | "yellow";
+export type NumberFragment =
+  | {
+      kind: "text";
+      value: string;
+    }
+  | {
+      glyph: string;
+      kind: "reserve";
+    }
+  | {
+      glyph: string;
+      kind: "fill";
+    };
+export type NumberFormatReason =
+  | "invalidSyntax"
+  | "conditionalSection"
+  | "localeDirective"
+  | "indexedColor"
+  | "dateTime"
+  | "fraction"
+  | "textPlaceholder"
+  | "generalNeedsLayout"
+  | "unsupportedToken"
+  | "groupedEmbeddedLiteral";
 export type ChartLabelPosition = "bestFit" | "b" | "ctr" | "inBase" | "inEnd" | "l" | "outEnd" | "r" | "t";
 export type ChartLabelSeparator =
   | {
@@ -392,6 +433,7 @@ export interface SourceChartLabels {
    * Each required series is normalized once. Fractions are not sector angles.
    */
   normalizations: ChartLabelNormalization[];
+  numberSymbols?: NumberSymbols | null;
   object: SourceObjectRef;
   plotSourceOrdinal: number;
   profile: ChartLabelProfile;
@@ -412,6 +454,10 @@ export interface ChartLabelPlan {
   components: ChartLabelComponent[];
   customTextSource?: number | null;
   /**
+   * Same order as components. Not assembled label text or render admission.
+   */
+  formattedComponents?: ChartLabelComponentDisplay[] | null;
+  /**
    * Office displays a legend key only alongside a selected text component or tx.
    */
   legendKeyVisible?: boolean | null;
@@ -425,6 +471,22 @@ export interface ChartLabelPlan {
 export interface ChartLabelDataFormat {
   code: string;
   sourceOrdinal: number;
+}
+export interface NumberDisplay {
+  color?: NumberFormatColor | null;
+  fragments: NumberFragment[];
+  /**
+   * The displayed numeric magnitude differs from the exact input.
+   */
+  rounded: boolean;
+  section: number;
+}
+export interface NumberFormatIssue {
+  /**
+   * UTF-8 byte offset in the unmodified source format code.
+   */
+  offset: number;
+  reason: NumberFormatReason;
 }
 export interface ChartLabelSettings {
   deleted?: ChartLabelValue | null;
@@ -506,6 +568,13 @@ export interface SectorWork {
    * Sum of exact integer widths after common decimal scaling, including zeros.
    */
   scaledDecimalDigits: number;
+}
+/**
+ * Explicit display symbols, independent of the machine's regional settings.
+ */
+export interface NumberSymbols {
+  decimalSeparator: string;
+  groupSeparator: string;
 }
 export interface SourceObjectRef {
   nativeId: number;

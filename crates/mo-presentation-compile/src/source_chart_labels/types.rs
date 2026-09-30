@@ -28,6 +28,9 @@ pub struct SourceChartLabelRequest {
     pub negative_weights: NegativeWeights,
     /// Explicit stable identities; no allocation of a dense array from sparse idx.
     pub targets: Vec<ChartLabelTarget>,
+    /// Opt in to source numeric format evaluation with explicit display symbols.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub number_symbols: Option<mo_charts::number_format::NumberSymbols>,
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -45,6 +48,8 @@ pub struct SourceChartLabels {
     pub normalizations: Vec<ChartLabelNormalization>,
     /// Unique native text cascades, shared by labels with the same declaration chain.
     pub text_cascades: Vec<mo_presentation_source::source::text::cascade::ChartTextOutcome>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub number_symbols: Option<mo_charts::number_format::NumberSymbols>,
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -67,6 +72,23 @@ pub struct ChartLabelPlan {
     pub text_cascade: Option<u32>,
     /// Office displays a legend key only alongside a selected text component or tx.
     pub legend_key_visible: Option<bool>,
+    /// Same order as components. Not assembled label text or render admission.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub formatted_components: Option<Vec<ChartLabelComponentDisplay>>,
+}
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(tag = "kind", rename_all = "camelCase", deny_unknown_fields)]
+pub enum ChartLabelComponentDisplay {
+    Text {
+        value: String,
+    },
+    Number {
+        display: mo_charts::number_format::NumberDisplay,
+    },
+    MissingFormat {},
+    Unresolved {
+        issue: mo_charts::number_format::NumberFormatIssue,
+    },
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -184,6 +206,7 @@ pub struct SourceChartLabelLimits {
     pub max_data_points: usize,
     pub max_retained_bytes: usize,
     pub text: mo_presentation_source::source::text::cascade::TextCascadeLimits,
+    pub number_format: mo_charts::number_format::FormatLimits,
 }
 impl Default for SourceChartLabelLimits {
     fn default() -> Self {
@@ -194,6 +217,7 @@ impl Default for SourceChartLabelLimits {
             max_data_points: 65536,
             max_retained_bytes: 8 * 1024 * 1024,
             text: Default::default(),
+            number_format: Default::default(),
         }
     }
 }
@@ -203,6 +227,8 @@ pub enum ChartLabelError {
     Source(#[from] PptxError),
     #[error(transparent)]
     Ratios(#[from] mo_charts::sectors::SectorError),
+    #[error(transparent)]
+    NumberFormat(#[from] mo_charts::number_format::FormatError),
     #[error("unresolved chart label at ordinal {source_ordinal}: {reason}")]
     Unresolved {
         source_ordinal: u32,

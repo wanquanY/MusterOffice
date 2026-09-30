@@ -63,6 +63,15 @@ fn failure(error: ChartLabelError) -> PptxChartLabelFailure {
                 f.point_index = Some(i);
             }
         }
+        ChartLabelError::NumberFormat(e) => {
+            use mo_charts::number_format::FormatError as E;
+            f.code = match e {
+                E::Cancelled => PptxFailureCode::Cancelled,
+                E::Limit(_) => PptxFailureCode::LimitExceeded,
+                E::Unresolved(_) => PptxFailureCode::MappingNotImplemented,
+                E::Symbols | E::Ratio => PptxFailureCode::InputInvalid,
+            };
+        }
     }
     f
 }

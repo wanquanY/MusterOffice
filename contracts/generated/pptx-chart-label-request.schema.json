@@ -10,6 +10,17 @@
     "negativeWeights": {
       "$ref": "#/$defs/NegativeWeights"
     },
+    "numberSymbols": {
+      "description": "Opt in to source numeric format evaluation with explicit display symbols.",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/NumberSymbols"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "object": {
       "$ref": "#/$defs/SourceObjectRef"
     },
@@ -79,6 +90,23 @@
       "enum": [
         "reject",
         "absoluteMagnitude"
+      ]
+    },
+    "NumberSymbols": {
+      "description": "Explicit display symbols, independent of the machine's regional settings.",
+      "type": "object",
+      "properties": {
+        "decimalSeparator": {
+          "type": "string"
+        },
+        "groupSeparator": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "decimalSeparator",
+        "groupSeparator"
       ]
     },
     "SourceObjectRef": {

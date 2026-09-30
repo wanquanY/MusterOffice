@@ -421,6 +421,74 @@
         }
       ]
     },
+    "ChartLabelComponentDisplay": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "text"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "display": {
+              "$ref": "#/$defs/NumberDisplay"
+            },
+            "kind": {
+              "type": "string",
+              "const": "number"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "display"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingFormat"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "issue": {
+              "$ref": "#/$defs/NumberFormatIssue"
+            },
+            "kind": {
+              "type": "string",
+              "const": "unresolved"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "issue"
+          ]
+        }
+      ]
+    },
     "ChartLabelDataFormat": {
       "type": "object",
       "properties": {
@@ -522,6 +590,16 @@
           ],
           "format": "uint32",
           "minimum": 0
+        },
+        "formattedComponents": {
+          "description": "Same order as components. Not assembled label text or render admission.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/$defs/ChartLabelComponentDisplay"
+          }
         },
         "legendKeyVisible": {
           "description": "Office displays a legend key only alongside a selected text component or tx.",
@@ -1340,6 +1418,168 @@
         "absoluteMagnitude"
       ]
     },
+    "NumberDisplay": {
+      "type": "object",
+      "properties": {
+        "color": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NumberFormatColor"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fragments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NumberFragment"
+          }
+        },
+        "rounded": {
+          "description": "The displayed numeric magnitude differs from the exact input.",
+          "type": "boolean"
+        },
+        "section": {
+          "type": "integer",
+          "format": "uint8",
+          "maximum": 255,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "section",
+        "fragments",
+        "rounded"
+      ]
+    },
+    "NumberFormatColor": {
+      "type": "string",
+      "enum": [
+        "black",
+        "blue",
+        "cyan",
+        "green",
+        "magenta",
+        "red",
+        "white",
+        "yellow"
+      ]
+    },
+    "NumberFormatIssue": {
+      "type": "object",
+      "properties": {
+        "offset": {
+          "description": "UTF-8 byte offset in the unmodified source format code.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "reason": {
+          "$ref": "#/$defs/NumberFormatReason"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "offset",
+        "reason"
+      ]
+    },
+    "NumberFormatReason": {
+      "type": "string",
+      "enum": [
+        "invalidSyntax",
+        "conditionalSection",
+        "localeDirective",
+        "indexedColor",
+        "dateTime",
+        "fraction",
+        "textPlaceholder",
+        "generalNeedsLayout",
+        "unsupportedToken",
+        "groupedEmbeddedLiteral"
+      ]
+    },
+    "NumberFragment": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "text"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "description": "Measured advance of this glyph, not an ASCII-space substitution.",
+          "type": "object",
+          "properties": {
+            "glyph": {
+              "type": "string",
+              "maxLength": 1,
+              "minLength": 1
+            },
+            "kind": {
+              "type": "string",
+              "const": "reserve"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "glyph"
+          ]
+        },
+        {
+          "description": "The layout engine repeats this glyph to fill remaining available width.",
+          "type": "object",
+          "properties": {
+            "glyph": {
+              "type": "string",
+              "maxLength": 1,
+              "minLength": 1
+            },
+            "kind": {
+              "type": "string",
+              "const": "fill"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "glyph"
+          ]
+        }
+      ]
+    },
+    "NumberSymbols": {
+      "description": "Explicit display symbols, independent of the machine's regional settings.",
+      "type": "object",
+      "properties": {
+        "decimalSeparator": {
+          "type": "string"
+        },
+        "groupSeparator": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "decimalSeparator",
+        "groupSeparator"
+      ]
+    },
     "PlaceholderMatchRule": {
       "type": "string",
       "enum": [
@@ -1481,6 +1721,16 @@
           "items": {
             "$ref": "#/$defs/ChartLabelNormalization"
           }
+        },
+        "numberSymbols": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NumberSymbols"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "object": {
           "$ref": "#/$defs/SourceObjectRef"

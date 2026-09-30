@@ -27,6 +27,77 @@ fn by_name(name: &str) -> SourceChartLabels {
     run(&b, q, Default::default(), &|| false).unwrap()
 }
 #[test]
+fn numeric_display_is_opt_in_and_keeps_cache_format_authority() {
+    let (_, bytes, mut q, _) = cases()
+        .into_iter()
+        .find(|c| c.0 == "format-attribute-default")
+        .unwrap();
+    let unchanged = run(&bytes, q.clone(), Default::default(), &|| false).unwrap();
+    let wire = serde_json::to_value(&unchanged).unwrap();
+    assert!(wire.get("numberSymbols").is_none());
+    assert!(wire["labels"][0].get("formattedComponents").is_none());
+    q["numberSymbols"] = json!({"decimalSeparator":".","groupSeparator":","});
+    let r = run(&bytes, q, Default::default(), &|| false).unwrap();
+    let show = |idx: usize| {
+        let ChartLabelComponentDisplay::Number { display } =
+            &r.labels[idx].formatted_components.as_ref().unwrap()[0]
+        else {
+            panic!()
+        };
+        display
+            .fragments
+            .iter()
+            .map(|f| match f {
+                mo_charts::number_format::NumberFragment::Text { value } => value.as_str(),
+                _ => panic!(),
+            })
+            .collect::<String>()
+    };
+    assert_eq!(show(0), "1");
+    // The local sourceLinked default is true, so cache 0.000 overrides its 0.0.
+    assert_eq!(show(1), "2.000");
+    assert_eq!(show(2), "3");
+}
+#[test]
+fn numeric_display_budget_is_request_wide_and_large_groups_reuse_formats() {
+    let (bytes, mut q) = wide(4096);
+    q["numberSymbols"] = json!({"decimalSeparator":".","groupSeparator":","});
+    let mut limits = SourceChartLabelLimits::default();
+    limits.number_format.max_formats = 1;
+    let r = run(&bytes, q.clone(), limits, &|| false).unwrap();
+    assert_eq!(r.labels.len(), 4096);
+    assert!(
+        r.labels
+            .iter()
+            .all(|l| l.formatted_components.as_ref().unwrap().len() == l.components.len())
+    );
+    limits.number_format.max_output_bytes = 64;
+    assert!(matches!(
+        run(&bytes, q, limits, &|| false),
+        Err(ChartLabelError::NumberFormat(
+            mo_charts::number_format::FormatError::Limit(_)
+        ))
+    ));
+}
+#[test]
+fn absent_percent_formats_and_string_components_do_not_acquire_guessed_codes() {
+    let (_, bytes, mut q, _) = cases()
+        .into_iter()
+        .find(|c| c.0 == "pie-separator")
+        .unwrap();
+    q["numberSymbols"] = json!({"decimalSeparator":".","groupSeparator":","});
+    let r = run(&bytes, q, Default::default(), &|| false).unwrap();
+    for label in r.labels {
+        assert!(matches!(
+            &label.formatted_components.unwrap()[..],
+            [
+                ChartLabelComponentDisplay::Text { .. },
+                ChartLabelComponentDisplay::MissingFormat {}
+            ]
+        ));
+    }
+}
+#[test]
 fn shared_label_text_cascade_is_computed_once_with_request_wide_budgets() {
     let bytes = package(&xml(
         "doughnutChart",

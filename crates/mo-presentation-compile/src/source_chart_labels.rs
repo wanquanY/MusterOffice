@@ -1,6 +1,8 @@
 //! Resolve label declarations and bind their data without inventing chart-style
-//! defaults, formatting decimal values or replacing labels with shape text boxes.
+//! defaults or replacing labels with shape text boxes. Numeric display is an
+//! explicit, source-format-bound computation independent of font/layout work.
 mod data;
+mod display;
 mod prepared;
 mod settings;
 mod types;
@@ -153,6 +155,7 @@ pub(crate) fn compute_prepared(
         labels: vec![],
         normalizations: vec![],
         text_cascades: vec![],
+        number_symbols: request.number_symbols.clone(),
     };
     let mut selected = BTreeSet::new();
     let mut series_data = BTreeMap::new();
@@ -163,6 +166,13 @@ pub(crate) fn compute_prepared(
         check,
     )?;
     let mut cascades = BTreeMap::new();
+    let mut formatter = request
+        .number_symbols
+        .as_ref()
+        .map(|symbols| {
+            mo_charts::number_format::Formatter::new(symbols, limits.number_format, check)
+        })
+        .transpose()?;
     let chart_defaults: Vec<_> = chart
         .annotations
         .text_bodies
@@ -221,6 +231,7 @@ pub(crate) fn compute_prepared(
             custom_text_source: custom.map(|t| t.source_ordinal),
             text_cascade: None,
             legend_key_visible: None,
+            formatted_components: None,
         };
         if !label.settings.deleted.as_ref().is_some_and(|d| d.value) {
             let mut roots = label.settings.text_property_roots.clone();
@@ -304,6 +315,14 @@ pub(crate) fn compute_prepared(
                     format: data::percent_format(&label.settings, &mut budget)?,
                 });
             }
+        }
+        if let Some(formatter) = &mut formatter {
+            label.formatted_components = Some(display::components(
+                &label.components,
+                &result.normalizations,
+                formatter,
+                &mut budget,
+            )?);
         }
         result.labels.push(label);
     }

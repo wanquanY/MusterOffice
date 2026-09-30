@@ -1,0 +1,389 @@
+{
+  "format": "musteroffice.chart-number-display/1",
+  "date": "2026-09-30",
+  "baseRevision": "34b62ea1b47d8c3e377335e984aacbc9a855e62f",
+  "scope": "Opt-in source-format evaluation on exact decimal and ratio values, with explicit symbols and measured-layout fragments. Not assembled labels, complete formats, chart rendering, native editing or Office/WPS admission.",
+  "environment": {
+    "platform": "Darwin",
+    "machine": "arm64",
+    "macOS": "26.2",
+    "rust": "rustc 1.92.0 (ded5c06cf 2025-12-08)",
+    "node": "v23.5.0",
+    "python": "3.13.0",
+    "bindgen": "wasm-bindgen 0.2.126",
+    "profile": "release"
+  },
+  "tests": {
+    "uniquePassed": 145,
+    "passedBySuite": {
+      "chartNumbersRatiosAndSectors": 11,
+      "numberFormat": 8,
+      "compilerLibrary": 100,
+      "sourceChartLabels": 13,
+      "sourceChartPlot": 7,
+      "chartApis": 6
+    },
+    "wideGroupTargets": 4096,
+    "wideGroupFormatCacheLimit": 1,
+    "sharedWorkBudgetsVerified": true,
+    "strictScopedClippyPassed": true,
+    "generatedSchemasAndTypesChecked": true,
+    "typeScriptCompilationPassed": true,
+    "requestsValid": 150,
+    "responsesValid": 150
+  },
+  "parity": {
+    "completeResponses": 150,
+    "statuses": {
+      "planned": 149,
+      "error": 1
+    },
+    "componentOutcomes": {
+      "unresolved": 18,
+      "number": 429,
+      "text": 9,
+      "missingFormat": 3
+    },
+    "actualTemplateCharts": 2,
+    "priorFullResponsesUnchanged": 328,
+    "priorByCommand": {
+      "layout-chart-sectors": 84,
+      "compile-chart-geometry": 130,
+      "compile-pptx-chart-geometry": 45,
+      "compile-pptx-chart-plot": 31,
+      "pptx-chart-labels": 38
+    },
+    "oldWasmNewWasmNativeEqual": true
+  },
+  "independentOracle": {
+    "numbersChecked": 345,
+    "rejectedMutations": 114,
+    "inputCases": 149,
+    "checkedCases": 114,
+    "scope": "Enumerated fixed, percent, scale, scientific and exact-small General formats; source binding also checked against raw XML",
+    "mutation": "altered-visible-numeric-string",
+    "allCheckedValuesMatched": true,
+    "allFormatCodesProven": false
+  },
+  "externalObservation": {
+    "application": "LibreOffice 26.2.0.3 afbbd0df0edb6d40b450b0337ac646b0913a760c",
+    "scope": "Owned XLSX numeric format to displayed CSV, compared with corresponding source PPTX label display. Not chart rendering or Office/WPS admission.",
+    "ownedCases": 28,
+    "matches": 24,
+    "differences": 4,
+    "unresolvedDifferences": [
+      {
+        "name": "optional-zero",
+        "value": "0",
+        "code": "#.##",
+        "kernel": ".",
+        "libreOffice": "",
+        "equal": false
+      },
+      {
+        "name": "scale-before-dot",
+        "value": "12000",
+        "code": "0,.0",
+        "kernel": "12.0",
+        "libreOffice": "12000",
+        "equal": false
+      },
+      {
+        "name": "twice-percent",
+        "value": "0.0001",
+        "code": "0%%",
+        "kernel": "1%%",
+        "libreOffice": "0%%",
+        "equal": false
+      },
+      {
+        "name": "dot",
+        "value": "12",
+        "code": "0.",
+        "kernel": "12.",
+        "libreOffice": "12",
+        "equal": false
+      }
+    ],
+    "officeWpsProven": false
+  },
+  "tooling": {
+    "corepackSignatureMismatch": "Installed Corepack rejected pnpm bootstrap signatures; no signature verification was disabled. Type generation and TypeScript checks ran directly using existing repository dependencies.",
+    "bindgen": "Used the existing pinned local toolchain executable after shell PATH lookup failed."
+  },
+  "dependencies": {
+    "newDependencies": 0,
+    "cargoLock": {
+      "path": "Cargo.lock",
+      "sha256": "1e4b67039ea618f08335087d4a1b3ff35739d27812b63a0c92cbe99ccedbab3f",
+      "bytes": 30335
+    }
+  },
+  "artifacts": [
+    {
+      "path": "target/release/mo-cli",
+      "sha256": "15512683c27bea0305a54ddd4b19ee860bf0059863ae078cc836f8974621088f",
+      "bytes": 22018944
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/wasm/mo_wasm.js",
+      "sha256": "8aabb7bd1f955a7c9316099b97b4276a244d4d27a120de70aa05dc9cc43cd4bd",
+      "bytes": 75434
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/wasm/mo_wasm_bg.wasm",
+      "sha256": "5ccca44804c56e050f200a0e30a0fad20f3d3e2460d4b5bb1e09fefdfdc061f9",
+      "bytes": 17484782
+    }
+  ],
+  "localEvidence": [
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/charts-tests.log",
+      "sha256": "2f9c9becb0ecc85b39a637acc9295c6774f844ad3aa697a151df47fbd2ae433b",
+      "bytes": 2629
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/compile-tests.log",
+      "sha256": "12083f9e45a329a512177122e43d65903cea58632690ad40b89ce1da88d99a07",
+      "bytes": 12362
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/api-tests.log",
+      "sha256": "eb832832dc0d53dbd2a2264dead112fb3a644c996fe38e9800e27374a4c209bd",
+      "bytes": 1516
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/clippy.log",
+      "sha256": "17c8f91c2caeef4dbc56519ad17f51de15a3a37cda575f596d864a8bd5b75d8b",
+      "bytes": 725
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/schema-check.log",
+      "sha256": "96ff5723b6ebf8ea2384217b564192cfbea3875212e9e9a11c71dd188698b7d1",
+      "bytes": 8497
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/types-check.log",
+      "sha256": "50dd1169036b8bad595d702da68583bf3c921810d9638a87dfd54236688235fb",
+      "bytes": 4291
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/native-build.log",
+      "sha256": "a88537a815074f963030b8119940ef9a3eb90158a9471a005fb944bf774ce7ce",
+      "bytes": 1162
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/wasm-build.log",
+      "sha256": "4be06214680d6be475a920ef9cc081f25a6cd02bbb260586c9b2439c4141bc2d",
+      "bytes": 729
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/parity.json",
+      "sha256": "26690c496bcc974a957fbf390f806a7eefaf4a31cb3da3740b7bb1831721371b",
+      "bytes": 45680
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/prior-regression.json",
+      "sha256": "2f4383fc174e60437454c3fea993632354cb723a96eb35617785030cddf8f1c4",
+      "bytes": 32339
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/label-regression.json",
+      "sha256": "f26cb1535cec2394b4ab2ec66838f1e614bc23832dcfb10a1fc621e39ee6f966",
+      "bytes": 2854
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/oracle-final.json",
+      "sha256": "a71c0711d60ab0625b3395ac73168fe4b6cb6f055c0f4c7689704555038dcbf9",
+      "bytes": 11255
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/schema-validation-final.json",
+      "sha256": "6f4e4094f1bf22c4c8cd4d4f81199fb5222cdd0a8294cc1689c48aa44c8375e1",
+      "bytes": 11057
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/application-comparison.json",
+      "sha256": "b7a56671d237f4618afe05fd7ad5ea49684cda4c48eaac596603bdc27208cba9",
+      "bytes": 5139
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/cases-final.json",
+      "sha256": "a8b0c8d1014b1df9223f7c8063b8f580e40ba3a051c529d3dc2335b365c60be0",
+      "bytes": 41001
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/oracle-cases-final.json",
+      "sha256": "5a2179ef4b71bba3ad250cfe0e33b513bc73605bce1f90fe7a92367ee0ae2312",
+      "bytes": 40749
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/application-requests.json",
+      "sha256": "9412b459b67f46b6ea0f38451917904b8691a1f4728281cc278612f21a0f95a6",
+      "bytes": 10610
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/application-cases.json",
+      "sha256": "164b9b2aacf10ec0cb09b7cbd7eb9040bf00a297423795ef2f3e43ade7fa4699",
+      "bytes": 1561
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/schema-validation.py",
+      "sha256": "b96acd1615bde3ef252a957b7c8a8730b19922eba01dd4ed700224f683c138dd",
+      "bytes": 1047
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/prior-regression.mjs",
+      "sha256": "2c0f02925316d41b9030b866efcc83acc7f85dc269d4a97d40a62a1242c30d91",
+      "bytes": 1893
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/label-regression.mjs",
+      "sha256": "84618c227a8ae1d9a8f91593c9387025363ff0640aa78f52884997a72ade7c69",
+      "bytes": 1295
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/prepare-cases.py",
+      "sha256": "ede0289c4ab3a57fbcbedca60debd0ddd4d4de8ab1eb58471879380b80593a7d",
+      "bytes": 3061
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/extra-cases.py",
+      "sha256": "8b329f3f59e19a5bf19b3af231b83cd451c8941d302edf3d0e77031f4325b836",
+      "bytes": 2321
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/application-probe.py",
+      "sha256": "7b5d034a49ca99f2626352a1ab3f901f9e4c5d497589ed38424c89e301828066",
+      "bytes": 3982
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/application-compare.py",
+      "sha256": "78749f4dff7506cc5e70348b04545f4dec4752b53e54309de6feb4f7455a44e8",
+      "bytes": 1576
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/owned-numeric.xlsx",
+      "sha256": "a4a9454b2f7c0be4968d3f28343e2c3289fb734f5160a70f976eb3929ffab297",
+      "bytes": 2904
+    },
+    {
+      "path": ".codex-work/chart-numeric-display-20260930/owned-numeric.csv",
+      "sha256": "48fdbcaf8d5ff689583ad52ee430c9ac01ceab09517f2f04bf0aa344abb0ff17",
+      "bytes": 519
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "contracts/generated/pptx-chart-label-request.schema.json",
+      "sha256": "e418678c0687810e3d9c826edd59474a4fa35537563453a1c9d2b32f3f60702e",
+      "bytes": 2914
+    },
+    {
+      "path": "contracts/generated/pptx-chart-label-response.schema.json",
+      "sha256": "10e65318d8e581e75c7e970ce54b358bc8def9ba0bd517488ff20895b1a27d07",
+      "bytes": 62739
+    },
+    {
+      "path": "crates/mo-charts/src/lib.rs",
+      "sha256": "ded01fe7e281ed8d09bbe09a9563a37abc8f6a20535f9c2c787a9d61b21b8624",
+      "bytes": 257
+    },
+    {
+      "path": "crates/mo-charts/src/number_format.rs",
+      "sha256": "6f515b61e80a9fa156219967add09c217e2f2f7e3845dfdfd2ab2bb6716d9414",
+      "bytes": 5017
+    },
+    {
+      "path": "crates/mo-charts/src/number_format/parse.rs",
+      "sha256": "046f6b322afa4e20e45283c7ed13866d6dbe241868b500d91f67a9828279841b",
+      "bytes": 10743
+    },
+    {
+      "path": "crates/mo-charts/src/number_format/render.rs",
+      "sha256": "d66a8f9f7ee46e183c8883c1318051d1c2b63d6ca9e71d3f9411cba99f1811c7",
+      "bytes": 10777
+    },
+    {
+      "path": "crates/mo-charts/src/number_format/types.rs",
+      "sha256": "e77fed5668f1a3a040d7fb6f18d69fe58ffc168f4b63b670804834f6501ed517",
+      "bytes": 3132
+    },
+    {
+      "path": "crates/mo-charts/tests/number_format.rs",
+      "sha256": "8fcceb4936f785d1952d3ce09f712a94e30da55f27f61e8825076b3153cd5a75",
+      "bytes": 9097
+    },
+    {
+      "path": "crates/mo-kernel-api/src/pptx_chart_labels.rs",
+      "sha256": "298c10d92b1b1996b8b65a3e093ec5858bdf7ce59a10597b2e2f3fadd8151fc1",
+      "bytes": 4488
+    },
+    {
+      "path": "crates/mo-kernel-api/tests/pptx_chart_number_display.rs",
+      "sha256": "a54a643a76c35294f06ca55f3c2dbd602ecb17d718030ec3127f9acc11057994",
+      "bytes": 2128
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_chart_labels.rs",
+      "sha256": "baa250ea5b098815f40e5ddb76dd236c4ab131db28ff1ef6dce097b4bc8c0507",
+      "bytes": 12520
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_chart_labels/display.rs",
+      "sha256": "a46fd4ee3c9165c67403d2cce42b2381b0efcdfb59cf55d503ed288cae01d98e",
+      "bytes": 2334
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_chart_labels/types.rs",
+      "sha256": "5f60574b9ae33b3802cba6ffea0bc5180d0de4e341974b12b5f8f50caa6d3d9c",
+      "bytes": 8564
+    },
+    {
+      "path": "crates/mo-presentation-compile/tests/source_chart_labels.rs",
+      "sha256": "3598914d7f96350303694ca0b3446113e98f89fad1cc024681d687d10ea2a111",
+      "bytes": 14267
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-chart-label-request.ts",
+      "sha256": "5c0e1d1c32288823472b7b8b5f5f9262c3258ebdaa00e3e2567e8eb50a3f2e6a",
+      "bytes": 1803
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-chart-label-response.ts",
+      "sha256": "76698d128ee2d6bc3c0083d5082ee5dbe1b5041074dbbcb5bda94c2a1f6e7e29",
+      "bytes": 19436
+    },
+    {
+      "path": "tools/test-support/chart_number_display.rs",
+      "sha256": "610db8861120e779f5192b45ef4dd702e13db572e59d8a52deb7b2f014f466c6",
+      "bytes": 5979
+    },
+    {
+      "path": "tools/verification/chart-number-display-oracle.py",
+      "sha256": "0b43aa24f9e141972112d276f3a6865e1e23c52b73c539cb4c773a67e55eac49",
+      "bytes": 6321
+    }
+  ],
+  "product": {
+    "revision": "ac14535b56744a0a8363e389ef957f87aecc3bf0",
+    "candidateUpdated": false,
+    "readOnlyReadiness": {
+      "checkedAt": "2026-09-30T04:52:54.052Z",
+      "readiness": 2,
+      "persistenceReady": true,
+      "endpointReady": true,
+      "productContextReady": true,
+      "binarySha256": "c5cd8ff4c40810fc395086cfabf4a2f7e8d2e873b28ffb479253efe575c5f22b"
+    }
+  },
+  "notProven": [
+    "Full numeric format language including conditions, dates, fractions, locale directives and indexed color context",
+    "General measured-width precision/scientific selection",
+    "Four recorded application format differences",
+    "Chart defaults and modern chart style resolution",
+    "Assembled labels, shaping, actual measured spacing/fill, legend/title layout and complete chart/page pixels",
+    "Native chart editing and Office/WPS visual/editing interoperability",
+    "Full advanced PPT replacement and whole desktop distribution performance/size"
+  ]
+}
