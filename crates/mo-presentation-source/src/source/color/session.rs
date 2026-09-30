@@ -57,7 +57,20 @@ impl<'a> Session<'a> {
         session.select_surface(index, surface)?;
         Ok(session)
     }
-    /// Replace bindings without resetting the cumulative expression budget.
+    /// Overlay explicit bindings without resetting the cumulative expression budget.
+    pub fn overlay(
+        &mut self,
+        map: Option<&'a SourceColorMap>,
+        scheme: Option<(&'a str, &'a SourceColorScheme)>,
+    ) {
+        if let Some(map) = map {
+            self.map = Some(map);
+        }
+        if let Some(scheme) = scheme {
+            self.scheme = Some(scheme);
+        }
+    }
+    /// Replace surface bindings without resetting the cumulative expression budget.
     pub fn select_surface(
         &mut self,
         index: &'a SourceIndex,

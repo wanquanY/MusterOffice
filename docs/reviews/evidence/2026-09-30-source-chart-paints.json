@@ -1,0 +1,495 @@
+{
+  "format": "musteroffice.source-chart-declared-paints/1",
+  "date": "2026-09-30",
+  "baseRevision": "c2ec1996273c956d249e6dd2b9909902d56ad281",
+  "scope": "Source-bound fill, line and effect declarations; contextual fill/line colors using existing DrawingML grammars and working precision. Data-point fill-only diagnostics. No chart style cascade, complete source-page rendering, Office/WPS or performance claim. Product runtime not changed.",
+  "environment": {
+    "platform": "Darwin",
+    "machine": "arm64",
+    "macOS": "26.2",
+    "cpu": "Apple M4 Max",
+    "memoryBytes": 38654705664,
+    "rust": "rustc 1.92.0 (ded5c06cf 2025-12-08)",
+    "node": "v23.5.0",
+    "profile": "release",
+    "python": "3.13.0"
+  },
+  "tests": {
+    "chartTestsPassed": 26,
+    "newPaintTestsIncluded": 9,
+    "priorColorRegressionTestsPassed": 39,
+    "publicApiTestsPassed": 2,
+    "strictClippyPassed": true,
+    "generatedContractsChecked": true,
+    "typeScriptCompilationPassed": true,
+    "requestSchemasValid": 16,
+    "responseSchemasValid": 16,
+    "independentOracleNegativesRejected": [
+      "wrong-channel",
+      "omitted-source-color",
+      "wrong-theme-origin"
+    ]
+  },
+  "parity": {
+    "completeResponses": 16,
+    "computed": 14,
+    "expectedErrors": 2,
+    "actualTemplateCharts": 4,
+    "actualFillDiagnosticFrames": 2,
+    "allPixelBytesAndMetadataEqual": true
+  },
+  "independentOracle": {
+    "profile": "source-chart-independent-xml-color-oracle/1",
+    "charts": 14,
+    "shapeDeclarations": 48,
+    "declaredColors": 37,
+    "sourceColorPixelProbes": 12,
+    "allMatched": true
+  },
+  "artifacts": [
+    {
+      "path": "target/release/mo-cli",
+      "sha256": "192cdc54d8f14915a9eea355ae8349436312f9b3653137437fa2a5bed39e9ba6",
+      "bytes": 21703776
+    },
+    {
+      "path": "target/release/mo-raster-worker",
+      "sha256": "63ae8eb3a816d0b1fa46c6b9252fd2a8f280676da6c7703ca3a221c573201ce8",
+      "bytes": 13639344
+    },
+    {
+      "path": ".codex-work/chart-paints-20260930/wasm-final/mo_wasm.js",
+      "sha256": "316c648f3a7f3967b5c6c62944b390290210438b67c3ea9d6a0ce5e02a4457a7",
+      "bytes": 73898
+    },
+    {
+      "path": ".codex-work/chart-paints-20260930/wasm-final/mo_wasm_bg.wasm",
+      "sha256": "0932f17d6fc3cef44f728020c3019907368d9930c5130b57d6cf9fdea08224eb",
+      "bytes": 17170745
+    },
+    {
+      "path": ".codex-work/snapshot-scopes/wasm/mo-skia.mjs",
+      "sha256": "a2f6139aecc20512c52d84612d9264d74f90422d957a83c83e14e1be6cda544c",
+      "bytes": 14230
+    },
+    {
+      "path": ".codex-work/snapshot-scopes/wasm/mo-skia.wasm",
+      "sha256": "c8792a9c86a4e3231692c37d8f986d00be5a8bb807bbc9a0099662329495bba2",
+      "bytes": 2388651
+    },
+    {
+      "path": ".codex-work/raster-component/index.js",
+      "sha256": "91f1d088ea8f41c0867dd2b84290fec74f258edca5448b50becc3baeec55d54c",
+      "bytes": 16887
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "contracts/generated/pptx-chart-paint-query.schema.json",
+      "sha256": "3a8abe7016066bb625adc953d88ec801815b7f57af92ebc8fa35d7859c541df3",
+      "bytes": 11216
+    },
+    {
+      "path": "contracts/generated/pptx-chart-paint-response.schema.json",
+      "sha256": "0dbfa3853bf4b3745346e79f21adc364cca6954468b3713358d6ca6c297d7cad",
+      "bytes": 105783
+    },
+    {
+      "path": "crates/mo-kernel-api/src/lib.rs",
+      "sha256": "a735fea41209c0a762cc7412ccc504eb9a7e14831469e48c0983667f2cdf6384",
+      "bytes": 6880
+    },
+    {
+      "path": "crates/mo-kernel-api/src/pptx_chart_paints.rs",
+      "sha256": "d625e868c7577b38f33377d504be4fde86e9a9da3beee10205d5324c67f7dd2b",
+      "bytes": 2308
+    },
+    {
+      "path": "crates/mo-kernel-api/tests/pptx_chart_paints.rs",
+      "sha256": "f5e9b510e75661eca178603c7c547aa99d046021f786df2a0fe6cd10074626fc",
+      "bytes": 5739
+    },
+    {
+      "path": "crates/mo-presentation-source/src/source/charts/mod.rs",
+      "sha256": "9ee0e52935945ed7dcb46145ef342f8f8428e1fece9175ff259493c1af0b4e13",
+      "bytes": 9586
+    },
+    {
+      "path": "crates/mo-presentation-source/src/source/charts/paints.rs",
+      "sha256": "2c46a1bf254e0c3a700fb18bd6977f284dbde95dc94c259b4bd64facee47909f",
+      "bytes": 7773
+    },
+    {
+      "path": "crates/mo-presentation-source/src/source/charts/paints/read.rs",
+      "sha256": "6cf6e4caa2df7f455cd0ee0bea2578761bda5dd073892b0ca1a226f6f4ee254e",
+      "bytes": 10491
+    },
+    {
+      "path": "crates/mo-presentation-source/src/source/charts/paints/types.rs",
+      "sha256": "c1421eee715bcf22681adfe6379596f0e75cc891303c6c4772d59629aa0857ef",
+      "bytes": 2699
+    },
+    {
+      "path": "crates/mo-presentation-source/src/source/color/session.rs",
+      "sha256": "dd6dffc8467c4474150a8f16d1db2133acdc65692892f393b795876e333d8dae",
+      "bytes": 5486
+    },
+    {
+      "path": "crates/mo-presentation-source/src/source/color_mapping.rs",
+      "sha256": "c6f52a31f06263ada10f6736d56be208b4376ab540d4ae01448a3174acafe71f",
+      "bytes": 5396
+    },
+    {
+      "path": "crates/mo-presentation-source/src/source/theme.rs",
+      "sha256": "cf31bfac53c0be5338ef17d13af89b959db3463ee3c349328b4ca25b0cec14ae",
+      "bytes": 8184
+    },
+    {
+      "path": "crates/mo-presentation-source/tests/chart_paints.rs",
+      "sha256": "881f9aef75f2e4e072d7e6cb0b0b326f091d568ff8ed98e6dae267e4fe5ba023",
+      "bytes": 11169
+    },
+    {
+      "path": "crates/mo-presentation-source/tests/support/chart_paints.rs",
+      "sha256": "f2e6104057b10105716f5033f46e3b8c03740ebeda31c1883bdf27f793c02f52",
+      "bytes": 3303
+    },
+    {
+      "path": "crates/mo-wasm/src/lib.rs",
+      "sha256": "f52d41b8d464140d96bd9d54b9be369e1be6cc4b06af0b5e11c182c08fa861f5",
+      "bytes": 7225
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-chart-paint-query.ts",
+      "sha256": "b97f5487186c617685893fc4e70e37fe5909012de38e8a28310abf18bdad3a11",
+      "bytes": 4156
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-chart-paint-response.ts",
+      "sha256": "83a4926af9dd68eff129a8225b956141d9f637123ffe3e3f6bef9913ce029f0b",
+      "bytes": 27601
+    },
+    {
+      "path": "tools/mo-cli/src/main.rs",
+      "sha256": "ff94dc9aa0436776361fa7023380481da8ace091d710267cdd068ea4bf6b110c",
+      "bytes": 17002
+    },
+    {
+      "path": "tools/mo-contract-codegen/src/main.rs",
+      "sha256": "3fe8ee4fff09f2c305ee6a6515731d989fd08c1eb00ff8e00d9ddf104ec377c9",
+      "bytes": 15841
+    },
+    {
+      "path": "tools/verification/chart-paint-oracle.py",
+      "sha256": "f9eabbc053e47be0c1c209a89ea8020508602f55bb96e603540faa15ec47abe7",
+      "bytes": 9126
+    },
+    {
+      "path": "tools/verification/chart-paint-parity.mjs",
+      "sha256": "3da555c22f27b4243e50ecb7f0999d1967f9e1e693ade044c62bd5898dfa4984",
+      "bytes": 5850
+    }
+  ],
+  "checks": [
+    {
+      "path": ".codex-work/chart-paints-20260930/source-tests-final.log",
+      "sha256": "910479d55a25c28b7ad9656b8bca4f2c1efe032d4d0c81f1d81e0c8221df8c53",
+      "bytes": 2819
+    },
+    {
+      "path": ".codex-work/chart-paints-20260930/effects-tests.log",
+      "sha256": "79551d9ca5760eaad366203c8fe1f5ef5be29f95ca6b37148b2fe333f8f8fe9a",
+      "bytes": 1143
+    },
+    {
+      "path": ".codex-work/chart-paints-20260930/context-regression.log",
+      "sha256": "622e423f194f4c1f513ee9b79ce04e47122391062c671840b8be29d9b0bad3d7",
+      "bytes": 3858
+    },
+    {
+      "path": ".codex-work/chart-paints-20260930/api-final.log",
+      "sha256": "f33b28f1aa54b2662fc14de59233d3868b94f2482826cb4bd31612429b424c69",
+      "bytes": 1019
+    },
+    {
+      "path": ".codex-work/chart-paints-20260930/clippy-final-02.log",
+      "sha256": "86cf1644c98bbd04dad85a9fda4083c88d05d902c6d733e7c3894a3844132315",
+      "bytes": 1289
+    },
+    {
+      "path": ".codex-work/chart-paints-20260930/type-check-final.log",
+      "sha256": "983c36452d5af74cec8a5b788b8cb052b22bfae551dd06da9f70ce906aab74b7",
+      "bytes": 4561
+    },
+    {
+      "path": ".codex-work/chart-paints-20260930/schemas-final.log",
+      "sha256": "864a59a8e8e24c8ec29ef27c7eb2f9775836ca464792c37bb8fc1b11d2ecee2f",
+      "bytes": 8605
+    },
+    {
+      "path": ".codex-work/chart-paints-20260930/schema-check.json",
+      "sha256": "ea1afcca3938083303f17e3e661ad28cf42ca5929e15d0ee2c61bd53d68bcee2",
+      "bytes": 50
+    },
+    {
+      "path": ".codex-work/chart-paints-20260930/parity.json",
+      "sha256": "399e40beaf48b02d252b517b8bfcf15933a0d4cdcf8721173654077873290d8c",
+      "bytes": 383643
+    },
+    {
+      "path": ".codex-work/chart-paints-20260930/oracle.json",
+      "sha256": "9363b35ffb7051ab7d721f538349bc87d864288caeabd2a27fad8d2df74514fd",
+      "bytes": 170
+    },
+    {
+      "path": ".codex-work/chart-paints-20260930/oracle-negative.json",
+      "sha256": "5689e6e299843e165c6180c07c14d702168be3335340539033cf00428520cfd5",
+      "bytes": 116
+    },
+    {
+      "path": ".codex-work/chart-paints-20260930/overview.png",
+      "sha256": "72e5de84fede4567485ae403910613cea28dc5ea8032a6eed3be64186b58bcd1",
+      "bytes": 32738
+    }
+  ],
+  "cases": [
+    {
+      "name": "literal",
+      "requestSha256": "979f357df2266f38fb135c16c16dd869e7f8e43841b2d41471aca7422efe6a1f",
+      "sourceSha256": "1070091fcfd18373888e69200d5ba278e33b2a08677ff33c666469d67952bd2a",
+      "status": "computed",
+      "responseSha256": "ff36dbb943befaa1c40581d517baba291e9c0102b15372f54d85b8615dc1231f",
+      "shapeDeclarations": 1,
+      "declaredColors": 1,
+      "unresolvedColors": 0
+    },
+    {
+      "name": "mapped-theme",
+      "requestSha256": "1776441f2226efc0e9d30a829f9dc62800b983710a83de37b584ba5f4ba0a023",
+      "sourceSha256": "dc0a8095b6334090fe476b098f6c7f85880dda571467cb81e742ad25f8aa930e",
+      "status": "computed",
+      "responseSha256": "b19bb5c4a11f656e29417935b78c6dabeecfdf77cc7a1ca016f483b877ee1571",
+      "shapeDeclarations": 1,
+      "declaredColors": 1,
+      "unresolvedColors": 0
+    },
+    {
+      "name": "gradient",
+      "requestSha256": "68221871eaefeafce4271817328efb3059f8f7c6b87d5e574ad7bb4ca82b64df",
+      "sourceSha256": "b9b16f2ee75852226efc2380119a814b17f377d745cce53ae3c98c9b6ab61eeb",
+      "status": "computed",
+      "responseSha256": "782e8d974e9021cb21d7fad13fad4abe11c5a41851d5f8d9bceab198e0669b7c",
+      "shapeDeclarations": 1,
+      "declaredColors": 2,
+      "unresolvedColors": 0
+    },
+    {
+      "name": "pattern",
+      "requestSha256": "a050c38ce502ad6adfb2eccb3d80c28124be54ef0e2226202d3719ccf6db993d",
+      "sourceSha256": "2e13878b76c323e0645255bf8da105b7623fec2d616e9bcc189996afd40de360",
+      "status": "computed",
+      "responseSha256": "ca474c4eadda7ace1b93bfbfe61d19a26d3a4360e2f67b704d2637450b7d1e49",
+      "shapeDeclarations": 1,
+      "declaredColors": 2,
+      "unresolvedColors": 0
+    },
+    {
+      "name": "line",
+      "requestSha256": "7f90a59f71d95e0ce4c060d1ea72586edc3b77ee58b843fe2e08b6db9f8700a1",
+      "sourceSha256": "592dc6a7442773e61af90b6d753c7de431733d89ede5fb353bdca6d0d59108bc",
+      "status": "computed",
+      "responseSha256": "0cc3b6a05b3b4a5188a2d0499bd54e72ec92031bdfe787d8f6f716fbc7cb3198",
+      "shapeDeclarations": 1,
+      "declaredColors": 1,
+      "unresolvedColors": 0
+    },
+    {
+      "name": "system-fallback",
+      "requestSha256": "255c825c41255db5472bc46f64d98aaeb041a160180fd217337e2c406438cda5",
+      "sourceSha256": "0bf5ffd9328d8c64b61cfbc0883212176f02bfe981bea66a13ef1b27f2ae6a4d",
+      "status": "computed",
+      "responseSha256": "aca51203b7d375a33452b59e3ca2a4a19d08a02396780b890ac5f26e2cc7f642",
+      "shapeDeclarations": 1,
+      "declaredColors": 1,
+      "unresolvedColors": 0
+    },
+    {
+      "name": "placeholder-unresolved",
+      "requestSha256": "690d636bdfb17f98ade0344fe15425da1dd3d3af6f5b7dd97aa083cd2193c3f3",
+      "sourceSha256": "909c6d402bcd2536729f54db38d5834e5624186270a7654f185332610ecc4b8c",
+      "status": "computed",
+      "responseSha256": "007bc2128bc3968b887ab3de78a9e363922e264a33245387ffff7ef4b70333fb",
+      "shapeDeclarations": 1,
+      "declaredColors": 1,
+      "unresolvedColors": 1
+    },
+    {
+      "name": "effect-retained",
+      "requestSha256": "2f2144c31b3b85582c2b3b79e921e86aa5b3fc2e2eceb70cc047270217d9d6ce",
+      "sourceSha256": "650e06e3686118b2c4703152a7ee8108c1ba638b27f968db6cfec97cebe61909",
+      "status": "computed",
+      "responseSha256": "7852aec995857b4c59e6512c5e71851d675118c663d23985081afedda61b0d18",
+      "shapeDeclarations": 1,
+      "declaredColors": 0,
+      "unresolvedColors": 0
+    },
+    {
+      "name": "duplicate-fill",
+      "requestSha256": "4ce6b39dbf1ae21a012ee60ba83829412f3a669413ac0ba3523b7977f472b807",
+      "sourceSha256": "48f32f30c71435589e7203d4d294805d1a6938b9bdef30c9f48f70befcb4698a",
+      "status": "error",
+      "responseSha256": "a268c729a89656a86d7844a3abd4c2adb4693f837a69ddfc822dd161b9c58d7c",
+      "errorCode": "INPUT_INVALID"
+    },
+    {
+      "name": "missing-system",
+      "requestSha256": "03fd1fa0d6dfa5b1e26d358bca8693505ec4b040a8c401b200ecb57c20ab4de8",
+      "sourceSha256": "16de28912e316939687a2dbbffebd7d17aa231f42e92bb517fa6e1e3703a144b",
+      "status": "computed",
+      "responseSha256": "916c04131441204e5f899b759a39939913ef7ff13906bd6077cb6a12f73217fd",
+      "shapeDeclarations": 1,
+      "declaredColors": 1,
+      "unresolvedColors": 1
+    },
+    {
+      "name": "host-system",
+      "requestSha256": "e79af0549b3ce2261fdfefa8baa9f6c713a5c2f284d20e5ded13b11ba63c8488",
+      "sourceSha256": "16de28912e316939687a2dbbffebd7d17aa231f42e92bb517fa6e1e3703a144b",
+      "status": "computed",
+      "responseSha256": "d82f83d188af1a50adb646f9f5eba3eff1e0d1991d29debcf805816fc0c027a6",
+      "shapeDeclarations": 1,
+      "declaredColors": 1,
+      "unresolvedColors": 0
+    },
+    {
+      "name": "wrong-object",
+      "requestSha256": "700e329eb18c4cc7cb32887057e05a8e59229c9fb911b38caf4a0d3e582e7440",
+      "sourceSha256": "16de28912e316939687a2dbbffebd7d17aa231f42e92bb517fa6e1e3703a144b",
+      "status": "error",
+      "responseSha256": "89296531b7ca1eaa995f211d46c8065738e56526b9022593987680d42438941a",
+      "errorCode": "SOURCE_CONFLICT"
+    },
+    {
+      "name": "actual-template-1-page-7",
+      "requestSha256": "c092e0fdac0aa5b4aa848df16e4812215bbc4fa5f9c4f1ef780c276905a39673",
+      "sourceSha256": "941737a78d59781d2552e846279ca12768dd93b78da9fb149606631a6edcf72c",
+      "status": "computed",
+      "responseSha256": "15deaad981be3de129741b1912c3ed1fd4cdb55b3b81509516ca14842bab0fd3",
+      "shapeDeclarations": 10,
+      "declaredColors": 8,
+      "unresolvedColors": 0
+    },
+    {
+      "name": "actual-template-1-page-8",
+      "requestSha256": "a5d7b048c698623cab2e9dfd92794ceb084cad3a52d9b129f2a447d59aef150e",
+      "sourceSha256": "941737a78d59781d2552e846279ca12768dd93b78da9fb149606631a6edcf72c",
+      "status": "computed",
+      "responseSha256": "2612522d1ba220155ebcb338e41b05dd1569f766dfe95347cb99220b745494a9",
+      "shapeDeclarations": 9,
+      "declaredColors": 5,
+      "unresolvedColors": 0,
+      "fillDiagnostic": {
+        "geometryRequestSha256": "5509cdfaa93100ef6e021866d359cad59039aceccc2a48619b55758da3ae9e9b",
+        "pixelSha256": "454891f995586f615459d31cf1a5082befc8890dfa29b16985b5a89155779c6e",
+        "width": 512,
+        "height": 512,
+        "metadata": {
+          "status": "rendered",
+          "info": {
+            "profile": "skia-8d6d37b-q32-world-brushes-srgb-premul-rgba8-v4-draft",
+            "width": 512,
+            "height": 512,
+            "byteLength": "1048576",
+            "sha256": "454891f995586f615459d31cf1a5082befc8890dfa29b16985b5a89155779c6e",
+            "frameSha256": "c688b544a98902e5bce48f5d8e0b9dacbd8361c08f35db1c84ceb85f9fb4fc5b",
+            "work": {
+              "paths": 3,
+              "commands": 129,
+              "draws": 3,
+              "drawnCommands": 129,
+              "coordinateErrorBound": "99422",
+              "strokeStyles": 0,
+              "strokeDraws": 0,
+              "strokeWidthErrorBound": "0",
+              "miterLimitErrorBound": "0",
+              "gradients": 0,
+              "gradientStops": 0,
+              "gradientDraws": 0,
+              "gradientCoordinateErrorBound": "0",
+              "gradientValueErrorBound": 0
+            }
+          }
+        },
+        "combinedCoordinateErrorPixelsQ32": "781618",
+        "completePixelsAndMetadataEqual": true,
+        "strokeRendered": false,
+        "fullChartRendered": false
+      }
+    },
+    {
+      "name": "actual-template-3-page-7",
+      "requestSha256": "e460caf26de8cc922b6ee6730114590a3bcab5b3130413e9bdf5129e1bc5f249",
+      "sourceSha256": "8dca31afacd37bed8d18d69fe96b5a46ba17950972f7b33c1c355f002e6f39f0",
+      "status": "computed",
+      "responseSha256": "9d8303d17ce547fe46d3ca4b25b5f61237a4146f00b438f6461c464b2c9584e2",
+      "shapeDeclarations": 10,
+      "declaredColors": 8,
+      "unresolvedColors": 0
+    },
+    {
+      "name": "actual-template-3-page-8",
+      "requestSha256": "cc0bd8001fbbba44dcb2298a9f6886e20cadc56b8615eb6d7d7d3615ce9ebe97",
+      "sourceSha256": "8dca31afacd37bed8d18d69fe96b5a46ba17950972f7b33c1c355f002e6f39f0",
+      "status": "computed",
+      "responseSha256": "a8161c0b9560cb876c0f4f70039a0fa9da43efa2e6bbb5c29181982cb109e5e2",
+      "shapeDeclarations": 9,
+      "declaredColors": 5,
+      "unresolvedColors": 0,
+      "fillDiagnostic": {
+        "geometryRequestSha256": "95aca171834f7dbb93ff065ecc8d81603fd7c4b5912a7bea8cc9740c7ff1c5ba",
+        "pixelSha256": "8f75752a180787ac66ddd9d3bf0935b5402910139927c037283937d8e1585638",
+        "width": 512,
+        "height": 512,
+        "metadata": {
+          "status": "rendered",
+          "info": {
+            "profile": "skia-8d6d37b-q32-world-brushes-srgb-premul-rgba8-v4-draft",
+            "width": 512,
+            "height": 512,
+            "byteLength": "1048576",
+            "sha256": "8f75752a180787ac66ddd9d3bf0935b5402910139927c037283937d8e1585638",
+            "frameSha256": "70257c4116495e3f9e4ef92c9c0d365c6f19654bbadddd3245bdfdd30973ecbf",
+            "work": {
+              "paths": 3,
+              "commands": 129,
+              "draws": 3,
+              "drawnCommands": 129,
+              "coordinateErrorBound": "99422",
+              "strokeStyles": 0,
+              "strokeDraws": 0,
+              "strokeWidthErrorBound": "0",
+              "miterLimitErrorBound": "0",
+              "gradients": 0,
+              "gradientStops": 0,
+              "gradientDraws": 0,
+              "gradientCoordinateErrorBound": "0",
+              "gradientValueErrorBound": 0
+            }
+          }
+        },
+        "combinedCoordinateErrorPixelsQ32": "781618",
+        "completePixelsAndMetadataEqual": true,
+        "strokeRendered": false,
+        "fullChartRendered": false
+      }
+    }
+  ],
+  "limitations": [
+    "Declared paints and contextual colors only; no automatic chart style or series/point property cascade.",
+    "Fill-only native and WASM diagnostic frames omit inherited stroke, labels, legend, effects and chart background.",
+    "Black/white modes and retained properties must be resolved before chart admission.",
+    "Existing source-circle antialias boundary and target-application calibration gates remain open.",
+    "One additional chart read in this stage is accounted in the byte budget; a full chart preparation should share parsed state.",
+    "No changes to the fixed Musterwork acceptance runtime or its capability declarations."
+  ]
+}

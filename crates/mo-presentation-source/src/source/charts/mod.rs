@@ -3,6 +3,7 @@
 mod data;
 mod layout;
 mod layout_types;
+pub mod paints;
 mod tree;
 mod types;
 use super::{SourceIndex, SourceLimits, SourceObjectKind, SourceObjectRef};

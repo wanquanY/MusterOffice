@@ -108,6 +108,29 @@ struct Budget {
     elements: usize,
     attribute_bytes: usize,
 }
+/// A chart may own a theme override independently of the presentation surface.
+/// Reuse the exact native theme grammar and its bounded fill/line/text readers.
+pub(in crate::source) fn read_override(
+    bytes: &[u8],
+    sha256: Digest,
+    limits: SourceLimits,
+    check: &dyn Fn() -> bool,
+) -> Result<SourceThemePart, PptxError> {
+    read::parse(
+        bytes,
+        SourceThemeKind::Override,
+        sha256,
+        limits,
+        &mut Budget {
+            elements: 0,
+            attribute_bytes: 0,
+        },
+        &mut line::Budget::default(),
+        &mut paint::Budget::default(),
+        &mut text::Budget::default(),
+        check,
+    )
+}
 pub(super) fn load(
     package: &dyn PackageRead,
     surfaces: &mut BTreeMap<String, SourceSurface>,

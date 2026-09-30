@@ -22,7 +22,7 @@ pub struct SourceColorMap {
     pub fol_hlink: ColorSlot,
 }
 impl SourceColorMap {
-    fn read(element: &Element) -> Result<Self, XmlError> {
+    pub(in crate::source) fn read(element: &Element) -> Result<Self, XmlError> {
         let slot = |name| {
             let value = element
                 .attribute(name)

@@ -1,0 +1,4680 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:pptx-chart-paint-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PptxChartPaintResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "paints": {
+          "$ref": "#/$defs/SourceChartPaints"
+        },
+        "status": {
+          "type": "string",
+          "const": "computed"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "paints"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/PptxFailure"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "error"
+      ]
+    }
+  ],
+  "$defs": {
+    "ByteLength": {
+      "description": "Canonical uint64 byte length. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9]"
+      },
+      "pattern": "^(0|[1-9][0-9]{0,19})$",
+      "x-integer-maximum": "18446744073709551615",
+      "x-integer-minimum": "0"
+    },
+    "ChartAxisKind": {
+      "type": "string",
+      "enum": [
+        "category",
+        "value",
+        "date",
+        "series"
+      ]
+    },
+    "ChartCacheKind": {
+      "type": "string",
+      "enum": [
+        "number",
+        "string",
+        "multiLevelString"
+      ]
+    },
+    "ChartChannelRole": {
+      "type": "string",
+      "enum": [
+        "title",
+        "categories",
+        "values",
+        "xValues",
+        "yValues",
+        "bubbleSize"
+      ]
+    },
+    "ChartDataAuthority": {
+      "type": "string",
+      "enum": [
+        "sourceCacheSnapshot"
+      ]
+    },
+    "ChartMarkupKind": {
+      "type": "string",
+      "enum": [
+        "shapeProperties",
+        "textProperties",
+        "title",
+        "majorGridlines",
+        "minorGridlines",
+        "displayUnits",
+        "dataLabels",
+        "seriesLines",
+        "marker",
+        "pictureOptions",
+        "trendline",
+        "errorBars",
+        "extensions"
+      ]
+    },
+    "ChartPaintColor": {
+      "type": "object",
+      "properties": {
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ColorDependency"
+          }
+        },
+        "notices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ColorNotice"
+          }
+        },
+        "outcome": {
+          "$ref": "#/$defs/ColorSample"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "outcome",
+        "dependencies",
+        "notices"
+      ]
+    },
+    "ChartPaintDeclaration": {
+      "type": "object",
+      "properties": {
+        "blackWhiteMode": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeBlackWhiteMode"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "colors": {
+          "description": "Every declared fill/line color is evaluated once, without quantized reuse.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ChartPaintColor"
+          }
+        },
+        "effectNodes": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^\\d+$": {
+              "$ref": "#/$defs/SourceEffectNode"
+            }
+          }
+        },
+        "effects": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceEffectProperties"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fill": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceFill"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "line": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceLine"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "retainedOrdinals": {
+          "description": "Geometry, extensions and unknown attributes remain source-bound.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "effectNodes",
+        "retainedOrdinals",
+        "colors"
+      ]
+    },
+    "ChartPropertyKind": {
+      "type": "string",
+      "enum": [
+        "barDirection",
+        "grouping",
+        "varyColors",
+        "gapWidth",
+        "gapDepth",
+        "overlap",
+        "firstSliceAngle",
+        "holeSize",
+        "delete",
+        "axisPosition",
+        "majorTickMark",
+        "minorTickMark",
+        "tickLabelPosition",
+        "crossAxis",
+        "crosses",
+        "crossesAt",
+        "crossBetween",
+        "majorUnit",
+        "minorUnit",
+        "auto",
+        "labelAlignment",
+        "labelOffset",
+        "tickLabelSkip",
+        "tickMarkSkip",
+        "noMultiLevelLabels",
+        "baseTimeUnit",
+        "majorTimeUnit",
+        "minorTimeUnit",
+        "logBase",
+        "orientation",
+        "minimum",
+        "maximum",
+        "explosion",
+        "bubble3D",
+        "invertIfNegative",
+        "smooth"
+      ]
+    },
+    "ChartThemeOverride": {
+      "type": "object",
+      "properties": {
+        "part": {
+          "type": "string"
+        },
+        "sha256": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "sha256"
+      ]
+    },
+    "ChartWorkbookTarget": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "byteLength": {
+              "$ref": "#/$defs/ByteLength"
+            },
+            "contentType": {
+              "type": "string"
+            },
+            "kind": {
+              "type": "string",
+              "const": "embedded"
+            },
+            "part": {
+              "type": "string"
+            },
+            "sha256": {
+              "$ref": "#/$defs/Digest"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part",
+            "contentType",
+            "sha256",
+            "byteLength"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "external"
+            },
+            "uri": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "uri"
+          ]
+        }
+      ]
+    },
+    "ColorDependency": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "theme"
+            },
+            "part": {
+              "type": "string"
+            },
+            "slot": {
+              "$ref": "#/$defs/ColorSlot"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part",
+            "slot",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "color": {
+              "$ref": "#/$defs/SystemColor"
+            },
+            "kind": {
+              "type": "string",
+              "const": "system"
+            },
+            "origin": {
+              "$ref": "#/$defs/SystemColorOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "color",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "placeholder"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "ColorNotice": {
+      "oneOf": [
+        {
+          "description": "ECMA does not give coefficients. This profile explicitly uses 22/72/6.",
+          "type": "string",
+          "const": "grayWeightsProvisional"
+        },
+        {
+          "description": "2016 table says 250,250,120 for ltGoldenrodYellow, unlike its long alias.",
+          "type": "string",
+          "const": "presetAliasDiscrepancy"
+        }
+      ]
+    },
+    "ColorProfile": {
+      "description": "A named, provisional numerical interpretation, not an Office/WPS certificate.",
+      "type": "string",
+      "enum": [
+        "ecma376-2016-draft-v1"
+      ]
+    },
+    "ColorSample": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "clippedForSrgb": {
+              "type": "boolean"
+            },
+            "linear": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 4,
+              "minItems": 4
+            },
+            "rgba16": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint16",
+                "maximum": 65535,
+                "minimum": 0
+              },
+              "maxItems": 4,
+              "minItems": 4
+            },
+            "rgba8": {
+              "description": "Never feed these quantized samples back into native expressions.",
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 4,
+              "minItems": 4
+            },
+            "srgb": {
+              "description": "Unassociated, unclipped working-precision channels.",
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 4,
+              "minItems": 4
+            },
+            "status": {
+              "type": "string",
+              "const": "resolved"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "srgb",
+            "linear",
+            "rgba8",
+            "rgba16",
+            "clippedForSrgb"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "reason": {
+              "$ref": "#/$defs/ColorUnresolved"
+            },
+            "status": {
+              "type": "string",
+              "const": "unresolved"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "reason"
+          ]
+        }
+      ]
+    },
+    "ColorSlot": {
+      "type": "string",
+      "enum": [
+        "dk1",
+        "lt1",
+        "dk2",
+        "lt2",
+        "accent1",
+        "accent2",
+        "accent3",
+        "accent4",
+        "accent5",
+        "accent6",
+        "hlink",
+        "folHlink"
+      ]
+    },
+    "ColorUnresolved": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingColorMap"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingColorScheme"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingThemeSlot"
+            },
+            "slot": {
+              "$ref": "#/$defs/ColorSlot"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "slot"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "color": {
+              "$ref": "#/$defs/SystemColor"
+            },
+            "kind": {
+              "type": "string",
+              "const": "missingSystemColor"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "color"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingPlaceholder"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "retainedPlaceholderContext"
+            },
+            "part": {
+              "type": "string"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "schemeCycle"
+            },
+            "slot": {
+              "$ref": "#/$defs/ColorSlot"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "slot"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "numericRange"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "Emu": {
+      "description": "Signed int64 EMU. 1 point = 12700 EMU. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,18})$",
+      "x-integer-maximum": "9223372036854775807",
+      "x-integer-minimum": "-9223372036854775808"
+    },
+    "NativeBlackWhiteMode": {
+      "type": "string",
+      "enum": [
+        "clr",
+        "auto",
+        "gray",
+        "ltGray",
+        "invGray",
+        "grayWhite",
+        "blackGray",
+        "blackWhite",
+        "black",
+        "white",
+        "hidden"
+      ]
+    },
+    "NativeBlendMode": {
+      "type": "string",
+      "enum": [
+        "over",
+        "mult",
+        "screen",
+        "darken",
+        "lighten"
+      ]
+    },
+    "NativeBlipCompression": {
+      "type": "string",
+      "enum": [
+        "email",
+        "screen",
+        "print",
+        "hqprint",
+        "none"
+      ]
+    },
+    "NativeCompoundLine": {
+      "type": "string",
+      "enum": [
+        "sng",
+        "dbl",
+        "thickThin",
+        "thinThick",
+        "tri"
+      ]
+    },
+    "NativeCoordinate": {
+      "description": "Native coordinate: bounded integer EMU or exact decimal universal measure.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9+.a-z\\-]"
+      },
+      "pattern": "^([+-]?[0-9]+|-?[0-9]+(\\.[0-9]+)?(mm|cm|in|pt|pc|pi))$"
+    },
+    "NativeEffectContainerType": {
+      "type": "string",
+      "enum": [
+        "sib",
+        "tree"
+      ]
+    },
+    "NativeFillAlignment": {
+      "type": "string",
+      "enum": [
+        "tl",
+        "t",
+        "tr",
+        "l",
+        "ctr",
+        "r",
+        "bl",
+        "b",
+        "br"
+      ]
+    },
+    "NativeLineCap": {
+      "type": "string",
+      "enum": [
+        "flat",
+        "rnd",
+        "sq"
+      ]
+    },
+    "NativeLineEnd": {
+      "type": "string",
+      "enum": [
+        "none",
+        "triangle",
+        "stealth",
+        "diamond",
+        "oval",
+        "arrow"
+      ]
+    },
+    "NativeLineEndSize": {
+      "type": "string",
+      "enum": [
+        "sm",
+        "med",
+        "lg"
+      ]
+    },
+    "NativePathShade": {
+      "type": "string",
+      "enum": [
+        "shape",
+        "circle",
+        "rect"
+      ]
+    },
+    "NativePattern": {
+      "type": "string",
+      "enum": [
+        "pct5",
+        "pct10",
+        "pct20",
+        "pct25",
+        "pct30",
+        "pct40",
+        "pct50",
+        "pct60",
+        "pct70",
+        "pct75",
+        "pct80",
+        "pct90",
+        "horz",
+        "vert",
+        "ltHorz",
+        "ltVert",
+        "dkHorz",
+        "dkVert",
+        "narHorz",
+        "narVert",
+        "dashHorz",
+        "dashVert",
+        "cross",
+        "dnDiag",
+        "upDiag",
+        "ltDnDiag",
+        "ltUpDiag",
+        "dkDnDiag",
+        "dkUpDiag",
+        "wdDnDiag",
+        "wdUpDiag",
+        "dashDnDiag",
+        "dashUpDiag",
+        "diagCross",
+        "smCheck",
+        "lgCheck",
+        "smGrid",
+        "lgGrid",
+        "dotGrid",
+        "smConfetti",
+        "lgConfetti",
+        "horzBrick",
+        "diagBrick",
+        "solidDmnd",
+        "openDmnd",
+        "dotDmnd",
+        "plaid",
+        "sphere",
+        "weave",
+        "divot",
+        "shingle",
+        "wave",
+        "trellis",
+        "zigZag"
+      ]
+    },
+    "NativePenAlignment": {
+      "type": "string",
+      "enum": [
+        "ctr",
+        "in"
+      ]
+    },
+    "NativePercentage": {
+      "description": "Exact native percentage: int32 thousandths of a percent or decimal percent; ranges depend on use.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9+.%\\-]"
+      },
+      "pattern": "^([+-]?[0-9]+|-?[0-9]+(\\.[0-9]+)?%)$"
+    },
+    "NativePresetDash": {
+      "type": "string",
+      "enum": [
+        "solid",
+        "dot",
+        "dash",
+        "lgDash",
+        "dashDot",
+        "lgDashDot",
+        "lgDashDotDot",
+        "sysDash",
+        "sysDot",
+        "sysDashDot",
+        "sysDashDotDot"
+      ]
+    },
+    "NativePresetShadow": {
+      "type": "string",
+      "enum": [
+        "shdw1",
+        "shdw2",
+        "shdw3",
+        "shdw4",
+        "shdw5",
+        "shdw6",
+        "shdw7",
+        "shdw8",
+        "shdw9",
+        "shdw10",
+        "shdw11",
+        "shdw12",
+        "shdw13",
+        "shdw14",
+        "shdw15",
+        "shdw16",
+        "shdw17",
+        "shdw18",
+        "shdw19",
+        "shdw20"
+      ]
+    },
+    "NativeTileFlip": {
+      "type": "string",
+      "enum": [
+        "none",
+        "x",
+        "y",
+        "xy"
+      ]
+    },
+    "PptxFailure": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/PptxFailureCode"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "PptxFailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "SOURCE_CONFLICT",
+        "PRESERVATION_CONFLICT",
+        "MAPPING_NOT_IMPLEMENTED",
+        "RESOURCE_REQUIRED",
+        "LIMIT_EXCEEDED",
+        "CANCELLED",
+        "READ_FAILED"
+      ]
+    },
+    "PresetColor": {
+      "type": "string",
+      "enum": [
+        "aliceBlue",
+        "antiqueWhite",
+        "aqua",
+        "aquamarine",
+        "azure",
+        "beige",
+        "bisque",
+        "black",
+        "blanchedAlmond",
+        "blue",
+        "blueViolet",
+        "brown",
+        "burlyWood",
+        "cadetBlue",
+        "chartreuse",
+        "chocolate",
+        "coral",
+        "cornflowerBlue",
+        "cornsilk",
+        "crimson",
+        "cyan",
+        "darkBlue",
+        "darkCyan",
+        "darkGoldenrod",
+        "darkGray",
+        "darkGrey",
+        "darkGreen",
+        "darkKhaki",
+        "darkMagenta",
+        "darkOliveGreen",
+        "darkOrange",
+        "darkOrchid",
+        "darkRed",
+        "darkSalmon",
+        "darkSeaGreen",
+        "darkSlateBlue",
+        "darkSlateGray",
+        "darkSlateGrey",
+        "darkTurquoise",
+        "darkViolet",
+        "dkBlue",
+        "dkCyan",
+        "dkGoldenrod",
+        "dkGray",
+        "dkGrey",
+        "dkGreen",
+        "dkKhaki",
+        "dkMagenta",
+        "dkOliveGreen",
+        "dkOrange",
+        "dkOrchid",
+        "dkRed",
+        "dkSalmon",
+        "dkSeaGreen",
+        "dkSlateBlue",
+        "dkSlateGray",
+        "dkSlateGrey",
+        "dkTurquoise",
+        "dkViolet",
+        "deepPink",
+        "deepSkyBlue",
+        "dimGray",
+        "dimGrey",
+        "dodgerBlue",
+        "firebrick",
+        "floralWhite",
+        "forestGreen",
+        "fuchsia",
+        "gainsboro",
+        "ghostWhite",
+        "gold",
+        "goldenrod",
+        "gray",
+        "grey",
+        "green",
+        "greenYellow",
+        "honeydew",
+        "hotPink",
+        "indianRed",
+        "indigo",
+        "ivory",
+        "khaki",
+        "lavender",
+        "lavenderBlush",
+        "lawnGreen",
+        "lemonChiffon",
+        "lightBlue",
+        "lightCoral",
+        "lightCyan",
+        "lightGoldenrodYellow",
+        "lightGray",
+        "lightGrey",
+        "lightGreen",
+        "lightPink",
+        "lightSalmon",
+        "lightSeaGreen",
+        "lightSkyBlue",
+        "lightSlateGray",
+        "lightSlateGrey",
+        "lightSteelBlue",
+        "lightYellow",
+        "ltBlue",
+        "ltCoral",
+        "ltCyan",
+        "ltGoldenrodYellow",
+        "ltGray",
+        "ltGrey",
+        "ltGreen",
+        "ltPink",
+        "ltSalmon",
+        "ltSeaGreen",
+        "ltSkyBlue",
+        "ltSlateGray",
+        "ltSlateGrey",
+        "ltSteelBlue",
+        "ltYellow",
+        "lime",
+        "limeGreen",
+        "linen",
+        "magenta",
+        "maroon",
+        "medAquamarine",
+        "medBlue",
+        "medOrchid",
+        "medPurple",
+        "medSeaGreen",
+        "medSlateBlue",
+        "medSpringGreen",
+        "medTurquoise",
+        "medVioletRed",
+        "mediumAquamarine",
+        "mediumBlue",
+        "mediumOrchid",
+        "mediumPurple",
+        "mediumSeaGreen",
+        "mediumSlateBlue",
+        "mediumSpringGreen",
+        "mediumTurquoise",
+        "mediumVioletRed",
+        "midnightBlue",
+        "mintCream",
+        "mistyRose",
+        "moccasin",
+        "navajoWhite",
+        "navy",
+        "oldLace",
+        "olive",
+        "oliveDrab",
+        "orange",
+        "orangeRed",
+        "orchid",
+        "paleGoldenrod",
+        "paleGreen",
+        "paleTurquoise",
+        "paleVioletRed",
+        "papayaWhip",
+        "peachPuff",
+        "peru",
+        "pink",
+        "plum",
+        "powderBlue",
+        "purple",
+        "red",
+        "rosyBrown",
+        "royalBlue",
+        "saddleBrown",
+        "salmon",
+        "sandyBrown",
+        "seaGreen",
+        "seaShell",
+        "sienna",
+        "silver",
+        "skyBlue",
+        "slateBlue",
+        "slateGray",
+        "slateGrey",
+        "snow",
+        "springGreen",
+        "steelBlue",
+        "tan",
+        "teal",
+        "thistle",
+        "tomato",
+        "turquoise",
+        "violet",
+        "wheat",
+        "white",
+        "whiteSmoke",
+        "yellow",
+        "yellowGreen"
+      ]
+    },
+    "SchemeColor": {
+      "type": "string",
+      "enum": [
+        "bg1",
+        "tx1",
+        "bg2",
+        "tx2",
+        "accent1",
+        "accent2",
+        "accent3",
+        "accent4",
+        "accent5",
+        "accent6",
+        "hlink",
+        "folHlink",
+        "phClr",
+        "dk1",
+        "lt1",
+        "dk2",
+        "lt2"
+      ]
+    },
+    "SourceChartAxis": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "kind": {
+          "$ref": "#/$defs/ChartAxisKind"
+        },
+        "layout": {
+          "$ref": "#/$defs/SourceChartLayout"
+        },
+        "numberFormat": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceChartNumberFormat"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scaling": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceChartScaling"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "kind",
+        "id",
+        "layout"
+      ]
+    },
+    "SourceChartCache": {
+      "type": "object",
+      "properties": {
+        "declaredPointCount": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "formatCode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "kind": {
+          "$ref": "#/$defs/ChartCacheKind"
+        },
+        "levels": {
+          "description": "Source level order; no expansion of sparse point indices or missing values.",
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/SourceChartPoint"
+            }
+          }
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "kind",
+        "levels"
+      ]
+    },
+    "SourceChartChannel": {
+      "type": "object",
+      "properties": {
+        "cache": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceChartCache"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "formula": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "literalText": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "nativeKind": {
+          "description": "Native container name; distinguishes reference, literal and title text.",
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/$defs/ChartChannelRole"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "role",
+        "nativeKind"
+      ]
+    },
+    "SourceChartExternalData": {
+      "type": "object",
+      "properties": {
+        "autoUpdate": {
+          "description": "None means omitted; no eager refresh is performed by inspection.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "relationshipId": {
+          "type": "string"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "target": {
+          "$ref": "#/$defs/ChartWorkbookTarget"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "relationshipId",
+        "target"
+      ]
+    },
+    "SourceChartLayout": {
+      "type": "object",
+      "properties": {
+        "markup": {
+          "description": "Complex markup remains bound to its original part and physical ordinal.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceChartMarkup"
+          }
+        },
+        "properties": {
+          "description": "Source order; missing property, missing val and explicit lexical val differ.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceChartProperty"
+          }
+        },
+        "unrecognizedChildren": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceChartUnknown"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "properties",
+        "markup"
+      ]
+    },
+    "SourceChartMarkup": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/ChartMarkupKind"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "kind"
+      ]
+    },
+    "SourceChartNumberFormat": {
+      "type": "object",
+      "properties": {
+        "formatCode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sourceLinked": {
+          "description": "Preserve omission and the actual lexical boolean; no workbook lookup.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal"
+      ]
+    },
+    "SourceChartPaints": {
+      "type": "object",
+      "properties": {
+        "chart": {
+          "description": "Series and point layout references bind to the declaration ordinals below.",
+          "$ref": "#/$defs/SourceChartPart"
+        },
+        "colorMapping": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceColorMapRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "colorScheme": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceThemeSchemeRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "declarations": {
+          "description": "Source order. This is not a resolved chart-style/series/point cascade.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ChartPaintDeclaration"
+          }
+        },
+        "object": {
+          "$ref": "#/$defs/SourceObjectRef"
+        },
+        "profile": {
+          "$ref": "#/$defs/ColorProfile"
+        },
+        "sourceSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "themeOverride": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ChartThemeOverride"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceSha256",
+        "object",
+        "profile",
+        "chart",
+        "declarations"
+      ]
+    },
+    "SourceChartPart": {
+      "type": "object",
+      "properties": {
+        "axes": {
+          "description": "Source declarations; reference resolution, defaults and geometry are separate.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceChartAxis"
+          }
+        },
+        "byteLength": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "compatibility": {
+          "$ref": "#/$defs/SourceCompatibility"
+        },
+        "dataAuthority": {
+          "description": "Cache declarations are snapshots, not recalculated workbook values.",
+          "$ref": "#/$defs/ChartDataAuthority"
+        },
+        "extensionOrdinals": {
+          "description": "Opaque extension roots remain physically bound even though inspection\ndoes not interpret their descendants. Consumers must not silently admit.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "externalData": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceChartExternalData"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "part": {
+          "type": "string"
+        },
+        "plots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceChartPlot"
+          }
+        },
+        "sha256": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "sha256",
+        "byteLength",
+        "compatibility",
+        "plots",
+        "axes",
+        "dataAuthority"
+      ]
+    },
+    "SourceChartPlot": {
+      "type": "object",
+      "properties": {
+        "axisIds": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "layout": {
+          "$ref": "#/$defs/SourceChartLayout"
+        },
+        "nativeKind": {
+          "description": "Native local name (barChart, doughnutChart, ...), not a rendering capability.",
+          "type": "string"
+        },
+        "series": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceChartSeries"
+          }
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "nativeKind",
+        "axisIds",
+        "series",
+        "layout"
+      ]
+    },
+    "SourceChartPoint": {
+      "type": "object",
+      "properties": {
+        "formatCode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "index": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "value": {
+          "description": "Exact lexical value. Missing v, empty v, zero and errors remain distinct.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "index"
+      ]
+    },
+    "SourceChartPointOverride": {
+      "type": "object",
+      "properties": {
+        "index": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "layout": {
+          "$ref": "#/$defs/SourceChartLayout"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "index",
+        "layout"
+      ]
+    },
+    "SourceChartProperty": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/ChartPropertyKind"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "value": {
+          "description": "XML attribute value, without numeric conversion or schema defaulting.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "kind"
+      ]
+    },
+    "SourceChartScaling": {
+      "type": "object",
+      "properties": {
+        "properties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceChartProperty"
+          }
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "properties"
+      ]
+    },
+    "SourceChartSeries": {
+      "type": "object",
+      "properties": {
+        "channels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceChartChannel"
+          }
+        },
+        "index": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "layout": {
+          "$ref": "#/$defs/SourceChartLayout"
+        },
+        "order": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "pointOverrides": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceChartPointOverride"
+          }
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "index",
+        "order",
+        "channels"
+      ]
+    },
+    "SourceChartUnknown": {
+      "type": "object",
+      "properties": {
+        "localName": {
+          "type": "string"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "namespace",
+        "localName"
+      ]
+    },
+    "SourceColor": {
+      "type": "object",
+      "properties": {
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "transforms": {
+          "description": "XML application order, including repeated transforms.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceColorTransform"
+          }
+        },
+        "value": {
+          "$ref": "#/$defs/SourceColorValue"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "value",
+        "transforms"
+      ]
+    },
+    "SourceColorMapRef": {
+      "type": "object",
+      "properties": {
+        "part": {
+          "type": "string"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "sourceOrdinal"
+      ]
+    },
+    "SourceColorTransform": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "tint"
+            },
+            "value": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "shade"
+            },
+            "value": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "comp"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "inv"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "gray"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "alpha"
+            },
+            "value": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "alphaOff"
+            },
+            "value": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "alphaMod"
+            },
+            "value": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "hue"
+            },
+            "value": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "hueOff"
+            },
+            "value": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "hueMod"
+            },
+            "value": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "sat"
+            },
+            "value": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "satOff"
+            },
+            "value": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "satMod"
+            },
+            "value": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "lum"
+            },
+            "value": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "lumOff"
+            },
+            "value": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "lumMod"
+            },
+            "value": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "red"
+            },
+            "value": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "redOff"
+            },
+            "value": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "redMod"
+            },
+            "value": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "green"
+            },
+            "value": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "greenOff"
+            },
+            "value": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "greenMod"
+            },
+            "value": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "blue"
+            },
+            "value": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "blueOff"
+            },
+            "value": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "blueMod"
+            },
+            "value": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "gamma"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "invGamma"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "SourceColorValue": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "srgb"
+            },
+            "rgb": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "rgb"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "blue": {
+              "$ref": "#/$defs/NativePercentage"
+            },
+            "green": {
+              "$ref": "#/$defs/NativePercentage"
+            },
+            "kind": {
+              "type": "string",
+              "const": "scRgb"
+            },
+            "red": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "red",
+            "green",
+            "blue"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "hue": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "kind": {
+              "type": "string",
+              "const": "hsl"
+            },
+            "luminance": {
+              "$ref": "#/$defs/NativePercentage"
+            },
+            "saturation": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "hue",
+            "saturation",
+            "luminance"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "color": {
+              "$ref": "#/$defs/SystemColor"
+            },
+            "kind": {
+              "type": "string",
+              "const": "system"
+            },
+            "lastColor": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "color"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "scheme"
+            },
+            "slot": {
+              "$ref": "#/$defs/SchemeColor"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "slot"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "color": {
+              "$ref": "#/$defs/PresetColor"
+            },
+            "kind": {
+              "type": "string",
+              "const": "preset"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "color"
+          ]
+        }
+      ]
+    },
+    "SourceCompatibility": {
+      "type": "object",
+      "properties": {
+        "ignoredAttributes": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "ignoredElements": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "selections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceCompatibilitySelection"
+          }
+        },
+        "unwrappedElements": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "selections",
+        "ignoredElements",
+        "ignoredAttributes",
+        "unwrappedElements"
+      ]
+    },
+    "SourceCompatibilityBranch": {
+      "type": "object",
+      "properties": {
+        "fallback": {
+          "type": "boolean"
+        },
+        "requires": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "selected": {
+          "type": "boolean"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "requires",
+        "fallback",
+        "selected"
+      ]
+    },
+    "SourceCompatibilitySelection": {
+      "type": "object",
+      "properties": {
+        "branches": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceCompatibilityBranch"
+          }
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "branches"
+      ]
+    },
+    "SourceDashStop": {
+      "type": "object",
+      "properties": {
+        "dash": {
+          "$ref": "#/$defs/NativePercentage"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "space": {
+          "$ref": "#/$defs/NativePercentage"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "dash",
+        "space"
+      ]
+    },
+    "SourceEffectDefinition": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "containerType": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativeEffectContainerType"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "container"
+            },
+            "name": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "nodes": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint32",
+                "minimum": 0
+              }
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nodes"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "reference"
+            },
+            "reference": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reference"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "alphaBiLevel"
+            },
+            "threshold": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "threshold"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "alphaCeiling"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "alphaFloor"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "color": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/SourceColor"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "alphaInverse"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "container": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "alphaModulate"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "container"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "amount": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativePercentage"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "alphaModulateFixed"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "alphaOutset"
+            },
+            "radius": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativeCoordinate"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "alpha": {
+              "$ref": "#/$defs/NativePercentage"
+            },
+            "kind": {
+              "type": "string",
+              "const": "alphaReplace"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "alpha"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "biLevel"
+            },
+            "threshold": {
+              "$ref": "#/$defs/NativePercentage"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "threshold"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "blend": {
+              "$ref": "#/$defs/NativeBlendMode"
+            },
+            "container": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "blend"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "blend",
+            "container"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "grow": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "blur"
+            },
+            "radius": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Emu"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "from": {
+              "$ref": "#/$defs/SourceColor"
+            },
+            "kind": {
+              "type": "string",
+              "const": "colorChange"
+            },
+            "to": {
+              "$ref": "#/$defs/SourceColor"
+            },
+            "useAlpha": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "from",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "color": {
+              "$ref": "#/$defs/SourceColor"
+            },
+            "kind": {
+              "type": "string",
+              "const": "colorReplace"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "color"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "first": {
+              "$ref": "#/$defs/SourceColor"
+            },
+            "kind": {
+              "type": "string",
+              "const": "duotone"
+            },
+            "second": {
+              "$ref": "#/$defs/SourceColor"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "first",
+            "second"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "fill": {
+              "$ref": "#/$defs/SourceFill"
+            },
+            "kind": {
+              "type": "string",
+              "const": "fill"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "fill"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "blend": {
+              "$ref": "#/$defs/NativeBlendMode"
+            },
+            "fill": {
+              "$ref": "#/$defs/SourceFill"
+            },
+            "kind": {
+              "type": "string",
+              "const": "fillOverlay"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "blend",
+            "fill"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "color": {
+              "$ref": "#/$defs/SourceColor"
+            },
+            "kind": {
+              "type": "string",
+              "const": "glow"
+            },
+            "radius": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Emu"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "color"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "grayscale"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "hue": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "hsl"
+            },
+            "luminance": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativePercentage"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "saturation": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativePercentage"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "blurRadius": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Emu"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "color": {
+              "$ref": "#/$defs/SourceColor"
+            },
+            "direction": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint32",
+              "minimum": 0
+            },
+            "distance": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Emu"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "innerShadow"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "color"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "brightness": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativePercentage"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "contrast": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativePercentage"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "luminance"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "alignment": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativeFillAlignment"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "blurRadius": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Emu"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "color": {
+              "$ref": "#/$defs/SourceColor"
+            },
+            "direction": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint32",
+              "minimum": 0
+            },
+            "distance": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Emu"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "outerShadow"
+            },
+            "rotateWithShape": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "scaleX": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativePercentage"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "scaleY": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativePercentage"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "skewX": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int32"
+            },
+            "skewY": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int32"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "color"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "color": {
+              "$ref": "#/$defs/SourceColor"
+            },
+            "direction": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint32",
+              "minimum": 0
+            },
+            "distance": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Emu"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "presetShadow"
+            },
+            "preset": {
+              "$ref": "#/$defs/NativePresetShadow"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "preset",
+            "color"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "alignment": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativeFillAlignment"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "blurRadius": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Emu"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "direction": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint32",
+              "minimum": 0
+            },
+            "distance": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Emu"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "endAlpha": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativePercentage"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "endPosition": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativePercentage"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "fadeDirection": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "reflection"
+            },
+            "rotateWithShape": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "scaleX": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativePercentage"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "scaleY": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativePercentage"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "skewX": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int32"
+            },
+            "skewY": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int32"
+            },
+            "startAlpha": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativePercentage"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "startPosition": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativePercentage"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "relativeOffset"
+            },
+            "translateX": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativePercentage"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "translateY": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativePercentage"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "softEdge"
+            },
+            "radius": {
+              "$ref": "#/$defs/Emu"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "radius"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "amount": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativePercentage"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "hue": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "tint"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "transform"
+            },
+            "scaleX": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativePercentage"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "scaleY": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativePercentage"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "skewX": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int32"
+            },
+            "skewY": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int32"
+            },
+            "translateX": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativeCoordinate"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "translateY": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativeCoordinate"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "SourceEffectNode": {
+      "type": "object",
+      "properties": {
+        "definition": {
+          "$ref": "#/$defs/SourceEffectDefinition"
+        },
+        "retainedOrdinals": {
+          "description": "Only this node's uninterpreted properties. Children have their own nodes.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "definition",
+        "retainedOrdinals"
+      ]
+    },
+    "SourceEffectProperties": {
+      "type": "object",
+      "properties": {
+        "definition": {
+          "$ref": "#/$defs/SourceEffectPropertiesDefinition"
+        },
+        "retainedOrdinals": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "definition",
+        "retainedOrdinals"
+      ]
+    },
+    "SourceEffectPropertiesDefinition": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "list"
+            },
+            "nodes": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint32",
+                "minimum": 0
+              }
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "nodes"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "dag"
+            },
+            "root": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "root"
+          ]
+        }
+      ]
+    },
+    "SourceFill": {
+      "type": "object",
+      "properties": {
+        "definition": {
+          "$ref": "#/$defs/SourceFillDefinition"
+        },
+        "retainedOrdinals": {
+          "description": "Physical nodes in the immutable source part. Consumers must resolve or\ndiagnose these before claiming a complete brush.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "definition",
+        "retainedOrdinals"
+      ]
+    },
+    "SourceFillBlip": {
+      "type": "object",
+      "properties": {
+        "compression": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeBlipCompression"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "effectNodes": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "embed": {
+          "description": "Relationship IDs only: the core never opens a network URL or file path.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "link": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "retainedOrdinals": {
+          "description": "Uninterpreted properties only; known effects use the part catalog.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "retainedOrdinals"
+      ]
+    },
+    "SourceFillColor": {
+      "type": "object",
+      "properties": {
+        "color": {
+          "$ref": "#/$defs/SourceColor"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "color"
+      ]
+    },
+    "SourceFillDefinition": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "none"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "color": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/SourceColor"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "solid"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "flip": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativeTileFlip"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "gradient"
+            },
+            "rotateWithShape": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "shade": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/SourceGradientShade"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "stops": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/SourceGradientStops"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "tileRect": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/SourceFillRect"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "background": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/SourceFillColor"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "foreground": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/SourceFillColor"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "pattern"
+            },
+            "preset": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativePattern"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "blip": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/SourceFillBlip"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "dpi": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "image"
+            },
+            "mode": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/SourceImageFillMode"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "rotateWithShape": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "sourceRect": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/SourceFillRect"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "group"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "SourceFillRect": {
+      "type": "object",
+      "properties": {
+        "bottom": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativePercentage"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "left": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativePercentage"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "right": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativePercentage"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "top": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativePercentage"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal"
+      ]
+    },
+    "SourceGradientFill": {
+      "type": "object",
+      "properties": {
+        "flip": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeTileFlip"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rotateWithShape": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "shade": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceGradientShade"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "stops": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceGradientStops"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tileRect": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceFillRect"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "SourceGradientShade": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "angle": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "linear"
+            },
+            "scaled": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "fillToRect": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/SourceFillRect"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "path"
+            },
+            "path": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativePathShade"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sourceOrdinal"
+          ]
+        }
+      ]
+    },
+    "SourceGradientStop": {
+      "type": "object",
+      "properties": {
+        "color": {
+          "$ref": "#/$defs/SourceColor"
+        },
+        "position": {
+          "$ref": "#/$defs/NativePercentage"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "position",
+        "color"
+      ]
+    },
+    "SourceGradientStops": {
+      "type": "object",
+      "properties": {
+        "entries": {
+          "description": "Native order is significant, including repeated stop positions.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceGradientStop"
+          }
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "entries"
+      ]
+    },
+    "SourceImageFillMode": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "alignment": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativeFillAlignment"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "flip": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativeTileFlip"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "tile"
+            },
+            "scaleX": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativePercentage"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "scaleY": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativePercentage"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "translateX": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativeCoordinate"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "translateY": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativeCoordinate"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "fillRect": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/SourceFillRect"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "stretch"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sourceOrdinal"
+          ]
+        }
+      ]
+    },
+    "SourceLine": {
+      "type": "object",
+      "properties": {
+        "alignment": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativePenAlignment"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cap": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeLineCap"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "compound": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeCompoundLine"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "dash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceLineDash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fill": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceLineFill"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "head": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceLineEnd"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "join": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceLineJoin"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "retainedOrdinals": {
+          "description": "Unsupported attributes/extensions bind to their owning elements. They\ncannot be discarded or counted as resolved line semantics.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "tail": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceLineEnd"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "width": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Emu"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "retainedOrdinals"
+      ]
+    },
+    "SourceLineDash": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "preset"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativePresetDash"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "custom"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "stops": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/SourceDashStop"
+              }
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sourceOrdinal",
+            "stops"
+          ]
+        }
+      ]
+    },
+    "SourceLineEnd": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeLineEnd"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "length": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeLineEndSize"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "width": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeLineEndSize"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal"
+      ]
+    },
+    "SourceLineFill": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "none"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "color": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/SourceColor"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "solid"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "gradient": {
+              "$ref": "#/$defs/SourceGradientFill"
+            },
+            "kind": {
+              "type": "string",
+              "const": "gradient"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sourceOrdinal",
+            "gradient"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "pattern"
+            },
+            "pattern": {
+              "$ref": "#/$defs/SourcePatternFill"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sourceOrdinal",
+            "pattern"
+          ]
+        }
+      ]
+    },
+    "SourceLineJoin": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "round"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "bevel"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "miter"
+            },
+            "limit": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NativePercentage"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sourceOrdinal"
+          ]
+        }
+      ]
+    },
+    "SourceObjectRef": {
+      "type": "object",
+      "properties": {
+        "nativeId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "part": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "nativeId"
+      ]
+    },
+    "SourcePatternFill": {
+      "type": "object",
+      "properties": {
+        "background": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceFillColor"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "foreground": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceFillColor"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "preset": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativePattern"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "SourceThemeSchemeRef": {
+      "type": "object",
+      "properties": {
+        "part": {
+          "type": "string"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "sourceOrdinal"
+      ]
+    },
+    "SystemColor": {
+      "type": "string",
+      "enum": [
+        "scrollBar",
+        "background",
+        "activeCaption",
+        "inactiveCaption",
+        "menu",
+        "window",
+        "windowFrame",
+        "menuText",
+        "windowText",
+        "captionText",
+        "activeBorder",
+        "inactiveBorder",
+        "appWorkspace",
+        "highlight",
+        "highlightText",
+        "btnFace",
+        "btnShadow",
+        "grayText",
+        "btnText",
+        "inactiveCaptionText",
+        "btnHighlight",
+        "3dDkShadow",
+        "3dLight",
+        "infoText",
+        "infoBk",
+        "hotLight",
+        "gradientActiveCaption",
+        "gradientInactiveCaption",
+        "menuHighlight",
+        "menuBar"
+      ]
+    },
+    "SystemColorOrigin": {
+      "type": "string",
+      "enum": [
+        "hostContext",
+        "fileLastColor"
+      ]
+    }
+  }
+}
