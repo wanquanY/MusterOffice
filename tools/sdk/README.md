@@ -95,9 +95,12 @@ Registry package license declarations and included Unicode/ECMA notices are
 retained; complete binary distribution notices and platform acceptance remain
 required. The worker, fonts, media, browser bindings and product UI are separate.
 
-The receiving build pins the SHA-256 of `sdk-manifest.json` from a trusted local
-build record. Verify the complete directory before adding a relative path
-dependency on `crates/mo-embedded-sdk`. The manifest does not authenticate itself.
+The portable directory is an upstream build input. Product repositories consume
+independent versioned Cargo packages via the [release assembler](../release/README.md),
+which binds the SDK, native worker and WASM package in one immutable manifest.
+Standalone kernel examples may still use this verified directory directly.
+Pin the SHA-256 of `sdk-manifest.json` from a trusted local build record and verify
+the complete directory before using it. The manifest does not authenticate itself.
 `verify.py DIRECTORY --sha256 EXPECTED` verifies bytes and exact inventory; run
 the verifier from a trusted source, not from an unverified download.
 
