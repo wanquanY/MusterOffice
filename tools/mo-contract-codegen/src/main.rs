@@ -25,6 +25,7 @@ use mo_kernel_api::{ParagraphLayoutRequest, ParagraphLayoutResponse};
 use mo_kernel_api::{ParagraphPathsRequest, ParagraphPathsResponse};
 use mo_kernel_api::{PathRasterRequest, PathRasterResponse};
 use mo_kernel_api::{PptxChartGeometryResponse, SourceCircularRequest};
+use mo_kernel_api::{PptxChartLabelsResponse, SourceChartLabelRequest};
 use mo_kernel_api::{PptxChartPaintResponse, SourceChartPaintQuery};
 use mo_kernel_api::{PptxChartPlotResponse, SourceChartPlotRequest};
 use mo_kernel_api::{PptxChartsResponse, PptxImagesResponse, SourceChartQuery, SourceImageQuery};
@@ -225,6 +226,14 @@ fn main() -> Result<(), Box<dyn Error>> {
         ("image-scene-response", schema::<ImageSceneRasterResponse>()),
         ("pptx-chart-query", schema::<SourceChartQuery>()),
         ("pptx-chart-response", schema::<PptxChartsResponse>()),
+        (
+            "pptx-chart-label-request",
+            schema::<SourceChartLabelRequest>(),
+        ),
+        (
+            "pptx-chart-label-response",
+            schema::<PptxChartLabelsResponse>(),
+        ),
         ("pptx-chart-paint-query", schema::<SourceChartPaintQuery>()),
         (
             "pptx-chart-plot-request",

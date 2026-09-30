@@ -1,0 +1,103 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:pptx-chart-label-request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SourceChartLabelRequest",
+  "type": "object",
+  "properties": {
+    "expectedSourceSha256": {
+      "$ref": "#/$defs/Digest"
+    },
+    "negativeWeights": {
+      "$ref": "#/$defs/NegativeWeights"
+    },
+    "object": {
+      "$ref": "#/$defs/SourceObjectRef"
+    },
+    "plotSourceOrdinal": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0
+    },
+    "profile": {
+      "$ref": "#/$defs/ChartLabelProfile"
+    },
+    "targets": {
+      "description": "Explicit stable identities; no allocation of a dense array from sparse idx.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ChartLabelTarget"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "expectedSourceSha256",
+    "object",
+    "plotSourceOrdinal",
+    "profile",
+    "negativeWeights",
+    "targets"
+  ],
+  "$defs": {
+    "ChartLabelProfile": {
+      "type": "string",
+      "enum": [
+        "source-chart-label-bindings-v1-draft"
+      ]
+    },
+    "ChartLabelTarget": {
+      "type": "object",
+      "properties": {
+        "pointIndex": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "seriesIndex": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "seriesIndex",
+        "pointIndex"
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "NegativeWeights": {
+      "type": "string",
+      "enum": [
+        "reject",
+        "absoluteMagnitude"
+      ]
+    },
+    "SourceObjectRef": {
+      "type": "object",
+      "properties": {
+        "nativeId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "part": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "nativeId"
+      ]
+    }
+  }
+}

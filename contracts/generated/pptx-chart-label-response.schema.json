@@ -1,0 +1,776 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:pptx-chart-label-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PptxChartLabelsResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "labels": {
+          "$ref": "#/$defs/SourceChartLabels"
+        },
+        "status": {
+          "type": "string",
+          "const": "planned"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "labels"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/PptxChartLabelFailure"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "error"
+      ]
+    }
+  ],
+  "$defs": {
+    "ChartDataAuthority": {
+      "type": "string",
+      "enum": [
+        "sourceCacheSnapshot"
+      ]
+    },
+    "ChartDecimalNumber": {
+      "description": "Exact finite decimal spelling, never a JSON floating point number. Semantic validation limits normalized decimal exponent to -4096..4096 and lexical UTF-8 bytes to 1024. Null, blanks, error tokens and infinities are not numeric weights.",
+      "type": "string",
+      "maxLength": 1024,
+      "minLength": 1,
+      "pattern": "^[ \\t\\r\\n]*[+-]?([0-9]+(\\.[0-9]*)?|\\.[0-9]+)([eE][+-]?[0-9]+)?[ \\t\\r\\n]*$"
+    },
+    "ChartLabelComponent": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "channelSourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "text"
+            },
+            "role": {
+              "$ref": "#/$defs/ChartLabelFlag"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "role",
+            "channelSourceOrdinal",
+            "sourceOrdinal",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "channelSourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "format": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/ChartLabelDataFormat"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "number"
+            },
+            "role": {
+              "$ref": "#/$defs/ChartLabelFlag"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "value": {
+              "$ref": "#/$defs/ChartDecimalNumber"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "role",
+            "channelSourceOrdinal",
+            "sourceOrdinal",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "format": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/ChartLabelDataFormat"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "percent"
+            },
+            "normalization": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "pointIndex": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "normalization",
+            "pointIndex"
+          ]
+        }
+      ]
+    },
+    "ChartLabelDataFormat": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "code"
+      ]
+    },
+    "ChartLabelFlag": {
+      "type": "string",
+      "enum": [
+        "legendKey",
+        "value",
+        "categoryName",
+        "seriesName",
+        "percent",
+        "bubbleSize"
+      ]
+    },
+    "ChartLabelNormalization": {
+      "type": "object",
+      "properties": {
+        "channelSourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "ratios": {
+          "$ref": "#/$defs/ExactWeightRatios"
+        },
+        "seriesIndex": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "seriesIndex",
+        "channelSourceOrdinal",
+        "ratios"
+      ]
+    },
+    "ChartLabelNumberFormat": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "sourceLinked": {
+          "$ref": "#/$defs/ChartLabelValue"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "code",
+        "sourceLinked"
+      ]
+    },
+    "ChartLabelPlan": {
+      "type": "object",
+      "properties": {
+        "annotationChain": {
+          "description": "Most specific first. Missing declarations do not clear inherited fields.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "components": {
+          "description": "Named data bindings, not final display order or formatted display text.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ChartLabelComponent"
+          }
+        },
+        "customTextSource": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "legendKeyVisible": {
+          "description": "Office displays a legend key only alongside a selected text component or tx.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "settings": {
+          "$ref": "#/$defs/ChartLabelSettings"
+        },
+        "target": {
+          "$ref": "#/$defs/ChartLabelTarget"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "annotationChain",
+        "settings",
+        "components"
+      ]
+    },
+    "ChartLabelPosition": {
+      "type": "string",
+      "enum": [
+        "bestFit",
+        "b",
+        "ctr",
+        "inBase",
+        "inEnd",
+        "l",
+        "outEnd",
+        "r",
+        "t"
+      ]
+    },
+    "ChartLabelProfile": {
+      "type": "string",
+      "enum": [
+        "source-chart-label-bindings-v1-draft"
+      ]
+    },
+    "ChartLabelSeparator": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "declared"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "commaDefault"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "pieCategoryPercentLineBreak"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "ChartLabelSettings": {
+      "type": "object",
+      "properties": {
+        "deleted": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ChartLabelValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "flags": {
+          "type": "object",
+          "properties": {
+            "bubbleSize": {
+              "$ref": "#/$defs/ChartLabelValue"
+            },
+            "categoryName": {
+              "$ref": "#/$defs/ChartLabelValue"
+            },
+            "legendKey": {
+              "$ref": "#/$defs/ChartLabelValue"
+            },
+            "percent": {
+              "$ref": "#/$defs/ChartLabelValue"
+            },
+            "seriesName": {
+              "$ref": "#/$defs/ChartLabelValue"
+            },
+            "value": {
+              "$ref": "#/$defs/ChartLabelValue"
+            }
+          },
+          "additionalProperties": false
+        },
+        "layoutSourceOrdinal": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "numberFormat": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ChartLabelNumberFormat"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "position": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ChartLabelValue2"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "separator": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ChartLabelSeparator"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "shapePropertyRoots": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "showLeaderLines": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ChartLabelValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "textPropertyRoots": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "unresolvedFlags": {
+          "description": "Missing throughout the chain: application/chart-style defaults still needed.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ChartLabelFlag"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "flags",
+        "unresolvedFlags",
+        "textPropertyRoots",
+        "shapePropertyRoots"
+      ]
+    },
+    "ChartLabelTarget": {
+      "type": "object",
+      "properties": {
+        "pointIndex": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "seriesIndex": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "seriesIndex",
+        "pointIndex"
+      ]
+    },
+    "ChartLabelValue": {
+      "type": "object",
+      "properties": {
+        "schemaDefaulted": {
+          "description": "Present CT_Boolean/numFmt with omitted val/sourceLinked uses schema true.",
+          "type": "boolean"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "value": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "sourceOrdinal",
+        "schemaDefaulted"
+      ]
+    },
+    "ChartLabelValue2": {
+      "type": "object",
+      "properties": {
+        "schemaDefaulted": {
+          "description": "Present CT_Boolean/numFmt with omitted val/sourceLinked uses schema true.",
+          "type": "boolean"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "value": {
+          "$ref": "#/$defs/ChartLabelPosition"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "sourceOrdinal",
+        "schemaDefaulted"
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "ExactWeightNumerator": {
+      "type": "object",
+      "properties": {
+        "numerator": {
+          "description": "Unsigned decimal integer, before percentage formatting or rounding.",
+          "type": "string"
+        },
+        "pointIndex": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "pointIndex",
+        "numerator"
+      ]
+    },
+    "ExactWeightRatios": {
+      "description": "Exact normalized magnitudes for percent labels. Denominator is stored once;\nconsumers must handle zero_total, not silently display a zero percentage.",
+      "type": "object",
+      "properties": {
+        "denominator": {
+          "type": "string"
+        },
+        "numerators": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ExactWeightNumerator"
+          }
+        },
+        "work": {
+          "$ref": "#/$defs/SectorWork"
+        },
+        "zeroTotal": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "denominator",
+        "numerators",
+        "zeroTotal",
+        "work"
+      ]
+    },
+    "NegativeWeights": {
+      "type": "string",
+      "enum": [
+        "reject",
+        "absoluteMagnitude"
+      ]
+    },
+    "PptxChartLabelFailure": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/PptxFailureCode"
+        },
+        "message": {
+          "type": "string"
+        },
+        "pointIndex": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "seriesIndex": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "sourceOrdinal": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "PptxFailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "SOURCE_CONFLICT",
+        "PRESERVATION_CONFLICT",
+        "MAPPING_NOT_IMPLEMENTED",
+        "RESOURCE_REQUIRED",
+        "LIMIT_EXCEEDED",
+        "CANCELLED",
+        "READ_FAILED"
+      ]
+    },
+    "SectorWork": {
+      "type": "object",
+      "properties": {
+        "boundaryDecimalDigits": {
+          "description": "Bounds repeated prefix/total arithmetic even if only one weight is wide.",
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0
+        },
+        "numberBytes": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0
+        },
+        "points": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "scaledDecimalDigits": {
+          "description": "Sum of exact integer widths after common decimal scaling, including zeros.",
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "points",
+        "numberBytes",
+        "scaledDecimalDigits",
+        "boundaryDecimalDigits"
+      ]
+    },
+    "SourceChartLabels": {
+      "type": "object",
+      "properties": {
+        "chartPart": {
+          "type": "string"
+        },
+        "chartSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "dataAuthority": {
+          "$ref": "#/$defs/ChartDataAuthority"
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ChartLabelPlan"
+          }
+        },
+        "negativeWeights": {
+          "$ref": "#/$defs/NegativeWeights"
+        },
+        "normalizations": {
+          "description": "Each required series is normalized once. Fractions are not sector angles.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ChartLabelNormalization"
+          }
+        },
+        "object": {
+          "$ref": "#/$defs/SourceObjectRef"
+        },
+        "plotSourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "profile": {
+          "$ref": "#/$defs/ChartLabelProfile"
+        },
+        "sourceSha256": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "sourceSha256",
+        "object",
+        "chartPart",
+        "chartSha256",
+        "plotSourceOrdinal",
+        "dataAuthority",
+        "negativeWeights",
+        "labels",
+        "normalizations"
+      ]
+    },
+    "SourceObjectRef": {
+      "type": "object",
+      "properties": {
+        "nativeId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "part": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "nativeId"
+      ]
+    }
+  }
+}

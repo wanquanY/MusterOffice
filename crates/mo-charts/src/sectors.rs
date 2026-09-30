@@ -139,89 +139,8 @@ pub fn layout(
     if !(0..i128::from(TURN)).contains(&request.start_turn.raw()) {
         return Err(SectorError::Invalid("start turn outside [0, 1)"));
     }
-    if request.weights.len() > limits.max_points {
-        return Err(SectorError::Limit("points"));
-    }
-    let mut ids = BTreeSet::new();
-    let mut work = SectorWork {
-        points: request
-            .weights
-            .len()
-            .try_into()
-            .map_err(|_| SectorError::Limit("points"))?,
-        ..SectorWork::default()
-    };
-    let mut exponent = None;
-    for weight in &request.weights {
-        cancel(check)?;
-        if !ids.insert(weight.point_index) {
-            return Err(SectorError::DuplicatePoint(weight.point_index));
-        }
-        charge(
-            &mut work.number_bytes,
-            weight.value.lexical().len(),
-            limits.max_number_bytes,
-            "number bytes",
-        )?;
-        if !weight.value.is_zero() {
-            if request.negative_weights == NegativeWeights::Reject
-                && weight.value.is_sign_negative()
-            {
-                return Err(SectorError::NegativeWeight(weight.point_index));
-            }
-            exponent =
-                Some(exponent.map_or(weight.value.exponent, |e: i32| e.min(weight.value.exponent)));
-        }
-    }
-    let has_nonzero = exponent.is_some();
-    let exponent = exponent.unwrap_or(0);
-    let mut widest = 0usize;
-    for weight in &request.weights {
-        cancel(check)?;
-        let width = if weight.value.is_zero() {
-            1
-        } else {
-            weight.value.coefficient_digits + (weight.value.exponent - exponent) as usize
-        };
-        widest = widest.max(width);
-        charge(
-            &mut work.scaled_decimal_digits,
-            width,
-            limits.max_scaled_decimal_digits,
-            "scaled decimal digits",
-        )?;
-    }
-    if has_nonzero {
-        // Summing N integers grows width by at most decimal_digits(N); shifting
-        // a numerator by 32 adds at most ten digits. Account before expansion.
-        let width = widest + request.weights.len().to_string().len() + 10;
-        let amount = width
-            .checked_mul(request.weights.len())
-            .ok_or(SectorError::Limit("boundary decimal digits"))?;
-        charge(
-            &mut work.boundary_decimal_digits,
-            amount,
-            limits.max_boundary_decimal_digits,
-            "boundary decimal digits",
-        )?;
-    }
-    let mut powers = BTreeMap::new();
-    let mut scaled = Vec::with_capacity(request.weights.len());
-    let mut total = BigUint::from(0u8);
-    for weight in &request.weights {
-        cancel(check)?;
-        let value = if weight.value.is_zero() {
-            BigUint::from(0u8)
-        } else {
-            let power = (weight.value.exponent - exponent) as u32;
-            let factor = powers
-                .entry(power)
-                .or_insert_with(|| BigUint::from(10u8).pow(power));
-            &weight.value.coefficient * &*factor
-        };
-        total += &value;
-        scaled.push(value);
-    }
+    let (scaled, total, work) =
+        prepare_weights(&request.weights, request.negative_weights, limits, check)?;
     let zero_total = total == BigUint::from(0u8);
     let sign = if request.direction == SectorDirection::Clockwise {
         1i128
@@ -255,6 +174,138 @@ pub fn layout(
         sectors,
         zero_total,
         endpoint_error_bound: Fixed::from_raw(if zero_total { 0 } else { 1 }),
+        work,
+    })
+}
+
+fn prepare_weights(
+    weights: &[SectorWeight],
+    negative_weights: NegativeWeights,
+    limits: SectorLimits,
+    check: &dyn Fn() -> bool,
+) -> Result<(Vec<BigUint>, BigUint, SectorWork), SectorError> {
+    cancel(check)?;
+    if weights.len() > limits.max_points {
+        return Err(SectorError::Limit("points"));
+    }
+    let mut ids = BTreeSet::new();
+    let mut work = SectorWork {
+        points: weights
+            .len()
+            .try_into()
+            .map_err(|_| SectorError::Limit("points"))?,
+        ..SectorWork::default()
+    };
+    let mut exponent = None;
+    for weight in weights {
+        cancel(check)?;
+        if !ids.insert(weight.point_index) {
+            return Err(SectorError::DuplicatePoint(weight.point_index));
+        }
+        charge(
+            &mut work.number_bytes,
+            weight.value.lexical().len(),
+            limits.max_number_bytes,
+            "number bytes",
+        )?;
+        if !weight.value.is_zero() {
+            if negative_weights == NegativeWeights::Reject && weight.value.is_sign_negative() {
+                return Err(SectorError::NegativeWeight(weight.point_index));
+            }
+            exponent =
+                Some(exponent.map_or(weight.value.exponent, |e: i32| e.min(weight.value.exponent)));
+        }
+    }
+    let has_nonzero = exponent.is_some();
+    let exponent = exponent.unwrap_or(0);
+    let mut widest = 0usize;
+    for weight in weights {
+        cancel(check)?;
+        let width = if weight.value.is_zero() {
+            1
+        } else {
+            weight.value.coefficient_digits + (weight.value.exponent - exponent) as usize
+        };
+        widest = widest.max(width);
+        charge(
+            &mut work.scaled_decimal_digits,
+            width,
+            limits.max_scaled_decimal_digits,
+            "scaled decimal digits",
+        )?;
+    }
+    if has_nonzero {
+        // Summing N integers grows width by at most decimal_digits(N); shifting
+        // a numerator by 32 adds at most ten digits. Account before expansion.
+        let width = widest + weights.len().to_string().len() + 10;
+        let amount = width
+            .checked_mul(weights.len())
+            .ok_or(SectorError::Limit("boundary decimal digits"))?;
+        charge(
+            &mut work.boundary_decimal_digits,
+            amount,
+            limits.max_boundary_decimal_digits,
+            "boundary decimal digits",
+        )?;
+    }
+    let mut powers = BTreeMap::new();
+    let mut scaled = Vec::with_capacity(weights.len());
+    let mut total = BigUint::from(0u8);
+    for weight in weights {
+        cancel(check)?;
+        let value = if weight.value.is_zero() {
+            BigUint::from(0u8)
+        } else {
+            let power = (weight.value.exponent - exponent) as u32;
+            let factor = powers
+                .entry(power)
+                .or_insert_with(|| BigUint::from(10u8).pow(power));
+            &weight.value.coefficient * &*factor
+        };
+        total += &value;
+        scaled.push(value);
+    }
+    Ok((scaled, total, work))
+}
+
+/// Exact normalized magnitudes for percent labels. Denominator is stored once;
+/// consumers must handle zero_total, not silently display a zero percentage.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ExactWeightRatios {
+    pub denominator: String,
+    pub numerators: Vec<ExactWeightNumerator>,
+    pub zero_total: bool,
+    pub work: SectorWork,
+}
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ExactWeightNumerator {
+    pub point_index: u32,
+    /// Unsigned decimal integer, before percentage formatting or rounding.
+    pub numerator: String,
+}
+pub fn ratios(
+    weights: &[SectorWeight],
+    negative_weights: NegativeWeights,
+    limits: SectorLimits,
+    check: &dyn Fn() -> bool,
+) -> Result<ExactWeightRatios, SectorError> {
+    let (values, total, work) = prepare_weights(weights, negative_weights, limits, check)?;
+    let zero_total = total == BigUint::from(0u8);
+    let mut numerators = Vec::with_capacity(values.len());
+    for (weight, value) in weights.iter().zip(values) {
+        cancel(check)?;
+        numerators.push(ExactWeightNumerator {
+            point_index: weight.point_index,
+            numerator: value.to_str_radix(10),
+        });
+    }
+    cancel(check)?;
+    Ok(ExactWeightRatios {
+        denominator: total.to_str_radix(10),
+        numerators,
+        zero_total,
         work,
     })
 }
