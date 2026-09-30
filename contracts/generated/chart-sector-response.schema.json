@@ -1,0 +1,183 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:chart-sector-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ChartSectorsResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "layout": {
+          "$ref": "#/$defs/SectorLayout"
+        },
+        "status": {
+          "type": "string",
+          "const": "computed"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "layout"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/ChartSectorFailure"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "error"
+      ]
+    }
+  ],
+  "$defs": {
+    "ChartSectorFailure": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/ChartSectorFailureCode"
+        },
+        "message": {
+          "type": "string"
+        },
+        "pointIndex": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "ChartSectorFailureCode": {
+      "type": "string",
+      "enum": [
+        "inputInvalid",
+        "limitExceeded",
+        "cancelled"
+      ]
+    },
+    "FixedQ32": {
+      "description": "Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,38})$",
+      "x-integer-maximum": "170141183460469231731687303715884105727",
+      "x-integer-minimum": "-170141183460469231731687303715884105728"
+    },
+    "Sector": {
+      "type": "object",
+      "properties": {
+        "endTurn": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "pointIndex": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "positiveBelowResolution": {
+          "description": "A positive weight survives in the plan even if its Q32 endpoints coincide.",
+          "type": "boolean"
+        },
+        "startTurn": {
+          "description": "Unwrapped Q32 turns. Adjacent sectors share exactly the same boundary.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "zeroWeight": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "pointIndex",
+        "startTurn",
+        "endTurn",
+        "zeroWeight",
+        "positiveBelowResolution"
+      ]
+    },
+    "SectorLayout": {
+      "type": "object",
+      "properties": {
+        "endpointErrorBound": {
+          "description": "Conservative endpoint error in raw Q32 turn units, relative to start_turn.\nFor a sweep, combine the two endpoint errors. No geometric error claimed.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "profile": {
+          "type": "string"
+        },
+        "sectors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Sector"
+          }
+        },
+        "work": {
+          "$ref": "#/$defs/SectorWork"
+        },
+        "zeroTotal": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "sectors",
+        "zeroTotal",
+        "endpointErrorBound",
+        "work"
+      ]
+    },
+    "SectorWork": {
+      "type": "object",
+      "properties": {
+        "boundaryDecimalDigits": {
+          "description": "Bounds repeated prefix/total arithmetic even if only one weight is wide.",
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0
+        },
+        "numberBytes": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0
+        },
+        "points": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "scaledDecimalDigits": {
+          "description": "Sum of exact integer widths after common decimal scaling, including zeros.",
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "points",
+        "numberBytes",
+        "scaledDecimalDigits",
+        "boundaryDecimalDigits"
+      ]
+    }
+  }
+}

@@ -1,5 +1,6 @@
 use mo_kernel_api::{BidiAnalysisRequest, BidiAnalysisResponse};
 use mo_kernel_api::{CascadeRequest, CascadeResponse, TextAnalysisRequest, TextAnalysisResponse};
+use mo_kernel_api::{ChartSectorsResponse, SectorRequest};
 use mo_kernel_api::{FontMetricsRequest, FontMetricsResponse};
 use mo_kernel_api::{FontOutlinesRequest, FontOutlinesResponse};
 use mo_kernel_api::{
@@ -219,6 +220,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         ("image-scene-response", schema::<ImageSceneRasterResponse>()),
         ("pptx-chart-query", schema::<SourceChartQuery>()),
         ("pptx-chart-response", schema::<PptxChartsResponse>()),
+        ("chart-sector-request", schema::<SectorRequest>()),
+        ("chart-sector-response", schema::<ChartSectorsResponse>()),
         ("pptx-image-query", schema::<SourceImageQuery>()),
         ("pptx-image-response", schema::<PptxImagesResponse>()),
         ("image-raster-request", schema::<ImageRasterRequest>()),
