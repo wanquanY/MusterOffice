@@ -1,0 +1,130 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:chart-geometry-request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ChartGeometryRequest",
+  "type": "object",
+  "properties": {
+    "center": {
+      "description": "Explicit local chart coordinates, Q32 EMU. No layout/theme defaults.",
+      "$ref": "#/$defs/Point"
+    },
+    "coordinateTolerance": {
+      "description": "Maximum per-axis local error, including decimal angular allocation,\ninterval/control conversion and curve interpolation, Q32 EMU.",
+      "$ref": "#/$defs/FixedQ32"
+    },
+    "innerRadius": {
+      "description": "Zero creates pie wedges; positive creates a doughnut. Must be < outer.",
+      "$ref": "#/$defs/FixedQ32"
+    },
+    "outerRadius": {
+      "$ref": "#/$defs/FixedQ32"
+    },
+    "sectors": {
+      "$ref": "#/$defs/SectorRequest"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "sectors",
+    "center",
+    "outerRadius",
+    "innerRadius",
+    "coordinateTolerance"
+  ],
+  "$defs": {
+    "ChartDecimalNumber": {
+      "description": "Exact finite decimal spelling, never a JSON floating point number. Semantic validation limits normalized decimal exponent to -4096..4096 and lexical UTF-8 bytes to 1024. Null, blanks, error tokens and infinities are not numeric weights.",
+      "type": "string",
+      "maxLength": 1024,
+      "minLength": 1,
+      "pattern": "^[ \\t\\r\\n]*[+-]?([0-9]+(\\.[0-9]*)?|\\.[0-9]+)([eE][+-]?[0-9]+)?[ \\t\\r\\n]*$"
+    },
+    "FixedQ32": {
+      "description": "Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,38})$",
+      "x-integer-maximum": "170141183460469231731687303715884105727",
+      "x-integer-minimum": "-170141183460469231731687303715884105728"
+    },
+    "NegativeWeights": {
+      "type": "string",
+      "enum": [
+        "reject",
+        "absoluteMagnitude"
+      ]
+    },
+    "Point": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "y": {
+          "$ref": "#/$defs/FixedQ32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "SectorDirection": {
+      "type": "string",
+      "enum": [
+        "clockwise",
+        "counterclockwise"
+      ]
+    },
+    "SectorRequest": {
+      "type": "object",
+      "properties": {
+        "direction": {
+          "$ref": "#/$defs/SectorDirection"
+        },
+        "negativeWeights": {
+          "$ref": "#/$defs/NegativeWeights"
+        },
+        "startTurn": {
+          "description": "Q32 turns from twelve o'clock, in [0, 1). No degree/EMU conversion here.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "weights": {
+          "description": "Explicit drawing order. Stable point indices need not be contiguous.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SectorWeight"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "startTurn",
+        "direction",
+        "negativeWeights",
+        "weights"
+      ]
+    },
+    "SectorWeight": {
+      "type": "object",
+      "properties": {
+        "pointIndex": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "value": {
+          "$ref": "#/$defs/ChartDecimalNumber"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "pointIndex",
+        "value"
+      ]
+    }
+  }
+}

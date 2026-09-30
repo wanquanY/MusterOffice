@@ -1,0 +1,413 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:chart-geometry-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ChartGeometryResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "geometry": {
+          "$ref": "#/$defs/ChartGeometry"
+        },
+        "status": {
+          "type": "string",
+          "const": "computed"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "geometry"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/ChartGeometryFailure"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "error"
+      ]
+    }
+  ],
+  "$defs": {
+    "ChartGeometry": {
+      "type": "object",
+      "properties": {
+        "fillRule": {
+          "$ref": "#/$defs/FillRule"
+        },
+        "layout": {
+          "$ref": "#/$defs/SectorLayout"
+        },
+        "paths": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ChartSectorPath"
+          }
+        },
+        "profile": {
+          "type": "string"
+        },
+        "work": {
+          "$ref": "#/$defs/ChartGeometryWork"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "layout",
+        "fillRule",
+        "paths",
+        "work"
+      ]
+    },
+    "ChartGeometryFailure": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/ChartGeometryFailureCode"
+        },
+        "message": {
+          "type": "string"
+        },
+        "pointIndex": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "ChartGeometryFailureCode": {
+      "type": "string",
+      "enum": [
+        "inputInvalid",
+        "limitExceeded",
+        "precisionExceeded",
+        "numericRange",
+        "cancelled"
+      ]
+    },
+    "ChartGeometryWork": {
+      "type": "object",
+      "properties": {
+        "arcSegments": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "commands": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "paths": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "steps": {
+          "description": "Bounded arithmetic stages; each trigonometric evaluation charges 24.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "paths",
+        "commands",
+        "arcSegments",
+        "steps"
+      ]
+    },
+    "ChartSectorPath": {
+      "type": "object",
+      "properties": {
+        "angularErrorBound": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "arcSegments": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "commands": {
+          "description": "Empty for zero-weight sectors. Positive sub-resolution sectors fail with\nPrecision rather than disappearing from a successful geometry result.\nFull rings use opposite winding subpaths, without a radial stroke seam.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PathCommand"
+          }
+        },
+        "coordinateErrorBound": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "curveErrorBound": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "numericErrorBound": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "pointIndex": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "pointIndex",
+        "commands",
+        "numericErrorBound",
+        "curveErrorBound",
+        "angularErrorBound",
+        "coordinateErrorBound",
+        "arcSegments"
+      ]
+    },
+    "FillRule": {
+      "type": "string",
+      "enum": [
+        "nonzero",
+        "evenodd"
+      ]
+    },
+    "FixedQ32": {
+      "description": "Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,38})$",
+      "x-integer-maximum": "170141183460469231731687303715884105727",
+      "x-integer-minimum": "-170141183460469231731687303715884105728"
+    },
+    "PathCommand": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "move"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "line"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "control": {
+              "$ref": "#/$defs/Point"
+            },
+            "kind": {
+              "type": "string",
+              "const": "quadratic"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "control",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "control1": {
+              "$ref": "#/$defs/Point"
+            },
+            "control2": {
+              "$ref": "#/$defs/Point"
+            },
+            "kind": {
+              "type": "string",
+              "const": "cubic"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "control1",
+            "control2",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "close"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "Point": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "y": {
+          "$ref": "#/$defs/FixedQ32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "Sector": {
+      "type": "object",
+      "properties": {
+        "endTurn": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "pointIndex": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "positiveBelowResolution": {
+          "description": "A positive weight survives in the plan even if its Q32 endpoints coincide.",
+          "type": "boolean"
+        },
+        "startTurn": {
+          "description": "Unwrapped Q32 turns. Adjacent sectors share exactly the same boundary.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "zeroWeight": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "pointIndex",
+        "startTurn",
+        "endTurn",
+        "zeroWeight",
+        "positiveBelowResolution"
+      ]
+    },
+    "SectorLayout": {
+      "type": "object",
+      "properties": {
+        "endpointErrorBound": {
+          "description": "Conservative endpoint error in raw Q32 turn units, relative to start_turn.\nFor a sweep, combine the two endpoint errors. No geometric error claimed.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "profile": {
+          "type": "string"
+        },
+        "sectors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Sector"
+          }
+        },
+        "work": {
+          "$ref": "#/$defs/SectorWork"
+        },
+        "zeroTotal": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "sectors",
+        "zeroTotal",
+        "endpointErrorBound",
+        "work"
+      ]
+    },
+    "SectorWork": {
+      "type": "object",
+      "properties": {
+        "boundaryDecimalDigits": {
+          "description": "Bounds repeated prefix/total arithmetic even if only one weight is wide.",
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0
+        },
+        "numberBytes": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0
+        },
+        "points": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "scaledDecimalDigits": {
+          "description": "Sum of exact integer widths after common decimal scaling, including zeros.",
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "points",
+        "numberBytes",
+        "scaledDecimalDigits",
+        "boundaryDecimalDigits"
+      ]
+    }
+  }
+}

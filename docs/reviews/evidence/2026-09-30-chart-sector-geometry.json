@@ -1,0 +1,2125 @@
+{
+  "format": "musteroffice.chart-sector-geometry/1",
+  "date": "2026-09-30",
+  "baseRevision": "762daebf576f9174a10cfced905e4e248a5535e4",
+  "scope": "Exact-decimal circular sector geometry and diagnostic path rasterization; no source-chart admission, chart styles/labels/editor/writer or Office/WPS compatibility claim. Musterwork runtime remains fixed.",
+  "environment": {
+    "platform": "Darwin",
+    "machine": "arm64",
+    "macOS": "26.2",
+    "cpu": "Apple M4 Max",
+    "memoryBytes": 38654705664,
+    "rust": "rustc 1.92.0 (ded5c06cf 2025-12-08)",
+    "node": "v23.5.0",
+    "profile": "release"
+  },
+  "tests": {
+    "compilerUnitTestsPassed": 100,
+    "chartGeometryUnitTestsIncluded": 9,
+    "publicApiTestsPassed": 2,
+    "strictClippyPassed": true,
+    "generatedTypesChecked": true,
+    "typeScriptCompilationPassed": true,
+    "responseSchemasValid": 130,
+    "requestSchemasValid": 127,
+    "expectedRequestStructuralRejects": 3,
+    "independentOracleNegativeCasesRejected": [
+      "displaced-control",
+      "forged-zero-error"
+    ]
+  },
+  "parity": {
+    "completeResponses": 130,
+    "computed": 55,
+    "expectedErrors": 75,
+    "errorCodes": {
+      "precisionExceeded": 63,
+      "inputInvalid": 10,
+      "limitExceeded": 2
+    },
+    "renderedFrames": 13,
+    "allPixelBytesAndMetadataEqual": true,
+    "interiorExteriorPixelAssertions": 2997704
+  },
+  "independentOracle": {
+    "profile": "chart-geometry-independent-decimal-oracle/1",
+    "sectors": 239,
+    "cubics": 8660,
+    "sampledPoints": 77940,
+    "decimalPrecision": 90,
+    "originalDecimalAngles": true,
+    "allBoundsEncloseSamples": true
+  },
+  "nativeArcRefactorRegression": {
+    "cases": 64,
+    "allCompleteResponsesEqualBeforeAndAfter": true,
+    "previousWasm": {
+      "path": ".codex-work/chart-sectors-20260930/wasm-node/mo_wasm_bg.wasm",
+      "sha256": "3d1ebe317cfef827127642bd99fabc448e8f20e3187eaf3f4dbde726312304e9",
+      "bytes": 17035908
+    },
+    "evidenceSha256": "f0732bce33f87125701b98fafa9fc50b89b8fb18d0c08cfc75a76685e6d52626"
+  },
+  "artifacts": [
+    {
+      "path": "target/release/mo-cli",
+      "sha256": "6abd1674147f4aabe5edc0dd05be3343ab34046ee98105bbe866a8cf8345819e",
+      "bytes": 21591296
+    },
+    {
+      "path": "target/release/mo-raster-worker",
+      "sha256": "45cf64bf5d530dd7b4984aa998f37c0caf9ecd9a75780c5bf87bea97ed2e72e7",
+      "bytes": 13639344
+    },
+    {
+      "path": ".codex-work/chart-geometry-20260930/wasm-node/mo_wasm.js",
+      "sha256": "ecde5a3f9b9a712a7c11a5eff9c2980165efd64dd33e92f682a2ccbe1707ac91",
+      "bytes": 72346
+    },
+    {
+      "path": ".codex-work/chart-geometry-20260930/wasm-node/mo_wasm_bg.wasm",
+      "sha256": "ab67c1a51c020f48f5e53fa9d084e84db23b51801616d0ab830710f39cc283cd",
+      "bytes": 17067325
+    },
+    {
+      "path": ".codex-work/snapshot-scopes/wasm/mo-skia.mjs",
+      "sha256": "a2f6139aecc20512c52d84612d9264d74f90422d957a83c83e14e1be6cda544c",
+      "bytes": 14230
+    },
+    {
+      "path": ".codex-work/snapshot-scopes/wasm/mo-skia.wasm",
+      "sha256": "c8792a9c86a4e3231692c37d8f986d00be5a8bb807bbc9a0099662329495bba2",
+      "bytes": 2388651
+    },
+    {
+      "path": ".codex-work/raster-component/index.js",
+      "sha256": "91f1d088ea8f41c0867dd2b84290fec74f258edca5448b50becc3baeec55d54c",
+      "bytes": 16887
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "Cargo.lock",
+      "sha256": "1e4b67039ea618f08335087d4a1b3ff35739d27812b63a0c92cbe99ccedbab3f",
+      "bytes": 30335
+    },
+    {
+      "path": "contracts/generated/chart-geometry-request.schema.json",
+      "sha256": "1ff262cb6a0c747d3ef58ad4a1ea539114a7332b5a481ddc5d43f2b74dbbb04d",
+      "bytes": 3665
+    },
+    {
+      "path": "contracts/generated/chart-geometry-response.schema.json",
+      "sha256": "96506c1fb3ab5715d20e75c38b39e102887279694a24dcc1cc1d417df0f1bcb8",
+      "bytes": 9883
+    },
+    {
+      "path": "crates/mo-charts/src/number.rs",
+      "sha256": "7a071bfa8736d53be86aac38428c4244996d163585bff47114afdb8bb45a8e3e",
+      "bytes": 4955
+    },
+    {
+      "path": "crates/mo-charts/src/sectors.rs",
+      "sha256": "b68d4a48d035222fadc01b76164d030302249a638639c892a8f9be5c1a6bc5d8",
+      "bytes": 9013
+    },
+    {
+      "path": "crates/mo-kernel-api/src/chart_geometry.rs",
+      "sha256": "f2bc76320f69d37b79e83a6ac5418b9649e22d8a3702a20457c0f6ea434f1a03",
+      "bytes": 3125
+    },
+    {
+      "path": "crates/mo-kernel-api/src/lib.rs",
+      "sha256": "dca207263cc93d512e1fc86f7b2dacebe4c54c45d55ec391e1cb54ce407191fe",
+      "bytes": 6770
+    },
+    {
+      "path": "crates/mo-kernel-api/tests/chart_geometry.rs",
+      "sha256": "c1cff630678c416f6e1756438d75be75ed6d652c289f7990073f15a6917963f6",
+      "bytes": 2506
+    },
+    {
+      "path": "crates/mo-presentation-compile/Cargo.toml",
+      "sha256": "85c528f129141f6b29a69e3288a773aadf9e6c128a502e6510178b8a97d8b6de",
+      "bytes": 875
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/chart_geometry.rs",
+      "sha256": "83636f9b10130f28a3df95af387b010327dccfb80d01126b2ccec614372f8bfe",
+      "bytes": 10372
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/chart_geometry/tests.rs",
+      "sha256": "fab518d00d63726e06e8b35c56c5e022dd41760cca5803fae0f3266fe78fb248",
+      "bytes": 12338
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/chart_geometry/types.rs",
+      "sha256": "57f97cc8866b9e22ffc3feeb4e0054dde625b027b9b22696798e6e44fe5ae39e",
+      "bytes": 3086
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/hermite_arc.rs",
+      "sha256": "996af866c42cd09e86781b4c4c6d26866bc354ad7c5bca8a0419c80cf8576428",
+      "bytes": 1414
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/interval.rs",
+      "sha256": "f51e09bcad094318db6247c33639b650559bf70d438871c9176b8cb13a3f4360",
+      "bytes": 3168
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/lib.rs",
+      "sha256": "f11a995563d146bd35c1b6650830822b2f4378155be6484b6a553ec32c3b2518",
+      "bytes": 1703
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/native_paths/math.rs",
+      "sha256": "6611a047c674dc50748b70c8b6b98ed3f33e08ed88b471591768880e23aabbd1",
+      "bytes": 4944
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/native_paths/path.rs",
+      "sha256": "5d5054b5f98a9c359af80ad53ff5ee1af506a382638b1b749e43ff31467e6c25",
+      "bytes": 9513
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/trig.rs",
+      "sha256": "ad4dee09d25f34f61f0a18a6f8d3378e9c85965c55f894a790bc50466cc4135b",
+      "bytes": 3756
+    },
+    {
+      "path": "crates/mo-wasm/src/lib.rs",
+      "sha256": "d3b90c73ed85fd7fa54d8ade8950a02d5d1711a2c7bd07dd4325200b22153370",
+      "bytes": 6899
+    },
+    {
+      "path": "fixtures/charts/geometry/full-ring.json",
+      "sha256": "efde3c08ceb628012b921de640ebe858cc5fc71a97c432e896cbf681f9abf4d7",
+      "bytes": 351
+    },
+    {
+      "path": "fixtures/charts/geometry/reverse-ring.json",
+      "sha256": "b52f0415863ba84a895217c5a8b21dda8c2ae82c222b2c94b49a4a53b28b9adf",
+      "bytes": 359
+    },
+    {
+      "path": "fixtures/charts/geometry/thirds-ring.json",
+      "sha256": "2b7c8ed29af5cc2beb7060e49689a1656283759e5f80f6b98512ed5c3af0276f",
+      "bytes": 471
+    },
+    {
+      "path": "packages/contracts/src/generated/chart-geometry-request.ts",
+      "sha256": "1937db3212c239088dcc5d9d0a5d2fffe040b9e8fd5cf76379de87e07a835aab",
+      "bytes": 2669
+    },
+    {
+      "path": "packages/contracts/src/generated/chart-geometry-response.ts",
+      "sha256": "6f7777ab6b83f75c6f1abe3cd080e694a628c0cd5f2f720bd444325d9d268d51",
+      "bytes": 3008
+    },
+    {
+      "path": "tools/mo-cli/src/main.rs",
+      "sha256": "71ffa39ebf38fa8da2b735d474f27803c499d41312de6b5da33ac04f7625c170",
+      "bytes": 16112
+    },
+    {
+      "path": "tools/mo-contract-codegen/src/main.rs",
+      "sha256": "f6b08ac63560532c1adc84646e7e075027f7d6f604cfdd86877ce84e81fa711b",
+      "bytes": 15294
+    },
+    {
+      "path": "tools/verification/chart-geometry-oracle.py",
+      "sha256": "bceb655d9d54831d65c6301deee9cbdf130eb4eaffebb63dd137e742efd93be2",
+      "bytes": 5111
+    },
+    {
+      "path": "tools/verification/chart-geometry-parity.mjs",
+      "sha256": "44c50272611c16c3339c9361af67e9c9762cc753b6cb11917c6fbbdd95cdb6d9",
+      "bytes": 5461
+    }
+  ],
+  "cases": [
+    {
+      "name": "thirds",
+      "requestSha256": "32c323a66a4f41f9cca0cd20a03b2878f125348f44e6d08004b41c542d76bf3b",
+      "responseSha256": "76d9d5420150d3e06553fd46ffeec949de9be28e29f94d89ac4c900ade556580",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 3,
+        "commands": 105,
+        "arcSegments": 96,
+        "steps": 2866
+      },
+      "pointCount": 3
+    },
+    {
+      "name": "tiny-and-zero",
+      "requestSha256": "028cd868f975dfa2be48382ade1a5260ae711a438c7b42f7cead312a6d84cf60",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "empty",
+      "requestSha256": "23883de789921c78e08ea5e39a54dbb265c6498503fb238dd219d7d0084f74c6",
+      "responseSha256": "0e5e0648088981acdb3c69162aed2fb0be0d4115ab9e5340ae23965730bbf03d",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 0,
+        "commands": 0,
+        "arcSegments": 0,
+        "steps": 1
+      },
+      "pointCount": 0
+    },
+    {
+      "name": "zero",
+      "requestSha256": "aedc9b351408df3bc64c4677de1cc3b80743d67148df3b61bc3873fda5aaedfc",
+      "responseSha256": "0b91eafe081aa5f3ffc900b022d844f3126150b100c3ea50f643a817ca4d6c21",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 3,
+        "commands": 0,
+        "arcSegments": 0,
+        "steps": 4
+      },
+      "pointCount": 3
+    },
+    {
+      "name": "decimal",
+      "requestSha256": "f5153458c8a558cc46c2964fab336b0152061a927703761ca967e18f6e200618",
+      "responseSha256": "969579005a4d6d830bbda0ea6819c06d4cf33b64eedb6ef1931aef49d777250a",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 3,
+        "commands": 185,
+        "arcSegments": 176,
+        "steps": 5267
+      },
+      "pointCount": 3
+    },
+    {
+      "name": "large",
+      "requestSha256": "c5bbcd20023ad5429e90011ea9b658f58059c801a9b1b966ab247898336d25e4",
+      "responseSha256": "2959f1d698718714dd7fefee363ea38d89c6f29e2e202ab4aece77a39e003ce0",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 3,
+        "commands": 185,
+        "arcSegments": 176,
+        "steps": 5267
+      },
+      "pointCount": 3
+    },
+    {
+      "name": "small",
+      "requestSha256": "7377dac25d52c82561eb00ea2ab2a5e259d5973d4c5a35a81ab7f00148ae036c",
+      "responseSha256": "6f269fc20e7efccd9f258a7805a71c3b1d7ccd3b826a2418feea7521e9a43c1d",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 3,
+        "commands": 97,
+        "arcSegments": 88,
+        "steps": 2640
+      },
+      "pointCount": 3
+    },
+    {
+      "name": "extreme",
+      "requestSha256": "c7e4139c0c4b88965540bcaf7d223bdf905f874cc885df78ae6f3645414a1bc2",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "spelling",
+      "requestSha256": "40130ba445268ac51481362c874dd66c51696829307c7dac55a44f3bda0ca912",
+      "responseSha256": "33ac0e5e0b1fd5782cee7616545166215af9ffb1276dbc4de83cd6eeaa594211",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 3,
+        "commands": 141,
+        "arcSegments": 132,
+        "steps": 4021
+      },
+      "pointCount": 3
+    },
+    {
+      "name": "negative",
+      "requestSha256": "d56915e959dfe1a0f5d7b8cd9ceb6f23a132bb31e64141ee234fa5b37991d9e9",
+      "responseSha256": "29bc384a39c396d58049863cb45a3bd511e293e41e1b3896452e0f46ecb29d23",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "inputInvalid"
+    },
+    {
+      "name": "infinite",
+      "requestSha256": "e42bf39440fdae48188ddbd66ca4a636361f881dbb36f9d8d5d5fbef1ddb0d0a",
+      "responseSha256": "c78b1dec84736d8caaf943501bcb9b5ad665a5b173a751ab9467605c6adc566f",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "inputInvalid"
+    },
+    {
+      "name": "error-token",
+      "requestSha256": "95d7e58518109f67417bfb4a596eecacd2fc0eac01a8429e6959559c7b940e0b",
+      "responseSha256": "c78b1dec84736d8caaf943501bcb9b5ad665a5b173a751ab9467605c6adc566f",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "inputInvalid"
+    },
+    {
+      "name": "overscale",
+      "requestSha256": "bd4ca1a98e234f95452fedcc28f205d7438fdf0a9c056fac90efa407539d977c",
+      "responseSha256": "181416a48b43bf5505aae366978795bcc29b37ea1f430ad11ac7aecbc18f90d5",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "inputInvalid"
+    },
+    {
+      "name": "absolute-policy",
+      "requestSha256": "5a8c455747bb1f944b5499b37024026c284f8d8c14327a384f6dce7080beb4cb",
+      "responseSha256": "b35eebaa1b66ac34ee06e03c39719274420fe8f03c22dd56b157fbce8d83a8c9",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 2,
+        "commands": 150,
+        "arcSegments": 144,
+        "steps": 4261
+      },
+      "pointCount": 2
+    },
+    {
+      "name": "duplicate-point",
+      "requestSha256": "7d8a567d5702405c0c577c7cf52cd8fa1ade3bf6adf64df624c911c04d74b259",
+      "responseSha256": "bebe8adcb8f89e92b1a8e9a4db43f433f531fcc330a6ed45d51585436e841ad2",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "inputInvalid"
+    },
+    {
+      "name": "start-outside",
+      "requestSha256": "15e9b7bc0ec52f8e6914fe2c4b2667bb9c762dfb94f312cd04b12d2c05e1c8dd",
+      "responseSha256": "0cdb50e13026bf1e185f8d5687c0f34ffd0f888f1b64d9e428d1d3888dd433ad",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "inputInvalid"
+    },
+    {
+      "name": "point-budget",
+      "requestSha256": "65f82935e7ecf29db8fda326c1d5341d61141d16c1a4a5cb8d524d122ade3886",
+      "responseSha256": "b98d0d8b554799cc24facb48387a30cdc1649fc10ea0639a6e8199875798906c",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "limitExceeded"
+    },
+    {
+      "name": "boundary-work-budget",
+      "requestSha256": "0a0dcb1eee54ec274e3ba430056236934bdde26814d38f145cb7db607c6b38e5",
+      "responseSha256": "f5e01625cb883fd320d18351b7414c88d17a85108a3c4e1b634362fd82f995ce",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "limitExceeded"
+    },
+    {
+      "name": "rational-0",
+      "requestSha256": "1f60b5459cd50a01e5aa238c5cdac2aef0c20c09732ac79ef8fc5f4789315695",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-1",
+      "requestSha256": "7f15408c68de37218b714f6305e182845ef2b55c9d0a8c6ba6f479abe26aa1a7",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-2",
+      "requestSha256": "cc89d5ddbef7b65145881b717911714b992e3698636ed60b996c90a66a003dc6",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-3",
+      "requestSha256": "e3956d7bdbcfff711deb3dc2f7997ab1b5e140a91fc4e8185feae0cfa018f19b",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-4",
+      "requestSha256": "38f3e01b360ce1d0fa5920a0b75cd557c287ee31862ba57588f8124b37878ab5",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-5",
+      "requestSha256": "f108854000e50535965393ae78763bbc3b68d5731f44f7cedb38da15c196b1c5",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-6",
+      "requestSha256": "a6abbcd4678182386c03507d2544e1ca6e5588149cd53f9125b7ef318980f7f3",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-7",
+      "requestSha256": "53d26f66ef2cfc3a6c1de635222f6991fd892185e0f8826d48f4924e3bafefb6",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-8",
+      "requestSha256": "6af26bfccf033d82bc896ccd3cd71d0ca863b6d301db2bfbc094dced22b03ff0",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-9",
+      "requestSha256": "100273f6c92f332c71a830b4cc24e17b243de1468782cf4e04e0e70ed0648b91",
+      "responseSha256": "f2303f08803a67482e23b5523d072312b998172cda541d518f73f399f2f4ea75",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 5,
+        "commands": 84,
+        "arcSegments": 69,
+        "steps": 2210
+      },
+      "pointCount": 5
+    },
+    {
+      "name": "rational-10",
+      "requestSha256": "5df5e0b55f17bc69a427d9b38f53c8d07053c5706b9143900d6a62a8c5620bfa",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-11",
+      "requestSha256": "293990278b38c002971cdc579ee876cb718b39744831b6e6db749023beb17632",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-12",
+      "requestSha256": "de6eff4597f3cacccf48d0e5d31848dead5020dbc7a7fc79d99b7997d478ef40",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-13",
+      "requestSha256": "12c39b953200e46f7875656a65d413a8f37df70ff2841732baac6cca9039fd72",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-14",
+      "requestSha256": "85e57be2afb709a4af1c3583fabc79b104321684fbfb7fbfcdecaaf556fb2319",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-15",
+      "requestSha256": "a06666032235772108d74e5723cdf4d502b5ab402e14f09ec9ac9fda51bdb0f0",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-16",
+      "requestSha256": "452a32b8fc1bb6bf0dde44b0eb01ff864ae268bafa96d51ec0d5b8d2c9d8b74c",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-17",
+      "requestSha256": "950dfd2eebfb03eff96e1cb804cdc5de080ee55b1753e2915247ca2ba98a64bc",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-18",
+      "requestSha256": "070587c0693a2aea73ab61fc9edce0172994614c5d6adb62dc72bb3cefa8ec39",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-19",
+      "requestSha256": "d3814156bd42b168fc2a0966e8488e7e78857c40fda1d4711dbe34a553ba7ea4",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-20",
+      "requestSha256": "67038f07693cf943fce4a94280c9cae33945353be420f4164dcc70886c05b8d6",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-21",
+      "requestSha256": "118ec7b693a8ec4e9bfde04ee293d4681488fe309a509fd18bdaf871faf7a3a1",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-22",
+      "requestSha256": "f4f5e3c0db85a960cde516b8cc698b9e74433efda15fce0998948905c7982cda",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-23",
+      "requestSha256": "c16b9ea598eade97e9fa5e789d1c8973a5ef3ca22076fea196ef195dc3d6bf7f",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-24",
+      "requestSha256": "6445c55f61bbee0799260bbdbf6e365682149f0916e5e9bfa524f90c57b402c9",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-25",
+      "requestSha256": "ad7b28deda74c8baee64b9c2936f3f41c097b7dae802b6ffe013abf0cde6beb6",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-26",
+      "requestSha256": "2df1492ef066172948992c611f4d8b93d73b4af7484cfe1abd6c23818b8d8c49",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-27",
+      "requestSha256": "2257c0a3bd37a27b6e02ed02be4820bfb7901c0a1e035f6a99711710c429e499",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-28",
+      "requestSha256": "82eea1ddb070551d284fd5cc2bf4c35394b153458f83f5c322fbf825a06f1371",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-29",
+      "requestSha256": "20e7a3ed8611ddd327c1e97ed1c281db584ffb17d6f5324f4442b5d75f663de3",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-30",
+      "requestSha256": "8c4a45f7a292f45eecd745ec15c77a14bc54b5fce565c0315276a281c10672ad",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-31",
+      "requestSha256": "701121925de746f7da366acc61d31706d939b7395ad2b140c240e3651104f8e2",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-32",
+      "requestSha256": "b9c37f8abefb6ea51739d50d59401f5fd47b6ea3c8777feb6b2267af0a000bc5",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-33",
+      "requestSha256": "b6b32cde3df326782c226a5eacc5409a6d6fb9ba56856e121fd3ba4dd8cf457c",
+      "responseSha256": "9694a7919fe699ed33ab4dc1fc4780d07ba12ea51c904dbfe0c1b4ca2ef994c1",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 2,
+        "commands": 71,
+        "arcSegments": 65,
+        "steps": 1935
+      },
+      "pointCount": 2
+    },
+    {
+      "name": "rational-34",
+      "requestSha256": "c9749abf4ce59b24f5a6b3a585343fe9773e03b3b8d9465e92ebd02bd3524882",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-35",
+      "requestSha256": "b9613432c1f2908fdca62839d8777860552d89022361f82e287b6a499d8661ad",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-36",
+      "requestSha256": "0d065d425861e96be4c1400e14c1944c42ed81a558b38248f17b715bd5318652",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-37",
+      "requestSha256": "a30244e80ef44f2cb120e0ea86faf51f24102dc107d59305648f3c12f7a4d3e9",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-38",
+      "requestSha256": "2585fc380098cfa214fdcfb3351f9d18baf4d1f90087e36eedaf5e22a070cb65",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-39",
+      "requestSha256": "18551aa055b16ef1343247ed901922e548716d4a2746f7deb3b0d20e28031503",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-40",
+      "requestSha256": "381e4b0357299649c36f9af3b9465d8f2aa9aca5462c36507b2ee992e311ca95",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-41",
+      "requestSha256": "f3b54fc6a16a8b89389eb9643407654f0e5920d9b288d3c766216549a0bdcf00",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-42",
+      "requestSha256": "17775bc3f9a8be694ce465958ef829431c69d04987a8dd26de9c0bc4098c9f47",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-43",
+      "requestSha256": "a3fd945fcc1c052cc6ef41dfd3906b18be18c794022bf419b8e499c3251abddd",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-44",
+      "requestSha256": "b9a7f556900d1b6a83c83470e7de21a9eb333a5e868e1b9562a90080d68ec3ba",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-45",
+      "requestSha256": "6e614c81e324aaf66311c8b19b05d17d07f439033cc76d8b090c574617a08b05",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-46",
+      "requestSha256": "73d025f675bc3062261df394e098fb4948f5d07c2bad4f887c0d89153ea2fe8d",
+      "responseSha256": "c98076b0d3920a2891f5005595a6be93e9a5240241c07f30e00809eb1e1a20ae",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 1,
+        "commands": 132,
+        "arcSegments": 128,
+        "steps": 3702
+      },
+      "pointCount": 1
+    },
+    {
+      "name": "rational-47",
+      "requestSha256": "c8a36119cb67447f46c718fabb3fb45265eb33fc0fed8bc957cba7ca23d92a5e",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-48",
+      "requestSha256": "4855101ddda0de697fefc3cf21e3a5af1d4c15900894d52a4b0623b14d416b19",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-49",
+      "requestSha256": "6abb90d0146a46e8626603d4e92bd0f94b01c070f939fe30ca857e12be796e53",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-50",
+      "requestSha256": "549b5d80d129a9534e4e37bbebdd5ca59f146d9bff55964145f45e66a72b5254",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-51",
+      "requestSha256": "ec82022cfc64cade061b94ff9803c9df68fe2394f2ad12389761301e0a70a706",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-52",
+      "requestSha256": "84db0be9c221157e7110d49a828eb303207de986aa544977c4c7b8bdb0a5b88c",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-53",
+      "requestSha256": "29049792b5534dc6f47b18624f9926591d2c1d6ffe6f229fd7e48efe1946f6bb",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-54",
+      "requestSha256": "d82d81977012450399ff5dc1e93f6ebe91bc1a3bc18ab36aab9468ffa0e5a6cd",
+      "responseSha256": "e4f4fed7b3ee7f1d69bccf8a2f0a6beddc3edd9006bf21921938db97250d5aa5",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 2,
+        "commands": 71,
+        "arcSegments": 65,
+        "steps": 1935
+      },
+      "pointCount": 2
+    },
+    {
+      "name": "rational-55",
+      "requestSha256": "1c7edc7d89ef0684e110bc97524c7d41d0d744cd6922ab01e5d48bc39298e30d",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-56",
+      "requestSha256": "a42d2151b676c2091da6278340420acb2d87119d47f6a1cbca14a029a9bf03b9",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-57",
+      "requestSha256": "db7a71cd50948b35f1c58ae7305d43ecd804c5f40e4b60bb234feaf0eb89f259",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-58",
+      "requestSha256": "b21b2f261191a5f59fc1af64a7a236c2c1bdd50139cc60852d505c890a49fc57",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-59",
+      "requestSha256": "b4d22ccd298bd8f81b5fdfff4b86e82beedb0b923d172523116f818dacfddb87",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-60",
+      "requestSha256": "407577321c08ef0119d55b11f839bc66913830797b50d3d97361ccfbfb8b758d",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-61",
+      "requestSha256": "b12507611a4e047d7f2548640bb104974aba1dc739044a6c5d14434a84a27024",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-62",
+      "requestSha256": "e257af2eee82303481bc38016fdec5435481adcb51334805d956d651275a003f",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "rational-63",
+      "requestSha256": "b2c6a427c40489b1297e1a586f439956e281696d559ffe24c21d5ae2850de9fc",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "actual-doughnut-values-1",
+      "requestSha256": "ffa7b08ee788926d6216a2d40bff1698956678d180f37544a5df6198ddac70e7",
+      "responseSha256": "b16e089a0bcf8a841d8f144f4f56d653c6988b8c820daf020f55a068fe57950b",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 3,
+        "commands": 153,
+        "arcSegments": 144,
+        "steps": 4372
+      },
+      "pointCount": 3
+    },
+    {
+      "name": "actual-doughnut-values-3",
+      "requestSha256": "613d467353bb3143287a97b1ed9e145f3c75e6aab4daf886d7d85a08e977306e",
+      "responseSha256": "fe87780ba538698d06d9a148e71b9b03f65c2ed4c70ad3fa5a4ca985848a7031",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 3,
+        "commands": 169,
+        "arcSegments": 160,
+        "steps": 4821
+      },
+      "pointCount": 3
+    },
+    {
+      "name": "full-pie",
+      "requestSha256": "b36406e047a9d5e2535705370752c353bc48863635df00d29ff816606a96b4f7",
+      "responseSha256": "5d1f4b10f50c580b546059795a11f244350d8051e702a2d90032322a22be553b",
+      "status": "computed",
+      "rendered": [
+        {
+          "mode": "fill",
+          "width": 512,
+          "height": 512,
+          "pixelsSha256": "ae17e87147461be3bc111c1454caa16f0cee4b3e9f9f5b93bc517fc045f59526",
+          "bytes": 1048576,
+          "requestSha256": "fa71ad8e604bd0779e6ebaae7311c98c73a6eecda5d2d20d78a138855a43e2be",
+          "metadata": {
+            "status": "rendered",
+            "info": {
+              "profile": "skia-8d6d37b-q32-world-brushes-srgb-premul-rgba8-v4-draft",
+              "width": 512,
+              "height": 512,
+              "byteLength": "1048576",
+              "sha256": "ae17e87147461be3bc111c1454caa16f0cee4b3e9f9f5b93bc517fc045f59526",
+              "frameSha256": "24754e3e8900923d40c1fe2319769b993f3d337a5a1e53f2597f158d4dc07a7e",
+              "work": {
+                "paths": 1,
+                "commands": 66,
+                "draws": 1,
+                "drawnCommands": 66,
+                "coordinateErrorBound": "98149",
+                "strokeStyles": 0,
+                "strokeDraws": 0,
+                "strokeWidthErrorBound": "0",
+                "miterLimitErrorBound": "0",
+                "gradients": 0,
+                "gradientStops": 0,
+                "gradientDraws": 0,
+                "gradientCoordinateErrorBound": "0",
+                "gradientValueErrorBound": 0
+              }
+            }
+          },
+          "totalCoordinateErrorPixelsQ32": "307213",
+          "verifiedPixels": 254524,
+          "exactNativeWasmPixels": true
+        },
+        {
+          "mode": "stroke",
+          "width": 512,
+          "height": 512,
+          "pixelsSha256": "6d61e229e50391da6ee1db471471ca13cda936e6d25b5301869602d5c9ad3c8a",
+          "bytes": 1048576,
+          "requestSha256": "d3dad536324331731ac3135732f3bd84dbab4f93c86c6496f689a9b765c47f46",
+          "metadata": {
+            "status": "rendered",
+            "info": {
+              "profile": "skia-8d6d37b-q32-world-brushes-srgb-premul-rgba8-v4-draft",
+              "width": 512,
+              "height": 512,
+              "byteLength": "1048576",
+              "sha256": "6d61e229e50391da6ee1db471471ca13cda936e6d25b5301869602d5c9ad3c8a",
+              "frameSha256": "3dddb78a5ccc6a2b6ac2aadaaa43e8b1a79dc40bf16308d337d5ab77962ca6f9",
+              "work": {
+                "paths": 1,
+                "commands": 66,
+                "draws": 1,
+                "drawnCommands": 66,
+                "coordinateErrorBound": "98149",
+                "strokeStyles": 1,
+                "strokeDraws": 1,
+                "strokeWidthErrorBound": "0",
+                "miterLimitErrorBound": "0",
+                "gradients": 0,
+                "gradientStops": 0,
+                "gradientDraws": 0,
+                "gradientCoordinateErrorBound": "0",
+                "gradientValueErrorBound": 0
+              }
+            }
+          },
+          "totalCoordinateErrorPixelsQ32": "307213",
+          "verifiedPixels": 254524,
+          "exactNativeWasmPixels": true
+        }
+      ],
+      "work": {
+        "paths": 1,
+        "commands": 66,
+        "arcSegments": 64,
+        "steps": 1852
+      },
+      "pointCount": 1
+    },
+    {
+      "name": "full-ring",
+      "requestSha256": "efde3c08ceb628012b921de640ebe858cc5fc71a97c432e896cbf681f9abf4d7",
+      "responseSha256": "091ce2ca06eaed397b715b58595ff779a18cf562f574ec7769b26f5aa7a6dcf6",
+      "status": "computed",
+      "rendered": [
+        {
+          "mode": "fill",
+          "width": 512,
+          "height": 512,
+          "pixelsSha256": "b786151c2eef07dae784c49a8f5c284977bab9809459688f2a320f566527d91a",
+          "bytes": 1048576,
+          "requestSha256": "7099f6ad2b1f7384a569c184bd2d95f86ddd128788119567545198a8d468eaa1",
+          "metadata": {
+            "status": "rendered",
+            "info": {
+              "profile": "skia-8d6d37b-q32-world-brushes-srgb-premul-rgba8-v4-draft",
+              "width": 512,
+              "height": 512,
+              "byteLength": "1048576",
+              "sha256": "b786151c2eef07dae784c49a8f5c284977bab9809459688f2a320f566527d91a",
+              "frameSha256": "10d3bf8a5dd5db5639a64c1cd2bf4f151258477cb4a5a32fe3ab9b35f7e616fc",
+              "work": {
+                "paths": 1,
+                "commands": 132,
+                "draws": 1,
+                "drawnCommands": 132,
+                "coordinateErrorBound": "137206",
+                "strokeStyles": 0,
+                "strokeDraws": 0,
+                "strokeWidthErrorBound": "0",
+                "miterLimitErrorBound": "0",
+                "gradients": 0,
+                "gradientStops": 0,
+                "gradientDraws": 0,
+                "gradientCoordinateErrorBound": "0",
+                "gradientValueErrorBound": 0
+              }
+            }
+          },
+          "totalCoordinateErrorPixelsQ32": "346270",
+          "verifiedPixels": 250060,
+          "exactNativeWasmPixels": true
+        },
+        {
+          "mode": "stroke",
+          "width": 512,
+          "height": 512,
+          "pixelsSha256": "41815ef8c80348162992da49107e908c9c4ec6758db86a688896b93f69f3d041",
+          "bytes": 1048576,
+          "requestSha256": "2582b24fe4d1bfb7efb6ed31c5c71944a4024e049c41bf6fb59f92c5ce1faad7",
+          "metadata": {
+            "status": "rendered",
+            "info": {
+              "profile": "skia-8d6d37b-q32-world-brushes-srgb-premul-rgba8-v4-draft",
+              "width": 512,
+              "height": 512,
+              "byteLength": "1048576",
+              "sha256": "41815ef8c80348162992da49107e908c9c4ec6758db86a688896b93f69f3d041",
+              "frameSha256": "8880b3bf1835f65b358850b2dea60ecad298182578fc9f515be121c6da5b21d1",
+              "work": {
+                "paths": 1,
+                "commands": 132,
+                "draws": 1,
+                "drawnCommands": 132,
+                "coordinateErrorBound": "137206",
+                "strokeStyles": 1,
+                "strokeDraws": 1,
+                "strokeWidthErrorBound": "0",
+                "miterLimitErrorBound": "0",
+                "gradients": 0,
+                "gradientStops": 0,
+                "gradientDraws": 0,
+                "gradientCoordinateErrorBound": "0",
+                "gradientValueErrorBound": 0
+              }
+            }
+          },
+          "totalCoordinateErrorPixelsQ32": "346270",
+          "verifiedPixels": 250060,
+          "exactNativeWasmPixels": true
+        }
+      ],
+      "work": {
+        "paths": 1,
+        "commands": 132,
+        "arcSegments": 128,
+        "steps": 3702
+      },
+      "pointCount": 1
+    },
+    {
+      "name": "reverse-ring",
+      "requestSha256": "b52f0415863ba84a895217c5a8b21dda8c2ae82c222b2c94b49a4a53b28b9adf",
+      "responseSha256": "a70f591dc96516e34938fad22e179e97d62e02fa215fbee45ea572af04266943",
+      "status": "computed",
+      "rendered": [
+        {
+          "mode": "fill",
+          "width": 512,
+          "height": 512,
+          "pixelsSha256": "a2388f69ec4ced42738c8ff25e4700bedd61882e809aa1e814b133755e046237",
+          "bytes": 1048576,
+          "requestSha256": "c22bf4ddf49190b8e13ab302115700e485ee21b5651a5ccad63a5d2727f97fef",
+          "metadata": {
+            "status": "rendered",
+            "info": {
+              "profile": "skia-8d6d37b-q32-world-brushes-srgb-premul-rgba8-v4-draft",
+              "width": 512,
+              "height": 512,
+              "byteLength": "1048576",
+              "sha256": "a2388f69ec4ced42738c8ff25e4700bedd61882e809aa1e814b133755e046237",
+              "frameSha256": "a478e7812e1074454f7b30add51272d8686ca38f898c25dd2454a49139c1de54",
+              "work": {
+                "paths": 1,
+                "commands": 132,
+                "draws": 1,
+                "drawnCommands": 132,
+                "coordinateErrorBound": "146006",
+                "strokeStyles": 0,
+                "strokeDraws": 0,
+                "strokeWidthErrorBound": "0",
+                "miterLimitErrorBound": "0",
+                "gradients": 0,
+                "gradientStops": 0,
+                "gradientDraws": 0,
+                "gradientCoordinateErrorBound": "0",
+                "gradientValueErrorBound": 0
+              }
+            }
+          },
+          "totalCoordinateErrorPixelsQ32": "355070",
+          "verifiedPixels": 250060,
+          "exactNativeWasmPixels": true
+        },
+        {
+          "mode": "stroke",
+          "width": 512,
+          "height": 512,
+          "pixelsSha256": "b7ba720e6ad7cf69046efd76858e20a8425b9abda93861c9da3f8d7dfec7ba41",
+          "bytes": 1048576,
+          "requestSha256": "2ac6e8b1926c2e36b81357e7b963648b96f9da696d2e3fb540c6ece8cdd902e0",
+          "metadata": {
+            "status": "rendered",
+            "info": {
+              "profile": "skia-8d6d37b-q32-world-brushes-srgb-premul-rgba8-v4-draft",
+              "width": 512,
+              "height": 512,
+              "byteLength": "1048576",
+              "sha256": "b7ba720e6ad7cf69046efd76858e20a8425b9abda93861c9da3f8d7dfec7ba41",
+              "frameSha256": "fa775d690660a86d379790d30423eebdf415a9fe31defec4fa4c06c1dc39f709",
+              "work": {
+                "paths": 1,
+                "commands": 132,
+                "draws": 1,
+                "drawnCommands": 132,
+                "coordinateErrorBound": "146006",
+                "strokeStyles": 1,
+                "strokeDraws": 1,
+                "strokeWidthErrorBound": "0",
+                "miterLimitErrorBound": "0",
+                "gradients": 0,
+                "gradientStops": 0,
+                "gradientDraws": 0,
+                "gradientCoordinateErrorBound": "0",
+                "gradientValueErrorBound": 0
+              }
+            }
+          },
+          "totalCoordinateErrorPixelsQ32": "355070",
+          "verifiedPixels": 250060,
+          "exactNativeWasmPixels": true
+        }
+      ],
+      "work": {
+        "paths": 1,
+        "commands": 132,
+        "arcSegments": 128,
+        "steps": 3702
+      },
+      "pointCount": 1
+    },
+    {
+      "name": "quarters-pie",
+      "requestSha256": "39e9a7ab4ca9eca63569f94295f9e4d886b99ce20b6233beb8e9b19bd0aef826",
+      "responseSha256": "aee51f0809e0ec2d109e59572bc21e456dd1f1b089647ea2e4992925c9a05760",
+      "status": "computed",
+      "rendered": [
+        {
+          "mode": "fill",
+          "width": 512,
+          "height": 512,
+          "pixelsSha256": "f711c1b7304cdefdd64bb807baf4e07a492127fa37b84e57cef38e9c831833b9",
+          "bytes": 1048576,
+          "requestSha256": "73f41dfd967b5a2c06b74a9d51a73b9ccab90c80361407dff4a7527cbffdc782",
+          "metadata": {
+            "status": "rendered",
+            "info": {
+              "profile": "skia-8d6d37b-q32-world-brushes-srgb-premul-rgba8-v4-draft",
+              "width": 512,
+              "height": 512,
+              "byteLength": "1048576",
+              "sha256": "f711c1b7304cdefdd64bb807baf4e07a492127fa37b84e57cef38e9c831833b9",
+              "frameSha256": "8e09f461ac47ec07b0d2d5c38ac5e7be622b6658a2efcfb5f85a818fbe0ea41a",
+              "work": {
+                "paths": 4,
+                "commands": 76,
+                "draws": 4,
+                "drawnCommands": 76,
+                "coordinateErrorBound": "98149",
+                "strokeStyles": 0,
+                "strokeDraws": 0,
+                "strokeWidthErrorBound": "0",
+                "miterLimitErrorBound": "0",
+                "gradients": 0,
+                "gradientStops": 0,
+                "gradientDraws": 0,
+                "gradientCoordinateErrorBound": "0",
+                "gradientValueErrorBound": 0
+              }
+            }
+          },
+          "totalCoordinateErrorPixelsQ32": "307213",
+          "verifiedPixels": 132656,
+          "exactNativeWasmPixels": true
+        }
+      ],
+      "work": {
+        "paths": 4,
+        "commands": 76,
+        "arcSegments": 64,
+        "steps": 2025
+      },
+      "pointCount": 4
+    },
+    {
+      "name": "thirds-ring",
+      "requestSha256": "2b7c8ed29af5cc2beb7060e49689a1656283759e5f80f6b98512ed5c3af0276f",
+      "responseSha256": "faac5c46946ac35dde830d2904ac75202ea5f2120245369cf450b4cc9bcb4646",
+      "status": "computed",
+      "rendered": [
+        {
+          "mode": "fill",
+          "width": 512,
+          "height": 512,
+          "pixelsSha256": "a8ce24d848e730186cca60e634fdd9db305cc057fba38bd604101210019e1986",
+          "bytes": 1048576,
+          "requestSha256": "8b6414d3c658b38fb2c55025b24f8409d675636dfa1df05088341fa5d77d0223",
+          "metadata": {
+            "status": "rendered",
+            "info": {
+              "profile": "skia-8d6d37b-q32-world-brushes-srgb-premul-rgba8-v4-draft",
+              "width": 512,
+              "height": 512,
+              "byteLength": "1048576",
+              "sha256": "a8ce24d848e730186cca60e634fdd9db305cc057fba38bd604101210019e1986",
+              "frameSha256": "21c24332eb45b73ac30f58c1a75a81277c1243e54fb3e784d2d3b066cc785ea0",
+              "work": {
+                "paths": 3,
+                "commands": 201,
+                "draws": 3,
+                "drawnCommands": 201,
+                "coordinateErrorBound": "107563",
+                "strokeStyles": 0,
+                "strokeDraws": 0,
+                "strokeWidthErrorBound": "0",
+                "miterLimitErrorBound": "0",
+                "gradients": 0,
+                "gradientStops": 0,
+                "gradientDraws": 0,
+                "gradientCoordinateErrorBound": "0",
+                "gradientValueErrorBound": 0
+              }
+            }
+          },
+          "totalCoordinateErrorPixelsQ32": "149869",
+          "verifiedPixels": 175676,
+          "exactNativeWasmPixels": true
+        }
+      ],
+      "work": {
+        "paths": 3,
+        "commands": 201,
+        "arcSegments": 192,
+        "steps": 5719
+      },
+      "pointCount": 3
+    },
+    {
+      "name": "reverse-thirds-ring",
+      "requestSha256": "5a486ed9297175a5b43d53878d772d8bb4250243aa82e4f569ce90fc7248391a",
+      "responseSha256": "87827fbdc09dec60013ab12bf132dbd31754aa0e1a42a28876e7019f65fe278c",
+      "status": "computed",
+      "rendered": [
+        {
+          "mode": "fill",
+          "width": 512,
+          "height": 512,
+          "pixelsSha256": "0be59269105998f75379829910fd92c4c5e2a4e1c3d9b7262acca8b7b659a842",
+          "bytes": 1048576,
+          "requestSha256": "7ea840aeacd3178b29612f7e35269d3d3ffb22b628951ee79ad4f439ee297314",
+          "metadata": {
+            "status": "rendered",
+            "info": {
+              "profile": "skia-8d6d37b-q32-world-brushes-srgb-premul-rgba8-v4-draft",
+              "width": 512,
+              "height": 512,
+              "byteLength": "1048576",
+              "sha256": "0be59269105998f75379829910fd92c4c5e2a4e1c3d9b7262acca8b7b659a842",
+              "frameSha256": "eae95c213e42cf4e584f1e418146da93325984a3c7372ad675d16abe581b98fd",
+              "work": {
+                "paths": 3,
+                "commands": 201,
+                "draws": 3,
+                "drawnCommands": 201,
+                "coordinateErrorBound": "143920",
+                "strokeStyles": 0,
+                "strokeDraws": 0,
+                "strokeWidthErrorBound": "0",
+                "miterLimitErrorBound": "0",
+                "gradients": 0,
+                "gradientStops": 0,
+                "gradientDraws": 0,
+                "gradientCoordinateErrorBound": "0",
+                "gradientValueErrorBound": 0
+              }
+            }
+          },
+          "totalCoordinateErrorPixelsQ32": "186226",
+          "verifiedPixels": 175676,
+          "exactNativeWasmPixels": true
+        }
+      ],
+      "work": {
+        "paths": 3,
+        "commands": 201,
+        "arcSegments": 192,
+        "steps": 5719
+      },
+      "pointCount": 3
+    },
+    {
+      "name": "narrow-ring",
+      "requestSha256": "ebe04fb92c6189fa2b66d4f482732d3554258e42727702f99f819c5760dcfa01",
+      "responseSha256": "64faff1b1d3a76b62979fb790f15d47ecf7bf0500808f00263aeca935ca98f42",
+      "status": "computed",
+      "rendered": [
+        {
+          "mode": "fill",
+          "width": 512,
+          "height": 512,
+          "pixelsSha256": "01b8d91928411c5a361611ee55bc7a442f24a077dce15eb9f2b4cbee2bfb3111",
+          "bytes": 1048576,
+          "requestSha256": "b61782ce5d67b842d43b5f5c68a607ea1a3b1ef9d1b4f012eb11e2acc94477a1",
+          "metadata": {
+            "status": "rendered",
+            "info": {
+              "profile": "skia-8d6d37b-q32-world-brushes-srgb-premul-rgba8-v4-draft",
+              "width": 512,
+              "height": 512,
+              "byteLength": "1048576",
+              "sha256": "01b8d91928411c5a361611ee55bc7a442f24a077dce15eb9f2b4cbee2bfb3111",
+              "frameSha256": "5fdfe6a3eb97dff17f54d35032a0cec6a0bef9a04b01beb89152c3518c299719",
+              "work": {
+                "paths": 1,
+                "commands": 132,
+                "draws": 1,
+                "drawnCommands": 132,
+                "coordinateErrorBound": "98149",
+                "strokeStyles": 0,
+                "strokeDraws": 0,
+                "strokeWidthErrorBound": "0",
+                "miterLimitErrorBound": "0",
+                "gradients": 0,
+                "gradientStops": 0,
+                "gradientDraws": 0,
+                "gradientCoordinateErrorBound": "0",
+                "gradientValueErrorBound": 0
+              }
+            }
+          },
+          "totalCoordinateErrorPixelsQ32": "307213",
+          "verifiedPixels": 252144,
+          "exactNativeWasmPixels": true
+        },
+        {
+          "mode": "stroke",
+          "width": 512,
+          "height": 512,
+          "pixelsSha256": "9beaa11db027cefc59cdbaa1f10c2357ae3ec5812524eeb1ffb7501cb01842c9",
+          "bytes": 1048576,
+          "requestSha256": "4cea587d65895ee5e194d730987b57ac1376410aca602c5b02d51f47a47118ca",
+          "metadata": {
+            "status": "rendered",
+            "info": {
+              "profile": "skia-8d6d37b-q32-world-brushes-srgb-premul-rgba8-v4-draft",
+              "width": 512,
+              "height": 512,
+              "byteLength": "1048576",
+              "sha256": "9beaa11db027cefc59cdbaa1f10c2357ae3ec5812524eeb1ffb7501cb01842c9",
+              "frameSha256": "0a7fa5a749e62c2591222a3990f786709eccef02c7cdc25b4e10374bb8210534",
+              "work": {
+                "paths": 1,
+                "commands": 132,
+                "draws": 1,
+                "drawnCommands": 132,
+                "coordinateErrorBound": "98149",
+                "strokeStyles": 1,
+                "strokeDraws": 1,
+                "strokeWidthErrorBound": "0",
+                "miterLimitErrorBound": "0",
+                "gradients": 0,
+                "gradientStops": 0,
+                "gradientDraws": 0,
+                "gradientCoordinateErrorBound": "0",
+                "gradientValueErrorBound": 0
+              }
+            }
+          },
+          "totalCoordinateErrorPixelsQ32": "307213",
+          "verifiedPixels": 252144,
+          "exactNativeWasmPixels": true
+        }
+      ],
+      "work": {
+        "paths": 1,
+        "commands": 132,
+        "arcSegments": 128,
+        "steps": 3702
+      },
+      "pointCount": 1
+    },
+    {
+      "name": "zero-in-ring",
+      "requestSha256": "916c7c7110c88a60abf4510aa80a5d037496bf46ccbfdf9f5d68040faab9cd70",
+      "responseSha256": "cebdd84b413142a5d8086d2e09e7d1aa0ec95030491d28ee80c59836bbb7c534",
+      "status": "computed",
+      "rendered": [
+        {
+          "mode": "fill",
+          "width": 512,
+          "height": 512,
+          "pixelsSha256": "87e1afe67b9cc64aeaf4a82532fe4d0d26c6cce5778050bee922258d8c8d4c65",
+          "bytes": 1048576,
+          "requestSha256": "8cf8885421ea61f8f36f21fa3bd00fb4b55e0470609c000414d2c78d5901880d",
+          "metadata": {
+            "status": "rendered",
+            "info": {
+              "profile": "skia-8d6d37b-q32-world-brushes-srgb-premul-rgba8-v4-draft",
+              "width": 512,
+              "height": 512,
+              "byteLength": "1048576",
+              "sha256": "87e1afe67b9cc64aeaf4a82532fe4d0d26c6cce5778050bee922258d8c8d4c65",
+              "frameSha256": "963b58e7d7627e17f086960ef05cd5ab43c6e6cea2bc33064ed163a812382dbe",
+              "work": {
+                "paths": 3,
+                "commands": 132,
+                "draws": 1,
+                "drawnCommands": 132,
+                "coordinateErrorBound": "98149",
+                "strokeStyles": 0,
+                "strokeDraws": 0,
+                "strokeWidthErrorBound": "0",
+                "miterLimitErrorBound": "0",
+                "gradients": 0,
+                "gradientStops": 0,
+                "gradientDraws": 0,
+                "gradientCoordinateErrorBound": "0",
+                "gradientValueErrorBound": 0
+              }
+            }
+          },
+          "totalCoordinateErrorPixelsQ32": "307213",
+          "verifiedPixels": 250060,
+          "exactNativeWasmPixels": true
+        },
+        {
+          "mode": "stroke",
+          "width": 512,
+          "height": 512,
+          "pixelsSha256": "26967b0c7cb3a2a0b945c1381104f00389bd899b68a2ff1cbdb3a9d49c6cc5e8",
+          "bytes": 1048576,
+          "requestSha256": "3032a47c564068fb6405d68734b577e26ff1e67044d9b527aa3bf3abc4f41380",
+          "metadata": {
+            "status": "rendered",
+            "info": {
+              "profile": "skia-8d6d37b-q32-world-brushes-srgb-premul-rgba8-v4-draft",
+              "width": 512,
+              "height": 512,
+              "byteLength": "1048576",
+              "sha256": "26967b0c7cb3a2a0b945c1381104f00389bd899b68a2ff1cbdb3a9d49c6cc5e8",
+              "frameSha256": "6fc18c4c74a6e24ce6a8ec52fe94d9383f33b995e277a87efa05449601779be6",
+              "work": {
+                "paths": 3,
+                "commands": 132,
+                "draws": 1,
+                "drawnCommands": 132,
+                "coordinateErrorBound": "98149",
+                "strokeStyles": 1,
+                "strokeDraws": 1,
+                "strokeWidthErrorBound": "0",
+                "miterLimitErrorBound": "0",
+                "gradients": 0,
+                "gradientStops": 0,
+                "gradientDraws": 0,
+                "gradientCoordinateErrorBound": "0",
+                "gradientValueErrorBound": 0
+              }
+            }
+          },
+          "totalCoordinateErrorPixelsQ32": "307213",
+          "verifiedPixels": 250060,
+          "exactNativeWasmPixels": true
+        }
+      ],
+      "work": {
+        "paths": 3,
+        "commands": 132,
+        "arcSegments": 128,
+        "steps": 3704
+      },
+      "pointCount": 3
+    },
+    {
+      "name": "equal-radii",
+      "requestSha256": "9da6caf47e6d608d50c7aa727135b397d2d87bc40578252d67c5702a8ffafad1",
+      "responseSha256": "02a4888dc5e0be0afc671ead814b1a69cf7458855a86358316285df9ee137d9e",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "inputInvalid"
+    },
+    {
+      "name": "negative-radius",
+      "requestSha256": "d10252b65e262ce596cf3452ad2980aebe26e2cc923339a69e689e67574bf3ea",
+      "responseSha256": "02a4888dc5e0be0afc671ead814b1a69cf7458855a86358316285df9ee137d9e",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "inputInvalid"
+    },
+    {
+      "name": "invalid-center",
+      "requestSha256": "27bce7d5facb5003b46ca1b8affd953c4746a101dd4dbb7dfcf262c1b47a8441",
+      "responseSha256": "d4a54126c755a93488bf35cf74af7fab1faac67e8cdebc2eb4b2550f57194b4e",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "inputInvalid"
+    },
+    {
+      "name": "tiny-tolerance",
+      "requestSha256": "8435b7fa9181f46aa69e8d8ab59162efca14716b76e9e899a0d9aea88a2cf4f5",
+      "responseSha256": "0ab6e1e2c8c435cdd0633f3264f649bee1204ad57dcf32552e4d9ed3b888d7f6",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "precisionExceeded"
+    },
+    {
+      "name": "unknown-property",
+      "requestSha256": "d14c1c73572d66d6a47723df63c04b0a86352ac93154028ad76d61fcca52509a",
+      "responseSha256": "884badf07f0d2af11e113eca7354b774326858a00a475c3da7e848a86bc1ca4b",
+      "status": "error",
+      "rendered": [],
+      "errorCode": "inputInvalid"
+    },
+    {
+      "name": "balanced-00",
+      "requestSha256": "f8dc5908021eee34b2d27293e5188a552e9cf04196a895c06aa85040262fd20e",
+      "responseSha256": "8cb221f93fb61101f8bcb0bd483a4a0b9a69b157a519f67e58f109fb8933993b",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 5,
+        "commands": 85,
+        "arcSegments": 70,
+        "steps": 2243
+      },
+      "pointCount": 5
+    },
+    {
+      "name": "balanced-01",
+      "requestSha256": "163697b411ab5b602d08633ba4850fea9eb25a938ea976fec8efd0f906068dcb",
+      "responseSha256": "71b63ad2fbdb3233440bb7bce01954d55caa144a6ebbb268c89809b7cc76553a",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 4,
+        "commands": 168,
+        "arcSegments": 156,
+        "steps": 4804
+      },
+      "pointCount": 4
+    },
+    {
+      "name": "balanced-02",
+      "requestSha256": "b06147b8ec61eb64e1d36992350a17df5ddeaf0aceccc2dbbed6736467c0cc1e",
+      "responseSha256": "5fff8d34008c7d150a83d25c8aa8e924cc5d22312a0c378dae74bb30d913c55a",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 3,
+        "commands": 185,
+        "arcSegments": 176,
+        "steps": 5267
+      },
+      "pointCount": 3
+    },
+    {
+      "name": "balanced-03",
+      "requestSha256": "2be0796b35a2afd63e33d4948e3d5bafd4341218ec1e37ac44743b0cd78d71d5",
+      "responseSha256": "ce47482795f70779895288870d993bb18cb1f8e8a3b49ce5749b52d2394b6079",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 3,
+        "commands": 171,
+        "arcSegments": 162,
+        "steps": 4870
+      },
+      "pointCount": 3
+    },
+    {
+      "name": "balanced-04",
+      "requestSha256": "ba96fddb163c8697de7d4ba32ab8474b31b647a7dd220a4109477d5aa300cd46",
+      "responseSha256": "69f8fcb34ab5a7e74269d6c9de3f5ee1e4308408f60d535dcd12592ab12f3c1d",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 9,
+        "commands": 124,
+        "arcSegments": 97,
+        "steps": 3673
+      },
+      "pointCount": 9
+    },
+    {
+      "name": "balanced-05",
+      "requestSha256": "99c0cfe09f3ba3467301e771ecbb1873df65c04e3e652be897732d079abd1fed",
+      "responseSha256": "58789a8d0caf78ecb034ab06d3e9e9d5b9dd4450d72c99a11165120752bb2b42",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 7,
+        "commands": 122,
+        "arcSegments": 101,
+        "steps": 3223
+      },
+      "pointCount": 7
+    },
+    {
+      "name": "balanced-06",
+      "requestSha256": "6a7c0cdf563600ee3ba05cbc37ba6c7d8e547ffa0812429f96c09de007da9bc9",
+      "responseSha256": "1b2e5d76f86e0e8ab626a50f93bc0e50c4bcde5b39fe87c4af705f8c90893478",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 2,
+        "commands": 166,
+        "arcSegments": 160,
+        "steps": 4709
+      },
+      "pointCount": 2
+    },
+    {
+      "name": "balanced-07",
+      "requestSha256": "b1d3d5c59a4303d51018fdeb2518dde308028980ac7709db1287d7da51442fd3",
+      "responseSha256": "53c99a7b435a58cbdbf920b9b1919fd3455c8db8242ef358adbaccfeba1ab412",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 4,
+        "commands": 147,
+        "arcSegments": 135,
+        "steps": 4210
+      },
+      "pointCount": 4
+    },
+    {
+      "name": "balanced-08",
+      "requestSha256": "fd127dccc289914cae8a50380b180a7dac4e188861d51878fd20ac8c12f82694",
+      "responseSha256": "f4c976fcb7726efa25a3bb3c722f98af3bae53f15f6d22a38fb64e7b0c3e208c",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 9,
+        "commands": 129,
+        "arcSegments": 102,
+        "steps": 3810
+      },
+      "pointCount": 9
+    },
+    {
+      "name": "balanced-09",
+      "requestSha256": "4a6a324ccab66b905acc2e402f9134a5c45ec439d485a4529ae91c90db01933c",
+      "responseSha256": "fb9ec2a6f8a9649268e60f7264dc459c41d2e7348e9f2d798265e00f66d380f4",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 2,
+        "commands": 136,
+        "arcSegments": 130,
+        "steps": 3861
+      },
+      "pointCount": 2
+    },
+    {
+      "name": "balanced-10",
+      "requestSha256": "7df4cfdad9a1fcc00ab50f7122a55d3426ec58e229b5d9692cf61bd7f4daed19",
+      "responseSha256": "7e14b94e88186fde3f806a82841e9fad611bfc3a5f80e7fc602af36d48a36819",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 8,
+        "commands": 141,
+        "arcSegments": 117,
+        "steps": 3724
+      },
+      "pointCount": 8
+    },
+    {
+      "name": "balanced-11",
+      "requestSha256": "7f5d47869b4f2245e536b9161030b83a25caf474b224fa0d767d1d6f45c479bd",
+      "responseSha256": "a973ae0e5219cf61d4e9af773d555fe00808b1bd8eb90ef1b24c7011fb484a83",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 3,
+        "commands": 171,
+        "arcSegments": 162,
+        "steps": 4869
+      },
+      "pointCount": 3
+    },
+    {
+      "name": "balanced-12",
+      "requestSha256": "dd7968c0f5c6ca04474faa05f23394311bda6b4a957f2d832f2116a6ec6e008e",
+      "responseSha256": "895d126c7852ab4ed0a4d7f6bcd280ec25ef22303d65a8128424046767d9c1f7",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 4,
+        "commands": 96,
+        "arcSegments": 84,
+        "steps": 2785
+      },
+      "pointCount": 4
+    },
+    {
+      "name": "balanced-13",
+      "requestSha256": "dd32e83d196850632fcf95dcd09afa1bdfd7594e918b66be694c379171b94bf0",
+      "responseSha256": "255082c6d7248f59e7e02e130a8800b3097dbcd1873e6f7b83f085381ec10dcb",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 9,
+        "commands": 197,
+        "arcSegments": 170,
+        "steps": 5736
+      },
+      "pointCount": 9
+    },
+    {
+      "name": "balanced-14",
+      "requestSha256": "d69d18919b87bd853e5827cc889ec593a651db71d00dad7d3c0bb7e9e8798061",
+      "responseSha256": "c31b0e4df8dba6211611a994ddde0fe5865e5f30c5eb9d7e962c463d3c4dd70f",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 4,
+        "commands": 152,
+        "arcSegments": 140,
+        "steps": 4353
+      },
+      "pointCount": 4
+    },
+    {
+      "name": "balanced-15",
+      "requestSha256": "9dd692efbe2aa23915b06f1555c695a0e2b3baeb9ef2e81494ab1e3c5472f947",
+      "responseSha256": "ce3d373c44134fddba808bc2af6f83d85eb46c97eddd0d7b4ed97a277e2e9e51",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 3,
+        "commands": 82,
+        "arcSegments": 73,
+        "steps": 2216
+      },
+      "pointCount": 3
+    },
+    {
+      "name": "balanced-16",
+      "requestSha256": "14d4c8e2613446733da6cdae97ae5d5478d15a577c16783035114a584642cd03",
+      "responseSha256": "5ffd5f6852a5a0f465a4a2cd309a106742add09f82f91cdec3f6fd962ae614e8",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 8,
+        "commands": 117,
+        "arcSegments": 93,
+        "steps": 3455
+      },
+      "pointCount": 8
+    },
+    {
+      "name": "balanced-17",
+      "requestSha256": "f57df2df65c2acc1ff0dd851fb74efa80e8d1272b63c7b89cfb3b6e723c35150",
+      "responseSha256": "d4c9e442c0a3340e5c680b1492482f9cd455d5b6fe513d1673ac90a8eeaa0ec3",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 10,
+        "commands": 224,
+        "arcSegments": 194,
+        "steps": 6506
+      },
+      "pointCount": 10
+    },
+    {
+      "name": "balanced-18",
+      "requestSha256": "79437964f80eed124f1e188a0e7064d7f280578c1b468e896521c5cce8c324bf",
+      "responseSha256": "b943bdea56d98fdfd26cbc45b20a404f0563b93800906b36a4f7f0c76eb4f8c4",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 3,
+        "commands": 140,
+        "arcSegments": 131,
+        "steps": 4002
+      },
+      "pointCount": 3
+    },
+    {
+      "name": "balanced-19",
+      "requestSha256": "53dc73e55b95ee278513d7e915cbef411a3c925b41ea382edca55de774bad922",
+      "responseSha256": "e41801ed44600c420faee226eede6f8133d3cb4d7ff136d4a579aeefc3c8dc56",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 5,
+        "commands": 155,
+        "arcSegments": 140,
+        "steps": 4457
+      },
+      "pointCount": 5
+    },
+    {
+      "name": "balanced-20",
+      "requestSha256": "d1d5429ae313623d05263314199ef190d106d510de90f03abf0df39de2a286ac",
+      "responseSha256": "43cf04b99a29273cd13432ecb2173ed82599237f65c13f3c9e72573f7da1c6dc",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 10,
+        "commands": 81,
+        "arcSegments": 51,
+        "steps": 1979
+      },
+      "pointCount": 10
+    },
+    {
+      "name": "balanced-21",
+      "requestSha256": "02c820b513c1f851c81dac81071a40255df3a29e3bb677a181b738cb986c713a",
+      "responseSha256": "f1d1857375ac58cc0cd4ba09afbee6578f5711f631f8635ca347891966510610",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 10,
+        "commands": 194,
+        "arcSegments": 164,
+        "steps": 5654
+      },
+      "pointCount": 10
+    },
+    {
+      "name": "balanced-22",
+      "requestSha256": "79b816ccfe0c8e7a71f0b60540199eb3c601df094a60c921b05743076d5121bb",
+      "responseSha256": "d585e3b6cb3d9291bd6fa1e6b3926780bb182094afcd5b0296e5012870b7f13f",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 10,
+        "commands": 206,
+        "arcSegments": 176,
+        "steps": 5989
+      },
+      "pointCount": 10
+    },
+    {
+      "name": "balanced-23",
+      "requestSha256": "831f62cde8942c6ae8dfcb09bd3803a2752856a833528b22b05810da096ef715",
+      "responseSha256": "4faa8fa5890a3b375c14e04020f464b445069b44281a6a7e7c9ec1108423e60b",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 5,
+        "commands": 177,
+        "arcSegments": 162,
+        "steps": 5091
+      },
+      "pointCount": 5
+    },
+    {
+      "name": "balanced-24",
+      "requestSha256": "9ee6eeed8e46f8750575c1f6c0f5737c930cfc2cf50967bbf18ef6a04eb077fe",
+      "responseSha256": "60aeb5db4ad045dc8fab00940110146dd2dc8d7db372f95b80fdd9ebfba04690",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 8,
+        "commands": 140,
+        "arcSegments": 116,
+        "steps": 4112
+      },
+      "pointCount": 8
+    },
+    {
+      "name": "balanced-25",
+      "requestSha256": "a5fa5f13b0dafacb943aa1c5995c5c0aa29dcbe53c19532223848c76241b4d13",
+      "responseSha256": "40f3fd2b414374fb96bdcc3eafd0908f128b61b95cda4268e9533bd4922e7e35",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 3,
+        "commands": 82,
+        "arcSegments": 73,
+        "steps": 2216
+      },
+      "pointCount": 3
+    },
+    {
+      "name": "balanced-26",
+      "requestSha256": "438f97d42d6c4d366ea60cdf7f6f7e6b2b05140ed1ddbd2911a0252a6d42c071",
+      "responseSha256": "bf60f6cb253861a62025acc215448bd138adad8252746276c6a9b19b2fdfe83b",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 4,
+        "commands": 176,
+        "arcSegments": 164,
+        "steps": 5038
+      },
+      "pointCount": 4
+    },
+    {
+      "name": "balanced-27",
+      "requestSha256": "4fe291f75ada1f6d3a9ecbd3bc9e05cc0d669f337b6e2e1f19e9baf3de9f0526",
+      "responseSha256": "2a574c4aa9bf76128a597614436e457a0dcfbf844da36e968c0102ee1cbf7de5",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 2,
+        "commands": 136,
+        "arcSegments": 130,
+        "steps": 3861
+      },
+      "pointCount": 2
+    },
+    {
+      "name": "balanced-28",
+      "requestSha256": "eac19777bf465ebca1fcd5f54d5add1093b49ac363bae7afdd996f51479b4c92",
+      "responseSha256": "5c79ebf89e785ff25879cac4c72115288511f9597334e25a4792f3f5aab954d3",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 3,
+        "commands": 111,
+        "arcSegments": 102,
+        "steps": 3182
+      },
+      "pointCount": 3
+    },
+    {
+      "name": "balanced-29",
+      "requestSha256": "022a7c1e6284f9514f366c3bcfb69208cfd4d2247ca117626e4f1159b05f0404",
+      "responseSha256": "aab0defd26e60a19602db00eb6dc7de61d0c3e1c6952f44b5fc51aaa96652534",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 5,
+        "commands": 171,
+        "arcSegments": 156,
+        "steps": 4911
+      },
+      "pointCount": 5
+    },
+    {
+      "name": "balanced-30",
+      "requestSha256": "d30ab2df554d4d6d4e62442c165e020e7a00086b01297bc673df6ddad9d52ce6",
+      "responseSha256": "bd355bd6228abe955be29120554e02d1f83da0fcd09329fb1373a99ca44f934f",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 12,
+        "commands": 146,
+        "arcSegments": 110,
+        "steps": 3743
+      },
+      "pointCount": 12
+    },
+    {
+      "name": "balanced-31",
+      "requestSha256": "cc08d21d1f10ccb2f9a47c18579d2eaf761985f10e634047c6a12ca996fc0ac5",
+      "responseSha256": "e618a5e5f5568ca13f8d65721b2840559c4aaabb38d4cd5d5e3ded8acfc7cd47",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 8,
+        "commands": 172,
+        "arcSegments": 148,
+        "steps": 4993
+      },
+      "pointCount": 8
+    },
+    {
+      "name": "angular-budget-headroom",
+      "requestSha256": "075ddb5dace2b7a70be8c67245c792c966001619b4d94007fa1d1942d1bee917",
+      "responseSha256": "cee7a9fedbdc2b7f6760fc6a2d5adac17030831896a58cb4b34e2b64389b1a5a",
+      "status": "computed",
+      "rendered": [],
+      "work": {
+        "paths": 1,
+        "commands": 2050,
+        "arcSegments": 2048,
+        "steps": 57409
+      },
+      "pointCount": 1
+    }
+  ],
+  "manualReview": {
+    "overviewSha256": "ff8f1d46895734661e11796392a8a8c48a482b787d8b903c505438772d2bfcd1",
+    "ownedGeometryImagesViewed": true,
+    "sourceChartAppearanceAccepted": false
+  },
+  "productRuntimeChanged": false,
+  "sourceChartRenderingProven": false,
+  "officeWpsProven": false,
+  "fullReplacementAccepted": false
+}

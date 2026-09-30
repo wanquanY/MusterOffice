@@ -1,5 +1,5 @@
 use super::{CompiledNativePath, NativePathError, NativePathIssue, NativePathSpan, Work, math};
-use crate::{interval::Interval as I, trig};
+use crate::{hermite_arc, interval::Interval as I, trig};
 use mo_geometry::{Fixed, PathCommand as C, Point};
 use mo_presentation_source::source::geometry::evaluate::{
     EvaluatedCommand as E, EvaluatedPath, EvaluatedPoint,
@@ -93,20 +93,11 @@ impl Builder<'_, '_> {
         loop {
             self.work.step()?;
             h = delta.divide(i64::from(n));
-            let h2 = h.mul(&h);
-            let fourth = h2.mul(&h2).abs_upper().divide(384);
-            error = [
-                radii[0]
-                    .mul(&self.scale[0])
-                    .mul(&fourth)
-                    .upper_q32()
-                    .map_err(|_| self.work.numeric())?,
-                radii[1]
-                    .mul(&self.scale[1])
-                    .mul(&fourth)
-                    .upper_q32()
-                    .map_err(|_| self.work.numeric())?,
-            ];
+            error = hermite_arc::error(
+                &[radii[0].mul(&self.scale[0]), radii[1].mul(&self.scale[1])],
+                &h,
+            )
+            .map_err(|_| self.work.numeric())?;
             if crate::coordinate_budget::curve_fits_local(error, self.tolerance) {
                 break;
             }
@@ -132,7 +123,6 @@ impl Builder<'_, '_> {
             current[0].sub(&radii[0].mul(&cs[0])),
             current[1].sub(&radii[1].mul(&cs[1])),
         ];
-        let tangent = h.divide(3);
         let mut to = current.clone();
         for j in 0..n {
             self.work.step()?;
@@ -146,18 +136,10 @@ impl Builder<'_, '_> {
                 )
             };
             let next = math::cos_sin(&angle, self.work)?;
-            let control1 = self.point(&[
-                center[0].add(&radii[0].mul(&cs[0].sub(&tangent.mul(&cs[1])))),
-                center[1].add(&radii[1].mul(&cs[1].add(&tangent.mul(&cs[0])))),
-            ])?;
-            let control2 = self.point(&[
-                center[0].add(&radii[0].mul(&next[0].add(&tangent.mul(&next[1])))),
-                center[1].add(&radii[1].mul(&next[1].sub(&tangent.mul(&next[0])))),
-            ])?;
-            to = [
-                center[0].add(&radii[0].mul(&next[0])),
-                center[1].add(&radii[1].mul(&next[1])),
-            ];
+            let [c1, c2, end] = hermite_arc::cubic(&center, &radii, &cs, &next, &h);
+            let control1 = self.point(&c1)?;
+            let control2 = self.point(&c2)?;
+            to = end;
             let p = self.point(&to)?;
             self.push(C::Cubic {
                 control1,

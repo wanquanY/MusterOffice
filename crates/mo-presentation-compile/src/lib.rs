@@ -1,7 +1,9 @@
 //! Presentation author semantics to evaluated geometry. The placement stage is
 //! shared by later painting/hit-testing; it does not resolve text, images or paint.
 mod angle;
+pub mod chart_geometry;
 mod coordinate_budget;
+mod hermite_arc;
 pub mod incremental;
 mod interval;
 mod interval_extended;
