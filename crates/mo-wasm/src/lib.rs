@@ -55,6 +55,11 @@ pub fn compute_pptx_chart_paints(request: &str, source: &[u8]) -> String {
 }
 
 #[wasm_bindgen]
+pub fn compile_pptx_chart_plot(request: &str, source: &[u8]) -> String {
+    mo_kernel_api::compile_pptx_chart_plot_json(request, source)
+}
+
+#[wasm_bindgen]
 pub fn layout_chart_sectors(request: &str) -> String {
     mo_kernel_api::layout_chart_sectors_json(request, &|| false)
 }

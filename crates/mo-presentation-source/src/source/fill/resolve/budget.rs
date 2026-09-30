@@ -4,7 +4,7 @@ use crate::{
     source::{drawingml::*, fill::*},
 };
 
-pub(super) struct Budget<'a> {
+pub(in crate::source) struct Budget<'a> {
     pub limits: FillResolveLimits,
     pub check: &'a dyn Fn() -> bool,
     steps: usize,
@@ -98,7 +98,9 @@ impl<'a> Budget<'a> {
                 self.bytes(part.len())?;
                 self.bytes(via.part.len())?;
             }
-            FillOrigin::SchemaDefault { part, .. } => self.bytes(part.len())?,
+            FillOrigin::Chart { part, .. } | FillOrigin::SchemaDefault { part, .. } => {
+                self.bytes(part.len())?
+            }
             FillOrigin::ProfileDefault {} => (),
         }
         Ok(origin.clone())
@@ -108,6 +110,7 @@ impl<'a> Budget<'a> {
         let mut origin = self.origin(origin)?;
         match &mut origin {
             FillOrigin::Declaration { source_ordinal, .. }
+            | FillOrigin::Chart { source_ordinal, .. }
             | FillOrigin::TableStyle { source_ordinal, .. }
             | FillOrigin::Theme { source_ordinal, .. }
             | FillOrigin::SchemaDefault { source_ordinal, .. } => *source_ordinal = ordinal,
@@ -115,7 +118,7 @@ impl<'a> Budget<'a> {
         }
         Ok(origin)
     }
-    pub fn bind<T: Lexical + Clone>(
+    pub(super) fn bind<T: Lexical + Clone>(
         &mut self,
         value: &T,
         origin: &FillOrigin,

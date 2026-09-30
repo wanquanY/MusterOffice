@@ -16,7 +16,7 @@ use image::Image;
 use rectangle::InheritedRect;
 
 #[derive(Clone, Copy)]
-pub(super) enum Input<'a> {
+pub(in crate::source) enum Input<'a> {
     None,
     Solid(Option<&'a SourceColor>),
     Gradient(&'a SourceGradientFill),
@@ -45,7 +45,7 @@ enum Fields {
     Group,
 }
 #[derive(Default)]
-pub(super) struct Partial {
+pub(in crate::source) struct Partial {
     origin: Option<FillOrigin>,
     fields: Option<Fields>,
 }

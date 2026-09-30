@@ -281,6 +281,11 @@ export type EffectiveFill =
 
 export type FillOrigin =
   | {
+      kind: "chart";
+      part: string;
+      sourceOrdinal: number;
+    }
+  | {
       kind: "declaration";
       owner: FillOwner;
       sourceOrdinal: number;
@@ -937,6 +942,11 @@ export type LineOutcome =
     };
 
 export type LineOrigin =
+  | {
+      kind: "chart";
+      part: string;
+      sourceOrdinal: number;
+    }
   | {
       cell: SourceCellAddress;
       edge: TableCellEdge;

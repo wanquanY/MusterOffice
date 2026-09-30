@@ -109,15 +109,7 @@ pub fn compile(
     check: &dyn Fn() -> bool,
 ) -> Result<SourceCircularGeometry, SourceCircularError> {
     cancel(check)?;
-    if request.outer_radius.raw() <= 0
-        || request.outer_radius.raw() > (27_273_042_316_900i128 << 32)
-        || request.coordinate_tolerance.raw() <= 0
-    {
-        return Err(chart_geometry::ChartGeometryError::Invalid(
-            "source chart radius or tolerance",
-        )
-        .into());
-    }
+    validate(request)?;
     let sources = query(
         package,
         index,
@@ -135,6 +127,17 @@ pub fn compile(
         .find(|b| b.object == request.object)
         .ok_or_else(|| PptxError::SourceConflict("chart object binding missing".into()))?;
     let chart = &sources.charts[binding.chart as usize];
+    compile_prepared(chart, request, limits.geometry, check)
+}
+
+pub(crate) fn compile_prepared(
+    chart: &SourceChartPart,
+    request: &SourceCircularRequest,
+    geometry_limits: chart_geometry::ChartGeometryLimits,
+    check: &dyn Fn() -> bool,
+) -> Result<SourceCircularGeometry, SourceCircularError> {
+    cancel(check)?;
+    validate(request)?;
     if let Some(ordinal) = chart.extension_ordinals.first() {
         return Err(unresolved(
             *ordinal,
@@ -197,7 +200,7 @@ pub fn compile(
             "pie requires one series; doughnut requires nonempty series",
         ));
     }
-    if plot.series.len() > limits.geometry.max_paths as usize {
+    if plot.series.len() > geometry_limits.max_paths as usize {
         return Err(chart_geometry::ChartGeometryError::Limit("source series").into());
     }
     let first_slice_degrees = property(plot, ChartPropertyKind::FirstSliceAngle, 360, false)?;
@@ -233,7 +236,7 @@ pub fn compile(
     let denominator = 100u32
         .checked_mul(count)
         .ok_or(chart_geometry::ChartGeometryError::Range)?;
-    let mut remaining = limits.geometry;
+    let mut remaining = geometry_limits;
     let mut output = Vec::with_capacity(order.len());
     for (position, series) in order.into_iter().enumerate() {
         cancel(check)?;
@@ -315,7 +318,7 @@ pub fn compile(
     cancel(check)?;
     Ok(SourceCircularGeometry {
         profile: request.profile,
-        source_sha256: sources.source_sha256,
+        source_sha256: request.expected_source_sha256.clone(),
         object: request.object.clone(),
         chart_part: chart.part.clone(),
         chart_sha256: chart.sha256.clone(),
@@ -327,4 +330,17 @@ pub fn compile(
         external_data: chart.external_data.clone(),
         series: output,
     })
+}
+
+fn validate(request: &SourceCircularRequest) -> Result<(), SourceCircularError> {
+    if request.outer_radius.raw() <= 0
+        || request.outer_radius.raw() > (27_273_042_316_900i128 << 32)
+        || request.coordinate_tolerance.raw() <= 0
+    {
+        return Err(chart_geometry::ChartGeometryError::Invalid(
+            "source chart radius or tolerance",
+        )
+        .into());
+    }
+    Ok(())
 }

@@ -1,10 +1,11 @@
 use super::*;
+use crate::source_stroke::{StrokeInput, stroke};
 use mo_presentation_source::source::{
     color::ColorSample,
     fill::colors::FillPaintColors,
-    line::{colors::LinePaintColor, resolve::*, *},
+    line::{colors::LinePaintColor, resolve::*},
 };
-use mo_raster::{StrokeCap, StrokeJoin, StrokeStyle};
+use mo_raster::StrokeStyle;
 
 #[derive(Clone)]
 pub(crate) enum FillPaint {
@@ -70,76 +71,18 @@ pub(super) fn line(
     let LineOutcome::Resolved { line } = &result.style else {
         return Err(mapping(at, SourcePageIssue::Line {}));
     };
-    Ok(Some((rgba8, stroke(StrokeInput::from(line.as_ref()), at)?)))
+    Ok(Some((
+        rgba8,
+        stroke(StrokeInput::from(line.as_ref()))
+            .map_err(|_| mapping(at, SourcePageIssue::Line {}))?,
+    )))
 }
 
-struct StrokeInput<'a> {
-    width: mo_common::Emu,
-    cap: NativeLineCap,
-    compound: NativeCompoundLine,
-    alignment: NativePenAlignment,
-    dash: &'a EffectiveLineDash,
-    join: &'a EffectiveLineJoin,
-    head: NativeLineEnd,
-    tail: NativeLineEnd,
-}
-impl<'a> From<&'a EffectiveLine> for StrokeInput<'a> {
-    fn from(v: &'a EffectiveLine) -> Self {
-        Self {
-            width: v.width.value,
-            cap: v.cap.value,
-            compound: v.compound.value,
-            alignment: v.alignment.value,
-            dash: &v.dash,
-            join: &v.join,
-            head: v.head.kind.value,
-            tail: v.tail.kind.value,
-        }
-    }
-}
-impl<'a> From<&'a EffectiveLineGeometry> for StrokeInput<'a> {
-    fn from(v: &'a EffectiveLineGeometry) -> Self {
-        Self {
-            width: v.width.value,
-            cap: v.cap.value,
-            compound: v.compound.value,
-            alignment: v.alignment.value,
-            dash: &v.dash,
-            join: &v.join,
-            head: v.head.kind.value,
-            tail: v.tail.kind.value,
-        }
-    }
-}
-fn stroke(line: StrokeInput<'_>, at: &SourcePageLocation) -> Result<StrokeStyle, SourcePageError> {
-    if line.compound != NativeCompoundLine::Single
-        || line.alignment != NativePenAlignment::Center
-        || !matches!(line.dash, EffectiveLineDash::Preset {value,..} if value.value==NativePresetDash::Solid)
-        || line.head != NativeLineEnd::None
-        || line.tail != NativeLineEnd::None
-    {
-        return Err(mapping(at, SourcePageIssue::Line {}));
-    }
-    let join = match line.join {
-        EffectiveLineJoin::Round { .. } => StrokeJoin::Round {},
-        EffectiveLineJoin::Bevel { .. } => StrokeJoin::Bevel {},
-        EffectiveLineJoin::Miter { .. } => return Err(mapping(at, SourcePageIssue::Line {})),
-    };
-    Ok(StrokeStyle {
-        width: Fixed::emu(line.width),
-        join,
-        cap: match line.cap {
-            NativeLineCap::Flat => StrokeCap::Butt,
-            NativeLineCap::Round => StrokeCap::Round,
-            NativeLineCap::Square => StrokeCap::Square,
-        },
-    })
-}
 pub(super) fn table_stroke(
     geometry: &EffectiveLineGeometry,
     at: &SourcePageLocation,
 ) -> Result<StrokeStyle, SourcePageError> {
-    stroke(StrokeInput::from(geometry), at)
+    stroke(StrokeInput::from(geometry)).map_err(|_| mapping(at, SourcePageIssue::Line {}))
 }
 
 pub(super) fn background_redirect(result: &SourceFillColorResult, at: &SourcePageLocation) -> bool {

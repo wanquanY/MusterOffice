@@ -26,6 +26,7 @@ use mo_kernel_api::{ParagraphPathsRequest, ParagraphPathsResponse};
 use mo_kernel_api::{PathRasterRequest, PathRasterResponse};
 use mo_kernel_api::{PptxChartGeometryResponse, SourceCircularRequest};
 use mo_kernel_api::{PptxChartPaintResponse, SourceChartPaintQuery};
+use mo_kernel_api::{PptxChartPlotResponse, SourceChartPlotRequest};
 use mo_kernel_api::{PptxChartsResponse, PptxImagesResponse, SourceChartQuery, SourceImageQuery};
 use mo_kernel_api::{
     PptxFillColorResponse, PptxFillResponse, SourceFillColorQuery, SourceFillQuery,
@@ -225,6 +226,14 @@ fn main() -> Result<(), Box<dyn Error>> {
         ("pptx-chart-query", schema::<SourceChartQuery>()),
         ("pptx-chart-response", schema::<PptxChartsResponse>()),
         ("pptx-chart-paint-query", schema::<SourceChartPaintQuery>()),
+        (
+            "pptx-chart-plot-request",
+            schema::<SourceChartPlotRequest>(),
+        ),
+        (
+            "pptx-chart-plot-response",
+            schema::<PptxChartPlotResponse>(),
+        ),
         (
             "pptx-chart-paint-response",
             schema::<PptxChartPaintResponse>(),

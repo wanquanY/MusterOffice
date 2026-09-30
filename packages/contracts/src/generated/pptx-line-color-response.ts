@@ -166,6 +166,11 @@ export type LineOutcome =
     };
 export type LineOrigin =
   | {
+      kind: "chart";
+      part: string;
+      sourceOrdinal: number;
+    }
+  | {
       cell: SourceCellAddress;
       edge: TableCellEdge;
       kind: "tableCell";

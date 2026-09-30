@@ -101,6 +101,11 @@ pub enum FillOutcome {
     deny_unknown_fields
 )]
 pub enum FillOrigin {
+    /// Physical DrawingML chart declaration, not a slide shape/native ID.
+    Chart {
+        part: String,
+        source_ordinal: u32,
+    },
     Declaration {
         owner: FillOwner,
         source_ordinal: u32,
@@ -127,7 +132,8 @@ impl FillOrigin {
     pub(crate) fn part(&self) -> Option<&str> {
         match self {
             Self::Declaration { owner, .. } => Some(&owner.part),
-            Self::Theme { part, .. }
+            Self::Chart { part, .. }
+            | Self::Theme { part, .. }
             | Self::TableStyle { part, .. }
             | Self::SchemaDefault { part, .. } => Some(part),
             Self::ProfileDefault {} => None,

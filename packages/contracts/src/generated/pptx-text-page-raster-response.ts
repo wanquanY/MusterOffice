@@ -412,6 +412,11 @@ export type FormulaIssue = "unknownOperation" | "arity" | "divisionByZero" | "un
 export type TableCellEdge = "left" | "right" | "top" | "bottom" | "topLeftToBottomRight" | "bottomLeftToTopRight";
 export type FillOrigin =
   | {
+      kind: "chart";
+      part: string;
+      sourceOrdinal: number;
+    }
+  | {
       kind: "declaration";
       owner: FillOwner;
       sourceOrdinal: number;

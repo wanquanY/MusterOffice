@@ -42,6 +42,11 @@ export type SourceImageOutcome =
     };
 export type FillOrigin =
   | {
+      kind: "chart";
+      part: string;
+      sourceOrdinal: number;
+    }
+  | {
       kind: "declaration";
       owner: FillOwner;
       sourceOrdinal: number;

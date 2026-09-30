@@ -1,0 +1,610 @@
+{
+  "format": "musteroffice.source-chart-declared-plot/1",
+  "date": "2026-09-30",
+  "baseRevision": "e439c56e086b8cfd48724736b7cf34952d9ff848",
+  "scope": "Source circular cache geometry and declared point/series fill/stroke composition into shared Draw IR. No automatic chart styles, label/legend layout, full template or Office/WPS claim. Product candidate unchanged.",
+  "environment": {
+    "platform": "Darwin",
+    "machine": "arm64",
+    "macOS": "26.2",
+    "rust": "rustc 1.92.0 (ded5c06cf 2025-12-08)",
+    "node": "v23.5.0",
+    "python": "3.13.0",
+    "profile": "release"
+  },
+  "tests": {
+    "newPlotTestsPassed": 6,
+    "sourceGeometryTestsPassed": 7,
+    "compilerLibraryTestsPassed": 100,
+    "sourceShapeAndTableCompileRegressionTestsPassed": 14,
+    "fillLineRegressionTestsPassed": 48,
+    "publicApiTestsPassed": 3,
+    "strictScopedClippyPassed": true,
+    "generatedContractsChecked": true,
+    "typeScriptCompilationPassed": true,
+    "requestSchemasValid": 31,
+    "responseSchemasValid": 31,
+    "independentOracleNegativesRejected": [
+      "wrong-inherited-width",
+      "omitted-stroke",
+      "wrong-inherited-color",
+      "wrong-physical-origin"
+    ]
+  },
+  "parity": {
+    "completeResponses": 31,
+    "compiled": 17,
+    "expectedErrors": 14,
+    "renderedFrames": 17,
+    "actualTemplatePlots": 2,
+    "allPixelsAndMetadataEqual": true,
+    "priorFullResponsesUnchanged": 61,
+    "oldWasmNewWasmNativeEqual": true
+  },
+  "independentOracle": {
+    "profile": "source-chart-plot-independent-xml-oracle/1",
+    "charts": 17,
+    "points": 51,
+    "draws": 85,
+    "fillAndHoleProbes": 96,
+    "strokePixelProbes": 548,
+    "allMatched": true
+  },
+  "artifacts": [
+    {
+      "path": "target/release/mo-cli",
+      "sha256": "4b51330347a481a75718c93e037631118833bc388621d11d9ad0f3d4e50a90a7",
+      "bytes": 21730432
+    },
+    {
+      "path": "target/release/mo-raster-worker",
+      "sha256": "16d482f097ae1fe24bfa5ac30d553ec0407d4f604a67ed6097617dbc28e38399",
+      "bytes": 13606944
+    },
+    {
+      "path": ".codex-work/chart-plot-20260930/wasm/mo_wasm.js",
+      "sha256": "a5d598507bb59fb5762f878a0d9deff25870b11ded733d0a5eeb66e7a28e1a60",
+      "bytes": 74662
+    },
+    {
+      "path": ".codex-work/chart-plot-20260930/wasm/mo_wasm_bg.wasm",
+      "sha256": "e8e4b3d4853075f6c536c922c33cab0db01f3965f002d7eaf1dd6bd9e978b2af",
+      "bytes": 17230438
+    },
+    {
+      "path": ".codex-work/snapshot-scopes/wasm/mo-skia.mjs",
+      "sha256": "a2f6139aecc20512c52d84612d9264d74f90422d957a83c83e14e1be6cda544c",
+      "bytes": 14230
+    },
+    {
+      "path": ".codex-work/snapshot-scopes/wasm/mo-skia.wasm",
+      "sha256": "c8792a9c86a4e3231692c37d8f986d00be5a8bb807bbc9a0099662329495bba2",
+      "bytes": 2388651
+    }
+  ],
+  "localEvidence": [
+    {
+      "path": ".codex-work/chart-plot-20260930/parity.json",
+      "sha256": "a47871e1c0082c5f2c50925981abc0fd3ac626dbb84123c5e7c6d318c596467f"
+    },
+    {
+      "path": ".codex-work/chart-plot-20260930/oracle.json",
+      "sha256": "492eecd7452dc30c7acbcb929f31ba47fcb983ef1e193dbb5ea8bc95c4241a29"
+    },
+    {
+      "path": ".codex-work/chart-plot-20260930/oracle-negatives.json",
+      "sha256": "f7e4b03de4561f7d02e3ff713bd1232366a0c1d96e9528073eaf4dd1c5cc5012"
+    },
+    {
+      "path": ".codex-work/chart-plot-20260930/schema-validation.json",
+      "sha256": "30353ef0e0653d149cda848d925fa79abc22eeab9d3821074db312c2df5e34ed"
+    },
+    {
+      "path": ".codex-work/chart-plot-20260930/prior-regression.json",
+      "sha256": "fa4f65ad63ac32f90ccff5e11f5899ba0e5daaf5e48a2c1c09bceb71e29ff3f7"
+    },
+    {
+      "path": ".codex-work/chart-plot-20260930/native-final.log",
+      "sha256": "7f23dfff774e8e628df3adc859c12ac70d420f0abf8a4652cc9158531cfcdb30"
+    },
+    {
+      "path": ".codex-work/chart-plot-20260930/wasm-build.log",
+      "sha256": "c736483d03b61799a6e245a8c0ead0bb42283d5cd9cefaace03f6b82b5677e49"
+    },
+    {
+      "path": ".codex-work/chart-plot-20260930/compiler-style-final.log",
+      "sha256": "8c1c7cc483a8300e310cc496f7279b8c9bddc9478284b8b3c9207dbff29c6886"
+    },
+    {
+      "path": ".codex-work/chart-plot-20260930/regression.log",
+      "sha256": "6366f41a8e209a023515175b3e73638e168c7b4fb4f5ed6ffd71764151159863"
+    },
+    {
+      "path": ".codex-work/chart-plot-20260930/paint-regression.log",
+      "sha256": "65c6bc6dabec8a17c08f1c51ffb341a61031bc42c07b99770468e1587b679759"
+    },
+    {
+      "path": ".codex-work/chart-plot-20260930/api-verified.log",
+      "sha256": "d0d2462cba965cbef3d34083423555d39c4526467ef18d00f80e9c44fd025b07"
+    },
+    {
+      "path": ".codex-work/chart-plot-20260930/api-final.log",
+      "sha256": "3ac59b957cb0207b59af09c15df5c8d793caa51efb7ca92431533e311172431a"
+    },
+    {
+      "path": ".codex-work/chart-plot-20260930/clippy-final.log",
+      "sha256": "ceed9655022b5376aa29e682aedf97e2f3343f832fe0eb3974e2e786733cbcb5"
+    },
+    {
+      "path": ".codex-work/chart-plot-20260930/types.log",
+      "sha256": "8129bb34e67dcdea1ba64dd68c8c5b64ed44dc1b3f1911e2c01b6d5ba59c43b8"
+    },
+    {
+      "path": ".codex-work/chart-plot-20260930/schema-check.log",
+      "sha256": "1a4e65b2a61d480c9d9b89d22f973bf45e3c201decee252823242d4f12bac2bb"
+    }
+  ],
+  "cases": [
+    {
+      "name": "series",
+      "requestSha256": "0a8b4b9e6038219d18e072e2804473c1f78fd04b77a9c4f5870b047c8284edb1",
+      "sourceSha256": "e973ce2dfddb417fe34ac3658d3798a4a6c9e1e5b2fece909e48cefc9b31e635",
+      "status": "compiled",
+      "pixelSha256": "a09e319103994d85ed07d572496207388c75c18e1b937bed936b08acd5549a05",
+      "combinedCoordinateErrorPixelsQ32": "277627"
+    },
+    {
+      "name": "point-fill",
+      "requestSha256": "2b7d4d8e581106bc8336c6f71b663871f27bca23ab4057eedce68bc464841fc5",
+      "sourceSha256": "c1db4b16a85c2827467109f6b018d61844947b806051cb9a6405ea3d63f608ad",
+      "status": "compiled",
+      "pixelSha256": "a86ebe39641ae44253a9bbaa78f37765c7111ab98049f0e32d9bef75c9c06a9c",
+      "combinedCoordinateErrorPixelsQ32": "277627"
+    },
+    {
+      "name": "empty-solid-inherits",
+      "requestSha256": "b5bae88820a8ece88f1537efadd326be9abf0c90e828b9c9ea106a060dcf8c7b",
+      "sourceSha256": "90e1603754d08d67234adaf23eed4866ee0892bb4d556f24a98094f14e7fa89b",
+      "status": "compiled",
+      "pixelSha256": "a09e319103994d85ed07d572496207388c75c18e1b937bed936b08acd5549a05",
+      "combinedCoordinateErrorPixelsQ32": "277627"
+    },
+    {
+      "name": "point-no-fill",
+      "requestSha256": "c14f31bc5490e84b59db0923e8600c463ccebc0564b2cd76c0e4ef8b3ecc027d",
+      "sourceSha256": "8e3e4e22b1c777d7e022e6c86df10aacb20b31595c7c534179593178d0bf4ebe",
+      "status": "compiled",
+      "pixelSha256": "3e1cd7ba7e332fa9dee4d4881785857970dc6e500b3bb59c72bf592f1543dbb3",
+      "combinedCoordinateErrorPixelsQ32": "277627"
+    },
+    {
+      "name": "point-line-no-fill",
+      "requestSha256": "6a5a3a0c7690e0ddbced376c10c4d63c4751d527526a46727e0ff844931462c9",
+      "sourceSha256": "04e79b1d641960344f5b787ef8ff23d8cf422b91a1b6b744a19152d5b0a2d0a3",
+      "status": "compiled",
+      "pixelSha256": "83214302104dd1e4e4b729a4226d3fcb6660623f48efae51c49aeaf31979a74f",
+      "combinedCoordinateErrorPixelsQ32": "277627"
+    },
+    {
+      "name": "point-width",
+      "requestSha256": "d14efb1af8ea2367eca82b563f44b054566dcf5fff2114bd5692952ac4134c1b",
+      "sourceSha256": "4677755b432709279e160e28daf05b0cf6363e6efe2ecd9e6968b382ed7b64ac",
+      "status": "compiled",
+      "pixelSha256": "2dea0793bf27a56cefe6f7e212b54e02e4accddd0c88ba47bae8dd7386e072ee",
+      "combinedCoordinateErrorPixelsQ32": "277627"
+    },
+    {
+      "name": "point-line-color",
+      "requestSha256": "5002e2063a7bec1014ed2dfe52d028b7ca4723873e4be3b6f457983825bf87b0",
+      "sourceSha256": "4eade3973936c8e2b7c14aa8e3de1dece33b550e385193928b5d04f0b9bbaf0d",
+      "status": "compiled",
+      "pixelSha256": "a5e7ee81be84e8f1f0dd581585f3dbdb4a84faf244526dc5606a980ae0e5fe4a",
+      "combinedCoordinateErrorPixelsQ32": "277627"
+    },
+    {
+      "name": "empty-line-solid",
+      "requestSha256": "a25b266090396988302aa8ea043e797ade5dd537551767f276bb0fb8e6797f7b",
+      "sourceSha256": "dd55db8a8d7118472ef2b96f8623d834acfe88aa42c1fb49d9f5aece103436ea",
+      "status": "compiled",
+      "pixelSha256": "a09e319103994d85ed07d572496207388c75c18e1b937bed936b08acd5549a05",
+      "combinedCoordinateErrorPixelsQ32": "277627"
+    },
+    {
+      "name": "point-bevel",
+      "requestSha256": "e67eac800422253ab40d39f777ccb1b5aebb70937deef11ee1b0331073bebc7f",
+      "sourceSha256": "3c4cbf11ceefcc20e245fc38eabe6f409579dcb9e6f8a9ef79f16404fe1da545",
+      "status": "compiled",
+      "pixelSha256": "12c6e95eae25bbf9ce88a63ae7b66cffc07ad24f31644c0d81a67a5e157fd96f",
+      "combinedCoordinateErrorPixelsQ32": "277627"
+    },
+    {
+      "name": "point-alpha",
+      "requestSha256": "057aa90a0458ac89c1e094fc102a43977d3807a69ea6af05721f4c8b4bd3cd7b",
+      "sourceSha256": "4959fe43fd966234922a44f930ce76eb8fb49afb8c1369054478ca16fa80200f",
+      "status": "compiled",
+      "pixelSha256": "03b58e729be4a1ffd696b3501ea2a066c3953edadcc04517524b52410c144315",
+      "combinedCoordinateErrorPixelsQ32": "277627"
+    },
+    {
+      "name": "unknown-geometry",
+      "requestSha256": "c044661f8e7201ec711bf3e098476ca455760f3101005d4066e5359bec3335cd",
+      "sourceSha256": "a5ac1c888af2bfae9750cc33c5f94d066928cbb008bfec9380871979aa7a39b3",
+      "status": "error",
+      "code": "MAPPING_NOT_IMPLEMENTED"
+    },
+    {
+      "name": "point-dash",
+      "requestSha256": "fad680059394ad5e29bf962d61e2c5b589a3b36e9142cba875702721dabbeeee",
+      "sourceSha256": "9b2f3b8450a81fa08f174e0e80163e6ce5431ac338bd0016917daecd67d3d5cf",
+      "status": "error",
+      "code": "MAPPING_NOT_IMPLEMENTED"
+    },
+    {
+      "name": "point-double",
+      "requestSha256": "87dc2dab3bd24d68373ab1c3c030154c0a28272af7b48383c48f2b6114643a7b",
+      "sourceSha256": "c18a61bf1463c74f7723676e8d51dd2948e1a938b6390ab015ad45ee4033a565",
+      "status": "error",
+      "code": "MAPPING_NOT_IMPLEMENTED"
+    },
+    {
+      "name": "point-alignment",
+      "requestSha256": "f32fbf4c5f12fdf4197c8786b1e546c3a900726b0a0b3967a25ee5845e46ce15",
+      "sourceSha256": "55a263df096ef213d50c37357d5ae893e7866e4289c39a0b9a95e05f2c7b0ad3",
+      "status": "error",
+      "code": "MAPPING_NOT_IMPLEMENTED"
+    },
+    {
+      "name": "point-miter",
+      "requestSha256": "4ca8bbe0e2f07c9af6c61ea0f87c70d74adfb0e4adca3064a128e0ae7403b1f6",
+      "sourceSha256": "df044d104c6e6c69e9a9d00365b31e7ec9e0b4408edf8273a72d2c99d19ab8d9",
+      "status": "error",
+      "code": "MAPPING_NOT_IMPLEMENTED"
+    },
+    {
+      "name": "point-arrow",
+      "requestSha256": "ebe4c65e90a98dedc9c8cf49bfc0e2a1d6639f758c8655375377b3642d24255d",
+      "sourceSha256": "7445fe41c0dbf8a693497084765aedf5cd7825e1ac401cb3eeb207355df52690",
+      "status": "error",
+      "code": "MAPPING_NOT_IMPLEMENTED"
+    },
+    {
+      "name": "point-shadow",
+      "requestSha256": "12faaa0dbb2f6a2c0e4cb2acb1ce3796716e4260b882d10d91e0a43dfe02ae49",
+      "sourceSha256": "058704cd54be7d4992e2c7a4efc97494cc3d4cfd86cefc39fab555341b9dd8c9",
+      "status": "error",
+      "code": "MAPPING_NOT_IMPLEMENTED"
+    },
+    {
+      "name": "empty-dag",
+      "requestSha256": "184e7238f4419f71179ac5d954aa5f09bc10ac1627ab7042abf2101b9c007114",
+      "sourceSha256": "1533cb27c5987bc7d01aa6c554c56e1bfec1018f5881c449162bb32cc1ebee33",
+      "status": "error",
+      "code": "MAPPING_NOT_IMPLEMENTED"
+    },
+    {
+      "name": "missing-system-color",
+      "requestSha256": "b4af07c0e1da54235aa22897006ab967ce12fd5917de34f25043731006c14bd5",
+      "sourceSha256": "e89035076574143eba7a317f41acb60976a70f0474041971513c97ce6523b533",
+      "status": "error",
+      "code": "MAPPING_NOT_IMPLEMENTED"
+    },
+    {
+      "name": "pattern",
+      "requestSha256": "abd4f27444930604a65804bedd81ddb96f0ebc0494c9843d48e0e88370d3ea28",
+      "sourceSha256": "eec29f3ecc9e8b9b9429b5073f8ccf0ffdada680ff62ebc7b42b538fd88e3d37",
+      "status": "error",
+      "code": "MAPPING_NOT_IMPLEMENTED"
+    },
+    {
+      "name": "zero-point",
+      "requestSha256": "a0e52bd80979981cb568afa4a44eab01bc3272370b9d9f76c26b2e8ee95b5185",
+      "sourceSha256": "df38aa320d3aa8516ab3822052f5ccdf0394930a488266c2190a4a40223cf106",
+      "status": "compiled",
+      "pixelSha256": "9442f644bae674da964bff0f816087b6f80b7e2529ca197f16906660f99d53a0",
+      "combinedCoordinateErrorPixelsQ32": "140563"
+    },
+    {
+      "name": "full-ring",
+      "requestSha256": "fd62b69cdaafcc333e19fcd2cd297149570da0f3411db2b5b9b715b5cbe666fb",
+      "sourceSha256": "5fb1c5d571454567fcea5dc6d3dd0544d55b217f5801c243a3969244423a22b8",
+      "status": "compiled",
+      "pixelSha256": "a92cd23c7baeba03cdb1ec37ce0aba21d173f940684c3e1ef01fa1d3b3939ae4",
+      "combinedCoordinateErrorPixelsQ32": "307212"
+    },
+    {
+      "name": "all-zero",
+      "requestSha256": "7459010c009e3e23e1a6967e0f414b0e71ce483fa52f71b6dbb277f70b849e0a",
+      "sourceSha256": "693e91a24b704199c27d1759891836522efb9da4128806694c62499d3e92f63c",
+      "status": "compiled",
+      "pixelSha256": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+      "combinedCoordinateErrorPixelsQ32": "0"
+    },
+    {
+      "name": "no-line",
+      "requestSha256": "8d3f7714309922f3d3b50d7432ed9b22dd929d9b7fba0d3a9e028911e02693be",
+      "sourceSha256": "195119e6c420c3d34116d4d6ca55d5ac788da5463ee386a498d1bc6e10fe9e19",
+      "status": "compiled",
+      "pixelSha256": "fe9776c2f1f6e8ac3a694f975901620b9075d6278e67476abb303d93c634bf80",
+      "combinedCoordinateErrorPixelsQ32": "306994"
+    },
+    {
+      "name": "automatic-fill",
+      "requestSha256": "e91cb8d77a3dd9580f503dfaac827643ddbbd2c43fcaf315d0693609a8024a4d",
+      "sourceSha256": "47b42e881808bb9c870d9b7fab621b3adbe333aa821bafdcf7cc69ca3e4ee017",
+      "status": "error",
+      "code": "MAPPING_NOT_IMPLEMENTED"
+    },
+    {
+      "name": "automatic-width",
+      "requestSha256": "139d33e8ea7446515422490001156879804fe9257e9ed6e54a961ceee5bfc9e1",
+      "sourceSha256": "119e0531470cd8824c67da49b65d71829a25a597999a838fe7b5828b75ede86d",
+      "status": "error",
+      "code": "MAPPING_NOT_IMPLEMENTED"
+    },
+    {
+      "name": "automatic-effects",
+      "requestSha256": "314e7b8eca6570c731d38ee64f47ca26c647a78c51845dd6d2d6f425535f49ec",
+      "sourceSha256": "e238a57c16bb8fa5f06511d2f1d70a1cd276b816d562ccf75b305ccb2fa5710a",
+      "status": "error",
+      "code": "MAPPING_NOT_IMPLEMENTED"
+    },
+    {
+      "name": "automatic-line",
+      "requestSha256": "7ed4c3192d6a46a18e70dcb40f266d16d0969cbd96ca476a53f4db633503bfb4",
+      "sourceSha256": "7d48b0fa6021c8c069e931dfe9c9c6c85af6518595cd4ddfa36a8920311c9342",
+      "status": "error",
+      "code": "MAPPING_NOT_IMPLEMENTED"
+    },
+    {
+      "name": "inherited-chart-theme",
+      "requestSha256": "d25e3ec390b04c8fd7025bbea885b2dcec3143319453a7a75bb86ca5543d8f48",
+      "sourceSha256": "401b70dc5fde166e7d961462fd5d8459698e4bb7fff6cdc4dea89aed3046d64d",
+      "status": "compiled",
+      "pixelSha256": "c8da99c100190541368cc9676971522ba68678f1124958426a80a6aea75041f5",
+      "combinedCoordinateErrorPixelsQ32": "277627"
+    },
+    {
+      "name": "actual-template-1-page-8",
+      "requestSha256": "6d36d70e99c6e87a87ea2b8b49322ae4f2a595f84cc4d126523d346355404bc9",
+      "sourceSha256": "941737a78d59781d2552e846279ca12768dd93b78da9fb149606631a6edcf72c",
+      "status": "compiled",
+      "pixelSha256": "b369486223173f3a6f5dd211d84ba9477774c6408ee5c61580555113506e4c4f",
+      "combinedCoordinateErrorPixelsQ32": "277627"
+    },
+    {
+      "name": "actual-template-3-page-8",
+      "requestSha256": "8dcf5b44800f567ad36625e1f2d08f6d43528e1f8cc0638d274a2fb117410715",
+      "sourceSha256": "8dca31afacd37bed8d18d69fe96b5a46ba17950972f7b33c1c355f002e6f39f0",
+      "status": "compiled",
+      "pixelSha256": "ebb8d456c32fc3654f2d84c170fd35f040958ca3340a6ce28deceda1eb576048",
+      "combinedCoordinateErrorPixelsQ32": "277627"
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "contracts/generated/pptx-chart-plot-request.schema.json",
+      "sha256": "82fa21ea0d0aaef59f3e380126f202b5b971df5d8def645e4f9d4c993c747fe3"
+    },
+    {
+      "path": "contracts/generated/pptx-chart-plot-response.schema.json",
+      "sha256": "8863e61f9e6afda509b7736f569d5a50cdf1c3cfd18f4485117a4324b765c15b"
+    },
+    {
+      "path": "contracts/generated/pptx-fill-color-response.schema.json",
+      "sha256": "5f0a0b51ff254d5cc3feda276b17dc88259fb8f4af04f127faf10da155eb3f0c"
+    },
+    {
+      "path": "contracts/generated/pptx-fill-response.schema.json",
+      "sha256": "2219d406c95872c8e0217185c14adf196d61f1c119453c9e95446a3efa9ab01b"
+    },
+    {
+      "path": "contracts/generated/pptx-image-response.schema.json",
+      "sha256": "402262d1ccb841aefd9831efaa192706aec5ecfaed8b5f530c8638f2a25988c9"
+    },
+    {
+      "path": "contracts/generated/pptx-line-color-response.schema.json",
+      "sha256": "9a141ec887b6ffe269c97981d0f429fc12bc8bd3bc03544a1cd24c903e0db5ce"
+    },
+    {
+      "path": "contracts/generated/pptx-line-response.schema.json",
+      "sha256": "6a342fbcf0d63a8852dd4483eff7d996ef5b234c86864bf21d61b58f2afbc6c1"
+    },
+    {
+      "path": "contracts/generated/pptx-page-compile-response.schema.json",
+      "sha256": "e99dff2a973ba1a7edd8e9b9e97daefc2d36e53ec7b56a2f932423dde68ad84e"
+    },
+    {
+      "path": "contracts/generated/pptx-page-raster-response.schema.json",
+      "sha256": "fc230237ee1e09c494884d268a4593c1ecb276bbc6d3596b23df350a0d455622"
+    },
+    {
+      "path": "contracts/generated/pptx-playback-raster-response.schema.json",
+      "sha256": "fde3f5434b0e201b2b558f703c87c58f0a22721fa8cab0e189429bbb06c68f3c"
+    },
+    {
+      "path": "contracts/generated/pptx-playback-session-response.schema.json",
+      "sha256": "25180fd60e5b313a9f4333c3456b00a2a1c83c0444477e7f9fe007d02dbd7de6"
+    },
+    {
+      "path": "contracts/generated/pptx-radial-layout-response.schema.json",
+      "sha256": "c8efeef1558128383e4f07d9baf2bb29acd1a0d8d1614f2b7d5a9595b4b2bee8"
+    },
+    {
+      "path": "contracts/generated/pptx-resource-page-raster-response.schema.json",
+      "sha256": "8b90c8d62bf4619127ed86987fdc4b54ee4ba9d10f8c7ec6a53abf81195513b3"
+    },
+    {
+      "path": "contracts/generated/pptx-table-border-response.schema.json",
+      "sha256": "0aa1837dab84b4ac695d8d0460c6cbfe0379a38b525350113ee729d5718351f0"
+    },
+    {
+      "path": "contracts/generated/pptx-text-page-raster-response.schema.json",
+      "sha256": "ad384518c56308e207aec1c02cba50803689fce6f57f894a6182aa361c18a327"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/lib.rs",
+      "sha256": "916abe745e93ddf7dce2a7e36b145758ede999209cc32f2571498651b60671d2"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/pptx_chart_geometry.rs",
+      "sha256": "b64e92ff06dd7b56aebacd62bc602d27202809e13ad315798ad80e8dfa1b3786"
+    },
+    {
+      "path": "crates/mo-kernel-api/src/pptx_chart_plot.rs",
+      "sha256": "307719b454017d68d10dd01665dc2f2ba18a09ccfeaa602caaed8209a2276f77"
+    },
+    {
+      "path": "crates/mo-kernel-api/tests/pptx_chart_plot.rs",
+      "sha256": "03bba67ab2e3d835ea9fa761195f601e5c0102df905efe3bbff55b5cce20a6b0"
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/lib.rs",
+      "sha256": "4d421e7b2a083049816967295cf03b3b7c24b5267debc33381609b6f7908d512"
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_chart.rs",
+      "sha256": "8c455963f656ef7a8f511c34736650d60270f5c3f59bc6598a8f9a0661fe9df3"
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_chart_plot.rs",
+      "sha256": "5d29260f4734b446163901100b30a62fd4538c0e9ee77f0184adae3058b98587"
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_chart_plot/types.rs",
+      "sha256": "26b42921a92df74977187a36969971e37ccc93662d80f737395e54ddf8159e15"
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_page/paint.rs",
+      "sha256": "f00ebabd34548166f4b9e6bf4083c788116ab9bda7eeff03b70c257d567e3efa"
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_stroke.rs",
+      "sha256": "ce95d5600aacc1ccc1682268844f0ca85b6bf7db37ba0da591fa83f69b0f75b0"
+    },
+    {
+      "path": "crates/mo-presentation-compile/tests/source_chart_plot.rs",
+      "sha256": "db13c61a063e5b43243ac38137252e9c7b6d9f154e388bfb285c31a37cedded8"
+    },
+    {
+      "path": "crates/mo-presentation-source/src/source/charts/mod.rs",
+      "sha256": "e9bb6117ce1140656c1859b39bba950a7fa51645f3615e7dd9138892859707c1"
+    },
+    {
+      "path": "crates/mo-presentation-source/src/source/charts/styles.rs",
+      "sha256": "197d4fe5bd396c9f35820fd91cf14072d067c504280be8b2735b61dff4c46e27"
+    },
+    {
+      "path": "crates/mo-presentation-source/src/source/fill/resolve.rs",
+      "sha256": "ec32dd1426a2862eccb0214f1e493fa87f16345f8da3a9dc148039a7e5d41cfe"
+    },
+    {
+      "path": "crates/mo-presentation-source/src/source/fill/resolve/budget.rs",
+      "sha256": "9e6e6e7dfd5d2ec416599c8fca67736db2fa3dd13fb595294da954ef432a1315"
+    },
+    {
+      "path": "crates/mo-presentation-source/src/source/fill/resolve/merge.rs",
+      "sha256": "3f62e81592abc2167de22d4f5212b9b8678e6b0507cfb72f68ca49e9103b87e3"
+    },
+    {
+      "path": "crates/mo-presentation-source/src/source/fill/resolve/types.rs",
+      "sha256": "d69f550dd19b0cbc01a06c1464f3696a545e25954aa8dbb6282d32fd40513703"
+    },
+    {
+      "path": "crates/mo-presentation-source/src/source/line/resolve/types.rs",
+      "sha256": "5b06da8dd9da791b26a85b30bc61b6c95b3faf57a8b50831a01d639285710f89"
+    },
+    {
+      "path": "crates/mo-wasm/src/lib.rs",
+      "sha256": "972a71673ae94c8c23fb4d56e84ac76f1c21432471aaaa104eb80779c2e5768d"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-chart-plot-request.ts",
+      "sha256": "e9a322071e6c79495bef70544bf1e562d283107aef209b529b5afb84b55a9f16"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-chart-plot-response.ts",
+      "sha256": "d907344c4d1b0c253bffe514320b3b3920dca1a0e8646457db508a5f51bbb4b0"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-fill-color-response.ts",
+      "sha256": "08dbdc73dd4ac92d140bfdcd5775f83d1e7a1981879c1f939fac2f4c25e58d58"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-fill-response.ts",
+      "sha256": "8bf2d3dd054f5dfc7a812f6f8cf878136c755a8a9ba736bdc0f47d3631903974"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-image-response.ts",
+      "sha256": "e6d2c58dd66112c82ce15fb77bacd765e6792981c95c63b94c7bfd9f1c9daf43"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-line-color-response.ts",
+      "sha256": "7bd7e67854cfb67b9ec6176bbe5c9ec733b9a5191d09cd949fa535fca1c6eea2"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-line-response.ts",
+      "sha256": "9ea7d83520c8990cbccbd7409031eeddc780fa807f7ed0662133e6d0cf699e93"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-page-compile-response/part-001.ts",
+      "sha256": "e06fc1cc64a33e62ac12f3078d9754bbbc2680b73ffa9be5f495e7bd96b50085"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-page-raster-response.ts",
+      "sha256": "e1b9c814645fb3d812047e8abc3ab0a3cbf19c373a4d01780384548038496335"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-playback-raster-response/part-001.ts",
+      "sha256": "10d9e3af12001b0d8f605803c7599e00760a0d8cdc4c28d5686ebca7fe2dd00f"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-playback-session-response/part-001.ts",
+      "sha256": "9f6daa428715ed64fbc2b0a8732e4ba4fcee55aac0aadcc41750af1332bea011"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-radial-layout-response.ts",
+      "sha256": "f4b6f525bac0a1f249f41df9ae11c31f1551e2b3013027ffe39255814c5f262c"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-resource-page-raster-response.ts",
+      "sha256": "82d92b65f12771b77716cd4e643dff989dbdac1f5dfe6a593e7844469698a12e"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-table-border-response.ts",
+      "sha256": "9371039c91899b24b60e0e5b075079f4cb4ae97af532821901a5ba01809e0a24"
+    },
+    {
+      "path": "packages/contracts/src/generated/pptx-text-page-raster-response.ts",
+      "sha256": "4bc08401a926d8fdf667b61cf7ae3fe05bbd45123d9d7604d3c1095d1802764f"
+    },
+    {
+      "path": "tools/mo-cli/src/main.rs",
+      "sha256": "aee23951d9c5f725eb9a13c48e28c67037cba02081cddfe582491fe3ccc524ce"
+    },
+    {
+      "path": "tools/mo-contract-codegen/src/main.rs",
+      "sha256": "2b3884c4a66726bde9eb6bd612ef8f8c2644c9343e09bf1ba7016a0459cd54bb"
+    },
+    {
+      "path": "tools/test-support/chart_plot.rs",
+      "sha256": "8653d160ba4db417119f88c0a294c284c880aeeb3f802a632fc8b925ddb01140"
+    },
+    {
+      "path": "tools/verification/chart-plot-oracle.py",
+      "sha256": "2339c13452e415504b01ddc376e9b040be1e4cf3df08e2c0d2bac22aa3d81eda"
+    },
+    {
+      "path": "tools/verification/chart-plot-parity.mjs",
+      "sha256": "13f2ec3434bca6e88e4d6c4eebaa558748ba3343cc3064e958c8fc9ad5ae57d8"
+    }
+  ],
+  "limitations": [
+    "Point-to-series cascade and basic line defaults are an explicit draft requiring target application calibration.",
+    "Automatic chart styles, gradients/patterns/images, effects, additional native strokes, labels/legends, automatic layout and full source-page admission remain incomplete.",
+    "Multi-ring layout and adjacent antialias coverage are not Office/WPS calibrated.",
+    "Geometry error bounds are not a proof of stroke ink, antialias coverage or pixel accuracy.",
+    "Source caches are snapshots; workbook recalculation and native chart editing/writing remain outstanding.",
+    "Native/WASM equality and independent XML probes do not replace full Office/WPS open/edit/playback acceptance.",
+    "No SDK/vendor/worker/config activation or restart in the product checkout; no packaging or product performance claim."
+  ]
+}

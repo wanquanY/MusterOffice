@@ -7,13 +7,15 @@ mod types;
 use super::*;
 use crate::{PptxError, cancelled, source::*, value};
 use budget::Budget;
+pub(in crate::source) use budget::Budget as FillBudget;
+pub(in crate::source) use merge::{Input as FillInput, Partial as FillPartial};
 use std::collections::{BTreeMap, BTreeSet};
 pub(in crate::source) use table::{
     BindIssue as TablePaintBindIssue, Binding as TablePaintBinding, Bindings as TablePaintBindings,
 };
 pub use types::*;
 
-enum Failure {
+pub(in crate::source) enum Failure {
     Unresolved(FillUnresolved),
     Abort(PptxError),
 }
@@ -57,7 +59,7 @@ fn native_id(target: &FillTarget) -> Option<u32> {
         _ => None,
     }
 }
-fn line_input(fill: &line::SourceLineFill) -> (u32, merge::Input<'_>) {
+pub(in crate::source) fn line_input(fill: &line::SourceLineFill) -> (u32, merge::Input<'_>) {
     match fill {
         line::SourceLineFill::None { source_ordinal } => (*source_ordinal, merge::Input::None),
         line::SourceLineFill::Solid {

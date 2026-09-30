@@ -46,6 +46,11 @@ pub enum LineOutcome {
     deny_unknown_fields
 )]
 pub enum LineOrigin {
+    /// Physical DrawingML chart declaration, not a slide shape/native ID.
+    Chart {
+        part: String,
+        source_ordinal: u32,
+    },
     TableCell {
         object: SourceObjectRef,
         cell: crate::source::table::SourceCellAddress,
@@ -86,6 +91,7 @@ impl LineOrigin {
         let mut result = self.clone();
         match &mut result {
             Self::Object { source_ordinal, .. }
+            | Self::Chart { source_ordinal, .. }
             | Self::Theme { source_ordinal, .. }
             | Self::TableCell { source_ordinal, .. }
             | Self::TableStyle { source_ordinal, .. }

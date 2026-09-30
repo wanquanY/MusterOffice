@@ -37,7 +37,7 @@ pub struct PptxChartGeometryFailure {
     pub point_index: Option<u32>,
     pub message: String,
 }
-fn failure(error: SourceCircularError) -> PptxChartGeometryResponse {
+pub(crate) fn failure(error: SourceCircularError) -> PptxChartGeometryFailure {
     use SourceCircularError as E;
     let mut failure = PptxChartGeometryFailure {
         code: PptxFailureCode::MappingNotImplemented,
@@ -82,7 +82,7 @@ fn failure(error: SourceCircularError) -> PptxChartGeometryResponse {
             }
         }
     }
-    PptxChartGeometryResponse::Error { error: failure }
+    failure
 }
 
 pub fn compile_pptx_chart_geometry<R: ReaderAt>(
@@ -103,12 +103,14 @@ pub fn compile_pptx_chart_geometry<R: ReaderAt>(
         Ok(geometry) => PptxChartGeometryResponse::Compiled {
             geometry: Box::new(geometry),
         },
-        Err(e) => failure(e),
+        Err(e) => PptxChartGeometryResponse::Error { error: failure(e) },
     }
 }
 pub fn compile_pptx_chart_geometry_json(input: &str, source: &[u8]) -> String {
     let response = if input.len() > super::MAX_REQUEST_BYTES {
-        failure(PptxError::Limit("chart geometry request bytes").into())
+        PptxChartGeometryResponse::Error {
+            error: failure(PptxError::Limit("chart geometry request bytes").into()),
+        }
     } else {
         match from_json_str::<SourceCircularRequest>(input) {
             Ok(request) => compile_pptx_chart_geometry(

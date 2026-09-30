@@ -271,6 +271,11 @@ export type EffectiveFill =
     };
 export type FillOrigin =
   | {
+      kind: "chart";
+      part: string;
+      sourceOrdinal: number;
+    }
+  | {
       kind: "declaration";
       owner: FillOwner;
       sourceOrdinal: number;

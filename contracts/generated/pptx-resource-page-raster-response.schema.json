@@ -605,6 +605,30 @@
     "FillOrigin": {
       "oneOf": [
         {
+          "description": "Physical DrawingML chart declaration, not a slide shape/native ID.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "chart"
+            },
+            "part": {
+              "type": "string"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part",
+            "sourceOrdinal"
+          ]
+        },
+        {
           "type": "object",
           "properties": {
             "kind": {
