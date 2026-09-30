@@ -181,11 +181,31 @@ pub(super) fn read(
                     channels.push(channel(tree, n, role, budget, check)?);
                 }
             }
+            let mut point_overrides = vec![];
+            let mut override_indices = BTreeSet::new();
+            for p in tree.children(s, "dPt") {
+                cancelled(check)?;
+                budget.points += 1;
+                if budget.points > budget.limits.max_points {
+                    return Err(PptxError::Limit("chart points and overrides"));
+                }
+                let index = tree.number(p, "idx")?;
+                if !override_indices.insert(index) {
+                    return Err(invalid("duplicate chart point override"));
+                }
+                point_overrides.push(SourceChartPointOverride {
+                    source_ordinal: tree.nodes[p].ordinal,
+                    index,
+                    layout: layout::read(tree, p, layout::Scope::Point, check)?,
+                });
+            }
             series.push(SourceChartSeries {
                 source_ordinal: tree.nodes[s].ordinal,
                 index,
                 order,
                 channels,
+                layout: layout::read(tree, s, layout::Scope::Series, check)?,
+                point_overrides,
             });
         }
         let axis_ids = tree

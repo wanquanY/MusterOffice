@@ -7,6 +7,8 @@ pub(super) enum Scope {
     Plot,
     Axis,
     Scaling,
+    Series,
+    Point,
 }
 fn property(scope: Scope, name: &str) -> Option<ChartPropertyKind> {
     use ChartPropertyKind::*;
@@ -43,20 +45,29 @@ fn property(scope: Scope, name: &str) -> Option<ChartPropertyKind> {
         (Scope::Scaling, "orientation") => Orientation,
         (Scope::Scaling, "min") => Minimum,
         (Scope::Scaling, "max") => Maximum,
+        (Scope::Series | Scope::Point, "explosion") => Explosion,
+        (Scope::Series | Scope::Point, "bubble3D") => Bubble3D,
+        (Scope::Series | Scope::Point, "invertIfNegative") => InvertIfNegative,
+        (Scope::Series, "smooth") => Smooth,
         _ => return None,
     })
 }
 fn markup(scope: Scope, name: &str) -> Option<ChartMarkupKind> {
     use ChartMarkupKind::*;
     Some(match (scope, name) {
-        (Scope::Axis, "spPr") => ShapeProperties,
+        (Scope::Axis | Scope::Series | Scope::Point, "spPr") => ShapeProperties,
         (Scope::Axis, "txPr") => TextProperties,
         (Scope::Axis, "title") => Title,
         (Scope::Axis, "majorGridlines") => MajorGridlines,
         (Scope::Axis, "minorGridlines") => MinorGridlines,
         (Scope::Axis, "dispUnits") => DisplayUnits,
-        (Scope::Plot, "dLbls") => DataLabels,
+        (Scope::Plot | Scope::Series, "dLbls") => DataLabels,
         (Scope::Plot, "serLines") => SeriesLines,
+        (Scope::Series | Scope::Point, "marker") => Marker,
+        (Scope::Series | Scope::Point, "pictureOptions") => PictureOptions,
+        (Scope::Series, "trendline") => Trendline,
+        (Scope::Series, "errBars") => ErrorBars,
+        (_, "extLst") => Extensions,
         _ => return None,
     })
 }
@@ -74,17 +85,26 @@ pub(super) fn read(
 ) -> Result<SourceChartLayout, PptxError> {
     let mut result = SourceChartLayout {
         properties: vec![],
-        markup: vec![],
+        markup: tree.nodes[parent]
+            .extensions
+            .iter()
+            .map(|source_ordinal| SourceChartMarkup {
+                source_ordinal: *source_ordinal,
+                kind: ChartMarkupKind::Extensions,
+            })
+            .collect(),
+        unrecognized_children: vec![],
     };
     let mut properties = BTreeSet::new();
     let mut markups = BTreeSet::new();
     for &i in &tree.nodes[parent].children {
         cancelled(check)?;
         let node = &tree.nodes[i];
-        if node.element.name.namespace != C {
-            continue;
-        }
-        if let Some(kind) = property(scope, &node.element.name.local) {
+        let native = node.element.name.namespace == C;
+        if let Some(kind) = native
+            .then(|| property(scope, &node.element.name.local))
+            .flatten()
+        {
             leaf(node)?;
             if !properties.insert(kind) {
                 return Err(invalid("duplicate chart layout property"));
@@ -94,15 +114,54 @@ pub(super) fn read(
                 kind,
                 value: node.element.attribute("val").map(str::to_owned),
             });
-        } else if let Some(kind) = markup(scope, &node.element.name.local) {
+        } else if let Some(kind) = native
+            .then(|| markup(scope, &node.element.name.local))
+            .flatten()
+        {
             // serLines permits repeated declarations; keep physical source order.
-            if kind != ChartMarkupKind::SeriesLines && !markups.insert(kind) {
+            if !matches!(
+                kind,
+                ChartMarkupKind::SeriesLines
+                    | ChartMarkupKind::Trendline
+                    | ChartMarkupKind::ErrorBars
+            ) && !markups.insert(kind)
+            {
                 return Err(invalid("duplicate chart layout markup"));
             }
             result.markup.push(SourceChartMarkup {
                 source_ordinal: node.ordinal,
                 kind,
             });
+        } else {
+            let structural = native
+                && match scope {
+                    Scope::Plot => matches!(node.element.name.local.as_str(), "ser" | "axId"),
+                    Scope::Series => matches!(
+                        node.element.name.local.as_str(),
+                        "idx"
+                            | "order"
+                            | "tx"
+                            | "cat"
+                            | "val"
+                            | "xVal"
+                            | "yVal"
+                            | "bubbleSize"
+                            | "dPt"
+                    ),
+                    Scope::Point => node.element.name.local == "idx",
+                    Scope::Axis => matches!(
+                        node.element.name.local.as_str(),
+                        "axId" | "scaling" | "numFmt"
+                    ),
+                    Scope::Scaling => false,
+                };
+            if !structural {
+                result.unrecognized_children.push(SourceChartUnknown {
+                    source_ordinal: node.ordinal,
+                    namespace: node.element.name.namespace.clone(),
+                    local_name: node.element.name.local.clone(),
+                });
+            }
         }
     }
     Ok(result)

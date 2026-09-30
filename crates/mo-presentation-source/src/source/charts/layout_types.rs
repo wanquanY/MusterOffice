@@ -2,13 +2,29 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct SourceChartLayout {
     /// Source order; missing property, missing val and explicit lexical val differ.
     pub properties: Vec<SourceChartProperty>,
     /// Complex markup remains bound to its original part and physical ordinal.
     pub markup: Vec<SourceChartMarkup>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub unrecognized_children: Vec<SourceChartUnknown>,
+}
+impl SourceChartLayout {
+    pub fn is_empty(&self) -> bool {
+        self.properties.is_empty()
+            && self.markup.is_empty()
+            && self.unrecognized_children.is_empty()
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct SourceChartUnknown {
+    pub source_ordinal: u32,
+    pub namespace: String,
+    pub local_name: String,
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -55,6 +71,10 @@ pub enum ChartPropertyKind {
     Orientation,
     Minimum,
     Maximum,
+    Explosion,
+    Bubble3D,
+    InvertIfNegative,
+    Smooth,
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -75,6 +95,11 @@ pub enum ChartMarkupKind {
     DisplayUnits,
     DataLabels,
     SeriesLines,
+    Marker,
+    PictureOptions,
+    Trendline,
+    ErrorBars,
+    Extensions,
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

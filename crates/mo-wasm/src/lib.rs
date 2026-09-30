@@ -45,6 +45,11 @@ pub fn inspect_pptx_charts(request: &str, source: &[u8]) -> String {
 }
 
 #[wasm_bindgen]
+pub fn compile_pptx_chart_geometry(request: &str, source: &[u8]) -> String {
+    mo_kernel_api::compile_pptx_chart_geometry_json(request, source)
+}
+
+#[wasm_bindgen]
 pub fn layout_chart_sectors(request: &str) -> String {
     mo_kernel_api::layout_chart_sectors_json(request, &|| false)
 }

@@ -35,6 +35,10 @@ pub struct SourceChartPart {
     pub sha256: Digest,
     pub byte_length: ByteLength,
     pub compatibility: SourceCompatibility,
+    /// Opaque extension roots remain physically bound even though inspection
+    /// does not interpret their descendants. Consumers must not silently admit.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub extension_ordinals: Vec<u32>,
     pub plots: Vec<SourceChartPlot>,
     /// Source declarations; reference resolution, defaults and geometry are separate.
     pub axes: Vec<SourceChartAxis>,
@@ -64,6 +68,17 @@ pub struct SourceChartSeries {
     pub index: u32,
     pub order: u32,
     pub channels: Vec<SourceChartChannel>,
+    #[serde(default, skip_serializing_if = "SourceChartLayout::is_empty")]
+    pub layout: SourceChartLayout,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub point_overrides: Vec<SourceChartPointOverride>,
+}
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct SourceChartPointOverride {
+    pub source_ordinal: u32,
+    pub index: u32,
+    pub layout: SourceChartLayout,
 }
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]

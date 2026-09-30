@@ -7,10 +7,12 @@ pub(super) struct Node {
     pub ordinal: u32,
     pub children: Vec<usize>,
     pub text: String,
+    pub extensions: Vec<u32>,
 }
 pub(super) struct Tree {
     pub nodes: Vec<Node>,
     pub compatibility: super::super::SourceCompatibility,
+    pub extension_ordinals: Vec<u32>,
 }
 impl Tree {
     pub fn children<'a>(&'a self, node: usize, local: &'a str) -> impl Iterator<Item = usize> + 'a {
@@ -55,8 +57,9 @@ pub(super) fn read(
 ) -> Result<Tree, PptxError> {
     xml.max_bytes = xml.max_bytes.min(budget.limits.max_part_bytes);
     let mut nodes: Vec<Node> = vec![];
-    let mut stack = vec![];
+    let mut stack: Vec<usize> = vec![];
     let mut skipped = 0;
+    let mut extension_ordinals = vec![];
     let summary = mce::scan(bytes, xml, profile, check, |event| {
         match event {
             mce::Event::SourceElement { .. } => {
@@ -73,6 +76,16 @@ pub(super) fn read(
             } => match event {
                 XmlEvent::Start { element, .. } => {
                     if extension_content || skipped > 0 {
+                        if skipped == 0 {
+                            budget.account(16)?;
+                            let ordinal =
+                                u32::try_from(source_ordinal.expect("extension root ordinal"))
+                                    .map_err(|_| mo_xml::XmlError::Limit("chart ordinal"))?;
+                            extension_ordinals.push(ordinal);
+                            if let Some(&parent) = stack.last() {
+                                nodes[parent].extensions.push(ordinal);
+                            }
+                        }
                         skipped += 1;
                         return Ok(());
                     }
@@ -106,6 +119,7 @@ pub(super) fn read(
                             .map_err(|_| mo_xml::XmlError::Limit("chart ordinal"))?,
                         children: vec![],
                         text: String::new(),
+                        extensions: vec![],
                     });
                     stack.push(i);
                 }
@@ -133,5 +147,6 @@ pub(super) fn read(
     Ok(Tree {
         nodes,
         compatibility: super::super::compatibility::record(summary)?,
+        extension_ordinals,
     })
 }

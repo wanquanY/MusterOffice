@@ -18,7 +18,12 @@ export type ChartMarkupKind =
   | "minorGridlines"
   | "displayUnits"
   | "dataLabels"
-  | "seriesLines";
+  | "seriesLines"
+  | "marker"
+  | "pictureOptions"
+  | "trendline"
+  | "errorBars"
+  | "extensions";
 export type ChartPropertyKind =
   | "barDirection"
   | "grouping"
@@ -51,7 +56,11 @@ export type ChartPropertyKind =
   | "logBase"
   | "orientation"
   | "minimum"
-  | "maximum";
+  | "maximum"
+  | "explosion"
+  | "bubble3D"
+  | "invertIfNegative"
+  | "smooth";
 /**
  * Canonical uint64 byte length. Range requires semantic validation.
  */
@@ -111,6 +120,11 @@ export interface SourceChartPart {
    * Cache declarations are snapshots, not recalculated workbook values.
    */
   dataAuthority: "sourceCacheSnapshot";
+  /**
+   * Opaque extension roots remain physically bound even though inspection
+   * does not interpret their descendants. Consumers must not silently admit.
+   */
+  extensionOrdinals?: number[];
   externalData?: SourceChartExternalData | null;
   part: string;
   plots: SourceChartPlot[];
@@ -133,6 +147,7 @@ export interface SourceChartLayout {
    * Source order; missing property, missing val and explicit lexical val differ.
    */
   properties: SourceChartProperty[];
+  unrecognizedChildren?: SourceChartUnknown[];
 }
 export interface SourceChartMarkup {
   kind: ChartMarkupKind;
@@ -145,6 +160,11 @@ export interface SourceChartProperty {
    * XML attribute value, without numeric conversion or schema defaulting.
    */
   value?: string | null;
+}
+export interface SourceChartUnknown {
+  localName: string;
+  namespace: string;
+  sourceOrdinal: number;
 }
 export interface SourceChartNumberFormat {
   formatCode?: string | null;
@@ -196,7 +216,9 @@ export interface SourceChartPlot {
 export interface SourceChartSeries {
   channels: SourceChartChannel[];
   index: number;
+  layout?: SourceChartLayout;
   order: number;
+  pointOverrides?: SourceChartPointOverride[];
   sourceOrdinal: number;
 }
 export interface SourceChartChannel {
@@ -228,6 +250,11 @@ export interface SourceChartPoint {
    * Exact lexical value. Missing v, empty v, zero and errors remain distinct.
    */
   value?: string | null;
+}
+export interface SourceChartPointOverride {
+  index: number;
+  layout: SourceChartLayout;
+  sourceOrdinal: number;
 }
 export interface PptxFailure {
   code: PptxFailureCode;

@@ -93,7 +93,12 @@
         "minorGridlines",
         "displayUnits",
         "dataLabels",
-        "seriesLines"
+        "seriesLines",
+        "marker",
+        "pictureOptions",
+        "trendline",
+        "errorBars",
+        "extensions"
       ]
     },
     "ChartPropertyKind": {
@@ -130,7 +135,11 @@
         "logBase",
         "orientation",
         "minimum",
-        "maximum"
+        "maximum",
+        "explosion",
+        "bubble3D",
+        "invertIfNegative",
+        "smooth"
       ]
     },
     "ChartWorkbookTarget": {
@@ -430,6 +439,12 @@
           "items": {
             "$ref": "#/$defs/SourceChartProperty"
           }
+        },
+        "unrecognizedChildren": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceChartUnknown"
+          }
         }
       },
       "additionalProperties": false,
@@ -502,6 +517,15 @@
         "dataAuthority": {
           "description": "Cache declarations are snapshots, not recalculated workbook values.",
           "$ref": "#/$defs/ChartDataAuthority"
+        },
+        "extensionOrdinals": {
+          "description": "Opaque extension roots remain physically bound even though inspection\ndoes not interpret their descendants. Consumers must not silently admit.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
         },
         "externalData": {
           "anyOf": [
@@ -609,6 +633,30 @@
         "index"
       ]
     },
+    "SourceChartPointOverride": {
+      "type": "object",
+      "properties": {
+        "index": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "layout": {
+          "$ref": "#/$defs/SourceChartLayout"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "index",
+        "layout"
+      ]
+    },
     "SourceChartProperty": {
       "type": "object",
       "properties": {
@@ -669,10 +717,19 @@
           "format": "uint32",
           "minimum": 0
         },
+        "layout": {
+          "$ref": "#/$defs/SourceChartLayout"
+        },
         "order": {
           "type": "integer",
           "format": "uint32",
           "minimum": 0
+        },
+        "pointOverrides": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceChartPointOverride"
+          }
         },
         "sourceOrdinal": {
           "type": "integer",
@@ -686,6 +743,28 @@
         "index",
         "order",
         "channels"
+      ]
+    },
+    "SourceChartUnknown": {
+      "type": "object",
+      "properties": {
+        "localName": {
+          "type": "string"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "namespace",
+        "localName"
       ]
     },
     "SourceCharts": {

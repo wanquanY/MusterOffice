@@ -248,6 +248,7 @@ pub fn query(
                 sha256: info.sha256.clone(),
                 byte_length: ByteLength::new(info.byte_length),
                 compatibility: tree.compatibility,
+                extension_ordinals: tree.extension_ordinals,
                 plots,
                 external_data,
                 data_authority: ChartDataAuthority::SourceCacheSnapshot,

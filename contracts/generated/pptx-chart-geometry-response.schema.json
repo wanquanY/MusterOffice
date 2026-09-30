@@ -1,0 +1,919 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:pptx-chart-geometry-response",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PptxChartGeometryResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "geometry": {
+          "$ref": "#/$defs/SourceCircularGeometry"
+        },
+        "status": {
+          "type": "string",
+          "const": "compiled"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "geometry"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/PptxChartGeometryFailure"
+        },
+        "status": {
+          "type": "string",
+          "const": "error"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "error"
+      ]
+    }
+  ],
+  "$defs": {
+    "ByteLength": {
+      "description": "Canonical uint64 byte length. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9]"
+      },
+      "pattern": "^(0|[1-9][0-9]{0,19})$",
+      "x-integer-maximum": "18446744073709551615",
+      "x-integer-minimum": "0"
+    },
+    "ChartDataAuthority": {
+      "type": "string",
+      "enum": [
+        "sourceCacheSnapshot"
+      ]
+    },
+    "ChartGeometry": {
+      "type": "object",
+      "properties": {
+        "fillRule": {
+          "$ref": "#/$defs/FillRule"
+        },
+        "layout": {
+          "$ref": "#/$defs/SectorLayout"
+        },
+        "paths": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ChartSectorPath"
+          }
+        },
+        "profile": {
+          "type": "string"
+        },
+        "work": {
+          "$ref": "#/$defs/ChartGeometryWork"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "layout",
+        "fillRule",
+        "paths",
+        "work"
+      ]
+    },
+    "ChartGeometryWork": {
+      "type": "object",
+      "properties": {
+        "arcSegments": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "commands": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "paths": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "steps": {
+          "description": "Bounded arithmetic stages; each trigonometric evaluation charges 24.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "paths",
+        "commands",
+        "arcSegments",
+        "steps"
+      ]
+    },
+    "ChartMarkupKind": {
+      "type": "string",
+      "enum": [
+        "shapeProperties",
+        "textProperties",
+        "title",
+        "majorGridlines",
+        "minorGridlines",
+        "displayUnits",
+        "dataLabels",
+        "seriesLines",
+        "marker",
+        "pictureOptions",
+        "trendline",
+        "errorBars",
+        "extensions"
+      ]
+    },
+    "ChartPropertyKind": {
+      "type": "string",
+      "enum": [
+        "barDirection",
+        "grouping",
+        "varyColors",
+        "gapWidth",
+        "gapDepth",
+        "overlap",
+        "firstSliceAngle",
+        "holeSize",
+        "delete",
+        "axisPosition",
+        "majorTickMark",
+        "minorTickMark",
+        "tickLabelPosition",
+        "crossAxis",
+        "crosses",
+        "crossesAt",
+        "crossBetween",
+        "majorUnit",
+        "minorUnit",
+        "auto",
+        "labelAlignment",
+        "labelOffset",
+        "tickLabelSkip",
+        "tickMarkSkip",
+        "noMultiLevelLabels",
+        "baseTimeUnit",
+        "majorTimeUnit",
+        "minorTimeUnit",
+        "logBase",
+        "orientation",
+        "minimum",
+        "maximum",
+        "explosion",
+        "bubble3D",
+        "invertIfNegative",
+        "smooth"
+      ]
+    },
+    "ChartSectorPath": {
+      "type": "object",
+      "properties": {
+        "angularErrorBound": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "arcSegments": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "commands": {
+          "description": "Empty for zero-weight sectors. Positive sub-resolution sectors fail with\nPrecision rather than disappearing from a successful geometry result.\nFull rings use opposite winding subpaths, without a radial stroke seam.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PathCommand"
+          }
+        },
+        "coordinateErrorBound": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "curveErrorBound": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "numericErrorBound": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "pointIndex": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "pointIndex",
+        "commands",
+        "numericErrorBound",
+        "curveErrorBound",
+        "angularErrorBound",
+        "coordinateErrorBound",
+        "arcSegments"
+      ]
+    },
+    "ChartWorkbookTarget": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "byteLength": {
+              "$ref": "#/$defs/ByteLength"
+            },
+            "contentType": {
+              "type": "string"
+            },
+            "kind": {
+              "type": "string",
+              "const": "embedded"
+            },
+            "part": {
+              "type": "string"
+            },
+            "sha256": {
+              "$ref": "#/$defs/Digest"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part",
+            "contentType",
+            "sha256",
+            "byteLength"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "external"
+            },
+            "uri": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "uri"
+          ]
+        }
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "FillRule": {
+      "type": "string",
+      "enum": [
+        "nonzero",
+        "evenodd"
+      ]
+    },
+    "FixedQ32": {
+      "description": "Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,38})$",
+      "x-integer-maximum": "170141183460469231731687303715884105727",
+      "x-integer-minimum": "-170141183460469231731687303715884105728"
+    },
+    "PathCommand": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "move"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "line"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "control": {
+              "$ref": "#/$defs/Point"
+            },
+            "kind": {
+              "type": "string",
+              "const": "quadratic"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "control",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "control1": {
+              "$ref": "#/$defs/Point"
+            },
+            "control2": {
+              "$ref": "#/$defs/Point"
+            },
+            "kind": {
+              "type": "string",
+              "const": "cubic"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "control1",
+            "control2",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "close"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "Point": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "y": {
+          "$ref": "#/$defs/FixedQ32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "PptxChartGeometryFailure": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/PptxFailureCode"
+        },
+        "message": {
+          "type": "string"
+        },
+        "pointIndex": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "seriesIndex": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "sourceOrdinal": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "PptxFailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "SOURCE_CONFLICT",
+        "PRESERVATION_CONFLICT",
+        "MAPPING_NOT_IMPLEMENTED",
+        "RESOURCE_REQUIRED",
+        "LIMIT_EXCEEDED",
+        "CANCELLED",
+        "READ_FAILED"
+      ]
+    },
+    "Sector": {
+      "type": "object",
+      "properties": {
+        "endTurn": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "pointIndex": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "positiveBelowResolution": {
+          "description": "A positive weight survives in the plan even if its Q32 endpoints coincide.",
+          "type": "boolean"
+        },
+        "startTurn": {
+          "description": "Unwrapped Q32 turns. Adjacent sectors share exactly the same boundary.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "zeroWeight": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "pointIndex",
+        "startTurn",
+        "endTurn",
+        "zeroWeight",
+        "positiveBelowResolution"
+      ]
+    },
+    "SectorLayout": {
+      "type": "object",
+      "properties": {
+        "endpointErrorBound": {
+          "description": "Conservative endpoint error in raw Q32 turn units, relative to start_turn.\nFor a sweep, combine the two endpoint errors. No geometric error claimed.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "profile": {
+          "type": "string"
+        },
+        "sectors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Sector"
+          }
+        },
+        "work": {
+          "$ref": "#/$defs/SectorWork"
+        },
+        "zeroTotal": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "sectors",
+        "zeroTotal",
+        "endpointErrorBound",
+        "work"
+      ]
+    },
+    "SectorWork": {
+      "type": "object",
+      "properties": {
+        "boundaryDecimalDigits": {
+          "description": "Bounds repeated prefix/total arithmetic even if only one weight is wide.",
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0
+        },
+        "numberBytes": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0
+        },
+        "points": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "scaledDecimalDigits": {
+          "description": "Sum of exact integer widths after common decimal scaling, including zeros.",
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "points",
+        "numberBytes",
+        "scaledDecimalDigits",
+        "boundaryDecimalDigits"
+      ]
+    },
+    "SourceChartExternalData": {
+      "type": "object",
+      "properties": {
+        "autoUpdate": {
+          "description": "None means omitted; no eager refresh is performed by inspection.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "relationshipId": {
+          "type": "string"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "target": {
+          "$ref": "#/$defs/ChartWorkbookTarget"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "relationshipId",
+        "target"
+      ]
+    },
+    "SourceChartLayout": {
+      "type": "object",
+      "properties": {
+        "markup": {
+          "description": "Complex markup remains bound to its original part and physical ordinal.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceChartMarkup"
+          }
+        },
+        "properties": {
+          "description": "Source order; missing property, missing val and explicit lexical val differ.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceChartProperty"
+          }
+        },
+        "unrecognizedChildren": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceChartUnknown"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "properties",
+        "markup"
+      ]
+    },
+    "SourceChartMarkup": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/ChartMarkupKind"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "kind"
+      ]
+    },
+    "SourceChartPointOverride": {
+      "type": "object",
+      "properties": {
+        "index": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "layout": {
+          "$ref": "#/$defs/SourceChartLayout"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "index",
+        "layout"
+      ]
+    },
+    "SourceChartProperty": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/ChartPropertyKind"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "value": {
+          "description": "XML attribute value, without numeric conversion or schema defaulting.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "kind"
+      ]
+    },
+    "SourceChartUnknown": {
+      "type": "object",
+      "properties": {
+        "localName": {
+          "type": "string"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "namespace",
+        "localName"
+      ]
+    },
+    "SourceCircularGeometry": {
+      "type": "object",
+      "properties": {
+        "chartPart": {
+          "type": "string"
+        },
+        "chartSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "dataAuthority": {
+          "$ref": "#/$defs/ChartDataAuthority"
+        },
+        "externalData": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceChartExternalData"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "firstSliceDegrees": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "holePercent": {
+          "type": "integer",
+          "format": "uint8",
+          "maximum": 255,
+          "minimum": 0
+        },
+        "nativeKind": {
+          "type": "string"
+        },
+        "object": {
+          "$ref": "#/$defs/SourceObjectRef"
+        },
+        "plotSourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "profile": {
+          "$ref": "#/$defs/SourceCircularProfile"
+        },
+        "series": {
+          "description": "Source series order, with the innermost doughnut ring first. Stable series\nindices are retained independently of physical XML or drawing order.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceCircularSeries"
+          }
+        },
+        "sourceSha256": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "sourceSha256",
+        "object",
+        "chartPart",
+        "chartSha256",
+        "plotSourceOrdinal",
+        "nativeKind",
+        "firstSliceDegrees",
+        "holePercent",
+        "dataAuthority",
+        "series"
+      ]
+    },
+    "SourceCircularPoint": {
+      "type": "object",
+      "properties": {
+        "formatCode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "index": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "index",
+        "sourceOrdinal"
+      ]
+    },
+    "SourceCircularProfile": {
+      "oneOf": [
+        {
+          "description": "Explicit source angles/hole size; no guessed application layout defaults.",
+          "type": "string",
+          "const": "source-cache-declared-circular-plot-v1-draft"
+        }
+      ]
+    },
+    "SourceCircularSeries": {
+      "type": "object",
+      "properties": {
+        "coordinateErrorBound": {
+          "description": "Maximum complete per-axis bound across all paths, including source error.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "formula": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "geometry": {
+          "$ref": "#/$defs/ChartGeometry"
+        },
+        "index": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "innerRadius": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "layout": {
+          "$ref": "#/$defs/SourceChartLayout"
+        },
+        "order": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "outerRadius": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "pointOverrides": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceChartPointOverride"
+          }
+        },
+        "points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceCircularPoint"
+          }
+        },
+        "sourceGeometryErrorBound": {
+          "description": "Upstream angle/radius conversion error in local Q32 EMU, not included in\ngeometry's per-path bounds. Consumers must use the combined bound below.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "valuesSourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "index",
+        "order",
+        "sourceOrdinal",
+        "valuesSourceOrdinal",
+        "points",
+        "layout",
+        "pointOverrides",
+        "innerRadius",
+        "outerRadius",
+        "sourceGeometryErrorBound",
+        "coordinateErrorBound",
+        "geometry"
+      ]
+    },
+    "SourceObjectRef": {
+      "type": "object",
+      "properties": {
+        "nativeId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "part": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "nativeId"
+      ]
+    }
+  }
+}

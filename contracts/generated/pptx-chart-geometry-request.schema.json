@@ -1,0 +1,117 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:pptx-chart-geometry-request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SourceCircularRequest",
+  "type": "object",
+  "properties": {
+    "center": {
+      "description": "Resolved plot geometry, not the graphicFrame's outer box or a guessed\nautomatic layout. Labels/legend reserve space in their own layout stage.",
+      "$ref": "#/$defs/Point"
+    },
+    "coordinateTolerance": {
+      "$ref": "#/$defs/FixedQ32"
+    },
+    "expectedSourceSha256": {
+      "$ref": "#/$defs/Digest"
+    },
+    "negativeWeights": {
+      "$ref": "#/$defs/NegativeWeights"
+    },
+    "object": {
+      "$ref": "#/$defs/SourceObjectRef"
+    },
+    "outerRadius": {
+      "$ref": "#/$defs/FixedQ32"
+    },
+    "plotSourceOrdinal": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0
+    },
+    "profile": {
+      "$ref": "#/$defs/SourceCircularProfile"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "expectedSourceSha256",
+    "object",
+    "plotSourceOrdinal",
+    "profile",
+    "center",
+    "outerRadius",
+    "coordinateTolerance",
+    "negativeWeights"
+  ],
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "FixedQ32": {
+      "description": "Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,38})$",
+      "x-integer-maximum": "170141183460469231731687303715884105727",
+      "x-integer-minimum": "-170141183460469231731687303715884105728"
+    },
+    "NegativeWeights": {
+      "type": "string",
+      "enum": [
+        "reject",
+        "absoluteMagnitude"
+      ]
+    },
+    "Point": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "y": {
+          "$ref": "#/$defs/FixedQ32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "SourceCircularProfile": {
+      "oneOf": [
+        {
+          "description": "Explicit source angles/hole size; no guessed application layout defaults.",
+          "type": "string",
+          "const": "source-cache-declared-circular-plot-v1-draft"
+        }
+      ]
+    },
+    "SourceObjectRef": {
+      "type": "object",
+      "properties": {
+        "nativeId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "part": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "nativeId"
+      ]
+    }
+  }
+}

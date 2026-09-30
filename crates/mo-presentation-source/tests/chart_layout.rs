@@ -7,6 +7,58 @@ use mo_presentation_source::{
 };
 use support::*;
 
+#[test]
+fn series_and_point_geometry_and_style_bindings_are_preserved_without_defaults() {
+    let s=series().replace("</c:ser>",r#"<c:spPr/><c:explosion val="12"/><c:dLbls/><c:dPt><c:idx val="2"/><c:explosion/><c:bubble3D val="false"/><c:spPr/></c:dPt><c:futureGeometry val="opaque"/></c:ser>"#);
+    let result = inspect(&chart(&s), Default::default()).unwrap();
+    let s = &result.charts[0].plots[0].series[0];
+    assert_eq!(s.layout.properties[0].kind, ChartPropertyKind::Explosion);
+    assert_eq!(s.layout.properties[0].value.as_deref(), Some("12"));
+    assert!(
+        s.layout
+            .markup
+            .iter()
+            .any(|m| m.kind == ChartMarkupKind::DataLabels)
+    );
+    assert_eq!(
+        s.layout.unrecognized_children[0].local_name,
+        "futureGeometry"
+    );
+    let p = &s.point_overrides[0];
+    assert_eq!(p.index, 2);
+    assert_eq!(p.layout.properties[0].kind, ChartPropertyKind::Explosion);
+    assert_eq!(p.layout.properties[0].value, None);
+    assert_eq!(p.layout.properties[1].value.as_deref(), Some("false"));
+    assert!(p.layout.markup[0].source_ordinal > p.source_ordinal);
+}
+
+#[test]
+fn opaque_extensions_duplicate_point_overrides_and_override_budgets_are_explicit() {
+    let extension =
+        r#"<c:extLst><c:ext uri="owned"><f:future xmlns:f="urn:owned-future"/></c:ext></c:extLst>"#;
+    let s = series().replace("</c:ser>", &format!("{extension}</c:ser>"));
+    let result = inspect(&chart(&s), Default::default()).unwrap();
+    let part = &result.charts[0];
+    assert_eq!(part.extension_ordinals.len(), 1);
+    let markup = &part.plots[0].series[0].layout.markup[0];
+    assert_eq!(markup.kind, ChartMarkupKind::Extensions);
+    assert_eq!(markup.source_ordinal, part.extension_ordinals[0]);
+    let point = r#"<c:dPt><c:idx val="0"/></c:dPt>"#;
+    let duplicate = series().replace("</c:ser>", &format!("{point}{point}</c:ser>"));
+    assert!(inspect(&chart(&duplicate), Default::default()).is_err());
+    let single = series().replace("</c:ser>", &format!("{point}</c:ser>"));
+    assert!(
+        inspect(
+            &chart(&single),
+            SourceChartLimits {
+                max_points: 8,
+                ..Default::default()
+            }
+        )
+        .is_err()
+    );
+}
+
 fn inspect(chart: &str, limits: SourceChartLimits) -> Result<SourceCharts, PptxError> {
     let bytes = package(chart, &frame(2), CT, "chart", false);
     let package = Package::open(
