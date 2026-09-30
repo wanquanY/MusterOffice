@@ -39,6 +39,260 @@
     }
   ],
   "$defs": {
+    "CascadedCharacterStyle": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "description": "None kerning means no kerning after cascade exhaustion, not a zero threshold.\nLanguage, alternative language and bookmark can also remain unspecified.",
+          "$ref": "#/$defs/SourceTextCharacterAttributes"
+        },
+        "declarations": {
+          "description": "Empty/mutually exclusive declarations replace a slot as a whole.",
+          "type": "object",
+          "properties": {
+            "click": {
+              "$ref": "#/$defs/TextStyleDeclaration"
+            },
+            "complexScript": {
+              "$ref": "#/$defs/TextStyleDeclaration"
+            },
+            "eastAsian": {
+              "$ref": "#/$defs/TextStyleDeclaration"
+            },
+            "effects": {
+              "$ref": "#/$defs/TextStyleDeclaration"
+            },
+            "fill": {
+              "$ref": "#/$defs/TextStyleDeclaration"
+            },
+            "highlight": {
+              "$ref": "#/$defs/TextStyleDeclaration"
+            },
+            "latin": {
+              "$ref": "#/$defs/TextStyleDeclaration"
+            },
+            "line": {
+              "$ref": "#/$defs/TextStyleDeclaration"
+            },
+            "mouseOver": {
+              "$ref": "#/$defs/TextStyleDeclaration"
+            },
+            "rightToLeft": {
+              "$ref": "#/$defs/TextStyleDeclaration"
+            },
+            "symbol": {
+              "$ref": "#/$defs/TextStyleDeclaration"
+            },
+            "underlineFill": {
+              "$ref": "#/$defs/TextStyleDeclaration"
+            },
+            "underlineLine": {
+              "$ref": "#/$defs/TextStyleDeclaration"
+            }
+          },
+          "additionalProperties": false
+        },
+        "origins": {
+          "type": "object",
+          "properties": {
+            "alternativeLanguage": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "baseline": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "bold": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "bookmark": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "caps": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "dirty": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "error": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "italic": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "kerning": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "kumimoji": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "language": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "noProof": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "normalizeHeight": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "size": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "smartClean": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "smartId": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "spacing": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "strike": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "underline": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "attributes",
+        "origins",
+        "declarations"
+      ]
+    },
+    "CascadedParagraph": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "$ref": "#/$defs/SourceTextParagraphAttributes"
+        },
+        "declarations": {
+          "type": "object",
+          "properties": {
+            "bullet": {
+              "$ref": "#/$defs/TextStyleDeclaration"
+            },
+            "bulletColor": {
+              "$ref": "#/$defs/TextStyleDeclaration"
+            },
+            "bulletFont": {
+              "$ref": "#/$defs/TextStyleDeclaration"
+            },
+            "bulletSize": {
+              "$ref": "#/$defs/TextStyleDeclaration"
+            },
+            "lineSpacing": {
+              "$ref": "#/$defs/TextStyleDeclaration"
+            },
+            "spaceAfter": {
+              "$ref": "#/$defs/TextStyleDeclaration"
+            },
+            "spaceBefore": {
+              "$ref": "#/$defs/TextStyleDeclaration"
+            },
+            "tabs": {
+              "$ref": "#/$defs/TextStyleDeclaration"
+            }
+          },
+          "additionalProperties": false
+        },
+        "endStyle": {
+          "description": "Separate insertion/empty-paragraph style; never applied to existing runs.",
+          "$ref": "#/$defs/CascadedCharacterStyle"
+        },
+        "origins": {
+          "type": "object",
+          "properties": {
+            "alignment": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "defaultTabSize": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "eastAsianLineBreak": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "fontAlignment": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "hangingPunctuation": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "indent": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "latinLineBreak": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "leftMargin": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "level": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "rightMargin": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "rightToLeft": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            }
+          },
+          "additionalProperties": false
+        },
+        "runs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CascadedTextRun"
+          }
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "attributes",
+        "origins",
+        "declarations",
+        "runs",
+        "endStyle"
+      ]
+    },
+    "CascadedTextRun": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/SourceRunKind"
+        },
+        "run": {
+          "description": "Index into SourceObject.paragraphs[paragraph]. Text is not copied here.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "style": {
+          "$ref": "#/$defs/CascadedCharacterStyle"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "run",
+        "kind",
+        "style"
+      ]
+    },
     "ChartDataAuthority": {
       "type": "string",
       "enum": [
@@ -281,6 +535,15 @@
         },
         "target": {
           "$ref": "#/$defs/ChartLabelTarget"
+        },
+        "textCascade": {
+          "description": "Index into text_cascades. None requires chart-style/default text resolution.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
         }
       },
       "additionalProperties": false,
@@ -547,6 +810,92 @@
         "schemaDefaulted"
       ]
     },
+    "ChartTextCascade": {
+      "type": "object",
+      "properties": {
+        "bodySourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "chartPart": {
+          "type": "string"
+        },
+        "chartSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "paragraphs": {
+          "description": "Declared cascade only. Chart style/default, paint, fonts and layout remain\nseparate computations; None does not mean a shape default was selected.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CascadedParagraph"
+          }
+        },
+        "propertyRoots": {
+          "description": "High to low priority, excluding the body itself. These are native txPr roots.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "chartPart",
+        "chartSha256",
+        "bodySourceOrdinal",
+        "propertyRoots",
+        "paragraphs"
+      ]
+    },
+    "ChartTextOutcome": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "cascaded"
+            },
+            "text": {
+              "$ref": "#/$defs/ChartTextCascade"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "text"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "reason": {
+              "$ref": "#/$defs/TextCascadeUnresolved"
+            },
+            "status": {
+              "type": "string",
+              "const": "unresolved"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "reason"
+          ]
+        }
+      ]
+    },
+    "ChartTextUnresolved": {
+      "type": "string",
+      "enum": [
+        "multiplePropertyParagraphs",
+        "propertyTextRuns",
+        "listStyle"
+      ]
+    },
     "Digest": {
       "type": "string",
       "maxLength": 64,
@@ -603,11 +952,399 @@
         "work"
       ]
     },
+    "NativeCoordinate": {
+      "description": "Native coordinate: bounded integer EMU or exact decimal universal measure.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9+.a-z\\-]"
+      },
+      "pattern": "^([+-]?[0-9]+|-?[0-9]+(\\.[0-9]+)?(mm|cm|in|pt|pc|pi))$"
+    },
+    "NativePercentage": {
+      "description": "Exact native percentage: int32 thousandths of a percent or decimal percent; ranges depend on use.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9+.%\\-]"
+      },
+      "pattern": "^([+-]?[0-9]+|-?[0-9]+(\\.[0-9]+)?%)$"
+    },
+    "NativeTableGridIssue": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "emptyGrid"
+            }
+          },
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "actual": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "expected": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "rowWidth"
+            },
+            "row": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "kind",
+            "row",
+            "actual",
+            "expected"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "duplicateCellId"
+            }
+          },
+          "required": [
+            "kind",
+            "cell"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "invalidSpan"
+            }
+          },
+          "required": [
+            "kind",
+            "cell"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "missingNeighbour"
+            }
+          },
+          "required": [
+            "kind",
+            "cell"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "conflictingNeighbours"
+            }
+          },
+          "required": [
+            "kind",
+            "cell"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "outsideMerge"
+            },
+            "origin": {
+              "$ref": "#/$defs/SourceCellAddress"
+            }
+          },
+          "required": [
+            "kind",
+            "cell",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/SourceCellAddress"
+            },
+            "kind": {
+              "type": "string",
+              "const": "conflictingSpan"
+            },
+            "origin": {
+              "$ref": "#/$defs/SourceCellAddress"
+            }
+          },
+          "required": [
+            "kind",
+            "cell",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "incompleteMerge"
+            },
+            "origin": {
+              "$ref": "#/$defs/SourceCellAddress"
+            }
+          },
+          "required": [
+            "kind",
+            "origin"
+          ]
+        }
+      ]
+    },
+    "NativeTextAlign": {
+      "type": "string",
+      "enum": [
+        "l",
+        "ctr",
+        "r",
+        "just",
+        "justLow",
+        "dist",
+        "thaiDist"
+      ]
+    },
+    "NativeTextCaps": {
+      "type": "string",
+      "enum": [
+        "none",
+        "small",
+        "all"
+      ]
+    },
+    "NativeTextElement": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "txBody",
+            "txStyles",
+            "defaultTextStyle",
+            "titleStyle",
+            "bodyStyle",
+            "otherStyle",
+            "lstStyle",
+            "bodyPr",
+            "p",
+            "pPr",
+            "defPPr",
+            "lvl1pPr",
+            "lvl2pPr",
+            "lvl3pPr",
+            "lvl4pPr",
+            "lvl5pPr",
+            "lvl6pPr",
+            "lvl7pPr",
+            "lvl8pPr",
+            "lvl9pPr",
+            "r",
+            "br",
+            "fld",
+            "t",
+            "rPr",
+            "defRPr",
+            "endParaRPr",
+            "noAutofit",
+            "normAutofit",
+            "spAutoFit",
+            "lnSpc",
+            "spcBef",
+            "spcAft",
+            "spcPct",
+            "spcPts",
+            "buClrTx",
+            "buClr",
+            "buSzTx",
+            "buSzPct",
+            "buSzPts",
+            "buFontTx",
+            "buFont",
+            "buNone",
+            "buAutoNum",
+            "buChar",
+            "tabLst",
+            "tab",
+            "latin",
+            "ea",
+            "cs",
+            "sym",
+            "fontRef",
+            "highlight",
+            "uLnTx",
+            "uLn",
+            "uFillTx",
+            "uFill",
+            "hlinkClick",
+            "hlinkMouseOver",
+            "rtl",
+            "noFill",
+            "solidFill",
+            "gradFill",
+            "blipFill",
+            "pattFill",
+            "grpFill",
+            "ln",
+            "effectLst",
+            "effectDag",
+            "srgbClr",
+            "scrgbClr",
+            "hslClr",
+            "sysClr",
+            "schemeClr",
+            "prstClr"
+          ]
+        },
+        {
+          "description": "DrawingML chart text properties; retains its actual chart namespace.",
+          "type": "string",
+          "const": "txPr"
+        },
+        {
+          "description": "DrawingML chart rich text; not a presentation shape text body.",
+          "type": "string",
+          "const": "rich"
+        },
+        {
+          "description": "Native table-style font collection; stored in the table style catalog.",
+          "type": "string",
+          "const": "font"
+        }
+      ]
+    },
+    "NativeTextFontAlign": {
+      "type": "string",
+      "enum": [
+        "auto",
+        "t",
+        "ctr",
+        "base",
+        "b"
+      ]
+    },
+    "NativeTextPoint": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "hundredthPoints"
+            },
+            "value": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "universalMeasure"
+            },
+            "value": {
+              "$ref": "#/$defs/NativeCoordinate"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        }
+      ]
+    },
+    "NativeTextStrike": {
+      "type": "string",
+      "enum": [
+        "noStrike",
+        "sngStrike",
+        "dblStrike"
+      ]
+    },
+    "NativeTextUnderline": {
+      "type": "string",
+      "enum": [
+        "none",
+        "words",
+        "sng",
+        "dbl",
+        "heavy",
+        "dotted",
+        "dottedHeavy",
+        "dash",
+        "dashHeavy",
+        "dashLong",
+        "dashLongHeavy",
+        "dotDash",
+        "dotDashHeavy",
+        "dotDotDash",
+        "dotDotDashHeavy",
+        "wavy",
+        "wavyHeavy",
+        "wavyDbl"
+      ]
+    },
     "NegativeWeights": {
       "type": "string",
       "enum": [
         "reject",
         "absoluteMagnitude"
+      ]
+    },
+    "PlaceholderMatchRule": {
+      "type": "string",
+      "enum": [
+        "slideIndex",
+        "masterType"
       ]
     },
     "PptxChartLabelFailure": {
@@ -697,6 +1434,26 @@
         "boundaryDecimalDigits"
       ]
     },
+    "SourceCellAddress": {
+      "type": "object",
+      "properties": {
+        "column": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "row": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "row",
+        "column"
+      ]
+    },
     "SourceChartLabels": {
       "type": "object",
       "properties": {
@@ -738,6 +1495,13 @@
         },
         "sourceSha256": {
           "$ref": "#/$defs/Digest"
+        },
+        "textCascades": {
+          "description": "Unique native text cascades, shared by labels with the same declaration chain.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ChartTextOutcome"
+          }
         }
       },
       "additionalProperties": false,
@@ -751,7 +1515,8 @@
         "dataAuthority",
         "negativeWeights",
         "labels",
-        "normalizations"
+        "normalizations",
+        "textCascades"
       ]
     },
     "SourceObjectRef": {
@@ -770,6 +1535,865 @@
       "required": [
         "part",
         "nativeId"
+      ]
+    },
+    "SourcePlaceholderMatch": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "notPlaceholder"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "master"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "rule": {
+              "$ref": "#/$defs/PlaceholderMatchRule"
+            },
+            "status": {
+              "type": "string",
+              "const": "matched"
+            },
+            "target": {
+              "$ref": "#/$defs/SourceObjectRef"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "target",
+            "rule"
+          ]
+        },
+        {
+          "description": "Missing relationship or matching placeholder; no synthetic geometry.",
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "unmatched"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ]
+        },
+        {
+          "description": "Slide idx=0xffffffff is explicitly detached from layout matching.",
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "detached"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "candidates": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "part": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "const": "ambiguous"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "part",
+            "candidates"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "const": "unsupportedContext"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ]
+        }
+      ]
+    },
+    "SourceRunKind": {
+      "type": "string",
+      "enum": [
+        "text",
+        "break",
+        "field"
+      ]
+    },
+    "SourceTextCharacterAttributes": {
+      "type": "object",
+      "properties": {
+        "alternativeLanguage": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "baseline": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativePercentage"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "bold": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "bookmark": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "caps": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeTextCaps"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "dirty": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "error": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "italic": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "kerning": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int32"
+        },
+        "kumimoji": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "language": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "noProof": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "normalizeHeight": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "size": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int32"
+        },
+        "smartClean": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "smartId": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "spacing": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeTextPoint"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "strike": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeTextStrike"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "underline": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeTextUnderline"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "SourceTextParagraphAttributes": {
+      "type": "object",
+      "properties": {
+        "alignment": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeTextAlign"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "defaultTabSize": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeCoordinate"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "eastAsianLineBreak": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "fontAlignment": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeTextFontAlign"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "hangingPunctuation": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "indent": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int32"
+        },
+        "latinLineBreak": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "leftMargin": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int32"
+        },
+        "level": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int32"
+        },
+        "rightMargin": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int32"
+        },
+        "rightToLeft": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "SourceThemeDefaultKind": {
+      "type": "string",
+      "enum": [
+        "txDef",
+        "lnDef",
+        "spDef"
+      ]
+    },
+    "TableStyleRegion": {
+      "type": "string",
+      "enum": [
+        "wholeTbl",
+        "band1H",
+        "band2H",
+        "band1V",
+        "band2V",
+        "lastCol",
+        "firstCol",
+        "lastRow",
+        "seCell",
+        "swCell",
+        "firstRow",
+        "neCell",
+        "nwCell"
+      ]
+    },
+    "TableStyleSelectionError": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "conflictingStyles"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "invalidIdentity"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingDefinition"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "gridMismatch"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "cellOutsideGrid"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "retainedDeclaration"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "cancelled"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "TableTextStyleSource": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "inline"
+            },
+            "object": {
+              "$ref": "#/$defs/SourceObjectRef"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "catalog"
+            },
+            "part": {
+              "type": "string"
+            },
+            "styleId": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part",
+            "styleId"
+          ]
+        }
+      ]
+    },
+    "TextCascadeUnresolved": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "chartText"
+            },
+            "origin": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "reason": {
+              "$ref": "#/$defs/ChartTextUnresolved"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin",
+            "reason"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "tableGrid"
+            },
+            "reason": {
+              "$ref": "#/$defs/NativeTableGridIssue"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reason"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "tableStyle"
+            },
+            "reason": {
+              "$ref": "#/$defs/TableStyleSelectionError"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reason"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "noTextBody"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "placeholder"
+            },
+            "matching": {
+              "$ref": "#/$defs/SourcePlaceholderMatch"
+            },
+            "object": {
+              "$ref": "#/$defs/SourceObjectRef"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "matching"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "retainedContent"
+            },
+            "origin": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "ambiguousTemplateParagraph"
+            },
+            "level": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "object": {
+              "$ref": "#/$defs/SourceObjectRef"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "level"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "fieldParagraph"
+            },
+            "origin": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin"
+          ]
+        }
+      ]
+    },
+    "TextStyleDeclaration": {
+      "description": "Selected whole declaration. Consumers must still resolve its native semantics,\nretained descendants, colors, theme fonts, resources, effects and permissions.\nThe reference is meaningful only with this result's immutable SourceIndex.",
+      "type": "object",
+      "properties": {
+        "element": {
+          "$ref": "#/$defs/NativeTextElement"
+        },
+        "origin": {
+          "$ref": "#/$defs/TextStyleOrigin"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "element",
+        "origin"
+      ]
+    },
+    "TextStyleOrigin": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "bodySourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "chart"
+            },
+            "part": {
+              "type": "string"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part",
+            "bodySourceOrdinal",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "tableStyle"
+            },
+            "region": {
+              "$ref": "#/$defs/TableStyleRegion"
+            },
+            "source": {
+              "$ref": "#/$defs/TableTextStyleSource"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "source",
+            "region",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "object"
+            },
+            "object": {
+              "$ref": "#/$defs/SourceObjectRef"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "master"
+            },
+            "part": {
+              "type": "string"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "presentation"
+            },
+            "part": {
+              "type": "string"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "defaultKind": {
+              "$ref": "#/$defs/SourceThemeDefaultKind"
+            },
+            "kind": {
+              "type": "string",
+              "const": "theme"
+            },
+            "part": {
+              "type": "string"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part",
+            "defaultKind",
+            "sourceOrdinal"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "profileDefault"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
       ]
     }
   }

@@ -1,5 +1,5 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { CharacterProperty, ColorUnresolved, EffectiveFillRect, EffectiveFillTile, FillOwner, FillRedirect, FlowIssue, GeometryIssue, ItemizationNotice, ParagraphProperty, PathSceneIssue, PixelExtent, PlacementUnresolved, PptxPageFailure, PptxPlaybackRasterInfo, ShapeFailure, SourceCellAddress, SourceFontSelectionFailure, SourceImageBinding, SourceImageReference, SourceImageResult, SourceObjectRef, SourceVisualIssue, TableBorderTarget, TextBodyProperty, TextDecorationIssue, TextPaintLocation, TextStyleDeclaration, TimelineFailure, TypefaceUnresolved } from './part-002.js';
+import type { CharacterProperty, ColorUnresolved, EffectiveFillRect, EffectiveFillTile, FillOwner, FillRedirect, FlowIssue, GeometryIssue, ItemizationNotice, ParagraphProperty, PathSceneIssue, PixelExtent, PlacementUnresolved, PptxPageFailure, PptxPlaybackRasterInfo, ShapeFailure, SourceCellAddress, SourceFontSelectionFailure, SourceImageBinding, SourceImageReference, SourceImageResult, SourceObjectRef, SourceVisualIssue, TableBorderTarget, TextBodyProperty, TextCascadeUnresolved, TextDecorationIssue, TextPaintLocation, TextStyleDeclaration, TimelineFailure, TypefaceUnresolved } from './part-002.js';
 
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
 
@@ -979,6 +979,12 @@ export type NativeTextElement =
 
 export type TextStyleOrigin =
   | {
+      bodySourceOrdinal: number;
+      kind: "chart";
+      part: string;
+      sourceOrdinal: number;
+    }
+  | {
       kind: "tableStyle";
       region: TableStyleRegion;
       source: TableTextStyleSource;
@@ -1168,35 +1174,4 @@ export type SourceTextIssue =
       boundary: number;
       kind: "graphemeStyleConflict";
       paragraph: number;
-    };
-
-export type TextCascadeUnresolved =
-  | {
-      kind: "tableGrid";
-      reason: NativeTableGridIssue;
-    }
-  | {
-      kind: "tableStyle";
-      reason: TableStyleSelectionError;
-    }
-  | {
-      kind: "noTextBody";
-    }
-  | {
-      kind: "placeholder";
-      matching: SourcePlaceholderMatch;
-      object: SourceObjectRef;
-    }
-  | {
-      kind: "retainedContent";
-      origin: TextStyleOrigin;
-    }
-  | {
-      kind: "ambiguousTemplateParagraph";
-      level: number;
-      object: SourceObjectRef;
-    }
-  | {
-      kind: "fieldParagraph";
-      origin: TextStyleOrigin;
     };

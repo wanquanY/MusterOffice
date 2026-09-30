@@ -43,6 +43,8 @@ pub struct SourceChartLabels {
     pub labels: Vec<ChartLabelPlan>,
     /// Each required series is normalized once. Fractions are not sector angles.
     pub normalizations: Vec<ChartLabelNormalization>,
+    /// Unique native text cascades, shared by labels with the same declaration chain.
+    pub text_cascades: Vec<mo_presentation_source::source::text::cascade::ChartTextOutcome>,
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -61,6 +63,8 @@ pub struct ChartLabelPlan {
     /// Named data bindings, not final display order or formatted display text.
     pub components: Vec<ChartLabelComponent>,
     pub custom_text_source: Option<u32>,
+    /// Index into text_cascades. None requires chart-style/default text resolution.
+    pub text_cascade: Option<u32>,
     /// Office displays a legend key only alongside a selected text component or tx.
     pub legend_key_visible: Option<bool>,
 }
@@ -179,6 +183,7 @@ pub struct SourceChartLabelLimits {
     pub max_targets: usize,
     pub max_data_points: usize,
     pub max_retained_bytes: usize,
+    pub text: mo_presentation_source::source::text::cascade::TextCascadeLimits,
 }
 impl Default for SourceChartLabelLimits {
     fn default() -> Self {
@@ -188,6 +193,7 @@ impl Default for SourceChartLabelLimits {
             max_targets: 4096,
             max_data_points: 65536,
             max_retained_bytes: 8 * 1024 * 1024,
+            text: Default::default(),
         }
     }
 }

@@ -671,6 +671,12 @@ export type NativeTextElement =
   | "font";
 export type TextStyleOrigin =
   | {
+      bodySourceOrdinal: number;
+      kind: "chart";
+      part: string;
+      sourceOrdinal: number;
+    }
+  | {
       kind: "tableStyle";
       region: TableStyleRegion;
       source: TableTextStyleSource;
@@ -855,6 +861,11 @@ export type SourceTextIssue =
     };
 export type TextCascadeUnresolved =
   | {
+      kind: "chartText";
+      origin: TextStyleOrigin;
+      reason: ChartTextUnresolved;
+    }
+  | {
       kind: "tableGrid";
       reason: NativeTableGridIssue;
     }
@@ -883,6 +894,7 @@ export type TextCascadeUnresolved =
       kind: "fieldParagraph";
       origin: TextStyleOrigin;
     };
+export type ChartTextUnresolved = "multiplePropertyParagraphs" | "propertyTextRuns" | "listStyle";
 export type NativeTableGridIssue =
   | {
       kind: "emptyGrid";

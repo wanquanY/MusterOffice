@@ -34,6 +34,11 @@ pub const PROFILE: &str = "drawingml-text-cascade-draft-v1";
     deny_unknown_fields
 )]
 pub enum TextStyleOrigin {
+    Chart {
+        part: String,
+        body_source_ordinal: u32,
+        source_ordinal: u32,
+    },
     TableStyle {
         source: TableTextStyleSource,
         region: TableStyleRegion,
@@ -63,6 +68,7 @@ impl TextStyleOrigin {
         let mut result = self.clone();
         match &mut result {
             Self::Object { source_ordinal, .. }
+            | Self::Chart { source_ordinal, .. }
             | Self::Master { source_ordinal, .. }
             | Self::Presentation { source_ordinal, .. }
             | Self::Theme { source_ordinal, .. } => *source_ordinal = ordinal,
@@ -76,6 +82,7 @@ impl TextStyleOrigin {
             Self::TableStyle { source, .. } => source.lexical_bytes() + 128,
             Self::Object { object, .. } => object.part.len() + 64,
             Self::Master { part, .. }
+            | Self::Chart { part, .. }
             | Self::Presentation { part, .. }
             | Self::Theme { part, .. } => part.len() + 64,
             Self::ProfileDefault {} => 64,
@@ -190,6 +197,10 @@ impl CascadedText {
     deny_unknown_fields
 )]
 pub enum TextCascadeUnresolved {
+    ChartText {
+        origin: TextStyleOrigin,
+        reason: ChartTextUnresolved,
+    },
     TableGrid {
         reason: crate::source::table::grid::NativeTableGridIssue,
     },
@@ -211,6 +222,13 @@ pub enum TextCascadeUnresolved {
     FieldParagraph {
         origin: TextStyleOrigin,
     },
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum ChartTextUnresolved {
+    MultiplePropertyParagraphs,
+    PropertyTextRuns,
+    ListStyle,
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "status", rename_all = "camelCase", deny_unknown_fields)]

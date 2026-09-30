@@ -73,6 +73,14 @@
         "bookmark"
       ]
     },
+    "ChartTextUnresolved": {
+      "type": "string",
+      "enum": [
+        "multiplePropertyParagraphs",
+        "propertyTextRuns",
+        "listStyle"
+      ]
+    },
     "ClipWork": {
       "type": "object",
       "properties": {
@@ -4712,6 +4720,27 @@
           "properties": {
             "kind": {
               "type": "string",
+              "const": "chartText"
+            },
+            "origin": {
+              "$ref": "#/$defs/TextStyleOrigin"
+            },
+            "reason": {
+              "$ref": "#/$defs/ChartTextUnresolved"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin",
+            "reason"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
               "const": "tableGrid"
             },
             "reason": {
@@ -4922,6 +4951,35 @@
     },
     "TextStyleOrigin": {
       "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "bodySourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "chart"
+            },
+            "part": {
+              "type": "string"
+            },
+            "sourceOrdinal": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "part",
+            "bodySourceOrdinal",
+            "sourceOrdinal"
+          ]
+        },
         {
           "type": "object",
           "properties": {

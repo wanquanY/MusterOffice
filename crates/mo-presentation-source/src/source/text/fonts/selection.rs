@@ -34,7 +34,13 @@ pub(super) fn declaration(
             }
         });
     }
-    let node = cascade::declaration(index, reference)?;
+    native(cascade::declaration(index, reference)?, reference, limits)
+}
+pub(super) fn native(
+    node: &SourceTextNode,
+    reference: &TextStyleDeclaration,
+    limits: TypefaceLimits,
+) -> Result<Result<Input, TypefaceUnresolved>, PptxError> {
     if let Some(at) = node.retained_ordinals.first() {
         return Ok(Err(TypefaceUnresolved::RetainedDeclaration {
             origin: reference.origin.at(*at),

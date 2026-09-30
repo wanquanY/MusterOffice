@@ -152,10 +152,17 @@ pub(crate) fn compute_prepared(
         negative_weights: request.negative_weights,
         labels: vec![],
         normalizations: vec![],
+        text_cascades: vec![],
     };
     let mut selected = BTreeSet::new();
     let mut series_data = BTreeMap::new();
     let mut normalized = BTreeMap::new();
+    let mut text = mo_presentation_source::source::text::cascade::ChartTextResolver::new(
+        chart,
+        limits.text,
+        check,
+    )?;
+    let mut cascades = BTreeMap::new();
     let chart_defaults: Vec<_> = chart
         .annotations
         .text_bodies
@@ -212,8 +219,30 @@ pub(crate) fn compute_prepared(
             settings,
             components: vec![],
             custom_text_source: custom.map(|t| t.source_ordinal),
+            text_cascade: None,
             legend_key_visible: None,
         };
+        if !label.settings.deleted.as_ref().is_some_and(|d| d.value) {
+            let mut roots = label.settings.text_property_roots.clone();
+            if let Some(SourceChartAnnotationText {
+                content: ChartAnnotationTextContent::Rich { source_ordinal },
+                ..
+            }) = custom
+            {
+                roots.insert(0, *source_ordinal);
+            }
+            if let Some((&body, parents)) = roots.split_first() {
+                let idx = if let Some(&idx) = cascades.get(&roots) {
+                    idx
+                } else {
+                    let idx = result.text_cascades.len() as u32;
+                    result.text_cascades.push(text.resolve(body, parents)?);
+                    cascades.insert(roots, idx);
+                    idx
+                };
+                label.text_cascade = Some(idx);
+            }
+        }
         label.legend_key_visible = if label.settings.deleted.as_ref().is_some_and(|d| d.value) {
             Some(false)
         } else {

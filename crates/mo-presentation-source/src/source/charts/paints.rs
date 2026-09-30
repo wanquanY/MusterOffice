@@ -22,66 +22,6 @@ fn gradient_colors<'a>(g: &'a SourceGradientFill, colors: &mut Vec<&'a SourceCol
 fn pattern_colors<'a>(p: &'a SourcePatternFill, colors: &mut Vec<&'a SourceColor>) {
     colors.extend(p.foreground.iter().chain(&p.background).map(|c| &c.color));
 }
-fn theme_override(
-    package: &dyn PackageRead,
-    chart: &PartName,
-    source_limits: SourceLimits,
-    limits: SourceChartLimits,
-    bytes_left: &mut u64,
-    check: &dyn Fn() -> bool,
-) -> Result<Option<(String, theme::SourceThemePart)>, PptxError> {
-    let mut target = None;
-    for (i, rel) in package
-        .relationships()
-        .get(&RelationshipSource::Part(chart.clone()))
-        .into_iter()
-        .flatten()
-        .enumerate()
-    {
-        cancelled(check)?;
-        if i >= limits.max_relationship_steps {
-            return Err(PptxError::Limit("chart paint relationship steps"));
-        }
-        if rel.relationship_type != format!("{R}/themeOverride") {
-            continue;
-        }
-        if target.is_some() {
-            return Err(invalid("multiple chart theme overrides"));
-        }
-        let RelationshipTarget::Internal {
-            part,
-            fragment: None,
-        } = &rel.resolved
-        else {
-            return Err(invalid("chart theme override must be an internal part"));
-        };
-        let info = package
-            .parts()
-            .get(part)
-            .ok_or_else(|| invalid("missing chart theme override"))?;
-        if info.content_type != "application/vnd.openxmlformats-officedocument.themeOverride+xml" {
-            return Err(invalid("chart theme override content type"));
-        }
-        if source_limits.max_theme_parts == 0 {
-            return Err(PptxError::Limit("chart theme parts"));
-        }
-        *bytes_left = bytes_left
-            .checked_sub(info.byte_length)
-            .ok_or(PptxError::Limit("chart paint total part bytes"))?;
-        let bytes = package.read_part(
-            part,
-            limits
-                .max_part_bytes
-                .min(source_limits.package.xml.max_bytes) as u64,
-            check,
-        )?;
-        target = Some((
-            part.to_string(),
-            theme::read_override(&bytes, info.sha256.clone(), source_limits, check)?,
-        ));
-    }
-    Ok(target)
-}
 pub fn query(
     package: &dyn PackageRead,
     index: &SourceIndex,
@@ -124,9 +64,9 @@ pub fn query(
     let part = PartName::new(&chart.part)?;
     let bytes = package.read_part(&part, limits.source.max_part_bytes as u64, check)?;
     let mut parsed = read::read(&bytes, source_limits, limits.max_declarations, check)?;
-    let overlay = theme_override(
+    let overlay = super::context::read_theme_override(
         package,
-        &part,
+        &chart,
         source_limits,
         limits.source,
         &mut bytes_left,

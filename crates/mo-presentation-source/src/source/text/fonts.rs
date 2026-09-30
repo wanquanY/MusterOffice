@@ -4,7 +4,9 @@ use super::{cascade::*, *};
 use crate::{PptxError, cancelled, source::*, value};
 use theme::{SourceFontCollection, SourceThemeSchemeRef};
 
+mod chart;
 mod selection;
+pub use chart::ChartTypefaceContext;
 
 pub const FONT_PROFILE: &str = "drawingml-explicit-theme-typeface-draft-v1";
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
@@ -158,16 +160,7 @@ pub fn resolve(
     if text.source_sha256 != index.source_sha256 || text.profile != PROFILE {
         return Err(conflict());
     }
-    if script.is_some_and(|s| {
-        s.len() != 4
-            || !s.as_bytes()[0].is_ascii_uppercase()
-            || !s.as_bytes()[1..].iter().all(u8::is_ascii_lowercase)
-    }) {
-        return Err(value(
-            "typeface.script",
-            "expected an explicit four-letter theme script key",
-        ));
-    }
+    check_script(script)?;
     let surface = index.surfaces.get(&text.object.part).ok_or_else(conflict)?;
     if !surface
         .objects
@@ -200,6 +193,30 @@ pub fn resolve(
         Ok(input) => input,
         Err(reason) => return unresolved(reason),
     };
+    resolve_input(input, reference, slot, script, limits, check, &|| {
+        let Some(selection) = &surface.theme_selection.fonts else {
+            return Ok(None);
+        };
+        let scheme = index
+            .themes
+            .get(&selection.part)
+            .and_then(|t| t.font_scheme.as_ref())
+            .filter(|s| s.source_ordinal == selection.source_ordinal)
+            .ok_or_else(conflict)?;
+        Ok(Some((selection.clone(), scheme)))
+    })
+}
+type FontSchemeLookup<'a> =
+    dyn Fn() -> Result<Option<(SourceThemeSchemeRef, &'a theme::SourceFontScheme)>, PptxError> + 'a;
+fn resolve_input(
+    input: selection::Input,
+    reference: &TextStyleDeclaration,
+    slot: NativeFontSlot,
+    script: Option<&str>,
+    limits: TypefaceLimits,
+    check: &dyn Fn() -> bool,
+    scheme: &FontSchemeLookup<'_>,
+) -> Result<TypefaceOutcome, PptxError> {
     let (authored, table_font, choice) = match input {
         selection::Input::Font { font, table_font } => {
             check_name(&font.typeface, limits)?;
@@ -236,15 +253,9 @@ pub fn resolve(
             (None, None, (collection, slot))
         }
     };
-    let Some(selection) = &surface.theme_selection.fonts else {
+    let Some((selection, scheme)) = scheme()? else {
         return unresolved(TypefaceUnresolved::NoThemeFont {});
     };
-    let scheme = index
-        .themes
-        .get(&selection.part)
-        .and_then(|t| t.font_scheme.as_ref())
-        .filter(|s| s.source_ordinal == selection.source_ordinal)
-        .ok_or_else(conflict)?;
     if let Some(at) = scheme.retained_ordinals.first() {
         return unresolved(TypefaceUnresolved::RetainedTheme {
             scheme: selection.clone(),
@@ -285,4 +296,18 @@ pub fn resolve(
             theme_font: Some(font),
         }),
     })
+}
+
+fn check_script(script: Option<&str>) -> Result<(), PptxError> {
+    if script.is_some_and(|s| {
+        s.len() != 4
+            || !s.as_bytes()[0].is_ascii_uppercase()
+            || !s.as_bytes()[1..].iter().all(u8::is_ascii_lowercase)
+    }) {
+        return Err(value(
+            "typeface.script",
+            "expected an explicit four-letter theme script key",
+        ));
+    }
+    Ok(())
 }

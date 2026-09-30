@@ -1,5 +1,43 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { ByteLength, Digest, EffectiveImageMode, Emu, FillOrigin, FillTarget, FixedQ32, FontMetric, FontSelectionReason, FontStyle, ImageFormat, NativeBlipCompression, NativeCoordinate, NativeFillAlignment, NativeFontCollectionIndex, NativeFontSlot, NativePercentage, NativeTextElement, NativeTileFlip, NodePhase, PhysicalPixelSize, PlacementCause, PlaybackGeneration, PlaybackSessionId, PptxPageFailureCode, ResolutionSource, ResolutionUnit, RotationBasis, ShapeFailureCode, SourceColor, SourceImageOutcome, SourcePageIssue, SourcePageProfile, SourceVisualIssueKind, SurfaceKind, TableCellEdge, TextStyleOrigin, Ticks, Timescale, TimingNodeId, Visibility } from './part-001.js';
+import type { ByteLength, Digest, EffectiveImageMode, Emu, FillOrigin, FillTarget, FixedQ32, FontMetric, FontSelectionReason, FontStyle, ImageFormat, NativeBlipCompression, NativeCoordinate, NativeFillAlignment, NativeFontCollectionIndex, NativeFontSlot, NativePercentage, NativeTableGridIssue, NativeTextElement, NativeTileFlip, NodePhase, PhysicalPixelSize, PlacementCause, PlaybackGeneration, PlaybackSessionId, PptxPageFailureCode, ResolutionSource, ResolutionUnit, RotationBasis, ShapeFailureCode, SourceColor, SourceImageOutcome, SourcePageIssue, SourcePageProfile, SourcePlaceholderMatch, SourceVisualIssueKind, SurfaceKind, TableCellEdge, TableStyleSelectionError, TextStyleOrigin, Ticks, Timescale, TimingNodeId, Visibility } from './part-001.js';
+
+export type TextCascadeUnresolved =
+  | {
+      kind: "chartText";
+      origin: TextStyleOrigin;
+      reason: ChartTextUnresolved;
+    }
+  | {
+      kind: "tableGrid";
+      reason: NativeTableGridIssue;
+    }
+  | {
+      kind: "tableStyle";
+      reason: TableStyleSelectionError;
+    }
+  | {
+      kind: "noTextBody";
+    }
+  | {
+      kind: "placeholder";
+      matching: SourcePlaceholderMatch;
+      object: SourceObjectRef;
+    }
+  | {
+      kind: "retainedContent";
+      origin: TextStyleOrigin;
+    }
+  | {
+      kind: "ambiguousTemplateParagraph";
+      level: number;
+      object: SourceObjectRef;
+    }
+  | {
+      kind: "fieldParagraph";
+      origin: TextStyleOrigin;
+    };
+
+export type ChartTextUnresolved = "multiplePropertyParagraphs" | "propertyTextRuns" | "listStyle";
 
 export type CharacterProperty =
   | "kumimoji"

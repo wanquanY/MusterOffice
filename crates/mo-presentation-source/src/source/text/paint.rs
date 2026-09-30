@@ -349,6 +349,7 @@ fn solid(
                     part: text.object.part.clone(),
                     source_ordinal: match r.origin {
                         TextStyleOrigin::TableStyle { source_ordinal, .. }
+                        | TextStyleOrigin::Chart { source_ordinal, .. }
                         | TextStyleOrigin::Object { source_ordinal, .. }
                         | TextStyleOrigin::Master { source_ordinal, .. }
                         | TextStyleOrigin::Presentation { source_ordinal, .. }

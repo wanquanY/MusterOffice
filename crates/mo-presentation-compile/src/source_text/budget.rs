@@ -36,6 +36,7 @@ impl Budget {
             TextStyleOrigin::TableStyle { source, .. } => source.lexical_bytes(),
             TextStyleOrigin::Object { object, .. } => object.part.len(),
             TextStyleOrigin::Master { part, .. }
+            | TextStyleOrigin::Chart { part, .. }
             | TextStyleOrigin::Presentation { part, .. }
             | TextStyleOrigin::Theme { part, .. } => part.len(),
             TextStyleOrigin::ProfileDefault {} => 0,

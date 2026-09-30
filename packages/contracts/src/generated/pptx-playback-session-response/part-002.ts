@@ -60,6 +60,11 @@ export type SourceTextIssue =
 
 export type TextCascadeUnresolved =
   | {
+      kind: "chartText";
+      origin: TextStyleOrigin;
+      reason: ChartTextUnresolved;
+    }
+  | {
       kind: "tableGrid";
       reason: NativeTableGridIssue;
     }
@@ -88,6 +93,8 @@ export type TextCascadeUnresolved =
       kind: "fieldParagraph";
       origin: TextStyleOrigin;
     };
+
+export type ChartTextUnresolved = "multiplePropertyParagraphs" | "propertyTextRuns" | "listStyle";
 
 export type CharacterProperty =
   | "kumimoji"

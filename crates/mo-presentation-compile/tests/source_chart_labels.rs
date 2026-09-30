@@ -27,6 +27,43 @@ fn by_name(name: &str) -> SourceChartLabels {
     run(&b, q, Default::default(), &|| false).unwrap()
 }
 #[test]
+fn shared_label_text_cascade_is_computed_once_with_request_wide_budgets() {
+    let bytes = package(&xml(
+        "doughnutChart",
+        &series(
+            7,
+            &["1", "2", "3"],
+            &group("", &format!("{}{}", tx(1400), flags(true, false, false))),
+        ),
+        "",
+    ));
+    let q = request(&bytes);
+    let limits = SourceChartLabelLimits {
+        text: mo_presentation_source::source::text::cascade::TextCascadeLimits {
+            max_paragraphs: 1,
+            ..Default::default()
+        },
+        ..Default::default()
+    };
+    let r = run(&bytes, q, limits, &|| false).unwrap();
+    assert_eq!(r.text_cascades.len(), 1);
+    assert!(r.labels.iter().all(|l| l.text_cascade == Some(0)));
+    let mo_presentation_source::source::text::cascade::ChartTextOutcome::Cascaded { text } =
+        &r.text_cascades[0]
+    else {
+        panic!()
+    };
+    assert_eq!(text.paragraphs[0].end_style.attributes.size, Some(1400));
+    assert!(text.paragraphs[0].end_style.attributes.bold.is_none());
+    let bytes = package(&actual_like());
+    assert!(matches!(
+        run(&bytes, request(&bytes), limits, &|| false),
+        Err(ChartLabelError::Source(
+            mo_presentation_source::PptxError::Limit(_)
+        ))
+    ));
+}
+#[test]
 fn numeric_categories_bubble_roles_and_positions_keep_their_native_sources() {
     let result = by_name("numeric-categories");
     for (label, format) in result.labels.iter().zip(["0.0", "0.00", "0.0"]) {

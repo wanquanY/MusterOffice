@@ -4,6 +4,7 @@ mod annotation_layout;
 mod annotation_text;
 mod annotation_types;
 mod annotations;
+pub mod context;
 mod data;
 mod layout;
 mod layout_types;

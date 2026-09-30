@@ -1026,6 +1026,12 @@ export type NativeTextElement =
 
 export type TextStyleOrigin =
   | {
+      bodySourceOrdinal: number;
+      kind: "chart";
+      part: string;
+      sourceOrdinal: number;
+    }
+  | {
       kind: "tableStyle";
       region: TableStyleRegion;
       source: TableTextStyleSource;
