@@ -28,6 +28,8 @@ pub(super) fn node(
                     | N::OtherStyle
             ) {
                 P
+            } else if matches!(element, N::TxPr | N::Rich) {
+                crate::source::charts::C
             } else {
                 A
             }
@@ -227,7 +229,7 @@ pub(super) fn child(parent: N, e: &Element) -> Result<Child, XmlError> {
         });
     }
     let (rank, repeated, opaque) = match parent {
-        N::TxBody => match local {
+        N::TxBody | N::TxPr | N::Rich => match local {
             "bodyPr" => (1, false, false),
             "lstStyle" => (2, false, false),
             "p" => (3, true, false),
@@ -364,7 +366,9 @@ pub(super) fn close(
 ) -> Result<(), XmlError> {
     let children: Vec<_> = node.children.iter().map(|id| nodes[id].element).collect();
     let missing = match node.element {
-        N::TxBody => !children.contains(&N::BodyPr) || !children.contains(&N::P),
+        N::TxBody | N::TxPr | N::Rich => {
+            !children.contains(&N::BodyPr) || !children.contains(&N::P)
+        }
         N::R => !children.contains(&N::T),
         N::LnSpc | N::SpcBef | N::SpcAft | N::BuClr | N::Highlight | N::UFill => {
             children.is_empty() && node.retained_ordinals.is_empty()

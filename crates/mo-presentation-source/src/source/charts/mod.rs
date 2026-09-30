@@ -1,5 +1,9 @@
 //! Native chart source/cache inspection. No workbook recalculation, rendering,
 //! external fetch, implicit refresh or editable-chart capability is asserted.
+mod annotation_layout;
+mod annotation_text;
+mod annotation_types;
+mod annotations;
 mod data;
 mod layout;
 mod layout_types;
@@ -9,13 +13,14 @@ mod tree;
 mod types;
 use super::{SourceIndex, SourceLimits, SourceObjectKind, SourceObjectRef};
 use crate::{A, P, PptxError, R, cancelled};
+pub use annotation_types::*;
 pub use layout_types::*;
 use mo_common::ByteLength;
 use mo_opc::{PackageRead, PartName, Relationship, RelationshipSource, RelationshipTarget};
 use mo_xml::{Element, ExpandedName, mce};
 use std::collections::{BTreeMap, BTreeSet};
 pub use types::*;
-const C: &str = "http://schemas.openxmlformats.org/drawingml/2006/chart";
+pub(super) const C: &str = "http://schemas.openxmlformats.org/drawingml/2006/chart";
 const CHART_TYPE: &str = "application/vnd.openxmlformats-officedocument.drawingml.chart+xml";
 fn invalid(message: impl Into<String>) -> PptxError {
     PptxError::SourceConflict(message.into())
@@ -46,6 +51,8 @@ struct Budget {
     series: usize,
     points: usize,
     axes: usize,
+    annotations: usize,
+    text: annotation_text::Budget,
 }
 impl Budget {
     fn account(&mut self, bytes: usize) -> Result<(), mo_xml::XmlError> {
@@ -154,6 +161,8 @@ pub fn query(
         series: 0,
         points: 0,
         axes: 0,
+        annotations: 0,
+        text: Default::default(),
     };
     let bytes = budget.read(package, &owner, check)?;
     // Keep the exact presentation MCE selection used to build SourceIndex.
@@ -243,9 +252,19 @@ pub fn query(
             )?;
             let (plots, external_data) = data::read(package, part, &tree, &mut budget, check)?;
             let axes = layout::axes(&tree, &mut budget, check)?;
+            let annotations = annotations::read(
+                &tree,
+                &bytes,
+                &plots,
+                &axes,
+                source_limits,
+                &mut budget,
+                check,
+            )?;
             let i = result.charts.len() as u32;
             result.charts.push(SourceChartPart {
                 axes,
+                annotations,
                 part: part.to_string(),
                 sha256: info.sha256.clone(),
                 byte_length: ByteLength::new(info.byte_length),

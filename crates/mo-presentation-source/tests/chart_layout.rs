@@ -84,7 +84,7 @@ fn with_axes(axes: &str) -> String {
     chart(&series()).replace("</c:plotArea>", &format!("{axes}</c:plotArea>"))
 }
 fn value_axis() -> &'static str {
-    r#"<c:valAx><c:axId val="12"/><c:scaling><c:logBase val="1.0000000000000001"/><c:orientation val="maxMin"/><c:max val="1e+99"/><c:min val="-0.00000000000000001"/></c:scaling><c:delete/><c:axPos val="r"/><c:majorGridlines><c:spPr/></c:majorGridlines><c:minorGridlines/><c:title/><c:numFmt formatCode="0.00 &amp; kg" sourceLinked="false"/><c:majorTickMark val="in"/><c:minorTickMark val="none"/><c:tickLblPos val="nextTo"/><c:spPr/><c:txPr/><c:crossAx val="11"/><c:crossesAt val="-0.0"/><c:crossBetween val="between"/><c:majorUnit val="0.5"/><c:minorUnit val="0.1"/><c:dispUnits/></c:valAx>"#
+    r#"<c:valAx><c:axId val="12"/><c:scaling><c:logBase val="1.0000000000000001"/><c:orientation val="maxMin"/><c:max val="1e+99"/><c:min val="-0.00000000000000001"/></c:scaling><c:delete/><c:axPos val="r"/><c:majorGridlines><c:spPr/></c:majorGridlines><c:minorGridlines/><c:title/><c:numFmt formatCode="0.00 &amp; kg" sourceLinked="false"/><c:majorTickMark val="in"/><c:minorTickMark val="none"/><c:tickLblPos val="nextTo"/><c:spPr/><c:txPr><a:bodyPr/><a:p/></c:txPr><c:crossAx val="11"/><c:crossesAt val="-0.0"/><c:crossBetween val="between"/><c:majorUnit val="0.5"/><c:minorUnit val="0.1"/><c:dispUnits/></c:valAx>"#
 }
 #[test]
 fn preserves_axis_source_order_exact_values_defaults_and_markup_bindings() {

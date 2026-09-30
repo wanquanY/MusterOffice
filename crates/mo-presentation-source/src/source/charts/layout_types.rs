@@ -11,12 +11,16 @@ pub struct SourceChartLayout {
     pub markup: Vec<SourceChartMarkup>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub unrecognized_children: Vec<SourceChartUnknown>,
+    /// Known elements carrying attributes that this declaration model does not interpret.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub retained_attribute_ordinals: Vec<u32>,
 }
 impl SourceChartLayout {
     pub fn is_empty(&self) -> bool {
         self.properties.is_empty()
             && self.markup.is_empty()
             && self.unrecognized_children.is_empty()
+            && self.retained_attribute_ordinals.is_empty()
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
@@ -31,7 +35,7 @@ pub struct SourceChartUnknown {
 pub struct SourceChartProperty {
     pub source_ordinal: u32,
     pub kind: ChartPropertyKind,
-    /// XML attribute value, without numeric conversion or schema defaulting.
+    /// XML val attribute (or separator character data), without schema defaulting.
     pub value: Option<String>,
 }
 #[derive(
@@ -75,6 +79,26 @@ pub enum ChartPropertyKind {
     Bubble3D,
     InvertIfNegative,
     Smooth,
+    LabelPosition,
+    ShowLegendKey,
+    ShowValue,
+    ShowCategoryName,
+    ShowSeriesName,
+    ShowPercent,
+    ShowBubbleSize,
+    Separator,
+    ShowLeaderLines,
+    LegendPosition,
+    Overlay,
+    LayoutTarget,
+    XMode,
+    YMode,
+    WidthMode,
+    HeightMode,
+    X,
+    Y,
+    Width,
+    Height,
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -100,6 +124,12 @@ pub enum ChartMarkupKind {
     Trendline,
     ErrorBars,
     Extensions,
+    DataLabel,
+    LegendEntry,
+    Layout,
+    ManualLayout,
+    TextSource,
+    LeaderLines,
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

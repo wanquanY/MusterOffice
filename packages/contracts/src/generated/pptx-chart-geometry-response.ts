@@ -69,7 +69,13 @@ export type ChartMarkupKind =
   | "pictureOptions"
   | "trendline"
   | "errorBars"
-  | "extensions";
+  | "extensions"
+  | "dataLabel"
+  | "legendEntry"
+  | "layout"
+  | "manualLayout"
+  | "textSource"
+  | "leaderLines";
 export type ChartPropertyKind =
   | "barDirection"
   | "grouping"
@@ -106,7 +112,27 @@ export type ChartPropertyKind =
   | "explosion"
   | "bubble3D"
   | "invertIfNegative"
-  | "smooth";
+  | "smooth"
+  | "labelPosition"
+  | "showLegendKey"
+  | "showValue"
+  | "showCategoryName"
+  | "showSeriesName"
+  | "showPercent"
+  | "showBubbleSize"
+  | "separator"
+  | "showLeaderLines"
+  | "legendPosition"
+  | "overlay"
+  | "layoutTarget"
+  | "xMode"
+  | "yMode"
+  | "widthMode"
+  | "heightMode"
+  | "x"
+  | "y"
+  | "width"
+  | "height";
 export type PptxFailureCode =
   | "INPUT_INVALID"
   | "SOURCE_CONFLICT"
@@ -248,6 +274,10 @@ export interface SourceChartLayout {
    * Source order; missing property, missing val and explicit lexical val differ.
    */
   properties: SourceChartProperty[];
+  /**
+   * Known elements carrying attributes that this declaration model does not interpret.
+   */
+  retainedAttributeOrdinals?: number[];
   unrecognizedChildren?: SourceChartUnknown[];
 }
 export interface SourceChartMarkup {
@@ -258,7 +288,7 @@ export interface SourceChartProperty {
   kind: ChartPropertyKind;
   sourceOrdinal: number;
   /**
-   * XML attribute value, without numeric conversion or schema defaulting.
+   * XML val attribute (or separator character data), without schema defaulting.
    */
   value?: string | null;
 }

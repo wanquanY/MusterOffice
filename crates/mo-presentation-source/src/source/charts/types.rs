@@ -1,5 +1,5 @@
 use super::super::{SourceCompatibility, SourceObjectRef};
-use super::{SourceChartAxis, SourceChartLayout};
+use super::{SourceChartAnnotations, SourceChartAxis, SourceChartLayout};
 use mo_common::{ByteLength, Digest};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -42,6 +42,9 @@ pub struct SourceChartPart {
     pub plots: Vec<SourceChartPlot>,
     /// Source declarations; reference resolution, defaults and geometry are separate.
     pub axes: Vec<SourceChartAxis>,
+    /// Physical label, legend and title declarations, before inheritance/layout.
+    #[serde(default, skip_serializing_if = "SourceChartAnnotations::is_empty")]
+    pub annotations: SourceChartAnnotations,
     pub external_data: Option<SourceChartExternalData>,
     /// Cache declarations are snapshots, not recalculated workbook values.
     pub data_authority: ChartDataAuthority,
@@ -160,6 +163,8 @@ pub struct SourceChartLimits {
     pub max_bindings: usize,
     pub max_series: usize,
     pub max_axes: usize,
+    pub max_annotations: usize,
+    pub max_text_bodies: usize,
     pub max_points: usize,
     pub max_elements: usize,
     /// Logical retained XML cost, identical on native and WASM.
@@ -175,6 +180,8 @@ impl Default for SourceChartLimits {
             max_bindings: 4096,
             max_series: 16384,
             max_axes: 4096,
+            max_annotations: 16384,
+            max_text_bodies: 4096,
             max_points: 1_000_000,
             max_elements: 262_144,
             max_metadata_bytes: 16 * 1024 * 1024,

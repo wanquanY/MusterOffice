@@ -134,7 +134,13 @@
         "pictureOptions",
         "trendline",
         "errorBars",
-        "extensions"
+        "extensions",
+        "dataLabel",
+        "legendEntry",
+        "layout",
+        "manualLayout",
+        "textSource",
+        "leaderLines"
       ]
     },
     "ChartPropertyKind": {
@@ -175,7 +181,27 @@
         "explosion",
         "bubble3D",
         "invertIfNegative",
-        "smooth"
+        "smooth",
+        "labelPosition",
+        "showLegendKey",
+        "showValue",
+        "showCategoryName",
+        "showSeriesName",
+        "showPercent",
+        "showBubbleSize",
+        "separator",
+        "showLeaderLines",
+        "legendPosition",
+        "overlay",
+        "layoutTarget",
+        "xMode",
+        "yMode",
+        "widthMode",
+        "heightMode",
+        "x",
+        "y",
+        "width",
+        "height"
       ]
     },
     "ChartSectorPath": {
@@ -608,6 +634,15 @@
             "$ref": "#/$defs/SourceChartProperty"
           }
         },
+        "retainedAttributeOrdinals": {
+          "description": "Known elements carrying attributes that this declaration model does not interpret.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
         "unrecognizedChildren": {
           "type": "array",
           "items": {
@@ -675,7 +710,7 @@
           "minimum": 0
         },
         "value": {
-          "description": "XML attribute value, without numeric conversion or schema defaulting.",
+          "description": "XML val attribute (or separator character data), without schema defaulting.",
           "type": [
             "string",
             "null"

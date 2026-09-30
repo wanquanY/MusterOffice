@@ -1,6 +1,6 @@
 use super::*;
 use std::collections::BTreeSet;
-fn channel(
+pub(super) fn channel(
     tree: &tree::Tree,
     node: usize,
     role: ChartChannelRole,

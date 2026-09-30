@@ -26,6 +26,26 @@ fn run(
     )
 }
 #[test]
+fn unknown_point_attributes_cannot_silently_change_rendering() {
+    for points in [
+        point(1, "").replace("<c:dPt>", "<c:dPt future=\"1\">"),
+        point(1, "").replace("<c:spPr>", "<c:explosion val=\"0\" future=\"1\"/><c:spPr>"),
+    ] {
+        let error = run(
+            &fixture(BASE, &points, &["1", "2", "3"]),
+            Default::default(),
+            &|| false,
+        )
+        .unwrap_err();
+        assert!(
+            error
+                .to_string()
+                .contains("unrecognized series or point attribute"),
+            "{error}"
+        );
+    }
+}
+#[test]
 fn source_series_and_point_properties_feed_shared_stroke_and_scene() {
     let bytes = fixture(
         BASE,

@@ -9,7 +9,6 @@ export type PptxChartPaintResponse =
       error: PptxFailure;
       status: "error";
     };
-export type ChartAxisKind = "category" | "value" | "date" | "series";
 export type ChartMarkupKind =
   | "shapeProperties"
   | "textProperties"
@@ -23,7 +22,13 @@ export type ChartMarkupKind =
   | "pictureOptions"
   | "trendline"
   | "errorBars"
-  | "extensions";
+  | "extensions"
+  | "dataLabel"
+  | "legendEntry"
+  | "layout"
+  | "manualLayout"
+  | "textSource"
+  | "leaderLines";
 export type ChartPropertyKind =
   | "barDirection"
   | "grouping"
@@ -60,162 +65,41 @@ export type ChartPropertyKind =
   | "explosion"
   | "bubble3D"
   | "invertIfNegative"
-  | "smooth";
-/**
- * Canonical uint64 byte length. Range requires semantic validation.
- */
-export type ByteLength = string;
-export type ChartWorkbookTarget =
+  | "smooth"
+  | "labelPosition"
+  | "showLegendKey"
+  | "showValue"
+  | "showCategoryName"
+  | "showSeriesName"
+  | "showPercent"
+  | "showBubbleSize"
+  | "separator"
+  | "showLeaderLines"
+  | "legendPosition"
+  | "overlay"
+  | "layoutTarget"
+  | "xMode"
+  | "yMode"
+  | "widthMode"
+  | "heightMode"
+  | "x"
+  | "y"
+  | "width"
+  | "height";
+export type ChartAnnotationKind =
+  "dataLabels" | "dataLabel" | "legend" | "legendEntry" | "title" | "layout" | "manualLayout";
+export type ChartAnnotationTextContent =
   | {
-      byteLength: ByteLength;
-      contentType: string;
-      kind: "embedded";
-      part: string;
-      sha256: Digest;
+      kind: "rich";
+      sourceOrdinal: number;
     }
   | {
-      kind: "external";
-      uri: string;
+      channel: SourceChartChannel;
+      kind: "stringReference";
     };
-export type Digest = string;
 export type ChartCacheKind = "number" | "string" | "multiLevelString";
 export type ChartChannelRole = "title" | "categories" | "values" | "xValues" | "yValues" | "bubbleSize";
-export type NativeBlackWhiteMode =
-  | "clr"
-  | "auto"
-  | "gray"
-  | "ltGray"
-  | "invGray"
-  | "grayWhite"
-  | "blackGray"
-  | "blackWhite"
-  | "black"
-  | "white"
-  | "hidden";
-export type ColorDependency =
-  | {
-      kind: "theme";
-      part: string;
-      slot: ColorSlot;
-      sourceOrdinal: number;
-    }
-  | {
-      color: SystemColor;
-      kind: "system";
-      origin: SystemColorOrigin;
-    }
-  | {
-      kind: "placeholder";
-    };
-export type ColorSlot =
-  | "dk1"
-  | "lt1"
-  | "dk2"
-  | "lt2"
-  | "accent1"
-  | "accent2"
-  | "accent3"
-  | "accent4"
-  | "accent5"
-  | "accent6"
-  | "hlink"
-  | "folHlink";
-export type SystemColor =
-  | "scrollBar"
-  | "background"
-  | "activeCaption"
-  | "inactiveCaption"
-  | "menu"
-  | "window"
-  | "windowFrame"
-  | "menuText"
-  | "windowText"
-  | "captionText"
-  | "activeBorder"
-  | "inactiveBorder"
-  | "appWorkspace"
-  | "highlight"
-  | "highlightText"
-  | "btnFace"
-  | "btnShadow"
-  | "grayText"
-  | "btnText"
-  | "inactiveCaptionText"
-  | "btnHighlight"
-  | "3dDkShadow"
-  | "3dLight"
-  | "infoText"
-  | "infoBk"
-  | "hotLight"
-  | "gradientActiveCaption"
-  | "gradientInactiveCaption"
-  | "menuHighlight"
-  | "menuBar";
-export type SystemColorOrigin = "hostContext" | "fileLastColor";
-export type ColorNotice = "grayWeightsProvisional" | "presetAliasDiscrepancy";
-export type ColorSample =
-  | {
-      clippedForSrgb: boolean;
-      /**
-       * @minItems 4
-       * @maxItems 4
-       */
-      linear: [number, number, number, number];
-      /**
-       * @minItems 4
-       * @maxItems 4
-       */
-      rgba16: [number, number, number, number];
-      /**
-       * Never feed these quantized samples back into native expressions.
-       *
-       * @minItems 4
-       * @maxItems 4
-       */
-      rgba8: [number, number, number, number];
-      /**
-       * Unassociated, unclipped working-precision channels.
-       *
-       * @minItems 4
-       * @maxItems 4
-       */
-      srgb: [number, number, number, number];
-      status: "resolved";
-    }
-  | {
-      reason: ColorUnresolved;
-      status: "unresolved";
-    };
-export type ColorUnresolved =
-  | {
-      kind: "missingColorMap";
-    }
-  | {
-      kind: "missingColorScheme";
-    }
-  | {
-      kind: "missingThemeSlot";
-      slot: ColorSlot;
-    }
-  | {
-      color: SystemColor;
-      kind: "missingSystemColor";
-    }
-  | {
-      kind: "missingPlaceholder";
-    }
-  | {
-      kind: "retainedPlaceholderContext";
-      part: string;
-      sourceOrdinal: number;
-    }
-  | {
-      kind: "schemeCycle";
-      slot: ColorSlot;
-    }
-  | {
-      kind: "numericRange";
-    };
+export type SourceRunKind = "text" | "break" | "field";
 export type SourceEffectDefinition =
   | {
       containerType?: NativeEffectContainerType | null;
@@ -532,6 +416,37 @@ export type SourceColorValue =
       color: PresetColor;
       kind: "preset";
     };
+export type SystemColor =
+  | "scrollBar"
+  | "background"
+  | "activeCaption"
+  | "inactiveCaption"
+  | "menu"
+  | "window"
+  | "windowFrame"
+  | "menuText"
+  | "windowText"
+  | "captionText"
+  | "activeBorder"
+  | "inactiveBorder"
+  | "appWorkspace"
+  | "highlight"
+  | "highlightText"
+  | "btnFace"
+  | "btnShadow"
+  | "grayText"
+  | "btnText"
+  | "inactiveCaptionText"
+  | "btnHighlight"
+  | "3dDkShadow"
+  | "3dLight"
+  | "infoText"
+  | "infoBk"
+  | "hotLight"
+  | "gradientActiveCaption"
+  | "gradientInactiveCaption"
+  | "menuHighlight"
+  | "menuBar";
 export type SchemeColor =
   | "bg1"
   | "tx1"
@@ -892,15 +807,168 @@ export type NativePresetShadow =
   | "shdw18"
   | "shdw19"
   | "shdw20";
-export type SourceEffectPropertiesDefinition =
+export type SourceTextValue =
   | {
-      kind: "list";
-      nodes: number[];
+      kind: "container";
     }
   | {
-      kind: "dag";
-      root: number;
+      attributes: SourceTextBodyAttributes;
+      kind: "body";
+    }
+  | {
+      attributes: SourceTextParagraphAttributes;
+      kind: "paragraph";
+    }
+  | {
+      attributes: SourceTextCharacterAttributes;
+      kind: "character";
+    }
+  | {
+      font: SourceTextFont;
+      kind: "font";
+    }
+  | {
+      index: NativeFontCollectionIndex;
+      kind: "fontReference";
+    }
+  | {
+      fontScale?: NativePercentage | null;
+      kind: "autofit";
+      lineSpacingReduction?: NativePercentage | null;
+    }
+  | {
+      kind: "percentage";
+      value: NativePercentage;
+    }
+  | {
+      kind: "points";
+      value: number;
+    }
+  | {
+      kind: "autoNumber";
+      scheme: NativeTextAutonumber;
+      startAt?: number | null;
+    }
+  | {
+      character: string;
+      kind: "bulletCharacter";
+    }
+  | {
+      alignment?: NativeTextTabAlign | null;
+      kind: "tab";
+      position?: NativeCoordinate | null;
+    }
+  | {
+      fieldType?: string | null;
+      id: string;
+      kind: "field";
+    }
+  | {
+      attributes: SourceTextHyperlinkAttributes;
+      kind: "hyperlink";
+    }
+  | {
+      kind: "rightToLeft";
+      value?: boolean | null;
+    }
+  | {
+      fill: SourceFill;
+      kind: "fill";
+    }
+  | {
+      kind: "line";
+      line: SourceLine;
+    }
+  | {
+      effects: SourceEffectProperties;
+      kind: "effects";
+    }
+  | {
+      color: SourceColor;
+      kind: "color";
     };
+export type NativeTextAnchor = "t" | "ctr" | "b" | "just" | "dist";
+export type NativeTextHorizontalOverflow = "overflow" | "clip";
+export type NativeTextVertical =
+  "horz" | "vert" | "vert270" | "wordArtVert" | "eaVert" | "mongolianVert" | "wordArtVertRtl";
+export type NativeTextVerticalOverflow = "overflow" | "ellipsis" | "clip";
+export type NativeTextWrap = "none" | "square";
+export type NativeTextAlign = "l" | "ctr" | "r" | "just" | "justLow" | "dist" | "thaiDist";
+export type NativeTextFontAlign = "auto" | "t" | "ctr" | "base" | "b";
+export type NativeTextCaps = "none" | "small" | "all";
+export type NativeTextPoint =
+  | {
+      kind: "hundredthPoints";
+      value: number;
+    }
+  | {
+      kind: "universalMeasure";
+      value: NativeCoordinate;
+    };
+export type NativeTextStrike = "noStrike" | "sngStrike" | "dblStrike";
+export type NativeTextUnderline =
+  | "none"
+  | "words"
+  | "sng"
+  | "dbl"
+  | "heavy"
+  | "dotted"
+  | "dottedHeavy"
+  | "dash"
+  | "dashHeavy"
+  | "dashLong"
+  | "dashLongHeavy"
+  | "dotDash"
+  | "dotDashHeavy"
+  | "dotDotDash"
+  | "dotDotDashHeavy"
+  | "wavy"
+  | "wavyHeavy"
+  | "wavyDbl";
+export type NativeFontCollectionIndex = "major" | "minor" | "none";
+export type NativeTextAutonumber =
+  | "alphaLcParenBoth"
+  | "alphaUcParenBoth"
+  | "alphaLcParenR"
+  | "alphaUcParenR"
+  | "alphaLcPeriod"
+  | "alphaUcPeriod"
+  | "arabicParenBoth"
+  | "arabicParenR"
+  | "arabicPeriod"
+  | "arabicPlain"
+  | "romanLcParenBoth"
+  | "romanUcParenBoth"
+  | "romanLcParenR"
+  | "romanUcParenR"
+  | "romanLcPeriod"
+  | "romanUcPeriod"
+  | "circleNumDbPlain"
+  | "circleNumWdBlackPlain"
+  | "circleNumWdWhitePlain"
+  | "arabicDbPeriod"
+  | "arabicDbPlain"
+  | "ea1ChsPeriod"
+  | "ea1ChsPlain"
+  | "ea1ChtPeriod"
+  | "ea1ChtPlain"
+  | "ea1JpnChsDbPeriod"
+  | "ea1JpnKorPlain"
+  | "ea1JpnKorPeriod"
+  | "arabic1Minus"
+  | "arabic2Minus"
+  | "hebrew2Minus"
+  | "thaiAlphaPeriod"
+  | "thaiAlphaParenR"
+  | "thaiAlphaParenBoth"
+  | "thaiNumPeriod"
+  | "thaiNumParenR"
+  | "thaiNumParenBoth"
+  | "hindiAlphaPeriod"
+  | "hindiNumPeriod"
+  | "hindiNumParenR"
+  | "hindiAlpha1Period";
+export type NativeTextTabAlign = "l" | "ctr" | "r" | "dec";
 export type NativePenAlignment = "ctr" | "in";
 export type NativeLineCap = "flat" | "rnd" | "sq";
 export type NativeCompoundLine = "sng" | "dbl" | "thickThin" | "thinThick" | "tri";
@@ -963,6 +1031,138 @@ export type SourceLineJoin =
       limit?: NativePercentage | null;
       sourceOrdinal: number;
     };
+export type SourceEffectPropertiesDefinition =
+  | {
+      kind: "list";
+      nodes: number[];
+    }
+  | {
+      kind: "dag";
+      root: number;
+    };
+export type ChartAxisKind = "category" | "value" | "date" | "series";
+/**
+ * Canonical uint64 byte length. Range requires semantic validation.
+ */
+export type ByteLength = string;
+export type ChartWorkbookTarget =
+  | {
+      byteLength: ByteLength;
+      contentType: string;
+      kind: "embedded";
+      part: string;
+      sha256: Digest;
+    }
+  | {
+      kind: "external";
+      uri: string;
+    };
+export type Digest = string;
+export type NativeBlackWhiteMode =
+  | "clr"
+  | "auto"
+  | "gray"
+  | "ltGray"
+  | "invGray"
+  | "grayWhite"
+  | "blackGray"
+  | "blackWhite"
+  | "black"
+  | "white"
+  | "hidden";
+export type ColorDependency =
+  | {
+      kind: "theme";
+      part: string;
+      slot: ColorSlot;
+      sourceOrdinal: number;
+    }
+  | {
+      color: SystemColor;
+      kind: "system";
+      origin: SystemColorOrigin;
+    }
+  | {
+      kind: "placeholder";
+    };
+export type ColorSlot =
+  | "dk1"
+  | "lt1"
+  | "dk2"
+  | "lt2"
+  | "accent1"
+  | "accent2"
+  | "accent3"
+  | "accent4"
+  | "accent5"
+  | "accent6"
+  | "hlink"
+  | "folHlink";
+export type SystemColorOrigin = "hostContext" | "fileLastColor";
+export type ColorNotice = "grayWeightsProvisional" | "presetAliasDiscrepancy";
+export type ColorSample =
+  | {
+      clippedForSrgb: boolean;
+      /**
+       * @minItems 4
+       * @maxItems 4
+       */
+      linear: [number, number, number, number];
+      /**
+       * @minItems 4
+       * @maxItems 4
+       */
+      rgba16: [number, number, number, number];
+      /**
+       * Never feed these quantized samples back into native expressions.
+       *
+       * @minItems 4
+       * @maxItems 4
+       */
+      rgba8: [number, number, number, number];
+      /**
+       * Unassociated, unclipped working-precision channels.
+       *
+       * @minItems 4
+       * @maxItems 4
+       */
+      srgb: [number, number, number, number];
+      status: "resolved";
+    }
+  | {
+      reason: ColorUnresolved;
+      status: "unresolved";
+    };
+export type ColorUnresolved =
+  | {
+      kind: "missingColorMap";
+    }
+  | {
+      kind: "missingColorScheme";
+    }
+  | {
+      kind: "missingThemeSlot";
+      slot: ColorSlot;
+    }
+  | {
+      color: SystemColor;
+      kind: "missingSystemColor";
+    }
+  | {
+      kind: "missingPlaceholder";
+    }
+  | {
+      kind: "retainedPlaceholderContext";
+      part: string;
+      sourceOrdinal: number;
+    }
+  | {
+      kind: "schemeCycle";
+      slot: ColorSlot;
+    }
+  | {
+      kind: "numericRange";
+    };
 /**
  * A named, provisional numerical interpretation, not an Office/WPS certificate.
  */
@@ -994,6 +1194,7 @@ export interface SourceChartPaints {
  * Series and point layout references bind to the declaration ordinals below.
  */
 export interface SourceChartPart {
+  annotations?: SourceChartAnnotations;
   /**
    * Source declarations; reference resolution, defaults and geometry are separate.
    */
@@ -1014,13 +1215,31 @@ export interface SourceChartPart {
   plots: SourceChartPlot[];
   sha256: Digest;
 }
-export interface SourceChartAxis {
-  id: number;
-  kind: ChartAxisKind;
-  layout: SourceChartLayout;
+/**
+ * Physical label, legend and title declarations, before inheritance/layout.
+ */
+export interface SourceChartAnnotations {
+  /**
+   * Physical source order. Parent ordinals refer to chart, plot, series, axis
+   * or another annotation; no synthetic shape/object IDs are allocated.
+   */
+  nodes: SourceChartAnnotation[];
+  /**
+   * One catalog per real c:txPr/c:rich body, including chart/axis defaults.
+   */
+  textBodies: SourceChartTextBody[];
+}
+export interface SourceChartAnnotation {
+  declarations: SourceChartLayout;
+  /**
+   * Native idx for dLbl/legendEntry only; sparse values stay sparse.
+   */
+  index?: number | null;
+  kind: ChartAnnotationKind;
   numberFormat?: SourceChartNumberFormat | null;
-  scaling?: SourceChartScaling | null;
+  parentOrdinal: number;
   sourceOrdinal: number;
+  textSource?: SourceChartAnnotationText | null;
 }
 export interface SourceChartLayout {
   /**
@@ -1031,6 +1250,10 @@ export interface SourceChartLayout {
    * Source order; missing property, missing val and explicit lexical val differ.
    */
   properties: SourceChartProperty[];
+  /**
+   * Known elements carrying attributes that this declaration model does not interpret.
+   */
+  retainedAttributeOrdinals?: number[];
   unrecognizedChildren?: SourceChartUnknown[];
 }
 export interface SourceChartMarkup {
@@ -1041,7 +1264,7 @@ export interface SourceChartProperty {
   kind: ChartPropertyKind;
   sourceOrdinal: number;
   /**
-   * XML attribute value, without numeric conversion or schema defaulting.
+   * XML val attribute (or separator character data), without schema defaulting.
    */
   value?: string | null;
 }
@@ -1058,51 +1281,9 @@ export interface SourceChartNumberFormat {
   sourceLinked?: string | null;
   sourceOrdinal: number;
 }
-export interface SourceChartScaling {
-  properties: SourceChartProperty[];
-  sourceOrdinal: number;
-}
-export interface SourceCompatibility {
-  ignoredAttributes: number;
-  ignoredElements: number;
-  selections: SourceCompatibilitySelection[];
-  unwrappedElements: number;
-}
-export interface SourceCompatibilitySelection {
-  branches: SourceCompatibilityBranch[];
-  sourceOrdinal: number;
-}
-export interface SourceCompatibilityBranch {
-  fallback: boolean;
-  requires: string[];
-  selected: boolean;
-  sourceOrdinal: number;
-}
-export interface SourceChartExternalData {
-  /**
-   * None means omitted; no eager refresh is performed by inspection.
-   */
-  autoUpdate?: boolean | null;
-  relationshipId: string;
-  sourceOrdinal: number;
-  target: ChartWorkbookTarget;
-}
-export interface SourceChartPlot {
-  axisIds: number[];
-  layout: SourceChartLayout;
-  /**
-   * Native local name (barChart, doughnutChart, ...), not a rendering capability.
-   */
-  nativeKind: string;
-  series: SourceChartSeries[];
-  sourceOrdinal: number;
-}
-export interface SourceChartSeries {
-  channels: SourceChartChannel[];
-  index: number;
-  layout?: SourceChartLayout;
-  order: number;
-  pointOverrides?: SourceChartPointOverride[];
+export interface SourceChartAnnotationText {
+  content: ChartAnnotationTextContent;
+  retainedOrdinals: number[];
   sourceOrdinal: number;
 }
 export interface SourceChartChannel {
@@ -1135,44 +1316,40 @@ export interface SourceChartPoint {
    */
   value?: string | null;
 }
-export interface SourceChartPointOverride {
-  index: number;
-  layout: SourceChartLayout;
+export interface SourceChartTextBody {
+  paragraphs: SourceChartTextParagraph[];
+  parentOrdinal: number;
+  sourceOrdinal: number;
+  styles: SourceTextCatalog;
+}
+export interface SourceChartTextParagraph {
+  runs: SourceChartTextRun[];
   sourceOrdinal: number;
 }
-export interface SourceColorMapRef {
-  part: string;
+export interface SourceChartTextRun {
+  kind: SourceRunKind;
   sourceOrdinal: number;
+  text: string;
+  textSourceOrdinal?: number | null;
 }
-export interface SourceThemeSchemeRef {
-  part: string;
-  sourceOrdinal: number;
-}
-export interface ChartPaintDeclaration {
-  blackWhiteMode?: NativeBlackWhiteMode | null;
-  /**
-   * Every declared fill/line color is evaluated once, without quantized reuse.
-   */
-  colors: ChartPaintColor[];
+export interface SourceTextCatalog {
   effectNodes: {
     [k: string]: SourceEffectNode | undefined;
   };
-  effects?: SourceEffectProperties | null;
-  fill?: SourceFill | null;
-  line?: SourceLine | null;
+  nodes: {
+    [k: string]: SourceTextNode | undefined;
+  };
   /**
-   * Geometry, extensions and unknown attributes remain source-bound.
+   * Physical ordinals in this part, in discovery order. A root is a txBody,
+   * txStyles, defaultTextStyle, fontRef, theme bodyPr/lstStyle or chart txPr/rich root.
+   * Relationships are resolved later.
    */
-  retainedOrdinals: number[];
-  sourceOrdinal: number;
-}
-export interface ChartPaintColor {
-  dependencies: ColorDependency[];
-  notices: ColorNotice[];
-  outcome: ColorSample;
-  sourceOrdinal: number;
+  roots: SourceTextRoot[];
 }
 /**
+ * This interface was referenced by `undefined`'s JSON-Schema definition
+ * via the `patternProperty` "^\d+$".
+ *
  * This interface was referenced by `undefined`'s JSON-Schema definition
  * via the `patternProperty` "^\d+$".
  */
@@ -1238,10 +1415,173 @@ export interface SourceFillBlip {
   retainedOrdinals: number[];
   sourceOrdinal: number;
 }
-export interface SourceEffectProperties {
-  definition: SourceEffectPropertiesDefinition;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema definition
+ * via the `patternProperty` "^\d+$".
+ */
+export interface SourceTextNode {
+  children: number[];
+  /**
+   * Native local name. Reader grammar validates its namespace and context.
+   */
+  element:
+    | (
+        | "txBody"
+        | "txStyles"
+        | "defaultTextStyle"
+        | "titleStyle"
+        | "bodyStyle"
+        | "otherStyle"
+        | "lstStyle"
+        | "bodyPr"
+        | "p"
+        | "pPr"
+        | "defPPr"
+        | "lvl1pPr"
+        | "lvl2pPr"
+        | "lvl3pPr"
+        | "lvl4pPr"
+        | "lvl5pPr"
+        | "lvl6pPr"
+        | "lvl7pPr"
+        | "lvl8pPr"
+        | "lvl9pPr"
+        | "r"
+        | "br"
+        | "fld"
+        | "t"
+        | "rPr"
+        | "defRPr"
+        | "endParaRPr"
+        | "noAutofit"
+        | "normAutofit"
+        | "spAutoFit"
+        | "lnSpc"
+        | "spcBef"
+        | "spcAft"
+        | "spcPct"
+        | "spcPts"
+        | "buClrTx"
+        | "buClr"
+        | "buSzTx"
+        | "buSzPct"
+        | "buSzPts"
+        | "buFontTx"
+        | "buFont"
+        | "buNone"
+        | "buAutoNum"
+        | "buChar"
+        | "tabLst"
+        | "tab"
+        | "latin"
+        | "ea"
+        | "cs"
+        | "sym"
+        | "fontRef"
+        | "highlight"
+        | "uLnTx"
+        | "uLn"
+        | "uFillTx"
+        | "uFill"
+        | "hlinkClick"
+        | "hlinkMouseOver"
+        | "rtl"
+        | "noFill"
+        | "solidFill"
+        | "gradFill"
+        | "blipFill"
+        | "pattFill"
+        | "grpFill"
+        | "ln"
+        | "effectLst"
+        | "effectDag"
+        | "srgbClr"
+        | "scrgbClr"
+        | "hslClr"
+        | "sysClr"
+        | "schemeClr"
+        | "prstClr"
+      )
+    | "txPr"
+    | "rich"
+    | "font";
+  parent?: number | null;
+  /**
+   * Uninterpreted attributes/subtrees cannot become resolved text semantics.
+   */
   retainedOrdinals: number[];
-  sourceOrdinal: number;
+  value: SourceTextValue;
+}
+export interface SourceTextBodyAttributes {
+  anchor?: NativeTextAnchor | null;
+  bottomInset?: NativeCoordinate | null;
+  centerAnchor?: boolean | null;
+  columnSpacing?: NativeCoordinate | null;
+  columns?: number | null;
+  compatibleLineSpacing?: boolean | null;
+  forceAntialiasing?: boolean | null;
+  fromWordArt?: boolean | null;
+  horizontalOverflow?: NativeTextHorizontalOverflow | null;
+  leftInset?: NativeCoordinate | null;
+  paragraphSpacing?: boolean | null;
+  rightInset?: NativeCoordinate | null;
+  rightToLeftColumns?: boolean | null;
+  rotation?: number | null;
+  topInset?: NativeCoordinate | null;
+  upright?: boolean | null;
+  vertical?: NativeTextVertical | null;
+  verticalOverflow?: NativeTextVerticalOverflow | null;
+  wrap?: NativeTextWrap | null;
+}
+export interface SourceTextParagraphAttributes {
+  alignment?: NativeTextAlign | null;
+  defaultTabSize?: NativeCoordinate | null;
+  eastAsianLineBreak?: boolean | null;
+  fontAlignment?: NativeTextFontAlign | null;
+  hangingPunctuation?: boolean | null;
+  indent?: number | null;
+  latinLineBreak?: boolean | null;
+  leftMargin?: number | null;
+  level?: number | null;
+  rightMargin?: number | null;
+  rightToLeft?: boolean | null;
+}
+export interface SourceTextCharacterAttributes {
+  alternativeLanguage?: string | null;
+  baseline?: NativePercentage | null;
+  bold?: boolean | null;
+  bookmark?: string | null;
+  caps?: NativeTextCaps | null;
+  dirty?: boolean | null;
+  error?: boolean | null;
+  italic?: boolean | null;
+  kerning?: number | null;
+  kumimoji?: boolean | null;
+  language?: string | null;
+  noProof?: boolean | null;
+  normalizeHeight?: boolean | null;
+  size?: number | null;
+  smartClean?: boolean | null;
+  smartId?: number | null;
+  spacing?: NativeTextPoint | null;
+  strike?: NativeTextStrike | null;
+  underline?: NativeTextUnderline | null;
+}
+export interface SourceTextFont {
+  charset?: number | null;
+  panose?: string | null;
+  pitchFamily?: number | null;
+  typeface: string;
+}
+export interface SourceTextHyperlinkAttributes {
+  action?: string | null;
+  endSound?: boolean | null;
+  highlightClick?: boolean | null;
+  history?: boolean | null;
+  invalidUrl?: string | null;
+  relationshipId?: string | null;
+  targetFrame?: string | null;
+  tooltip?: string | null;
 }
 export interface SourceLine {
   alignment?: NativePenAlignment | null;
@@ -1282,6 +1622,115 @@ export interface SourceLineEnd {
   length?: NativeLineEndSize | null;
   sourceOrdinal: number;
   width?: NativeLineEndSize | null;
+}
+export interface SourceEffectProperties {
+  definition: SourceEffectPropertiesDefinition;
+  retainedOrdinals: number[];
+  sourceOrdinal: number;
+}
+export interface SourceTextRoot {
+  cell?: SourceCellAddress | null;
+  /**
+   * Physical shape ID in this part; None for non-shape defaults and chart bodies.
+   */
+  owner?: number | null;
+  sourceOrdinal: number;
+}
+export interface SourceCellAddress {
+  column: number;
+  row: number;
+}
+export interface SourceChartAxis {
+  id: number;
+  kind: ChartAxisKind;
+  layout: SourceChartLayout;
+  numberFormat?: SourceChartNumberFormat | null;
+  scaling?: SourceChartScaling | null;
+  sourceOrdinal: number;
+}
+export interface SourceChartScaling {
+  properties: SourceChartProperty[];
+  sourceOrdinal: number;
+}
+export interface SourceCompatibility {
+  ignoredAttributes: number;
+  ignoredElements: number;
+  selections: SourceCompatibilitySelection[];
+  unwrappedElements: number;
+}
+export interface SourceCompatibilitySelection {
+  branches: SourceCompatibilityBranch[];
+  sourceOrdinal: number;
+}
+export interface SourceCompatibilityBranch {
+  fallback: boolean;
+  requires: string[];
+  selected: boolean;
+  sourceOrdinal: number;
+}
+export interface SourceChartExternalData {
+  /**
+   * None means omitted; no eager refresh is performed by inspection.
+   */
+  autoUpdate?: boolean | null;
+  relationshipId: string;
+  sourceOrdinal: number;
+  target: ChartWorkbookTarget;
+}
+export interface SourceChartPlot {
+  axisIds: number[];
+  layout: SourceChartLayout;
+  /**
+   * Native local name (barChart, doughnutChart, ...), not a rendering capability.
+   */
+  nativeKind: string;
+  series: SourceChartSeries[];
+  sourceOrdinal: number;
+}
+export interface SourceChartSeries {
+  channels: SourceChartChannel[];
+  index: number;
+  layout?: SourceChartLayout;
+  order: number;
+  pointOverrides?: SourceChartPointOverride[];
+  sourceOrdinal: number;
+}
+export interface SourceChartPointOverride {
+  index: number;
+  layout: SourceChartLayout;
+  sourceOrdinal: number;
+}
+export interface SourceColorMapRef {
+  part: string;
+  sourceOrdinal: number;
+}
+export interface SourceThemeSchemeRef {
+  part: string;
+  sourceOrdinal: number;
+}
+export interface ChartPaintDeclaration {
+  blackWhiteMode?: NativeBlackWhiteMode | null;
+  /**
+   * Every declared fill/line color is evaluated once, without quantized reuse.
+   */
+  colors: ChartPaintColor[];
+  effectNodes: {
+    [k: string]: SourceEffectNode | undefined;
+  };
+  effects?: SourceEffectProperties | null;
+  fill?: SourceFill | null;
+  line?: SourceLine | null;
+  /**
+   * Geometry, extensions and unknown attributes remain source-bound.
+   */
+  retainedOrdinals: number[];
+  sourceOrdinal: number;
+}
+export interface ChartPaintColor {
+  dependencies: ColorDependency[];
+  notices: ColorNotice[];
+  outcome: ColorSample;
+  sourceOrdinal: number;
 }
 export interface SourceObjectRef {
   nativeId: number;

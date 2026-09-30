@@ -137,6 +137,9 @@ impl<'a> PreparedChartStyles<'a> {
         &self,
         layout: &SourceChartLayout,
     ) -> Result<Option<&'a ChartPaintDeclaration>, ChartStyleError> {
+        if let Some(ordinal) = layout.retained_attribute_ordinals.first() {
+            return Err(unresolved(*ordinal, "unrecognized chart style attribute"));
+        }
         if let Some(node) = layout.unrecognized_children.first() {
             return Err(unresolved(
                 node.source_ordinal,

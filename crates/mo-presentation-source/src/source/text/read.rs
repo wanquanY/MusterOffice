@@ -87,6 +87,8 @@ impl Reader {
         if !matches!(
             node.element,
             NativeTextElement::TxBody
+                | NativeTextElement::TxPr
+                | NativeTextElement::Rich
                 | NativeTextElement::TxStyles
                 | NativeTextElement::DefaultTextStyle
                 | NativeTextElement::FontRef

@@ -163,6 +163,14 @@ pub(crate) fn compile_prepared(
             ));
         }
     };
+    if let Some(ordinal) = plot.layout.retained_attribute_ordinals.first() {
+        return Err(unresolved(
+            *ordinal,
+            None,
+            None,
+            "unrecognized native plot attribute",
+        ));
+    }
     if let Some(node) = plot.layout.unrecognized_children.first() {
         return Err(unresolved(
             node.source_ordinal,

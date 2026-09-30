@@ -888,6 +888,8 @@ export type NativeTextElement =
       | "schemeClr"
       | "prstClr"
     )
+  | "txPr"
+  | "rich"
   | "font";
 export type TextStyleOrigin =
   | {

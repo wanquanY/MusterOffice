@@ -9,8 +9,12 @@ pub(super) enum Scope {
     Scaling,
     Series,
     Point,
+    Annotation(ChartAnnotationKind),
 }
 fn property(scope: Scope, name: &str) -> Option<ChartPropertyKind> {
+    if let Scope::Annotation(kind) = scope {
+        return super::annotation_layout::property(kind, name);
+    }
     use ChartPropertyKind::*;
     Some(match (scope, name) {
         (Scope::Plot, "barDir") => BarDirection,
@@ -53,6 +57,9 @@ fn property(scope: Scope, name: &str) -> Option<ChartPropertyKind> {
     })
 }
 fn markup(scope: Scope, name: &str) -> Option<ChartMarkupKind> {
+    if let Scope::Annotation(kind) = scope {
+        return super::annotation_layout::markup(kind, name);
+    }
     use ChartMarkupKind::*;
     Some(match (scope, name) {
         (Scope::Axis | Scope::Series | Scope::Point, "spPr") => ShapeProperties,
@@ -71,8 +78,8 @@ fn markup(scope: Scope, name: &str) -> Option<ChartMarkupKind> {
         _ => return None,
     })
 }
-fn leaf(node: &tree::Node) -> Result<(), PptxError> {
-    if !node.children.is_empty() || !node.text.trim().is_empty() {
+pub(super) fn leaf(node: &tree::Node) -> Result<(), PptxError> {
+    if !node.children.is_empty() || !node.extensions.is_empty() || !node.text.trim().is_empty() {
         return Err(invalid("chart layout scalar contains content"));
     }
     Ok(())
@@ -94,7 +101,13 @@ pub(super) fn read(
             })
             .collect(),
         unrecognized_children: vec![],
+        retained_attribute_ordinals: vec![],
     };
+    retain_attributes(
+        &tree.nodes[parent],
+        &[],
+        &mut result.retained_attribute_ordinals,
+    );
     let mut properties = BTreeSet::new();
     let mut markups = BTreeSet::new();
     for &i in &tree.nodes[parent].children {
@@ -105,14 +118,30 @@ pub(super) fn read(
             .then(|| property(scope, &node.element.name.local))
             .flatten()
         {
-            leaf(node)?;
+            let separator = kind == ChartPropertyKind::Separator;
+            if separator {
+                if !node.children.is_empty() || !node.extensions.is_empty() {
+                    return Err(invalid("chart separator contains elements"));
+                }
+            } else {
+                leaf(node)?;
+            }
+            retain_attributes(
+                node,
+                if separator { &[] } else { &["val"] },
+                &mut result.retained_attribute_ordinals,
+            );
             if !properties.insert(kind) {
                 return Err(invalid("duplicate chart layout property"));
             }
             result.properties.push(SourceChartProperty {
                 source_ordinal: node.ordinal,
                 kind,
-                value: node.element.attribute("val").map(str::to_owned),
+                value: if separator {
+                    Some(node.text.clone())
+                } else {
+                    node.element.attribute("val").map(str::to_owned)
+                },
             });
         } else if let Some(kind) = native
             .then(|| markup(scope, &node.element.name.local))
@@ -124,6 +153,8 @@ pub(super) fn read(
                 ChartMarkupKind::SeriesLines
                     | ChartMarkupKind::Trendline
                     | ChartMarkupKind::ErrorBars
+                    | ChartMarkupKind::DataLabel
+                    | ChartMarkupKind::LegendEntry
             ) && !markups.insert(kind)
             {
                 return Err(invalid("duplicate chart layout markup"));
@@ -154,6 +185,9 @@ pub(super) fn read(
                         "axId" | "scaling" | "numFmt"
                     ),
                     Scope::Scaling => false,
+                    Scope::Annotation(kind) => {
+                        super::annotation_layout::structural(kind, &node.element.name.local)
+                    }
                 };
             if !structural {
                 result.unrecognized_children.push(SourceChartUnknown {
@@ -165,6 +199,30 @@ pub(super) fn read(
         }
     }
     Ok(result)
+}
+pub(super) fn retain_attributes(node: &tree::Node, allowed: &[&str], retained: &mut Vec<u32>) {
+    if node.element.attributes.iter().any(|a| {
+        a.name.namespace != "http://schemas.openxmlformats.org/markup-compatibility/2006"
+            && (!a.name.namespace.is_empty() || !allowed.contains(&a.name.local.as_str()))
+    }) {
+        retained.push(node.ordinal);
+    }
+}
+pub(super) fn number_format(
+    tree: &tree::Tree,
+    parent: usize,
+) -> Result<Option<SourceChartNumberFormat>, PptxError> {
+    tree.optional(parent, "numFmt")?
+        .map(|i| {
+            let n = &tree.nodes[i];
+            leaf(n)?;
+            Ok(SourceChartNumberFormat {
+                source_ordinal: n.ordinal,
+                format_code: n.element.attribute("formatCode").map(str::to_owned),
+                source_linked: n.element.attribute("sourceLinked").map(str::to_owned),
+            })
+        })
+        .transpose()
 }
 pub(super) fn axes(
     tree: &tree::Tree,
@@ -205,18 +263,7 @@ pub(super) fn axes(
                 })
             })
             .transpose()?;
-        let number_format = tree
-            .optional(node, "numFmt")?
-            .map(|i| {
-                let n = &tree.nodes[i];
-                leaf(n)?;
-                Ok::<_, PptxError>(SourceChartNumberFormat {
-                    source_ordinal: n.ordinal,
-                    format_code: n.element.attribute("formatCode").map(str::to_owned),
-                    source_linked: n.element.attribute("sourceLinked").map(str::to_owned),
-                })
-            })
-            .transpose()?;
+        let number_format = number_format(tree, node)?;
         result.push(SourceChartAxis {
             source_ordinal: tree.nodes[node].ordinal,
             kind,

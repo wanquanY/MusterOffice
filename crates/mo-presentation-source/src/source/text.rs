@@ -28,7 +28,7 @@ use std::collections::BTreeMap;
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct SourceTextCatalog {
     /// Physical ordinals in this part, in discovery order. A root is a txBody,
-    /// txStyles, defaultTextStyle, fontRef or a theme bodyPr/lstStyle root.
+    /// txStyles, defaultTextStyle, fontRef, theme bodyPr/lstStyle or chart txPr/rich root.
     /// Relationships are resolved later.
     pub roots: Vec<SourceTextRoot>,
     pub nodes: BTreeMap<u32, SourceTextNode>,
@@ -40,7 +40,7 @@ pub struct SourceTextRoot {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell: Option<super::table::SourceCellAddress>,
     pub source_ordinal: u32,
-    /// Physical shape ID in this part; None for presentation/master defaults.
+    /// Physical shape ID in this part; None for non-shape defaults and chart bodies.
     pub owner: Option<u32>,
 }
 impl SourceTextCatalog {

@@ -979,7 +979,7 @@ export interface SourceTextCatalog {
   };
   /**
    * Physical ordinals in this part, in discovery order. A root is a txBody,
-   * txStyles, defaultTextStyle, fontRef or a theme bodyPr/lstStyle root.
+   * txStyles, defaultTextStyle, fontRef, theme bodyPr/lstStyle or chart txPr/rich root.
    * Relationships are resolved later.
    */
   roots: SourceTextRoot[];
@@ -1072,6 +1072,8 @@ export interface SourceTextNode {
         | "schemeClr"
         | "prstClr"
       )
+    | "txPr"
+    | "rich"
     | "font";
   parent?: number | null;
   /**
@@ -1153,7 +1155,7 @@ export interface SourceTextHyperlinkAttributes {
 export interface SourceTextRoot {
   cell?: SourceCellAddress | null;
   /**
-   * Physical shape ID in this part; None for presentation/master defaults.
+   * Physical shape ID in this part; None for non-shape defaults and chart bodies.
    */
   owner?: number | null;
   sourceOrdinal: number;

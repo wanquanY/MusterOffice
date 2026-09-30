@@ -14,6 +14,14 @@ pub(super) fn geometry_modifiers(series: &SourceChartSeries) -> Result<(), Sourc
             .iter()
             .map(|p| (Some(p.index), &p.layout)),
     ) {
+        if let Some(ordinal) = layout.retained_attribute_ordinals.first() {
+            return Err(unresolved(
+                *ordinal,
+                Some(series.index),
+                point,
+                "unrecognized series or point attribute",
+            ));
+        }
         if let Some(node) = layout.unrecognized_children.first() {
             return Err(unresolved(
                 node.source_ordinal,

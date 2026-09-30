@@ -266,6 +266,12 @@ pub enum NativeFontCollectionIndex {
     Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, JsonSchema,
 )]
 pub enum NativeTextElement {
+    /// DrawingML chart text properties; retains its actual chart namespace.
+    #[serde(rename = "txPr")]
+    TxPr,
+    /// DrawingML chart rich text; not a presentation shape text body.
+    #[serde(rename = "rich")]
+    Rich,
     #[serde(rename = "txBody")]
     TxBody,
     #[serde(rename = "txStyles")]
