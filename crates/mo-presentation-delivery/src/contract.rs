@@ -9,6 +9,11 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 pub const PROFILE: &str = "presentations-pptx-resource-delivery-v1-draft";
+/// Delivery compatibility identity, independent of Cargo distribution versions.
+/// Exact renderer implementations remain pinned by `RendererIdentity` and the
+/// host's immutable component release. Change this only with delivery semantics,
+/// not when repackaging the same engine for a private registry.
+pub const ENGINE_IDENTITY: &str = "MusterOffice/0.1.0";
 pub const MODEL_MIME: &str = "application/vnd.musteroffice.presentation+json";
 pub const CONTEXT_MIME: &str = "application/vnd.musteroffice.presentation-context+json";
 pub const PPTX_MIME: &str =

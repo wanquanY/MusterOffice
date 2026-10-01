@@ -2,6 +2,8 @@
 //! Native placement is already flattened; neither parent transforms nor source
 //! origin/anchor may be applied again by a scene consumer.
 mod number;
+mod sampling;
+pub(crate) use sampling::compile_sampled;
 mod types;
 use crate::{interval::Interval as I, source_image_layout::*};
 use mo_geometry::{Affine, Fixed, PathCommand as C, Point};

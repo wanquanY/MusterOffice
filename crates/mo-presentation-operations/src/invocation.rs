@@ -33,7 +33,8 @@ impl Invocation {
                 "new document has no base snapshot",
             )),
             (
-                DocumentAction::Apply { .. }
+                DocumentAction::Append { .. }
+                | DocumentAction::Apply { .. }
                 | DocumentAction::Export { .. }
                 | DocumentAction::DescribeTemplate { .. }
                 | DocumentAction::InstantiateTemplate { .. },

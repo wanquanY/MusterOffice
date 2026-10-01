@@ -70,6 +70,33 @@ fn author_projection_and_verified_native_readback_have_identical_declarations() 
     assert_readback(&document, &defaults);
 }
 
+#[test]
+fn authored_paragraph_spacing_and_indents_survive_native_readback() {
+    for spacing in [
+        ParagraphLineSpacing::Percent { value: 150_000 },
+        ParagraphLineSpacing::Exact {
+            height: Emu::new(317_500),
+        },
+        ParagraphLineSpacing::Percent { value: 0 },
+    ] {
+        let (mut document, defaults) = support::input();
+        for object in document.objects.values_mut() {
+            if let ObjectContent::Shape {
+                text: Some(text), ..
+            } = &mut object.content
+            {
+                for paragraph in &mut text.paragraphs {
+                    paragraph.style.line_spacing = Some(spacing);
+                    paragraph.style.left_margin = Some(Emu::new(127_000));
+                    paragraph.style.right_margin = Some(Emu::new(254_000));
+                    paragraph.style.indent = Some(Emu::new(-63_500));
+                }
+            }
+        }
+        assert_readback(&document, &defaults);
+    }
+}
+
 fn assert_readback(document: &Document, defaults: &ExportDefaults) {
     let before = document.clone();
     let plan = AuthorPlan::new(document, defaults, Default::default(), &|| false).unwrap();

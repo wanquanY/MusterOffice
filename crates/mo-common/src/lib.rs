@@ -12,7 +12,7 @@ pub use byte_length::{ByteLength, ByteLengthError};
 pub use canonical::{CanonicalError, canonical_bytes, digest};
 pub use ids::*;
 pub use json_budget::{JsonBudgetError, check_json_size};
-pub use strict_json::from_json_str;
+pub use strict_json::{JsonDecodeError, from_json_str, from_json_str_with_path};
 pub use units::*;
 
 /// Stable runtime schema identity shared by on-demand discovery and file

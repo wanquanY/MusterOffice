@@ -76,7 +76,7 @@ fn native_title_is_revisioned_and_writes_only_core_properties() {
     assert!(!d.title.is_empty());
     assert_eq!(
         d.source_bindings.as_ref().unwrap().profile,
-        SourceBindingProfile::PresentationmlRetainedFieldsV3
+        SourceBindingProfile::PresentationmlRetainedFieldsV4
     );
     let snapshot = Snapshot::new(d, Default::default()).unwrap();
     let title = "标题 <&>\r\n🚀";
@@ -118,6 +118,9 @@ fn native_title_is_revisioned_and_writes_only_core_properties() {
     legacy.source_bindings.as_mut().unwrap().profile =
         SourceBindingProfile::PresentationmlRetainedFieldsV1;
     legacy.title.clear();
+    for object in legacy.objects.values_mut() {
+        object.accessibility = Default::default();
+    }
     assert_eq!(
         SourcePlan::new(&legacy, &p, Default::default(), &|| false)
             .unwrap()

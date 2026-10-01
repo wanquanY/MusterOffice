@@ -26,6 +26,7 @@ mod shape_paths;
 pub mod source_chart;
 pub mod source_chart_labels;
 pub mod source_chart_plot;
+pub mod source_chart_text;
 pub mod source_frame;
 pub mod source_image_layout;
 pub mod source_image_paint;

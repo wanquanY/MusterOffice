@@ -5,7 +5,9 @@ pub mod protocol;
 mod resources;
 mod retained;
 mod retained_frame;
+mod sampling;
 pub use retained_frame::PreparedResourceFrame;
+pub(crate) use sampling::DecodePolicy;
 mod types;
 use crate::{
     source_page::{self, *},
@@ -41,6 +43,7 @@ pub(crate) struct PageView<'a> {
     pub source_owner: Option<&'a std::sync::Arc<SourceIndex>>,
     pub request: &'a SourcePageRequest,
     pub transforms: Option<&'a crate::source_placement::SourceProperties>,
+    pub decode_policy: DecodePolicy<'a>,
 }
 pub fn prepare(
     package: &dyn PackageRead,
@@ -58,6 +61,7 @@ pub fn prepare(
             source_owner: None,
             request: q,
             transforms: None,
+            decode_policy: DecodePolicy::Viewport,
         },
         decoder,
         text,
@@ -103,6 +107,7 @@ pub fn prepare_input(
             source_owner: None,
             request: q,
             transforms: None,
+            decode_policy: DecodePolicy::Viewport,
         },
         decoder,
         text,
@@ -148,7 +153,15 @@ fn prepare_input_view(
         _ => None,
     };
     prepared.tables.clear();
-    let images = resources::prepare(input, index, &prepared, options, decoder, check)?;
+    let images = resources::prepare(
+        input,
+        index,
+        &prepared,
+        options,
+        view.decode_policy,
+        decoder,
+        check,
+    )?;
     let built = source_page::build(
         prepared,
         text.as_mut()

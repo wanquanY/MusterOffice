@@ -1,7 +1,10 @@
 use super::*;
-use mo_presentation_source::source::text::{cascade::TextStyleOrigin, fonts::NativeTypeface};
+use mo_presentation_source::source::text::{
+    cascade::{CascadedCharacterStyle, TextStyleOrigin},
+    fonts::NativeTypeface,
+};
 
-pub(super) struct Budget {
+pub(crate) struct Budget {
     pub limits: SourceTextLimits,
     bytes: usize,
     fonts: usize,
@@ -26,6 +29,39 @@ impl Budget {
             return Err(SourceTextError::Limit("source plan bytes"));
         }
         Ok(())
+    }
+    pub fn character(&mut self, style: &CascadedCharacterStyle) -> Result<(), SourceTextError> {
+        use mo_presentation_source::source::text::NativeTextPoint;
+        let a = &style.attributes;
+        let mut bytes = [
+            a.language.as_ref(),
+            a.alternative_language.as_ref(),
+            a.bookmark.as_ref(),
+        ]
+        .into_iter()
+        .flatten()
+        .map(|s| s.len())
+        .sum::<usize>();
+        bytes += a.baseline.as_ref().map_or(0, |p| p.lexical().len());
+        if let Some(NativeTextPoint::UniversalMeasure { value }) = &a.spacing {
+            bytes += value.lexical().len();
+        }
+        for origin in style
+            .origins
+            .values()
+            .chain(style.declarations.values().map(|d| &d.origin))
+        {
+            bytes += match origin {
+                TextStyleOrigin::TableStyle { source, .. } => source.lexical_bytes(),
+                TextStyleOrigin::Object { object, .. } => object.part.len(),
+                TextStyleOrigin::Master { part, .. }
+                | TextStyleOrigin::Chart { part, .. }
+                | TextStyleOrigin::Presentation { part, .. }
+                | TextStyleOrigin::Theme { part, .. } => part.len(),
+                TextStyleOrigin::ProfileDefault {} => 0,
+            };
+        }
+        self.charge(8192 + bytes * 4)
     }
     pub fn font(&mut self, font: &NativeTypeface) -> Result<(), SourceTextError> {
         self.fonts += 1;

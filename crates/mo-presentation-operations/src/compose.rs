@@ -1,5 +1,6 @@
 //! One-way authoring convenience: ordered pages and text/shape declarations
 //! expand into the existing Document. No alternate rendering or storage model.
+pub(crate) mod append;
 mod lower;
 #[cfg(test)]
 mod tests;
@@ -11,10 +12,10 @@ use mo_presentation_model::{
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-/// Compact creation input for native editable text and shapes. Coordinates and
+/// Compact creation input for native editable text, shapes and pictures. Coordinates and
 /// font sizes are decimal EMU strings (12700 EMU per point). This is expanded
 /// once into Document; all subsequent editing, rendering and export use that
-/// same document. Use `create` with Document for other object kinds/resources.
+/// same document. Use `create` with Document for other object kinds.
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[schemars(example = example())]
@@ -24,6 +25,9 @@ pub struct PresentationContent {
     pub page_size: mo_presentation_model::Size,
     /// Array order is slide order. IDs must be unique across this presentation.
     pub slides: Vec<SlideContent>,
+    /// Source identities only. The host supplies separately authorized bytes.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub resources: Vec<mo_presentation_model::Resource>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
@@ -36,7 +40,52 @@ pub struct SlideContent {
     #[serde(default)]
     pub background: Option<Fill>,
     /// Array order is paint order, back to front.
-    pub elements: Vec<ShapeContent>,
+    pub elements: Vec<ElementContent>,
+}
+
+/// Ordered native shapes and pictures; legacy shape declarations remain valid.
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[serde(untagged)]
+pub enum ElementContent {
+    Picture(PictureContent),
+    Shape(Box<ShapeContent>),
+}
+impl ElementContent {
+    pub fn id(&self) -> &ObjectId {
+        match self {
+            Self::Shape(s) => &s.id,
+            Self::Picture(p) => &p.id,
+        }
+    }
+    pub fn frame(&self) -> ShapeFrame {
+        match self {
+            Self::Shape(s) => s.frame,
+            Self::Picture(p) => p.frame,
+        }
+    }
+    pub fn accessibility(&self) -> &Accessibility {
+        match self {
+            Self::Shape(s) => &s.accessibility,
+            Self::Picture(p) => &p.accessibility,
+        }
+    }
+}
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct PictureContent {
+    pub id: ObjectId,
+    pub frame: ShapeFrame,
+    pub picture: PictureSource,
+    #[serde(default)]
+    pub accessibility: Accessibility,
+}
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct PictureSource {
+    pub resource: mo_common::ResourceId,
+    /// Native crop fractions: 100000 is the full source extent.
+    #[serde(default)]
+    pub crop: mo_presentation_model::Crop,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
@@ -114,6 +163,14 @@ pub struct PlainTextStyle {
     pub space_before: Option<Emu>,
     #[serde(default)]
     pub space_after: Option<Emu>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub line_spacing: Option<mo_presentation_model::ParagraphLineSpacing>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub left_margin: Option<Emu>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub right_margin: Option<Emu>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub indent: Option<Emu>,
 }
 
 fn rectangle() -> Geometry {

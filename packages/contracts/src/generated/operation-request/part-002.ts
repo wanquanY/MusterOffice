@@ -1,5 +1,21 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { Alignment, AssetBinding, ByteLength, CellId, Color, ColumnId, ContainerDuration, ContainerId, ContainerKind, Digest, DocumentId, Effect, Emu, Fill, FillMode, FontDelivery, FontId, FontManifestProfile, ImageSampling, ImageSourceSelection, Inherited, InlineContent, LayoutId, MasterId, MotionCoordinate, MotionSegment, NativeEditConstraint, NextAction, ObjectContent, ObjectId, Operation, OperationId, OverflowPolicy, ParagraphId, PresentationRole, PreviousAction, RepeatCount, RepeatDuration, RequestId, ResourceId, ResourceKind, RestartMode, RetainedRunKind, RowId, RunId, SlideId, SourceBindingProfile, StartCondition, Stroke, TableVerticalAlignment, TextDirection, ThemeId, Ticks, TimeCondition, TimelineVersion, Timescale, TimingNodeId, TypefaceMappingPolicy } from './part-001.js';
+import type { Alignment, AssetBinding, ByteLength, CellId, Color, ColumnId, ContainerDuration, ContainerId, ContainerKind, Digest, DocumentId, Effect, Emu, Fill, FillMode, FontDelivery, FontId, FontManifestProfile, ImageSampling, ImageSourceSelection, Inherited, InlineContent, LayoutId, MasterId, MotionCoordinate, MotionSegment, NativeEditConstraint, NextAction, ObjectContent, ObjectId, Operation, OperationId, OverflowPolicy, ParagraphId, ParagraphLineSpacing, PresentationRole, PreviousAction, RepeatCount, RepeatDuration, RequestId, ResourceId, ResourceKind, RestartMode, RetainedRunKind, RowId, RunId, SlideId, SourceBindingProfile, StartCondition, Stroke, TableVerticalAlignment, TextDirection, ThemeId, Ticks, TimeCondition, TimelineVersion, Timescale, TimingNodeId, TypefaceMappingPolicy } from './part-001.js';
+
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema definition
+ * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+ *
+ * This interface was referenced by `OperationRequest`'s JSON-Schema
+ * via the `definition` "FontFace".
+ */
+export interface FontFace {
+  faceIndex: number;
+  family: string;
+  id: FontId;
+  italic: boolean;
+  resource: ResourceId;
+  weight: number;
+}
 
 /**
  * This interface was referenced by `undefined`'s JSON-Schema definition
@@ -350,6 +366,16 @@ export interface ParagraphStyle {
         kind: "value";
         value: TextDirection;
       };
+  /**
+   * Relative to the paragraph margin; negative values create a hanging indent.
+   */
+  indent?: Emu | null;
+  leftMargin?: Emu | null;
+  /**
+   * Omitted values retain native inheritance and historical document digests.
+   */
+  lineSpacing?: ParagraphLineSpacing | null;
+  rightMargin?: Emu | null;
   spaceAfter?:
     | {
         kind: "inherit";
@@ -1141,59 +1167,4 @@ export interface RendererIdentity {
 export interface RendererIdentity1 {
   implementationSha256: Digest;
   profile: string;
-}
-
-/**
- * This interface was referenced by `OperationRequest`'s JSON-Schema
- * via the `definition` "TableCellBorders".
- */
-export interface TableCellBorders1 {
-  bottom?:
-    | {
-        kind: "inherit";
-      }
-    | {
-        kind: "value";
-        value: Stroke;
-      };
-  bottomLeftToTopRight?:
-    | {
-        kind: "inherit";
-      }
-    | {
-        kind: "value";
-        value: Stroke;
-      };
-  left?:
-    | {
-        kind: "inherit";
-      }
-    | {
-        kind: "value";
-        value: Stroke;
-      };
-  right?:
-    | {
-        kind: "inherit";
-      }
-    | {
-        kind: "value";
-        value: Stroke;
-      };
-  top?:
-    | {
-        kind: "inherit";
-      }
-    | {
-        kind: "value";
-        value: Stroke;
-      };
-  topLeftToBottomRight?:
-    | {
-        kind: "inherit";
-      }
-    | {
-        kind: "value";
-        value: Stroke;
-      };
 }

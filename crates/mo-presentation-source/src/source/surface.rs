@@ -89,6 +89,7 @@ pub(super) fn read(
     let mut transform_capture: Option<(Option<usize>, transform::Reader)> = None;
     let mut geometry_capture: Option<(usize, geometry::Reader)> = None;
     let mut visual = visual::Reader::default();
+    let mut accessibility = super::accessibility::Reader::default();
     let mut style_capture: Option<text::Reader> = None;
     let mce_summary = mo_xml::mce::scan(
         bytes,
@@ -316,6 +317,7 @@ pub(super) fn read(
                         }
                         let index = surface.objects.len();
                         surface.objects.push(SourceObject {
+                            accessibility: Default::default(),
                             table: None,
                             hidden: None,
                             text_body_ordinal: None,
@@ -534,6 +536,10 @@ pub(super) fn read(
                                 return Err(malformed("duplicate object identity"));
                             }
                             object.hidden = element.attribute("hidden").map(boolean).transpose()?;
+                            object.accessibility.title =
+                                element.attribute("title").unwrap_or("").into();
+                            object.accessibility.description =
+                                element.attribute("descr").unwrap_or("").into();
                             object.native_id = integer(element.attribute("id"), "object ID")?;
                             if !seen_ids.insert(object.native_id) {
                                 return Err(malformed("duplicate native object ID"));
@@ -674,6 +680,12 @@ pub(super) fn read(
                             limits,
                         )?);
                     }
+                    let accessibility_owned = accessibility.start(
+                        element,
+                        &stack,
+                        frames.last().map(|f| (f.index, f.depth)),
+                        &mut surface,
+                    )?;
                     visual.start(
                         element,
                         &stack,
@@ -681,7 +693,8 @@ pub(super) fn read(
                             .try_into()
                             .map_err(|_| XmlError::Limit("visual source ordinal"))?,
                         frames.last().map(|f| (f.index, f.depth)),
-                        style_capture.is_some()
+                        accessibility_owned
+                            || style_capture.is_some()
                             || table_capture.is_some()
                             || fill_capture.is_some()
                             || line_capture.is_some()
@@ -871,6 +884,7 @@ pub(super) fn read(
                         }
                     }
                     visual.end(stack.len() - 1);
+                    accessibility.end(stack.len() - 1)?;
                     stack.pop();
                 }
                 _ => {}

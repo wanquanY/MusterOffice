@@ -32,20 +32,26 @@ unsafe extern "C" {
     ) -> i32;
     fn mo_skia_free(pixels: *mut c_void);
     fn mo_image_decode_abi() -> u32;
-    fn mo_image_decode(
+    fn mo_image_decode_sized_abi() -> u32;
+    fn mo_image_decode_sized(
         encoded: *const u8,
         length: u32,
+        min_width: u32,
+        min_height: u32,
         pixels: *mut *mut u8,
         info: *mut u32,
     ) -> i32;
 }
-pub(super) fn decode(encoded: &[u8]) -> Result<mo_image::DecoderReply, mo_image::ImageError> {
+pub(super) fn decode(
+    encoded: &[u8],
+    size: Option<mo_image::DecodeSize>,
+) -> Result<mo_image::DecoderReply, mo_image::ImageError> {
     use mo_image::{DecoderReply, ImageError, MAX_ENCODED_BYTES, MAX_PIXEL_BYTES};
     if encoded.len() > MAX_ENCODED_BYTES {
         return Err(ImageError::Limit("native encoded bytes"));
     }
     // SAFETY: pure ABI query; the caller serializes this pinned component.
-    if unsafe { mo_image_decode_abi() } != 1 {
+    if unsafe { mo_image_decode_abi() } != 1 || unsafe { mo_image_decode_sized_abi() } != 1 {
         return Err(ImageError::Host("decode ABI mismatch"));
     }
     let mut pointer = ptr::null_mut();
@@ -53,9 +59,11 @@ pub(super) fn decode(encoded: &[u8]) -> Result<mo_image::DecoderReply, mo_image:
     // SAFETY: bounded immutable bytes and distinct valid output slots. No input
     // references survive the synchronous call. Output uses the shared allocator.
     let status = unsafe {
-        mo_image_decode(
+        mo_image_decode_sized(
             encoded.as_ptr(),
             encoded.len() as u32,
+            size.map_or(0, |s| s.width),
+            size.map_or(0, |s| s.height),
             &mut pointer,
             words.as_mut_ptr(),
         )

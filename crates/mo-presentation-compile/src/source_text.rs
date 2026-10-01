@@ -2,7 +2,8 @@
 //! Text-frame positioning, paragraph alignment and paint belong to the page
 //! compiler. This module never presents its unpainted paths as a rendered page.
 mod assemble;
-mod budget;
+pub(crate) mod budget;
+pub(crate) mod computation;
 mod number;
 mod script;
 mod style;

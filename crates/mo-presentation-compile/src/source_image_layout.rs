@@ -18,6 +18,31 @@ use number::{positive, q32};
 pub use source::{ImageSourceLayoutError, ImageSourceLayoutPlan, layout_source};
 pub use types::*;
 
+// Geometry describes the original oriented source, not a decoded sample grid.
+struct ImageGeometry {
+    width: u32,
+    height: u32,
+    density: PhysicalPixelSize,
+}
+impl ImageGeometry {
+    fn from(image: &DecodedImageInfo) -> Result<Self, ImageLayoutError> {
+        let size = image.source_size();
+        if image.width == 0
+            || image.height == 0
+            || image.width > size.width
+            || image.height > size.height
+            || !(1..=8).contains(&image.orientation)
+        {
+            return Err(ImageLayoutError::Invalid("normalized image dimensions"));
+        }
+        Ok(Self {
+            width: size.width,
+            height: size.height,
+            density: image.resolution.physical_pixel_size,
+        })
+    }
+}
+
 pub const PROFILE: &str = "drawingml-normalized-image-layout-q96-v1-draft";
 fn cancel(check: &dyn Fn() -> bool) -> Result<(), ImageLayoutError> {
     if check() {
@@ -49,7 +74,7 @@ fn rectangle(
 }
 fn density(
     fill: &EffectiveImageFill,
-    image: &DecodedImageInfo,
+    image: &ImageGeometry,
 ) -> Result<([I; 2], ImageLayoutDensity), ImageLayoutError> {
     if fill.dpi.value != 0 {
         let v = I::ratio(914400, i64::from(fill.dpi.value));
@@ -60,10 +85,8 @@ fn density(
             },
         ));
     }
-    let PhysicalPixelSize::Known { x, y } = image.resolution.physical_pixel_size else {
-        return Err(ImageLayoutError::PhysicalSize(
-            image.resolution.physical_pixel_size,
-        ));
+    let PhysicalPixelSize::Known { x, y } = image.density else {
+        return Err(ImageLayoutError::PhysicalSize(image.density));
     };
     let value = |v: PixelExtent| {
         if v.numerator.get() <= 0 || v.denominator == 0 {
@@ -106,7 +129,7 @@ pub fn layout(
     }
     layout_box(
         fill,
-        image,
+        &ImageGeometry::from(image)?,
         [I::integer(0), I::integer(0)],
         [I::integer(w), I::integer(h)],
         check,
@@ -136,11 +159,57 @@ pub(crate) fn layout_region(
         enclose(bounds.max.x).sub(&origin[0]),
         enclose(bounds.max.y).sub(&origin[1]),
     ];
-    layout_box(fill, image, origin, size, check)
+    layout_box(fill, &ImageGeometry::from(image)?, origin, size, check)
+}
+/// A unit source square gives the complete image footprint without decoding.
+/// Stretch/crop geometry is independent of source density and pixel dimensions.
+/// Tile layouts need the source's physical density and keep their exact grid.
+pub(crate) fn unit_stretch_layout(
+    fill: &EffectiveImageFill,
+    size: Size,
+    region: Option<(mo_geometry::Rect, Fixed)>,
+    check: &dyn Fn() -> bool,
+) -> Result<Option<NativeImageLayout>, ImageLayoutError> {
+    if !matches!(fill.mode, EffectiveImageMode::Stretch { .. }) {
+        return Ok(None);
+    }
+    let (origin, extent) = if let Some((r, error)) = region {
+        if error.raw() < 0 {
+            return Err(ImageLayoutError::Invalid("negative receiver uncertainty"));
+        }
+        let enclose = |v| {
+            let v = I::fixed(v);
+            let e = I::fixed(error);
+            I::raw(v.lo - &e.lo, v.hi + &e.hi)
+        };
+        let origin = [enclose(r.min.x), enclose(r.min.y)];
+        let extent = [
+            enclose(r.max.x).sub(&origin[0]),
+            enclose(r.max.y).sub(&origin[1]),
+        ];
+        (origin, extent)
+    } else {
+        (
+            [I::integer(0), I::integer(0)],
+            [I::integer(size.width.get()), I::integer(size.height.get())],
+        )
+    };
+    layout_box(
+        fill,
+        &ImageGeometry {
+            width: 1,
+            height: 1,
+            density: PhysicalPixelSize::Unspecified,
+        },
+        origin,
+        extent,
+        check,
+    )
+    .map(Some)
 }
 fn layout_box(
     fill: &EffectiveImageFill,
-    image: &DecodedImageInfo,
+    image: &ImageGeometry,
     origin: [I; 2],
     size: [I; 2],
     check: &dyn Fn() -> bool,

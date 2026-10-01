@@ -62,7 +62,8 @@ impl<'a> SourcePlan<'a> {
                 String::new()
             }
             mo_presentation_model::SourceBindingProfile::PresentationmlRetainedFieldsV2
-            | mo_presentation_model::SourceBindingProfile::PresentationmlRetainedFieldsV3 => {
+            | mo_presentation_model::SourceBindingProfile::PresentationmlRetainedFieldsV3
+            | mo_presentation_model::SourceBindingProfile::PresentationmlRetainedFieldsV4 => {
                 mo_opc::read_core_properties(source, limits.package.xml, check)?
                     .map_or_else(String::new, |p| p.title)
             }
@@ -82,6 +83,7 @@ impl<'a> SourcePlan<'a> {
             bindings.profile,
             mo_presentation_model::SourceBindingProfile::PresentationmlRetainedFieldsV2
                 | mo_presentation_model::SourceBindingProfile::PresentationmlRetainedFieldsV3
+                | mo_presentation_model::SourceBindingProfile::PresentationmlRetainedFieldsV4
         ) && baseline.title != document.title
         {
             baseline.title.clone_from(&document.title);

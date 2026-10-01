@@ -56,6 +56,14 @@ pub enum DocumentAction {
         template_digest: Digest,
         bindings: BTreeMap<TemplateParameterId, BindingValue>,
     },
+    /// Append a bounded page batch atomically to the pinned native revision.
+    Append {
+        document_id: DocumentId,
+        base_revision: Digest,
+        slides: Vec<crate::compose::SlideContent>,
+        #[serde(default)]
+        resources: Vec<mo_presentation_model::Resource>,
+    },
     Apply {
         document_id: DocumentId,
         base_revision: Digest,
@@ -74,6 +82,7 @@ impl DocumentAction {
             Self::Import { .. }
             | Self::Create { .. }
             | Self::Compose { .. }
+            | Self::Append { .. }
             | Self::Apply { .. }
             | Self::DescribeTemplate { .. }
             | Self::InstantiateTemplate { .. } => OperationProfile::AuthorModel,
@@ -88,6 +97,7 @@ impl DocumentAction {
             Self::DescribeTemplate { .. } => "templates.describe",
             Self::InstantiateTemplate { .. } => "templates.instantiate",
             Self::Apply { .. } => "presentations.apply",
+            Self::Append { .. } => "presentations.append",
             Self::Export { .. } => "presentations.export",
         }
     }
@@ -98,6 +108,7 @@ impl DocumentAction {
             Self::DescribeTemplate { definition } => &definition.source.document_id,
             Self::Import { document_id, .. }
             | Self::InstantiateTemplate { document_id, .. }
+            | Self::Append { document_id, .. }
             | Self::Apply { document_id, .. }
             | Self::Export { document_id, .. } => document_id,
         }

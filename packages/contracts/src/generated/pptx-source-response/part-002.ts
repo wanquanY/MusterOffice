@@ -509,6 +509,7 @@ export interface SourceSurfaceLinks {
 }
 
 export interface SourceObject {
+  accessibility?: Accessibility;
   effectReference?: SourceEffectReference | null;
   effects?: SourceEffectProperties | null;
   fill?: SourceFill | null;
@@ -536,6 +537,12 @@ export interface SourceObject {
   transform?: SourceTransform | null;
   useBackgroundFill?: SourceBackgroundFillUsage | null;
   visualIssues?: SourceVisualIssue[];
+}
+
+export interface Accessibility {
+  decorative: boolean;
+  description: string;
+  title: string;
 }
 
 export interface SourceEffectReference {

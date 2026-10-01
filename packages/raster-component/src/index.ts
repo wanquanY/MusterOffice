@@ -20,6 +20,8 @@ export interface RasterModule {
   _mo_skia_raster_images?(request: number, words: number, images: number, imageBytes: number, output: number, bytes: number): number;
   _mo_skia_free(pointer: number): void;
   _mo_image_decode_abi?(): number;
+  _mo_image_decode_sized_abi?(): number;
+  _mo_image_decode_sized?(encoded: number, length: number, minWidth: number, minHeight: number, output: number, info: number): number;
   _mo_image_decode?(encoded: number, length: number, output: number, info: number): number;
   _mo_skia_raster(request: number, words: number, output: number, bytes: number): number;
   _mo_skia_execution_abi?(): number;
@@ -172,8 +174,11 @@ export class RasterComponent {
       typeof m._mo_image_decode_abi === "function" && m._mo_image_decode_abi() === 1; }
     catch (error) { this.invalidate(); throw error; }
   }
-  decodeImage(encoded: Uint8Array): DecodeReply {
+  decodeImage(encoded: Uint8Array, minWidth = 0, minHeight = 0): DecodeReply {
     if (!this.supportsDecode) throw new Error("Image decode extension unavailable");
+    if (![minWidth, minHeight].every(n => Number.isInteger(n) && n >= 0 && n <= 8192) || (minWidth === 0) !== (minHeight === 0)) {
+      throw new Error("Invalid decode sample demand");
+    }
     const m = this.#module!;
     if (this.#busy) throw new Error("Component busy");
     if (!(encoded.buffer instanceof ArrayBuffer) || encoded.buffer === m.HEAPU8.buffer) {
@@ -194,7 +199,14 @@ export class RasterComponent {
       const input = allocate(encoded.byteLength), slots = allocate(40);
       m.HEAPU8.set(encoded, input);
       m.HEAPU32.fill(0, slots / 4, slots / 4 + 10);
-      const status = m._mo_image_decode!(input, encoded.byteLength, slots, slots + 4);
+      const status = minWidth === 0
+        ? m._mo_image_decode!(input, encoded.byteLength, slots, slots + 4)
+        : (() => {
+            if (typeof m._mo_image_decode_sized !== "function" || m._mo_image_decode_sized_abi?.() !== 1) {
+              throw new Error("Sized image decode extension unavailable");
+            }
+            return m._mo_image_decode_sized(input, encoded.byteLength, minWidth, minHeight, slots, slots + 4);
+          })();
       output = m.HEAPU32[slots / 4]!;
       const words = m.HEAPU32.slice(slots / 4 + 1, slots / 4 + 10);
       if (!Number.isInteger(status) || status < 0 || status > 5 || status === 4 ||

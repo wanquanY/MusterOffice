@@ -616,6 +616,37 @@ impl Validator<'_> {
                 &paragraph.default_run_style,
                 &format!("{path}/defaultRunStyle"),
             );
+            for (name, value) in [
+                ("leftMargin", paragraph.style.left_margin),
+                ("rightMargin", paragraph.style.right_margin),
+            ] {
+                if let Some(value) = value {
+                    self.value(
+                        (0..=51_206_400).contains(&value.get()),
+                        &format!("{path}/style/{name}"),
+                        "paragraph margin is outside the native range",
+                    );
+                }
+            }
+            if let Some(value) = paragraph.style.indent {
+                self.value(
+                    (-51_206_400..=51_206_400).contains(&value.get()),
+                    &format!("{path}/style/indent"),
+                    "paragraph indent is outside the native range",
+                );
+            }
+            if let Some(spacing) = paragraph.style.line_spacing {
+                self.value(
+                    match spacing {
+                        ParagraphLineSpacing::Percent { value } => value <= 13_200_000,
+                        ParagraphLineSpacing::Exact { height } => {
+                            (0..=158_400 * 127).contains(&height.get()) && height.get() % 127 == 0
+                        }
+                    },
+                    &format!("{path}/style/lineSpacing"),
+                    "line spacing is outside the native range or not exactly representable",
+                );
+            }
             let mut count = 0_usize;
             for (j, run) in paragraph.runs.iter().enumerate() {
                 let path = format!("{path}/runs/{j}");

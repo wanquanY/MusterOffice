@@ -131,10 +131,24 @@ pub struct SourceFontSpan {
 pub struct SourceParagraphPlan {
     pub profile: String,
     pub source_ordinal: u32,
+    pub sources: Vec<SourceScalarRange>,
+    #[serde(flatten)]
+    pub computation: ParagraphComputationPlan,
+}
+impl std::ops::Deref for SourceParagraphPlan {
+    type Target = ParagraphComputationPlan;
+    fn deref(&self) -> &Self::Target {
+        &self.computation
+    }
+}
+/// Shared immutable computation input. Native source bindings remain in each
+/// domain's containing plan; generated chart strings never acquire XML run ids.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ParagraphComputationPlan {
     /// Source a:br is represented by U+2028. Existing a:t is never normalized.
     pub text: String,
     pub direction: ParagraphDirection,
-    pub sources: Vec<SourceScalarRange>,
     pub fonts: Vec<SourceFontBinding>,
     pub font_spans: Vec<SourceFontSpan>,
     pub spans: Vec<StyleSpan>,
@@ -148,8 +162,8 @@ pub struct SourceParagraphPlan {
     /// Insertion/empty-line style, never used to overwrite existing run styles.
     pub end_style: u32,
 }
-impl SourceParagraphPlan {
-    pub(super) fn input(&self) -> ManifestParagraphInput<'_> {
+impl ParagraphComputationPlan {
+    pub(crate) fn input(&self) -> ManifestParagraphInput<'_> {
         ManifestParagraphInput {
             text: &self.text,
             direction: self.direction,

@@ -1,5 +1,5 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { Accessibility, Appearance, Crop, Document, ExportSettings, FontFace, Layout, Master, MotionPath, MotionPoint, Object, OperationEntry, Point, PresentationContent, PresentationSequence, RationalTime, Resource, RetainedParagraph, Rgba, ScaleValue, Size, Slide, Table, TableCell, TableCellStyle1, TableColumn, TableRow, TemplateDefinition, TextBody, Theme, Timeline, Transform } from './part-002.js';
+import type { Accessibility, Appearance, AssetBinding, Crop, Document, ExportSettings, FontFace, Layout, Master, MotionPath, MotionPoint, Object, OperationEntry, PictureContent, Point, PresentationContent, PresentationSequence, RationalTime, Resource, RetainedParagraph, Rgba, ScaleValue, ShapeContent, Size, Slide, SlideContent, Table, TableCell, TableCellStyle1, TableColumn, TableRow, TemplateDefinition, TextBody, Theme, Timeline, Transform } from './part-002.js';
 
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
 
@@ -33,6 +33,13 @@ export type DocumentAction =
       documentId: DocumentId;
       kind: "instantiateTemplate";
       templateDigest: Digest;
+    }
+  | {
+      baseRevision: Digest;
+      documentId: DocumentId;
+      kind: "append";
+      resources?: Resource[];
+      slides: SlideContent[];
     }
   | {
       baseRevision: Digest;
@@ -316,6 +323,23 @@ export type Alignment = "start" | "center" | "end" | "justify";
 export type TextDirection = "leftToRight" | "rightToLeft" | "verticalRightToLeft" | "verticalLeftToRight";
 
 /**
+ * Native paragraph line spacing. Percentage is measured against the line's
+ * largest font size by the shared layout engine; 100000 means 100%, 150000 150%.
+ *
+ * This interface was referenced by `OperationRequest`'s JSON-Schema
+ * via the `definition` "ParagraphLineSpacing".
+ */
+export type ParagraphLineSpacing =
+  | {
+      kind: "percent";
+      value: number;
+    }
+  | {
+      height: Emu;
+      kind: "exact";
+    };
+
+/**
  * This interface was referenced by `OperationRequest`'s JSON-Schema
  * via the `definition` "RowId".
  */
@@ -457,7 +481,8 @@ export type NativeEditConstraint =
 export type SourceBindingProfile =
   | "presentationml-retained-fields-v1-draft"
   | "presentationml-retained-fields-v2-draft"
-  | "presentationml-retained-fields-v3-draft";
+  | "presentationml-retained-fields-v3-draft"
+  | "presentationml-retained-fields-v4-draft";
 
 /**
  * This interface was referenced by `OperationRequest`'s JSON-Schema
@@ -717,6 +742,14 @@ export type PresentationPreset = "appear" | "disappear" | "spin" | "growShrink" 
  * via the `definition` "PresentationTrigger".
  */
 export type PresentationTrigger = "click" | "withPrevious" | "afterPrevious";
+
+/**
+ * Ordered native shapes and pictures; legacy shape declarations remain valid.
+ *
+ * This interface was referenced by `OperationRequest`'s JSON-Schema
+ * via the `definition` "ElementContent".
+ */
+export type ElementContent = PictureContent | ShapeContent;
 
 /**
  * This interface was referenced by `OperationRequest`'s JSON-Schema
@@ -1163,37 +1196,3 @@ export type Inherited9 =
  * via the `definition` "PresentationGroupStart".
  */
 export type PresentationGroupStart = "automatic" | "next";
-
-/**
- * This interface was referenced by `OperationRequest`'s JSON-Schema
- * via the `definition` "TableCellMerge".
- */
-export type TableCellMerge =
-  | {
-      columns: number;
-      kind: "span";
-      rows: number;
-    }
-  | {
-      kind: "covered";
-      origin: CellId;
-    };
-
-/**
- * A computation request carries no identity, permissions, durable job or output mode.
- */
-export interface OperationRequest {
-  action: DocumentAction;
-  contractVersion: ContractVersion;
-  profileId: OperationProfile;
-  requestId: RequestId;
-}
-
-/**
- * This interface was referenced by `OperationRequest`'s JSON-Schema
- * via the `definition` "AssetBinding".
- */
-export interface AssetBinding {
-  assetId: RequestId;
-  resourceId: ResourceId;
-}

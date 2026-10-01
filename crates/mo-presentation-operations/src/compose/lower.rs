@@ -54,6 +54,15 @@ impl PresentationContent {
         }
         let mut document = Document::empty(self.id.clone(), self.page_size);
         document.title = self.title.clone();
+        for resource in &self.resources {
+            if document
+                .resources
+                .insert(resource.id.clone(), resource.clone())
+                .is_some()
+            {
+                return Err(invalid("duplicate composition resource id"));
+            }
+        }
         let mut used = size(&document, MAX_OPERATION_BYTES, check)?;
         for source in &self.slides {
             cancelled(check)?;
@@ -76,25 +85,51 @@ impl PresentationContent {
                         "composition objects",
                     ));
                 }
-                if document.objects.contains_key(&element.id) {
+                if document.objects.contains_key(element.id()) {
                     return Err(invalid("duplicate composition object id"));
                 }
-                let f = element.frame;
-                let text = element
-                    .text
-                    .as_ref()
-                    .map(|text| {
-                        lower_text(
-                            text,
-                            &self.id,
-                            &element.id,
-                            MAX_OPERATION_BYTES - used,
-                            check,
+                let f = element.frame();
+                let (appearance, content) = match element {
+                    ElementContent::Shape(shape) => {
+                        let text = shape
+                            .text
+                            .as_ref()
+                            .map(|text| {
+                                lower_text(
+                                    text,
+                                    &self.id,
+                                    &shape.id,
+                                    MAX_OPERATION_BYTES - used,
+                                    check,
+                                )
+                            })
+                            .transpose()?;
+                        (
+                            Appearance {
+                                fill: Inherited::Value(shape.fill.clone().unwrap_or(Fill::None)),
+                                stroke: Inherited::Value(
+                                    shape.stroke.clone().unwrap_or(Stroke::None {}),
+                                ),
+                            },
+                            ObjectContent::Shape {
+                                geometry: shape.geometry.clone(),
+                                text,
+                            },
                         )
-                    })
-                    .transpose()?;
+                    }
+                    ElementContent::Picture(picture) => (
+                        Appearance {
+                            fill: Inherited::Value(Fill::None),
+                            stroke: Inherited::Value(Stroke::None {}),
+                        },
+                        ObjectContent::Picture {
+                            resource: picture.picture.resource.clone(),
+                            crop: picture.picture.crop,
+                        },
+                    ),
+                };
                 let object = Object {
-                    id: element.id.clone(),
+                    id: element.id().clone(),
                     parent: ContainerId::Slide(source.id.clone()),
                     transform: Some(Transform {
                         origin: Point { x: f.x, y: f.y },
@@ -106,19 +141,13 @@ impl PresentationContent {
                         flip_horizontal: f.flip_horizontal,
                         flip_vertical: f.flip_vertical,
                     }),
-                    appearance: Appearance {
-                        fill: Inherited::Value(element.fill.clone().unwrap_or(Fill::None)),
-                        stroke: Inherited::Value(element.stroke.clone().unwrap_or(Stroke::None {})),
-                    },
-                    accessibility: element.accessibility.clone(),
-                    content: ObjectContent::Shape {
-                        geometry: element.geometry.clone(),
-                        text,
-                    },
+                    appearance,
+                    accessibility: element.accessibility().clone(),
+                    content,
                 };
                 used += size(&object, MAX_OPERATION_BYTES - used, check)?;
-                slide.objects.push(element.id.clone());
-                document.objects.insert(element.id.clone(), object);
+                slide.objects.push(element.id().clone());
+                document.objects.insert(element.id().clone(), object);
             }
             used += size(&slide, MAX_OPERATION_BYTES - used, check)?;
             document.slide_order.push(source.id.clone());
@@ -190,6 +219,10 @@ fn lower_text(
                 direction: inherit(&s.direction),
                 space_before: inherit(&s.space_before),
                 space_after: inherit(&s.space_after),
+                line_spacing: s.line_spacing,
+                left_margin: s.left_margin,
+                right_margin: s.right_margin,
+                indent: s.indent,
             },
             default_run_style: CharacterStyle::default(),
             runs: vec![],

@@ -19,18 +19,19 @@ pub(super) struct Resources {
     pub manifest: Vec<mo_raster::ImageResource>,
     pub pixels: Vec<u8>,
 }
-struct Pending<'a> {
-    binding_id: u32,
-    owner: &'a SourcePagePaintBinding,
-    target: FillTarget,
-    source: SourceImageBinding,
-    resource: u32,
+pub(super) struct Pending<'a> {
+    pub(super) binding_id: u32,
+    pub(super) owner: &'a SourcePagePaintBinding,
+    pub(super) target: FillTarget,
+    pub(super) source: SourceImageBinding,
+    pub(super) resource: u32,
 }
 pub(super) fn prepare(
     input: &dyn ImageInput,
     index: &SourceIndex,
     page: &source_page::PreparedPage<'_>,
     options: ResourcePageOptions,
+    decode_policy: DecodePolicy<'_>,
     decoder: &mut dyn ImageDecoder,
     check: &dyn Fn() -> bool,
 ) -> Result<Resources, SourcePageError> {
@@ -158,6 +159,15 @@ pub(super) fn prepare(
             });
         }
     }
+    let demands = super::sampling::demands(
+        index,
+        page,
+        &pending,
+        descriptors.len(),
+        options.sampling,
+        decode_policy,
+        check,
+    )?;
     let mut decoded = vec![];
     let mut pixel_buffers = vec![];
     let mut pixel_bytes = 0usize;
@@ -171,8 +181,9 @@ pub(super) fn prepare(
             check,
         )?;
         let at = &locations[id];
-        let image = mo_image::decode(&encoded, &descriptor.sha256, decoder, check)
-            .map_err(|e| SourcePageError::from(e).at(at))?;
+        let image =
+            mo_image::decode_with_size(&encoded, &descriptor.sha256, demands[id], decoder, check)
+                .map_err(|e| SourcePageError::from(e).at(at))?;
         pixel_bytes = pixel_bytes
             .checked_add(image.pixels().len())
             .filter(|n| *n <= mo_image::MAX_PIXEL_BYTES)
@@ -211,7 +222,7 @@ pub(super) fn prepare(
             placement,
             layout,
         };
-        let paint = source_image_paint::compile(&layout, options.sampling, check)
+        let paint = source_image_paint::compile_sampled(&layout, image, options.sampling, check)
             .map_err(|e| SourcePageError::from(e).at(at))?;
         let key = FillOwner {
             part: at.part.clone(),

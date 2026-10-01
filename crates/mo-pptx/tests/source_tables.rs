@@ -377,7 +377,7 @@ fn legacy_projection_profiles_keep_opaque_tables_without_losing_bytes_or_accepti
         .unwrap();
         assert_eq!(
             d.source_bindings.as_ref().unwrap().profile,
-            SourceBindingProfile::PresentationmlRetainedFieldsV3
+            SourceBindingProfile::PresentationmlRetainedFieldsV4
         );
         let current = d.clone();
         d.source_bindings.as_mut().unwrap().profile = profile;
@@ -385,6 +385,7 @@ fn legacy_projection_profiles_keep_opaque_tables_without_losing_bytes_or_accepti
             d.title.clear();
         }
         for object in d.objects.values_mut() {
+            object.accessibility = Default::default();
             if let ObjectContent::RetainedSource { paragraphs, .. } = &mut object.content {
                 paragraphs.clear();
             }

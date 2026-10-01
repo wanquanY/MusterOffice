@@ -173,7 +173,7 @@ pub fn inspect(
         || bundle.versions.document_schema != "musteroffice.presentation/0.1-draft"
         || bundle.versions.operation_schema != "musteroffice.operations/1-draft"
         || bundle.versions.rules != PROFILE
-        || bundle.versions.engine != concat!("MusterOffice/", env!("CARGO_PKG_VERSION"))
+        || bundle.versions.engine != ENGINE_IDENTITY
     {
         return Err(DeliveryError::Invalid(
             "delivery version or accepted operation pin",

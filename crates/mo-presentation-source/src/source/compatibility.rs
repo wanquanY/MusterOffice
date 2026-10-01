@@ -6,10 +6,17 @@ pub const PROFILE_ID: &str = "musteroffice.pml-source-mce/1";
 
 pub(super) fn profile() -> mce::Profile {
     mce::Profile {
-        understood_namespaces: [P, A, R, "http://www.w3.org/XML/1998/namespace", ""]
-            .into_iter()
-            .map(str::to_owned)
-            .collect(),
+        understood_namespaces: [
+            P,
+            A,
+            R,
+            super::accessibility::DECORATIVE_NS,
+            "http://www.w3.org/XML/1998/namespace",
+            "",
+        ]
+        .into_iter()
+        .map(str::to_owned)
+        .collect(),
         extension_elements: [P, A]
             .into_iter()
             .map(|ns| ExpandedName {

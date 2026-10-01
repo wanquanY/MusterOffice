@@ -127,3 +127,24 @@ fn non_finite_numbers_cannot_silently_become_null_in_a_digest() {
     }
     assert!(canonical_bytes(&Option::<u32>::None).is_ok());
 }
+
+#[test]
+fn structural_request_errors_preserve_field_path_and_reject_duplicates() {
+    #[derive(serde::Deserialize)]
+    struct Input {
+        pages: Vec<Page>,
+    }
+    #[derive(serde::Deserialize)]
+    struct Page {
+        width: u32,
+    }
+    let error = mo_common::from_json_str_with_path::<Input>(r#"{"pages":[{"width":"wide"}]}"#)
+        .err()
+        .unwrap();
+    assert_eq!(error.path, "pages[0].width");
+    assert!(error.message.contains("u32"));
+    assert!(mo_common::from_json_str_with_path::<Input>(r#"{"pages":[],"pages":[]}"#).is_err());
+    let value =
+        mo_common::from_json_str_with_path::<Input>(r#"{"pages":[{"width":1280}]}"#).unwrap();
+    assert_eq!(value.pages[0].width, 1280);
+}

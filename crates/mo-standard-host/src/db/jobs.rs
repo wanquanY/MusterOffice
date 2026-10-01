@@ -17,7 +17,8 @@ fn base_revision(request: &OperationRequest) -> Option<&Digest> {
         | DocumentAction::Compose { .. }
         | DocumentAction::DescribeTemplate { .. }
         | DocumentAction::InstantiateTemplate { .. } => None,
-        DocumentAction::Apply { base_revision, .. }
+        DocumentAction::Append { base_revision, .. }
+        | DocumentAction::Apply { base_revision, .. }
         | DocumentAction::Export { base_revision, .. } => Some(base_revision),
     }
 }

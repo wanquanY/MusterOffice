@@ -153,4 +153,28 @@ pub struct ParagraphStyle {
     pub space_before: Inherited<Emu>,
     #[serde(default)]
     pub space_after: Inherited<Emu>,
+    /// Omitted values retain native inheritance and historical document digests.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub line_spacing: Option<ParagraphLineSpacing>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub left_margin: Option<Emu>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub right_margin: Option<Emu>,
+    /// Relative to the paragraph margin; negative values create a hanging indent.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub indent: Option<Emu>,
+}
+
+/// Native paragraph line spacing. Percentage is measured against the line's
+/// largest font size by the shared layout engine; 100000 means 100%, 150000 150%.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(tag = "kind", rename_all = "camelCase", deny_unknown_fields)]
+pub enum ParagraphLineSpacing {
+    Percent {
+        value: u32,
+    },
+    /// Exact baseline spacing in EMU; must be representable in 1/100 point.
+    Exact {
+        height: Emu,
+    },
 }

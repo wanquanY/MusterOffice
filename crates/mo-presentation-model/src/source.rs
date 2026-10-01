@@ -19,6 +19,10 @@ pub enum SourceBindingProfile {
     /// editable document projection, while preserving their native bytes.
     #[serde(rename = "presentationml-retained-fields-v3-draft")]
     PresentationmlRetainedFieldsV3,
+    /// Projects title, description and the Office decorative accessibility
+    /// marker. Older bindings retain their original opaque accessibility view.
+    #[serde(rename = "presentationml-retained-fields-v4-draft")]
+    PresentationmlRetainedFieldsV4,
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

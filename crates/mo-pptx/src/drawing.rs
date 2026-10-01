@@ -64,7 +64,13 @@ impl<'a> Drawing<'a> {
         x.attr("name", object.id.as_str())?;
         x.attr("title", &object.accessibility.title)?;
         x.attr("descr", &object.accessibility.description)?;
-        x.raw("/>")
+        if object.accessibility.decorative {
+            // Office 2019 DrawingML decorative extension. Keep title/description
+            // alongside the marker; assistive technology owns their presentation.
+            x.raw("><a:extLst><a:ext uri=\"{C183D7F6-B498-43B3-948B-1728B52AA6E4}\"><adec:decorative xmlns:adec=\"http://schemas.microsoft.com/office/drawing/2017/decorative\" val=\"1\"/></a:ext></a:extLst></p:cNvPr>")
+        } else {
+            x.raw("/>")
+        }
     }
     fn properties(&self, x: &mut Xml, object: &SourceObject) -> Result<(), PptxError> {
         if let Some(t) = &object.transform {

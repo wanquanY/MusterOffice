@@ -88,6 +88,9 @@ fn text_namespaced(
             SourceTextValue::Paragraph { attributes: a } => {
                 attribute(x, "rtl", &a.right_to_left)?;
                 attribute(x, "algn", &a.alignment)?;
+                attribute(x, "marL", &a.left_margin)?;
+                attribute(x, "marR", &a.right_margin)?;
+                attribute(x, "indent", &a.indent)?;
             }
             SourceTextValue::Character { attributes: a } => {
                 attribute(x, "sz", &a.size)?;
@@ -98,6 +101,7 @@ fn text_namespaced(
             }
             SourceTextValue::Font { font } => font_attributes(x, font)?,
             SourceTextValue::Points { value } => x.attr("val", value)?,
+            SourceTextValue::Percentage { value } => x.attr("val", value.lexical())?,
             _ => return Err(unexpected()),
         }
         if node.element == N::T {
@@ -107,7 +111,7 @@ fn text_namespaced(
         } else if node.children.is_empty()
             && matches!(
                 node.element,
-                N::NoAutofit | N::SpAutoFit | N::Latin | N::Ea | N::Cs | N::SpcPts
+                N::NoAutofit | N::SpAutoFit | N::Latin | N::Ea | N::Cs | N::SpcPts | N::SpcPct
             )
         {
             x.raw("/>")?;

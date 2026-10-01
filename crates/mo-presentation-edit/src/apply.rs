@@ -371,6 +371,7 @@ fn source_operation(d: &Document, operation: &Operation) -> Result<(), EditError
                 bindings.profile,
                 mo_presentation_model::SourceBindingProfile::PresentationmlRetainedFieldsV2
                     | mo_presentation_model::SourceBindingProfile::PresentationmlRetainedFieldsV3
+                    | mo_presentation_model::SourceBindingProfile::PresentationmlRetainedFieldsV4
             ) =>
         {
             None

@@ -44,6 +44,7 @@ pub struct ResourcePagePlan {
 impl ResourcePagePlan {
     /// Eagerly prepares the declared base pose. Failure publishes no owner.
     /// The raw package, font bundle, decoder and text backend may then be dropped.
+    /// Without a bound timing graph, arbitrary future transforms require exact grids.
     pub fn new(
         package: &dyn PackageRead,
         index: SourceIndex,
@@ -58,6 +59,7 @@ impl ResourcePagePlan {
             index,
             request,
             &SourceProperties::new(),
+            DecodePolicy::Exact,
             decoder,
             text,
             options,
@@ -72,6 +74,7 @@ impl ResourcePagePlan {
         index: SourceIndex,
         request: SourcePageRequest,
         visibility: &SourceProperties,
+        decode_policy: DecodePolicy<'_>,
         decoder: &mut dyn ImageDecoder,
         text: Option<TextPageContext<'_, '_, '_>>,
         options: ResourcePageOptions,
@@ -86,6 +89,7 @@ impl ResourcePagePlan {
                 source_owner: Some(&index),
                 request: &request,
                 transforms: Some(visibility),
+                decode_policy,
             },
             decoder,
             text,
@@ -204,8 +208,13 @@ impl ResourcePagePlan {
                 ));
             }
             layout.placement = owner.placement.clone();
-            let paint = source_image_paint::compile(&layout, self.sampling, check)
-                .map_err(|e| SourcePageError::from(e).at(&owner.location))?;
+            let paint = source_image_paint::compile_sampled(
+                &layout,
+                &self.decoded[layout.resource as usize],
+                self.sampling,
+                check,
+            )
+            .map_err(|e| SourcePageError::from(e).at(&owner.location))?;
             if paints.insert(key, paint).is_some() {
                 return Err(SourcePageError::Invalid("duplicate retained image paint"));
             }

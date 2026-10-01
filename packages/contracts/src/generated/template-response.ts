@@ -197,6 +197,19 @@ export type InlineContent =
     };
 export type Alignment = "start" | "center" | "end" | "justify";
 export type TextDirection = "leftToRight" | "rightToLeft" | "verticalRightToLeft" | "verticalLeftToRight";
+/**
+ * Native paragraph line spacing. Percentage is measured against the line's
+ * largest font size by the shared layout engine; 100000 means 100%, 150000 150%.
+ */
+export type ParagraphLineSpacing =
+  | {
+      kind: "percent";
+      value: number;
+    }
+  | {
+      height: Emu;
+      kind: "exact";
+    };
 export type RowId = string;
 export type RetainedObjectKind = "shape" | "picture" | "group" | "connector" | "graphicFrame";
 export type RetainedRunKind = "text" | "break" | "field";
@@ -277,7 +290,8 @@ export type NativeEditConstraint =
 export type SourceBindingProfile =
   | "presentationml-retained-fields-v1-draft"
   | "presentationml-retained-fields-v2-draft"
-  | "presentationml-retained-fields-v3-draft";
+  | "presentationml-retained-fields-v3-draft"
+  | "presentationml-retained-fields-v4-draft";
 export type TimelineVersion = "musteroffice.timeline/0.1-draft" | "musteroffice.timeline/0.2-draft";
 /**
  * Signed int64 ticks. Range requires semantic validation.
@@ -913,6 +927,16 @@ export interface ParagraphStyle {
         kind: "value";
         value: TextDirection;
       };
+  /**
+   * Relative to the paragraph margin; negative values create a hanging indent.
+   */
+  indent?: Emu | null;
+  leftMargin?: Emu | null;
+  /**
+   * Omitted values retain native inheritance and historical document digests.
+   */
+  lineSpacing?: ParagraphLineSpacing | null;
+  rightMargin?: Emu | null;
   spaceAfter?:
     | {
         kind: "inherit";

@@ -6,7 +6,7 @@ export interface RasterPort {
   invalidate(): void;
 }
 export interface DecoderPort {
-  decodeImage(encoded: Uint8Array): { status: number; words: Uint32Array; pixels: Uint8Array };
+  decodeImage(encoded: Uint8Array, minWidth?: number, minHeight?: number): { status: number; words: Uint32Array; pixels: Uint8Array };
   invalidate(): void;
 }
 export interface ShapingPort {

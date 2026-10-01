@@ -334,6 +334,19 @@ fn declared_budget_and_accepted_pins_fail_before_opening_assets() {
     assert_eq!(f.source.opens.get(), 0);
 }
 #[test]
+fn delivery_compatibility_is_exact_and_independent_of_distribution_versions() {
+    let mut f = Fixture::new();
+    assert_eq!(f.bundle.versions.engine, "MusterOffice/0.1.0");
+    f.run().unwrap();
+    for identity in ["MusterOffice/0.1.0-dev.fixture", "MusterOffice/0.2.0", ""] {
+        f.bundle.versions.engine = identity.into();
+        f.source.opens.set(0);
+        f.rejects("accepted operation pin");
+        assert_eq!(f.source.opens.get(), 0);
+    }
+}
+
+#[test]
 fn duplicate_and_absent_assets_never_become_partial_success() {
     let mut f = Fixture::new();
     f.bundle.assets.push(f.bundle.assets[0].clone());

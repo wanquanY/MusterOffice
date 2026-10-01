@@ -12,6 +12,25 @@ pub fn from_json_str<T: DeserializeOwned>(input: &str) -> Result<T, serde_json::
     serde_json::from_value(value.0)
 }
 
+/// Bounded structural feedback. Diagnostic text is untrusted input-derived
+/// data, suitable for the caller's own request feedback, never log authority.
+#[derive(Debug, thiserror::Error)]
+#[error("invalid JSON at {path}: {message}")]
+pub struct JsonDecodeError {
+    pub path: String,
+    pub message: String,
+}
+pub fn from_json_str_with_path<T: DeserializeOwned>(input: &str) -> Result<T, JsonDecodeError> {
+    let value: UniqueValue = serde_json::from_str(input).map_err(|error| JsonDecodeError {
+        path: format!("line {}, column {}", error.line(), error.column()),
+        message: error.to_string().chars().take(256).collect(),
+    })?;
+    serde_path_to_error::deserialize(value.0).map_err(|error| JsonDecodeError {
+        path: error.path().to_string().chars().take(512).collect(),
+        message: error.inner().to_string().chars().take(256).collect(),
+    })
+}
+
 struct UniqueValue(Value);
 
 impl<'de> Deserialize<'de> for UniqueValue {

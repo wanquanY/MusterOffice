@@ -210,6 +210,38 @@ pub fn compute_mutation(
                 check,
             );
         }
+        DocumentAction::Append {
+            document_id,
+            base_revision,
+            slides,
+            resources,
+        } => {
+            let base =
+                base.ok_or_else(|| Failure::new(FailureCode::NotFound, "document is unavailable"))?;
+            let base = Snapshot::restore(base, limits)?;
+            if &base.document().id != document_id {
+                return Err(Failure::new(
+                    FailureCode::InputInvalid,
+                    "append document identity",
+                ));
+            }
+            let transaction = crate::compose::append::transaction(
+                base.document(),
+                base_revision.clone(),
+                request.request_id.clone(),
+                slides,
+                resources,
+                check,
+            )?;
+            let prepared =
+                mo_presentation_edit::prepare_cancellable(&base, &transaction, limits, check)?;
+            (
+                prepared.snapshot.into_record(),
+                Some(Box::new(prepared.receipt)),
+                Some(base_revision.clone()),
+                Some(base.semantic_digest().clone()),
+            )
+        }
         DocumentAction::Apply {
             document_id,
             base_revision,

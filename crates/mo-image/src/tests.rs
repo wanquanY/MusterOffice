@@ -126,3 +126,62 @@ fn ordinary_failure_is_reusable_but_allocation_failure_is_not() {
         assert_eq!(b.invalid, status == 2);
     }
 }
+
+#[test]
+fn sized_decode_preserves_original_geometry_and_rejects_undersampling() {
+    let mut b = backend();
+    b.reply.as_mut().unwrap().words = [1, 1, 1, 2, 6, 1, 8, 0, 4];
+    b.reply.as_mut().unwrap().pixels.truncate(4);
+    let image = decode_with_size(
+        SOURCE,
+        &digest(),
+        Some(DecodeSize {
+            width: 1,
+            height: 1,
+        }),
+        &mut b,
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(
+        image.info().source_size(),
+        DecodeSize {
+            width: 2,
+            height: 1
+        }
+    );
+    assert_eq!(image.info().width, 1);
+    assert_ne!(image.info().profile, PROFILE);
+    let mut b = backend();
+    b.reply.as_mut().unwrap().words = [1, 1, 1, 2, 6, 1, 8, 0, 4];
+    b.reply.as_mut().unwrap().pixels.truncate(4);
+    assert!(matches!(
+        decode_with_size(
+            SOURCE,
+            &digest(),
+            Some(DecodeSize {
+                width: 2,
+                height: 1
+            }),
+            &mut b,
+            &|| false
+        ),
+        Err(ImageError::ComponentInvalid(_))
+    ));
+    assert!(b.invalid);
+    let mut b = backend();
+    assert!(
+        decode_with_size(
+            SOURCE,
+            &digest(),
+            Some(DecodeSize {
+                width: 0,
+                height: 1
+            }),
+            &mut b,
+            &|| false
+        )
+        .is_err()
+    );
+    assert_eq!(b.calls, 0);
+}

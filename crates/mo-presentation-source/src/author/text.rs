@@ -367,9 +367,30 @@ impl<'a, 'c> TextBuilder<'a, 'c> {
                 SourceTextParagraphAttributes {
                     alignment,
                     right_to_left: direction,
+                    left_margin: p.style.left_margin.map(|v| v.get() as i32),
+                    right_margin: p.style.right_margin.map(|v| v.get() as i32),
+                    indent: p.style.indent.map(|v| v.get() as i32),
                     ..Default::default()
                 },
             )?;
+            if let Some(spacing) = p.style.line_spacing {
+                let span = self.container(N::LnSpc, Some(properties))?;
+                let (element, value) = match spacing {
+                    ParagraphLineSpacing::Percent { value } => (
+                        N::SpcPct,
+                        SourceTextValue::Percentage {
+                            value: native(value.to_string())?,
+                        },
+                    ),
+                    ParagraphLineSpacing::Exact { height } => (
+                        N::SpcPts,
+                        SourceTextValue::Points {
+                            value: centipoints(height, "line spacing", 0, 158400)?,
+                        },
+                    ),
+                };
+                self.node(element, Some(span), value)?;
+            }
             for (element, value) in [
                 (N::SpcBef, &p.style.space_before),
                 (N::SpcAft, &p.style.space_after),

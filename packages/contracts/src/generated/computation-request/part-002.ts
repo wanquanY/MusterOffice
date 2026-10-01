@@ -1,6 +1,40 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { Alignment, AssetBinding, CellId, Color, ColumnId, ContainerDuration, ContainerId, ContainerKind, Digest, DocumentId, Effect, Emu, Fill, FillMode, FontId, ImageSampling, ImageSourceSelection, Inherited, InlineContent, LayoutId, MasterId, ModelVersion, MotionCoordinate, MotionSegment, NativeEditConstraint, NextAction, ObjectContent, ObjectId, Operation, OperationId, OverflowPolicy, ParagraphId, ParameterTarget, PathCommand, PresentationRole, PreviousAction, RepeatCount, RepeatDuration, RequestId, ResourceId, ResourceKind, RestartMode, RetainedRunKind, RowId, RunId, SlideId, SourceBindingProfile, StartCondition, Stroke, TableVerticalAlignment, TemplateVersion, TextDirection, ThemeId, Ticks, TimeCondition, TimelineVersion, Timescale, TimingNodeId } from './part-001.js';
+import type { Alignment, CellId, Color, ColumnId, ContainerDuration, ContainerId, ContainerKind, ContractVersion, Digest, DocumentAction, DocumentId, Effect, ElementContent, Emu, Fill, FillMode, FontId, ImageSampling, ImageSourceSelection, Inherited, InlineContent, LayoutId, MasterId, ModelVersion, MotionCoordinate, MotionSegment, NativeEditConstraint, NextAction, ObjectContent, ObjectId, Operation, OperationId, OperationProfile, OverflowPolicy, ParagraphId, ParagraphLineSpacing, ParameterTarget, PathCommand, PresentationRole, PreviousAction, RepeatCount, RepeatDuration, RequestId, ResourceId, ResourceKind, RestartMode, RetainedRunKind, RowId, RunId, SlideId, SourceBindingProfile, StartCondition, Stroke, TableVerticalAlignment, TemplateVersion, TextDirection, ThemeId, Ticks, TimeCondition, TimelineVersion, Timescale, TimingNodeId } from './part-001.js';
 import type { ColorContext, ExportDefaults, FontManifest, RendererIdentity } from './part-003.js';
+
+/**
+ * This interface was referenced by `OperationRequest`'s JSON-Schema
+ * via the `definition` "TableCellMerge".
+ */
+export type TableCellMerge =
+  | {
+      columns: number;
+      kind: "span";
+      rows: number;
+    }
+  | {
+      kind: "covered";
+      origin: CellId;
+    };
+
+/**
+ * A computation request carries no identity, permissions, durable job or output mode.
+ */
+export interface OperationRequest {
+  action: DocumentAction;
+  contractVersion: ContractVersion;
+  profileId: OperationProfile;
+  requestId: RequestId;
+}
+
+/**
+ * This interface was referenced by `OperationRequest`'s JSON-Schema
+ * via the `definition` "AssetBinding".
+ */
+export interface AssetBinding {
+  assetId: RequestId;
+  resourceId: ResourceId;
+}
 
 /**
  * Document declarations and immutable source provenance. Revisions, compilation
@@ -420,6 +454,16 @@ export interface ParagraphStyle {
         kind: "value";
         value: TextDirection;
       };
+  /**
+   * Relative to the paragraph margin; negative values create a hanging indent.
+   */
+  indent?: Emu | null;
+  leftMargin?: Emu | null;
+  /**
+   * Omitted values retain native inheritance and historical document digests.
+   */
+  lineSpacing?: ParagraphLineSpacing | null;
+  rightMargin?: Emu | null;
   spaceAfter?:
     | {
         kind: "inherit";
@@ -789,10 +833,10 @@ export interface SequenceNavigation {
 }
 
 /**
- * Compact creation input for native editable text and shapes. Coordinates and
+ * Compact creation input for native editable text, shapes and pictures. Coordinates and
  * font sizes are decimal EMU strings (12700 EMU per point). This is expanded
  * once into Document; all subsequent editing, rendering and export use that
- * same document. Use `create` with Document for other object kinds/resources.
+ * same document. Use `create` with Document for other object kinds.
  *
  * This interface was referenced by `OperationRequest`'s JSON-Schema
  * via the `definition` "PresentationContent".
@@ -800,6 +844,10 @@ export interface SequenceNavigation {
 export interface PresentationContent {
   id: DocumentId;
   pageSize: Size;
+  /**
+   * Source identities only. The host supplies separately authorized bytes.
+   */
+  resources?: Resource[];
   /**
    * Array order is slide order. IDs must be unique across this presentation.
    */
@@ -819,9 +867,62 @@ export interface SlideContent {
   /**
    * Array order is paint order, back to front.
    */
-  elements: ShapeContent[];
+  elements: ElementContent[];
   id: SlideId;
   name?: string;
+}
+
+/**
+ * This interface was referenced by `OperationRequest`'s JSON-Schema
+ * via the `definition` "PictureContent".
+ */
+export interface PictureContent {
+  accessibility?: Accessibility1;
+  frame: ShapeFrame;
+  id: ObjectId;
+  picture: PictureSource;
+}
+
+export interface Accessibility1 {
+  decorative: boolean;
+  description: string;
+  title: string;
+}
+
+/**
+ * This interface was referenced by `OperationRequest`'s JSON-Schema
+ * via the `definition` "ShapeFrame".
+ */
+export interface ShapeFrame {
+  flipHorizontal?: boolean;
+  flipVertical?: boolean;
+  height: Emu;
+  /**
+   * DrawingML units: 60000 per degree, just as the native model.
+   */
+  rotation?: number;
+  width: Emu;
+  x: Emu;
+  y: Emu;
+}
+
+/**
+ * This interface was referenced by `OperationRequest`'s JSON-Schema
+ * via the `definition` "PictureSource".
+ */
+export interface PictureSource {
+  crop?: Crop1;
+  resource: ResourceId;
+}
+
+/**
+ * Native crop fractions: 100000 is the full source extent.
+ */
+export interface Crop1 {
+  bottom: number;
+  left: number;
+  right: number;
+  top: number;
 }
 
 /**
@@ -829,7 +930,7 @@ export interface SlideContent {
  * via the `definition` "ShapeContent".
  */
 export interface ShapeContent {
-  accessibility?: Accessibility1;
+  accessibility?: Accessibility2;
   /**
    * Omitted fill/stroke mean explicit none, not implicit theme paint.
    */
@@ -859,27 +960,10 @@ export interface ShapeContent {
   text?: PlainText | null;
 }
 
-export interface Accessibility1 {
+export interface Accessibility2 {
   decorative: boolean;
   description: string;
   title: string;
-}
-
-/**
- * This interface was referenced by `OperationRequest`'s JSON-Schema
- * via the `definition` "ShapeFrame".
- */
-export interface ShapeFrame {
-  flipHorizontal?: boolean;
-  flipVertical?: boolean;
-  height: Emu;
-  /**
-   * DrawingML units: 60000 per degree, just as the native model.
-   */
-  rotation?: number;
-  width: Emu;
-  x: Emu;
-  y: Emu;
 }
 
 /**
@@ -914,8 +998,12 @@ export interface PlainTextStyle {
   bold?: boolean | null;
   color?: Color | null;
   direction?: TextDirection | null;
+  indent?: Emu | null;
   italic?: boolean | null;
   language?: string | null;
+  leftMargin?: Emu | null;
+  lineSpacing?: ParagraphLineSpacing | null;
+  rightMargin?: Emu | null;
   size?: Emu | null;
   spaceAfter?: Emu | null;
   spaceBefore?: Emu | null;

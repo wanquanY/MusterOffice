@@ -32,6 +32,90 @@ pub struct ChartTextResolver<'a> {
     paragraphs: usize,
 }
 impl<'a> ChartTextResolver<'a> {
+    /// The generated content style is the paragraph's defRPr cascade, never its
+    /// endParaRPr. No fictitious a:r or object is introduced to obtain this style.
+    pub fn default_character(
+        &mut self,
+        text: &ChartTextCascade,
+        paragraph: u32,
+    ) -> Result<Result<CascadedCharacterStyle, TextCascadeUnresolved>, PptxError> {
+        match self.default_character_inner(text, paragraph) {
+            Ok(style) => Ok(Ok(style)),
+            Err(Failure::Unresolved(reason)) => Ok(Err(reason)),
+            Err(Failure::Abort(e)) => Err(e),
+        }
+    }
+    fn default_character_inner(
+        &mut self,
+        text: &ChartTextCascade,
+        paragraph: u32,
+    ) -> Result<CascadedCharacterStyle, Failure> {
+        if text.chart_part != self.chart.part || text.chart_sha256 != self.chart.sha256 {
+            return Err(conflict().into());
+        }
+        let body = *self
+            .bodies
+            .get(&text.body_source_ordinal)
+            .ok_or_else(conflict)?;
+        let p = body
+            .paragraphs
+            .get(paragraph as usize)
+            .ok_or_else(conflict)?;
+        if text
+            .paragraphs
+            .get(paragraph as usize)
+            .map(|p| p.source_ordinal)
+            != Some(p.source_ordinal)
+        {
+            return Err(conflict().into());
+        }
+        let mut at = root(self.chart, body, &mut self.budget)?;
+        at.id = p.source_ordinal;
+        at.origin = at.origin.at(p.source_ordinal);
+        let mut paragraphs = vec![at];
+        let mut seen = BTreeSet::from([body.source_ordinal]);
+        for id in &text.property_roots {
+            self.budget.step()?;
+            if !seen.insert(*id) {
+                return Err(conflict().into());
+            }
+            let body = *self.bodies.get(id).ok_or_else(conflict)?;
+            let at = root(self.chart, body, &mut self.budget)?;
+            if at.node()?.element != N::TxPr {
+                return Err(conflict().into());
+            }
+            paragraphs.push(at.child(N::P, &mut self.budget)?.ok_or_else(conflict)?);
+        }
+        let mut characters = vec![];
+        for p in paragraphs {
+            p.checked(&mut self.budget)?;
+            if let Some(ppr) = p.child(N::PPr, &mut self.budget)? {
+                ppr.checked(&mut self.budget)?;
+                if let Some(rpr) = ppr.child(N::DefRPr, &mut self.budget)? {
+                    characters.push(Layer::Native(rpr));
+                }
+            }
+        }
+        native::character(&characters, false, &mut self.budget)
+    }
+    /// Generic DrawingML character defaults for label computation. Size and
+    /// typeface must still resolve from the chart; shape defaults never enter.
+    /// This does not implement chart-title, legend or chart-style role defaults.
+    pub fn complete_label_style(
+        &mut self,
+        style: &mut CascadedCharacterStyle,
+    ) -> Result<(), PptxError> {
+        self.budget.step()?;
+        let mut defaults = properties::character_defaults();
+        defaults.size = None;
+        properties::character(
+            &mut style.attributes,
+            &defaults,
+            &mut style.origins,
+            &TextStyleOrigin::ProfileDefault {},
+            &mut self.budget,
+        )
+    }
     pub(in crate::source::text) fn is_bound_to(&self, chart: &SourceChartPart) -> bool {
         std::ptr::eq(self.chart, chart)
     }

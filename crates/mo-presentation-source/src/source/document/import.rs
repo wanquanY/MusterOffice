@@ -15,7 +15,7 @@ pub(super) fn project(
         resource,
         Projection {
             identity_scope: None,
-            profile: SourceBindingProfile::PresentationmlRetainedFieldsV3,
+            profile: SourceBindingProfile::PresentationmlRetainedFieldsV4,
             title,
         },
         check,
@@ -216,8 +216,11 @@ pub(super) fn project_scoped(
             };
             let mut paragraphs = Vec::new();
             let projected_paragraphs = if object.table.is_some()
-                && profile != SourceBindingProfile::PresentationmlRetainedFieldsV3
-            {
+                && !matches!(
+                    profile,
+                    SourceBindingProfile::PresentationmlRetainedFieldsV3
+                        | SourceBindingProfile::PresentationmlRetainedFieldsV4
+                ) {
                 &[][..]
             } else {
                 object.paragraphs.as_slice()
@@ -299,7 +302,13 @@ pub(super) fn project_scoped(
                         .unwrap_or_else(|| owner.clone()),
                     transform,
                     appearance: Default::default(),
-                    accessibility: Default::default(),
+                    accessibility: if profile
+                        == SourceBindingProfile::PresentationmlRetainedFieldsV4
+                    {
+                        object.accessibility.clone()
+                    } else {
+                        Default::default()
+                    },
                     content: ObjectContent::RetainedSource {
                         native_kind,
                         children: children.remove(&object.native_id).unwrap_or_default(),

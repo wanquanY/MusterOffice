@@ -14,6 +14,13 @@ extern "C" {
 uint32_t mo_image_decode_abi(void);
 int32_t mo_image_decode(const uint8_t *encoded, uint32_t length,
                        uint8_t **pixels, uint32_t *info);
+// Oriented minimum sample size; (0,0) means the exact original grid. Returned
+// encoded dimensions/density always describe the original source. Native JPEG
+// DCT grids can be larger than demand; a source is never enlarged.
+uint32_t mo_image_decode_sized_abi(void);
+int32_t mo_image_decode_sized(const uint8_t *encoded, uint32_t length,
+                             uint32_t min_width, uint32_t min_height,
+                             uint8_t **pixels, uint32_t *info);
 #ifdef __cplusplus
 }
 #endif

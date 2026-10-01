@@ -4,6 +4,17 @@
   "title": "ImageDecodeRequest",
   "type": "object",
   "properties": {
+    "minimumSize": {
+      "description": "Minimum oriented sample grid. Omission retains exact full-resolution decoding.",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DecodeSize"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "sourceSha256": {
       "$ref": "#/$defs/Digest"
     }
@@ -13,6 +24,27 @@
     "sourceSha256"
   ],
   "$defs": {
+    "DecodeSize": {
+      "description": "Minimum useful oriented sample grid. A decoder may return a larger native\ngrid (for example a JPEG DCT scale), but never upscale a source or undersample.",
+      "type": "object",
+      "properties": {
+        "height": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "width": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height"
+      ]
+    },
     "Digest": {
       "type": "string",
       "maxLength": 64,

@@ -104,7 +104,10 @@ try {
   cases.push({ name: 'real-source-import', input, response });
   const snapshot = response.snapshot;
   assert.equal(snapshot.document.title, JSON.parse(exportRequest).document.title);
-  assert.equal(snapshot.document.sourceBindings.profile, 'presentationml-retained-fields-v2-draft');
+  assert.equal(snapshot.document.sourceBindings.profile, 'presentationml-retained-fields-v4-draft');
+  const accessibility = doc => Object.values(doc.objects).map(o => o.accessibility)
+    .sort((a, b) => a.title.localeCompare(b.title));
+  assert.deepEqual(accessibility(snapshot.document), accessibility(JSON.parse(exportRequest).document));
   const object = Object.values(snapshot.document.objects).find(o => o.parent.kind === 'slide' && o.content.paragraphs.length && o.content.paragraphs[0].runs.length && o.transform);
   const p = object.content.paragraphs[0];
   const splice = { kind: 'spliceText', object: object.id, paragraph: p.id, run: p.runs[0].id, start: 0, delete: 0, insert: '中文🚀' };
@@ -120,6 +123,11 @@ try {
   const legacyDocument = structuredClone(snapshot.document);
   legacyDocument.sourceBindings.profile = 'presentationml-retained-fields-v1-draft';
   legacyDocument.title = '';
+  // Historical bindings did not project native accessibility. Reconstruct that
+  // old view explicitly instead of relabelling the new v4 projection as v1.
+  for (const object of Object.values(legacyDocument.objects)) {
+    object.accessibility = {title: '', description: '', decorative: false};
+  }
   const legacy = compare('initialize-retained-v1', { operation: 'initialize', document: legacyDocument }, 'initialized').snapshot;
   compare('retained-v1-title-stays-unprojected', transaction([{ kind: 'setTitle', title: 'blocked' }], legacy), 'error', 'INPUT_INVALID');
 } finally { rmSync(temporary, { recursive: true, force: true }); }

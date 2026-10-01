@@ -64,6 +64,24 @@ impl<'a> ChartTypefaceContext<'a> {
             Some(r) => &p.runs.get(r as usize).ok_or_else(conflict)?.style,
             None => &p.end_style,
         };
+        self.resolve_style(resolver, style, slot, script, limits, check)
+    }
+    /// Resolve a real chart declaration selected for generated content. Such
+    /// content has no native run index; its style is bound by the chart resolver.
+    pub fn resolve_style(
+        &self,
+        resolver: &ChartTextResolver<'_>,
+        style: &CascadedCharacterStyle,
+        slot: NativeFontSlot,
+        script: Option<&str>,
+        limits: TypefaceLimits,
+        check: &dyn Fn() -> bool,
+    ) -> Result<TypefaceOutcome, PptxError> {
+        cancelled(check)?;
+        check_script(script)?;
+        if !resolver.is_bound_to(self.chart) {
+            return Err(conflict());
+        }
         let Some(reference) = style.declarations.get(&slot.character()) else {
             return unresolved(TypefaceUnresolved::MissingDeclaration {});
         };

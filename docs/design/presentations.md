@@ -2,6 +2,8 @@
 
 版本：**0.4** · 2026-09-27 职责修订 · 状态：**实施设计基线，部分实现，完整一期未验收**。
 
+2026-10-01 当前实施优先级按 [ADR 0008](../decisions/0008-everyday-presentation-acceptance.md)：已接入 Musterwork，先完善普通用户常用 PPT 基础需求并准备用户测试；下述完整能力继续作为长期路线，不作为本次基础功能验收的全量前置条件。
+
 产品名称、独立项目、一期完整演示目标及 Rust 主体＋TS 薄接入＋精选 C/C++ 组件策略已确认；具体组件、许可证、平台版本和预算按各自证据锁定。接入职责以 [ADR 0007](../decisions/0007-kernel-only-integration-boundary.md)和[接入总设计](../architecture/agent-integration.md)为准。已有源码及阶段验证，完整状态见[实现进度](../implementation/progress.md)，不能由设计稿推断能力已验收。
 
 本轮按最终效果补充[一期实施规格](implementation/README.md)：104 项能力计划、完整领域操作、算法与组件边界、质量/性能档案、Musterwork 源码合同映射及实施门槛；[设计合同](../contracts/README.md)提供机器可校验的导出/交付边界。它们是后续实施依据，不代表相应功能已经实现。

@@ -5,6 +5,12 @@ use mo_presentation_edit::Snapshot;
 use mo_presentation_model::*;
 use std::collections::BTreeSet;
 
+fn shape(element: &mut ElementContent) -> &mut ShapeContent {
+    match element {
+        ElementContent::Shape(shape) => shape,
+        _ => panic!("shape fixture"),
+    }
+}
 fn content() -> PresentationContent {
     serde_json::from_value(example()).unwrap()
 }
@@ -58,13 +64,51 @@ fn compact_example_becomes_the_same_valid_native_model() {
 }
 
 #[test]
+fn compact_paragraph_layout_uses_the_native_model_and_validation() {
+    let mut c = content();
+    let text = shape(&mut c.slides[0].elements[0]).text.as_mut().unwrap();
+    text.text = "First line\nSecond paragraph".into();
+    text.style.line_spacing = Some(ParagraphLineSpacing::Percent { value: 150_000 });
+    text.style.left_margin = Some(Emu::new(127_000));
+    text.style.right_margin = Some(Emu::new(254_000));
+    text.style.indent = Some(Emu::new(-63_500));
+    let result = compute(c.clone(), &|| false).unwrap();
+    let object = result.snapshot().document.objects.values().next().unwrap();
+    let ObjectContent::Shape {
+        text: Some(text), ..
+    } = &object.content
+    else {
+        panic!()
+    };
+    assert_eq!(text.paragraphs.len(), 2);
+    for p in &text.paragraphs {
+        assert_eq!(
+            p.style.line_spacing,
+            Some(ParagraphLineSpacing::Percent { value: 150_000 })
+        );
+        assert_eq!(p.style.left_margin, Some(Emu::new(127_000)));
+        assert_eq!(p.style.right_margin, Some(Emu::new(254_000)));
+        assert_eq!(p.style.indent, Some(Emu::new(-63_500)));
+    }
+    shape(&mut c.slides[0].elements[0])
+        .text
+        .as_mut()
+        .unwrap()
+        .style
+        .line_spacing = Some(ParagraphLineSpacing::Exact {
+        height: Emu::new(128),
+    });
+    assert!(compute(c, &|| false).is_err());
+}
+
+#[test]
 fn page_and_paint_order_and_identity_are_author_controlled() {
     let mut c = content();
     let mut second = c.slides[0].clone();
     second.id = SlideId::new("slide:2").unwrap();
-    second.elements[0].id = ObjectId::new("object:second").unwrap();
-    second.elements[0].frame.rotation = -5400000;
-    second.elements[0].frame.flip_horizontal = true;
+    shape(&mut second.elements[0]).id = ObjectId::new("object:second").unwrap();
+    shape(&mut second.elements[0]).frame.rotation = -5400000;
+    shape(&mut second.elements[0]).frame.flip_horizontal = true;
     c.slides.insert(0, second);
     let first = compute(c.clone(), &|| false).unwrap();
     let d = &first.snapshot().document;
@@ -96,7 +140,11 @@ fn page_and_paint_order_and_identity_are_author_controlled() {
     };
     let original = get_ids(d);
     c.slides.reverse();
-    c.slides[0].elements[0].text.as_mut().unwrap().text = "Replacement text".into();
+    shape(&mut c.slides[0].elements[0])
+        .text
+        .as_mut()
+        .unwrap()
+        .text = "Replacement text".into();
     assert_eq!(
         original,
         get_ids(&compute(c, &|| false).unwrap().snapshot().document)
@@ -107,7 +155,7 @@ fn page_and_paint_order_and_identity_are_author_controlled() {
 #[test]
 fn newline_tab_empty_paragraphs_and_explicit_false_are_preserved() {
     let mut c = content();
-    let text = c.slides[0].elements[0].text.as_mut().unwrap();
+    let text = shape(&mut c.slides[0].elements[0]).text.as_mut().unwrap();
     text.text = "A\tB\r\n\rC\n".into();
     text.style.bold = Some(false);
     text.wrap = false;
@@ -177,7 +225,7 @@ fn invalid_and_cancelled_inputs_never_publish_a_candidate() {
         FailureCode::InputInvalid
     );
     let mut c = content();
-    c.slides[0].elements[0].frame.width = Emu::new(-1);
+    shape(&mut c.slides[0].elements[0]).frame.width = Emu::new(-1);
     assert!(compute(c, &|| false).is_err());
     let mut value = example();
     value["slides"][0]["elements"][0]["html"] = "<b>not accepted</b>".into();
@@ -187,14 +235,22 @@ fn invalid_and_cancelled_inputs_never_publish_a_candidate() {
 #[test]
 fn expansion_is_bounded_before_materializing_arbitrary_text_runs() {
     let mut c = content();
-    c.slides[0].elements[0].text.as_mut().unwrap().text = "\t".repeat(100000);
+    shape(&mut c.slides[0].elements[0])
+        .text
+        .as_mut()
+        .unwrap()
+        .text = "\t".repeat(100000);
     assert_eq!(
         compute(c, &|| false).err().unwrap().code,
         FailureCode::LimitExceeded
     );
     let checks = std::cell::Cell::new(0usize);
     let mut c = content();
-    c.slides[0].elements[0].text.as_mut().unwrap().text = "x\n".repeat(5000);
+    shape(&mut c.slides[0].elements[0])
+        .text
+        .as_mut()
+        .unwrap()
+        .text = "x\n".repeat(5000);
     assert_eq!(
         compute(c, &|| {
             checks.set(checks.get() + 1);
@@ -204,5 +260,89 @@ fn expansion_is_bounded_before_materializing_arbitrary_text_runs() {
         .unwrap()
         .code,
         FailureCode::Cancelled
+    );
+}
+
+#[test]
+fn compact_append_is_atomic_preserves_pages_and_supports_ordered_pictures() {
+    let base = compute(content(), &|| false).unwrap().into_parts().0;
+    let mut page = serde_json::to_value(content().slides.remove(0)).unwrap();
+    page["id"] = serde_json::json!("slide:2");
+    page["elements"][0]["id"] = serde_json::json!("object:2");
+    let resource: Resource = serde_json::from_value(serde_json::json!({
+        "id":"image:1", "kind":"picture", "sha256":"aa".repeat(32), "mediaType":"image/jpeg"
+    }))
+    .unwrap();
+    page["elements"].as_array_mut().unwrap().insert(0, serde_json::json!({
+        "id":"picture:2", "frame":{"x":"0","y":"0","width":"12192000","height":"6858000"},
+        "picture":{"resource":"image:1"},
+        "accessibility":{"title":"Original image","description":"Content retained","decorative":true}
+    }));
+    let action = DocumentAction::Append {
+        document_id: base.document.id.clone(),
+        base_revision: base.revision.clone(),
+        slides: vec![serde_json::from_value(page).unwrap()],
+        resources: vec![resource],
+    };
+    let request_id = RequestId::new("append:test").unwrap();
+    let request = Computation {
+        request_id: &request_id,
+        profile_id: OperationProfile::AuthorModel,
+        action: &action,
+    };
+    let original = serde_json::to_value(&base).unwrap();
+    let result = compute_mutation(&request, Some(base.clone()), &|| false).unwrap();
+    let result = result.into_parts().0;
+    assert_eq!(result.document.slide_order.len(), 2);
+    assert_eq!(
+        result.document.slides[&base.document.slide_order[0]],
+        base.document.slides[&base.document.slide_order[0]]
+    );
+    assert_eq!(
+        result.document.objects[&ObjectId::new("object:title").unwrap()],
+        base.document.objects[&ObjectId::new("object:title").unwrap()]
+    );
+    let slide = &result.document.slides[&SlideId::new("slide:2").unwrap()];
+    assert_eq!(
+        slide.objects.iter().map(|i| i.as_str()).collect::<Vec<_>>(),
+        ["picture:2", "object:2"]
+    );
+    assert!(
+        result.document.objects[&slide.objects[0]]
+            .accessibility
+            .decorative
+    );
+    assert!(
+        result
+            .document
+            .resources
+            .contains_key(&mo_common::ResourceId::new("image:1").unwrap())
+    );
+    // Retrying with the old revision cannot duplicate pages or overwrite IDs.
+    assert!(compute_mutation(&request, Some(result), &|| false).is_err());
+    assert!(compute_mutation(&request, Some(base.clone()), &|| true).is_err());
+    assert_eq!(serde_json::to_value(&base).unwrap(), original);
+    let mut conflicting = match action {
+        DocumentAction::Append { slides, .. } => slides,
+        _ => unreachable!(),
+    };
+    conflicting[0].id = base.document.slide_order[0].clone();
+    let action = DocumentAction::Append {
+        document_id: base.document.id.clone(),
+        base_revision: base.revision.clone(),
+        slides: conflicting,
+        resources: vec![],
+    };
+    assert!(
+        compute_mutation(
+            &Computation {
+                action: &action,
+                request_id: &request_id,
+                profile_id: OperationProfile::AuthorModel
+            },
+            Some(base),
+            &|| false
+        )
+        .is_err()
     );
 }

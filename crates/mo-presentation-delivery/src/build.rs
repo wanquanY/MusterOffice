@@ -401,7 +401,7 @@ pub fn build<S: OutputStore>(
         },
         profile_id: PROFILE.into(),
         versions: Versions {
-            engine: concat!("MusterOffice/", env!("CARGO_PKG_VERSION")).into(),
+            engine: ENGINE_IDENTITY.into(),
             document_schema: "musteroffice.presentation/0.1-draft".into(),
             operation_schema: "musteroffice.operations/1-draft".into(),
             rules: PROFILE.into(),

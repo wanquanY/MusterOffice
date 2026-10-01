@@ -1,5 +1,5 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { Accessibility, Appearance, Crop, ExportSettings, Layout, Master, MotionPath, MotionPoint, Object, OperationEntry, Point, PresentationSequence, RationalTime, Resource, RetainedParagraph, Rgba, ScaleValue, Size, Slide, SourceBindings, Table, TableCell, TableCellStyle1, TableColumn, TableRow, TextBody, Theme, Timeline, Transform } from './part-002.js';
+import type { Accessibility, Appearance, Crop, ExportSettings, FontFace, Layout, Master, MotionPath, MotionPoint, Object, OperationEntry, Point, PresentationSequence, RationalTime, Resource, RetainedParagraph, Rgba, ScaleValue, Size, Slide, SourceBindings, Table, TableCell, TableCellStyle1, TableColumn, TableRow, TextBody, Theme, Timeline, Transform } from './part-002.js';
 
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
 
@@ -299,6 +299,23 @@ export type Alignment = "start" | "center" | "end" | "justify";
 export type TextDirection = "leftToRight" | "rightToLeft" | "verticalRightToLeft" | "verticalLeftToRight";
 
 /**
+ * Native paragraph line spacing. Percentage is measured against the line's
+ * largest font size by the shared layout engine; 100000 means 100%, 150000 150%.
+ *
+ * This interface was referenced by `OperationRequest`'s JSON-Schema
+ * via the `definition` "ParagraphLineSpacing".
+ */
+export type ParagraphLineSpacing =
+  | {
+      kind: "percent";
+      value: number;
+    }
+  | {
+      height: Emu;
+      kind: "exact";
+    };
+
+/**
  * This interface was referenced by `OperationRequest`'s JSON-Schema
  * via the `definition` "RowId".
  */
@@ -440,7 +457,8 @@ export type NativeEditConstraint =
 export type SourceBindingProfile =
   | "presentationml-retained-fields-v1-draft"
   | "presentationml-retained-fields-v2-draft"
-  | "presentationml-retained-fields-v3-draft";
+  | "presentationml-retained-fields-v3-draft"
+  | "presentationml-retained-fields-v4-draft";
 
 /**
  * This interface was referenced by `OperationRequest`'s JSON-Schema
@@ -1177,20 +1195,4 @@ export interface Document {
     [k: string]: Timeline | undefined;
   };
   title: string;
-}
-
-/**
- * This interface was referenced by `undefined`'s JSON-Schema definition
- * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
- *
- * This interface was referenced by `OperationRequest`'s JSON-Schema
- * via the `definition` "FontFace".
- */
-export interface FontFace {
-  faceIndex: number;
-  family: string;
-  id: FontId;
-  italic: boolean;
-  resource: ResourceId;
-  weight: number;
 }

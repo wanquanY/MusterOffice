@@ -48,7 +48,8 @@ impl ServiceOperation {
             DocumentAction::Create { .. } => Self::Create,
             DocumentAction::Apply { .. } => Self::Apply,
             DocumentAction::Export { .. } => Self::Export,
-            DocumentAction::Compose { .. }
+            DocumentAction::Append { .. }
+            | DocumentAction::Compose { .. }
             | DocumentAction::InstantiateTemplate { .. }
             | DocumentAction::DescribeTemplate { .. } => {
                 return Err(Failure::new(

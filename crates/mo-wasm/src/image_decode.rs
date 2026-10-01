@@ -3,7 +3,7 @@ use wasm_bindgen::prelude::*;
 #[wasm_bindgen(typescript_custom_section)]
 const INTERFACE: &str = r#"
 export interface ImageDecoderComponent {
-    decodeImage(encoded: Uint8Array): {status: number; words: Uint32Array; pixels: Uint8Array};
+    decodeImage(encoded: Uint8Array, minWidth?: number, minHeight?: number): {status: number; words: Uint32Array; pixels: Uint8Array};
     invalidate(): void;
 }
 "#;
@@ -13,7 +13,12 @@ extern "C" {
     pub type ImageDecoderComponent;
     type Reply;
     #[wasm_bindgen(method, catch, js_name = decodeImage)]
-    fn invoke(this: &ImageDecoderComponent, encoded: &[u8]) -> Result<Reply, JsValue>;
+    fn invoke(
+        this: &ImageDecoderComponent,
+        encoded: &[u8],
+        min_width: u32,
+        min_height: u32,
+    ) -> Result<Reply, JsValue>;
     #[wasm_bindgen(method, catch, js_name = invalidate)]
     fn discard(this: &ImageDecoderComponent) -> Result<(), JsValue>;
     #[wasm_bindgen(method, getter, catch, js_name = status)]
@@ -38,9 +43,32 @@ extern "C" {
 pub(crate) struct Backend<'a>(pub &'a ImageDecoderComponent);
 impl ImageDecoder for Backend<'_> {
     fn decode(&mut self, encoded: &[u8]) -> Result<DecoderReply, ImageError> {
+        self.decode_inner(encoded, None)
+    }
+    fn decode_sized(
+        &mut self,
+        encoded: &[u8],
+        size: mo_image::DecodeSize,
+    ) -> Result<DecoderReply, ImageError> {
+        self.decode_inner(encoded, Some(size))
+    }
+    fn invalidate(&mut self) {
+        let _ = self.0.discard();
+    }
+}
+impl Backend<'_> {
+    fn decode_inner(
+        &mut self,
+        encoded: &[u8],
+        size: Option<mo_image::DecodeSize>,
+    ) -> Result<DecoderReply, ImageError> {
         let result = self
             .0
-            .invoke(encoded)
+            .invoke(
+                encoded,
+                size.map_or(0, |s| s.width),
+                size.map_or(0, |s| s.height),
+            )
             .map_err(|_| ImageError::Host("WASM decoder call"))?;
         let invalid = |_| ImageError::ComponentInvalid("WASM decode reply");
         let status = result.status().map_err(invalid)?;
@@ -83,9 +111,6 @@ impl ImageDecoder for Backend<'_> {
             words,
             pixels,
         })
-    }
-    fn invalidate(&mut self) {
-        let _ = self.0.discard();
     }
 }
 #[wasm_bindgen]

@@ -212,13 +212,9 @@ fn objects(
             .transform
             .as_ref()
             .ok_or_else(|| value_error("transform", "missing authored transform"))?;
-        if model.accessibility.decorative {
-            return Err(PptxError::Unsupported(
-                "decorative accessibility extension".into(),
-            ));
-        }
         let native_id = bindings.object_ids[id];
         let mut object = SourceObject {
+            accessibility: model.accessibility.clone(),
             table: None,
             hidden: None,
             text_body_ordinal: None,

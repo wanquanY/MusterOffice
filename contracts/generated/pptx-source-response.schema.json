@@ -39,6 +39,26 @@
     }
   ],
   "$defs": {
+    "Accessibility": {
+      "type": "object",
+      "properties": {
+        "decorative": {
+          "type": "boolean"
+        },
+        "description": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "description",
+        "decorative"
+      ]
+    },
     "ByteLength": {
       "description": "Canonical uint64 byte length. Range requires semantic validation.",
       "type": "string",
@@ -5395,6 +5415,14 @@
     "SourceObject": {
       "type": "object",
       "properties": {
+        "accessibility": {
+          "$ref": "#/$defs/Accessibility",
+          "default": {
+            "decorative": false,
+            "description": "",
+            "title": ""
+          }
+        },
         "effectReference": {
           "anyOf": [
             {

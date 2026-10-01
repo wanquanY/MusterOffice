@@ -75,3 +75,27 @@ fn compact_creation_does_not_expand_the_frozen_persistent_host_contract() {
             .contains("PresentationContent")
     );
 }
+
+#[test]
+fn compact_append_remains_outside_the_frozen_persistent_host_contract() {
+    let action = DocumentAction::Append {
+        document_id: DocumentId::new("existing").unwrap(),
+        base_revision: Digest::from_sha256([0xaa; 32]),
+        slides: vec![],
+        resources: vec![],
+    };
+    assert!(ServiceOperation::for_action(&action).is_err());
+    let request = OperationRequest {
+        contract_version: ContractVersion::V1,
+        request_id: RequestId::new("append").unwrap(),
+        profile_id: OperationProfile::AuthorModel,
+        output_mode: OutputMode::Auto,
+        action,
+    };
+    assert!(request.validate_profile().is_err());
+    assert!(
+        serde_json::from_str::<OperationRequest>(&serde_json::to_string(&request).unwrap())
+            .is_err()
+    );
+    assert!(compute_mutation(&request, None, &|| false).is_err());
+}

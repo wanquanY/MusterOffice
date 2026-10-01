@@ -13,7 +13,7 @@ use mo_timeline::{
 };
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 pub const PROFILE: &str = "source-rotation-resource-page-q96-v1-draft";
 pub const TRANSFORM_PROFILE: &str = "source-transform-resource-page-q96-v1-draft";
@@ -63,6 +63,8 @@ pub struct SourcePlaybackPlan {
     /// Visible assignments may expose originally hidden content. Prepare the
     /// union once, without admitting unrelated permanently hidden resources.
     resource_visibility: SourceProperties,
+    /// Includes descendants of animated groups; resource dedup takes the strictest use.
+    geometry_owners: BTreeSet<(String, u32)>,
 }
 /// Not constructible from a host-supplied property map. It borrows the immutable
 /// timing/page plan that evaluated and bound these exact transforms.
@@ -107,6 +109,7 @@ impl SourcePlaybackPlan {
             index,
             self.page.clone(),
             &self.resource_visibility,
+            DecodePolicy::Retained(&self.geometry_owners),
             decoder,
             text,
             options,
@@ -191,9 +194,16 @@ impl SourcePlaybackPlan {
             }
         }
         let mut resource_visibility = SourceProperties::new();
+        let mut geometry_roots = Vec::new();
         for node in &timeline.nodes {
             if check() {
                 return Err(TimelineError::Cancelled.into());
+            }
+            if matches!(
+                node.effect,
+                mo_timeline::Effect::Scale { .. } | mo_timeline::Effect::Rotation { .. }
+            ) {
+                geometry_roots.push(objects[node.target()].native_id);
             }
             if matches!(
                 node.effect,
@@ -212,6 +222,26 @@ impl SourcePlaybackPlan {
                 );
             }
         }
+        // Expand group ownership once in linear graph work. Translation, visibility
+        // and opacity do not enlarge texel footprints and can retain sampled grids.
+        let mut children = BTreeMap::<u32, Vec<u32>>::new();
+        for object in &index.surfaces[&page.slide].objects {
+            if check() {
+                return Err(TimelineError::Cancelled.into());
+            }
+            if let Some(parent) = object.parent_group {
+                children.entry(parent).or_default().push(object.native_id);
+            }
+        }
+        let mut geometry_owners = BTreeSet::new();
+        while let Some(id) = geometry_roots.pop() {
+            if check() {
+                return Err(TimelineError::Cancelled.into());
+            }
+            if geometry_owners.insert((page.slide.clone(), id)) {
+                geometry_roots.extend(children.get(&id).into_iter().flatten().copied());
+            }
+        }
         let timeline = TimelinePlan::compile(&timeline, timing_limits, check)?;
         Ok(Self {
             page,
@@ -220,6 +250,7 @@ impl SourcePlaybackPlan {
             objects,
             timeline: TimelineSampler::new(timeline),
             resource_visibility,
+            geometry_owners,
         })
     }
     pub fn sample(
@@ -330,6 +361,7 @@ impl SourcePlaybackSample<'_> {
                 source_owner: None,
                 request: &self.plan.page,
                 transforms: Some(&self.transforms),
+                decode_policy: DecodePolicy::Viewport,
             },
             decoder,
             text,

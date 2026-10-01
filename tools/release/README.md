@@ -53,6 +53,12 @@ Worker and playback binaries stay separate from private Rust package delivery.
 The host checks complete release hashes before publication and consumption. A
 native worker cannot be upgraded independently of the SDK compiled into its host.
 
+Cargo versions identify distribution artifacts. `Versions.engine` in a delivery
+is the kernel's explicit compatibility identity (`MusterOffice/0.1.0`), not a
+Cargo package version. Both the producer and inspector require that exact identity;
+renderer identity, worker SHA-256 and all delivery content pins remain mandatory.
+A registry repackaging must not make its SDK reject its paired worker's delivery.
+
 ## Validation without building the host
 
 ```sh
@@ -64,6 +70,23 @@ its source SDK fixture, including a source-relative embedded resource. It does n
 build Musterwork or execute PPT acceptance. A real consuming repository can also
 run `cargo metadata --offline --locked` using the explicit local registry to check
 its dependency graph without compilation.
+
+Before adoption, execute a real export with the **registry archives** and paired
+worker. A successful source-workspace example or `cargo check` alone cannot detect
+runtime differences caused by distribution versions:
+
+```sh
+python3 tools/release/check.py \
+  --release /absolute/release --sha256 RELEASE_MANIFEST_SHA256 \
+  --target darwin-arm64 --input /absolute/owned-export-fixture \
+  --output /absolute/new-check-directory
+```
+
+Input uses the SDK example's `request.json`, `snapshot.json` and `assets.json`;
+the export request must pin this worker and its explicit resources/fonts. The
+check uses the unchanged public SDK example in a fresh consumer, Cargo's scoped
+local registry and offline locked build. It exports and independently verifies
+the actual stored bytes. It does not require or inspect a receiving product.
 
 Musterwork's adapter uses its existing Admin component authority for storage,
 signing, publication and rollback; see that repository's

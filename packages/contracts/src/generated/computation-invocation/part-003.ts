@@ -1,5 +1,5 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { Alignment, ByteLength, Color, Digest, Emu, FontDelivery, FontManifestProfile, Stroke, TextDirection, TypefaceMappingPolicy } from './part-001.js';
+import type { Alignment, ByteLength, Color, Digest, Emu, FontDelivery, FontManifestProfile, ParagraphLineSpacing, Stroke, TextDirection, TypefaceMappingPolicy } from './part-001.js';
 import type { Document, Rgba } from './part-002.js';
 
 /**
@@ -316,8 +316,12 @@ export interface PlainTextStyle1 {
   bold?: boolean | null;
   color?: Color | null;
   direction?: TextDirection | null;
+  indent?: Emu | null;
   italic?: boolean | null;
   language?: string | null;
+  leftMargin?: Emu | null;
+  lineSpacing?: ParagraphLineSpacing | null;
+  rightMargin?: Emu | null;
   size?: Emu | null;
   spaceAfter?: Emu | null;
   spaceBefore?: Emu | null;

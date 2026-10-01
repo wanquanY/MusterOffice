@@ -1,5 +1,6 @@
 //! Source-bound projection of native PresentationML. This is not a resolved
 //! layout/model importer: opaque content stays in the immutable OPC source.
+mod accessibility;
 pub mod charts;
 pub mod color;
 mod color_mapping;
@@ -193,6 +194,8 @@ pub enum SourceObjectKind {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct SourceObject {
+    #[serde(default)]
+    pub accessibility: mo_presentation_model::Accessibility,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub table: Option<table::SourceTable>,
     #[serde(default, skip_serializing_if = "Option::is_none")]

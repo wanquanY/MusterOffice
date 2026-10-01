@@ -2114,6 +2114,48 @@
       },
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
     },
+    "ParagraphLineSpacing": {
+      "description": "Native paragraph line spacing. Percentage is measured against the line's\nlargest font size by the shared layout engine; 100000 means 100%, 150000 150%.",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "percent"
+            },
+            "value": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "description": "Exact baseline spacing in EMU; must be representable in 1/100 point.",
+          "type": "object",
+          "properties": {
+            "height": {
+              "$ref": "#/$defs/Emu"
+            },
+            "kind": {
+              "type": "string",
+              "const": "exact"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "height"
+          ]
+        }
+      ]
+    },
     "ParagraphStyle": {
       "type": "object",
       "properties": {
@@ -2128,6 +2170,48 @@
           "default": {
             "kind": "inherit"
           }
+        },
+        "indent": {
+          "description": "Relative to the paragraph margin; negative values create a hanging indent.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Emu"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "leftMargin": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Emu"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lineSpacing": {
+          "description": "Omitted values retain native inheritance and historical document digests.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ParagraphLineSpacing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rightMargin": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Emu"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "spaceAfter": {
           "$ref": "#/$defs/Inherited5",
@@ -2677,6 +2761,11 @@
           "description": "Includes physical table-cell text. V1/V2 keep tables opaque in their\neditable document projection, while preserving their native bytes.",
           "type": "string",
           "const": "presentationml-retained-fields-v3-draft"
+        },
+        {
+          "description": "Projects title, description and the Office decorative accessibility\nmarker. Older bindings retain their original opaque accessibility view.",
+          "type": "string",
+          "const": "presentationml-retained-fields-v4-draft"
         }
       ]
     },

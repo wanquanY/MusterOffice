@@ -7,6 +7,9 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ImageDecodeRequest {
     pub source_sha256: Digest,
+    /// Minimum oriented sample grid. Omission retains exact full-resolution decoding.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub minimum_size: Option<mo_image::DecodeSize>,
 }
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
@@ -62,7 +65,14 @@ pub fn decode_image_json(
                 message: e.to_string(),
             })
             .and_then(|q| {
-                mo_image::decode(encoded, &q.source_sha256, decoder, check).map_err(failure)
+                mo_image::decode_with_size(
+                    encoded,
+                    &q.source_sha256,
+                    q.minimum_size,
+                    decoder,
+                    check,
+                )
+                .map_err(failure)
             })
     };
     let (response, pixels) = match result {

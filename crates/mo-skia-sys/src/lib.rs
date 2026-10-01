@@ -47,6 +47,25 @@ impl RasterBackend for NativeRaster {
 }
 impl mo_image::ImageDecoder for NativeRaster {
     fn decode(&mut self, encoded: &[u8]) -> Result<mo_image::DecoderReply, mo_image::ImageError> {
+        self.decode_inner(encoded, None)
+    }
+    fn decode_sized(
+        &mut self,
+        encoded: &[u8],
+        size: mo_image::DecodeSize,
+    ) -> Result<mo_image::DecoderReply, mo_image::ImageError> {
+        self.decode_inner(encoded, Some(size))
+    }
+    fn invalidate(&mut self) {
+        RasterBackend::invalidate(self);
+    }
+}
+impl NativeRaster {
+    fn decode_inner(
+        &mut self,
+        encoded: &[u8],
+        size: Option<mo_image::DecodeSize>,
+    ) -> Result<mo_image::DecoderReply, mo_image::ImageError> {
         use mo_image::ImageError;
         let _guard = INSTANCE
             .lock()
@@ -54,14 +73,11 @@ impl mo_image::ImageDecoder for NativeRaster {
         if self.is_invalid() {
             return Err(ImageError::Host("native component invalidated"));
         }
-        let result = ffi::decode(encoded);
+        let result = ffi::decode(encoded, size);
         if result.is_err() || result.as_ref().is_ok_and(|r| r.status == 2) {
             RasterBackend::invalidate(self);
         }
         result
-    }
-    fn invalidate(&mut self) {
-        RasterBackend::invalidate(self);
     }
 }
 #[cfg(test)]

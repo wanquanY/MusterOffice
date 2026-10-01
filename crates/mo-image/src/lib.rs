@@ -59,6 +59,25 @@ pub struct DecodedImageInfo {
     pub byte_length: u32,
     pub resolution: ImageResolution,
 }
+/// Minimum useful oriented sample grid. A decoder may return a larger native
+/// grid (for example a JPEG DCT scale), but never upscale a source or undersample.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct DecodeSize {
+    pub width: u32,
+    pub height: u32,
+}
+impl DecodedImageInfo {
+    /// Logical source geometry and density remain independent of the sample grid.
+    pub fn source_size(&self) -> DecodeSize {
+        let (width, height) = if self.orientation >= 5 {
+            (self.encoded_height, self.encoded_width)
+        } else {
+            (self.encoded_width, self.encoded_height)
+        };
+        DecodeSize { width, height }
+    }
+}
 pub struct DecodedImage {
     info: DecodedImageInfo,
     pixels: Vec<u8>,
@@ -82,6 +101,15 @@ pub struct DecoderReply {
 }
 pub trait ImageDecoder {
     fn decode(&mut self, encoded: &[u8]) -> Result<DecoderReply, ImageError>;
+    /// Full-resolution backends remain valid; native/WASM implementations
+    /// specialize this before pixel allocation. Callers still enforce budgets.
+    fn decode_sized(
+        &mut self,
+        encoded: &[u8],
+        _size: DecodeSize,
+    ) -> Result<DecoderReply, ImageError> {
+        self.decode(encoded)
+    }
     fn invalidate(&mut self);
 }
 fn cancel(check: &dyn Fn() -> bool) -> Result<(), ImageError> {
@@ -107,6 +135,18 @@ pub fn decode(
     backend: &mut dyn ImageDecoder,
     check: &dyn Fn() -> bool,
 ) -> Result<DecodedImage, ImageError> {
+    decode_with_size(encoded, source_sha256, None, backend, check)
+}
+pub fn decode_with_size(
+    encoded: &[u8],
+    source_sha256: &Digest,
+    size: Option<DecodeSize>,
+    backend: &mut dyn ImageDecoder,
+    check: &dyn Fn() -> bool,
+) -> Result<DecodedImage, ImageError> {
+    if size.is_some_and(|s| s.width == 0 || s.height == 0 || s.width > 8192 || s.height > 8192) {
+        return Err(ImageError::Invalid("sample size"));
+    }
     cancel(check)?;
     if encoded.is_empty() {
         return Err(ImageError::Invalid("empty input"));
@@ -119,7 +159,10 @@ pub fn decode(
     }
     cancel(check)?;
     let result = (|| {
-        let reply = backend.decode(encoded)?;
+        let reply = match size {
+            Some(size) => backend.decode_sized(encoded, size)?,
+            None => backend.decode(encoded)?,
+        };
         cancel(check)?;
         if reply.status > 5
             || reply.status == 4
@@ -141,7 +184,16 @@ pub fn decode(
             color,
             byte_length,
         ] = reply.words;
-        if width == 0
+        let (source_width, source_height) = if orientation >= 5 { (eh, ew) } else { (ew, eh) };
+        let minimum = size.unwrap_or(DecodeSize {
+            width: source_width,
+            height: source_height,
+        });
+        if ew == 0
+            || eh == 0
+            || ew > 8192
+            || eh > 8192
+            || width == 0
             || height == 0
             || width > 8192
             || height > 8192
@@ -149,7 +201,10 @@ pub fn decode(
             || u64::from(width) * u64::from(height) * 4 != u64::from(byte_length)
             || byte_length as usize > MAX_PIXEL_BYTES
             || reply.pixels.len() != byte_length as usize
-            || (if orientation >= 5 { (eh, ew) } else { (ew, eh) }) != (width, height)
+            || width > source_width
+            || height > source_height
+            || width < minimum.width.min(source_width)
+            || height < minimum.height.min(source_height)
         {
             return Err(ImageError::ComponentInvalid("dimensions or orientation"));
         }
@@ -180,7 +235,12 @@ pub fn decode(
         cancel(check)?;
         Ok(DecodedImage {
             info: DecodedImageInfo {
-                profile: PROFILE.into(),
+                profile: if (width, height) == (source_width, source_height) {
+                    PROFILE
+                } else {
+                    "skia-8d6d37b-png-jpeg-oriented-srgb-premul-rgba8-sampled-v2-draft"
+                }
+                .into(),
                 source_sha256: source_sha256.clone(),
                 pixels_sha256,
                 width,

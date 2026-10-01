@@ -209,6 +209,38 @@ impl Presentation {
         Ok(receipt)
     }
 
+    /// Appends text, shapes and pictures as one ordinary native transaction.
+    /// Failure/cancellation leaves this value and every existing page intact.
+    pub fn append(
+        &mut self,
+        request_id: RequestId,
+        slides: Vec<crate::operation::compose::SlideContent>,
+        resources: Vec<crate::model::Resource>,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<MutationReceipt, Failure> {
+        let action = DocumentAction::Append {
+            document_id: self.snapshot.document.id.clone(),
+            base_revision: self.snapshot.revision.clone(),
+            slides,
+            resources,
+        };
+        let result = compute_mutation(
+            &Computation {
+                request_id: &request_id,
+                profile_id: OperationProfile::AuthorModel,
+                action: &action,
+            },
+            Some(self.snapshot.clone()),
+            cancelled,
+        )?;
+        if cancelled() {
+            return Err(Failure::new(FailureCode::Cancelled, "append cancelled"));
+        }
+        let (snapshot, receipt) = result.into_parts();
+        self.snapshot = snapshot;
+        Ok(receipt)
+    }
+
     pub fn export(
         &self,
         exporter: &NativeExporter,
