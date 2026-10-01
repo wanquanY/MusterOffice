@@ -1,0 +1,1195 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:authoring-action",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AuthoringAction",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "create"
+        },
+        "pageSize": {
+          "$ref": "#/$defs/Size"
+        },
+        "slides": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SlideContent"
+          }
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "title",
+        "pageSize",
+        "slides"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "append"
+        },
+        "slides": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SlideContent"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "slides"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "edits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ContentEdit"
+          }
+        },
+        "kind": {
+          "type": "string",
+          "const": "edit"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "edits"
+      ]
+    }
+  ],
+  "$defs": {
+    "Accessibility": {
+      "type": "object",
+      "properties": {
+        "decorative": {
+          "type": "boolean"
+        },
+        "description": {
+          "type": "string",
+          "default": ""
+        },
+        "title": {
+          "type": "string",
+          "default": ""
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "decorative"
+      ]
+    },
+    "Alignment": {
+      "type": "string",
+      "enum": [
+        "start",
+        "center",
+        "end",
+        "justify"
+      ]
+    },
+    "Color": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "srgb"
+            },
+            "rgba": {
+              "$ref": "#/$defs/Rgba"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "rgba"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "theme"
+            },
+            "slot": {
+              "$ref": "#/$defs/ThemeColor"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "slot"
+          ]
+        }
+      ]
+    },
+    "ContentEdit": {
+      "description": "Targeted edits preserve object/slide identities and unrelated properties.\nReplacing text is explicit: use the same PlainText contract as creation.\nDeletions reject dependencies by default; no implicit cascade or page rebuild.",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "frame": {
+              "$ref": "#/$defs/ShapeFrame"
+            },
+            "kind": {
+              "type": "string",
+              "const": "setFrame"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "frame"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "replaceText"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "text": {
+              "$ref": "#/$defs/PlainText"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "text"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "accessibility": {
+              "$ref": "#/$defs/Accessibility"
+            },
+            "kind": {
+              "type": "string",
+              "const": "setAccessibility"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "accessibility"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "index": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "moveSlide"
+            },
+            "slide": {
+              "$ref": "#/$defs/SlideId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "slide",
+            "index"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "deleteSlide"
+            },
+            "slide": {
+              "$ref": "#/$defs/SlideId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "slide"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "deleteObject"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object"
+          ]
+        }
+      ]
+    },
+    "Crop": {
+      "type": "object",
+      "properties": {
+        "bottom": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "left": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "right": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "top": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "left",
+        "top",
+        "right",
+        "bottom"
+      ]
+    },
+    "ElementContent": {
+      "description": "Ordered native shapes and pictures; legacy shape declarations remain valid.",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PictureContent"
+        },
+        {
+          "$ref": "#/$defs/ShapeContent"
+        }
+      ]
+    },
+    "Emu": {
+      "description": "Signed int64 EMU. 1 point = 12700 EMU. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,18})$",
+      "x-integer-maximum": "9223372036854775807",
+      "x-integer-minimum": "-9223372036854775808"
+    },
+    "Fill": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "none"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "color": {
+              "$ref": "#/$defs/Color"
+            },
+            "kind": {
+              "type": "string",
+              "const": "solid"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "color"
+          ]
+        }
+      ]
+    },
+    "Geometry": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "rectangle"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "ellipse"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "roundRectangle"
+            },
+            "radius": {
+              "$ref": "#/$defs/Emu"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "radius"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "commands": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/PathCommand"
+              }
+            },
+            "kind": {
+              "type": "string",
+              "const": "path"
+            },
+            "viewport": {
+              "$ref": "#/$defs/Size"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "commands",
+            "viewport"
+          ]
+        }
+      ]
+    },
+    "Insets": {
+      "type": "object",
+      "properties": {
+        "bottom": {
+          "$ref": "#/$defs/Emu"
+        },
+        "left": {
+          "$ref": "#/$defs/Emu"
+        },
+        "right": {
+          "$ref": "#/$defs/Emu"
+        },
+        "top": {
+          "$ref": "#/$defs/Emu"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "left",
+        "top",
+        "right",
+        "bottom"
+      ]
+    },
+    "LineCap": {
+      "type": "string",
+      "enum": [
+        "flat",
+        "round",
+        "square"
+      ]
+    },
+    "LineJoin": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "round"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "bevel"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "miter"
+            },
+            "limit": {
+              "description": "Ratio in 1/100000 units: 400000 denotes four times line width.\nThe ratio compares full miter length with the full stroke width.",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "ObjectId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ParagraphLineSpacing": {
+      "description": "Native paragraph line spacing. Percentage is measured against the line's\nlargest font size by the shared layout engine; 100000 means 100%, 150000 150%.",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "percent"
+            },
+            "value": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "description": "Exact baseline spacing in EMU; must be representable in 1/100 point.",
+          "type": "object",
+          "properties": {
+            "height": {
+              "$ref": "#/$defs/Emu"
+            },
+            "kind": {
+              "type": "string",
+              "const": "exact"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "height"
+          ]
+        }
+      ]
+    },
+    "PathCommand": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "move"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "line"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "control": {
+              "$ref": "#/$defs/Point"
+            },
+            "kind": {
+              "type": "string",
+              "const": "quadratic"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "control",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "control1": {
+              "$ref": "#/$defs/Point"
+            },
+            "control2": {
+              "$ref": "#/$defs/Point"
+            },
+            "kind": {
+              "type": "string",
+              "const": "cubic"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "control1",
+            "control2",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "close"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "PictureContent": {
+      "type": "object",
+      "properties": {
+        "accessibility": {
+          "$ref": "#/$defs/Accessibility",
+          "default": {
+            "decorative": false,
+            "description": "",
+            "title": ""
+          }
+        },
+        "frame": {
+          "$ref": "#/$defs/ShapeFrame"
+        },
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "picture": {
+          "$ref": "#/$defs/PictureSource"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "frame",
+        "picture"
+      ]
+    },
+    "PictureSource": {
+      "type": "object",
+      "properties": {
+        "crop": {
+          "description": "Native crop fractions: 100000 is the full source extent.",
+          "$ref": "#/$defs/Crop",
+          "default": {
+            "bottom": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0
+          }
+        },
+        "resource": {
+          "$ref": "#/$defs/ResourceId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "resource"
+      ]
+    },
+    "PlainText": {
+      "type": "object",
+      "properties": {
+        "insets": {
+          "$ref": "#/$defs/Insets",
+          "default": {
+            "bottom": "0",
+            "left": "0",
+            "right": "0",
+            "top": "0"
+          }
+        },
+        "style": {
+          "description": "Omitted properties inherit explicit delivery defaults. Font selection\nuses the host's explicit default; use full Document creation for custom\nfont resources. This operation never searches installed system fonts.",
+          "$ref": "#/$defs/PlainTextStyle",
+          "default": {
+            "alignment": null,
+            "bold": null,
+            "color": null,
+            "direction": null,
+            "italic": null,
+            "language": null,
+            "size": null,
+            "spaceAfter": null,
+            "spaceBefore": null,
+            "underline": null
+          }
+        },
+        "text": {
+          "description": "LF, CRLF and CR each separate paragraphs; tabs become native tab runs.\nEmpty paragraphs and a trailing paragraph separator are preserved.",
+          "type": "string"
+        },
+        "wrap": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "text"
+      ]
+    },
+    "PlainTextStyle": {
+      "type": "object",
+      "properties": {
+        "alignment": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Alignment"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "bold": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": null
+        },
+        "color": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Color"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "direction": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TextDirection"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "indent": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Emu"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "italic": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": null
+        },
+        "language": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "leftMargin": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Emu"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lineSpacing": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ParagraphLineSpacing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rightMargin": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Emu"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "size": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Emu"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "spaceAfter": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Emu"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "spaceBefore": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Emu"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "underline": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "additionalProperties": false
+    },
+    "Point": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/Emu"
+        },
+        "y": {
+          "$ref": "#/$defs/Emu"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "ResourceId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "Rgba": {
+      "type": "object",
+      "properties": {
+        "alpha": {
+          "type": "integer",
+          "format": "uint8",
+          "maximum": 255,
+          "minimum": 0
+        },
+        "blue": {
+          "type": "integer",
+          "format": "uint8",
+          "maximum": 255,
+          "minimum": 0
+        },
+        "green": {
+          "type": "integer",
+          "format": "uint8",
+          "maximum": 255,
+          "minimum": 0
+        },
+        "red": {
+          "type": "integer",
+          "format": "uint8",
+          "maximum": 255,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "red",
+        "green",
+        "blue",
+        "alpha"
+      ]
+    },
+    "ShapeContent": {
+      "type": "object",
+      "properties": {
+        "accessibility": {
+          "$ref": "#/$defs/Accessibility",
+          "default": {
+            "decorative": false,
+            "description": "",
+            "title": ""
+          }
+        },
+        "fill": {
+          "description": "Omitted fill/stroke mean explicit none, not implicit theme paint.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Fill"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "frame": {
+          "$ref": "#/$defs/ShapeFrame"
+        },
+        "geometry": {
+          "description": "Omitted geometry is a rectangle; text remains native editable text.",
+          "$ref": "#/$defs/Geometry",
+          "default": {
+            "kind": "rectangle"
+          }
+        },
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "stroke": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Stroke"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "text": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PlainText"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "frame"
+      ]
+    },
+    "ShapeFrame": {
+      "type": "object",
+      "properties": {
+        "flipHorizontal": {
+          "type": "boolean",
+          "default": false
+        },
+        "flipVertical": {
+          "type": "boolean",
+          "default": false
+        },
+        "height": {
+          "$ref": "#/$defs/Emu"
+        },
+        "rotation": {
+          "description": "DrawingML units: 60000 per degree, just as the native model.",
+          "type": "integer",
+          "format": "int32",
+          "default": 0
+        },
+        "width": {
+          "$ref": "#/$defs/Emu"
+        },
+        "x": {
+          "$ref": "#/$defs/Emu"
+        },
+        "y": {
+          "$ref": "#/$defs/Emu"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y",
+        "width",
+        "height"
+      ]
+    },
+    "Size": {
+      "type": "object",
+      "properties": {
+        "height": {
+          "$ref": "#/$defs/Emu"
+        },
+        "width": {
+          "$ref": "#/$defs/Emu"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height"
+      ]
+    },
+    "SlideContent": {
+      "type": "object",
+      "properties": {
+        "background": {
+          "description": "Omitted background inherits the same caller delivery defaults as Document.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Fill"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "elements": {
+          "description": "Array order is paint order, back to front.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ElementContent"
+          }
+        },
+        "id": {
+          "$ref": "#/$defs/SlideId"
+        },
+        "name": {
+          "type": "string",
+          "default": ""
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "elements"
+      ]
+    },
+    "SlideId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "Stroke": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "none"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cap": {
+              "description": "Absent retains an unresolved declaration, not an implicit flat cap.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/LineCap"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "color": {
+              "$ref": "#/$defs/Color"
+            },
+            "join": {
+              "description": "Absent retains the source/default distinction.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/LineJoin"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "solid"
+            },
+            "width": {
+              "$ref": "#/$defs/Emu"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "color",
+            "width"
+          ]
+        }
+      ]
+    },
+    "TextDirection": {
+      "type": "string",
+      "enum": [
+        "leftToRight",
+        "rightToLeft",
+        "verticalRightToLeft",
+        "verticalLeftToRight"
+      ]
+    },
+    "ThemeColor": {
+      "type": "string",
+      "enum": [
+        "dark1",
+        "light1",
+        "dark2",
+        "light2",
+        "accent1",
+        "accent2",
+        "accent3",
+        "accent4",
+        "accent5",
+        "accent6",
+        "hyperlink",
+        "followedHyperlink"
+      ]
+    }
+  }
+}

@@ -159,7 +159,7 @@ impl PresentationContent {
     }
 }
 
-fn lower_text(
+pub(super) fn lower_text(
     input: &PlainText,
     document: &DocumentId,
     object: &ObjectId,

@@ -86,6 +86,10 @@ fn main() -> Result<(), Box<dyn Error>> {
             schema::<mo_presentation_operations::ComputationReceipt>(),
         ),
         (
+            "authoring-action",
+            schema::<mo_presentation_operations::compose::authoring::AuthoringAction>(),
+        ),
+        (
             "computation-request",
             schema::<mo_presentation_operations::OperationRequest>(),
         ),

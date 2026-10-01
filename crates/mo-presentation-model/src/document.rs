@@ -138,7 +138,9 @@ pub struct Object {
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct Accessibility {
+    #[serde(default)]
     pub title: String,
+    #[serde(default)]
     pub description: String,
     pub decorative: bool,
 }

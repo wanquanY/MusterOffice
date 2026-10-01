@@ -1,6 +1,7 @@
 //! One-way authoring convenience: ordered pages and text/shape declarations
 //! expand into the existing Document. No alternate rendering or storage model.
 pub(crate) mod append;
+pub mod authoring;
 mod lower;
 #[cfg(test)]
 mod tests;
@@ -44,11 +45,31 @@ pub struct SlideContent {
 }
 
 /// Ordered native shapes and pictures; legacy shape declarations remain valid.
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Serialize, JsonSchema)]
 #[serde(untagged)]
 pub enum ElementContent {
     Picture(PictureContent),
     Shape(Box<ShapeContent>),
+}
+// Dispatch on the explicit picture field instead of losing nested diagnostics
+// through an untagged enum. Wire shapes remain backwards compatible.
+impl<'de> Deserialize<'de> for ElementContent {
+    fn deserialize<D: serde::Deserializer<'de>>(decoder: D) -> Result<Self, D::Error> {
+        let value = serde_json::Value::deserialize(decoder)?;
+        let text = serde_json::to_string(&value).map_err(serde::de::Error::custom)?;
+        let decode = |error: mo_common::JsonDecodeError| {
+            serde::de::Error::custom(format!("{}: {}", error.path, error.message))
+        };
+        if value.get("picture").is_some() {
+            mo_common::from_json_str_with_path(&text)
+                .map(Self::Picture)
+                .map_err(decode)
+        } else {
+            mo_common::from_json_str_with_path(&text)
+                .map(Self::Shape)
+                .map_err(decode)
+        }
+    }
 }
 impl ElementContent {
     pub fn id(&self) -> &ObjectId {

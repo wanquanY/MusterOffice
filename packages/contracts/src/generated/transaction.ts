@@ -1540,8 +1540,8 @@ export interface Object {
  */
 export interface Accessibility {
   decorative: boolean;
-  description: string;
-  title: string;
+  description?: string;
+  title?: string;
 }
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema

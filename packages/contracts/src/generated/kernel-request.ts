@@ -737,8 +737,8 @@ export interface Object {
 }
 export interface Accessibility {
   decorative: boolean;
-  description: string;
-  title: string;
+  description?: string;
+  title?: string;
 }
 export interface Appearance {
   fill?:

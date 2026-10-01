@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "kebab-case")]
 pub enum SchemaId {
     ComputationRequest,
+    AuthoringAction,
     ComputationFailure,
     ComputationMutationReceipt,
     ComputationExportReceipt,
@@ -21,8 +22,9 @@ pub enum SchemaId {
     TemplateResponse,
 }
 impl SchemaId {
-    pub const ALL: [Self; 9] = [
+    pub const ALL: [Self; 10] = [
         Self::ComputationRequest,
+        Self::AuthoringAction,
         Self::ComputationFailure,
         Self::ComputationMutationReceipt,
         Self::ComputationExportReceipt,
@@ -35,6 +37,7 @@ impl SchemaId {
     pub fn schema(self) -> schemars::Schema {
         let schema = match self {
             Self::ComputationRequest => schema_for!(OperationRequest),
+            Self::AuthoringAction => schema_for!(crate::compose::authoring::AuthoringAction),
             Self::ComputationFailure => schema_for!(Failure),
             Self::ComputationMutationReceipt => schema_for!(MutationReceipt),
             Self::ComputationExportReceipt => schema_for!(ExportReceipt),

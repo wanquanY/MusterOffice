@@ -236,8 +236,8 @@ export interface Object {
  */
 export interface Accessibility {
   decorative: boolean;
-  description: string;
-  title: string;
+  description?: string;
+  title?: string;
 }
 
 /**
@@ -885,8 +885,8 @@ export interface PictureContent {
 
 export interface Accessibility1 {
   decorative: boolean;
-  description: string;
-  title: string;
+  description?: string;
+  title?: string;
 }
 
 /**
@@ -962,8 +962,8 @@ export interface ShapeContent {
 
 export interface Accessibility2 {
   decorative: boolean;
-  description: string;
-  title: string;
+  description?: string;
+  title?: string;
 }
 
 /**
