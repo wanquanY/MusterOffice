@@ -1,105 +1,42 @@
 {
-  "$id": "urn:musteroffice:runtime:0.1-draft:kernel-request",
+  "$id": "urn:musteroffice:runtime:0.1-draft:text-edit-candidate",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "KernelRequest",
-  "oneOf": [
-    {
-      "type": "object",
-      "properties": {
-        "document": {
-          "$ref": "#/$defs/Document"
+  "title": "TextEditCandidate",
+  "type": "object",
+  "properties": {
+    "commandDigest": {
+      "$ref": "#/$defs/Digest"
+    },
+    "rangeChange": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TextRangeChange"
         },
-        "operation": {
-          "type": "string",
-          "const": "validate"
+        {
+          "type": "null"
         }
-      },
-      "additionalProperties": false,
-      "required": [
-        "operation",
-        "document"
       ]
     },
-    {
-      "type": "object",
-      "properties": {
-        "document": {
-          "$ref": "#/$defs/Document"
-        },
-        "operation": {
-          "type": "string",
-          "const": "initialize"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "operation",
-        "document"
-      ]
+    "receipt": {
+      "$ref": "#/$defs/TransactionReceipt"
     },
-    {
-      "type": "object",
-      "properties": {
-        "operation": {
-          "type": "string",
-          "const": "prepare"
-        },
-        "snapshot": {
-          "$ref": "#/$defs/SnapshotRecord"
-        },
-        "transaction": {
-          "$ref": "#/$defs/Transaction"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "operation",
-        "snapshot",
-        "transaction"
-      ]
+    "selection": {
+      "$ref": "#/$defs/TextSelection"
     },
-    {
-      "type": "object",
-      "properties": {
-        "operation": {
-          "type": "string",
-          "const": "prepareHistory"
-        },
-        "snapshot": {
-          "$ref": "#/$defs/SnapshotRecord"
-        },
-        "transaction": {
-          "$ref": "#/$defs/HistoryTransaction"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "operation",
-        "snapshot",
-        "transaction"
-      ]
+    "snapshot": {
+      "$ref": "#/$defs/SnapshotRecord"
     },
-    {
-      "type": "object",
-      "properties": {
-        "command": {
-          "$ref": "#/$defs/TextEditCommand"
-        },
-        "operation": {
-          "type": "string",
-          "const": "prepareText"
-        },
-        "snapshot": {
-          "$ref": "#/$defs/SnapshotRecord"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "operation",
-        "snapshot",
-        "command"
-      ]
+    "transaction": {
+      "$ref": "#/$defs/Transaction"
     }
+  },
+  "additionalProperties": false,
+  "required": [
+    "snapshot",
+    "receipt",
+    "transaction",
+    "commandDigest",
+    "selection"
   ],
   "$defs": {
     "Accessibility": {
@@ -138,6 +75,36 @@
         "justify"
       ]
     },
+    "AnchorMap": {
+      "type": "object",
+      "properties": {
+        "deleted": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "inserted": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "paragraph": {
+          "$ref": "#/$defs/ParagraphId"
+        },
+        "start": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "paragraph",
+        "start",
+        "deleted",
+        "inserted"
+      ]
+    },
     "Appearance": {
       "type": "object",
       "properties": {
@@ -163,6 +130,124 @@
         "pattern": "[^A-Za-z0-9_.:-]"
       },
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ChangeSet": {
+      "type": "object",
+      "properties": {
+        "anchorMaps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AnchorMap"
+          }
+        },
+        "changedFonts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FontId"
+          }
+        },
+        "changedLayouts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LayoutId"
+          }
+        },
+        "changedMasters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MasterId"
+          }
+        },
+        "changedResources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ResourceId"
+          }
+        },
+        "changedThemes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ThemeId"
+          }
+        },
+        "changedTimelines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SlideId"
+          }
+        },
+        "createdObjects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectId"
+          }
+        },
+        "createdSlides": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SlideId"
+          }
+        },
+        "deletedObjects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectId"
+          }
+        },
+        "deletedSlides": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SlideId"
+          }
+        },
+        "invalidateAllLayout": {
+          "description": "Global page geometry changed. Otherwise use invalidated_slides; metadata\nand timeline edits have separate change fields and do not dirty layout.",
+          "type": "boolean"
+        },
+        "invalidatedSlides": {
+          "description": "Surviving/new pages whose static layout dependency closure changed.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SlideId"
+          }
+        },
+        "metadataChanged": {
+          "type": "boolean"
+        },
+        "slideOrderChanged": {
+          "type": "boolean"
+        },
+        "updatedObjects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectId"
+          }
+        },
+        "updatedSlides": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SlideId"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "createdObjects",
+        "updatedObjects",
+        "deletedObjects",
+        "createdSlides",
+        "updatedSlides",
+        "deletedSlides",
+        "changedThemes",
+        "changedMasters",
+        "changedLayouts",
+        "changedFonts",
+        "changedResources",
+        "slideOrderChanged",
+        "metadataChanged",
+        "invalidateAllLayout",
+        "anchorMaps"
+      ]
     },
     "CharacterStyle": {
       "type": "object",
@@ -208,83 +293,6 @@
           "default": {
             "kind": "inherit"
           }
-        }
-      },
-      "additionalProperties": false
-    },
-    "CharacterStylePatch": {
-      "description": "Omitted fields keep their declarations; `inherit` explicitly resets one\nfield. Applying bold must not resolve or overwrite font/theme inheritance.",
-      "type": "object",
-      "properties": {
-        "bold": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/Inherited8"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "color": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/Inherited7"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "font": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/Inherited6"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "italic": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/Inherited8"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "language": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/Inherited9"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "size": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/Inherited5"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "underline": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/Inherited8"
-            },
-            {
-              "type": "null"
-            }
-          ]
         }
       },
       "additionalProperties": false
@@ -1152,46 +1160,6 @@
             "viewport"
           ]
         }
-      ]
-    },
-    "HistoryDirection": {
-      "type": "string",
-      "enum": [
-        "undo",
-        "redo"
-      ]
-    },
-    "HistoryTransaction": {
-      "description": "A new command against the current revision, referring to an original edit.\nProduct APIs should accept a durable history reference and resolve the\noriginal material on the server, rather than trusting client checkpoints.",
-      "type": "object",
-      "properties": {
-        "baseRevision": {
-          "$ref": "#/$defs/Digest"
-        },
-        "direction": {
-          "$ref": "#/$defs/HistoryDirection"
-        },
-        "documentId": {
-          "$ref": "#/$defs/DocumentId"
-        },
-        "originalSnapshot": {
-          "$ref": "#/$defs/SnapshotRecord"
-        },
-        "originalTransaction": {
-          "$ref": "#/$defs/Transaction"
-        },
-        "requestId": {
-          "$ref": "#/$defs/RequestId"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "documentId",
-        "requestId",
-        "baseRevision",
-        "direction",
-        "originalSnapshot",
-        "originalTransaction"
       ]
     },
     "Inherited": {
@@ -4480,83 +4448,39 @@
         "verticalLeftToRight"
       ]
     },
-    "TextEditAction": {
-      "oneOf": [
-        {
-          "description": "CRLF and CR become paragraph breaks. Surviving runs keep their style;\ninserted text inherits the declaration at the start caret's affinity.",
-          "type": "object",
-          "properties": {
-            "kind": {
-              "type": "string",
-              "const": "replace"
-            },
-            "selection": {
-              "$ref": "#/$defs/TextSelection"
-            },
-            "text": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "kind",
-            "selection",
-            "text"
-          ]
-        },
-        {
-          "type": "object",
-          "properties": {
-            "kind": {
-              "type": "string",
-              "const": "setCharacterStyle"
-            },
-            "patch": {
-              "$ref": "#/$defs/CharacterStylePatch"
-            },
-            "selection": {
-              "$ref": "#/$defs/TextSelection"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "kind",
-            "selection",
-            "patch"
-          ]
-        }
-      ]
-    },
-    "TextEditCommand": {
+    "TextRangeChange": {
+      "description": "Ordered before/after ranges, including paragraph identities. All unaffected\nparagraphs keep their anchors. Reversal swaps the two ranges and lists.\nCoordinates are exact scalar offsets; joining text can turn a former\nboundary into the interior of a grapheme. A display caret must resolve the\nmapped offset against the resulting paragraph's grapheme boundaries.",
       "type": "object",
       "properties": {
-        "action": {
-          "$ref": "#/$defs/TextEditAction"
+        "after": {
+          "$ref": "#/$defs/TextSelection"
         },
-        "baseRevision": {
-          "$ref": "#/$defs/Digest"
+        "afterParagraphs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ParagraphId"
+          }
         },
-        "documentId": {
-          "$ref": "#/$defs/DocumentId"
+        "before": {
+          "$ref": "#/$defs/TextSelection"
+        },
+        "beforeParagraphs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ParagraphId"
+          }
         },
         "object": {
           "$ref": "#/$defs/ObjectId"
-        },
-        "operationId": {
-          "$ref": "#/$defs/OperationId"
-        },
-        "requestId": {
-          "$ref": "#/$defs/RequestId"
         }
       },
       "additionalProperties": false,
       "required": [
-        "documentId",
-        "requestId",
-        "baseRevision",
-        "operationId",
         "object",
-        "action"
+        "before",
+        "after",
+        "beforeParagraphs",
+        "afterParagraphs"
       ]
     },
     "TextRun": {
@@ -5078,6 +5002,42 @@
         "requestId",
         "baseRevision",
         "operations"
+      ]
+    },
+    "TransactionReceipt": {
+      "type": "object",
+      "properties": {
+        "baseRevision": {
+          "$ref": "#/$defs/Digest"
+        },
+        "changes": {
+          "$ref": "#/$defs/ChangeSet"
+        },
+        "documentId": {
+          "$ref": "#/$defs/DocumentId"
+        },
+        "requestDigest": {
+          "$ref": "#/$defs/Digest"
+        },
+        "requestId": {
+          "$ref": "#/$defs/RequestId"
+        },
+        "revision": {
+          "$ref": "#/$defs/Digest"
+        },
+        "semanticDigest": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "documentId",
+        "requestId",
+        "requestDigest",
+        "baseRevision",
+        "revision",
+        "semanticDigest",
+        "changes"
       ]
     },
     "Transform": {

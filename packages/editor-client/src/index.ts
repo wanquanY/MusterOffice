@@ -1,13 +1,14 @@
 /** Thin typed computation facade. Use in a host Worker; persistence, history
  * membership, authorization, cancellation and publication belong to the host. */
-import type { Document, SnapshotRecord, Transaction, HistoryTransaction, KernelRequest } from '../../contracts/src/generated/kernel-request.js';
+import type { Document, SnapshotRecord, Transaction, HistoryTransaction, TextEditCommand, KernelRequest } from '../../contracts/src/generated/kernel-request.js';
 import type { KernelResponse, KernelError } from '../../contracts/src/generated/kernel-response.js';
 import type { PagePlacementRequest } from '../../contracts/src/generated/page-placement-request.js';
 import type { PagePlacementResponse } from '../../contracts/src/generated/page-placement-response.js';
 import type { TextAnalysisResponse } from '../../contracts/src/generated/text-analysis-response.js';
 
-export type { Document, SnapshotRecord, Transaction, HistoryTransaction, KernelError };
+export type { Document, SnapshotRecord, Transaction, HistoryTransaction, TextEditCommand, KernelError };
 export type PreparedEdit = Extract<KernelResponse, { status: 'prepared' }>;
+export type PreparedTextEdit = Extract<KernelResponse, { status: 'textPrepared' }>['result'];
 export type PagePlacements = Extract<PagePlacementResponse, { status: 'evaluated' }>['result'];
 export type TextSegmentation = Extract<TextAnalysisResponse, { status: 'analyzed' }>['texts'][number];
 
@@ -47,6 +48,12 @@ export class PresentationEditor {
     const result = this.dispatch({ operation: 'prepareHistory', snapshot, transaction });
     if (result.status !== 'prepared') throw new Error('Unexpected history reply');
     return result;
+  }
+
+  prepareText(snapshot: SnapshotRecord, command: TextEditCommand): PreparedTextEdit {
+    const result = this.dispatch({ operation: 'prepareText', snapshot, command });
+    if (result.status !== 'textPrepared') throw new Error('Unexpected text preparation reply');
+    return result.result;
   }
 
   placements(request: PagePlacementRequest): PagePlacements {

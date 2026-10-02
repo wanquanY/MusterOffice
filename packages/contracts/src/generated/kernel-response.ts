@@ -15,6 +15,10 @@ export type KernelResponse =
       status: "prepared";
     }
   | {
+      result: TextEditCandidate;
+      status: "textPrepared";
+    }
+  | {
       error: KernelError;
       status: "error";
     };
@@ -403,6 +407,234 @@ export type PresentationRole =
 export type PresentationPreset = "appear" | "disappear" | "spin" | "growShrink" | "customMotion" | "fadeIn" | "fadeOut";
 export type PresentationTrigger = "click" | "withPrevious" | "afterPrevious";
 export type RequestId = string;
+export type Affinity = "before" | "after";
+export type Operation =
+  | {
+      kind: "editTable";
+      object: ObjectId;
+      operation: TableOperation;
+    }
+  | {
+      kind: "setPresentationSequence";
+      sequence: PresentationSequence;
+      slide: SlideId;
+    }
+  | {
+      kind: "setTimeline";
+      slide: SlideId;
+      timeline?: Timeline | null;
+    }
+  | {
+      kind: "setTitle";
+      title: string;
+    }
+  | {
+      kind: "setSlideName";
+      name: string;
+      slide: SlideId;
+    }
+  | {
+      background: Inherited;
+      kind: "setSlideBackground";
+      slide: SlideId;
+    }
+  | {
+      index: number;
+      kind: "insertSlide";
+      slide: Slide;
+    }
+  | {
+      kind: "deleteSlide";
+      policy: DeletePolicy;
+      slide: SlideId;
+    }
+  | {
+      index: number;
+      kind: "moveSlide";
+      slide: SlideId;
+    }
+  | {
+      kind: "setLayout";
+      layout?: LayoutId | null;
+      slide: SlideId;
+    }
+  | {
+      kind: "putTheme";
+      theme: Theme;
+    }
+  | {
+      kind: "putMaster";
+      master: Master;
+    }
+  | {
+      kind: "putLayout";
+      layout: Layout;
+    }
+  | {
+      kind: "ensureResource";
+      resource: Resource;
+    }
+  | {
+      kind: "attachResource";
+      resource: Resource;
+    }
+  | {
+      kind: "detachResource";
+      resource: ResourceId;
+    }
+  | {
+      font: FontFace;
+      kind: "putFont";
+    }
+  | {
+      index: number;
+      kind: "insertObject";
+      object: Object;
+    }
+  | {
+      kind: "deleteObject";
+      object: ObjectId;
+      policy: DeletePolicy;
+    }
+  | {
+      index: number;
+      kind: "moveObject";
+      object: ObjectId;
+      parent: ContainerId;
+      transform: Transform;
+    }
+  | {
+      kind: "setTransform";
+      object: ObjectId;
+      transform: Transform;
+    }
+  | {
+      appearance: Appearance;
+      kind: "setAppearance";
+      object: ObjectId;
+    }
+  | {
+      fill: Inherited;
+      kind: "setFill";
+      object: ObjectId;
+    }
+  | {
+      kind: "setStroke";
+      object: ObjectId;
+      stroke: Inherited2;
+    }
+  | {
+      crop?: Crop | null;
+      kind: "setPicture";
+      object: ObjectId;
+      resource: ResourceId;
+    }
+  | {
+      crop: Crop;
+      kind: "setPictureCrop";
+      object: ObjectId;
+    }
+  | {
+      geometry: Geometry;
+      kind: "setGeometry";
+      object: ObjectId;
+    }
+  | {
+      accessibility: Accessibility;
+      kind: "setAccessibility";
+      object: ObjectId;
+    }
+  | {
+      kind: "setText";
+      object: ObjectId;
+      text: TextBody;
+    }
+  | {
+      delete: number;
+      insert: string;
+      kind: "spliceText";
+      object: ObjectId;
+      paragraph: ParagraphId;
+      run: RunId;
+      start: number;
+    };
+export type TableOperation =
+  | {
+      kind: "replace";
+      table: Table;
+    }
+  | {
+      cell: CellId;
+      kind: "setCellText";
+      text?: TextBody | null;
+    }
+  | {
+      cell: CellId;
+      kind: "setCellStyle";
+      style: TableCellStyle1;
+    }
+  | {
+      column: ColumnId;
+      kind: "setColumnWidth";
+      width: Emu;
+    }
+  | {
+      height: Emu;
+      kind: "setRowHeight";
+      row: RowId;
+    }
+  | {
+      columns: number;
+      kind: "merge";
+      origin: CellId;
+      rows: number;
+    }
+  | {
+      cell: CellId;
+      kind: "split";
+    }
+  | {
+      index: number;
+      kind: "insertRow";
+      row: TableRow;
+    }
+  | {
+      cells: TableCell[];
+      column: TableColumn;
+      index: number;
+      kind: "insertColumn";
+    }
+  | {
+      kind: "deleteRow";
+      row: RowId;
+    }
+  | {
+      column: ColumnId;
+      kind: "deleteColumn";
+    }
+  | {
+      kind: "reorderRows";
+      order: RowId[];
+    }
+  | {
+      kind: "reorderColumns";
+      order: ColumnId[];
+    };
+/**
+ * Finite values retain the existing integer wire form. Infinity is a named
+ * alternative, never a sentinel count or a pre-expanded list of iterations.
+ */
+export type RepeatCount = "indefinite" | number;
+export type DeletePolicy = "rejectDependencies" | "cascade";
+export type Inherited2 =
+  | {
+      kind: "inherit";
+    }
+  | {
+      kind: "value";
+      value: Stroke;
+    };
+export type OperationId = string;
 export type ErrorCode =
   | "CANCELLED"
   | "INPUT_INVALID"
@@ -411,7 +643,6 @@ export type ErrorCode =
   | "REQUEST_ID_REUSED"
   | "LIMIT_EXCEEDED"
   | "INTERNAL_FAILURE";
-export type OperationId = string;
 
 export interface ValidationReport {
   issues: ValidationIssue[];
@@ -1079,6 +1310,107 @@ export interface AnchorMap {
   inserted: number;
   paragraph: ParagraphId;
   start: number;
+}
+export interface TextEditCandidate {
+  commandDigest: Digest;
+  rangeChange?: TextRangeChange | null;
+  receipt: TransactionReceipt;
+  selection: TextSelection;
+  snapshot: SnapshotRecord;
+  transaction: Transaction;
+}
+/**
+ * Ordered before/after ranges, including paragraph identities. All unaffected
+ * paragraphs keep their anchors. Reversal swaps the two ranges and lists.
+ * Coordinates are exact scalar offsets; joining text can turn a former
+ * boundary into the interior of a grapheme. A display caret must resolve the
+ * mapped offset against the resulting paragraph's grapheme boundaries.
+ */
+export interface TextRangeChange {
+  after: TextSelection;
+  afterParagraphs: ParagraphId[];
+  before: TextSelection;
+  beforeParagraphs: ParagraphId[];
+  object: ObjectId;
+}
+export interface TextSelection {
+  anchor: TextAnchor;
+  focus: TextAnchor;
+}
+export interface TextAnchor {
+  affinity: Affinity;
+  paragraph: ParagraphId;
+  scalarOffset: number;
+}
+export interface Transaction {
+  baseRevision: Digest;
+  documentId: DocumentId;
+  operations: OperationEntry[];
+  requestId: RequestId;
+}
+export interface OperationEntry {
+  operation: Operation;
+  operationId: OperationId;
+}
+export interface TableCellStyle1 {
+  borders?: TableCellBorders;
+  fill?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Fill;
+      };
+  verticalAlignment?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: TableVerticalAlignment;
+      };
+}
+export interface PresentationSequence {
+  groups: PresentationGroup[];
+}
+export interface PresentationGroup {
+  batches: PresentationBatch[];
+  /**
+   * Automatic is valid only for the first group; Next waits for navigation.
+   */
+  start: "automatic" | "next";
+}
+export interface PresentationBatch {
+  delay: RationalTime1;
+  effects: PresentationEffect[];
+}
+/**
+ * Exact wire representation. Equality compares author values; compare_time compares instants.
+ */
+export interface RationalTime1 {
+  ticks: Ticks;
+  timescale: Timescale;
+}
+export interface PresentationEffect {
+  delay: RationalTime2;
+  duration: RationalTime;
+  effect: Effect;
+  fill: FillMode;
+  /**
+   * Stable behavior identity. Container identities are allocated separately.
+   */
+  id: string;
+  repeatDuration?: RepeatDuration | null;
+  repeatMilli: RepeatCount;
+  timeTransform?: TimeTransform | null;
+}
+/**
+ * Exact wire representation. Equality compares author values; compare_time compares instants.
+ */
+export interface RationalTime2 {
+  ticks: Ticks;
+  timescale: Timescale;
 }
 export interface KernelError {
   code: ErrorCode;

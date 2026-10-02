@@ -4,10 +4,12 @@ mod diagnostics;
 pub use diagnostics::*;
 mod history;
 mod operations;
+mod text_edit;
 mod transaction;
 
 pub use history::*;
 pub use operations::*;
+pub use text_edit::*;
 pub use transaction::*;
 
 mod table;

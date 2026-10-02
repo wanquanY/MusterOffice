@@ -81,3 +81,23 @@ test('segmentation and page placements come from the actual kernel', () => {
   assert.equal(placement.documentSha256, snapshot.semanticDigest);
   assert.ok(placement.surfaces.some(surface => surface.objects.length > 0));
 });
+
+test('cross-run text and local styling produce identical native/WASM candidates', () => {
+  const original = editor.initialize(example);
+  const [objectId, object] = Object.entries(original.document.objects).find(([, object]) => object.content.kind === 'shape' && object.content.text);
+  const paragraphId = object.content.text.paragraphs[0].id;
+  const caret = scalarOffset => ({paragraph: paragraphId, scalarOffset, affinity: 'after'});
+  const command = {documentId: original.document.id, baseRevision: original.revision,
+    requestId: 'text-range:1', operationId: 'text-range-operation:1', object: objectId,
+    action: {kind: 'replace', selection: {anchor: caret(0), focus: caret(0)}, text: '中文😀\ne\u0301'}};
+  const result = editor.prepareText(original, command);
+  assert.deepEqual(result, nativeRequest({operation: 'prepareText', snapshot: original, command}).result);
+  assert.equal(result.rangeChange.afterParagraphs.length, 2);
+  assert.equal(result.selection.focus.scalarOffset, 2);
+  const selected = {anchor: caret(0), focus: caret(2)};
+  const style = {...command, baseRevision: result.snapshot.revision, requestId: 'text-style:1',
+    action: {kind: 'setCharacterStyle', selection: selected, patch: {bold: {kind: 'value', value: true}}}};
+  const styled = editor.prepareText(result.snapshot, style);
+  assert.deepEqual(styled, nativeRequest({operation: 'prepareText', snapshot: result.snapshot, command: style}).result);
+  assert.equal(styled.snapshot.document.objects[objectId].content.text.paragraphs[0].runs[0].style.bold.value, true);
+});

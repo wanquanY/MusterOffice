@@ -6,7 +6,9 @@ history store, account, network connection or durable editing session.
 
 The pinned playback runtime also returns `runtime.editor`, sharing its already
 initialized kernel. `initialize` verifies a document, `prepare` computes a new
-atomic candidate, and `prepareHistory` computes a guarded reversal. `placements`
+atomic candidate, `prepareHistory` computes a guarded reversal, and
+`prepareText` replaces grapheme-aligned ranges across runs/paragraphs or patches
+selected character declarations without resolving unrelated inherited styles. `placements`
 uses the renderer's existing author placement engine; it is not yet a complete
 hit-test or caret API. `segment` returns the kernel's pinned grapheme boundaries
 with scalar, UTF-8 and UTF-16 offsets. Source-backed documents retain their
@@ -24,6 +26,13 @@ are retained. Conflicting declarations or invalid references reject the whole
 candidate. Undo and redo generate new revisions. Saving a checkpoint need not
 discard history. The original checkpoint's resources must remain retained while
 that checkpoint is reachable from the host's history.
+
+Text commands expand to ordinary semantic transactions, so validation, history
+and source-backed restrictions stay in the same engine. Persist both the original
+command (with its intent digest) and expanded transaction. Exact scalar change
+maps preserve range lineage; the returned display selection is on a resulting
+grapheme boundary, including when an edit forms a new emoji sequence. This API
+currently edits authored shape text, not table cells or retained source runs.
 
 Validation uses real native and WASM builds:
 

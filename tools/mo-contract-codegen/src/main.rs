@@ -343,6 +343,14 @@ fn main() -> Result<(), Box<dyn Error>> {
         ("document", schema::<Document>()),
         ("transaction", schema::<Transaction>()),
         (
+            "text-edit-command",
+            schema::<mo_presentation_edit::TextEditCommand>(),
+        ),
+        (
+            "text-edit-candidate",
+            schema::<mo_presentation_edit::TextEditCandidate>(),
+        ),
+        (
             "history-transaction",
             schema::<mo_presentation_edit::HistoryTransaction>(),
         ),

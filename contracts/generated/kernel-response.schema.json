@@ -61,6 +61,23 @@
     {
       "type": "object",
       "properties": {
+        "result": {
+          "$ref": "#/$defs/TextEditCandidate"
+        },
+        "status": {
+          "type": "string",
+          "const": "textPrepared"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "result"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
         "error": {
           "$ref": "#/$defs/KernelError"
         },
@@ -95,6 +112,13 @@
       "additionalProperties": false,
       "required": [
         "decorative"
+      ]
+    },
+    "Affinity": {
+      "type": "string",
+      "enum": [
+        "before",
+        "after"
       ]
     },
     "Alignment": {
@@ -571,6 +595,13 @@
         "top",
         "right",
         "bottom"
+      ]
+    },
+    "DeletePolicy": {
+      "type": "string",
+      "enum": [
+        "rejectDependencies",
+        "cascade"
       ]
     },
     "Digest": {
@@ -2213,6 +2244,687 @@
       },
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
     },
+    "Operation": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "editTable"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "operation": {
+              "$ref": "#/$defs/TableOperation"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "operation"
+          ]
+        },
+        {
+          "description": "Compile native editorial groups and replace this slide's whole timeline.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "setPresentationSequence"
+            },
+            "sequence": {
+              "$ref": "#/$defs/PresentationSequence"
+            },
+            "slide": {
+              "$ref": "#/$defs/SlideId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "slide",
+            "sequence"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "setTimeline"
+            },
+            "slide": {
+              "$ref": "#/$defs/SlideId"
+            },
+            "timeline": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Timeline"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "slide"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "setTitle"
+            },
+            "title": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "title"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "setSlideName"
+            },
+            "name": {
+              "type": "string"
+            },
+            "slide": {
+              "$ref": "#/$defs/SlideId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "slide",
+            "name"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "background": {
+              "$ref": "#/$defs/Inherited"
+            },
+            "kind": {
+              "type": "string",
+              "const": "setSlideBackground"
+            },
+            "slide": {
+              "$ref": "#/$defs/SlideId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "slide",
+            "background"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "index": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "insertSlide"
+            },
+            "slide": {
+              "$ref": "#/$defs/Slide"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "slide",
+            "index"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "deleteSlide"
+            },
+            "policy": {
+              "$ref": "#/$defs/DeletePolicy"
+            },
+            "slide": {
+              "$ref": "#/$defs/SlideId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "slide",
+            "policy"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "index": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "moveSlide"
+            },
+            "slide": {
+              "$ref": "#/$defs/SlideId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "slide",
+            "index"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "setLayout"
+            },
+            "layout": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/LayoutId"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "slide": {
+              "$ref": "#/$defs/SlideId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "slide"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "putTheme"
+            },
+            "theme": {
+              "$ref": "#/$defs/Theme"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "theme"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "putMaster"
+            },
+            "master": {
+              "$ref": "#/$defs/Master"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "master"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "putLayout"
+            },
+            "layout": {
+              "$ref": "#/$defs/Layout"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "layout"
+          ]
+        },
+        {
+          "description": "Bind a resource without changing pixels selected by existing objects.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "ensureResource"
+            },
+            "resource": {
+              "$ref": "#/$defs/Resource"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "resource"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "attachResource"
+            },
+            "resource": {
+              "$ref": "#/$defs/Resource"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "resource"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "detachResource"
+            },
+            "resource": {
+              "$ref": "#/$defs/ResourceId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "resource"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "font": {
+              "$ref": "#/$defs/FontFace"
+            },
+            "kind": {
+              "type": "string",
+              "const": "putFont"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "font"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "index": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "insertObject"
+            },
+            "object": {
+              "$ref": "#/$defs/Object"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "index"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "deleteObject"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "policy": {
+              "$ref": "#/$defs/DeletePolicy"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "policy"
+          ]
+        },
+        {
+          "description": "Caller supplies the intended local transform explicitly when changing coordinates.",
+          "type": "object",
+          "properties": {
+            "index": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "moveObject"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "parent": {
+              "$ref": "#/$defs/ContainerId"
+            },
+            "transform": {
+              "$ref": "#/$defs/Transform"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "parent",
+            "index",
+            "transform"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "setTransform"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "transform": {
+              "$ref": "#/$defs/Transform"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "transform"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "appearance": {
+              "$ref": "#/$defs/Appearance"
+            },
+            "kind": {
+              "type": "string",
+              "const": "setAppearance"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "appearance"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "fill": {
+              "$ref": "#/$defs/Inherited"
+            },
+            "kind": {
+              "type": "string",
+              "const": "setFill"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "fill"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "setStroke"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "stroke": {
+              "$ref": "#/$defs/Inherited2"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "stroke"
+          ]
+        },
+        {
+          "description": "Replace source pixels while preserving identity, geometry and crop unless specified.",
+          "type": "object",
+          "properties": {
+            "crop": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Crop"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "setPicture"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "resource": {
+              "$ref": "#/$defs/ResourceId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "resource"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "crop": {
+              "$ref": "#/$defs/Crop"
+            },
+            "kind": {
+              "type": "string",
+              "const": "setPictureCrop"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "crop"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "geometry": {
+              "$ref": "#/$defs/Geometry"
+            },
+            "kind": {
+              "type": "string",
+              "const": "setGeometry"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "geometry"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "accessibility": {
+              "$ref": "#/$defs/Accessibility"
+            },
+            "kind": {
+              "type": "string",
+              "const": "setAccessibility"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "accessibility"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "setText"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "text": {
+              "$ref": "#/$defs/TextBody"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "text"
+          ]
+        },
+        {
+          "description": "Splice within one text run using Unicode scalar offsets, never UTF-16 or bytes.",
+          "type": "object",
+          "properties": {
+            "delete": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "insert": {
+              "type": "string"
+            },
+            "kind": {
+              "type": "string",
+              "const": "spliceText"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "paragraph": {
+              "$ref": "#/$defs/ParagraphId"
+            },
+            "run": {
+              "$ref": "#/$defs/RunId"
+            },
+            "start": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "paragraph",
+            "run",
+            "start",
+            "delete",
+            "insert"
+          ]
+        }
+      ]
+    },
+    "OperationEntry": {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "$ref": "#/$defs/Operation"
+        },
+        "operationId": {
+          "$ref": "#/$defs/OperationId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "operationId",
+        "operation"
+      ]
+    },
     "OperationId": {
       "type": "string",
       "maxLength": 128,
@@ -2491,6 +3203,107 @@
         "y"
       ]
     },
+    "PresentationBatch": {
+      "type": "object",
+      "properties": {
+        "delay": {
+          "description": "Additional delay after the preceding batch ends (or group activation).",
+          "$ref": "#/$defs/RationalTime"
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PresentationEffect"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "delay",
+        "effects"
+      ]
+    },
+    "PresentationEffect": {
+      "type": "object",
+      "properties": {
+        "delay": {
+          "description": "Offset from this batch's activation, not from the preceding effect.",
+          "$ref": "#/$defs/RationalTime"
+        },
+        "duration": {
+          "$ref": "#/$defs/RationalTime"
+        },
+        "effect": {
+          "$ref": "#/$defs/Effect"
+        },
+        "fill": {
+          "$ref": "#/$defs/FillMode"
+        },
+        "id": {
+          "description": "Stable behavior identity. Container identities are allocated separately.",
+          "$ref": "#/$defs/TimingNodeId"
+        },
+        "repeatDuration": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RepeatDuration"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "repeatMilli": {
+          "$ref": "#/$defs/RepeatCount"
+        },
+        "timeTransform": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TimeTransform"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "delay",
+        "duration",
+        "repeatMilli",
+        "fill",
+        "effect"
+      ]
+    },
+    "PresentationGroup": {
+      "type": "object",
+      "properties": {
+        "batches": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PresentationBatch"
+          }
+        },
+        "start": {
+          "description": "Automatic is valid only for the first group; Next waits for navigation.",
+          "$ref": "#/$defs/PresentationGroupStart"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "batches"
+      ]
+    },
+    "PresentationGroupStart": {
+      "type": "string",
+      "enum": [
+        "automatic",
+        "next"
+      ]
+    },
     "PresentationPreset": {
       "type": "string",
       "enum": [
@@ -2539,6 +3352,21 @@
             "trigger"
           ]
         }
+      ]
+    },
+    "PresentationSequence": {
+      "type": "object",
+      "properties": {
+        "groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PresentationGroup"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "groups"
       ]
     },
     "PresentationTrigger": {
@@ -3344,6 +4172,295 @@
         "width"
       ]
     },
+    "TableOperation": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "replace"
+            },
+            "table": {
+              "$ref": "#/$defs/Table"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "table"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/CellId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "setCellText"
+            },
+            "text": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/TextBody"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "cell"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/CellId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "setCellStyle"
+            },
+            "style": {
+              "$ref": "#/$defs/TableCellStyle"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "cell",
+            "style"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "column": {
+              "$ref": "#/$defs/ColumnId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "setColumnWidth"
+            },
+            "width": {
+              "$ref": "#/$defs/Emu"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "column",
+            "width"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "height": {
+              "$ref": "#/$defs/Emu"
+            },
+            "kind": {
+              "type": "string",
+              "const": "setRowHeight"
+            },
+            "row": {
+              "$ref": "#/$defs/RowId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "row",
+            "height"
+          ]
+        },
+        {
+          "description": "Existing merged rectangles must be wholly inside this rectangle.\nCovered cells retain their identities, styles and text for later split.",
+          "type": "object",
+          "properties": {
+            "columns": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "merge"
+            },
+            "origin": {
+              "$ref": "#/$defs/CellId"
+            },
+            "rows": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin",
+            "rows",
+            "columns"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cell": {
+              "$ref": "#/$defs/CellId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "split"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "cell"
+          ]
+        },
+        {
+          "description": "Supplied cells must be unmerged. Crossing merges expand over the row.",
+          "type": "object",
+          "properties": {
+            "index": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "insertRow"
+            },
+            "row": {
+              "$ref": "#/$defs/TableRow"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "index",
+            "row"
+          ]
+        },
+        {
+          "description": "Supply one unmerged physical cell per existing row.",
+          "type": "object",
+          "properties": {
+            "cells": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/TableCell"
+              }
+            },
+            "column": {
+              "$ref": "#/$defs/TableColumn"
+            },
+            "index": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "insertColumn"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "index",
+            "column",
+            "cells"
+          ]
+        },
+        {
+          "description": "Removes only this row's physical cells. Surviving merge rectangles\nshrink; when the origin is removed, the next upper-left cell takes over\nwith its own retained text/style. Deleted content is never transferred.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "deleteRow"
+            },
+            "row": {
+              "$ref": "#/$defs/RowId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "row"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "column": {
+              "$ref": "#/$defs/ColumnId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "deleteColumn"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "column"
+          ]
+        },
+        {
+          "description": "A complete permutation. A merged cell must remain a rectangle with the\nsame upper-left origin; split explicitly before rearranging its members.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "reorderRows"
+            },
+            "order": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/RowId"
+              }
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "order"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "reorderColumns"
+            },
+            "order": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ColumnId"
+              }
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "order"
+          ]
+        }
+      ]
+    },
     "TableRow": {
       "type": "object",
       "properties": {
@@ -3376,6 +4493,28 @@
         "bottom",
         "justified",
         "distributed"
+      ]
+    },
+    "TextAnchor": {
+      "type": "object",
+      "properties": {
+        "affinity": {
+          "$ref": "#/$defs/Affinity"
+        },
+        "paragraph": {
+          "$ref": "#/$defs/ParagraphId"
+        },
+        "scalarOffset": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "paragraph",
+        "scalarOffset",
+        "affinity"
       ]
     },
     "TextBody": {
@@ -3418,6 +4557,79 @@
         "verticalLeftToRight"
       ]
     },
+    "TextEditCandidate": {
+      "type": "object",
+      "properties": {
+        "commandDigest": {
+          "$ref": "#/$defs/Digest"
+        },
+        "rangeChange": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TextRangeChange"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "receipt": {
+          "$ref": "#/$defs/TransactionReceipt"
+        },
+        "selection": {
+          "$ref": "#/$defs/TextSelection"
+        },
+        "snapshot": {
+          "$ref": "#/$defs/SnapshotRecord"
+        },
+        "transaction": {
+          "$ref": "#/$defs/Transaction"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "snapshot",
+        "receipt",
+        "transaction",
+        "commandDigest",
+        "selection"
+      ]
+    },
+    "TextRangeChange": {
+      "description": "Ordered before/after ranges, including paragraph identities. All unaffected\nparagraphs keep their anchors. Reversal swaps the two ranges and lists.\nCoordinates are exact scalar offsets; joining text can turn a former\nboundary into the interior of a grapheme. A display caret must resolve the\nmapped offset against the resulting paragraph's grapheme boundaries.",
+      "type": "object",
+      "properties": {
+        "after": {
+          "$ref": "#/$defs/TextSelection"
+        },
+        "afterParagraphs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ParagraphId"
+          }
+        },
+        "before": {
+          "$ref": "#/$defs/TextSelection"
+        },
+        "beforeParagraphs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ParagraphId"
+          }
+        },
+        "object": {
+          "$ref": "#/$defs/ObjectId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "object",
+        "before",
+        "after",
+        "beforeParagraphs",
+        "afterParagraphs"
+      ]
+    },
     "TextRun": {
       "type": "object",
       "properties": {
@@ -3436,6 +4648,22 @@
         "id",
         "style",
         "content"
+      ]
+    },
+    "TextSelection": {
+      "type": "object",
+      "properties": {
+        "anchor": {
+          "$ref": "#/$defs/TextAnchor"
+        },
+        "focus": {
+          "$ref": "#/$defs/TextAnchor"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "anchor",
+        "focus"
       ]
     },
     "Theme": {
@@ -3894,6 +5122,33 @@
       "required": [
         "roots",
         "containers"
+      ]
+    },
+    "Transaction": {
+      "type": "object",
+      "properties": {
+        "baseRevision": {
+          "$ref": "#/$defs/Digest"
+        },
+        "documentId": {
+          "$ref": "#/$defs/DocumentId"
+        },
+        "operations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/OperationEntry"
+          }
+        },
+        "requestId": {
+          "$ref": "#/$defs/RequestId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "documentId",
+        "requestId",
+        "baseRevision",
+        "operations"
       ]
     },
     "TransactionReceipt": {

@@ -92,8 +92,8 @@ mod pptx_text_page;
 use mo_common::{Digest, from_json_str};
 pub use mo_pptx::source::{SourceLimits, SourceTextEdits, SourceTransformEdits};
 use mo_presentation_edit::{
-    EditError, HistoryTransaction, Snapshot, SnapshotRecord, Transaction, TransactionReceipt,
-    prepare, prepare_history,
+    EditError, HistoryTransaction, Snapshot, SnapshotRecord, TextEditCandidate, TextEditCommand,
+    Transaction, TransactionReceipt, prepare, prepare_history, prepare_text_edit,
 };
 use mo_presentation_model::{Document, ValidationLimits, ValidationReport, validate};
 pub use package::*;
@@ -135,6 +135,10 @@ pub enum KernelRequest {
         snapshot: SnapshotRecord,
         transaction: HistoryTransaction,
     },
+    PrepareText {
+        snapshot: SnapshotRecord,
+        command: TextEditCommand,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
@@ -149,6 +153,9 @@ pub enum KernelResponse {
     Prepared {
         snapshot: SnapshotRecord,
         receipt: Box<TransactionReceipt>,
+    },
+    TextPrepared {
+        result: Box<TextEditCandidate>,
     },
     Error {
         error: KernelError,
@@ -248,6 +255,16 @@ pub fn dispatch(request: KernelRequest, limits: ValidationLimits) -> KernelRespo
                 Ok(prepared) => KernelResponse::Prepared {
                     snapshot: prepared.snapshot.into_record(),
                     receipt: Box::new(prepared.receipt),
+                },
+                Err(error) => edit_error(error),
+            }
+        }
+        KernelRequest::PrepareText { snapshot, command } => {
+            match Snapshot::restore(snapshot, limits)
+                .and_then(|base| prepare_text_edit(&base, &command, limits, &|| false))
+            {
+                Ok(prepared) => KernelResponse::TextPrepared {
+                    result: Box::new(prepared.into_candidate()),
                 },
                 Err(error) => edit_error(error),
             }

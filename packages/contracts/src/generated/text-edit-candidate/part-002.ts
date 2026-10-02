@@ -1,686 +1,5 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-
-export type KernelRequest =
-  | {
-      document: Document;
-      operation: "validate";
-    }
-  | {
-      document: Document;
-      operation: "initialize";
-    }
-  | {
-      operation: "prepare";
-      snapshot: SnapshotRecord;
-      transaction: Transaction;
-    }
-  | {
-      operation: "prepareHistory";
-      snapshot: SnapshotRecord;
-      transaction: HistoryTransaction;
-    }
-  | {
-      command: TextEditCommand;
-      operation: "prepareText";
-      snapshot: SnapshotRecord;
-    };
-export type FontId = string;
-export type ResourceId = string;
-export type ModelVersion = "musteroffice.presentation/0.1-draft";
-export type DocumentId = string;
-export type Inherited =
-  | {
-      kind: "inherit";
-    }
-  | {
-      kind: "value";
-      value: Fill;
-    };
-export type Fill =
-  | {
-      kind: "none";
-    }
-  | {
-      color: Color;
-      kind: "solid";
-    };
-export type Color =
-  | {
-      kind: "srgb";
-      rgba: Rgba;
-    }
-  | {
-      kind: "theme";
-      slot: ThemeColor;
-    };
-export type ThemeColor =
-  | "dark1"
-  | "light1"
-  | "dark2"
-  | "light2"
-  | "accent1"
-  | "accent2"
-  | "accent3"
-  | "accent4"
-  | "accent5"
-  | "accent6"
-  | "hyperlink"
-  | "followedHyperlink";
-/**
- * Signed int64 EMU. 1 point = 12700 EMU. Range requires semantic validation.
- */
-export type Emu = string;
-export type LayoutId = string;
-export type MasterId = string;
-export type ObjectId = string;
-export type ThemeId = string;
-export type Stroke =
-  | {
-      kind: "none";
-    }
-  | {
-      /**
-       * Absent retains an unresolved declaration, not an implicit flat cap.
-       */
-      cap?: LineCap | null;
-      color: Color;
-      /**
-       * Absent retains the source/default distinction.
-       */
-      join?: LineJoin | null;
-      kind: "solid";
-      width: Emu;
-    };
-export type LineCap = "flat" | "round" | "square";
-export type LineJoin =
-  | {
-      kind: "round";
-    }
-  | {
-      kind: "bevel";
-    }
-  | {
-      kind: "miter";
-      /**
-       * Ratio in 1/100000 units: 400000 denotes four times line width.
-       * The ratio compares full miter length with the full stroke width.
-       */
-      limit?: number | null;
-    };
-export type ObjectContent =
-  | {
-      kind: "table";
-      table: Table;
-    }
-  | {
-      children: ObjectId[];
-      kind: "retainedSource";
-      native_kind: RetainedObjectKind;
-      paragraphs: RetainedParagraph[];
-    }
-  | {
-      geometry: Geometry;
-      kind: "shape";
-      text?: TextBody | null;
-    }
-  | {
-      crop: Crop;
-      kind: "picture";
-      resource: ResourceId;
-    }
-  | {
-      children: ObjectId[];
-      kind: "group";
-      viewport: Size;
-    }
-  | {
-      end: ConnectorEndpoint;
-      kind: "connector";
-      start: ConnectorEndpoint;
-    };
-export type ColumnId = string;
-export type CellId = string;
-export type TableVerticalAlignment = "top" | "center" | "bottom" | "justified" | "distributed";
-export type OverflowPolicy = "report" | "clip" | "growShape";
-export type ParagraphId = string;
-export type InlineContent =
-  | {
-      kind: "text";
-      text: string;
-    }
-  | {
-      kind: "break";
-    }
-  | {
-      kind: "tab";
-    };
-export type RunId = string;
-export type Alignment = "start" | "center" | "end" | "justify";
-export type TextDirection = "leftToRight" | "rightToLeft" | "verticalRightToLeft" | "verticalLeftToRight";
-/**
- * Native paragraph line spacing. Percentage is measured against the line's
- * largest font size by the shared layout engine; 100000 means 100%, 150000 150%.
- */
-export type ParagraphLineSpacing =
-  | {
-      kind: "percent";
-      value: number;
-    }
-  | {
-      height: Emu;
-      kind: "exact";
-    };
-export type RowId = string;
-export type RetainedObjectKind = "shape" | "picture" | "group" | "connector" | "graphicFrame";
-export type RetainedRunKind = "text" | "break" | "field";
-export type Geometry =
-  | {
-      kind: "rectangle";
-    }
-  | {
-      kind: "ellipse";
-    }
-  | {
-      kind: "roundRectangle";
-      radius: Emu;
-    }
-  | {
-      commands: PathCommand[];
-      kind: "path";
-      viewport: Size;
-    };
-export type PathCommand =
-  | {
-      kind: "move";
-      to: Point;
-    }
-  | {
-      kind: "line";
-      to: Point;
-    }
-  | {
-      control: Point;
-      kind: "quadratic";
-      to: Point;
-    }
-  | {
-      control1: Point;
-      control2: Point;
-      kind: "cubic";
-      to: Point;
-    }
-  | {
-      kind: "close";
-    };
-export type ConnectorEndpoint =
-  | {
-      kind: "free";
-      position: Point;
-    }
-  | {
-      kind: "attached";
-      object: ObjectId;
-      site: number;
-    };
-export type ContainerId =
-  | {
-      id: SlideId;
-      kind: "slide";
-    }
-  | {
-      id: MasterId;
-      kind: "master";
-    }
-  | {
-      id: LayoutId;
-      kind: "layout";
-    }
-  | {
-      id: ObjectId;
-      kind: "group";
-    };
-export type SlideId = string;
-export type ResourceKind = "font" | "picture" | "audio" | "video" | "sourcePackage" | "embeddedWorkbook" | "model3d";
-export type Digest = string;
-export type NativeEditConstraint =
-  | "missingDirectTransform"
-  | "retainedTransform"
-  | "compatibilityBranch"
-  | "structuredLeaf"
-  | "dynamicField"
-  | "timingReferences"
-  | "retainedReferences";
-export type SourceBindingProfile =
-  | "presentationml-retained-fields-v1-draft"
-  | "presentationml-retained-fields-v2-draft"
-  | "presentationml-retained-fields-v3-draft"
-  | "presentationml-retained-fields-v4-draft";
-export type TimelineVersion = "musteroffice.timeline/0.1-draft" | "musteroffice.timeline/0.2-draft";
-/**
- * Signed int64 ticks. Range requires semantic validation.
- */
-export type Ticks = string;
-export type Timescale = number;
-export type Effect =
-  | {
-      composition?: RotationComposition;
-      from: number;
-      kind: "rotation";
-      target: ObjectId;
-      to: number;
-    }
-  | {
-      from: ScaleValue;
-      kind: "scale";
-      target: ObjectId;
-      to: ScaleValue;
-    }
-  | {
-      kind: "setVisibility";
-      target: ObjectId;
-      value: Visibility;
-    }
-  | {
-      from: MotionPoint;
-      kind: "motionLine";
-      target: ObjectId;
-      to: MotionPoint;
-    }
-  | {
-      kind: "motionPath";
-      path: MotionPath;
-      target: ObjectId;
-    }
-  | {
-      kind: "fade";
-      target: ObjectId;
-      transition: FadeTransition;
-    };
-/**
- * Rotation is composed before object/group placement. Layout replaces earlier
- * animation offsets while preserving the document's local orientation. Add
- * sums the sampled offset with the lower-priority visible rotation stack.
- */
-export type RotationComposition = "absolute" | "layout" | "add";
-export type Visibility = "visible" | "hidden";
-/**
- * Exact decimal fraction of the slide dimension; canonicalized without rounding.
- */
-export type MotionCoordinate = string;
-/**
- * Source control points remain editable; subdivision belongs only to the
- * immutable playback plan. Close returns to the initial `from` point.
- */
-export type MotionSegment =
-  | {
-      kind: "line";
-      to: MotionPoint;
-    }
-  | {
-      control1: MotionPoint;
-      control2: MotionPoint;
-      kind: "cubic";
-      to: MotionPoint;
-    }
-  | {
-      kind: "close";
-    };
-export type FadeTransition = "in" | "out";
-export type TimeCondition =
-  | {
-      kind: "never";
-    }
-  | {
-      kind: "at";
-      offset: RationalTime;
-    }
-  | {
-      delay: RationalTime;
-      event: NodeEvent;
-      kind: "after";
-      node: TimingNodeId;
-    }
-  | {
-      delay: RationalTime;
-      kind: "click";
-      target?: ObjectId | null;
-    }
-  | {
-      delay: RationalTime;
-      direction: NavigationDirection;
-      kind: "navigation";
-      target?: ObjectId | null;
-    };
-export type NodeEvent = ("end" | "onEnd") | "begin" | "onBegin";
-export type TimingNodeId = string;
-export type NavigationDirection = "next" | "previous";
-export type FillMode = ("remove" | "freeze") | "hold";
-export type RepeatDuration = "indefinite" | RationalTime;
-/**
- * Admission of new begin instances within one parent activation. Ancestor
- * reactivation resets this policy, including `Never`. Omission preserves the
- * existing draft's once-per-parent behavior, independently of native defaults.
- */
-export type RestartMode = "never" | "always" | "whenNotActive";
-/**
- * A flat disjunction of native begin conditions. The single-condition wire
- * representation remains unchanged; alternatives cannot recursively nest.
- */
-export type StartCondition =
-  | {
-      /**
-       * @minItems 1
-       */
-      conditions: [TimeCondition, ...TimeCondition[]];
-      kind: "anyOf";
-    }
-  | TimeCondition;
-export type ContainerDuration =
-  | {
-      kind: "automatic";
-    }
-  | {
-      duration: RationalTime;
-      kind: "fixed";
-    }
-  | {
-      kind: "indefinite";
-    };
-export type ContainerKind = "parallel" | "sequence";
-export type NextAction = "none" | "seek";
-export type PreviousAction = "none" | "skipTimed";
-export type PresentationRole =
-  | {
-      kind: "mainSequence";
-    }
-  | {
-      kind: "effect";
-      preset: PresentationPreset;
-      trigger: PresentationTrigger;
-    };
-export type PresentationPreset = "appear" | "disappear" | "spin" | "growShrink" | "customMotion" | "fadeIn" | "fadeOut";
-export type PresentationTrigger = "click" | "withPrevious" | "afterPrevious";
-export type Operation =
-  | {
-      kind: "editTable";
-      object: ObjectId;
-      operation: TableOperation;
-    }
-  | {
-      kind: "setPresentationSequence";
-      sequence: PresentationSequence;
-      slide: SlideId;
-    }
-  | {
-      kind: "setTimeline";
-      slide: SlideId;
-      timeline?: Timeline | null;
-    }
-  | {
-      kind: "setTitle";
-      title: string;
-    }
-  | {
-      kind: "setSlideName";
-      name: string;
-      slide: SlideId;
-    }
-  | {
-      background: Inherited;
-      kind: "setSlideBackground";
-      slide: SlideId;
-    }
-  | {
-      index: number;
-      kind: "insertSlide";
-      slide: Slide;
-    }
-  | {
-      kind: "deleteSlide";
-      policy: DeletePolicy;
-      slide: SlideId;
-    }
-  | {
-      index: number;
-      kind: "moveSlide";
-      slide: SlideId;
-    }
-  | {
-      kind: "setLayout";
-      layout?: LayoutId | null;
-      slide: SlideId;
-    }
-  | {
-      kind: "putTheme";
-      theme: Theme;
-    }
-  | {
-      kind: "putMaster";
-      master: Master;
-    }
-  | {
-      kind: "putLayout";
-      layout: Layout;
-    }
-  | {
-      kind: "ensureResource";
-      resource: Resource;
-    }
-  | {
-      kind: "attachResource";
-      resource: Resource;
-    }
-  | {
-      kind: "detachResource";
-      resource: ResourceId;
-    }
-  | {
-      font: FontFace;
-      kind: "putFont";
-    }
-  | {
-      index: number;
-      kind: "insertObject";
-      object: Object;
-    }
-  | {
-      kind: "deleteObject";
-      object: ObjectId;
-      policy: DeletePolicy;
-    }
-  | {
-      index: number;
-      kind: "moveObject";
-      object: ObjectId;
-      parent: ContainerId;
-      transform: Transform;
-    }
-  | {
-      kind: "setTransform";
-      object: ObjectId;
-      transform: Transform;
-    }
-  | {
-      appearance: Appearance;
-      kind: "setAppearance";
-      object: ObjectId;
-    }
-  | {
-      fill: Inherited;
-      kind: "setFill";
-      object: ObjectId;
-    }
-  | {
-      kind: "setStroke";
-      object: ObjectId;
-      stroke: Inherited2;
-    }
-  | {
-      crop?: Crop | null;
-      kind: "setPicture";
-      object: ObjectId;
-      resource: ResourceId;
-    }
-  | {
-      crop: Crop;
-      kind: "setPictureCrop";
-      object: ObjectId;
-    }
-  | {
-      geometry: Geometry;
-      kind: "setGeometry";
-      object: ObjectId;
-    }
-  | {
-      accessibility: Accessibility;
-      kind: "setAccessibility";
-      object: ObjectId;
-    }
-  | {
-      kind: "setText";
-      object: ObjectId;
-      text: TextBody;
-    }
-  | {
-      delete: number;
-      insert: string;
-      kind: "spliceText";
-      object: ObjectId;
-      paragraph: ParagraphId;
-      run: RunId;
-      start: number;
-    };
-export type TableOperation =
-  | {
-      kind: "replace";
-      table: Table;
-    }
-  | {
-      cell: CellId;
-      kind: "setCellText";
-      text?: TextBody | null;
-    }
-  | {
-      cell: CellId;
-      kind: "setCellStyle";
-      style: TableCellStyle1;
-    }
-  | {
-      column: ColumnId;
-      kind: "setColumnWidth";
-      width: Emu;
-    }
-  | {
-      height: Emu;
-      kind: "setRowHeight";
-      row: RowId;
-    }
-  | {
-      columns: number;
-      kind: "merge";
-      origin: CellId;
-      rows: number;
-    }
-  | {
-      cell: CellId;
-      kind: "split";
-    }
-  | {
-      index: number;
-      kind: "insertRow";
-      row: TableRow;
-    }
-  | {
-      cells: TableCell[];
-      column: TableColumn;
-      index: number;
-      kind: "insertColumn";
-    }
-  | {
-      kind: "deleteRow";
-      row: RowId;
-    }
-  | {
-      column: ColumnId;
-      kind: "deleteColumn";
-    }
-  | {
-      kind: "reorderRows";
-      order: RowId[];
-    }
-  | {
-      kind: "reorderColumns";
-      order: ColumnId[];
-    };
-/**
- * Finite values retain the existing integer wire form. Infinity is a named
- * alternative, never a sentinel count or a pre-expanded list of iterations.
- */
-export type RepeatCount = "indefinite" | number;
-export type DeletePolicy = "rejectDependencies" | "cascade";
-export type Inherited2 =
-  | {
-      kind: "inherit";
-    }
-  | {
-      kind: "value";
-      value: Stroke;
-    };
-export type OperationId = string;
-export type RequestId = string;
-export type HistoryDirection = "undo" | "redo";
-export type TextEditAction =
-  | {
-      kind: "replace";
-      selection: TextSelection;
-      text: string;
-    }
-  | {
-      kind: "setCharacterStyle";
-      patch: CharacterStylePatch;
-      selection: TextSelection;
-    };
-export type Affinity = "before" | "after";
-export type Inherited8 =
-  | {
-      kind: "inherit";
-    }
-  | {
-      kind: "value";
-      value: boolean;
-    };
-export type Inherited7 =
-  | {
-      kind: "inherit";
-    }
-  | {
-      kind: "value";
-      value: Color;
-    };
-export type Inherited6 =
-  | {
-      kind: "inherit";
-    }
-  | {
-      kind: "value";
-      value: FontId;
-    };
-export type Inherited9 =
-  | {
-      kind: "inherit";
-    }
-  | {
-      kind: "value";
-      value: string;
-    };
-export type Inherited5 =
-  | {
-      kind: "inherit";
-    }
-  | {
-      kind: "value";
-      value: Emu;
-    };
+import type { Alignment, CellId, Color, ColumnId, ContainerDuration, ContainerId, ContainerKind, Digest, DocumentId, Effect, Emu, Fill, FillMode, FontId, Inherited, InlineContent, LayoutId, MasterId, ModelVersion, MotionCoordinate, MotionSegment, NativeEditConstraint, NextAction, ObjectContent, ObjectId, Operation, OperationId, OverflowPolicy, ParagraphId, ParagraphLineSpacing, PresentationRole, PreviousAction, RepeatCount, RepeatDuration, RequestId, ResourceId, ResourceKind, RestartMode, RetainedRunKind, RowId, RunId, SlideId, SourceBindingProfile, StartCondition, Stroke, TableVerticalAlignment, TextDirection, ThemeId, Ticks, TimeCondition, TimelineVersion, Timescale, TimingNodeId } from './part-001.js';
 
 /**
  * Document declarations and immutable source provenance. Revisions, compilation
@@ -691,6 +10,9 @@ export type Inherited5 =
  * explicit delivery defaults. Copy slides/objects with distinct IDs to expand
  * the deck. Inspect optional feature definitions only when those features are
  * needed; the example requires no system font discovery or external resources.
+ *
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "Document".
  */
 export interface Document {
   fonts: {
@@ -731,9 +53,13 @@ export interface Document {
   };
   title: string;
 }
+
 /**
  * This interface was referenced by `undefined`'s JSON-Schema definition
  * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+ *
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "FontFace".
  */
 export interface FontFace {
   faceIndex: number;
@@ -743,9 +69,13 @@ export interface FontFace {
   resource: ResourceId;
   weight: number;
 }
+
 /**
  * This interface was referenced by `undefined`'s JSON-Schema definition
  * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+ *
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "Layout".
  */
 export interface Layout {
   background: Inherited;
@@ -755,12 +85,22 @@ export interface Layout {
   name: string;
   objects: ObjectId[];
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "Rgba".
+ */
 export interface Rgba {
   alpha: number;
   blue: number;
   green: number;
   red: number;
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "CharacterStyle".
+ */
 export interface CharacterStyle {
   bold?:
     | {
@@ -819,9 +159,13 @@ export interface CharacterStyle {
         value: boolean;
       };
 }
+
 /**
  * This interface was referenced by `undefined`'s JSON-Schema definition
  * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+ *
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "Master".
  */
 export interface Master {
   background: Inherited;
@@ -830,9 +174,13 @@ export interface Master {
   objects: ObjectId[];
   theme: ThemeId;
 }
+
 /**
  * This interface was referenced by `undefined`'s JSON-Schema definition
  * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+ *
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "Object".
  */
 export interface Object {
   accessibility: Accessibility;
@@ -846,11 +194,21 @@ export interface Object {
    */
   transform?: Transform | null;
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "Accessibility".
+ */
 export interface Accessibility {
   decorative: boolean;
   description?: string;
   title?: string;
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "Appearance".
+ */
 export interface Appearance {
   fill?:
     | {
@@ -869,14 +227,29 @@ export interface Appearance {
         value: Stroke;
       };
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "Table".
+ */
 export interface Table {
   columns: TableColumn[];
   rows: TableRow[];
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "TableColumn".
+ */
 export interface TableColumn {
   id: ColumnId;
   width: Emu;
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "TableRow".
+ */
 export interface TableRow {
   /**
    * One entry per grid column, even when covered by another cell.
@@ -885,6 +258,11 @@ export interface TableRow {
   height: Emu;
   id: RowId;
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "TableCell".
+ */
 export interface TableCell {
   /**
    * Row/column/cell identities are table-scoped. Text identities remain
@@ -904,6 +282,7 @@ export interface TableCell {
   style?: TableCellStyle;
   text?: TextBody | null;
 }
+
 export interface TableCellStyle {
   borders?: TableCellBorders;
   fill?:
@@ -923,6 +302,7 @@ export interface TableCellStyle {
         value: TableVerticalAlignment;
       };
 }
+
 export interface TableCellBorders {
   bottom?:
     | {
@@ -973,6 +353,11 @@ export interface TableCellBorders {
         value: Stroke;
       };
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "TextBody".
+ */
 export interface TextBody {
   insets: Insets;
   overflow: OverflowPolicy;
@@ -980,23 +365,43 @@ export interface TextBody {
   style: CharacterStyle;
   wrap: boolean;
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "Insets".
+ */
 export interface Insets {
   bottom: Emu;
   left: Emu;
   right: Emu;
   top: Emu;
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "Paragraph".
+ */
 export interface Paragraph {
   defaultRunStyle: CharacterStyle;
   id: ParagraphId;
   runs: TextRun[];
   style: ParagraphStyle;
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "TextRun".
+ */
 export interface TextRun {
   content: InlineContent;
   id: RunId;
   style: CharacterStyle;
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "ParagraphStyle".
+ */
 export interface ParagraphStyle {
   alignment?:
     | {
@@ -1041,29 +446,59 @@ export interface ParagraphStyle {
         value: Emu;
       };
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "RetainedParagraph".
+ */
 export interface RetainedParagraph {
   id: ParagraphId;
   runs: RetainedTextRun[];
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "RetainedTextRun".
+ */
 export interface RetainedTextRun {
   id: RunId;
   kind: RetainedRunKind;
   text: string;
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "Point".
+ */
 export interface Point {
   x: Emu;
   y: Emu;
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "Size".
+ */
 export interface Size {
   height: Emu;
   width: Emu;
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "Crop".
+ */
 export interface Crop {
   bottom: number;
   left: number;
   right: number;
   top: number;
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "Transform".
+ */
 export interface Transform {
   flipHorizontal: boolean;
   flipVertical: boolean;
@@ -1074,11 +509,15 @@ export interface Transform {
   rotation: number;
   size: Size;
 }
+
 /**
  * Opaque authorized handle and declared content identity; byte verification belongs to the host.
  *
  * This interface was referenced by `undefined`'s JSON-Schema definition
  * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+ *
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "Resource".
  */
 export interface Resource {
   id: ResourceId;
@@ -1086,9 +525,13 @@ export interface Resource {
   mediaType: string;
   sha256: Digest;
 }
+
 /**
  * This interface was referenced by `undefined`'s JSON-Schema definition
  * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+ *
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "Slide".
  */
 export interface Slide {
   background: Inherited;
@@ -1098,6 +541,11 @@ export interface Slide {
   name: string;
   objects: ObjectId[];
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "SourceBindings".
+ */
 export interface SourceBindings {
   /**
    * Immutable origin namespace used to derive source-local IDs. Absence
@@ -1140,9 +588,13 @@ export interface SourceBindings {
     [k: string]: string | undefined;
   };
 }
+
 /**
  * This interface was referenced by `undefined`'s JSON-Schema definition
  * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+ *
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "NativeObjectBinding".
  */
 export interface NativeObjectBinding {
   nativeId: number;
@@ -1155,18 +607,26 @@ export interface NativeObjectBinding {
    */
   transformConstraint?: NativeEditConstraint | null;
 }
+
 /**
  * This interface was referenced by `undefined`'s JSON-Schema definition
  * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+ *
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "NativeRunBinding".
  */
 export interface NativeRunBinding {
   constraint?: NativeEditConstraint | null;
   paragraph: number;
   run: number;
 }
+
 /**
  * This interface was referenced by `undefined`'s JSON-Schema definition
  * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+ *
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "Theme".
  */
 export interface Theme {
   colors: {
@@ -1187,18 +647,27 @@ export interface Theme {
   id: ThemeId;
   name: string;
 }
+
 /**
  * Behaviors plus an optional explicit timing forest. The legacy graph retains
  * its byte representation; version 0.2 owns every behavior through tree roots.
  *
  * This interface was referenced by `undefined`'s JSON-Schema definition
  * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+ *
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "Timeline".
  */
 export interface Timeline {
   format: TimelineVersion;
   nodes: TimingNode[];
   tree?: TimingTree | null;
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "TimingNode".
+ */
 export interface TimingNode {
   duration: RationalTime;
   effect: Effect;
@@ -1220,33 +689,55 @@ export interface TimingNode {
   start: StartCondition;
   timeTransform?: TimeTransform | null;
 }
+
 /**
  * Exact wire representation. Equality compares author values; compare_time compares instants.
+ *
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "RationalTime".
  */
 export interface RationalTime {
   ticks: Ticks;
   timescale: Timescale;
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "ScaleValue".
+ */
 export interface ScaleValue {
   x: number;
   y: number;
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "MotionPoint".
+ */
 export interface MotionPoint {
   x: MotionCoordinate;
   y: MotionCoordinate;
 }
+
 /**
  * Connected native path. Coordinates are absolute offsets from the original
  * layout center, measured in slide fractions. Pacing uses length in this
  * normalized coordinate space, before scaling the axes to slide dimensions.
+ *
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "MotionPath".
  */
 export interface MotionPath {
   from: MotionPoint;
   segments: MotionSegment[];
 }
+
 /**
  * Local behavior clock. Percentages use native thousandths of one percent;
  * 100000 speed is normal playback. The clock is independent of effect values.
+ *
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "TimeTransform".
  */
 export interface TimeTransform {
   accelerationMilliPercent: number;
@@ -1254,10 +745,20 @@ export interface TimeTransform {
   decelerationMilliPercent: number;
   speedMilliPercent: number;
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "TimingTree".
+ */
 export interface TimingTree {
   containers: TimingContainer[];
   roots: TimingNodeId[];
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "TimingContainer".
+ */
 export interface TimingContainer {
   children: TimingNodeId[];
   duration: ContainerDuration;
@@ -1280,9 +781,13 @@ export interface TimingContainer {
    */
   timeTransform?: TimeTransform | null;
 }
+
 /**
  * Sequence controls are document computation, independent of host buttons or
  * keyboard bindings. Conditions are disjunctions, like begin/end conditions.
+ *
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "SequenceNavigation".
  */
 export interface SequenceNavigation {
   concurrent: boolean;
@@ -1291,24 +796,31 @@ export interface SequenceNavigation {
   previousAction: PreviousAction;
   previousConditions: TimeCondition[];
 }
+
 /**
- * Storage envelope owned by an authorized host. A digest is not an access token.
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "Transaction".
  */
-export interface SnapshotRecord {
-  document: Document;
-  revision: Digest;
-  semanticDigest: Digest;
-}
 export interface Transaction {
   baseRevision: Digest;
   documentId: DocumentId;
   operations: OperationEntry[];
   requestId: RequestId;
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "OperationEntry".
+ */
 export interface OperationEntry {
   operation: Operation;
   operationId: OperationId;
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "TableCellStyle".
+ */
 export interface TableCellStyle1 {
   borders?: TableCellBorders;
   fill?:
@@ -1328,9 +840,19 @@ export interface TableCellStyle1 {
         value: TableVerticalAlignment;
       };
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "PresentationSequence".
+ */
 export interface PresentationSequence {
   groups: PresentationGroup[];
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "PresentationGroup".
+ */
 export interface PresentationGroup {
   batches: PresentationBatch[];
   /**
@@ -1338,10 +860,16 @@ export interface PresentationGroup {
    */
   start: "automatic" | "next";
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "PresentationBatch".
+ */
 export interface PresentationBatch {
   delay: RationalTime1;
   effects: PresentationEffect[];
 }
+
 /**
  * Exact wire representation. Equality compares author values; compare_time compares instants.
  */
@@ -1349,6 +877,11 @@ export interface RationalTime1 {
   ticks: Ticks;
   timescale: Timescale;
 }
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "PresentationEffect".
+ */
 export interface PresentationEffect {
   delay: RationalTime2;
   duration: RationalTime;
@@ -1362,6 +895,7 @@ export interface PresentationEffect {
   repeatMilli: RepeatCount;
   timeTransform?: TimeTransform | null;
 }
+
 /**
  * Exact wire representation. Equality compares author values; compare_time compares instants.
  */
@@ -1369,46 +903,58 @@ export interface RationalTime2 {
   ticks: Ticks;
   timescale: Timescale;
 }
+
 /**
- * A new command against the current revision, referring to an original edit.
- * Product APIs should accept a durable history reference and resolve the
- * original material on the server, rather than trusting client checkpoints.
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "TableCellBorders".
  */
-export interface HistoryTransaction {
-  baseRevision: Digest;
-  direction: HistoryDirection;
-  documentId: DocumentId;
-  originalSnapshot: SnapshotRecord;
-  originalTransaction: Transaction;
-  requestId: RequestId;
-}
-export interface TextEditCommand {
-  action: TextEditAction;
-  baseRevision: Digest;
-  documentId: DocumentId;
-  object: ObjectId;
-  operationId: OperationId;
-  requestId: RequestId;
-}
-export interface TextSelection {
-  anchor: TextAnchor;
-  focus: TextAnchor;
-}
-export interface TextAnchor {
-  affinity: Affinity;
-  paragraph: ParagraphId;
-  scalarOffset: number;
-}
-/**
- * Omitted fields keep their declarations; `inherit` explicitly resets one
- * field. Applying bold must not resolve or overwrite font/theme inheritance.
- */
-export interface CharacterStylePatch {
-  bold?: Inherited8 | null;
-  color?: Inherited7 | null;
-  font?: Inherited6 | null;
-  italic?: Inherited8 | null;
-  language?: Inherited9 | null;
-  size?: Inherited5 | null;
-  underline?: Inherited8 | null;
+export interface TableCellBorders1 {
+  bottom?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  bottomLeftToTopRight?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  left?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  right?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  top?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
+  topLeftToBottomRight?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Stroke;
+      };
 }
