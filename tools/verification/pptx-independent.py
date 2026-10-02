@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 import posixpath
 import zipfile
+from fractions import Fraction
 
 from lxml import etree
 from pptx import Presentation
@@ -50,7 +51,12 @@ def native_geometry(node, expected):
         native = sp.find("a:prstGeom", NS)
         assert native.get("prst") == {"rectangle": "rect", "ellipse": "ellipse", "roundRectangle": "roundRect"}[geometry["kind"]]
         if geometry["kind"] == "roundRectangle":
-            adjustment = int(native.find("a:avLst/a:gd", NS).get("fmla").removeprefix("val "))
+            formula = native.find("a:avLst/a:gd", NS).get("fmla").split()
+            if formula[0] == "val" and len(formula) == 2:
+                adjustment = Fraction(int(formula[1]))
+            else:
+                assert formula[0] == "*/" and len(formula) == 4
+                adjustment = Fraction(int(formula[1]) * int(formula[2]), int(formula[3]))
             short = min(int(v) for v in expected["transform"]["size"].values())
             assert adjustment * short == int(geometry["radius"]) * 100000
     else:
