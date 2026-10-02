@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
 RUN git clone https://github.com/ninja-build/ninja.git /opt/ninja && \
     git -C /opt/ninja checkout --detach 3441b633c2fe2c494e958780ba0f4227b1327634 && \
-    cmake -S /opt/ninja -B /opt/ninja/out -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release && \
+    cmake -G Ninja -S /opt/ninja -B /opt/ninja/out -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release && \
     cmake --build /opt/ninja/out -j 4 && \
     install -m 0755 /opt/ninja/out/ninja /usr/local/bin/ninja && \
     test "$(ninja --version)" = 1.13.2
