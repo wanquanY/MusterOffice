@@ -27,7 +27,9 @@ def main():
     args = parser.parse_args()
     if command("git", "status", "--porcelain"):
         raise RuntimeError("Linux release build requires a clean committed source tree")
-    driver = command("docker", "buildx", "inspect", args.builder, "--format", "{{.Driver}}")
+    description = command("docker", "buildx", "inspect", args.builder)
+    driver = next((line.split(":", 1)[1].strip() for line in description.splitlines()
+                   if line.startswith("Driver:")), None)
     if driver != "docker-container":
         raise RuntimeError("Select an existing local docker-container builder; production Kubernetes is not a builder")
     output = args.output.resolve()
