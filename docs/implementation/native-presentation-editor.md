@@ -1,7 +1,8 @@
 # 原生交互编辑计算实施记录
 
 2026-10-02，实施中。决策依据为 [ADR 0009](../decisions/0009-product-editor-computation.md)。
-本专项从 main `45cb7c6a2a323b96b241fe4bb58a4b94a64a9bd1` 隔离开展。
+首批实现基线为 main `45cb7c6a2a323b96b241fe4bb58a4b94a64a9bd1`。
+按用户澄清，Office 实现已迁回主工作区 main（首批提交 `5b5c815`），多余 worktree 已删除；仅 Musterwork 保持隔离。
 
 ## 已实现并执行的首批检查
 

@@ -4,7 +4,7 @@
 
 ## 已确认
 
-- **原生交互编辑专项**：2026-10-02 用户要求按 Musterwork 原生 PPT 编辑及独立放映方案，基于 main 在隔离 worktree 中实现至可合并；该专项在两仓均隔离，替代下述历史工作区安排。内核只提供计算，产品持有 UI、保存和窗口。见 [ADR 0009](0009-product-editor-computation.md)；开发授权不等于验收或部署。
+- **原生交互编辑专项**：2026-10-02 用户要求按 Musterwork 原生 PPT 编辑及独立放映方案，基于 main 在隔离 worktree 中实现至可合并；仅隔离 Musterwork；用户明确 Office 没有并行工作，Office 继续在主工作区 main 开发，已清理初建的多余 worktree。内核只提供计算，产品持有 UI、保存和窗口。见 [ADR 0009](0009-product-editor-computation.md)；开发授权不等于验收或部署。
 
 - **当前实施范围**：Musterwork 已接入并正常产出 PPT；继续按既有方案完善普通用户常用基础需求，准备下一次用户测试验收，不过度开发和设计。完整高级能力保留为长期路线，按反馈逐步完善，不再作为本次基础验收的前置条件。见 [ADR 0008](0008-everyday-presentation-acceptance.md)，该最新指示优先于下述历史完整一期门槛。
 - 产品名称：**MusterOffice**。
