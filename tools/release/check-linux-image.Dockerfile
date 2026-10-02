@@ -13,7 +13,9 @@ ARG MUSTEROFFICE_RELEASE_SHA256
 ENV RUSTUP_TOOLCHAIN=1.92.0 CARGO_TARGET_DIR=/target
 RUN --mount=type=cache,id=musteroffice-linux-x64-cargo-registry,target=/usr/local/cargo/registry,sharing=locked \
     --mount=type=cache,id=musteroffice-linux-x64-release-check,target=/target,sharing=locked \
-    python3 tools/release/check.py --release /component --sha256 "$MUSTEROFFICE_RELEASE_SHA256" \
-      --target linux-x64 --input /input --output /result
+    if ! python3 tools/release/check.py --release /component --sha256 "$MUSTEROFFICE_RELEASE_SHA256" \
+      --target linux-x64 --input /input --output /result; then \
+      test ! -f /result/cargo.log || tail -n 120 /result/cargo.log; exit 1; \
+    fi
 FROM scratch AS artifact
 COPY --from=check /result/ /
