@@ -7,13 +7,15 @@
   "engines": { "node": ">=22" },
   "scripts": {
     "generate:types": "node tools/contracts/generate-types.mjs write",
-    "check:types": "node tools/contracts/generate-types.mjs check && tsc --project packages/contracts/tsconfig.json && tsc --project packages/text-component/tsconfig.json --noEmit && tsc --project packages/raster-component/tsconfig.json --noEmit && tsc --project packages/operation-client/tsconfig.json --noEmit && tsc --project packages/playback-client/tsconfig.json --noEmit",
+    "check:types": "node tools/contracts/generate-types.mjs check && tsc --project packages/contracts/tsconfig.json && tsc --project packages/text-component/tsconfig.json --noEmit && tsc --project packages/raster-component/tsconfig.json --noEmit && tsc --project packages/operation-client/tsconfig.json --noEmit && tsc --project packages/playback-client/tsconfig.json --noEmit && tsc --project packages/editor-client/tsconfig.json --noEmit",
     "build:text-component": "tsc --project packages/text-component/tsconfig.json",
     "build:raster-component": "tsc --project packages/raster-component/tsconfig.json",
     "build:operation-client": "tsc --project packages/operation-client/tsconfig.json",
     "test:operation-client": "pnpm run build:operation-client && node --test tools/verification/operation-client-tests.mjs",
     "build:playback-client": "tsc --project packages/playback-client/tsconfig.json",
-    "test:playback-client": "pnpm run build:playback-client && node --test tools/verification/playback-client-tests.mjs"
+    "test:playback-client": "pnpm run build:playback-client && node --test tools/verification/playback-client-tests.mjs",
+    "build:editor-client": "tsc --project packages/editor-client/tsconfig.json",
+    "test:editor-client": "pnpm run build:editor-client && node --test tools/verification/editor-client-tests.mjs"
   },
   "devDependencies": {
     "json-schema-to-typescript": "16.0.0",

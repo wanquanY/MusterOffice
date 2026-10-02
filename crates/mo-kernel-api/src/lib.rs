@@ -92,7 +92,8 @@ mod pptx_text_page;
 use mo_common::{Digest, from_json_str};
 pub use mo_pptx::source::{SourceLimits, SourceTextEdits, SourceTransformEdits};
 use mo_presentation_edit::{
-    EditError, Snapshot, SnapshotRecord, Transaction, TransactionReceipt, prepare,
+    EditError, HistoryTransaction, Snapshot, SnapshotRecord, Transaction, TransactionReceipt,
+    prepare, prepare_history,
 };
 use mo_presentation_model::{Document, ValidationLimits, ValidationReport, validate};
 pub use package::*;
@@ -129,6 +130,10 @@ pub enum KernelRequest {
     Prepare {
         snapshot: SnapshotRecord,
         transaction: Transaction,
+    },
+    PrepareHistory {
+        snapshot: SnapshotRecord,
+        transaction: HistoryTransaction,
     },
 }
 
@@ -225,6 +230,20 @@ pub fn dispatch(request: KernelRequest, limits: ValidationLimits) -> KernelRespo
         } => {
             match Snapshot::restore(snapshot, limits)
                 .and_then(|base| prepare(&base, &transaction, limits))
+            {
+                Ok(prepared) => KernelResponse::Prepared {
+                    snapshot: prepared.snapshot.into_record(),
+                    receipt: Box::new(prepared.receipt),
+                },
+                Err(error) => edit_error(error),
+            }
+        }
+        KernelRequest::PrepareHistory {
+            snapshot,
+            transaction,
+        } => {
+            match Snapshot::restore(snapshot, limits)
+                .and_then(|base| prepare_history(&base, &transaction, limits, &|| false))
             {
                 Ok(prepared) => KernelResponse::Prepared {
                     snapshot: prepared.snapshot.into_record(),

@@ -2,9 +2,11 @@
 mod apply;
 mod diagnostics;
 pub use diagnostics::*;
+mod history;
 mod operations;
 mod transaction;
 
+pub use history::*;
 pub use operations::*;
 pub use transaction::*;
 

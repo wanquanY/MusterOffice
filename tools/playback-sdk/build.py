@@ -63,6 +63,8 @@ def build(output, wasm, raster, text):
     output.mkdir(parents=True,exist_ok=False)
     subprocess.run(['pnpm','exec','tsc','--project','packages/playback-client/tsconfig.json',
                     '--outDir',str(output/'lib')],cwd=ROOT,check=True)
+    subprocess.run(['pnpm','exec','tsc','--project','packages/editor-client/tsconfig.json',
+                    '--outDir',str(output/'lib')],cwd=ROOT,check=True)
     for name in ['index.mjs','index.d.mts']:copy(ROOT/'packages/playback-client/bundle'/name,output/name)
     copy(ROOT/'packages/playback-client/README.md',output/'README.md')
     copy(ROOT/'tools/playback-sdk/example.mjs',output/'examples/node-worker.mjs')

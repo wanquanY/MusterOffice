@@ -1,84 +1,37 @@
 {
-  "$id": "urn:musteroffice:runtime:0.1-draft:kernel-request",
+  "$id": "urn:musteroffice:runtime:0.1-draft:history-transaction",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "KernelRequest",
-  "oneOf": [
-    {
-      "type": "object",
-      "properties": {
-        "document": {
-          "$ref": "#/$defs/Document"
-        },
-        "operation": {
-          "type": "string",
-          "const": "validate"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "operation",
-        "document"
-      ]
+  "title": "HistoryTransaction",
+  "description": "A new command against the current revision, referring to an original edit.\nProduct APIs should accept a durable history reference and resolve the\noriginal material on the server, rather than trusting client checkpoints.",
+  "type": "object",
+  "properties": {
+    "baseRevision": {
+      "$ref": "#/$defs/Digest"
     },
-    {
-      "type": "object",
-      "properties": {
-        "document": {
-          "$ref": "#/$defs/Document"
-        },
-        "operation": {
-          "type": "string",
-          "const": "initialize"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "operation",
-        "document"
-      ]
+    "direction": {
+      "$ref": "#/$defs/HistoryDirection"
     },
-    {
-      "type": "object",
-      "properties": {
-        "operation": {
-          "type": "string",
-          "const": "prepare"
-        },
-        "snapshot": {
-          "$ref": "#/$defs/SnapshotRecord"
-        },
-        "transaction": {
-          "$ref": "#/$defs/Transaction"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "operation",
-        "snapshot",
-        "transaction"
-      ]
+    "documentId": {
+      "$ref": "#/$defs/DocumentId"
     },
-    {
-      "type": "object",
-      "properties": {
-        "operation": {
-          "type": "string",
-          "const": "prepareHistory"
-        },
-        "snapshot": {
-          "$ref": "#/$defs/SnapshotRecord"
-        },
-        "transaction": {
-          "$ref": "#/$defs/HistoryTransaction"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "operation",
-        "snapshot",
-        "transaction"
-      ]
+    "originalSnapshot": {
+      "$ref": "#/$defs/SnapshotRecord"
+    },
+    "originalTransaction": {
+      "$ref": "#/$defs/Transaction"
+    },
+    "requestId": {
+      "$ref": "#/$defs/RequestId"
     }
+  },
+  "additionalProperties": false,
+  "required": [
+    "documentId",
+    "requestId",
+    "baseRevision",
+    "direction",
+    "originalSnapshot",
+    "originalTransaction"
   ],
   "$defs": {
     "Accessibility": {
@@ -1054,39 +1007,6 @@
       "enum": [
         "undo",
         "redo"
-      ]
-    },
-    "HistoryTransaction": {
-      "description": "A new command against the current revision, referring to an original edit.\nProduct APIs should accept a durable history reference and resolve the\noriginal material on the server, rather than trusting client checkpoints.",
-      "type": "object",
-      "properties": {
-        "baseRevision": {
-          "$ref": "#/$defs/Digest"
-        },
-        "direction": {
-          "$ref": "#/$defs/HistoryDirection"
-        },
-        "documentId": {
-          "$ref": "#/$defs/DocumentId"
-        },
-        "originalSnapshot": {
-          "$ref": "#/$defs/SnapshotRecord"
-        },
-        "originalTransaction": {
-          "$ref": "#/$defs/Transaction"
-        },
-        "requestId": {
-          "$ref": "#/$defs/RequestId"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "documentId",
-        "requestId",
-        "baseRevision",
-        "direction",
-        "originalSnapshot",
-        "originalTransaction"
       ]
     },
     "Inherited": {

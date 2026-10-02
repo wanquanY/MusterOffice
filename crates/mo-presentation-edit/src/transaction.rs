@@ -282,6 +282,34 @@ pub fn prepare_cancellable(
             },
         )?;
     }
+    finish_preparation(
+        snapshot,
+        document,
+        transaction.request_id.clone(),
+        request_digest,
+        anchor_maps,
+        limits,
+        check,
+    )
+}
+
+/// All edit paths share validation, revision derivation and invalidation rules.
+pub(crate) fn finish_preparation(
+    snapshot: &Snapshot,
+    document: Document,
+    request_id: RequestId,
+    request_digest: Digest,
+    anchor_maps: Vec<AnchorMap>,
+    limits: ValidationLimits,
+    check: &dyn Fn() -> bool,
+) -> Result<PreparedTransaction, EditError> {
+    let cancelled = || {
+        if check() {
+            Err(EditError::Cancelled)
+        } else {
+            Ok(())
+        }
+    };
     cancelled()?;
     ensure_valid(&document, limits)?;
     cancelled()?;
@@ -294,7 +322,7 @@ pub fn prepare_cancellable(
     cancelled()?;
     let receipt = TransactionReceipt {
         document_id: document.id.clone(),
-        request_id: transaction.request_id.clone(),
+        request_id,
         request_digest,
         base_revision: snapshot.revision.clone(),
         revision: revision.clone(),

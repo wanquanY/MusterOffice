@@ -342,6 +342,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         ("kernel-response", schema::<KernelResponse>()),
         ("document", schema::<Document>()),
         ("transaction", schema::<Transaction>()),
+        (
+            "history-transaction",
+            schema::<mo_presentation_edit::HistoryTransaction>(),
+        ),
         ("transaction-receipt", schema::<TransactionReceipt>()),
         ("validation-report", schema::<ValidationReport>()),
         ("package-inspection", schema::<PackageInspectionResponse>()),
