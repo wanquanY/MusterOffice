@@ -1,5 +1,6 @@
 # syntax=docker/dockerfile:1
 # Build the independent native component, never a receiving application's source.
+FROM python:3.13.7-bookworm@sha256:c900d35aba5fe4c1dc1cd358408baae2902ff2a2926a1d15cc5002c6061ddb2e AS python
 FROM rust:1.92.0-bookworm@sha256:e90e846de4124376164ddfbaab4b0774c7bdeef5e738866295e5a90a34a307a2 AS toolchain
 ENV RUSTUP_TOOLCHAIN=1.92.0
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -17,6 +18,10 @@ RUN git clone https://gn.googlesource.com/gn /opt/gn && \
     test "$(out/gn --version)" = '2175 (b2afae122eeb)'
 
 FROM toolchain AS components
+# Component extraction requires Python's data filter; bookworm's system Python
+# predates it. Keep the pinned interpreter in the build stage only.
+COPY --from=python /usr/local/ /usr/local/
+RUN python3 -c 'import tarfile; assert hasattr(tarfile, "data_filter")'
 WORKDIR /src
 COPY components /src/components
 COPY tools/components /src/tools/components
