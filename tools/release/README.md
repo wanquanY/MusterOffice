@@ -112,3 +112,27 @@ the actual stored bytes. It does not require or inspect a receiving product.
 Musterwork's adapter uses its existing Admin component authority for storage,
 signing, publication and rollback; see that repository's
 `components/musteroffice/README.md` for its deployment and local-link commands.
+
+## Native OCI delivery
+
+After the Linux build, assemble an integration release containing that worker and
+run `check.py` under Linux. `check-linux-image.Dockerfile` accepts named contexts
+`release` and `export-input` and exports the actual check result. It consumes the
+same pinned offline Cargo registry cache as the worker build.
+
+Seal the distribution only after both checks pass:
+
+```sh
+python3 tools/release/native-image.py \
+  --release /absolute/release --sha256 RELEASE_MANIFEST_SHA256 \
+  --build /absolute/linux-worker --export-check /absolute/linux-export-check \
+  --output /absolute/new-native-image-context
+```
+
+Build that context as `linux/amd64` and publish to an explicitly authorized OCI
+registry. Pass the returned source revision and version as
+`MUSTEROFFICE_SOURCE_REVISION` and `MUSTEROFFICE_RELEASE_VERSION` build arguments.
+The receiver pins the image digest and component manifest digest, rather than a
+mutable tag. This native qualification does not promote experimental playback.
+See [native component distribution](../../docs/architecture/native-component-distribution.md)
+for the exact contract and receiving-product responsibilities.
