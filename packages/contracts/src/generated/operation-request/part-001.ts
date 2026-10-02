@@ -759,6 +759,12 @@ export type Operation =
       slide: Slide;
     }
   | {
+      index: number;
+      kind: "duplicateSlide";
+      slide: SlideId;
+      source: SlideId;
+    }
+  | {
       kind: "deleteSlide";
       policy: DeletePolicy;
       slide: SlideId;

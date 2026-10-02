@@ -101,3 +101,19 @@ test('cross-run text and local styling produce identical native/WASM candidates'
   assert.deepEqual(styled, nativeRequest({operation: 'prepareText', snapshot: result.snapshot, command: style}).result);
   assert.equal(styled.snapshot.document.objects[objectId].content.text.paragraphs[0].runs[0].style.bold.value, true);
 });
+
+test('slide duplication remaps its owned graph identically in native and WASM', () => {
+  const original = editor.initialize(example);
+  const source = original.document.slideOrder[0];
+  const operation = {kind: 'duplicateSlide', source, slide: 'copied:slide', index: 1};
+  const request = transaction(original, 'copy:1', [operation]);
+  const result = editor.prepare(original, request);
+  assert.deepEqual(result, nativeRequest({operation: 'prepare', snapshot: original, transaction: request}));
+  assert.equal(result.snapshot.document.slideOrder[1], 'copied:slide');
+  assert.ok(result.receipt.changes.createdObjects.length > 0);
+  for (const id of result.receipt.changes.createdObjects) {
+    assert.equal(original.document.objects[id], undefined);
+  }
+  const undo = editor.prepareHistory(result.snapshot, history(result.snapshot, original, request, 'undo'));
+  assert.deepEqual(undo.snapshot.document, original.document);
+});

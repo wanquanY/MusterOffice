@@ -2290,6 +2290,34 @@
           ]
         },
         {
+          "description": "Clone the owned object/text graph and its timeline with deterministic new\nidentities. Shared masters, layouts, fonts and resources remain shared.",
+          "type": "object",
+          "properties": {
+            "index": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "duplicateSlide"
+            },
+            "slide": {
+              "$ref": "#/$defs/SlideId"
+            },
+            "source": {
+              "$ref": "#/$defs/SlideId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "source",
+            "slide",
+            "index"
+          ]
+        },
+        {
           "type": "object",
           "properties": {
             "kind": {

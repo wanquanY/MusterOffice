@@ -76,6 +76,13 @@ pub(crate) fn apply(
             insert(&mut document.slide_order, *index, slide.id.clone())?;
             document.slides.insert(slide.id.clone(), slide.clone());
         }
+        Operation::DuplicateSlide {
+            source,
+            slide,
+            index,
+        } => {
+            crate::duplicate::slide(document, source, slide, *index, limits, check)?;
+        }
         Operation::DeleteSlide { slide, policy } => {
             let record = document
                 .slides

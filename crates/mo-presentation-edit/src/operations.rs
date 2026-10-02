@@ -57,6 +57,13 @@ pub enum Operation {
         slide: Slide,
         index: u32,
     },
+    /// Clone the owned object/text graph and its timeline with deterministic new
+    /// identities. Shared masters, layouts, fonts and resources remain shared.
+    DuplicateSlide {
+        source: SlideId,
+        slide: SlideId,
+        index: u32,
+    },
     DeleteSlide {
         slide: SlideId,
         policy: DeletePolicy,

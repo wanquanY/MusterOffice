@@ -2,6 +2,7 @@
 mod apply;
 mod diagnostics;
 pub use diagnostics::*;
+mod duplicate;
 mod history;
 mod operations;
 mod text_edit;
