@@ -1,6 +1,51 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { Alignment, CellId, Color, ColumnId, ContainerDuration, ContainerId, ContainerKind, ContractVersion, Digest, DocumentAction, DocumentId, Effect, ElementContent, Emu, Fill, FillMode, FontId, ImageSampling, ImageSourceSelection, Inherited, InlineContent, LayoutId, MasterId, ModelVersion, MotionCoordinate, MotionSegment, NativeEditConstraint, NextAction, ObjectContent, ObjectId, Operation, OperationId, OperationProfile, OverflowPolicy, ParagraphId, ParagraphLineSpacing, ParameterTarget, PathCommand, PresentationRole, PreviousAction, RepeatCount, RepeatDuration, RequestId, ResourceId, ResourceKind, RestartMode, RetainedRunKind, RowId, RunId, SlideId, SourceBindingProfile, StartCondition, Stroke, TableVerticalAlignment, TemplateVersion, TextDirection, ThemeId, Ticks, TimeCondition, TimelineVersion, Timescale, TimingNodeId } from './part-001.js';
-import type { ColorContext, ExportDefaults, FontManifest, RendererIdentity, SnapshotRecord } from './part-003.js';
+import type { Alignment, CellId, Color, ColumnId, ContainerDuration, ContainerId, ContainerKind, ContractVersion, Digest, DocumentAction, DocumentId, Effect, ElementContent, Emu, Fill, FillMode, FontId, Inherited, InlineContent, LayoutId, MasterId, ModelVersion, MotionCoordinate, MotionSegment, NativeEditConstraint, NextAction, ObjectContent, ObjectId, Operation, OperationId, OperationProfile, OverflowPolicy, ParagraphId, ParagraphLineSpacing, ParameterTarget, PathCommand, PresentationRole, PreviousAction, RepeatCount, RepeatDuration, RequestId, ResourceId, ResourceKind, RestartMode, RetainedRunKind, RowId, RunId, SlideId, SourceBindingProfile, StartCondition, Stroke, TableVerticalAlignment, TemplateVersion, TextDirection, ThemeId, Ticks, TimeCondition, TimelineVersion, Timescale, TimingNodeId } from './part-001.js';
+import type { SnapshotRecord } from './part-003.js';
+
+/**
+ * This interface was referenced by `Invocation`'s JSON-Schema
+ * via the `definition` "Inherited7".
+ */
+export type Inherited7 =
+  | {
+      kind: "inherit";
+    }
+  | {
+      kind: "value";
+      value: Color;
+    };
+
+/**
+ * This interface was referenced by `Invocation`'s JSON-Schema
+ * via the `definition` "Inherited8".
+ */
+export type Inherited8 =
+  | {
+      kind: "inherit";
+    }
+  | {
+      kind: "value";
+      value: boolean;
+    };
+
+/**
+ * This interface was referenced by `Invocation`'s JSON-Schema
+ * via the `definition` "Inherited9".
+ */
+export type Inherited9 =
+  | {
+      kind: "inherit";
+    }
+  | {
+      kind: "value";
+      value: string;
+    };
+
+/**
+ * This interface was referenced by `Invocation`'s JSON-Schema
+ * via the `definition` "PresentationGroupStart".
+ */
+export type PresentationGroupStart = "automatic" | "next";
 
 /**
  * This interface was referenced by `Invocation`'s JSON-Schema
@@ -1154,31 +1199,4 @@ export interface PresentationEffect {
 export interface RationalTime2 {
   ticks: Ticks;
   timescale: Timescale;
-}
-
-/**
- * This interface was referenced by `Invocation`'s JSON-Schema
- * via the `definition` "ExportSettings".
- */
-export interface ExportSettings {
-  delivery: DeliverySettings;
-  fontAssetId?: RequestId | null;
-  renderer: RendererIdentity;
-  resources: AssetBinding[];
-}
-
-/**
- * Explicit render/export choices are input identity. Pixels preserve page
- * aspect ratio; the pipeline derives a viewport covering the entire page.
- *
- * This interface was referenced by `Invocation`'s JSON-Schema
- * via the `definition` "DeliverySettings".
- */
-export interface DeliverySettings {
-  colorContext: ColorContext;
-  defaults: ExportDefaults;
-  fonts?: FontManifest | null;
-  imageSource: ImageSourceSelection;
-  previewWidth: number;
-  sampling: ImageSampling;
 }

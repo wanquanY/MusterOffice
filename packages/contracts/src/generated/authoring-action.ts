@@ -134,6 +134,52 @@ export type SlideId = string;
  */
 export type ContentEdit =
   | {
+      kind: "setTitle";
+      title: string;
+    }
+  | {
+      kind: "setSlideName";
+      name: string;
+      slide: SlideId;
+    }
+  | {
+      background: Inherited;
+      kind: "setSlideBackground";
+      slide: SlideId;
+    }
+  | {
+      element: ElementContent;
+      index: number;
+      kind: "insertElement";
+      slide: SlideId;
+    }
+  | {
+      fill: Inherited;
+      kind: "setFill";
+      object: ObjectId;
+    }
+  | {
+      kind: "setStroke";
+      object: ObjectId;
+      stroke: Inherited2;
+    }
+  | {
+      geometry: Geometry;
+      kind: "setGeometry";
+      object: ObjectId;
+    }
+  | {
+      crop?: Crop1 | null;
+      kind: "replacePicture";
+      object: ObjectId;
+      resource: ResourceId;
+    }
+  | {
+      crop: Crop1;
+      kind: "setPictureCrop";
+      object: ObjectId;
+    }
+  | {
       frame: ShapeFrame;
       kind: "setFrame";
       object: ObjectId;
@@ -160,6 +206,38 @@ export type ContentEdit =
   | {
       kind: "deleteObject";
       object: ObjectId;
+    };
+export type Inherited =
+  | {
+      kind: "inherit";
+    }
+  | {
+      kind: "value";
+      value: Fill;
+    };
+export type Inherited2 =
+  | {
+      kind: "inherit";
+    }
+  | {
+      kind: "value";
+      value: Stroke;
+    };
+export type Geometry =
+  | {
+      kind: "rectangle";
+    }
+  | {
+      kind: "ellipse";
+    }
+  | {
+      kind: "roundRectangle";
+      radius: Emu;
+    }
+  | {
+      commands: PathCommand[];
+      kind: "path";
+      viewport: Size;
     };
 
 export interface Size {
@@ -295,6 +373,12 @@ export interface PlainTextStyle {
   spaceAfter?: Emu | null;
   spaceBefore?: Emu | null;
   underline?: boolean | null;
+}
+export interface Crop1 {
+  bottom: number;
+  left: number;
+  right: number;
+  top: number;
 }
 export interface Accessibility2 {
   decorative: boolean;

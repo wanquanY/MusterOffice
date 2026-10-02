@@ -1,5 +1,59 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { Alignment, AssetBinding, ByteLength, CellId, Color, ColumnId, ContainerDuration, ContainerId, ContainerKind, Digest, DocumentId, Effect, Emu, Fill, FillMode, FontDelivery, FontId, FontManifestProfile, ImageSampling, ImageSourceSelection, Inherited, InlineContent, LayoutId, MasterId, MotionCoordinate, MotionSegment, NativeEditConstraint, NextAction, ObjectContent, ObjectId, Operation, OperationId, OverflowPolicy, ParagraphId, ParagraphLineSpacing, PresentationRole, PreviousAction, RepeatCount, RepeatDuration, RequestId, ResourceId, ResourceKind, RestartMode, RetainedRunKind, RowId, RunId, SlideId, SourceBindingProfile, StartCondition, Stroke, TableVerticalAlignment, TextDirection, ThemeId, Ticks, TimeCondition, TimelineVersion, Timescale, TimingNodeId, TypefaceMappingPolicy } from './part-001.js';
+import type { Alignment, AssetBinding, ByteLength, CellId, Color, ColumnId, ContainerDuration, ContainerId, ContainerKind, Digest, DocumentId, Effect, Emu, Fill, FillMode, FontDelivery, FontId, FontManifestProfile, ImageSampling, ImageSourceSelection, Inherited, InlineContent, LayoutId, MasterId, ModelVersion, MotionCoordinate, MotionSegment, NativeEditConstraint, NextAction, ObjectContent, ObjectId, Operation, OperationId, OverflowPolicy, ParagraphId, ParagraphLineSpacing, PresentationRole, PreviousAction, RepeatCount, RepeatDuration, RequestId, ResourceId, ResourceKind, RestartMode, RetainedRunKind, RowId, RunId, SlideId, SourceBindingProfile, StartCondition, Stroke, TableVerticalAlignment, TextDirection, ThemeId, Ticks, TimeCondition, TimelineVersion, Timescale, TimingNodeId, TypefaceMappingPolicy } from './part-001.js';
+import type { RendererIdentity, ShapeVariation } from './part-003.js';
+
+/**
+ * Document declarations and immutable source provenance. Revisions, compilation
+ * caches, clocks and decoder state live outside this model.
+ * The example is a complete editable 16:9 slide with a text shape. Coordinates
+ * and sizes are decimal EMU strings (12700 EMU per point). Empty theme, master,
+ * layout, font and resource maps are valid; inherited text uses the caller's
+ * explicit delivery defaults. Copy slides/objects with distinct IDs to expand
+ * the deck. Inspect optional feature definitions only when those features are
+ * needed; the example requires no system font discovery or external resources.
+ *
+ * This interface was referenced by `OperationRequest`'s JSON-Schema
+ * via the `definition` "Document".
+ */
+export interface Document {
+  fonts: {
+    [k: string]: FontFace | undefined;
+  };
+  format: ModelVersion;
+  id: DocumentId;
+  layouts: {
+    [k: string]: Layout | undefined;
+  };
+  masters: {
+    [k: string]: Master | undefined;
+  };
+  objects: {
+    [k: string]: Object | undefined;
+  };
+  pageSize: Size;
+  resources: {
+    [k: string]: Resource | undefined;
+  };
+  slideOrder: SlideId[];
+  slides: {
+    [k: string]: Slide | undefined;
+  };
+  /**
+   * Immutable native addresses/constraints. Known fields are edited in
+   * objects; this provenance never becomes a separate mutable document.
+   */
+  sourceBindings?: SourceBindings | null;
+  themes: {
+    [k: string]: Theme | undefined;
+  };
+  /**
+   * Slide-owned animation graphs; empty storage preserves older author digests.
+   */
+  timelines?: {
+    [k: string]: Timeline | undefined;
+  };
+  title: string;
+}
 
 /**
  * This interface was referenced by `undefined`'s JSON-Schema definition
@@ -1138,33 +1192,4 @@ export interface ManifestInstance {
    * All axes are validated, including instances unused by this paragraph.
    */
   variations: ShapeVariation[];
-}
-
-/**
- * This interface was referenced by `OperationRequest`'s JSON-Schema
- * via the `definition` "ShapeVariation".
- */
-export interface ShapeVariation {
-  tag: string;
-  /**
-   * Exact requested OpenType 16.16 design coordinate.
-   */
-  value1616: number;
-}
-
-/**
- * Expected identity, never an executable path or permission grant.
- */
-export interface RendererIdentity {
-  implementationSha256: Digest;
-  profile: string;
-}
-
-/**
- * This interface was referenced by `OperationRequest`'s JSON-Schema
- * via the `definition` "RendererIdentity".
- */
-export interface RendererIdentity1 {
-  implementationSha256: Digest;
-  profile: string;
 }

@@ -88,63 +88,13 @@ impl PresentationContent {
                 if document.objects.contains_key(element.id()) {
                     return Err(invalid("duplicate composition object id"));
                 }
-                let f = element.frame();
-                let (appearance, content) = match element {
-                    ElementContent::Shape(shape) => {
-                        let text = shape
-                            .text
-                            .as_ref()
-                            .map(|text| {
-                                lower_text(
-                                    text,
-                                    &self.id,
-                                    &shape.id,
-                                    MAX_OPERATION_BYTES - used,
-                                    check,
-                                )
-                            })
-                            .transpose()?;
-                        (
-                            Appearance {
-                                fill: Inherited::Value(shape.fill.clone().unwrap_or(Fill::None)),
-                                stroke: Inherited::Value(
-                                    shape.stroke.clone().unwrap_or(Stroke::None {}),
-                                ),
-                            },
-                            ObjectContent::Shape {
-                                geometry: shape.geometry.clone(),
-                                text,
-                            },
-                        )
-                    }
-                    ElementContent::Picture(picture) => (
-                        Appearance {
-                            fill: Inherited::Value(Fill::None),
-                            stroke: Inherited::Value(Stroke::None {}),
-                        },
-                        ObjectContent::Picture {
-                            resource: picture.picture.resource.clone(),
-                            crop: picture.picture.crop,
-                        },
-                    ),
-                };
-                let object = Object {
-                    id: element.id().clone(),
-                    parent: ContainerId::Slide(source.id.clone()),
-                    transform: Some(Transform {
-                        origin: Point { x: f.x, y: f.y },
-                        size: Size {
-                            width: f.width,
-                            height: f.height,
-                        },
-                        rotation: f.rotation,
-                        flip_horizontal: f.flip_horizontal,
-                        flip_vertical: f.flip_vertical,
-                    }),
-                    appearance,
-                    accessibility: element.accessibility().clone(),
-                    content,
-                };
+                let object = lower_element(
+                    element,
+                    &self.id,
+                    ContainerId::Slide(source.id.clone()),
+                    MAX_OPERATION_BYTES - used,
+                    check,
+                )?;
                 used += size(&object, MAX_OPERATION_BYTES - used, check)?;
                 slide.objects.push(element.id().clone());
                 document.objects.insert(element.id().clone(), object);
@@ -283,4 +233,64 @@ fn push_run(
     *used += size(&run, limit - *used, check)?;
     paragraph.runs.push(run);
     Ok(())
+}
+
+/// Shared expansion for both creation and insertion into an existing page.
+pub(super) fn lower_element(
+    element: &ElementContent,
+    document: &DocumentId,
+    parent: ContainerId,
+    remaining: usize,
+    check: &dyn Fn() -> bool,
+) -> Result<Object, Failure> {
+    cancelled(check)?;
+    let f = element.frame();
+    let (appearance, content) = match element {
+        ElementContent::Shape(shape) => {
+            let text = shape
+                .text
+                .as_ref()
+                .map(|text| lower_text(text, document, &shape.id, remaining, check))
+                .transpose()?;
+            (
+                Appearance {
+                    fill: Inherited::Value(shape.fill.clone().unwrap_or(Fill::None)),
+                    stroke: Inherited::Value(shape.stroke.clone().unwrap_or(Stroke::None {})),
+                },
+                ObjectContent::Shape {
+                    geometry: shape.geometry.clone(),
+                    text,
+                },
+            )
+        }
+        ElementContent::Picture(picture) => (
+            Appearance {
+                fill: Inherited::Value(Fill::None),
+                stroke: Inherited::Value(Stroke::None {}),
+            },
+            ObjectContent::Picture {
+                resource: picture.picture.resource.clone(),
+                crop: picture.picture.crop,
+            },
+        ),
+    };
+    let object = Object {
+        id: element.id().clone(),
+        parent,
+        transform: Some(Transform {
+            origin: Point { x: f.x, y: f.y },
+            size: Size {
+                width: f.width,
+                height: f.height,
+            },
+            rotation: f.rotation,
+            flip_horizontal: f.flip_horizontal,
+            flip_vertical: f.flip_vertical,
+        }),
+        appearance,
+        accessibility: element.accessibility().clone(),
+        content,
+    };
+    size(&object, remaining, check)?;
+    Ok(object)
 }

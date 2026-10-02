@@ -1714,6 +1714,48 @@
         {
           "type": "object",
           "properties": {
+            "kind": {
+              "type": "string",
+              "const": "setSlideName"
+            },
+            "name": {
+              "type": "string"
+            },
+            "slide": {
+              "$ref": "#/$defs/SlideId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "slide",
+            "name"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "background": {
+              "$ref": "#/$defs/Inherited8"
+            },
+            "kind": {
+              "type": "string",
+              "const": "setSlideBackground"
+            },
+            "slide": {
+              "$ref": "#/$defs/SlideId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "slide",
+            "background"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
             "index": {
               "type": "integer",
               "format": "uint32",
@@ -1854,6 +1896,24 @@
           "required": [
             "kind",
             "layout"
+          ]
+        },
+        {
+          "description": "Bind a resource without changing pixels selected by existing objects.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "ensureResource"
+            },
+            "resource": {
+              "$ref": "#/$defs/Resource"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "resource"
           ]
         },
         {
@@ -2023,6 +2083,122 @@
             "kind",
             "object",
             "appearance"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "fill": {
+              "$ref": "#/$defs/Inherited8"
+            },
+            "kind": {
+              "type": "string",
+              "const": "setFill"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "fill"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "setStroke"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "stroke": {
+              "$ref": "#/$defs/Inherited9"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "stroke"
+          ]
+        },
+        {
+          "description": "Replace source pixels while preserving identity, geometry and crop unless specified.",
+          "type": "object",
+          "properties": {
+            "crop": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Crop"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "setPicture"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "resource": {
+              "$ref": "#/$defs/ResourceId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "resource"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "crop": {
+              "$ref": "#/$defs/Crop"
+            },
+            "kind": {
+              "type": "string",
+              "const": "setPictureCrop"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "crop"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "geometry": {
+              "$ref": "#/$defs/Geometry"
+            },
+            "kind": {
+              "type": "string",
+              "const": "setGeometry"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "geometry"
           ]
         },
         {

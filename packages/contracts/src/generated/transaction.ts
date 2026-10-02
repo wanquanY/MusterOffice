@@ -35,6 +35,16 @@ export type Operation =
       title: string;
     }
   | {
+      kind: "setSlideName";
+      name: string;
+      slide: SlideId;
+    }
+  | {
+      background: Inherited8;
+      kind: "setSlideBackground";
+      slide: SlideId;
+    }
+  | {
       index: number;
       kind: "insertSlide";
       slide: Slide;
@@ -65,6 +75,10 @@ export type Operation =
   | {
       kind: "putLayout";
       layout: Layout;
+    }
+  | {
+      kind: "ensureResource";
+      resource: Resource;
     }
   | {
       kind: "attachResource";
@@ -103,6 +117,32 @@ export type Operation =
   | {
       appearance: Appearance;
       kind: "setAppearance";
+      object: ObjectId;
+    }
+  | {
+      fill: Inherited8;
+      kind: "setFill";
+      object: ObjectId;
+    }
+  | {
+      kind: "setStroke";
+      object: ObjectId;
+      stroke: Inherited9;
+    }
+  | {
+      crop?: Crop | null;
+      kind: "setPicture";
+      object: ObjectId;
+      resource: ResourceId;
+    }
+  | {
+      crop: Crop;
+      kind: "setPictureCrop";
+      object: ObjectId;
+    }
+  | {
+      geometry: Geometry;
+      kind: "setGeometry";
       object: ObjectId;
     }
   | {
@@ -789,6 +829,18 @@ export type ContainerId =
     };
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "Inherited9".
+ */
+export type Inherited9 =
+  | {
+      kind: "inherit";
+    }
+  | {
+      kind: "value";
+      value: Stroke;
+    };
+/**
+ * This interface was referenced by `Transaction`'s JSON-Schema
  * via the `definition` "OperationId".
  */
 export type OperationId = string;
@@ -892,18 +944,6 @@ export type Inherited7 =
   | {
       kind: "value";
       value: string;
-    };
-/**
- * This interface was referenced by `Transaction`'s JSON-Schema
- * via the `definition` "Inherited9".
- */
-export type Inherited9 =
-  | {
-      kind: "inherit";
-    }
-  | {
-      kind: "value";
-      value: Stroke;
     };
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema

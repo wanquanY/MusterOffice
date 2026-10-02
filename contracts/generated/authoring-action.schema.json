@@ -146,6 +146,208 @@
         {
           "type": "object",
           "properties": {
+            "kind": {
+              "type": "string",
+              "const": "setTitle"
+            },
+            "title": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "title"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "setSlideName"
+            },
+            "name": {
+              "type": "string"
+            },
+            "slide": {
+              "$ref": "#/$defs/SlideId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "slide",
+            "name"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "background": {
+              "$ref": "#/$defs/Inherited"
+            },
+            "kind": {
+              "type": "string",
+              "const": "setSlideBackground"
+            },
+            "slide": {
+              "$ref": "#/$defs/SlideId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "slide",
+            "background"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "element": {
+              "$ref": "#/$defs/ElementContent"
+            },
+            "index": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "insertElement"
+            },
+            "slide": {
+              "$ref": "#/$defs/SlideId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "slide",
+            "index",
+            "element"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "fill": {
+              "$ref": "#/$defs/Inherited"
+            },
+            "kind": {
+              "type": "string",
+              "const": "setFill"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "fill"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "setStroke"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "stroke": {
+              "$ref": "#/$defs/Inherited2"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "stroke"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "geometry": {
+              "$ref": "#/$defs/Geometry"
+            },
+            "kind": {
+              "type": "string",
+              "const": "setGeometry"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "geometry"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "crop": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Crop"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "kind": {
+              "type": "string",
+              "const": "replacePicture"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "resource": {
+              "$ref": "#/$defs/ResourceId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "resource"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "crop": {
+              "$ref": "#/$defs/Crop"
+            },
+            "kind": {
+              "type": "string",
+              "const": "setPictureCrop"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "crop"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
             "frame": {
               "$ref": "#/$defs/ShapeFrame"
             },
@@ -415,6 +617,74 @@
             "kind",
             "commands",
             "viewport"
+          ]
+        }
+      ]
+    },
+    "Inherited": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "inherit"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "value"
+            },
+            "value": {
+              "$ref": "#/$defs/Fill"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        }
+      ]
+    },
+    "Inherited2": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "inherit"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "value"
+            },
+            "value": {
+              "$ref": "#/$defs/Stroke"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
           ]
         }
       ]

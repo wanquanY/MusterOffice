@@ -36,6 +36,44 @@ pub enum AuthoringAction {
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "kind", rename_all = "camelCase", deny_unknown_fields)]
 pub enum ContentEdit {
+    SetTitle {
+        title: String,
+    },
+    SetSlideName {
+        slide: SlideId,
+        name: String,
+    },
+    SetSlideBackground {
+        slide: SlideId,
+        background: mo_presentation_model::Inherited<mo_presentation_model::Fill>,
+    },
+    InsertElement {
+        slide: SlideId,
+        index: u32,
+        element: super::ElementContent,
+    },
+    SetFill {
+        object: ObjectId,
+        fill: mo_presentation_model::Inherited<mo_presentation_model::Fill>,
+    },
+    SetStroke {
+        object: ObjectId,
+        stroke: mo_presentation_model::Inherited<mo_presentation_model::Stroke>,
+    },
+    SetGeometry {
+        object: ObjectId,
+        geometry: mo_presentation_model::Geometry,
+    },
+    ReplacePicture {
+        object: ObjectId,
+        resource: mo_common::ResourceId,
+        #[serde(default)]
+        crop: Option<mo_presentation_model::Crop>,
+    },
+    SetPictureCrop {
+        object: ObjectId,
+        crop: mo_presentation_model::Crop,
+    },
     SetFrame {
         object: ObjectId,
         frame: ShapeFrame,
@@ -64,20 +102,35 @@ impl AuthoringAction {
     /// Resource references selected by the author. A host resolves metadata and
     /// bytes from its authority, then passes native Resource values to bind().
     pub fn picture_resources(&self) -> Vec<mo_common::ResourceId> {
-        let slides = match self {
-            Self::Create { slides, .. } | Self::Append { slides } => slides,
-            Self::Edit { .. } => return vec![],
+        let picture = |element: &super::ElementContent| match element {
+            super::ElementContent::Picture(p) => Some(p.picture.resource.clone()),
+            _ => None,
         };
-        slides
-            .iter()
-            .flat_map(|slide| &slide.elements)
-            .filter_map(|element| match element {
-                super::ElementContent::Picture(p) => Some(p.picture.resource.clone()),
-                _ => None,
-            })
-            .collect::<std::collections::BTreeSet<_>>()
-            .into_iter()
-            .collect()
+        let mut references = std::collections::BTreeSet::new();
+        match self {
+            Self::Create { slides, .. } | Self::Append { slides } => {
+                references.extend(
+                    slides
+                        .iter()
+                        .flat_map(|slide| &slide.elements)
+                        .filter_map(picture),
+                );
+            }
+            Self::Edit { edits } => {
+                for edit in edits {
+                    match edit {
+                        ContentEdit::ReplacePicture { resource, .. } => {
+                            references.insert(resource.clone());
+                        }
+                        ContentEdit::InsertElement { element, .. } => {
+                            references.extend(picture(element));
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        }
+        references.into_iter().collect()
     }
     pub fn bind(
         self,
@@ -87,6 +140,7 @@ impl AuthoringAction {
         check: &dyn Fn() -> bool,
     ) -> Result<DocumentAction, Failure> {
         crate::budget::check_size(&self, MAX_OPERATION_BYTES, "authoring bytes", check)?;
+        let selected = self.picture_resources();
         Ok(match self {
             Self::Create {
                 title,
@@ -113,18 +167,78 @@ impl AuthoringAction {
                 resources,
             },
             Self::Edit { edits } => {
-                if !resources.is_empty() {
-                    return Err(invalid("edits cannot silently attach resources"));
-                }
                 if edits.is_empty() {
                     return Err(invalid("edits must not be empty"));
                 }
                 let mut operations = Vec::with_capacity(edits.len());
+                // Resource metadata must be supplied by the host for exactly
+                // the references selected by this action, never by the model.
+                let supplied = resources
+                    .iter()
+                    .map(|r| r.id.clone())
+                    .collect::<std::collections::BTreeSet<_>>();
+                if supplied.len() != resources.len()
+                    || selected.iter().any(|id| !supplied.contains(id))
+                    || supplied.len() != selected.len()
+                {
+                    return Err(invalid(
+                        "edits require exactly their selected authorized picture resources",
+                    ));
+                }
+                for resource in resources {
+                    operations.push(OperationEntry {
+                        operation_id: OperationId::new(format!("authoring:{}", operations.len()))
+                            .expect("bounded generated id"),
+                        operation: Operation::EnsureResource { resource },
+                    });
+                }
                 for edit in edits {
                     if check() {
                         return Err(Failure::new(FailureCode::Cancelled, "authoring cancelled"));
                     }
                     let operation = match edit {
+                        ContentEdit::SetTitle { title } => Operation::SetTitle { title },
+                        ContentEdit::SetSlideName { slide, name } => {
+                            Operation::SetSlideName { slide, name }
+                        }
+                        ContentEdit::SetSlideBackground { slide, background } => {
+                            Operation::SetSlideBackground { slide, background }
+                        }
+                        ContentEdit::InsertElement {
+                            slide,
+                            index,
+                            element,
+                        } => Operation::InsertObject {
+                            object: super::lower::lower_element(
+                                &element,
+                                &id,
+                                mo_presentation_model::ContainerId::Slide(slide),
+                                MAX_OPERATION_BYTES,
+                                check,
+                            )?,
+                            index,
+                        },
+                        ContentEdit::SetFill { object, fill } => {
+                            Operation::SetFill { object, fill }
+                        }
+                        ContentEdit::SetStroke { object, stroke } => {
+                            Operation::SetStroke { object, stroke }
+                        }
+                        ContentEdit::SetGeometry { object, geometry } => {
+                            Operation::SetGeometry { object, geometry }
+                        }
+                        ContentEdit::ReplacePicture {
+                            object,
+                            resource,
+                            crop,
+                        } => Operation::SetPicture {
+                            object,
+                            resource,
+                            crop,
+                        },
+                        ContentEdit::SetPictureCrop { object, crop } => {
+                            Operation::SetPictureCrop { object, crop }
+                        }
                         ContentEdit::SetFrame { object, frame: f } => Operation::SetTransform {
                             object,
                             transform: Transform {

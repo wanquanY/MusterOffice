@@ -1,6 +1,22 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { Alignment, ByteLength, Color, Digest, Emu, FontDelivery, FontManifestProfile, ParagraphLineSpacing, Stroke, TextDirection, TypefaceMappingPolicy } from './part-001.js';
+import type { Alignment, ByteLength, Color, Digest, Emu, FontDelivery, FontManifestProfile, ImageSampling, ImageSourceSelection, ParagraphLineSpacing, Stroke, TextDirection, TypefaceMappingPolicy } from './part-001.js';
 import type { Rgba } from './part-002.js';
+
+/**
+ * Explicit render/export choices are input identity. Pixels preserve page
+ * aspect ratio; the pipeline derives a viewport covering the entire page.
+ *
+ * This interface was referenced by `OperationRequest`'s JSON-Schema
+ * via the `definition` "DeliverySettings".
+ */
+export interface DeliverySettings {
+  colorContext: ColorContext;
+  defaults: ExportDefaults;
+  fonts?: FontManifest | null;
+  imageSource: ImageSourceSelection;
+  previewWidth: number;
+  sampling: ImageSampling;
+}
 
 /**
  * This interface was referenced by `OperationRequest`'s JSON-Schema

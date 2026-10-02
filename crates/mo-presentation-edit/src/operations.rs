@@ -45,6 +45,14 @@ pub enum Operation {
     SetTitle {
         title: String,
     },
+    SetSlideName {
+        slide: SlideId,
+        name: String,
+    },
+    SetSlideBackground {
+        slide: SlideId,
+        background: Inherited<Fill>,
+    },
     InsertSlide {
         slide: Slide,
         index: u32,
@@ -69,6 +77,10 @@ pub enum Operation {
     },
     PutLayout {
         layout: Layout,
+    },
+    /// Bind a resource without changing pixels selected by existing objects.
+    EnsureResource {
+        resource: Resource,
     },
     AttachResource {
         resource: Resource,
@@ -101,6 +113,28 @@ pub enum Operation {
     SetAppearance {
         object: ObjectId,
         appearance: Appearance,
+    },
+    SetFill {
+        object: ObjectId,
+        fill: Inherited<Fill>,
+    },
+    SetStroke {
+        object: ObjectId,
+        stroke: Inherited<Stroke>,
+    },
+    /// Replace source pixels while preserving identity, geometry and crop unless specified.
+    SetPicture {
+        object: ObjectId,
+        resource: ResourceId,
+        crop: Option<Crop>,
+    },
+    SetPictureCrop {
+        object: ObjectId,
+        crop: Crop,
+    },
+    SetGeometry {
+        object: ObjectId,
+        geometry: Geometry,
     },
     SetAccessibility {
         object: ObjectId,

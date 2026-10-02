@@ -27,6 +27,7 @@ v0.4 设计基线，2026-09-27 按 ADR 0007 修订接入职责。**已有部分�
 | [互操作、性能和质量验收](acceptance-profiles.md) | 应用矩阵、完整测量口径、视觉/编辑/播放断言和发行门禁 |
 | [Musterwork 适配实施](musterwork-adapter-spec.md) | 已观察实际工具与字段、新合同、状态机、历史迁移和消费者测试 |
 | [内核与接入产品边界](kernel-host-boundary.md) | 简单 SDK/MCP、权限/存储/UI 所有权、依赖装配、开销及旧实现收敛 |
+| [公共作者合同与诊断](authoring-contract-and-diagnostics.md) | 同源操作/Schema/示例、创建编辑一致性、完整诊断、预算与宿主交付边界；2026-10-02 跨仓修复基线，未声明完整实现或发行 |
 | [实施顺序与实验](delivery-plan.md) | E0 证据、模块依赖、可并行实施边界和停止条件 |
 | [机器可校验的设计合同](../../contracts/README.md) | 能力清单、执行信封、交付清单、质量声明和正反例 |
 

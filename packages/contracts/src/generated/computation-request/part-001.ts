@@ -835,6 +835,16 @@ export type Operation =
       title: string;
     }
   | {
+      kind: "setSlideName";
+      name: string;
+      slide: SlideId;
+    }
+  | {
+      background: Inherited;
+      kind: "setSlideBackground";
+      slide: SlideId;
+    }
+  | {
       index: number;
       kind: "insertSlide";
       slide: Slide;
@@ -865,6 +875,10 @@ export type Operation =
   | {
       kind: "putLayout";
       layout: Layout;
+    }
+  | {
+      kind: "ensureResource";
+      resource: Resource;
     }
   | {
       kind: "attachResource";
@@ -903,6 +917,32 @@ export type Operation =
   | {
       appearance: Appearance;
       kind: "setAppearance";
+      object: ObjectId;
+    }
+  | {
+      fill: Inherited;
+      kind: "setFill";
+      object: ObjectId;
+    }
+  | {
+      kind: "setStroke";
+      object: ObjectId;
+      stroke: Inherited2;
+    }
+  | {
+      crop?: Crop | null;
+      kind: "setPicture";
+      object: ObjectId;
+      resource: ResourceId;
+    }
+  | {
+      crop: Crop;
+      kind: "setPictureCrop";
+      object: ObjectId;
+    }
+  | {
+      geometry: Geometry;
+      kind: "setGeometry";
       object: ObjectId;
     }
   | {
@@ -1009,6 +1049,19 @@ export type DeletePolicy = "rejectDependencies" | "cascade";
 
 /**
  * This interface was referenced by `OperationRequest`'s JSON-Schema
+ * via the `definition` "Inherited2".
+ */
+export type Inherited2 =
+  | {
+      kind: "inherit";
+    }
+  | {
+      kind: "value";
+      value: Stroke;
+    };
+
+/**
+ * This interface was referenced by `OperationRequest`'s JSON-Schema
  * via the `definition` "OperationId".
  */
 export type OperationId = string;
@@ -1089,19 +1142,6 @@ export type Inherited10 =
 
 /**
  * This interface was referenced by `OperationRequest`'s JSON-Schema
- * via the `definition` "Inherited2".
- */
-export type Inherited2 =
-  | {
-      kind: "inherit";
-    }
-  | {
-      kind: "value";
-      value: Stroke;
-    };
-
-/**
- * This interface was referenced by `OperationRequest`'s JSON-Schema
  * via the `definition` "Inherited3".
  */
 export type Inherited3 =
@@ -1151,48 +1191,3 @@ export type Inherited6 =
       kind: "value";
       value: FontId;
     };
-
-/**
- * This interface was referenced by `OperationRequest`'s JSON-Schema
- * via the `definition` "Inherited7".
- */
-export type Inherited7 =
-  | {
-      kind: "inherit";
-    }
-  | {
-      kind: "value";
-      value: Color;
-    };
-
-/**
- * This interface was referenced by `OperationRequest`'s JSON-Schema
- * via the `definition` "Inherited8".
- */
-export type Inherited8 =
-  | {
-      kind: "inherit";
-    }
-  | {
-      kind: "value";
-      value: boolean;
-    };
-
-/**
- * This interface was referenced by `OperationRequest`'s JSON-Schema
- * via the `definition` "Inherited9".
- */
-export type Inherited9 =
-  | {
-      kind: "inherit";
-    }
-  | {
-      kind: "value";
-      value: string;
-    };
-
-/**
- * This interface was referenced by `OperationRequest`'s JSON-Schema
- * via the `definition` "PresentationGroupStart".
- */
-export type PresentationGroupStart = "automatic" | "next";

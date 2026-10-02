@@ -480,6 +480,16 @@ export type Operation =
       title: string;
     }
   | {
+      kind: "setSlideName";
+      name: string;
+      slide: SlideId;
+    }
+  | {
+      background: Inherited;
+      kind: "setSlideBackground";
+      slide: SlideId;
+    }
+  | {
       index: number;
       kind: "insertSlide";
       slide: Slide;
@@ -510,6 +520,10 @@ export type Operation =
   | {
       kind: "putLayout";
       layout: Layout;
+    }
+  | {
+      kind: "ensureResource";
+      resource: Resource;
     }
   | {
       kind: "attachResource";
@@ -548,6 +562,32 @@ export type Operation =
   | {
       appearance: Appearance;
       kind: "setAppearance";
+      object: ObjectId;
+    }
+  | {
+      fill: Inherited;
+      kind: "setFill";
+      object: ObjectId;
+    }
+  | {
+      kind: "setStroke";
+      object: ObjectId;
+      stroke: Inherited2;
+    }
+  | {
+      crop?: Crop | null;
+      kind: "setPicture";
+      object: ObjectId;
+      resource: ResourceId;
+    }
+  | {
+      crop: Crop;
+      kind: "setPictureCrop";
+      object: ObjectId;
+    }
+  | {
+      geometry: Geometry;
+      kind: "setGeometry";
       object: ObjectId;
     }
   | {
@@ -637,6 +677,14 @@ export type TableOperation =
  */
 export type RepeatCount = "indefinite" | number;
 export type DeletePolicy = "rejectDependencies" | "cascade";
+export type Inherited2 =
+  | {
+      kind: "inherit";
+    }
+  | {
+      kind: "value";
+      value: Stroke;
+    };
 export type OperationId = string;
 export type FontDelivery = "referenceOnly";
 export type FontManifestProfile = "explicit-font-resource-manifest-draft-v1";

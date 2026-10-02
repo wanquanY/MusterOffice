@@ -55,6 +55,20 @@ pub(crate) fn apply(
             }
         }
         Operation::SetTitle { title } => document.title = title.clone(),
+        Operation::SetSlideName { slide, name } => {
+            document
+                .slides
+                .get_mut(slide)
+                .ok_or_else(|| EditError::input("slide does not exist"))?
+                .name = name.clone();
+        }
+        Operation::SetSlideBackground { slide, background } => {
+            document
+                .slides
+                .get_mut(slide)
+                .ok_or_else(|| EditError::input("slide does not exist"))?
+                .background = background.clone();
+        }
         Operation::InsertSlide { slide, index } => {
             if document.slides.contains_key(&slide.id) {
                 return Err(EditError::input("slide already exists"));
@@ -100,6 +114,20 @@ pub(crate) fn apply(
         }
         Operation::PutLayout { layout } => {
             document.layouts.insert(layout.id.clone(), layout.clone());
+        }
+        Operation::EnsureResource { resource } => {
+            if document
+                .resources
+                .get(&resource.id)
+                .is_some_and(|existing| existing != resource)
+            {
+                return Err(EditError::input(
+                    "resource identity is already bound to different content",
+                ));
+            }
+            document
+                .resources
+                .insert(resource.id.clone(), resource.clone());
         }
         Operation::AttachResource { resource } => {
             document
@@ -149,6 +177,42 @@ pub(crate) fn apply(
         }
         Operation::SetAppearance { object, appearance } => {
             object_mut(document, object)?.appearance = appearance.clone()
+        }
+        Operation::SetFill { object, fill } => {
+            object_mut(document, object)?.appearance.fill = fill.clone()
+        }
+        Operation::SetStroke { object, stroke } => {
+            object_mut(document, object)?.appearance.stroke = stroke.clone()
+        }
+        Operation::SetPicture {
+            object,
+            resource,
+            crop,
+        } => match &mut object_mut(document, object)?.content {
+            ObjectContent::Picture {
+                resource: current,
+                crop: current_crop,
+            } => {
+                *current = resource.clone();
+                if let Some(crop) = crop {
+                    *current_crop = *crop;
+                }
+            }
+            _ => return Err(EditError::input("object is not a picture")),
+        },
+        Operation::SetPictureCrop { object, crop } => {
+            match &mut object_mut(document, object)?.content {
+                ObjectContent::Picture { crop: current, .. } => *current = *crop,
+                _ => return Err(EditError::input("object is not a picture")),
+            }
+        }
+        Operation::SetGeometry { object, geometry } => {
+            match &mut object_mut(document, object)?.content {
+                ObjectContent::Shape {
+                    geometry: current, ..
+                } => *current = geometry.clone(),
+                _ => return Err(EditError::input("object is not a shape")),
+            }
         }
         Operation::SetAccessibility {
             object,

@@ -1,5 +1,5 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { Accessibility, Appearance, Crop, ExportSettings, FontFace, Layout, Master, MotionPath, MotionPoint, Object, OperationEntry, Point, PresentationSequence, RationalTime, Resource, RetainedParagraph, Rgba, ScaleValue, Size, Slide, SourceBindings, Table, TableCell, TableCellStyle1, TableColumn, TableRow, TextBody, Theme, Timeline, Transform } from './part-002.js';
+import type { Accessibility, Appearance, Crop, Document, ExportSettings, FontFace, Layout, Master, MotionPath, MotionPoint, Object, OperationEntry, Point, PresentationSequence, RationalTime, Resource, RetainedParagraph, Rgba, ScaleValue, Size, Slide, Table, TableCell, TableCellStyle1, TableColumn, TableRow, TextBody, Theme, Timeline, Transform } from './part-002.js';
 
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
 
@@ -744,6 +744,16 @@ export type Operation =
       title: string;
     }
   | {
+      kind: "setSlideName";
+      name: string;
+      slide: SlideId;
+    }
+  | {
+      background: Inherited;
+      kind: "setSlideBackground";
+      slide: SlideId;
+    }
+  | {
       index: number;
       kind: "insertSlide";
       slide: Slide;
@@ -774,6 +784,10 @@ export type Operation =
   | {
       kind: "putLayout";
       layout: Layout;
+    }
+  | {
+      kind: "ensureResource";
+      resource: Resource;
     }
   | {
       kind: "attachResource";
@@ -812,6 +826,32 @@ export type Operation =
   | {
       appearance: Appearance;
       kind: "setAppearance";
+      object: ObjectId;
+    }
+  | {
+      fill: Inherited;
+      kind: "setFill";
+      object: ObjectId;
+    }
+  | {
+      kind: "setStroke";
+      object: ObjectId;
+      stroke: Inherited2;
+    }
+  | {
+      crop?: Crop | null;
+      kind: "setPicture";
+      object: ObjectId;
+      resource: ResourceId;
+    }
+  | {
+      crop: Crop;
+      kind: "setPictureCrop";
+      object: ObjectId;
+    }
+  | {
+      geometry: Geometry;
+      kind: "setGeometry";
       object: ObjectId;
     }
   | {
@@ -918,6 +958,19 @@ export type DeletePolicy = "rejectDependencies" | "cascade";
 
 /**
  * This interface was referenced by `OperationRequest`'s JSON-Schema
+ * via the `definition` "Inherited2".
+ */
+export type Inherited2 =
+  | {
+      kind: "inherit";
+    }
+  | {
+      kind: "value";
+      value: Stroke;
+    };
+
+/**
+ * This interface was referenced by `OperationRequest`'s JSON-Schema
  * via the `definition` "OperationId".
  */
 export type OperationId = string;
@@ -1000,19 +1053,6 @@ export type Inherited10 =
   | {
       kind: "value";
       value: TableVerticalAlignment;
-    };
-
-/**
- * This interface was referenced by `OperationRequest`'s JSON-Schema
- * via the `definition` "Inherited2".
- */
-export type Inherited2 =
-  | {
-      kind: "inherit";
-    }
-  | {
-      kind: "value";
-      value: Stroke;
     };
 
 /**
@@ -1142,57 +1182,4 @@ export interface OperationRequest {
 export interface AssetBinding {
   assetId: RequestId;
   resourceId: ResourceId;
-}
-
-/**
- * Document declarations and immutable source provenance. Revisions, compilation
- * caches, clocks and decoder state live outside this model.
- * The example is a complete editable 16:9 slide with a text shape. Coordinates
- * and sizes are decimal EMU strings (12700 EMU per point). Empty theme, master,
- * layout, font and resource maps are valid; inherited text uses the caller's
- * explicit delivery defaults. Copy slides/objects with distinct IDs to expand
- * the deck. Inspect optional feature definitions only when those features are
- * needed; the example requires no system font discovery or external resources.
- *
- * This interface was referenced by `OperationRequest`'s JSON-Schema
- * via the `definition` "Document".
- */
-export interface Document {
-  fonts: {
-    [k: string]: FontFace | undefined;
-  };
-  format: ModelVersion;
-  id: DocumentId;
-  layouts: {
-    [k: string]: Layout | undefined;
-  };
-  masters: {
-    [k: string]: Master | undefined;
-  };
-  objects: {
-    [k: string]: Object | undefined;
-  };
-  pageSize: Size;
-  resources: {
-    [k: string]: Resource | undefined;
-  };
-  slideOrder: SlideId[];
-  slides: {
-    [k: string]: Slide | undefined;
-  };
-  /**
-   * Immutable native addresses/constraints. Known fields are edited in
-   * objects; this provenance never becomes a separate mutable document.
-   */
-  sourceBindings?: SourceBindings | null;
-  themes: {
-    [k: string]: Theme | undefined;
-  };
-  /**
-   * Slide-owned animation graphs; empty storage preserves older author digests.
-   */
-  timelines?: {
-    [k: string]: Timeline | undefined;
-  };
-  title: string;
 }

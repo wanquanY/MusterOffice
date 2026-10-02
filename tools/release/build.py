@@ -34,7 +34,7 @@ def file_record(path, root):
     return dict(path=path.relative_to(root).as_posix(), sha256=sha(path), byteLength=path.stat().st_size)
 
 
-def copy(source, target, expected):
+def copy(source, target, expected, *, executable=False):
     if source.is_symlink() or not source.is_file() or sha(source) != expected:
         raise ValueError("input differs from its explicit SHA-256")
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -42,6 +42,9 @@ def copy(source, target, expected):
         shutil.copyfileobj(incoming, outgoing)
     if sha(target) != expected:
         raise ValueError("input changed during assembly")
+    # Byte digests do not carry filesystem mode. A release must be runnable
+    # directly as well as after installation by a receiving product.
+    target.chmod(0o755 if executable else 0o644)
 
 
 def build(*, sdk, sdk_sha256, playback, playback_sha256, workers, output, version, registry):
@@ -61,7 +64,7 @@ def build(*, sdk, sdk_sha256, playback, playback_sha256, workers, output, versio
             raise ValueError("invalid or duplicate native target")
         name = "mo-export-worker" + (".exe" if target.startswith("win32-") else "")
         destination = output / "workers" / target / name
-        copy(source, destination, expected)
+        copy(source, destination, expected, executable=not target.startswith("win32-"))
         native[target] = file_record(destination, output)
     if not native:
         raise ValueError("at least one explicitly pinned worker required")

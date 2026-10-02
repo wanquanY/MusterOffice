@@ -40,16 +40,23 @@ pub(super) fn geometry(
             if let Geometry::RoundRectangle { radius } = value {
                 let short = size.width.get().min(size.height.get());
                 let numerator = i128::from(radius.get()) * 100000;
-                if short <= 0 || radius.get() > short / 2 || numerator % i128::from(short) != 0 {
+                if short <= 0 || radius.get() < 0 || radius.get() > short / 2 {
                     return Err(value_error(
                         "roundRectangle.radius",
-                        "radius is not exactly representable by a native adjustment",
+                        "radius must be within zero and half the shorter side",
                     ));
                 }
                 adjustments.entries.push(SourceGuide {
                     source_ordinal: ord.next()?,
                     name: "adj".into(),
-                    formula: format!("val {}", numerator / i128::from(short)),
+                    // DrawingML guide formulas support multiply/divide. Keep
+                    // the exact ratio instead of requiring an integer percent
+                    // or rounding away part of the author's corner radius.
+                    formula: if numerator % i128::from(short) == 0 {
+                        format!("val {}", numerator / i128::from(short))
+                    } else {
+                        format!("*/ {} 100000 {short}", radius.get())
+                    },
                 });
             }
             SourceGeometryDefinition::Preset {
