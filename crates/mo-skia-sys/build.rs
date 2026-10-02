@@ -41,11 +41,26 @@ fn main() {
         env::var("TARGET").unwrap(),
         "separate cross target profile required"
     );
-    assert_eq!(
-        env::var("CARGO_CFG_TARGET_OS").unwrap(),
-        "macos",
-        "native raster profile currently macOS only"
+    let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap();
+    let target_arch = env::var("CARGO_CFG_TARGET_ARCH").unwrap();
+    assert!(
+        matches!(target_os.as_str(), "macos" | "linux"),
+        "unsupported native raster platform"
     );
+    if target_os == "linux" || record.get("nativePlatform").is_some() {
+        assert_eq!(
+            record["nativePlatform"]["os"], target_os,
+            "component OS mismatch"
+        );
+        assert_eq!(
+            record["nativePlatform"]["arch"], target_arch,
+            "component architecture mismatch"
+        );
+        assert_eq!(
+            record["imageCodecs"]["nativePlatform"], record["nativePlatform"],
+            "codec platform mismatch"
+        );
+    }
     for source in record["componentSources"].as_array().unwrap() {
         verify(&root, source);
     }
@@ -80,5 +95,12 @@ fn main() {
         );
         println!("cargo:rustc-link-lib=static={name}");
     }
-    println!("cargo:rustc-link-lib=c++");
+    println!(
+        "cargo:rustc-link-lib={}",
+        if target_os == "macos" {
+            "c++"
+        } else {
+            "stdc++"
+        }
+    );
 }

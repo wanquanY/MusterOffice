@@ -2,6 +2,7 @@
 import hashlib
 import json
 from pathlib import Path
+from native_platform import native_platform
 
 
 def configure(root, source, directory, target, sanitize, profile, run):
@@ -9,6 +10,11 @@ def configure(root, source, directory, target, sanitize, profile, run):
     record = json.loads((directory / 'build.json').read_text())
     assert record['format'] == 'musteroffice.image-codec-build/1'
     assert record['target'] == target and record['sanitizers'] == sanitize
+    if target == 'native':
+        current = native_platform()
+        # Existing macOS records predate platform metadata. Linux has no legacy
+        # build and must always carry the exact OS/architecture identity.
+        assert record.get('nativePlatform', current if current['os'] == 'macos' else None) == current
     assert record['lock'] == json.loads((component / 'lock.json').read_text())
     for entry in [record['script'], *record['libraries'].values(), *record['headers'],
                   *record['configurations']]:

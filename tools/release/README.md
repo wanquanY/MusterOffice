@@ -7,6 +7,27 @@ imports, database access, publication credentials or network requests.
 
 ## Assemble
 
+For a Linux x64 worker, the repository owns a local Docker build and execution
+check. Select an existing `docker-container` builder; Kubernetes builders are
+rejected. The source must be a clean commit. Supply the original downloaded
+Skia, HarfBuzz, PNG, JPEG and zlib archives; all are verified against existing
+component locks before entering the build context:
+
+```sh
+python3 tools/release/build-linux-worker.py \
+  --builder YOUR_LOCAL_BUILDER \
+  --archives /absolute/skia-downloads --archives /absolute/harfbuzz-downloads \
+  --archives /absolute/image-codec-downloads --output /absolute/new-linux-worker
+```
+
+The build runs Linux x64 natively or under Docker's configured emulation. It
+compiles the existing C++ components and Rust worker, runs actual native worker
+and lifecycle tests, and records ELF identity, dynamic libraries, component
+records, test output and source revision. `--build-proxy` optionally passes a
+container-reachable proxy without embedding it in the final artifact. Exported
+files are component inputs, not a network service or an application deployment.
+This build alone does not qualify a complete release for production.
+
 Produce and verify the portable library SDK with `tools/sdk/build.py`, and the
 WASM SDK with `tools/playback-sdk/build.py`. Build/verify each native worker under
 its corresponding target separately. Then bind their exact trusted bytes:

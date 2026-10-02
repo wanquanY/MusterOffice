@@ -52,9 +52,21 @@ fn main() {
         env::var("TARGET").unwrap(),
         "cross builds require a separate verified component target profile"
     );
+    let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap();
+    if target_os == "linux" || record.get("nativePlatform").is_some() {
+        assert_eq!(
+            record["nativePlatform"]["os"], target_os,
+            "component OS mismatch"
+        );
+        assert_eq!(
+            record["nativePlatform"]["arch"],
+            env::var("CARGO_CFG_TARGET_ARCH").unwrap(),
+            "component architecture mismatch"
+        );
+    }
     println!("cargo:rustc-link-search=native={}", directory.display());
     println!("cargo:rustc-link-lib=static=mo_harfbuzz");
-    match env::var("CARGO_CFG_TARGET_OS").unwrap().as_str() {
+    match target_os.as_str() {
         "macos" => println!("cargo:rustc-link-lib=c++"),
         "linux" => println!("cargo:rustc-link-lib=stdc++"),
         _ => panic!("native component target runtime profile not yet implemented"),

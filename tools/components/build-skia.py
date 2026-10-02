@@ -8,9 +8,10 @@ import hashlib
 import json
 import os
 from pathlib import Path
-import platform
+import shutil
 import subprocess
 import tarfile
+from native_platform import native_link_flags, native_platform
 
 
 def digest(path):
@@ -30,12 +31,13 @@ p.add_argument('--gn', type=Path, default=Path('.codex-work/skia/gn-source/out/g
 p.add_argument('--ninja', type=Path, default=Path('.codex-work/skia/tools/ninja'))
 p.add_argument('--emsdk', type=Path, default=Path('.codex-work/emsdk'))
 p.add_argument('--jobs', type=int, default=8)
+p.add_argument('--archiver', type=Path, help='explicit native LLVM archiver; WASM uses its pinned SDK')
 p.add_argument('--sanitize', action='store_true')
 p.add_argument('--image-codecs', type=Path, help='verified optional codec dependency build directory')
 a = p.parse_args()
 require(1 <= a.jobs <= 32, 'jobs must be between 1 and 32')
 require(not a.sanitize or a.target == 'native', 'sanitizers currently require native')
-require(a.target != 'native' or platform.system() == 'Darwin', 'native build currently verified for macOS only')
+native = native_platform() if a.target == 'native' else None
 root = Path.cwd()
 component = root / 'components/skia'
 lock = json.loads((component / 'lock.json').read_text())
@@ -46,6 +48,9 @@ archive = directory / f"skia-{lock['commit']}.tar.gz"
 record = digest(archive)
 require(record['sha256'] == lock['sha256'] and record['byteLength'] == lock['byteLength'], 'Skia archive mismatch')
 gn, ninja, emsdk = a.gn.resolve(), a.ninja.resolve(), a.emsdk.resolve()
+archiver = (a.archiver.resolve() if a.archiver else
+            Path(shutil.which('llvm-ar') or '/usr/bin/llvm-ar') if native and native['os'] == 'linux'
+            else emsdk / 'upstream/bin/llvm-ar')
 gn_version = subprocess.check_output([str(gn), '--version'], text=True).strip()
 ninja_version = subprocess.check_output([str(ninja), '--version'], text=True).strip()
 require(gn_version == lock['gnVersion'] and ninja_version == lock['ninjaVersion'], 'Build tool version mismatch')
@@ -71,7 +76,7 @@ if a.target == 'wasm':
     for entry in lock['emsdkTools']:
         require(digest(emsdk / entry['path'])['sha256'] == entry['sha256'], 'SDK tool mismatch: ' + entry['path'])
     profile.update(target_cpu='wasm', skia_emsdk_dir=str(emsdk))
-profile.update(cc='clang', cxx='clang++', ar=str(emsdk / 'upstream/bin/llvm-ar'))
+profile.update(cc='clang', cxx='clang++', ar=str(archiver))
 if a.sanitize:
     profile['extra_cflags'] += ['-g1', '-fno-omit-frame-pointer', '-fsanitize=address,undefined']
 output = source / 'out/mo'
@@ -105,7 +110,7 @@ if a.target == 'native':
     library = output / 'libskia.a'
     probe = directory / ('mo-skia-probe-asan' if a.sanitize else 'mo-skia-probe')
     run([compiler, *common, component / 'mo_skia.cpp', component / 'mo_miter_clip.cpp', component / 'mo_gradient.cpp', component / 'mo_gradient_plane.cpp', component / 'mo_office_gradient.cpp', *elliptic_sources, component / 'mo_image.cpp', component / 'mo_image_domain.cpp', *codec_sources, root / 'tools/verification/skia-probe.cpp',
-         library, *codec_libraries, '-Wl,-dead_strip', '-Wl,-map,' + str(directory / ('native-asan-link.map' if a.sanitize else 'native-link.map')), '-o', probe])
+         library, *codec_libraries, *native_link_flags(native, directory / ('native-asan-link.map' if a.sanitize else 'native-link.map')), '-o', probe])
     artifacts = [library, probe]
     adapter_object = directory / ('mo-skia-adapter-asan.o' if a.sanitize else 'mo-skia-adapter.o')
     adapter_archive = directory / ('libmo_skia_adapter_asan.a' if a.sanitize else 'libmo_skia_adapter.a')
@@ -133,7 +138,7 @@ if a.target == 'native':
         run([compiler, *common, '-c', codec_source, '-o', obj])
         codec_objects.append(obj)
     adapter_archive.unlink(missing_ok=True)
-    run([emsdk / 'upstream/bin/llvm-ar', 'rcsD', adapter_archive, adapter_object, join_object, gradient_object, plane_object, office_object, *elliptic_objects, image_object, domain_object, *codec_objects])
+    run([archiver, 'rcsD', adapter_archive, adapter_object, join_object, gradient_object, plane_object, office_object, *elliptic_objects, image_object, domain_object, *codec_objects])
     artifacts.append(adapter_archive)
 else:
     library = output / 'libskia.wasm.a'
@@ -161,6 +166,8 @@ result = {'format': 'musteroffice.skia-build/1', 'target': a.target, 'sanitizers
           'gn': digest(gn), 'ninja': digest(ninja), 'targetGraph': digest(target_file),
           'componentSources': [digest(p) for p in sorted(component.iterdir()) if p.is_file()],
           'artifacts': [digest(p) for p in artifacts]}
+if native:
+    result['nativePlatform'] = native
 if codec_record:
     result['imageCodecs'] = codec_record
     result['componentSources'] += [digest(p) for p in sorted((root / 'components/image-codec').rglob('*')) if p.is_file()]

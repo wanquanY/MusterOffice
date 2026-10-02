@@ -10,6 +10,7 @@ import shlex
 from pathlib import Path
 import subprocess
 import tarfile
+from native_platform import native_platform
 
 p=argparse.ArgumentParser()
 p.add_argument('--target',choices=['native','wasm'],required=True)
@@ -79,5 +80,7 @@ else:
     artifacts=[module,module.with_suffix('.wasm')]
 result={'format':'musteroffice.harfbuzz-build/1','target':a.target,'faultTests':a.fault_tests,'sanitizers':a.sanitize,'lock':lock,'compiler':version,'archiver':archiver_version,
  'commands':commands,'artifacts':[{'path':str(f),'sha256':hashlib.sha256(f.read_bytes()).hexdigest(),'byteLength':f.stat().st_size} for f in artifacts]}
+if a.target == 'native':
+    result['nativePlatform'] = native_platform()
 (a.directory/(a.target+'-build.json')).write_text(json.dumps(result,indent=2)+'\n')
 print(json.dumps({'target':a.target,'artifacts':result['artifacts']}))
