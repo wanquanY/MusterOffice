@@ -12,6 +12,7 @@ import shutil
 import subprocess
 import tarfile
 from native_platform import native_link_flags, native_platform
+from build_record import relative_paths
 
 
 def digest(path):
@@ -173,7 +174,7 @@ if codec_record:
     result['componentSources'] += [digest(p) for p in sorted((root / 'components/image-codec').rglob('*')) if p.is_file()]
     result['componentSources'] += [digest(root / 'tools/components/image_codec_build.py')]
     result['artifacts'] += [digest(p) for p in codec_libraries]
-# Paths in the build record remain repository relative, including command args.
-text = json.dumps(result, indent=2).replace(json.dumps(str(root)), '"."').replace(str(root) + '/', '') + '\n'
+# Whole path arguments become relative; embedded flags remain verbatim.
+text = json.dumps(relative_paths(result, root), indent=2) + '\n'
 (directory / (a.target + ('-asan' if a.sanitize else '') + '-build.json')).write_text(text)
 print(json.dumps({'target': a.target, 'artifacts': json.loads(text)['artifacts']}))

@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import tarfile
 from native_platform import native_platform
+from build_record import relative_paths
 
 
 def record(path):
@@ -104,5 +105,5 @@ result = dict(format='musteroffice.image-codec-build/1', target=a.target, saniti
               configurations=[record(directory / k / 'CMakeCache.txt') for k in libraries])
 if a.target == 'native':
     result['nativePlatform'] = native_platform()
-(directory / 'build.json').write_text(json.dumps(result, indent=2).replace(str(root) + '/', '') + '\n')
+(directory / 'build.json').write_text(json.dumps(relative_paths(result, root), indent=2) + '\n')
 print(json.dumps({'target': a.target, 'libraries': result['libraries']}))
