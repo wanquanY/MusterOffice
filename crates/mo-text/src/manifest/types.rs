@@ -61,6 +61,11 @@ pub enum FontStyle {
 pub struct ManifestTypeface {
     pub typeface: String,
     pub policy: TypefaceMappingPolicy,
+    /// Ordered, explicit coverage fallbacks into this manifest's typefaces.
+    /// Only these entries are tried; their own fallbacks are not expanded.
+    /// Each candidate uses the requested style slot without synthesis.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub fallbacks: Vec<String>,
     /// Explicit instance selection; no synthesized bold/slant or slot fallback.
     pub regular: Option<ManifestInstance>,
     pub bold: Option<ManifestInstance>,
@@ -118,6 +123,18 @@ pub struct ManifestStyleBinding {
     pub style: u32,
     pub typeface: u32,
     pub font_style: FontStyle,
+    pub face: u32,
+    pub candidate: FontCandidate,
+    pub policy: TypefaceMappingPolicy,
+    /// Candidate evidence in fallback order, after the primary candidate above.
+    /// Actual selections and missing-glyph probes remain in the shaping result.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub fallbacks: Vec<ManifestFallbackBinding>,
+}
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ManifestFallbackBinding {
+    pub typeface: u32,
     pub face: u32,
     pub candidate: FontCandidate,
     pub policy: TypefaceMappingPolicy,

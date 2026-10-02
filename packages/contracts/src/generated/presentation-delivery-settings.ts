@@ -324,6 +324,12 @@ export interface CascadeFont {
 export interface ManifestTypeface {
   bold?: ManifestInstance | null;
   boldItalic?: ManifestInstance | null;
+  /**
+   * Ordered, explicit coverage fallbacks into this manifest's typefaces.
+   * Only these entries are tried; their own fallbacks are not expanded.
+   * Each candidate uses the requested style slot without synthesis.
+   */
+  fallbacks?: string[];
   italic?: ManifestInstance | null;
   policy: TypefaceMappingPolicy;
   /**

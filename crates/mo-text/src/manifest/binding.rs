@@ -48,6 +48,12 @@ pub(super) fn structure<'a>(
     for (i, typeface) in manifest.typefaces.iter().enumerate() {
         cancelled(check)?;
         name(&typeface.typeface)?;
+        if typeface.fallbacks.len() >= 32 {
+            return Err(TextError::Limit("font manifest fallback candidates"));
+        }
+        for fallback in &typeface.fallbacks {
+            name(fallback)?;
+        }
         if names.insert(typeface.typeface.as_str(), i).is_some() {
             return Err(TextError::Invalid("duplicate manifest typeface"));
         }
@@ -64,6 +70,16 @@ pub(super) fn structure<'a>(
             }
             for axis in &instance.variations {
                 name(&axis.tag)?;
+            }
+        }
+    }
+    for typeface in &manifest.typefaces {
+        let mut seen = std::collections::BTreeSet::new();
+        seen.insert(typeface.typeface.as_str());
+        for fallback in &typeface.fallbacks {
+            cancelled(check)?;
+            if !names.contains_key(fallback.as_str()) || !seen.insert(fallback.as_str()) {
+                return Err(TextError::Invalid("font manifest fallback reference"));
             }
         }
     }
@@ -178,35 +194,58 @@ pub(super) fn paragraph(
             .get(s.typeface.as_str())
             .ok_or_else(|| missing(FontSelectionReason::UnmappedTypeface))?;
         let mapping = &manifest.typefaces[typeface];
-        if let TypefaceMappingPolicy::Substitution { reason, .. } = &mapping.policy {
-            copied_policy_bytes = copied_policy_bytes
-                .checked_add(reason.len())
-                .ok_or(TextError::Limit("manifest result policy bytes"))?;
-            if copied_policy_bytes > limits.max_name_bytes {
-                return Err(TextError::Limit("manifest result policy bytes"));
+        let mut candidates = vec![];
+        let mut bindings = vec![];
+        // This is a flat host-owned candidate order, not a recursive font graph.
+        for index in std::iter::once(typeface)
+            .chain(mapping.fallbacks.iter().map(|name| names[name.as_str()]))
+        {
+            cancelled(check)?;
+            let entry = &manifest.typefaces[index];
+            if let TypefaceMappingPolicy::Substitution { reason, .. } = &entry.policy {
+                copied_policy_bytes = copied_policy_bytes
+                    .checked_add(reason.len())
+                    .ok_or(TextError::Limit("manifest result policy bytes"))?;
+                if copied_policy_bytes > limits.max_name_bytes {
+                    return Err(TextError::Limit("manifest result policy bytes"));
+                }
             }
+            let instance = entry.slot(s.font_style).ok_or_else(|| {
+                TextError::FontSelection(Box::new(FontSelectionFailure {
+                    style: i as u32,
+                    typeface: entry.typeface.clone(),
+                    font_style: s.font_style,
+                    reason: FontSelectionReason::MissingStyle,
+                }))
+            })?;
+            let candidate = FontCandidate {
+                font: manifest.faces[instance.face as usize].font,
+                variations: instance.variations.clone(),
+            };
+            candidates.push(candidate.clone());
+            bindings.push(ManifestFallbackBinding {
+                typeface: index as u32,
+                face: instance.face,
+                candidate,
+                policy: entry.policy.clone(),
+            });
         }
-        let instance = mapping
-            .slot(s.font_style)
-            .ok_or_else(|| missing(FontSelectionReason::MissingStyle))?;
-        let candidate = FontCandidate {
-            font: manifest.faces[instance.face as usize].font,
-            variations: instance.variations.clone(),
-        };
+        let primary = bindings.remove(0);
         styles.push(ParagraphTextStyle {
             language: s.language.clone(),
             features: s.features.clone(),
-            candidates: vec![candidate.clone()],
+            candidates,
             suppress_dotted_circle: s.suppress_dotted_circle,
             max_glyphs: s.max_glyphs,
         });
         selected.push(ManifestStyleBinding {
             style: i as u32,
-            typeface: typeface as u32,
+            typeface: primary.typeface,
             font_style: s.font_style,
-            face: instance.face,
-            candidate,
-            policy: mapping.policy.clone(),
+            face: primary.face,
+            candidate: primary.candidate,
+            policy: primary.policy,
+            fallbacks: bindings,
         });
     }
     let paragraph = ParagraphShapeRequest {

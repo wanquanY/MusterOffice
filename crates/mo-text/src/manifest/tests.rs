@@ -2,6 +2,8 @@ use super::*;
 use crate::geometry::test_support::{Backend, FONT};
 use mo_common::{ByteLength, Digest};
 use mo_unicode::bidi::ParagraphDirection;
+#[path = "fallback_tests.rs"]
+mod fallback_tests;
 #[path = "prepared_tests.rs"]
 mod prepared_tests;
 
@@ -41,6 +43,7 @@ fn request(text: &str) -> ManifestParagraphRequest {
             typefaces: vec![ManifestTypeface {
                 typeface: family.into(),
                 policy: TypefaceMappingPolicy::ExactFamily {},
+                fallbacks: vec![],
                 regular: Some(ManifestInstance {
                     face: 0,
                     variations: vec![],

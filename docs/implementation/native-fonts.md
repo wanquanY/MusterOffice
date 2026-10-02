@@ -51,3 +51,5 @@ cargo check -p mo-pptx -p mo-text --target wasm32-unknown-unknown --locked
 XML 参考使用既有 lxml；字体参考只用 Python 标准库。本轮没有增加运行时依赖或改变锁文件，只为开发示例声明已有的 serde_json 开发依赖。冻结证据见[字体库级检查](../reviews/evidence/2026-09-25-native-fonts-library-verification.json)；此前的 10064 批仍只认证旧的[运行时产物](../reviews/evidence/2026-09-25-text-body-verification.json)，不能转算成新库能力覆盖。
 
 后续实现已将清单资源跨段落复用，并连接自动布局与字形轮廓，见[清单布局](manifest-layout.md)；上述 428 项及单个塑形探针保留为本阶段证据。下一步将来源 run、字体槽/语言、字号/基线、段落布局和文字画笔统一连接到页面编译，再执行实际双端绘制与目标应用对照。当前来源页面仍拒绝含文字的可见对象；autofit、多栏、竖排、项目符号、字段、完整高级对象与播放，以及 Musterwork E0–E3 均需继续完成。本轮没有新的发布构建、桌面完整包体积或产品性能结论。
+
+2026-10-03 补充：清单现已支持宿主声明的有序覆盖回退，见[显式字体覆盖回退](manifest-font-fallback.md)。上述阶段证据保持历史含义。
