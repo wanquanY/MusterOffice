@@ -52,6 +52,8 @@ mod placement;
 pub use placement::*;
 mod outlines;
 pub use outlines::*;
+mod carets;
+pub use carets::*;
 mod metrics;
 pub use metrics::*;
 mod chart_geometry;

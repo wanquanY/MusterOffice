@@ -13,7 +13,8 @@ const tag=s=>Buffer.from(s).readUInt32BE();
 const shape=Uint32Array.from([0x4d4f5342,1,0x0e0500,1,3,14,117,110,100,0x4d4f4842,0,4,tag('Latn'),3,0,1,0,1,0,0,16,1,65]);
 const metric=Uint32Array.from([0x4d4f4d42,1,0x0e0500,1,7,0x4d4f4d54,1,0,0,1,0,tag('hasc')]);
 const outlines=Uint32Array.from([0x4d4f4f42,1,0x0e0500,1,9,0x4d4f4f54,1,0,0,1,4096,1048576,0,1]);
-const frames=[['shapeBatch','shapeRegistered',shape],['measureBatch','measureRegistered',metric],['outlineBatch','outlineRegistered',outlines]];
+const carets=Uint32Array.from([0x4d4f4342,1,0x0e0500,1,9,0x4d4f4354,1,0,0,4,1,64,0,1]);
+const frames=[['shapeBatch','shapeRegistered',shape],['measureBatch','measureRegistered',metric],['outlineBatch','outlineRegistered',outlines],['caretBatch','caretRegistered',carets]];
 let allocations=[],frees=[];
 const component=await ShapingComponent.create(async options=>{
   const m=await factory(options),malloc=m._malloc,free=m._free;
@@ -38,6 +39,6 @@ const bounded=await ShapingComponent.create(factory,compiled);
 for(let i=0;i<32;i++)bounded.registerFont(saved);
 assert.throws(()=>bounded.registerFont(saved));assert.equal(bounded.invalid,true);
 const empty=await ShapingComponent.create(factory,compiled);assert.throws(()=>empty.registerFont(new Uint8Array()));assert.equal(empty.invalid,true);
-await fs.writeFile(output,JSON.stringify({profile:'real-wasm-font-residency/1',exactBatchComparisons:9,fontUploadsForNineBatches:1,
+await fs.writeFile(output,JSON.stringify({profile:'real-wasm-font-residency/1',exactBatchComparisons:12,fontUploadsForTwelveBatches:1,
   callerMutationIsolated:true,releaseVerified:true,staleHandleRejected:true,entryBudgetEnforced:true,emptyFontRejected:true},null,2)+'\n',{flag:'wx'});
-console.log('Verified nine identical real shaping/metrics/outline replies with one font upload and scoped release.');
+console.log('Verified twelve identical real shaping/metrics/outline/caret replies with one font upload and scoped release.');

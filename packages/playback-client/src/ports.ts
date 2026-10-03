@@ -13,10 +13,12 @@ export interface ShapingPort {
   registerFont(font: Uint8Array): number;
   unregisterFont(handle: number): void;
   shapeRegistered(handle: number, frame: Uint32Array): Uint32Array;
+  caretRegistered(handle: number, frame: Uint32Array): Uint32Array;
   measureRegistered(handle: number, frame: Uint32Array): Uint32Array;
   outlineRegistered(handle: number, frame: Uint32Array): Uint32Array;
   shapeBatch(font: Uint8Array, frame: Uint32Array): Uint32Array;
   outlineBatch(font: Uint8Array, frame: Uint32Array): Uint32Array;
+  caretBatch(font: Uint8Array, frame: Uint32Array): Uint32Array;
   measureBatch(font: Uint8Array, frame: Uint32Array): Uint32Array;
   invalidate(): void;
 }

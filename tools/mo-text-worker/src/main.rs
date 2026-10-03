@@ -12,10 +12,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         [mode] if mode == "--geometry" => mo_kernel_api::layout_lines_json,
         [mode] if mode == "--lines" => mo_kernel_api::shape_lines_json,
         [mode] if mode == "--outlines" => mo_kernel_api::outline_font_json,
+        [mode] if mode == "--carets" => mo_kernel_api::font_carets_json,
         [mode] if mode == "--metrics" => mo_kernel_api::measure_font_json,
         _ => {
             return Err(
-                "usage: mo-text-worker [--cascade|--paragraph|--lines|--metrics|--geometry|--layout|--outlines|--paths]".into(),
+                "usage: mo-text-worker [--cascade|--paragraph|--lines|--carets|--metrics|--geometry|--layout|--outlines|--paths]".into(),
             );
         }
     };

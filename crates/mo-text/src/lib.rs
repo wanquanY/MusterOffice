@@ -1,6 +1,7 @@
 //! Font-bound shaping, paragraph preparation and line-context reshaping.
 //! Host execution and authority live outside this crate.
 pub mod backend;
+pub mod carets;
 pub mod cascade;
 pub mod fallback;
 pub mod flow;

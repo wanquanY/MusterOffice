@@ -43,6 +43,10 @@ impl TextBackend for FrameBackend<'_> {
         self.charge(font, words)?;
         self.inner.outline_batch(font, words)
     }
+    fn caret_batch(&mut self, font: &[u8], words: &[u32]) -> Result<Vec<u32>, TextError> {
+        self.charge(font, words)?;
+        self.inner.caret_batch(font, words)
+    }
     fn invalidate(&mut self) {
         self.inner.invalidate();
     }

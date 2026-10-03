@@ -28,6 +28,7 @@ int main(int argc,char **argv) {
   uint32_t *output=nullptr,length=0;
   auto call=[&] {
     if (std::string(argv[3])=="--outlines") return mo_hb_outline_font(font.data(),font.size(),request.data(),request.size(),&output,&length);
+    if (std::string(argv[3])=="--carets") return mo_hb_caret_font(font.data(),font.size(),request.data(),request.size(),&output,&length);
     if (std::string(argv[3])=="--metrics") return mo_hb_measure_font(font.data(),font.size(),request.data(),request.size(),&output,&length);
     return mo_hb_shape(font.data(),font.size(),request.data(),request.size(),argv[3],std::char_traits<char>::length(argv[3]),&output,&length);
   };

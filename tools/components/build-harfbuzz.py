@@ -48,7 +48,7 @@ def run(command):
     commands.append(command)
     with (a.directory/(a.target+'-build.log')).open('a') as log:subprocess.run(command,check=True,env=env,stdout=log,stderr=log)
 if a.target=='native':
-    inputs=[upstream/'harfbuzz.cc',component/'mo_hb.cpp',component/'mo_hb_metrics.cpp',component/'mo_hb_outlines.cpp',component/'mo_hb_allocator.cpp'];objects=[]
+    inputs=[upstream/'harfbuzz.cc',component/'mo_hb.cpp',component/'mo_hb_metrics.cpp',component/'mo_hb_outlines.cpp',component/'mo_hb_carets.cpp',component/'mo_hb_allocator.cpp'];objects=[]
     for i,source_file in enumerate(inputs):
         target=a.directory/f'native-{i}.o';objects.append(str(target))
         run([compiler,*common,'-c',str(source_file),'-o',str(target)])
@@ -69,10 +69,10 @@ if a.target=='native':
             str(upstream.parent/'util/hb-shape.cc'),*glib,'-o',str(reference)])
         artifacts.append(reference)
 else:
-    exports=['_mo_hb_shape','_mo_hb_measure_font','_mo_hb_outline_font','_mo_hb_free','_mo_hb_version','_mo_hb_alloc_live','_malloc','_free']
+    exports=['_mo_hb_shape','_mo_hb_measure_font','_mo_hb_outline_font','_mo_hb_caret_font','_mo_hb_free','_mo_hb_version','_mo_hb_alloc_live','_malloc','_free']
     if a.fault_tests:exports+=['_mo_hb_fail_after']
     module=a.directory/'mo-hb.mjs'
-    run([compiler,*common,str(upstream/'harfbuzz.cc'),str(component/'mo_hb.cpp'),str(component/'mo_hb_metrics.cpp'),str(component/'mo_hb_outlines.cpp'),str(component/'mo_hb_allocator.cpp'),
+    run([compiler,*common,str(upstream/'harfbuzz.cc'),str(component/'mo_hb.cpp'),str(component/'mo_hb_metrics.cpp'),str(component/'mo_hb_outlines.cpp'),str(component/'mo_hb_carets.cpp'),str(component/'mo_hb_allocator.cpp'),
         '--no-entry','-sMODULARIZE=1','-sEXPORT_ES6=1','-sENVIRONMENT=node,web','-sFILESYSTEM=0',
         '-sALLOW_MEMORY_GROWTH=1','-sMAXIMUM_MEMORY=536870912','-sSTACK_SIZE=1048576','-sABORTING_MALLOC=0',
         '-sDYNAMIC_EXECUTION=0','-sEXPORTED_FUNCTIONS='+json.dumps(exports),

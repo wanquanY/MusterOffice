@@ -42,6 +42,7 @@ impl NativeShaper {
         let runs: Vec<_> = if !matches!(operation, ffi::Operation::Shape) {
             measured = match operation {
                 ffi::Operation::Outlines => backend::decode_outline_requests(frame)?,
+                ffi::Operation::Carets => backend::decode_caret_requests(frame)?,
                 _ => backend::decode_metric_requests(frame)?,
             };
             measured.iter().map(|words| (*words, None)).collect()
@@ -99,6 +100,10 @@ impl TextBackend for NativeShaper {
         let font = self.fonts.get(handle)?;
         self.execute(&font, frame, ffi::Operation::Outlines)
     }
+    fn caret_registered(&mut self, handle: u32, frame: &[u32]) -> Result<Vec<u32>, TextError> {
+        let font = self.fonts.get(handle)?;
+        self.execute(&font, frame, ffi::Operation::Carets)
+    }
 
     fn shape_batch(&mut self, font: &[u8], frame: &[u32]) -> Result<Vec<u32>, TextError> {
         self.execute(font, frame, ffi::Operation::Shape)
@@ -108,6 +113,9 @@ impl TextBackend for NativeShaper {
     }
     fn outline_batch(&mut self, font: &[u8], frame: &[u32]) -> Result<Vec<u32>, TextError> {
         self.execute(font, frame, ffi::Operation::Outlines)
+    }
+    fn caret_batch(&mut self, font: &[u8], frame: &[u32]) -> Result<Vec<u32>, TextError> {
+        self.execute(font, frame, ffi::Operation::Carets)
     }
     fn invalidate(&mut self) {
         self.invalid = true;

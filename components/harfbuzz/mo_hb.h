@@ -20,6 +20,10 @@ int32_t mo_hb_measure_font(const uint8_t *font, uint32_t font_length,
 int32_t mo_hb_outline_font(const uint8_t *font, uint32_t font_length,
                          const uint32_t *request, uint32_t request_words,
                          uint32_t **output, uint32_t *output_words);
+// GDEF ligature carets at the same font instance/scale as shaping, before GPOS.
+int32_t mo_hb_caret_font(const uint8_t *font, uint32_t font_length,
+                       const uint32_t *request, uint32_t request_words,
+                       uint32_t **output, uint32_t *output_words);
 void mo_hb_free(void *allocation);
 uint32_t mo_hb_version(void);
 #ifdef __cplusplus

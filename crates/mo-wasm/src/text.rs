@@ -7,11 +7,13 @@ export interface ShapingComponent {
     shapeBatch(font: Uint8Array, frame: Uint32Array): Uint32Array;
     outlineBatch(font: Uint8Array, frame: Uint32Array): Uint32Array;
     measureBatch(font: Uint8Array, frame: Uint32Array): Uint32Array;
+    caretBatch(font: Uint8Array, frame: Uint32Array): Uint32Array;
     registerFont(font: Uint8Array): number;
     unregisterFont(handle: number): void;
     shapeRegistered(handle: number, frame: Uint32Array): Uint32Array;
     measureRegistered(handle: number, frame: Uint32Array): Uint32Array;
     outlineRegistered(handle: number, frame: Uint32Array): Uint32Array;
+    caretRegistered(handle: number, frame: Uint32Array): Uint32Array;
     invalidate(): void;
 }
 "#;
@@ -34,6 +36,12 @@ extern "C" {
         font: &[u8],
         frame: &[u32],
     ) -> Result<Vec<u32>, JsValue>;
+    #[wasm_bindgen(method,catch,js_name=caretBatch)]
+    fn invoke_carets(
+        this: &ShapingComponent,
+        font: &[u8],
+        frame: &[u32],
+    ) -> Result<Vec<u32>, JsValue>;
     #[wasm_bindgen(method,catch,js_name=registerFont)]
     fn register(this: &ShapingComponent, font: &[u8]) -> Result<u32, JsValue>;
     #[wasm_bindgen(method,catch,js_name=unregisterFont)]
@@ -52,6 +60,12 @@ extern "C" {
     ) -> Result<Vec<u32>, JsValue>;
     #[wasm_bindgen(method,catch,js_name=outlineRegistered)]
     fn registered_outlines(
+        this: &ShapingComponent,
+        handle: u32,
+        frame: &[u32],
+    ) -> Result<Vec<u32>, JsValue>;
+    #[wasm_bindgen(method,catch,js_name=caretRegistered)]
+    fn registered_carets(
         this: &ShapingComponent,
         handle: u32,
         frame: &[u32],
@@ -89,6 +103,11 @@ impl TextBackend for Backend<'_> {
             .registered_outlines(handle, frame)
             .map_err(|_| TextError::Host("WASM registered outlines failed"))
     }
+    fn caret_registered(&mut self, handle: u32, frame: &[u32]) -> Result<Vec<u32>, TextError> {
+        self.0
+            .registered_carets(handle, frame)
+            .map_err(|_| TextError::Host("WASM registered carets failed"))
+    }
     fn shape_batch(&mut self, font: &[u8], frame: &[u32]) -> Result<Vec<u32>, TextError> {
         self.0
             .invoke(font, frame)
@@ -103,6 +122,11 @@ impl TextBackend for Backend<'_> {
         self.0
             .invoke_outlines(font, frame)
             .map_err(|_| TextError::Host("WASM outline component call failed"))
+    }
+    fn caret_batch(&mut self, font: &[u8], frame: &[u32]) -> Result<Vec<u32>, TextError> {
+        self.0
+            .invoke_carets(font, frame)
+            .map_err(|_| TextError::Host("WASM caret component call failed"))
     }
     fn invalidate(&mut self) {
         let _ = self.0.discard();
@@ -130,6 +154,11 @@ pub fn shape_paragraph(request: &str, bundle: &[u8], component: &ShapingComponen
 #[wasm_bindgen]
 pub fn shape_lines(request: &str, bundle: &[u8], component: &ShapingComponent) -> String {
     mo_kernel_api::shape_lines_json(request, bundle, &mut Backend(component), &|| false)
+}
+
+#[wasm_bindgen]
+pub fn font_carets(request: &str, font: &[u8], component: &ShapingComponent) -> String {
+    mo_kernel_api::font_carets_json(request, font, &mut Backend(component), &|| false)
 }
 
 #[wasm_bindgen]

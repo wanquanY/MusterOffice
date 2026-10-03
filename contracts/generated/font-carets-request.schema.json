@@ -1,0 +1,94 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:font-carets-request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FontCaretsRequest",
+  "type": "object",
+  "properties": {
+    "expectedSha256": {
+      "$ref": "#/$defs/Digest"
+    },
+    "faceIndex": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0
+    },
+    "instances": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/FontCaretsInstance"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "expectedSha256",
+    "faceIndex",
+    "instances"
+  ],
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "Direction": {
+      "type": "string",
+      "enum": [
+        "leftToRight",
+        "rightToLeft",
+        "topToBottom",
+        "bottomToTop"
+      ]
+    },
+    "FontCaretsInstance": {
+      "type": "object",
+      "properties": {
+        "direction": {
+          "$ref": "#/$defs/Direction"
+        },
+        "glyphIds": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "variations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ShapeVariation"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "variations",
+        "direction",
+        "glyphIds"
+      ]
+    },
+    "ShapeVariation": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string"
+        },
+        "value1616": {
+          "description": "Exact requested OpenType 16.16 design coordinate.",
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "tag",
+        "value1616"
+      ]
+    }
+  }
+}

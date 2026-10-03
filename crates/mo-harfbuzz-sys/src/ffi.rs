@@ -1,6 +1,9 @@
 use mo_text::{
     TextError,
-    backend::{MAX_METRICS_RESULT_WORDS, MAX_OUTLINES_RESULT_WORDS, MAX_RESULT_WORDS},
+    backend::{
+        MAX_CARETS_RESULT_WORDS, MAX_METRICS_RESULT_WORDS, MAX_OUTLINES_RESULT_WORDS,
+        MAX_RESULT_WORDS,
+    },
 };
 use std::{ffi::c_void, ptr, slice};
 unsafe extern "C" {
@@ -23,6 +26,14 @@ unsafe extern "C" {
         output_words: *mut u32,
     ) -> i32;
     fn mo_hb_outline_font(
+        font: *const u8,
+        font_length: u32,
+        request: *const u32,
+        request_words: u32,
+        output: *mut *mut u32,
+        output_words: *mut u32,
+    ) -> i32;
+    fn mo_hb_caret_font(
         font: *const u8,
         font_length: u32,
         request: *const u32,
@@ -60,6 +71,7 @@ pub(super) enum Operation {
     Shape,
     Metrics,
     Outlines,
+    Carets,
 }
 impl Operation {
     pub fn maximum(self) -> usize {
@@ -67,6 +79,7 @@ impl Operation {
             Self::Shape => MAX_RESULT_WORDS,
             Self::Metrics => MAX_METRICS_RESULT_WORDS,
             Self::Outlines => MAX_OUTLINES_RESULT_WORDS,
+            Self::Carets => MAX_CARETS_RESULT_WORDS,
         }
     }
 }
@@ -99,6 +112,15 @@ pub(super) fn compute(
             )
         } else if matches!(operation, Operation::Outlines) {
             mo_hb_outline_font(
+                font.as_ptr(),
+                n,
+                request.as_ptr(),
+                r,
+                &mut pointer,
+                &mut count,
+            )
+        } else if matches!(operation, Operation::Carets) {
+            mo_hb_caret_font(
                 font.as_ptr(),
                 n,
                 request.as_ptr(),

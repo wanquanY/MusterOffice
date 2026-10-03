@@ -6,6 +6,7 @@ export interface ComponentModule {
   _free(pointer: number): void;
   _mo_hb_outline_font(font: number, fontBytes: number, request: number, words: number, output: number, outputWords: number): number;
   _mo_hb_measure_font(font: number, fontBytes: number, request: number, words: number, output: number, outputWords: number): number;
+  _mo_hb_caret_font(font: number, fontBytes: number, request: number, words: number, output: number, outputWords: number): number;
   _mo_hb_free(pointer: number): void;
   _mo_hb_version(): number;
   _mo_hb_shape(font: number, fontBytes: number, request: number, words: number,
@@ -18,6 +19,7 @@ const profiles = {
   shape: {magic:0x4d4f5342, count:256, request:2200000, min:13, max:2200000, output:8, reply:2+256*9+262144*7},
   metrics: {magic:0x4d4f4d42, count:256, request:41732, min:6, max:162, output:6, reply:2+256*(1+6+28*3)},
   outlines: {magic:0x4d4f4f42, count:64, request:4+64*137+4096, min:8, max:392, output:6, reply:2+64*7+4096*3+262144*7},
+  carets: {magic:0x4d4f4342, count:64, request:4+64*137+4096, min:8, max:392, output:6, reply:2+64*7+4096*66},
 } as const;
 type Operation = keyof typeof profiles;
 
@@ -75,10 +77,12 @@ export class ShapingComponent {
   shapeRegistered(handle:number,frame:Uint32Array):Uint32Array {return this.#batch(handle,frame,"shape");}
   measureRegistered(handle:number,frame:Uint32Array):Uint32Array {return this.#batch(handle,frame,"metrics");}
   outlineRegistered(handle:number,frame:Uint32Array):Uint32Array {return this.#batch(handle,frame,"outlines");}
+  caretRegistered(handle:number,frame:Uint32Array):Uint32Array {return this.#batch(handle,frame,"carets");}
 
   shapeBatch(font: Uint8Array, frame: Uint32Array): Uint32Array {return this.#batch(font,frame,"shape");}
   measureBatch(font: Uint8Array, frame: Uint32Array): Uint32Array {return this.#batch(font,frame,"metrics");}
   outlineBatch(font: Uint8Array, frame: Uint32Array): Uint32Array {return this.#batch(font,frame,"outlines");}
+  caretBatch(font: Uint8Array, frame: Uint32Array): Uint32Array {return this.#batch(font,frame,"carets");}
   #batch(font: Uint8Array | number, frame: Uint32Array, operation: Operation): Uint32Array {
     const profile = profiles[operation], maximum = profile.reply, shaping = operation === "shape";
     const m = this.#module;
@@ -121,6 +125,7 @@ export class ShapingComponent {
         m.HEAPU32.fill(0, slots / 4, slots / 4 + 2);
         const status = operation === "metrics" ? m._mo_hb_measure_font(fontPointer,fontLength,requestPointer,requestLength,slots,slots+4) :
           operation === "outlines" ? m._mo_hb_outline_font(fontPointer,fontLength,requestPointer,requestLength,slots,slots+4) :
+          operation === "carets" ? m._mo_hb_caret_font(fontPointer,fontLength,requestPointer,requestLength,slots,slots+4) :
           m._mo_hb_shape(fontPointer, fontLength, requestPointer, requestLength, languagePointer, languageLength, slots, slots + 4);
         output = m.HEAPU32[slots / 4]!;
         const count = m.HEAPU32[slots / 4 + 1]!;

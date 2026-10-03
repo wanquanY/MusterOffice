@@ -46,7 +46,7 @@ const hbFactory = (await load(path.join(hbDir, 'mo-hb.mjs'))).default;
 const raster = await RasterComponent.create(skiaFactory, new WebAssembly.Module(await read(path.join(skiaDir, 'mo-skia.wasm'))));
 const shaper = await ShapingComponent.create(hbFactory, new WebAssembly.Module(await read(path.join(hbDir, 'mo-hb.wasm'))));
 let textCalls = 0, imageCalls = 0;
-const text = Object.fromEntries(['shapeBatch','outlineBatch','measureBatch','registerFont','unregisterFont','shapeRegistered','measureRegistered','outlineRegistered'].map(name => [name, (...args) => {
+const text = Object.fromEntries(['shapeBatch','outlineBatch','measureBatch','registerFont','unregisterFont','shapeRegistered','measureRegistered','outlineRegistered','caretBatch','caretRegistered'].map(name => [name, (...args) => {
   textCalls++; return shaper[name](...args);
 }]));
 text.invalidate = () => shaper.invalidate();

@@ -1,7 +1,9 @@
 //! Private transport between the shared Rust text engine and an isolated shaper.
 //! A single call uploads one font and a batch, never one crossing per glyph.
+mod carets;
 mod session;
 use crate::TextError;
+pub use carets::*;
 pub use session::FontSession;
 
 pub const MAGIC: u32 = 0x4d4f5342;
@@ -34,6 +36,9 @@ pub trait TextBackend {
     fn outline_registered(&mut self, _handle: u32, _frame: &[u32]) -> Result<Vec<u32>, TextError> {
         Err(TextError::Host("font residency unavailable"))
     }
+    fn caret_registered(&mut self, _handle: u32, _frame: &[u32]) -> Result<Vec<u32>, TextError> {
+        Err(TextError::Host("font caret residency unavailable"))
+    }
 
     /// Reply: [0, count, length, component words, ...], or [status, failedRun].
     /// Any exception, trap, malformed reply or status 2/6 invalidates the instance.
@@ -43,6 +48,9 @@ pub trait TextBackend {
     }
     fn outline_batch(&mut self, _font: &[u8], _frame: &[u32]) -> Result<Vec<u32>, TextError> {
         Err(TextError::Host("font outlines are unavailable"))
+    }
+    fn caret_batch(&mut self, _font: &[u8], _frame: &[u32]) -> Result<Vec<u32>, TextError> {
+        Err(TextError::Host("font carets are unavailable"))
     }
     fn invalidate(&mut self);
 }

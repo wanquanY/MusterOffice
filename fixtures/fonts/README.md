@@ -13,3 +13,8 @@
 `owned-metrics-hhea.ttf` / `owned-metrics-typo.ttf` 由 `tools/verification/metric-font-fixtures.py` 从原创 `owned.ttf` 生成，添加原创 avar 映射和 28 个 MVAR 度量记录，分别检查 hhea/typo 选择。摘要见 `owned-metrics.json`；许可与原始原创样本相同，不作为产品字体。独立计算见[字体实例度量](../../docs/implementation/font-instance-metrics.md)。
 
 `owned-outlines.ttf/.otf` 由 `tools/verification/outline-font-fixtures.py` 生成原创二次/三次曲线、孔洞、负坐标、复合变换和 gvar 样本，摘要见 `owned-outlines.json`；许可与其他原创样本一致。它们只用于[轮廓验证](../../docs/implementation/font-outlines.md)，不作为产品字体。
+
+`owned-carets*.ttf/.otf` 由 `tools/verification/caret-font-fixtures.py` 从原创
+`owned.ttf` / `owned-outlines.ttf/.otf` 生成，验证非等距合字、GDEF 坐标/点/变体、复合与 off-curve 点、
+超限和不可计算点。清单为 `owned-carets.json`，许可状态与上述原创字体一致。
+FontTools 独立计算和 Native/WASM 证据见[合字光标](../../docs/implementation/font-ligature-carets.md)。

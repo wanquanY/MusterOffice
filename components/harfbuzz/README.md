@@ -59,3 +59,19 @@
 成功头部为 `0x4d4f4d54, 1, upem, upem*64, metricCount, reservedZero`，随后每项为 `[tag, available, positionBits]`。`available` 只能为 0 或 1，0 时位置位必须为零；1 时位置是有符号 i32，真实零有效。查询使用公开 `hb_ot_metrics_get_position`，不合成缺失值。任何分配失败丢弃全部输出，并同时禁止该实例继续测量或塑形。
 
 Rust/TS 私有批次传输头为 `0x4d4f4d42, 1, 0x0e0500, instanceCount`，后接 `[wordLength, componentRequest...]`。最多 256 个实例，41732 个请求 words、23298 个响应 words。成功批次为 `[0, count, length, componentReply..., ...]`，失败为 `[status, failedInstanceIndex]`，不包含部分结果。字体上传一次，组件当前仍为每个实例创建字体对象。完整 profile 和边界见[字体实例度量](../../docs/implementation/font-instance-metrics.md)。
+
+## 合字光标 ABI v1
+
+`mo_hb_caret_font` 请求头为 8 words：
+`0x4d4f4354, 1, faceIndex, axisCount, direction, glyphCount, 64, reservedZero`，
+随后为轴 `[tag, f32bits]` 和 glyph IDs；方向值与塑形相同。最多 64 轴、256 个互不重复 glyph。
+成功头为 `0x4d4f4354, 1, upem, upem*64, direction, glyphCount`，
+随后依次为 `[glyphId, caretCount, signedPositionBits...]`。
+每 glyph 最多 64 光标，空数组与真实零不同；保留字体顺序，不生成等分位置。
+状态 3 也包括不可计算的轮廓点，状态 4 包括光标数量及轮廓工作预算超限。
+
+私有批次头为 `0x4d4f4342, 1, 0x0e0500, instanceCount`，实例用长度前缀；
+最多 64 实例/4096 glyph，总请求最多 12868 words，总回复最多 270786 words。
+响应沿用 `[0, count, length, reply..., ...]` 或 `[status, failedInstanceIndex]`。
+所有结果都属于塑形前的字体位置；字体绑定、批次原子性、Native/WASM 失败隔离和
+Format 2 私有适配的版本依赖见[合字光标实现](../../docs/implementation/font-ligature-carets.md)。

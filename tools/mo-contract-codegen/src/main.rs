@@ -3,6 +3,7 @@ use mo_kernel_api::{CascadeRequest, CascadeResponse, TextAnalysisRequest, TextAn
 use mo_kernel_api::{
     ChartGeometryRequest, ChartGeometryResponse, ChartSectorsResponse, SectorRequest,
 };
+use mo_kernel_api::{FontCaretsRequest, FontCaretsResponse};
 use mo_kernel_api::{FontMetricsRequest, FontMetricsResponse};
 use mo_kernel_api::{FontOutlinesRequest, FontOutlinesResponse};
 use mo_kernel_api::{
@@ -315,6 +316,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         ("line-geometry-response", schema::<LineGeometryResponse>()),
         ("font-outlines-request", schema::<FontOutlinesRequest>()),
         ("font-outlines-response", schema::<FontOutlinesResponse>()),
+        ("font-carets-request", schema::<FontCaretsRequest>()),
+        ("font-carets-response", schema::<FontCaretsResponse>()),
         ("font-metrics-request", schema::<FontMetricsRequest>()),
         ("font-metrics-response", schema::<FontMetricsResponse>()),
         ("line-break-request", schema::<LineBreakRequest>()),

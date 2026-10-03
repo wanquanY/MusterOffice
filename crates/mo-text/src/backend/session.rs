@@ -67,6 +67,12 @@ impl TextBackend for FontSession<'_, '_> {
             None => self.inner.outline_batch(font, frame),
         }
     }
+    fn caret_batch(&mut self, font: &[u8], frame: &[u32]) -> Result<Vec<u32>, TextError> {
+        match self.handle(font)? {
+            Some(id) => self.inner.caret_registered(id, frame),
+            None => self.inner.caret_batch(font, frame),
+        }
+    }
     fn invalidate(&mut self) {
         self.inner.invalidate();
     }
@@ -125,6 +131,9 @@ mod tests {
         fn measure_registered(&mut self, h: u32, w: &[u32]) -> Result<Vec<u32>, TextError> {
             self.shape_registered(h, w)
         }
+        fn caret_registered(&mut self, h: u32, w: &[u32]) -> Result<Vec<u32>, TextError> {
+            self.shape_registered(h, w)
+        }
         fn outline_registered(&mut self, h: u32, w: &[u32]) -> Result<Vec<u32>, TextError> {
             self.shape_registered(h, w)
         }
@@ -159,13 +168,14 @@ mod tests {
             assert_eq!(session.font_upload_bytes(FONT), 0);
             session.measure_batch(FONT, &[]).unwrap();
             session.outline_batch(FONT, &[]).unwrap();
+            session.caret_batch(FONT, &[]).unwrap();
             let foreign = FONT.to_vec();
             assert_eq!(session.font_upload_bytes(&foreign), FONT.len() as u64);
             session.shape_batch(&foreign, &[]).unwrap();
         }
         assert_eq!(
             (host.registrations, host.releases, host.resident, host.raw),
-            (1, 1, 3, 1)
+            (1, 1, 4, 1)
         );
         assert!(!host.invalid);
         {

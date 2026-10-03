@@ -5,6 +5,7 @@ pub(super) enum Mode {
     Cascade,
     Paragraph,
     Metrics,
+    Carets,
     Outlines,
     Lines,
     Geometry,
@@ -33,6 +34,9 @@ pub(super) fn shape(
         }
         Mode::Outlines => {
             command.arg("--outlines");
+        }
+        Mode::Carets => {
+            command.arg("--carets");
         }
         Mode::Metrics => {
             command.arg("--metrics");
