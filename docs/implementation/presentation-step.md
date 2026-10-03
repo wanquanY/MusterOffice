@@ -1,6 +1,6 @@
 # 放映步骤与页面边界反馈
 
-2026-10-03。内核已实现，Musterwork 的固定发行接入和窗口导航验收另行推进。
+2026-10-03。内核已实现并固定接入 Musterwork 共享播放器，独立窗口导航验收另行推进。
 这是[原生交互编辑计算](native-presentation-editor.md)的播放能力，遵循
 [ADR 0009](../decisions/0009-product-editor-computation.md)的职责边界。
 
@@ -47,4 +47,13 @@ parity-01 是 Node 模块类型配置失败记录，不作为成功证据。
 时间线累计 168 项测试通过（既有全量运行加最后补充的 3 项）。原始事件模式另外完成
 9 组 Native/WASM 配对和 6 次新视口对照，证据为 `legacy-parity-01/report.json`。
 Schema 与 TypeScript 类型已重新生成，TS 编译、28 项播放客户端测试、严格时间线、Kernel/WASM lib Clippy 通过。
+Author/Source session、原调用入口和 Delivery 另外 32 项回归通过。
 这不是浏览器全屏、跨页转场、性能、外部 Office 互操作或整个编辑器验收。
+
+## 固定开发发行
+
+本地完整发行 `0.1.0-dev.step.20261003.1` 绑定 27 个实际 registry 包、Native export worker 和 WASM/TS，
+release SHA-256 为 `172e3ce1b55e6705ec8bb64896a675552129a88d385ac86d887a7dad745b9a12`。
+原生 worker SHA-256 为 `984c80b4ac0e7f8407c15e71a115a72fc181b8215293d3ff8bc0b05e3e653821`。
+独立消费者实际编译、导出和检查通过，证据 `.codex-work/presentation-step/release-check/report.json`。
+只声明 macOS arm64 的本机开发验证，未进行远端组件发布。
