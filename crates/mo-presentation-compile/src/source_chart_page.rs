@@ -1,5 +1,6 @@
 //! Native chart resources. Computed paths retain real chart/source identities;
 //! neither the inspected index nor the original OPC package is rewritten.
+mod budget;
 mod errors;
 mod layout;
 mod style;
@@ -58,6 +59,7 @@ struct Label {
     pub align: f64,
 }
 struct Layout {
+    coordinate_tolerance: Fixed,
     pub draws: Vec<Draw>,
     pub labels: Vec<Label>,
 }
@@ -169,6 +171,7 @@ pub(crate) fn prepare(
     let mut draw_count = 0usize;
     let mut path_bytes = 0u64;
     for layer in layers {
+        let tolerances = budget::for_layer(index, q, &layer, properties, &bindings, check)?;
         for id in layer.objects {
             let key = (layer.part.clone(), id);
             let Some(binding) = bindings.get(&key) else {
@@ -206,7 +209,7 @@ pub(crate) fn prepare(
                     )
                 })?;
             let area = charts::page::page_structure(package, &paints.chart.part, check)?;
-            let layout = layout::prepare(&paints, area, size, check)?;
+            let layout = layout::prepare(&paints, area, size, tolerances[&id], check)?;
             label_count = label_count
                 .checked_add(layout.labels.len())
                 .ok_or(RasterError::Range)?;

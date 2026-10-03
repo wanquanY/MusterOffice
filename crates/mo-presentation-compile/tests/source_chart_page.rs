@@ -74,7 +74,7 @@ fn request(i: &SourceIndex) -> SourcePageRequest {
                 numerator: 1,
                 denominator: 10000,
             },
-            coordinate_tolerance: Fixed::from_raw(1 << 24),
+            coordinate_tolerance: Fixed::from_raw(1 << 20),
             background: [255; 4],
         },
     }

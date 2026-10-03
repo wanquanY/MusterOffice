@@ -49,3 +49,16 @@ professional-template pages rendered natively. For their eight chart pages,
 the Native and WASM resource-page APIs produced identical complete metadata
 and RGBA bytes with the same explicit fonts and settings. This verifies those
 inputs, not general Office/WPS interoperability or product activation.
+
+Device-budget correction (2026-10-04): page chart curves now receive local
+tolerance derived from the requested viewport and the actual sampled/grouped
+frame placement. Chart labels use the same precise paragraph geometry as ordinary
+text, retaining Q32 pen bounds and line heights; they no longer align using the
+legacy integer-EMU view or attach a constant 2 EMU uncertainty. Numerical bounds
+include the bounded binary64 chart layout and Q32 metric/fragment arithmetic.
+The delivery tolerance remains unchanged (raw Q32 pixel tolerance 2^20).
+Regression coverage includes scaled viewports, grouped charts, retained motion
+and visibility; product source qualification uses the delivery tolerance.
+All 28 professional-template pages also pass at the unchanged delivery tolerance
+2^20, and their eight chart pages again match Native/WASM metadata and RGBA
+exactly after this correction. Product import/publication remains a separate gate.

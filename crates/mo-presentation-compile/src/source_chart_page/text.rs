@@ -83,13 +83,19 @@ pub(crate) fn shape(
             cluster_spacing: Fixed::ZERO,
         }];
         let paths = manifest
-            .paragraph_paths(
-                ManifestLayoutInput {
+            .paragraph_geometry(
+                ManifestFlowInput {
+                    tabs: None,
                     paragraph: input(label, &styles, &spans),
                     styles: &geometry,
                     strut_style: 0,
                     spacing: LineSpacing::Natural,
-                    width: Emu::new(label.width.round() as i64),
+                    widths: mo_text::flow::LineWidths {
+                        first: fixed(label.width)?,
+                        rest: fixed(label.width)?,
+                    },
+                    wrapping: mo_text::flow::LineWrapping::Wrap,
+                    hanging_punctuation: mo_text::flow::HangingPunctuation::None,
                     overflow: mo_text::flow::OverflowPolicy::KeepUnbreakable,
                 },
                 Fixed::from_raw(1 << 24),
@@ -98,22 +104,44 @@ pub(crate) fn shape(
             )
             .map_err(crate::source_frame::SourceFrameError::from)?;
         let geometry = paths
-            .paths
-            .layout
             .geometry
+            .precise
             .as_ref()
-            .and_then(|g| g.layout.as_ref())
             .ok_or(SourcePageError::Invalid("chart text layout unresolved"))?;
-        if geometry.lines.len() != 1 || geometry.lines[0].pen_max.get() as f64 > label.width + 1.0 {
+        if geometry.lines.len() != 1
+            || geometry.lines[0].pen_max.raw() as f64 / 4294967296.0 > label.width + 1.0
+        {
             return Err(SourcePageError::Invalid(
                 "chart label does not fit its layout region",
             ));
         }
         let line = &geometry.lines[0];
-        let width = (line.pen_max.get() - line.pen_min.get()) as f64;
-        let x = label.x + (label.width - width) * label.align - line.pen_min.get() as f64;
-        let y = label.y - geometry.height.get() as f64 / 2.0;
+        let width = (line.pen_max.raw() - line.pen_min.raw()) as f64 / 4294967296.0;
+        let x = label.x + (label.width - width) * label.align
+            - line.pen_min.raw() as f64 / 4294967296.0;
+        let y = label.y - geometry.height.raw() as f64 / 4294967296.0 / 2.0;
+        // Same Q32 arithmetic bound as ordinary text: metric scaling, natural
+        // height and anchoring cost <= 4L + 2F + 8 raw units. Keep the precise
+        // pen/height values instead of rounding the public integer-EMU view.
+        let shaping = &paths
+            .geometry
+            .paths
+            .layout
+            .geometry
+            .as_ref()
+            .ok_or(SourcePageError::Invalid("chart text shaping unresolved"))?
+            .shaping;
+        let fragments: usize = shaping
+            .fallback
+            .items
+            .iter()
+            .map(|i| i.fragments.len())
+            .sum();
+        let error = ERROR.checked_add(Fixed::from_raw(
+            4 * geometry.lines.len() as i128 + 2 * fragments as i128 + 8,
+        ))?;
         let scene = paths
+            .geometry
             .paths
             .scene
             .ok_or(SourcePageError::Invalid("chart glyph outlines unavailable"))?;
@@ -148,7 +176,7 @@ pub(crate) fn shape(
                 },
                 rgba: label.style.rgba,
                 stroke: None,
-                error: Fixed::emu(Emu::new(2)),
+                error,
             });
         }
     }

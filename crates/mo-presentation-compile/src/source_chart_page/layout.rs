@@ -221,6 +221,7 @@ pub(super) fn prepare(
     source: &SourceChartPaints,
     area_ordinal: u32,
     size: mo_presentation_model::Size,
+    tolerance: Fixed,
     check: &dyn Fn() -> bool,
 ) -> Result<Layout, SourcePageError> {
     let chart = &source.chart;
@@ -420,6 +421,7 @@ pub(super) fn prepare(
         return Err(invalid(part, plot.source_ordinal, "empty chart extent"));
     }
     let mut out = Layout {
+        coordinate_tolerance: tolerance,
         draws: vec![],
         labels: vec![],
     };

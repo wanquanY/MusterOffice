@@ -46,6 +46,12 @@ pub(super) fn build(
     }
     let cx = area.x + area.w / 2.0;
     let cy = area.y + area.h / 2.0;
+    // Layout's own Q32 conversion error is charged separately below. Allocate
+    // the remaining curve budget from the actual device scale and placement.
+    let curve_tolerance = out.coordinate_tolerance.checked_sub(ERROR)?;
+    if curve_tolerance.raw() <= 0 {
+        return Err(RasterError::Precision.into());
+    }
     let geometry = source_chart::compile_prepared(
         &source.chart,
         &SourceCircularRequest {
@@ -55,7 +61,7 @@ pub(super) fn build(
             profile: SourceCircularProfile::DeclaredCircularDraftV1,
             center: point(cx, cy)?,
             outer_radius: fixed(radius)?,
-            coordinate_tolerance: Fixed::emu(mo_common::Emu::new(2)),
+            coordinate_tolerance: curve_tolerance,
             negative_weights: NegativeWeights::Reject,
         },
         Default::default(),

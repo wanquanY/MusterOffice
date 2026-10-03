@@ -15,6 +15,13 @@ impl ImageDecoder for Decoder {
 }
 #[test]
 fn retained_chart_reuses_native_paths_and_respects_hidden_state_and_motion() {
+    for denominator in [10000, 5000] {
+        for grouped in [false, true] {
+            check_retained(denominator, grouped);
+        }
+    }
+}
+fn check_retained(denominator: u32, grouped: bool) {
     let xml = fixture::chart(&fixture::series())
         .replace("barChart", "pieChart")
         .replace(
@@ -26,7 +33,13 @@ fn retained_chart_reuses_native_paths_and_respects_hidden_state_and_motion() {
     let end = xml.find("</c:ser>").unwrap() + 8;
     let mut xml = xml;
     xml.replace_range(start..end,r#"<c:ser><c:idx val="0"/><c:order val="0"/><c:spPr><a:solidFill><a:srgbClr val="229966"/></a:solidFill></c:spPr><c:cat><c:strLit><c:ptCount val="1"/><c:pt idx="0"><c:v>A</c:v></c:pt></c:strLit></c:cat><c:val><c:numLit><c:ptCount val="1"/><c:pt idx="0"><c:v>1</c:v></c:pt></c:numLit></c:val></c:ser>"#);
-    let b = fixture::package(&xml, &fixture::frame(2), fixture::CT, "chart", false);
+    let mut frame = fixture::frame(2);
+    if grouped {
+        frame = format!(
+            r#"<p:grpSp><p:nvGrpSpPr><p:cNvPr id="3" name="Scaled chart"/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="6000000" cy="4000000"/><a:chOff x="0" y="0"/><a:chExt cx="3000000" cy="2000000"/></a:xfrm></p:grpSpPr>{frame}</p:grpSp>"#
+        );
+    }
+    let b = fixture::package(&xml, &frame, fixture::CT, "chart", false);
     let package =
         mo_opc::Package::open(b.as_slice(), b.len() as u64, Default::default(), &|| false).unwrap();
     let index = inspect_source(&package, Default::default(), &|| false).unwrap();
@@ -36,14 +49,14 @@ fn retained_chart_reuses_native_paths_and_respects_hidden_state_and_motion() {
         profile: SourcePageProfile::StaticSolidDraftV1,
         color_context: Default::default(),
         viewport: RasterViewport {
-            width: 915,
-            height: 515,
+            width: 9144000u32.div_ceil(denominator),
+            height: 5143500u32.div_ceil(denominator),
             origin: point(0., 0.).unwrap(),
             scale: PixelScale {
                 numerator: 1,
-                denominator: 10000,
+                denominator,
             },
-            coordinate_tolerance: Fixed::from_raw(1 << 24),
+            coordinate_tolerance: Fixed::from_raw(1 << 20),
             background: [255; 4],
         },
     };
