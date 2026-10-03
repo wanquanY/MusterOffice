@@ -98,6 +98,7 @@ pub(super) fn object_bindings(
                 result.insert((source.part.clone(), source.native_id), id.clone());
             }
         }
+        PresentationPlan::Composed(plan) => result.extend(plan.object_bindings().clone()),
     }
     Ok(result)
 }

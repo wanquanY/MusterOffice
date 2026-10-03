@@ -389,7 +389,8 @@ export type SourceBindingProfile =
   | "presentationml-retained-fields-v1-draft"
   | "presentationml-retained-fields-v2-draft"
   | "presentationml-retained-fields-v3-draft"
-  | "presentationml-retained-fields-v4-draft";
+  | "presentationml-retained-fields-v4-draft"
+  | "presentationml-retained-fields-v5-draft";
 /**
  * This interface was referenced by `PptxExportRequest`'s JSON-Schema
  * via the `definition` "TimelineVersion".

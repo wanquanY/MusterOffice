@@ -15,7 +15,9 @@ use std::{
 };
 mod content_type_repair;
 mod core_properties;
+mod graph_append;
 pub use content_type_repair::ContentTypeRepair;
+pub use graph_append::GraphPart;
 
 enum PartData<'a> {
     Bytes(Cow<'a, [u8]>),
@@ -245,6 +247,7 @@ impl<'a> PackageBuilder<'a> {
 pub struct RewritePlan {
     replacements: BTreeMap<PartName, Vec<u8>>,
     core_title: Option<core_properties::CoreTitleEdit>,
+    graph_append: Option<graph_append::GraphAppend>,
 }
 
 impl RewritePlan {
@@ -270,7 +273,8 @@ impl RewritePlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<WriteReceipt, OpcError> {
         check_cancel(cancelled)?;
-        if self.replacements.is_empty() && self.core_title.is_none() {
+        if self.replacements.is_empty() && self.core_title.is_none() && self.graph_append.is_none()
+        {
             let mut output = Output::new(writer, source.limits.max_package_bytes);
             package::stream_range(
                 source.archive.get_ref(),
@@ -301,6 +305,15 @@ impl RewritePlan {
                 "core title source package changed".into(),
             ));
         }
+        if self
+            .graph_append
+            .as_ref()
+            .is_some_and(|e| e.source != source.sha256)
+        {
+            return Err(OpcError::Preservation(
+                "graph source package changed".into(),
+            ));
+        }
         let mut overlays: BTreeMap<_, _> = self
             .replacements
             .iter()
@@ -315,7 +328,20 @@ impl RewritePlan {
                 }
             }
         }
-        let types = self.core_title.as_ref().and_then(|e| e.types.as_deref());
+        if let Some(edit) = &self.graph_append {
+            for (part, bytes) in &edit.parts {
+                if overlays.insert(part, bytes.as_slice()).is_some() {
+                    return Err(OpcError::Preservation(
+                        "part has two coordinated edits".into(),
+                    ));
+                }
+            }
+        }
+        let types = self
+            .core_title
+            .as_ref()
+            .and_then(|e| e.types.as_deref())
+            .or_else(|| self.graph_append.as_ref().map(|e| e.types.as_slice()));
         let mut total = types.map_or(source.types_entry.byte_length, |b| b.len() as u64);
         if total > source.limits.max_part_bytes {
             return Err(OpcError::Limit("content types bytes"));
@@ -346,7 +372,13 @@ impl RewritePlan {
                 && source
                     .parts
                     .get(*name)
-                    .is_none_or(|p| metadata::is_xml(&p.content_type))
+                    .map(|p| p.content_type.as_str())
+                    .or_else(|| {
+                        self.graph_append
+                            .as_ref()
+                            .and_then(|e| e.added_types.get(*name).map(String::as_str))
+                    })
+                    .is_none_or(metadata::is_xml)
             {
                 mo_xml::scan_with_control(bytes, source.limits.xml, cancelled, |_| Ok(()))
                     .map_err(|error| {

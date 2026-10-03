@@ -15,7 +15,7 @@ pub(super) fn project(
         resource,
         Projection {
             identity_scope: None,
-            profile: SourceBindingProfile::PresentationmlRetainedFieldsV4,
+            profile: SourceBindingProfile::PresentationmlRetainedFieldsV5,
             title,
         },
         check,
@@ -220,6 +220,7 @@ pub(super) fn project_scoped(
                     profile,
                     SourceBindingProfile::PresentationmlRetainedFieldsV3
                         | SourceBindingProfile::PresentationmlRetainedFieldsV4
+                        | SourceBindingProfile::PresentationmlRetainedFieldsV5
                 ) {
                 &[][..]
             } else {
@@ -302,9 +303,11 @@ pub(super) fn project_scoped(
                         .unwrap_or_else(|| owner.clone()),
                     transform,
                     appearance: Default::default(),
-                    accessibility: if profile
-                        == SourceBindingProfile::PresentationmlRetainedFieldsV4
-                    {
+                    accessibility: if matches!(
+                        profile,
+                        SourceBindingProfile::PresentationmlRetainedFieldsV4
+                            | SourceBindingProfile::PresentationmlRetainedFieldsV5
+                    ) {
                         object.accessibility.clone()
                     } else {
                         Default::default()

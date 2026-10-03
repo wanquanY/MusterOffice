@@ -76,7 +76,7 @@ fn native_title_is_revisioned_and_writes_only_core_properties() {
     assert!(!d.title.is_empty());
     assert_eq!(
         d.source_bindings.as_ref().unwrap().profile,
-        SourceBindingProfile::PresentationmlRetainedFieldsV4
+        SourceBindingProfile::PresentationmlRetainedFieldsV5
     );
     let snapshot = Snapshot::new(d, Default::default()).unwrap();
     let title = "标题 <&>\r\n🚀";

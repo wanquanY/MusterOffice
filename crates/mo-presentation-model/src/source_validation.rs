@@ -6,6 +6,7 @@ pub(crate) fn validate(d: &Document, max_issues: usize) -> ValidationReport {
         return ValidationReport::default();
     };
     let mut report = ValidationReport::default();
+    let mixed = b.profile == SourceBindingProfile::PresentationmlRetainedFieldsV5;
     let mut require = |ok: bool, message: &str| {
         if !ok {
             if report.issues.len() >= max_issues {
@@ -26,16 +27,74 @@ pub(crate) fn validate(d: &Document, max_issues: usize) -> ValidationReport {
         "source binding requires source-package resource",
     );
     require(
-        b.slides.keys().eq(d.slides.keys())
-            && b.masters.keys().eq(d.masters.keys())
+        (if mixed {
+            b.slides.keys().all(|id| d.slides.contains_key(id))
+        } else {
+            b.slides.keys().eq(d.slides.keys())
+        }) && b.masters.keys().eq(d.masters.keys())
             && b.layouts.keys().eq(d.layouts.keys())
             && b.themes.keys().eq(d.themes.keys()),
         "source surface bindings must cover document surfaces exactly",
     );
     require(
-        b.objects.keys().eq(d.objects.keys()),
+        if mixed {
+            b.objects.keys().all(|id| d.objects.contains_key(id))
+        } else {
+            b.objects.keys().eq(d.objects.keys())
+        },
         "source object bindings must cover objects exactly",
     );
+    if mixed {
+        require(
+            d.slide_order
+                .iter()
+                .take(b.slides.len())
+                .all(|id| b.slides.contains_key(id))
+                && d.slide_order
+                    .iter()
+                    .skip(b.slides.len())
+                    .all(|id| !b.slides.contains_key(id)),
+            "authored slides must follow retained slides",
+        );
+        // Source-owned graphs cannot be rewritten through authored operations.
+        // New objects must belong to independent new slides (including groups).
+        for (id, object) in &d.objects {
+            if b.objects.contains_key(id) {
+                continue;
+            }
+            require(
+                !matches!(object.content, ObjectContent::RetainedSource { .. }),
+                "unbound retained object",
+            );
+            let mut parent = &object.parent;
+            let mut remaining = d.objects.len();
+            let independent = loop {
+                match parent {
+                    ContainerId::Slide(id) => break !b.slides.contains_key(id),
+                    ContainerId::Group(id) if remaining > 0 && !b.objects.contains_key(id) => {
+                        remaining -= 1;
+                        let Some(group) = d.objects.get(id) else {
+                            break false;
+                        };
+                        parent = &group.parent;
+                    }
+                    _ => break false,
+                }
+            };
+            require(
+                independent,
+                "authored object must belong to an independent slide",
+            );
+        }
+        for (id, slide) in &d.slides {
+            if !b.slides.contains_key(id) {
+                require(
+                    slide.layout.is_none(),
+                    "authored slide cannot reuse an opaque retained layout",
+                );
+            }
+        }
+    }
     let mut addresses = BTreeSet::new();
     for (id, binding) in &b.objects {
         require(

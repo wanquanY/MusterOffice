@@ -309,6 +309,7 @@ pub fn build<S: OutputStore>(
         &requests,
         match &plan {
             mo_pptx::PresentationPlan::Author(plan) => PreviewInput::Author { plan, resources: inputs.resources },
+            mo_pptx::PresentationPlan::Composed(plan) => PreviewInput::Source(Content { reader: plan.reader(), byte_length: plan.bytes().len() as u64 }),
             mo_pptx::PresentationPlan::Retained { plan, .. } => {
                 let original = inputs.resources.open(&document.source_bindings.as_ref().expect("source plan bindings").resource)?;
                 PreviewInput::Retained { plan, source: Content { reader: original.reader, byte_length: original.byte_length } }

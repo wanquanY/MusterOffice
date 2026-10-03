@@ -3,6 +3,7 @@ mod definitions;
 mod drawing;
 pub use mo_presentation_source::source;
 mod native;
+mod plan;
 pub mod timing;
 mod write;
 mod xml;
@@ -12,7 +13,8 @@ use mo_presentation_model::ValidationLimits;
 
 pub use write::{export, export_plan_to, export_presentation_plan_to, export_to};
 
-pub use mo_presentation_source::{PptxError, plan::PresentationPlan};
+pub use mo_presentation_source::PptxError;
+pub use plan::PresentationPlan;
 
 pub use mo_presentation_source::author::{AuthorPlan, ExportDefaults, FontDelivery};
 

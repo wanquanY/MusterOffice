@@ -436,6 +436,11 @@ fn source_operation(d: &Document, operation: &Operation) -> Result<(), EditError
     let Some(bindings) = &d.source_bindings else {
         return Ok(());
     };
+    if bindings.profile == SourceBindingProfile::PresentationmlRetainedFieldsV5
+        && crate::source_append::admits(d, bindings, operation)
+    {
+        return Ok(());
+    }
     let constraint = match operation {
         Operation::SetTitle { .. }
             if matches!(
@@ -443,6 +448,7 @@ fn source_operation(d: &Document, operation: &Operation) -> Result<(), EditError
                 mo_presentation_model::SourceBindingProfile::PresentationmlRetainedFieldsV2
                     | mo_presentation_model::SourceBindingProfile::PresentationmlRetainedFieldsV3
                     | mo_presentation_model::SourceBindingProfile::PresentationmlRetainedFieldsV4
+                    | mo_presentation_model::SourceBindingProfile::PresentationmlRetainedFieldsV5
             ) =>
         {
             None

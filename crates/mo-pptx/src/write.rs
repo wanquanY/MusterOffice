@@ -56,6 +56,7 @@ pub fn export_presentation_plan_to<S: ResultSink>(
             export_plan_to(plan, resources, sink, limits, check)
         }
         crate::PresentationPlan::Retained { plan, source } => plan.write_to(source, sink, check),
+        crate::PresentationPlan::Composed(plan) => plan.write_to(sink, check),
     }
 }
 

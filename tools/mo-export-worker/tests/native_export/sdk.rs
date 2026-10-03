@@ -107,3 +107,128 @@ fn sdk_creates_edits_exports_and_imports_real_bytes_without_an_owner_service() {
     drop((result, direct, edited, imported));
     root.clean();
 }
+
+#[test]
+fn imported_pptx_append_renders_and_exports_the_same_preserved_pages() {
+    use mo_common::{ObjectId, SlideId};
+    use mo_embedded_sdk::model::{ContainerId, ObjectContent};
+    use mo_presentation_operations::ExportAssets;
+    let root = Root::new();
+    let exporter = exporter(&root);
+    let (snapshot, request, source) = input(exporter.renderer_identity());
+    let candidate = exporter
+        .prepare(&request, snapshot.clone(), &source, &|| false)
+        .unwrap();
+    let pptx = candidate
+        .assets()
+        .iter()
+        .find(|a| a.role == AssetRole::Pptx)
+        .unwrap();
+    let original = bytes(&candidate, &pptx.id);
+    let source_asset = AssetId::new("source-pptx").unwrap();
+    let source_resource = ResourceId::new("source-pptx").unwrap();
+    let mut inputs = Inputs::new();
+    for (info, reader) in &source.0 {
+        inputs
+            .insert_bytes(
+                info.id.clone(),
+                info.descriptor.media_type.clone(),
+                &reader.bytes,
+                &|| false,
+            )
+            .unwrap();
+    }
+    inputs
+        .insert_bytes(
+            source_asset.clone(),
+            pptx.media_type.clone(),
+            &original,
+            &|| false,
+        )
+        .unwrap();
+    let mut imported = Presentation::import(
+        DocumentId::new("source-append").unwrap(),
+        source_resource.clone(),
+        inputs.get(&source_asset).unwrap(),
+        &|| false,
+    )
+    .unwrap();
+    let mut export_options = options(&request);
+    export_options.resources = vec![mo_presentation_operations::AssetBinding {
+        resource_id: source_resource,
+        asset_id: source_asset,
+    }];
+    let before_options = ExportOptions {
+        delivery: export_options.delivery.clone(),
+        resources: export_options.resources.clone(),
+        font_asset_id: export_options.font_asset_id.clone(),
+    };
+    let before = imported
+        .export(
+            &exporter,
+            RequestId::new("before").unwrap(),
+            before_options,
+            &inputs,
+            &|| false,
+        )
+        .unwrap();
+    let page_id = SlideId::new("added-page").unwrap();
+    let mut slide = snapshot.document.slides[&snapshot.document.slide_order[0]].clone();
+    slide.id = page_id.clone();
+    slide.layout = None;
+    slide.objects.clear();
+    slide.name = "New page".into();
+    let mut object = snapshot
+        .document
+        .objects
+        .values()
+        .find(|o| matches!(o.content, ObjectContent::Shape { text: Some(_), .. }))
+        .unwrap()
+        .clone();
+    object.id = ObjectId::new("added-text").unwrap();
+    object.parent = ContainerId::Slide(page_id);
+    imported
+        .edit(
+            RequestId::new("append").unwrap(),
+            vec![
+                OperationEntry {
+                    operation_id: OperationId::new("page").unwrap(),
+                    operation: Operation::InsertSlide { slide, index: 2 },
+                },
+                OperationEntry {
+                    operation_id: OperationId::new("text").unwrap(),
+                    operation: Operation::InsertObject { object, index: 0 },
+                },
+            ],
+            &|| false,
+        )
+        .unwrap();
+    let after = imported
+        .export(
+            &exporter,
+            RequestId::new("after").unwrap(),
+            export_options,
+            &inputs,
+            &|| false,
+        )
+        .unwrap();
+    assert_eq!(after.receipt().bundle.previews.len(), 3);
+    for index in 0..2 {
+        let old = &before.receipt().bundle.previews[index].image_asset_id;
+        let new = &after.receipt().bundle.previews[index].image_asset_id;
+        assert_eq!(
+            bytes(&before, old),
+            bytes(&after, new),
+            "retained visual page {index}"
+        );
+    }
+    let exported = after
+        .assets()
+        .iter()
+        .find(|a| a.role == AssetRole::Pptx)
+        .unwrap();
+    assert!(exported.byte_length.get() > original.len() as u64);
+    assert_eq!(after.receipt().revision, imported.snapshot().revision);
+    drop((before, after, candidate));
+    root.clean();
+}

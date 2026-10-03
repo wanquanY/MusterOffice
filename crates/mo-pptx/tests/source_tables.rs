@@ -377,7 +377,7 @@ fn legacy_projection_profiles_keep_opaque_tables_without_losing_bytes_or_accepti
         .unwrap();
         assert_eq!(
             d.source_bindings.as_ref().unwrap().profile,
-            SourceBindingProfile::PresentationmlRetainedFieldsV4
+            SourceBindingProfile::PresentationmlRetainedFieldsV5
         );
         let current = d.clone();
         d.source_bindings.as_mut().unwrap().profile = profile;

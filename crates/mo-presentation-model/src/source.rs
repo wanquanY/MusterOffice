@@ -23,6 +23,9 @@ pub enum SourceBindingProfile {
     /// marker. Older bindings retain their original opaque accessibility view.
     #[serde(rename = "presentationml-retained-fields-v4-draft")]
     PresentationmlRetainedFieldsV4,
+    /// Retains every imported surface while allowing independent authored slides.
+    #[serde(rename = "presentationml-retained-fields-v5-draft")]
+    PresentationmlRetainedFieldsV5,
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

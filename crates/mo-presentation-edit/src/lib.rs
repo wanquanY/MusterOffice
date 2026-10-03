@@ -1,6 +1,7 @@
 //! Pure, version-pinned transaction preparation. The host owns persistence and CAS commit.
 mod apply;
 mod diagnostics;
+mod source_append;
 pub use diagnostics::*;
 mod duplicate;
 mod history;

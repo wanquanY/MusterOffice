@@ -15,7 +15,7 @@ pub fn is_ncname(value: &str) -> bool {
     names::ncname(value)
 }
 pub use attribute_edit::{AttributeEdit, AttributeRewriteLimits, rewrite_attributes};
-pub use child_edit::append_child;
+pub use child_edit::{append_child, insert_before};
 pub use remove_elements::{ElementRemoval, remove_elements};
 pub use scan::{scan, scan_with_control};
 use std::ops::Range;

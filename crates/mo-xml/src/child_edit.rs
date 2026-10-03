@@ -14,6 +14,40 @@ pub fn append_child(
     limits: XmlLimits,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, XmlError> {
+    place_element(
+        input,
+        parent_ordinal,
+        expected_parent,
+        child,
+        false,
+        limits,
+        cancelled,
+    )
+}
+
+/// Insert a namespace-independent sibling before an identified element. The
+/// source encoding and all pre-existing byte spans remain unchanged.
+pub fn insert_before(
+    input: &[u8],
+    ordinal: usize,
+    expected: &ExpandedName,
+    element: &str,
+    limits: XmlLimits,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, XmlError> {
+    place_element(input, ordinal, expected, element, true, limits, cancelled)
+}
+
+#[allow(clippy::too_many_arguments)]
+fn place_element(
+    input: &[u8],
+    parent_ordinal: usize,
+    expected_parent: &ExpandedName,
+    child: &str,
+    before: bool,
+    limits: XmlLimits,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, XmlError> {
     // A standalone element cannot rely on ambient namespace bindings. XML
     // declarations/prolog instructions have no place inside an element.
     let mut child_names = Vec::new();
@@ -46,7 +80,18 @@ pub fn append_child(
                     if &element.name != expected_parent {
                         return Err(conflict("parent expanded name changed"));
                     }
-                    selected = Some((depth, span, element.qualified_name.clone()));
+                    if before {
+                        if depth == 0 {
+                            return Err(conflict("cannot insert outside the document root"));
+                        }
+                        patch = Some(Patch {
+                            span: span.start..span.start,
+                            text: child.into(),
+                        });
+                        insertion_ordinal = Some(ordinal);
+                    } else {
+                        selected = Some((depth, span, element.qualified_name.clone()));
+                    }
                 }
                 ordinal += 1;
             }

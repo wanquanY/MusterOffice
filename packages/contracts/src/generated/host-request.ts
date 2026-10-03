@@ -313,7 +313,8 @@ export type SourceBindingProfile =
   | "presentationml-retained-fields-v1-draft"
   | "presentationml-retained-fields-v2-draft"
   | "presentationml-retained-fields-v3-draft"
-  | "presentationml-retained-fields-v4-draft";
+  | "presentationml-retained-fields-v4-draft"
+  | "presentationml-retained-fields-v5-draft";
 export type TimelineVersion = "musteroffice.timeline/0.1-draft" | "musteroffice.timeline/0.2-draft";
 /**
  * Signed int64 ticks. Range requires semantic validation.

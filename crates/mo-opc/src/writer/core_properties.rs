@@ -18,7 +18,7 @@ impl RewritePlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), OpcError> {
         check_cancel(cancelled)?;
-        if self.core_title.is_some() {
+        if self.core_title.is_some() || self.graph_append.is_some() {
             return Err(OpcError::Structure("duplicate core title edit".into()));
         }
         let original = read_core_properties(source, source.limits.xml, cancelled)?;
