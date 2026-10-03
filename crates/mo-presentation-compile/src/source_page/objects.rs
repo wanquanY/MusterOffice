@@ -182,12 +182,14 @@ fn drawings(
     Ok(objects)
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(super) fn objects(
     index: &SourceIndex,
     q: &SourcePageRequest,
     layers: &[SourcePageLayer],
     transforms: Option<&crate::source_placement::SourceProperties>,
     preparation: Option<&mut mo_presentation_source::source::prepared::SourcePreparation<'_>>,
+    charts: &crate::source_chart_page::Charts,
     check: &dyn Fn() -> bool,
 ) -> Result<Vec<Object>, SourcePageError> {
     use std::collections::{BTreeMap, BTreeSet};
@@ -201,7 +203,9 @@ pub(super) fn objects(
             .filter(|o| o.table.is_some())
             .map(|o| o.native_id)
             .collect();
-        ordinary[i].objects.retain(|id| !ids.contains(id));
+        ordinary[i]
+            .objects
+            .retain(|id| !ids.contains(id) && !charts.contains_key(&(layer.part.clone(), *id)));
         tables[i].objects.retain(|id| ids.contains(id));
     }
     let ordinary = drawings(index, q, &ordinary, transforms, check)?;
@@ -218,7 +222,11 @@ pub(super) fn objects(
         )?
     };
     let mut by_id = BTreeMap::new();
-    for object in ordinary.into_iter().chain(tables) {
+    for object in ordinary
+        .into_iter()
+        .chain(tables)
+        .chain(chart_objects(index, q, layers, transforms, charts, check)?)
+    {
         let key = (
             object.binding.location.part.clone(),
             object.binding.location.object,
@@ -240,6 +248,78 @@ pub(super) fn objects(
     }
     if !by_id.is_empty() {
         return Err(SourcePageError::Invalid("unbound page objects"));
+    }
+    Ok(output)
+}
+
+fn chart_objects(
+    index: &SourceIndex,
+    q: &SourcePageRequest,
+    layers: &[SourcePageLayer],
+    transforms: Option<&SourceProperties>,
+    charts: &crate::source_chart_page::Charts,
+    check: &dyn Fn() -> bool,
+) -> Result<Vec<Object>, SourcePageError> {
+    let mut output = Vec::new();
+    for layer in layers {
+        let ids: Vec<_> = layer
+            .objects
+            .iter()
+            .copied()
+            .filter(|id| charts.contains_key(&(layer.part.clone(), *id)))
+            .collect();
+        if ids.is_empty() {
+            continue;
+        }
+        let placements = source_placements_sampled(
+            index,
+            &SourcePlacementQuery {
+                expected_source_sha256: q.expected_source_sha256.clone(),
+                surface: layer.part.clone(),
+                objects: ids,
+                profile: SourcePlacementProfile::DrawingmlSourceDraftV1,
+            },
+            Default::default(),
+            transforms,
+            check,
+        )?;
+        for placed in placements.objects {
+            let location = SourcePageLocation {
+                part: layer.part.clone(),
+                object: Some(placed.native_id),
+            };
+            let placement = match placed.outcome {
+                SourcePlacementOutcome::Resolved { placement } => *placement,
+                SourcePlacementOutcome::Unresolved { reason } => {
+                    return Err(mapping(&location, SourcePageIssue::Placement { reason }));
+                }
+            };
+            output.push(Object {
+                binding: SourcePagePaintBinding {
+                    location,
+                    drawing_surface: layer.part.clone(),
+                    fill: SourceFillColorResult {
+                        target: FillTarget::Object {
+                            native_id: placed.native_id,
+                        },
+                        style: FillOutcome::Resolved {
+                            fill: Box::new(EffectiveFill::None {
+                                declared_by: FillOrigin::ProfileDefault {},
+                            }),
+                            redirects: vec![],
+                        },
+                        colors: FillPaintColors::None {},
+                        context_override: None,
+                    },
+                    picture_fill: None,
+                    line: None,
+                    placement: Some(placement),
+                    region: None,
+                    table_stroke: None,
+                },
+                geometry: None,
+            });
+        }
     }
     Ok(output)
 }

@@ -1122,11 +1122,13 @@ export type LineGeometryOutcome =
       status: "unresolved";
     };
 
+export type Digest = string;
+
+export type ChartDataAuthority = "sourceCacheSnapshot";
+
 export type SurfaceKind = "slide" | "master" | "layout";
 
 export type SourcePageProfile = "drawingml-static-solid-page-v1-draft";
-
-export type Digest = string;
 
 export type PagePaintKind = "fill" | "stroke";
 

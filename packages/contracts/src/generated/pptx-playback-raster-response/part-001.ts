@@ -49,6 +49,8 @@ export type SourceColor = "assumedSrgb" | "icc" | "pngColor";
  */
 export type FixedQ32 = string;
 
+export type ChartDataAuthority = "sourceCacheSnapshot";
+
 export type SurfaceKind = "slide" | "master" | "layout";
 
 export type SourcePageProfile = "drawingml-static-solid-page-v1-draft";

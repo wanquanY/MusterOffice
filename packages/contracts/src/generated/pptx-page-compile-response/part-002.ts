@@ -1,6 +1,6 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { ColorDependency, ColorNotice, ColorSample, Digest, EffectiveGradientShade, EffectiveImageMode, EffectiveLineDash, EffectiveLineFill, EffectiveLineJoin, Emu, FillOrigin, FillOutcome, FillPaintColors, FillTarget, FixedQ32, GeometryOrigin, LineGeometryOutcome, LineOrigin, LineOutcome, LinePaintColor, NativeBlipCompression, NativeCompoundLine, NativeCoordinate, NativeFillAlignment, NativeLineCap, NativeLineEnd, NativeLineEndSize, NativePathShade, NativePattern, NativePenAlignment, NativePercentage, NativePresetDash, NativeTileFlip, PagePaintKind, SourceColorTransform, SourceColorValue, SourcePageProfile, SourcePlaceholderMatch, SurfaceKind, TransformValueSource } from './part-001.js';
-import type { FillPath, OpacityGroup, PlacementUnresolved, Point10, Point8, Point9, RasterViewport, SourceVisualIssue, StrokeStyle, TableBorderTarget, TransformNode } from './part-003.js';
+import type { ChartDataAuthority, ColorDependency, ColorNotice, ColorSample, Digest, EffectiveGradientShade, EffectiveImageMode, EffectiveLineDash, EffectiveLineFill, EffectiveLineJoin, Emu, FillOrigin, FillOutcome, FillPaintColors, FillTarget, FixedQ32, GeometryOrigin, LineGeometryOutcome, LineOrigin, LineOutcome, LinePaintColor, NativeBlipCompression, NativeCompoundLine, NativeCoordinate, NativeFillAlignment, NativeLineCap, NativeLineEnd, NativeLineEndSize, NativePathShade, NativePattern, NativePenAlignment, NativePercentage, NativePresetDash, NativeTileFlip, PagePaintKind, SourceColorTransform, SourceColorValue, SourcePageProfile, SourcePlaceholderMatch, SurfaceKind, TransformValueSource } from './part-001.js';
+import type { FillPath, ImageBrushUncertainty, ImageSourceDomain, OpacityGroup, PlacementUnresolved, Point10, Point7, RasterViewport, SourceVisualIssue, StrokeStyle, TableBorderTarget, TransformNode } from './part-003.js';
 
 export type NativeShapeType =
   | "accentBorderCallout1"
@@ -980,6 +980,7 @@ export interface SceneClipWork {
 
 export interface SourcePageInfo {
   arcSegments: number;
+  charts?: ChartPageInfo[];
   generatedCommands: number;
   hiddenSlide: boolean;
   /**
@@ -997,6 +998,26 @@ export interface SourcePageInfo {
   sourceSha256: Digest;
 }
 
+export interface ChartPageInfo {
+  chartPart: string;
+  chartSha256: Digest;
+  dataAuthority: ChartDataAuthority;
+  labels: number;
+  nativeKind: string;
+  object: SourceObjectRef;
+  pathBytes: number;
+  paths: number;
+  textWork: FrameWork;
+}
+
+export interface FrameWork {
+  componentCalls: number;
+  fontUploadBytes: number;
+  glyphs: number;
+  pathCommands: number;
+  requestWords: number;
+}
+
 export interface SourcePageLayer {
   hiddenObjects: number[];
   kind: SurfaceKind;
@@ -1008,6 +1029,7 @@ export interface SourcePageLayer {
 
 export interface SourcePagePaintSource {
   binding: number;
+  chart?: ChartPaintSource | null;
   /**
    * Present for the distinct p:blipFill paint. Ordinary shape/text paints
    * retain their existing provenance through binding/path/text_sources.
@@ -1016,6 +1038,11 @@ export interface SourcePagePaintSource {
   instance: number;
   paint: PagePaintKind;
   path?: GeometryOrigin | null;
+}
+
+export interface ChartPaintSource {
+  part: string;
+  sourceOrdinal: number;
 }
 
 export interface SceneRasterRequest {
@@ -1166,34 +1193,5 @@ export interface ImageBrush {
    */
   uncertainty?: ImageBrushUncertainty | null;
   xStep: Point10;
-  yStep: Point1;
-}
-
-/**
- * World Q32 EMU position of source pixel boundary (0, 0).
- */
-export interface Point7 {
-  x: FixedQ32;
-  y: FixedQ32;
-}
-
-export interface ImageSourceDomain {
-  bottom: FixedQ32;
-  left: FixedQ32;
-  right: FixedQ32;
-  top: FixedQ32;
-}
-
-export interface ImageBrushUncertainty {
-  origin: Point8;
-  /**
-   * Nonnegative Q32 source pixel errors, left/top/right/bottom. Must be zero
-   * when the brush has no explicit source domain.
-   *
-   * @minItems 4
-   * @maxItems 4
-   */
-  sourceDomain: [FixedQ32, FixedQ32, FixedQ32, FixedQ32];
-  xStep: Point9;
   yStep: Point1;
 }

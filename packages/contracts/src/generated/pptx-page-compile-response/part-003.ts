@@ -1,6 +1,35 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
 import type { FixedQ32, TableCellEdge } from './part-001.js';
-import type { FillRule, PathCommand, PlacementCause, Point, PptxPageFailureCode, SourceCellAddress, SourceObjectRef, SourcePageIssue, SourcePageLocation, SourceVisualIssueKind, StrokeCap, StrokeJoin } from './part-002.js';
+import type { FillRule, PathCommand, PlacementCause, Point, Point1, PptxPageFailureCode, SourceCellAddress, SourceObjectRef, SourcePageIssue, SourcePageLocation, SourceVisualIssueKind, StrokeCap, StrokeJoin } from './part-002.js';
+
+/**
+ * World Q32 EMU position of source pixel boundary (0, 0).
+ */
+export interface Point7 {
+  x: FixedQ32;
+  y: FixedQ32;
+}
+
+export interface ImageSourceDomain {
+  bottom: FixedQ32;
+  left: FixedQ32;
+  right: FixedQ32;
+  top: FixedQ32;
+}
+
+export interface ImageBrushUncertainty {
+  origin: Point8;
+  /**
+   * Nonnegative Q32 source pixel errors, left/top/right/bottom. Must be zero
+   * when the brush has no explicit source domain.
+   *
+   * @minItems 4
+   * @maxItems 4
+   */
+  sourceDomain: [FixedQ32, FixedQ32, FixedQ32, FixedQ32];
+  xStep: Point9;
+  yStep: Point1;
+}
 
 /**
  * Nonnegative Q32 world EMU errors; rebase never changes these bounds.

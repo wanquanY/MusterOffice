@@ -25,6 +25,7 @@ mod sampled_properties;
 mod shape_paths;
 pub mod source_chart;
 pub mod source_chart_labels;
+pub mod source_chart_page;
 pub mod source_chart_plot;
 pub mod source_chart_text;
 pub mod source_editor_page;

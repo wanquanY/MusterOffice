@@ -251,6 +251,14 @@
             }
           ]
         },
+        "parentOrdinal": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
         "retainedOrdinals": {
           "description": "Geometry, extensions and unknown attributes remain source-bound.",
           "type": "array",
@@ -1819,6 +1827,16 @@
     "SourceChartLayout": {
       "type": "object",
       "properties": {
+        "marker": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceChartMarker"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "markup": {
           "description": "Complex markup remains bound to its original part and physical ordinal.",
           "type": "array",
@@ -1853,6 +1871,44 @@
       "required": [
         "properties",
         "markup"
+      ]
+    },
+    "SourceChartMarker": {
+      "type": "object",
+      "properties": {
+        "retainedOrdinals": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "size": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint8",
+          "maximum": 255,
+          "minimum": 0
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "symbol": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sourceOrdinal",
+        "retainedOrdinals"
       ]
     },
     "SourceChartMarkup": {
@@ -1942,6 +1998,13 @@
         },
         "sourceSha256": {
           "$ref": "#/$defs/Digest"
+        },
+        "textColors": {
+          "description": "Colors in native annotation text, evaluated in the same chart context.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ChartPaintColor"
+          }
         },
         "themeOverride": {
           "anyOf": [

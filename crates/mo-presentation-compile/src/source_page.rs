@@ -18,6 +18,7 @@ use crate::{
     path_scene::SceneBuilder,
     source_placement::*,
 };
+pub(crate) use layers::select as chart_layers;
 use mo_geometry::{Affine, Fixed, PathCommand as C, Point};
 use mo_presentation_source::source::{
     SourceIndex,
@@ -133,6 +134,8 @@ pub(crate) fn prepare(
     Ok((plan, compiled))
 }
 pub(crate) use emit::build;
+pub(crate) use prepared::preflight_resources;
+#[cfg(test)]
 pub(crate) use prepared::{preflight_retained, preflight_sampled};
 pub fn compile(
     index: &SourceIndex,

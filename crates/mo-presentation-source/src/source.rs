@@ -16,6 +16,7 @@ pub mod images;
 mod inheritance;
 pub mod line;
 mod links;
+pub mod page_resources;
 mod paint;
 pub mod prepared;
 mod presentation;

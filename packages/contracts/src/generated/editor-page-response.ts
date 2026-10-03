@@ -41,8 +41,9 @@ export type FixedQ32 = string;
 export type SourceObjectKind = "shape" | "picture" | "group" | "connector" | "graphicFrame";
 export type ObjectId = string;
 export type SurfaceKind = "slide" | "master" | "layout";
-export type SourcePageProfile = "drawingml-static-solid-page-v1-draft";
 export type Digest = string;
+export type ChartDataAuthority = "sourceCacheSnapshot";
+export type SourcePageProfile = "drawingml-static-solid-page-v1-draft";
 export type CellId = string;
 export type ParagraphId = string;
 export type RunId = string;
@@ -1462,6 +1463,7 @@ export interface SourceObjectRef {
 }
 export interface SourcePageInfo {
   arcSegments: number;
+  charts?: ChartPageInfo[];
   generatedCommands: number;
   hiddenSlide: boolean;
   /**
@@ -1477,6 +1479,24 @@ export interface SourcePageInfo {
   profile: SourcePageProfile;
   slide: string;
   sourceSha256: Digest;
+}
+export interface ChartPageInfo {
+  chartPart: string;
+  chartSha256: Digest;
+  dataAuthority: ChartDataAuthority;
+  labels: number;
+  nativeKind: string;
+  object: SourceObjectRef;
+  pathBytes: number;
+  paths: number;
+  textWork: FrameWork;
+}
+export interface FrameWork {
+  componentCalls: number;
+  fontUploadBytes: number;
+  glyphs: number;
+  pathCommands: number;
+  requestWords: number;
 }
 export interface SourcePageLayer {
   hiddenObjects: number[];
@@ -1531,13 +1551,6 @@ export interface EditorTextRunIdentity {
    * These are identities, not editing permission or grapheme boundaries.
    */
   scalarStart: number;
-}
-export interface FrameWork {
-  componentCalls: number;
-  fontUploadBytes: number;
-  glyphs: number;
-  pathCommands: number;
-  requestWords: number;
 }
 export interface RasterViewport {
   /**

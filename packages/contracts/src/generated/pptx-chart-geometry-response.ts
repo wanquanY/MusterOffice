@@ -266,6 +266,7 @@ export interface ChartGeometryWork {
   steps: number;
 }
 export interface SourceChartLayout {
+  marker?: SourceChartMarker | null;
   /**
    * Complex markup remains bound to its original part and physical ordinal.
    */
@@ -279,6 +280,12 @@ export interface SourceChartLayout {
    */
   retainedAttributeOrdinals?: number[];
   unrecognizedChildren?: SourceChartUnknown[];
+}
+export interface SourceChartMarker {
+  retainedOrdinals: number[];
+  size?: number | null;
+  sourceOrdinal: number;
+  symbol?: string | null;
 }
 export interface SourceChartMarkup {
   kind: ChartMarkupKind;

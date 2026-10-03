@@ -52,7 +52,7 @@ fn property(scope: Scope, name: &str) -> Option<ChartPropertyKind> {
         (Scope::Series | Scope::Point, "explosion") => Explosion,
         (Scope::Series | Scope::Point, "bubble3D") => Bubble3D,
         (Scope::Series | Scope::Point, "invertIfNegative") => InvertIfNegative,
-        (Scope::Series, "smooth") => Smooth,
+        (Scope::Plot | Scope::Series, "smooth") => Smooth,
         _ => return None,
     })
 }
@@ -91,6 +91,7 @@ pub(super) fn read(
     check: &dyn Fn() -> bool,
 ) -> Result<SourceChartLayout, PptxError> {
     let mut result = SourceChartLayout {
+        marker: None,
         properties: vec![],
         markup: tree.nodes[parent]
             .extensions
@@ -147,6 +148,41 @@ pub(super) fn read(
             .then(|| markup(scope, &node.element.name.local))
             .flatten()
         {
+            if kind == ChartMarkupKind::Marker {
+                let mut marker = SourceChartMarker {
+                    source_ordinal: node.ordinal,
+                    symbol: None,
+                    size: None,
+                    retained_ordinals: node.extensions.clone(),
+                };
+                retain_attributes(node, &[], &mut marker.retained_ordinals);
+                for &child in &node.children {
+                    let child = &tree.nodes[child];
+                    if child.element.name.is(C, "symbol") || child.element.name.is(C, "size") {
+                        leaf(child)?;
+                        retain_attributes(child, &["val"], &mut marker.retained_ordinals);
+                        if child.element.name.local == "symbol" {
+                            if marker.symbol.is_some() {
+                                return Err(invalid("duplicate chart marker symbol"));
+                            }
+                            marker.symbol = child.element.attribute("val").map(str::to_owned);
+                        } else {
+                            if marker.size.is_some() {
+                                return Err(invalid("duplicate chart marker size"));
+                            }
+                            marker.size = child
+                                .element
+                                .attribute("val")
+                                .map(str::parse)
+                                .transpose()
+                                .map_err(|_| invalid("chart marker size"))?;
+                        }
+                    } else {
+                        marker.retained_ordinals.push(child.ordinal);
+                    }
+                }
+                result.marker = Some(marker);
+            }
             // serLines permits repeated declarations; keep physical source order.
             if !matches!(
                 kind,

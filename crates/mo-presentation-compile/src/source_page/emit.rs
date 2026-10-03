@@ -111,6 +111,7 @@ impl Emitter<'_> {
                 blend,
             },
             |instance| SourcePagePaintSource {
+                chart: None,
                 instance,
                 binding,
                 path: path.origin,
@@ -135,6 +136,7 @@ impl Emitter<'_> {
                 Brush::Solid { rgba },
                 Some(stroke),
                 |instance| SourcePagePaintSource {
+                    chart: None,
                     instance,
                     binding,
                     path: Some(path.origin),
@@ -195,6 +197,18 @@ pub(crate) fn build(
         scopes.enter(&object.opacity, emit.builder.scene.instances.len() as u32)?;
         let binding = bindings.len() as u32;
         bindings.push(object.binding);
+        let b = &bindings[binding as usize];
+        if let Some(chart) = page.charts.get(&(
+            b.location.part.clone(),
+            b.location.object.expect("object id"),
+        )) {
+            let (position, geometry) =
+                chart.emit(binding, b, &mut emit.builder, &page.viewport, check)?;
+            page.info.placement_coordinate_error_bound =
+                page.info.placement_coordinate_error_bound.max(position);
+            page.info.path_coordinate_error_bound =
+                page.info.path_coordinate_error_bound.max(geometry);
+        }
         for receiver in object.paints {
             let binding = if let Some(owner) = receiver.binding {
                 let id = bindings.len() as u32;

@@ -81,6 +81,32 @@ impl<'a, 'm, 'font> Compiler<'a, 'm, 'font> {
             interaction_lines: 0,
         }
     }
+    pub(crate) fn shape_charts(
+        &mut self,
+        charts: &mut crate::source_chart_page::Charts,
+        check: &dyn Fn() -> bool,
+    ) -> Result<(), SourcePageError> {
+        self.ensure_ready()?;
+        self.failed = true;
+        let mut backend = source_frame::backend::FrameBackend {
+            inner: &mut self.backend,
+            work: self.work.clone(),
+            limits: self.limits.work,
+        };
+        let mut path_bytes = charts.values().map(|c| c.info.path_bytes).sum();
+        for chart in charts.values_mut() {
+            crate::source_chart_page::text::shape(
+                chart,
+                self.manifest,
+                &mut backend,
+                &mut path_bytes,
+                check,
+            )?;
+        }
+        self.work = backend.work;
+        self.failed = false;
+        Ok(())
+    }
     pub(crate) fn retain_interaction(
         mut self,
         limits: interaction::FrameInteractionLimits,

@@ -1188,6 +1188,10 @@ export interface SourceChartPaints {
   object: SourceObjectRef;
   profile: ColorProfile;
   sourceSha256: Digest;
+  /**
+   * Colors in native annotation text, evaluated in the same chart context.
+   */
+  textColors?: ChartPaintColor[];
   themeOverride?: ChartThemeOverride | null;
 }
 /**
@@ -1242,6 +1246,7 @@ export interface SourceChartAnnotation {
   textSource?: SourceChartAnnotationText | null;
 }
 export interface SourceChartLayout {
+  marker?: SourceChartMarker | null;
   /**
    * Complex markup remains bound to its original part and physical ordinal.
    */
@@ -1255,6 +1260,12 @@ export interface SourceChartLayout {
    */
   retainedAttributeOrdinals?: number[];
   unrecognizedChildren?: SourceChartUnknown[];
+}
+export interface SourceChartMarker {
+  retainedOrdinals: number[];
+  size?: number | null;
+  sourceOrdinal: number;
+  symbol?: string | null;
 }
 export interface SourceChartMarkup {
   kind: ChartMarkupKind;
@@ -1720,6 +1731,7 @@ export interface ChartPaintDeclaration {
   effects?: SourceEffectProperties | null;
   fill?: SourceFill | null;
   line?: SourceLine | null;
+  parentOrdinal?: number | null;
   /**
    * Geometry, extensions and unknown attributes remain source-bound.
    */

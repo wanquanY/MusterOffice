@@ -180,6 +180,80 @@
         }
       ]
     },
+    "ChartDataAuthority": {
+      "type": "string",
+      "enum": [
+        "sourceCacheSnapshot"
+      ]
+    },
+    "ChartPageInfo": {
+      "type": "object",
+      "properties": {
+        "chartPart": {
+          "type": "string"
+        },
+        "chartSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "dataAuthority": {
+          "$ref": "#/$defs/ChartDataAuthority"
+        },
+        "labels": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "nativeKind": {
+          "type": "string"
+        },
+        "object": {
+          "$ref": "#/$defs/SourceObjectRef"
+        },
+        "pathBytes": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0
+        },
+        "paths": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "textWork": {
+          "$ref": "#/$defs/FrameWork"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "object",
+        "chartPart",
+        "chartSha256",
+        "dataAuthority",
+        "nativeKind",
+        "labels",
+        "paths",
+        "textWork",
+        "pathBytes"
+      ]
+    },
+    "ChartPaintSource": {
+      "type": "object",
+      "properties": {
+        "part": {
+          "type": "string"
+        },
+        "sourceOrdinal": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "sourceOrdinal"
+      ]
+    },
     "ClipNode": {
       "description": "Evaluated intersection path; geometry has its own transform. Parent clipping\nremains in world coordinates and is never transformed by a child or draw.",
       "type": "object",
@@ -2344,6 +2418,44 @@
         "divisionByZero",
         "undefinedDirection",
         "tangentPole"
+      ]
+    },
+    "FrameWork": {
+      "type": "object",
+      "properties": {
+        "componentCalls": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "fontUploadBytes": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0
+        },
+        "glyphs": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "pathCommands": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "requestWords": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "componentCalls",
+        "fontUploadBytes",
+        "requestWords",
+        "glyphs",
+        "pathCommands"
       ]
     },
     "GeometryOrigin": {
@@ -6053,6 +6165,12 @@
           "format": "uint32",
           "minimum": 0
         },
+        "charts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ChartPageInfo"
+          }
+        },
         "generatedCommands": {
           "type": "integer",
           "format": "uint32",
@@ -6470,6 +6588,16 @@
           "type": "integer",
           "format": "uint32",
           "minimum": 0
+        },
+        "chart": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ChartPaintSource"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "fillTarget": {
           "description": "Present for the distinct p:blipFill paint. Ordinary shape/text paints\nretain their existing provenance through binding/path/text_sources.",

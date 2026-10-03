@@ -6,7 +6,7 @@ use mo_pptx::{
     source::{
         SourceIndex,
         document::SourcePlan,
-        images::{AuthorImages, ImageInput, PackageImages, SourceImages},
+        images::{AuthorImages, PackageImages, SourceImages},
     },
 };
 use mo_presentation_compile::{
@@ -153,7 +153,7 @@ fn manifest<'a>(
 }
 fn render(
     request: &EditorPagePreparation,
-    images: &dyn ImageInput,
+    images: &dyn mo_pptx::source::page_resources::PageInput,
     index: &SourceIndex,
     manifest: &PreparedManifest<'_, '_>,
     backends: EditorPageBackends<'_>,

@@ -2,6 +2,7 @@
 //! Unknown appearance is source data, never permission to omit visible content.
 //! Locking, hyperlink actions and timing do not alter the static authoring view;
 //! this audit does not claim interaction, playback or editing support for them.
+mod metadata;
 use super::{SourceSurface, SurfaceKind};
 use crate::{A, P};
 use mo_xml::{Element, ExpandedName, XmlError};
@@ -25,6 +26,7 @@ pub struct SourceVisualIssue {
 #[derive(Default)]
 pub(super) struct Reader {
     opaque_depth: Option<usize>,
+    metadata: metadata::Reader,
 }
 impl Reader {
     pub fn text(&self, text: &str, delegated: bool) -> Result<(), XmlError> {
@@ -36,6 +38,7 @@ impl Reader {
         Ok(())
     }
     pub fn end(&mut self, depth: usize) {
+        self.metadata.end(depth);
         if self.opaque_depth == Some(depth) {
             self.opaque_depth = None;
         }
@@ -74,7 +77,10 @@ impl Reader {
         // A semantic delegate owns its entire subtree and retained attributes.
         // The remaining structural vocabulary is exact and context-sensitive.
         let mut skip = false;
-        let allowed: Option<&[&str]> = if extension {
+        let metadata = self.metadata.allowed(e, stack, owner)?;
+        let allowed: Option<&[&str]> = if metadata.is_some() {
+            metadata
+        } else if extension {
             None
         } else if depth == 0 {
             Some(match surface.kind {
@@ -168,9 +174,23 @@ impl Reader {
         } else if parent_is(A, "graphic")
             && e.name.is(A, "graphicData")
             && owner.is_some_and(|(_, d)| depth == d + 2)
-            && e.attribute("uri") == Some(super::table::TABLE_URI)
+            && matches!(
+                e.attribute("uri"),
+                Some(
+                    super::table::TABLE_URI
+                        | "http://schemas.openxmlformats.org/drawingml/2006/chart"
+                )
+            )
         {
             Some(&["uri"])
+        } else if parent_is(A, "graphicData")
+            && e.name.is(
+                "http://schemas.openxmlformats.org/drawingml/2006/chart",
+                "chart",
+            )
+            && owner.is_some_and(|(_, d)| depth == d + 3)
+        {
+            Some(&[])
         } else if e.name.namespace == A
             && ((parent_is(P, "cNvPr") && matches!(name, "hlinkClick" | "hlinkHover"))
                 || ([
@@ -209,7 +229,14 @@ impl Reader {
                     {
                         continue;
                     }
-                    if !a.name.namespace.is_empty() || !allowed.contains(&a.name.local.as_str()) {
+                    let chart_relationship = e.name.is(
+                        "http://schemas.openxmlformats.org/drawingml/2006/chart",
+                        "chart",
+                    ) && a.name.is(crate::R, "id");
+                    if !chart_relationship
+                        && (!a.name.namespace.is_empty()
+                            || !allowed.contains(&a.name.local.as_str()))
+                    {
                         issue(SourceVisualIssueKind::Attribute, &a.name);
                     }
                 }

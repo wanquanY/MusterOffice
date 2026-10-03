@@ -18,6 +18,7 @@ pub(super) fn read(
         color_map: None,
     };
     let mut depth = 0usize;
+    let mut ordinals = Vec::new();
     let mut active: Option<(usize, ChartPaintDeclaration)> = None;
     let mut fill: Option<paint::Reader> = None;
     let mut line: Option<line::Reader> = None;
@@ -140,6 +141,7 @@ pub(super) fn read(
                             depth,
                             ChartPaintDeclaration {
                                 source_ordinal: ordinal,
+                                parent_ordinal: ordinals.last().copied(),
                                 black_white_mode: element
                                     .attribute("bwMode")
                                     .map(enumeration)
@@ -153,9 +155,11 @@ pub(super) fn read(
                             },
                         ));
                     }
+                    ordinals.push(ordinal);
                     depth += 1;
                 }
                 XmlEvent::End { .. } => {
+                    ordinals.pop();
                     depth = depth
                         .checked_sub(1)
                         .ok_or_else(|| XmlError::Malformed("chart paint depth".into()))?;

@@ -1,5 +1,16 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { TimelineFailureCode } from './part-002.js';
+import type { ItemizationNoticeKind, TimelineFailureCode } from './part-002.js';
+
+export interface SourceThemeSchemeRef {
+  part: string;
+  sourceOrdinal: number;
+}
+
+export interface ItemizationNotice {
+  end: number;
+  kind: ItemizationNoticeKind;
+  start: number;
+}
 
 export interface EffectiveVariation {
   /**

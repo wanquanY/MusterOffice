@@ -7,7 +7,7 @@ mod types;
 use crate::source_frame::interaction::FrameInteractionLimits;
 use crate::{source_page::*, source_resource_page::*, source_text_page::TextPageInteraction};
 use mo_image::ImageDecoder;
-use mo_presentation_source::source::{SourceIndex, images::ImageInput};
+use mo_presentation_source::source::SourceIndex;
 use mo_raster::RasterBackend;
 pub use picking::{PageObjectHit, PagePickQuery, PagePickResult};
 pub use types::*;
@@ -33,7 +33,7 @@ pub struct EditorPageOptions {
     pub interaction: FrameInteractionLimits,
 }
 pub fn prepare(
-    input: &dyn ImageInput,
+    input: &dyn mo_presentation_source::source::page_resources::PageInput,
     index: &SourceIndex,
     q: &SourcePageRequest,
     decoder: &mut dyn ImageDecoder,

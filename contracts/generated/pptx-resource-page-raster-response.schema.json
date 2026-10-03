@@ -73,6 +73,62 @@
         "bookmark"
       ]
     },
+    "ChartDataAuthority": {
+      "type": "string",
+      "enum": [
+        "sourceCacheSnapshot"
+      ]
+    },
+    "ChartPageInfo": {
+      "type": "object",
+      "properties": {
+        "chartPart": {
+          "type": "string"
+        },
+        "chartSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "dataAuthority": {
+          "$ref": "#/$defs/ChartDataAuthority"
+        },
+        "labels": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "nativeKind": {
+          "type": "string"
+        },
+        "object": {
+          "$ref": "#/$defs/SourceObjectRef"
+        },
+        "pathBytes": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0
+        },
+        "paths": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "textWork": {
+          "$ref": "#/$defs/FrameWork"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "object",
+        "chartPart",
+        "chartSha256",
+        "dataAuthority",
+        "nativeKind",
+        "labels",
+        "paths",
+        "textWork",
+        "pathBytes"
+      ]
+    },
     "ChartTextUnresolved": {
       "type": "string",
       "enum": [
@@ -4545,6 +4601,12 @@
           "type": "integer",
           "format": "uint32",
           "minimum": 0
+        },
+        "charts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ChartPageInfo"
+          }
         },
         "generatedCommands": {
           "type": "integer",

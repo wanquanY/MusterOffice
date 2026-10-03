@@ -205,3 +205,9 @@ impl ImageInput for SourceImages<'_> {
         self.package.read(part, max, check)
     }
 }
+
+impl crate::source::page_resources::PageInput for SourceImages<'_> {
+    fn native_package(&self) -> Option<&dyn PackageRead> {
+        Some(self.package.0)
+    }
+}

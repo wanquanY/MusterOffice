@@ -20,6 +20,7 @@ pub(crate) struct PreparedPaint {
     pub line: Option<([u8; 4], StrokeStyle)>,
 }
 pub(crate) struct PreparedPage<'a> {
+    pub charts: std::sync::Arc<crate::source_chart_page::Charts>,
     pub source: Option<mo_presentation_source::source::prepared::SourcePreparation<'a>>,
     pub tables: crate::source_table::SharedTables<'a>,
     pub info: SourcePageInfo,
@@ -106,6 +107,28 @@ pub(crate) fn preflight_retained<'a>(
     retained: Option<&'a crate::source_table::RetainedTables>,
     check: &dyn Fn() -> bool,
 ) -> Result<PreparedPage<'a>, SourcePageError> {
+    preflight_resources(
+        index,
+        q,
+        text_enabled,
+        images_enabled,
+        transforms,
+        retained,
+        Default::default(),
+        check,
+    )
+}
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn preflight_resources<'a>(
+    index: &'a SourceIndex,
+    q: &SourcePageRequest,
+    text_enabled: bool,
+    images_enabled: bool,
+    transforms: Option<&crate::source_placement::SourceProperties>,
+    retained: Option<&'a crate::source_table::RetainedTables>,
+    charts: std::sync::Arc<crate::source_chart_page::Charts>,
+    check: &dyn Fn() -> bool,
+) -> Result<PreparedPage<'a>, SourcePageError> {
     cancel(check)?;
     if retained.is_some_and(|r| !std::ptr::eq(r.source.index(), index)) {
         return Err(SourcePageError::SourceConflict);
@@ -119,7 +142,15 @@ pub(crate) fn preflight_retained<'a>(
         .page_size
         .ok_or(SourcePageError::Invalid("missing page size"))?;
     let clip_page = crate::page_boundary::validate(size, v)?;
-    let layers = layers::select(index, q, text_enabled, images_enabled, transforms, check)?;
+    let layers = layers::select(
+        index,
+        q,
+        text_enabled,
+        images_enabled,
+        transforms,
+        &charts.keys().cloned().collect(),
+        check,
+    )?;
     let mut tables = super::table::admit(index, &layers, retained, check)?;
     let mut source = if tables.is_empty() {
         None
@@ -135,7 +166,15 @@ pub(crate) fn preflight_retained<'a>(
             )?,
         )
     };
-    let objects = objects::objects(index, q, &layers, transforms, source.as_mut(), check)?;
+    let objects = objects::objects(
+        index,
+        q,
+        &layers,
+        transforms,
+        source.as_mut(),
+        &charts,
+        check,
+    )?;
     let mut shared_tables = BTreeMap::new();
     let mut opacities = super::opacity::chains(index, &layers, transforms, check)?;
     let tolerance = local_tolerance(&objects, q, check)?;
@@ -319,6 +358,11 @@ pub(crate) fn preflight_retained<'a>(
                 picture_fill,
                 line,
             }]
+        } else if charts.contains_key(&(
+            b.location.part.clone(),
+            b.location.object.expect("object id"),
+        )) {
+            Vec::new()
         } else {
             let limits = tables
                 .remove(&(
@@ -416,6 +460,14 @@ pub(crate) fn preflight_retained<'a>(
         source,
         tables: shared_tables,
         info: SourcePageInfo {
+            charts: prepared
+                .iter()
+                .filter_map(|o| {
+                    charts
+                        .get(&(o.binding.location.part.clone(), o.binding.location.object?))
+                        .map(|c| c.info.clone())
+                })
+                .collect(),
             profile: q.profile,
             source_sha256: index.source_sha256.clone(),
             slide: q.slide.clone(),
@@ -427,6 +479,7 @@ pub(crate) fn preflight_retained<'a>(
             path_coordinate_error_bound: path_error,
             image_clip_coordinate_error_bound: Fixed::ZERO,
         },
+        charts,
         viewport: v.clone(),
         background,
         background_paint,

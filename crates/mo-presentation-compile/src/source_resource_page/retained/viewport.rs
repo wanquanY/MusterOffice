@@ -90,13 +90,14 @@ impl ResourcePagePlan {
         }
         let mut request = self.request.clone();
         request.viewport = viewport;
-        let prepared = source_page::preflight_retained(
+        let prepared = source_page::preflight_resources(
             &self.index,
             &request,
             self.text_enabled,
             true,
             Some(visibility),
             self.tables.as_ref(),
+            Arc::clone(&self.charts),
             check,
         )?;
         let resources = resources::prepare(

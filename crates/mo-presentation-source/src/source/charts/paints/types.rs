@@ -27,6 +27,9 @@ pub struct SourceChartPaints {
     pub theme_override: Option<ChartThemeOverride>,
     /// Source order. This is not a resolved chart-style/series/point cascade.
     pub declarations: Vec<ChartPaintDeclaration>,
+    /// Colors in native annotation text, evaluated in the same chart context.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub text_colors: Vec<ChartPaintColor>,
 }
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -38,6 +41,8 @@ pub struct ChartThemeOverride {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ChartPaintDeclaration {
     pub source_ordinal: u32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub parent_ordinal: Option<u32>,
     pub black_white_mode: Option<NativeBlackWhiteMode>,
     pub fill: Option<SourceFill>,
     pub line: Option<SourceLine>,

@@ -13,9 +13,10 @@ export type PptxTextPageRasterResponse =
  * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
  */
 export type FixedQ32 = string;
+export type Digest = string;
+export type ChartDataAuthority = "sourceCacheSnapshot";
 export type SurfaceKind = "slide" | "master" | "layout";
 export type SourcePageProfile = "drawingml-static-solid-page-v1-draft";
-export type Digest = string;
 /**
  * Canonical uint64 byte length. Range requires semantic validation.
  */
@@ -1203,6 +1204,7 @@ export interface SourcePageRasterInfo {
 }
 export interface SourcePageInfo {
   arcSegments: number;
+  charts?: ChartPageInfo[];
   generatedCommands: number;
   hiddenSlide: boolean;
   /**
@@ -1218,6 +1220,28 @@ export interface SourcePageInfo {
   profile: SourcePageProfile;
   slide: string;
   sourceSha256: Digest;
+}
+export interface ChartPageInfo {
+  chartPart: string;
+  chartSha256: Digest;
+  dataAuthority: ChartDataAuthority;
+  labels: number;
+  nativeKind: string;
+  object: SourceObjectRef;
+  pathBytes: number;
+  paths: number;
+  textWork: FrameWork;
+}
+export interface SourceObjectRef {
+  nativeId: number;
+  part: string;
+}
+export interface FrameWork {
+  componentCalls: number;
+  fontUploadBytes: number;
+  glyphs: number;
+  pathCommands: number;
+  requestWords: number;
 }
 export interface SourcePageLayer {
   hiddenObjects: number[];
@@ -1430,10 +1454,6 @@ export interface Rect1 {
   max: Point;
   min: Point;
 }
-export interface SourceObjectRef {
-  nativeId: number;
-  part: string;
-}
 export interface PageTextInk {
   /**
    * Page-space Q32 EMU, including the recorded coordinate uncertainty.
@@ -1447,13 +1467,6 @@ export interface PageTextInk {
   clippingApplied: boolean;
   coordinateErrorBound: FixedQ32;
   object: SourceObjectRef;
-}
-export interface FrameWork {
-  componentCalls: number;
-  fontUploadBytes: number;
-  glyphs: number;
-  pathCommands: number;
-  requestWords: number;
 }
 export interface PptxPageFailure {
   code: PptxPageFailureCode;

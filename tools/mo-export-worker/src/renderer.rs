@@ -57,8 +57,9 @@ impl PreviewRenderer for Renderer {
                     error: error.into(),
                 })
             })?;
-        use mo_pptx::source::images::{AuthorImages, ImageInput, PackageImages, SourceImages};
-        let mut render = |images: &dyn ImageInput, index: &mo_pptx::source::SourceIndex| {
+        use mo_pptx::source::images::{AuthorImages, PackageImages, SourceImages};
+        let mut render = |images: &dyn mo_pptx::source::page_resources::PageInput,
+                          index: &mo_pptx::source::SourceIndex| {
             let mut ordinal = 0;
             mo_kernel_api::render_resource_document_images(
                 requests,

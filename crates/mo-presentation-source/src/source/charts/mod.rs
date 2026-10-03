@@ -8,6 +8,7 @@ pub mod context;
 mod data;
 mod layout;
 mod layout_types;
+pub mod page;
 pub mod paints;
 pub mod styles;
 mod tree;
@@ -56,6 +57,21 @@ struct Budget {
     text: annotation_text::Budget,
 }
 impl Budget {
+    fn new(limits: SourceChartLimits) -> Self {
+        Self {
+            limits,
+            elements: 0,
+            metadata_bytes: 0,
+            part_bytes: 0,
+            relationships: 0,
+            series: 0,
+            points: 0,
+            axes: 0,
+            annotations: 0,
+            text: Default::default(),
+        }
+    }
+
     fn account(&mut self, bytes: usize) -> Result<(), mo_xml::XmlError> {
         self.metadata_bytes = self
             .metadata_bytes
@@ -153,18 +169,7 @@ pub fn query(
         .get(&request.surface)
         .ok_or_else(|| invalid("chart surface not in source index"))?;
     let owner = PartName::new(&request.surface)?;
-    let mut budget = Budget {
-        limits,
-        elements: 0,
-        metadata_bytes: 0,
-        part_bytes: 0,
-        relationships: 0,
-        series: 0,
-        points: 0,
-        axes: 0,
-        annotations: 0,
-        text: Default::default(),
-    };
+    let mut budget = Budget::new(limits);
     let bytes = budget.read(package, &owner, check)?;
     // Keep the exact presentation MCE selection used to build SourceIndex.
     let surface_tree = tree::read(

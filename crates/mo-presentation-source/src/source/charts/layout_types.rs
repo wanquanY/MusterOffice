@@ -5,6 +5,8 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct SourceChartLayout {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub marker: Option<SourceChartMarker>,
     /// Source order; missing property, missing val and explicit lexical val differ.
     pub properties: Vec<SourceChartProperty>,
     /// Complex markup remains bound to its original part and physical ordinal.
@@ -17,11 +19,20 @@ pub struct SourceChartLayout {
 }
 impl SourceChartLayout {
     pub fn is_empty(&self) -> bool {
-        self.properties.is_empty()
+        self.marker.is_none()
+            && self.properties.is_empty()
             && self.markup.is_empty()
             && self.unrecognized_children.is_empty()
             && self.retained_attribute_ordinals.is_empty()
     }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct SourceChartMarker {
+    pub source_ordinal: u32,
+    pub symbol: Option<String>,
+    pub size: Option<u8>,
+    pub retained_ordinals: Vec<u32>,
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

@@ -1,5 +1,5 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { ByteLength, Digest, EffectiveImageMode, Emu, FillOrigin, FillTarget, FixedQ32, FontMetric, FontSelectionReason, FontStyle, ImageFormat, NativeBlipCompression, NativeCoordinate, NativeFillAlignment, NativeFontCollectionIndex, NativeFontSlot, NativePercentage, NativeTableGridIssue, NativeTextElement, NativeTileFlip, NavigationDirection, NodePhase, PhysicalPixelSize, PlacementCause, PlaybackGeneration, PlaybackSessionId, PptxPageFailureCode, PresentationStepOutcome, ResolutionSource, ResolutionUnit, RotationBasis, ShapeFailureCode, SourceColor, SourceImageOutcome, SourcePageIssue, SourcePageProfile, SourcePlaceholderMatch, SourceVisualIssueKind, SurfaceKind, TableCellEdge, TableStyleSelectionError, TextStyleOrigin, Ticks, Timescale, TimingNodeId, Visibility } from './part-001.js';
+import type { ByteLength, ChartDataAuthority, Digest, EffectiveImageMode, Emu, FillOrigin, FillTarget, FixedQ32, FontMetric, FontSelectionReason, FontStyle, ImageFormat, NativeBlipCompression, NativeCoordinate, NativeFillAlignment, NativeFontCollectionIndex, NativeFontSlot, NativePercentage, NativeTableGridIssue, NativeTextElement, NativeTileFlip, NavigationDirection, NodePhase, PhysicalPixelSize, PlacementCause, PlaybackGeneration, PlaybackSessionId, PptxPageFailureCode, PresentationStepOutcome, ResolutionSource, ResolutionUnit, RotationBasis, ShapeFailureCode, SourceColor, SourceImageOutcome, SourcePageIssue, SourcePageProfile, SourcePlaceholderMatch, SourceVisualIssueKind, SurfaceKind, TableCellEdge, TableStyleSelectionError, TextStyleOrigin, Ticks, Timescale, TimingNodeId, Visibility } from './part-001.js';
 
 export type TextCascadeUnresolved =
   | {
@@ -381,6 +381,7 @@ export interface SourcePageRasterInfo {
 
 export interface SourcePageInfo {
   arcSegments: number;
+  charts?: ChartPageInfo[];
   generatedCommands: number;
   hiddenSlide: boolean;
   /**
@@ -396,6 +397,35 @@ export interface SourcePageInfo {
   profile: SourcePageProfile;
   slide: string;
   sourceSha256: Digest;
+}
+
+export interface ChartPageInfo {
+  chartPart: string;
+  chartSha256: Digest;
+  dataAuthority: ChartDataAuthority;
+  labels: number;
+  nativeKind: string;
+  object: SourceObjectRef;
+  pathBytes: number;
+  paths: number;
+  textWork: FrameWork;
+}
+
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema definition
+ * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
+ */
+export interface SourceObjectRef {
+  nativeId: number;
+  part: string;
+}
+
+export interface FrameWork {
+  componentCalls: number;
+  fontUploadBytes: number;
+  glyphs: number;
+  pathCommands: number;
+  requestWords: number;
 }
 
 export interface SourcePageLayer {
@@ -626,15 +656,6 @@ export interface Rect1 {
   min: Point;
 }
 
-/**
- * This interface was referenced by `undefined`'s JSON-Schema definition
- * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
- */
-export interface SourceObjectRef {
-  nativeId: number;
-  part: string;
-}
-
 export interface PageTextInk {
   /**
    * Page-space Q32 EMU, including the recorded coordinate uncertainty.
@@ -648,14 +669,6 @@ export interface PageTextInk {
   clippingApplied: boolean;
   coordinateErrorBound: FixedQ32;
   object: SourceObjectRef;
-}
-
-export interface FrameWork {
-  componentCalls: number;
-  fontUploadBytes: number;
-  glyphs: number;
-  pathCommands: number;
-  requestWords: number;
 }
 
 export interface SourcePlaybackFrame {

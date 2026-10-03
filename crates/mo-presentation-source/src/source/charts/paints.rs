@@ -124,6 +124,35 @@ pub fn query(
             });
         }
     }
+    let mut text_colors = Vec::new();
+    for body in &chart.annotations.text_bodies {
+        for node in body.styles.nodes.values() {
+            cancelled(check)?;
+            let mut colors = Vec::new();
+            if let crate::source::text::SourceTextValue::Fill { fill } = &node.value {
+                fill_colors(&fill.definition, &mut colors);
+            }
+            for c in colors {
+                if count >= limits.colors.max_queries {
+                    return Err(PptxError::Limit("chart text color queries"));
+                }
+                count += 1;
+                let outcome = session.expression(
+                    color::ExpressionRef {
+                        value: &c.value,
+                        transforms: &c.transforms,
+                    },
+                    None,
+                )?;
+                text_colors.push(ChartPaintColor {
+                    source_ordinal: c.source_ordinal,
+                    outcome: color::ColorSample::from_computed(outcome.color),
+                    dependencies: outcome.dependencies,
+                    notices: outcome.notices,
+                });
+            }
+        }
+    }
     cancelled(check)?;
     Ok(SourceChartPaints {
         source_sha256: index.source_sha256.clone(),
@@ -149,5 +178,6 @@ pub fn query(
         }),
         chart,
         declarations: parsed.declarations,
+        text_colors,
     })
 }

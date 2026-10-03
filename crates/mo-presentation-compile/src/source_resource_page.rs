@@ -16,8 +16,7 @@ use crate::{
 use mo_image::ImageDecoder;
 use mo_opc::PackageRead;
 use mo_presentation_source::source::{
-    SourceIndex,
-    images::{ImageInput, PackageImages},
+    SourceIndex, images::PackageImages, page_resources::PageInput,
 };
 use mo_raster::{PreparedImages, RasterBackend, RasterError};
 pub(crate) use retained::ResourceViewportUpdate;
@@ -36,6 +35,7 @@ fn cancel(check: &dyn Fn() -> bool) -> Result<(), SourcePageError> {
 /// happen exactly once in either plan() or render(); no partial page escapes.
 pub struct PreparedResourcePage {
     tables: Option<crate::source_table::RetainedTables>,
+    charts: std::sync::Arc<crate::source_chart_page::Charts>,
     built: source_page::BuiltPage,
     text: Option<source_text_page::TextPageContent>,
     images: resources::Resources,
@@ -96,7 +96,7 @@ pub(crate) fn prepare_view(
 /// Compile an author plan or inspected source through the same resource, text,
 /// geometry, placement and paint engines. ImageInput keeps provenance explicit.
 pub fn prepare_input(
-    input: &dyn ImageInput,
+    input: &dyn PageInput,
     index: &SourceIndex,
     q: &SourcePageRequest,
     decoder: &mut dyn ImageDecoder,
@@ -122,11 +122,11 @@ pub fn prepare_input(
 }
 
 pub(crate) fn prepare_input_view(
-    input: &dyn ImageInput,
+    input: &dyn PageInput,
     index: &SourceIndex,
     view: PageView<'_>,
     decoder: &mut dyn ImageDecoder,
-    text: Option<TextPageContext<'_, '_, '_>>,
+    mut text: Option<TextPageContext<'_, '_, '_>>,
     options: ResourcePageOptions,
     check: &dyn Fn() -> bool,
 ) -> Result<PreparedResourcePage, SourcePageError> {
@@ -135,8 +135,21 @@ pub(crate) fn prepare_input_view(
         return Err(SourcePageError::SourceConflict);
     }
     let q = view.request;
-    let mut prepared =
-        source_page::preflight_sampled(index, q, text.is_some(), true, view.transforms, check)?;
+    let charts = if let Some(package) = input.native_package() {
+        crate::source_chart_page::prepare(package, index, q, view.transforms, &mut text, check)?
+    } else {
+        Default::default()
+    };
+    let mut prepared = source_page::preflight_resources(
+        index,
+        q,
+        text.is_some(),
+        true,
+        view.transforms,
+        None,
+        charts,
+        check,
+    )?;
     let mut text = text.map(|t| {
         let compiler = source_text_page::Compiler::new(t.manifest, t.backend, options.text_limits);
         if let Some(limits) = view.interaction_limits {
@@ -154,6 +167,16 @@ pub(crate) fn prepare_input_view(
             check,
         )?;
     }
+    if let Some(text) = &mut text {
+        text.shape_charts(
+            std::sync::Arc::get_mut(&mut prepared.charts).ok_or(SourcePageError::Invalid(
+                "chart preparation unexpectedly shared",
+            ))?,
+            check,
+        )?;
+        prepared.info.charts = prepared.charts.values().map(|c| c.info.clone()).collect();
+    }
+    let charts = prepared.charts.clone();
     let tables = match (view.source_owner, prepared.source.take()) {
         (Some(owner), Some(source)) => Some(crate::source_table::RetainedTables::capture(
             std::sync::Arc::clone(owner),
@@ -190,6 +213,7 @@ pub(crate) fn prepare_input_view(
     cancel(check)?;
     Ok(PreparedResourcePage {
         tables,
+        charts,
         built,
         text,
         images,

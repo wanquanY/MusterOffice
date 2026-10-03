@@ -17,12 +17,13 @@ fn surface<'a>(
         .filter(|s| s.kind == kind)
         .ok_or(SourcePageError::Invalid("surface hierarchy binding"))
 }
-pub(super) fn select(
+pub(crate) fn select(
     index: &SourceIndex,
     q: &SourcePageRequest,
     text_enabled: bool,
     images_enabled: bool,
     properties: Option<&crate::source_placement::SourceProperties>,
+    charts: &BTreeSet<(String, u32)>,
     check: &dyn Fn() -> bool,
 ) -> Result<Vec<SourcePageLayer>, SourcePageError> {
     if !index.slides.iter().any(|s| s.part == q.slide) {
@@ -153,7 +154,15 @@ pub(super) fn select(
                     layer.template_placeholders.push(o.native_id);
                     continue;
                 }
-                audit(index, part, o, text_enabled, images_enabled, check)?;
+                audit(
+                    index,
+                    part,
+                    o,
+                    text_enabled,
+                    images_enabled,
+                    charts.contains(&(part.clone(), o.native_id)),
+                    check,
+                )?;
                 if o.kind != SourceObjectKind::Group {
                     layer.objects.push(o.native_id);
                 }
@@ -163,12 +172,14 @@ pub(super) fn select(
     }
     Ok(layers)
 }
+#[allow(clippy::too_many_arguments)]
 fn audit(
     index: &SourceIndex,
     part: &str,
     object: &SourceObject,
     text_enabled: bool,
     images_enabled: bool,
+    chart_enabled: bool,
     check: &dyn Fn() -> bool,
 ) -> Result<(), SourcePageError> {
     let location = SourcePageLocation {
@@ -196,7 +207,8 @@ fn audit(
         object.kind,
         SourceObjectKind::Shape | SourceObjectKind::Connector | SourceObjectKind::Group
     ) || images_enabled && object.kind == SourceObjectKind::Picture
-        || object.kind == SourceObjectKind::GraphicFrame && object.table.is_some())
+        || object.kind == SourceObjectKind::GraphicFrame
+            && (object.table.is_some() || chart_enabled))
     {
         return Err(mapping(
             &location,

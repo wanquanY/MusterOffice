@@ -1,6 +1,6 @@
 use super::*;
 pub struct ResourceDocumentInputs<'a> {
-    pub images: &'a dyn mo_pptx::source::images::ImageInput,
+    pub images: &'a dyn mo_pptx::source::page_resources::PageInput,
     pub index: &'a mo_pptx::source::SourceIndex,
     pub manifest: Option<&'a PreparedManifest<'a, 'a>>,
 }

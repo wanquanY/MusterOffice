@@ -57,6 +57,7 @@ pub(super) fn paint(
         None,
         clip,
         |instance| SourcePagePaintSource {
+            chart: None,
             instance,
             binding,
             path: None,

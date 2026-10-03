@@ -88,6 +88,7 @@ pub(crate) fn failure(e: SourcePageError) -> PptxPageFailure {
     use PptxPageFailureCode::*;
     let message = e.to_string();
     let code = match e {
+        SourcePageError::Chart { .. } => MappingNotImplemented,
         SourcePageError::TextContextRequired {
             location,
             source_ordinal,

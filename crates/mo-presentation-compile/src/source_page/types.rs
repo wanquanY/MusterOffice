@@ -77,6 +77,12 @@ pub enum SourcePageIssue {
 }
 #[derive(Debug, thiserror::Error)]
 pub enum SourcePageError {
+    #[error("native chart {part} at ordinal {source_ordinal}: {reason}")]
+    Chart {
+        part: String,
+        source_ordinal: u32,
+        reason: String,
+    },
     #[error("source page object {location:?}: {error}")]
     AtObject {
         location: SourcePageLocation,
@@ -179,6 +185,8 @@ pub struct SourcePaintRegion {
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct SourcePagePaintSource {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub chart: Option<crate::source_chart_page::ChartPaintSource>,
     pub instance: u32,
     pub binding: u32,
     pub path: Option<GeometryOrigin>,
@@ -191,6 +199,8 @@ pub struct SourcePagePaintSource {
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct SourcePageInfo {
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub charts: Vec<crate::source_chart_page::ChartPageInfo>,
     pub profile: SourcePageProfile,
     pub source_sha256: Digest,
     pub slide: String,

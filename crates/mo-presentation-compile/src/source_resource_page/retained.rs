@@ -21,6 +21,8 @@ pub struct ResourcePreparationInfo {
     pub text_work: crate::source_frame::FrameWork,
     /// Logical paths, draw elements and optional clip metadata; not heap capacity or RSS.
     pub text_path_bytes: u64,
+    #[serde(default)]
+    pub chart_path_bytes: u64,
     pub decoded_images: u32,
     pub decoded_pixel_bytes: u64,
     pub encoded_bytes: u64,
@@ -36,6 +38,7 @@ pub struct ResourcePagePlan {
     request: SourcePageRequest,
     index: Arc<SourceIndex>,
     tables: Option<crate::source_table::RetainedTables>,
+    charts: Arc<crate::source_chart_page::Charts>,
     text_enabled: bool,
     text: Option<RetainedText>,
     images: RetainedImages,
@@ -100,6 +103,7 @@ impl ResourcePagePlan {
         )?;
         let PreparedResourcePage {
             tables,
+            charts,
             built,
             text,
             images,
@@ -129,6 +133,7 @@ impl ResourcePagePlan {
             text_frames: text.as_ref().map_or(0, RetainedText::frames),
             text_work: text.as_ref().map(|t| t.work.clone()).unwrap_or_default(),
             text_path_bytes: text.as_ref().map_or(0, |t| t.path_bytes),
+            chart_path_bytes: charts.values().map(|c| c.info.path_bytes).sum(),
             decoded_images: images.decoded.len() as u32,
             decoded_pixel_bytes: images.data.bytes().len() as u64,
             encoded_bytes: images.encoded_bytes,
@@ -140,6 +145,7 @@ impl ResourcePagePlan {
             request,
             index,
             tables,
+            charts,
             text_enabled,
             text,
             images,
@@ -164,13 +170,14 @@ impl ResourcePagePlan {
         transforms: &SourceProperties,
         check: &dyn Fn() -> bool,
     ) -> Result<PreparedResourceFrame, SourcePageError> {
-        let mut prepared = source_page::preflight_retained(
+        let mut prepared = source_page::preflight_resources(
             &self.index,
             request,
             self.text_enabled,
             true,
             Some(transforms),
             self.tables.as_ref(),
+            Arc::clone(&self.charts),
             check,
         )?;
         // Retained text already owns its prepared frames; source grids are no
