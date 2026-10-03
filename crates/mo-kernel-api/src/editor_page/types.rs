@@ -1,4 +1,4 @@
-use mo_common::{CellId, Digest, ObjectId, ParagraphId, RunId};
+use mo_common::{CellId, Digest, DocumentId, ObjectId, ParagraphId, RunId, SlideId};
 use mo_pptx::{
     ExportDefaults,
     source::{SourceObjectKind, SourceObjectRef, SurfaceKind, table::SourceCellAddress},
@@ -14,6 +14,52 @@ use mo_text::manifest::FontManifest;
 use mo_unicode::TextBoundary;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+
+/// Page discovery needs no fonts, image bytes or rendering components. Author
+/// resource declarations remain part of the plan identity; prepare verifies
+/// their actual bytes. Retained and PPTX inputs use the OPC material channel.
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[serde(tag = "kind", rename_all = "camelCase", deny_unknown_fields)]
+pub enum EditorDocumentInput {
+    Pptx {},
+    Author {
+        document: Box<Document>,
+        defaults: ExportDefaults,
+    },
+    Retained {
+        document: Box<Document>,
+    },
+}
+#[derive(Debug, Clone, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct EditorDocumentIdentity {
+    pub id: DocumentId,
+    /// Matches SnapshotRecord.semanticDigest, not its CAS revision.
+    pub semantic_digest: Digest,
+}
+#[derive(Debug, Clone, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct EditorDocumentInfo {
+    /// Copy to ResourcePageRequest.page.expectedSourceSha256. For model inputs
+    /// this is the semantic native plan digest, not an exported PPTX checksum.
+    pub source_sha256: Digest,
+    pub model: Option<EditorDocumentIdentity>,
+    /// Missing native page size remains explicit; discovery is not render proof.
+    pub page_size: Option<mo_presentation_model::Size>,
+    /// Presentation order, including hidden slides. Never lexical part order.
+    pub slides: Vec<EditorDocumentSlide>,
+}
+#[derive(Debug, Clone, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct EditorDocumentSlide {
+    /// Copy to ResourcePageRequest.page.slide; opaque to the host.
+    pub slide: String,
+    pub native_id: u32,
+    /// Absent only for raw PPTX input, which has no model namespace.
+    pub slide_id: Option<SlideId>,
+    pub name: Option<String>,
+    pub hidden: bool,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "kind", rename_all = "camelCase", deny_unknown_fields)]
@@ -40,6 +86,10 @@ pub struct EditorPagePreparation {
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "operation", rename_all = "camelCase", deny_unknown_fields)]
 pub enum EditorPageRequest {
+    /// Does not replace, clear or create the session's rendered view.
+    Inspect {
+        input: Box<EditorDocumentInput>,
+    },
     Prepare {
         request: Box<EditorPagePreparation>,
     },
@@ -132,6 +182,9 @@ pub struct EditorPickResult {
 #[derive(Debug, Clone, Serialize, JsonSchema)]
 #[serde(tag = "status", rename_all = "camelCase")]
 pub enum EditorPageResponse {
+    Inspected {
+        info: Box<EditorDocumentInfo>,
+    },
     Prepared {
         view: Digest,
         info: Box<EditorPageInfo>,

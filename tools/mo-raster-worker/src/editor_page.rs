@@ -1,4 +1,5 @@
-//! One editor owner per isolated process. Only prepare consumes material/fonts.
+//! One editor owner per isolated process. Inspect consumes OPC material;
+//! prepare consumes material/fonts. Other commands reject both byte channels.
 use std::io::{self, Read, Write};
 pub fn run() -> Result<(), Box<dyn std::error::Error>> {
     let mut input = io::stdin().lock();

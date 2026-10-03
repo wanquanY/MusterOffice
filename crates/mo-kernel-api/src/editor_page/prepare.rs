@@ -17,9 +17,6 @@ use mo_presentation_compile::{
 use mo_text::manifest::PreparedManifest;
 use std::collections::BTreeMap;
 type ObjectIds = BTreeMap<(String, u32), ObjectId>;
-fn source_error(e: PptxError) -> PptxResourcePageFailure {
-    SourcePageError::Source(e).into()
-}
 pub(super) fn prepare(
     request: &EditorPagePreparation,
     material: &[u8],

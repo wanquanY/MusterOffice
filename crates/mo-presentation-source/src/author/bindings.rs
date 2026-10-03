@@ -1,5 +1,5 @@
 use crate::PptxError;
-use mo_common::{LayoutId, MasterId, ObjectId, ResourceId, ThemeId};
+use mo_common::{LayoutId, MasterId, ObjectId, ResourceId, SlideId, ThemeId};
 use mo_opc::PartName;
 use mo_presentation_model::{Document, ObjectContent};
 use std::collections::{BTreeMap, BTreeSet};
@@ -13,7 +13,14 @@ pub struct LayoutPlan {
     pub part: PartName,
     pub master: PartName,
 }
+pub struct SlidePlan {
+    pub id: SlideId,
+    pub part: PartName,
+    pub native_id: u32,
+}
 pub struct NativeBindings {
+    /// Presentation order, shared by projection and public page discovery.
+    pub slides: Vec<SlidePlan>,
     pub themes: BTreeMap<Option<ThemeId>, PartName>,
     pub masters: Vec<MasterPlan>,
     pub layouts: Vec<LayoutPlan>,
@@ -25,6 +32,18 @@ fn part(path: impl Into<String>) -> Result<PartName, PptxError> {
     Ok(PartName::new(path)?)
 }
 pub(super) fn plan(document: &Document) -> Result<NativeBindings, PptxError> {
+    let slides = document
+        .slide_order
+        .iter()
+        .enumerate()
+        .map(|(i, id)| {
+            Ok(SlidePlan {
+                id: id.clone(),
+                part: part(format!("/ppt/slides/slide{}.xml", i + 1))?,
+                native_id: 256 + i as u32,
+            })
+        })
+        .collect::<Result<_, PptxError>>()?;
     let mut themes = BTreeMap::new();
     for (i, id) in std::iter::once(None)
         .chain(document.themes.keys().cloned().map(Some))
@@ -104,6 +123,7 @@ pub(super) fn plan(document: &Document) -> Result<NativeBindings, PptxError> {
         .map(|(i, id)| (id.clone(), i as u32 + 2))
         .collect();
     Ok(NativeBindings {
+        slides,
         themes,
         masters,
         layouts,

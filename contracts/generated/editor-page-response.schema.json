@@ -7,6 +7,22 @@
       "type": "object",
       "properties": {
         "info": {
+          "$ref": "#/$defs/EditorDocumentInfo"
+        },
+        "status": {
+          "type": "string",
+          "const": "inspected"
+        }
+      },
+      "required": [
+        "status",
+        "info"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "info": {
           "$ref": "#/$defs/EditorPageInfo"
         },
         "status": {
@@ -326,11 +342,115 @@
       },
       "pattern": "^[0-9a-f]{64}$"
     },
+    "DocumentId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
     "DrawHitKind": {
       "type": "string",
       "enum": [
         "exact",
         "nearby"
+      ]
+    },
+    "EditorDocumentIdentity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/DocumentId"
+        },
+        "semanticDigest": {
+          "description": "Matches SnapshotRecord.semanticDigest, not its CAS revision.",
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "required": [
+        "id",
+        "semanticDigest"
+      ]
+    },
+    "EditorDocumentInfo": {
+      "type": "object",
+      "properties": {
+        "model": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EditorDocumentIdentity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pageSize": {
+          "description": "Missing native page size remains explicit; discovery is not render proof.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Size"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "slides": {
+          "description": "Presentation order, including hidden slides. Never lexical part order.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EditorDocumentSlide"
+          }
+        },
+        "sourceSha256": {
+          "description": "Copy to ResourcePageRequest.page.expectedSourceSha256. For model inputs\nthis is the semantic native plan digest, not an exported PPTX checksum.",
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "required": [
+        "sourceSha256",
+        "slides"
+      ]
+    },
+    "EditorDocumentSlide": {
+      "type": "object",
+      "properties": {
+        "hidden": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "nativeId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "slide": {
+          "description": "Copy to ResourcePageRequest.page.slide; opaque to the host.",
+          "type": "string"
+        },
+        "slideId": {
+          "description": "Absent only for raw PPTX input, which has no model namespace.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SlideId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "slide",
+        "nativeId",
+        "hidden"
       ]
     },
     "EditorObjectHit": {
@@ -4012,6 +4132,30 @@
         "COMPONENT_INVALID",
         "HOST_FAILURE"
       ]
+    },
+    "Size": {
+      "type": "object",
+      "properties": {
+        "height": {
+          "$ref": "#/$defs/Emu"
+        },
+        "width": {
+          "$ref": "#/$defs/Emu"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height"
+      ]
+    },
+    "SlideId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
     },
     "SourceCellAddress": {
       "type": "object",

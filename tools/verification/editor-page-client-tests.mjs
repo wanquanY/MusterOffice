@@ -11,9 +11,16 @@ const picked={status:'picked',view,results:[{hits:[{object:0,kind:'exact',textFr
 const failure={status:'error',error:{stage:'request',error:{code:'INPUT_INVALID',message:'Rejected input'}}};
 const request={input:{kind:'pptx'},fonts:{},page:{page:{viewport,expectedSourceSha256:view,slide:'slide'}}};
 const inputs={material:new Uint8Array(),fonts:new Uint8Array(),decoder:{},shaping:{},raster:{}};
+const inspected={status:'inspected',info:{sourceSha256:view,model:null,pageSize:null,
+ slides:[{slide:'slide',nativeId:256,slideId:null,name:null,hidden:false}]}};
 function fixture() {
- const state={ownerFreed:0,frameFreed:0,taken:0,onPrepare:()=>{},onPick:()=>{},pickReply:structuredClone(picked),mode:'valid',inside:false};
+ const state={ownerFreed:0,frameFreed:0,taken:0,onPrepare:()=>{},onPick:()=>{},onInspect:()=>{},inspectReply:structuredClone(inspected),pickReply:structuredClone(picked),mode:'valid',inside:false};
  const owner={
+  inspect(json,material){
+   state.inside=true;
+   try {assert.equal(JSON.parse(json).operation,'inspect');state.onInspect(material);return JSON.stringify(state.inspectReply);}
+   finally {state.inside=false;}
+  },
   prepare(){
    state.inside=true;
    try {
@@ -36,6 +43,40 @@ function fixture() {
  const client=new PresentationEditorPage({EditorPageSession:class {constructor(){return owner;}}});
  return {state,client};
 }
+test('discovery requires no page or components, and preserves the current rendered view on success or rejection',()=>{
+ const {state,client}=fixture();const material=new Uint8Array([1]);
+ state.onInspect=bytes=>assert.equal(bytes,material);
+ assert.deepEqual(client.inspect({kind:'pptx'},material),inspected.info);assert.equal(client.view,null);
+ client.prepare(request,inputs);assert.deepEqual(client.inspect({kind:'pptx'},material),inspected.info);assert.equal(client.view,view);
+ state.inspectReply=failure;assert.throws(()=>client.inspect({kind:'pptx'},material),EditorPageComputationError);
+ assert.equal(client.closed,false);assert.equal(client.view,view);assert.deepEqual(client.query([]),[]);
+ client.close();assert.equal(state.ownerFreed,1);
+});
+test('discovery validates native uniqueness and ordered model correspondence',()=>{
+ const input={kind:'author',document:{id:'doc',slideOrder:['b','a'],pageSize:{width:'1',height:'2'}},defaults:{}};
+ const valid={status:'inspected',info:{sourceSha256:view,model:{id:'doc',semanticDigest:view},pageSize:input.document.pageSize,
+  slides:['b','a'].map((slideId,i)=>({slide:`part${i}`,nativeId:256+i,slideId,name:slideId,hidden:i===1}))}};
+ const changes=[
+  r=>{r.status='prepared';},r=>{r.info.sourceSha256='bad';},r=>{r.info.model=null;},r=>{r.info.model.id='other';},
+  r=>{r.info.model.semanticDigest='bad';},r=>{r.info.pageSize=null;},r=>{r.info.pageSize.width='3';},
+  r=>{r.info.slides.pop();},r=>{r.info.slides.reverse();},r=>{r.info.slides[1].slide=r.info.slides[0].slide;},
+  r=>{r.info.slides[1].nativeId=r.info.slides[0].nativeId;},r=>{r.info.slides[0].nativeId=-1;},
+  r=>{r.info.slides[0].nativeId=0x100000000;},r=>{r.info.slides[0].slideId=null;},r=>{r.info.slides[0].hidden='false';},
+ ];
+ const good=fixture();good.state.inspectReply=valid;assert.deepEqual(good.client.inspect(input),valid.info);good.client.close();
+ for(const change of changes){
+  const {state,client}=fixture();state.inspectReply=structuredClone(valid);change(state.inspectReply);
+  assert.throws(()=>client.inspect(input));assert.equal(client.closed,true);assert.equal(state.ownerFreed,1);
+ }
+});
+test('discovery observes the same busy and deferred-close ownership discipline',()=>{
+ const {state,client}=fixture();client.prepare(request,inputs);
+ state.onInspect=()=>{assert.throws(()=>client.inspect({kind:'pptx'}),/closed or busy/);};
+ client.inspect({kind:'pptx'});assert.equal(client.view,view);
+ state.onInspect=()=>{client.close();assert.equal(state.ownerFreed,0);};
+ assert.throws(()=>client.inspect({kind:'pptx'}),/closed during calculation/);assert.equal(state.ownerFreed,1);
+ assert.equal(client.view,null);client.close();assert.equal(state.ownerFreed,1);
+});
 test('typed rejection preserves prior owner and consumes the empty pixel envelope',()=>{
  const {state,client}=fixture();
  client.prepare(request,inputs);state.mode='typed-error';

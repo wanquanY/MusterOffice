@@ -4,6 +4,24 @@
   "title": "EditorPageRequest",
   "oneOf": [
     {
+      "description": "Does not replace, clear or create the session's rendered view.",
+      "type": "object",
+      "properties": {
+        "input": {
+          "$ref": "#/$defs/EditorDocumentInput"
+        },
+        "operation": {
+          "type": "string",
+          "const": "inspect"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "input"
+      ]
+    },
+    {
       "type": "object",
       "properties": {
         "operation": {
@@ -1168,6 +1186,62 @@
         "pattern": "[^A-Za-z0-9_.:-]"
       },
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "EditorDocumentInput": {
+      "description": "Page discovery needs no fonts, image bytes or rendering components. Author\nresource declarations remain part of the plan identity; prepare verifies\ntheir actual bytes. Retained and PPTX inputs use the OPC material channel.",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "pptx"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "defaults": {
+              "$ref": "#/$defs/ExportDefaults"
+            },
+            "document": {
+              "$ref": "#/$defs/Document"
+            },
+            "kind": {
+              "type": "string",
+              "const": "author"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "document",
+            "defaults"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "document": {
+              "$ref": "#/$defs/Document"
+            },
+            "kind": {
+              "type": "string",
+              "const": "retained"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "document"
+          ]
+        }
+      ]
     },
     "EditorPageInput": {
       "oneOf": [

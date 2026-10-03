@@ -73,9 +73,9 @@ pub(super) fn build(
         )?;
         index.surfaces.insert(layout.part.to_string(), surface);
     }
-    for (i, id) in document.slide_order.iter().enumerate() {
-        let model = &document.slides[id];
-        let part = format!("/ppt/slides/slide{}.xml", i + 1);
+    for slide in &bindings.slides {
+        let model = &document.slides[&slide.id];
+        let part = slide.part.to_string();
         let mut surface = empty(SurfaceKind::Slide, index, ord)?;
         surface.name = Some(model.name.clone());
         surface.hidden = model.hidden;
@@ -105,7 +105,7 @@ pub(super) fn build(
         )?;
         index.surfaces.insert(part.clone(), surface);
         index.slides.push(SourceSlide {
-            native_id: 256 + i as u32,
+            native_id: slide.native_id,
             part,
         });
     }

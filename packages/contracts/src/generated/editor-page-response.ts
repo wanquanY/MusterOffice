@@ -2,6 +2,10 @@
 
 export type EditorPageResponse =
   | {
+      info: EditorDocumentInfo;
+      status: "inspected";
+    }
+  | {
       info: EditorPageInfo;
       status: "prepared";
       view: Digest;
@@ -24,6 +28,12 @@ export type EditorPageResponse =
       error: PptxResourcePageFailure;
       status: "error";
     };
+export type DocumentId = string;
+/**
+ * Signed int64 EMU. 1 point = 12700 EMU. Range requires semantic validation.
+ */
+export type Emu = string;
+export type SlideId = string;
 /**
  * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
  */
@@ -783,10 +793,6 @@ export type PhysicalPixelSize =
       x: PixelExtent;
       y: PixelExtent;
     };
-/**
- * Signed int64 EMU. 1 point = 12700 EMU. Range requires semantic validation.
- */
-export type Emu = string;
 export type PptxTextPageIssue =
   | {
       kind: "decorationMetric";
@@ -1386,6 +1392,46 @@ export type SystemColor =
   | "menuHighlight"
   | "menuBar";
 
+export interface EditorDocumentInfo {
+  model?: EditorDocumentIdentity | null;
+  /**
+   * Missing native page size remains explicit; discovery is not render proof.
+   */
+  pageSize?: Size | null;
+  /**
+   * Presentation order, including hidden slides. Never lexical part order.
+   */
+  slides: EditorDocumentSlide[];
+  /**
+   * Copy to ResourcePageRequest.page.expectedSourceSha256. For model inputs
+   * this is the semantic native plan digest, not an exported PPTX checksum.
+   */
+  sourceSha256: string;
+}
+export interface EditorDocumentIdentity {
+  id: DocumentId;
+  /**
+   * Matches SnapshotRecord.semanticDigest, not its CAS revision.
+   */
+  semanticDigest: string;
+}
+export interface Size {
+  height: Emu;
+  width: Emu;
+}
+export interface EditorDocumentSlide {
+  hidden: boolean;
+  name?: string | null;
+  nativeId: number;
+  /**
+   * Copy to ResourcePageRequest.page.slide; opaque to the host.
+   */
+  slide: string;
+  /**
+   * Absent only for raw PPTX input, which has no model namespace.
+   */
+  slideId?: SlideId | null;
+}
 export interface EditorPageInfo {
   downstreamCoordinateErrorBound: FixedQ32;
   /**

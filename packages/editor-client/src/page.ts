@@ -4,12 +4,15 @@ import type {EditorPagePreparation, EditorPageRequest, PagePickQuery, PageTextQu
 import type {EditorPageInfo, EditorPageResponse, EditorPickResult, PageTextQueryResult, PptxResourcePageFailure} from '../../contracts/src/generated/editor-page-response.js';
 import type {DecoderPort, RasterPort, ShapingPort, WasmFrame} from '../../playback-client/src/ports.js';
 import {sameViewport} from '../../playback-client/src/viewport.js';
+import {validateDocumentInfo, type EditorDocumentInput, type EditorDocumentInfo} from './document.js';
+export type {EditorDocumentInput, EditorDocumentInfo} from './document.js';
 export type {EditorPagePreparation, EditorPageInfo, PagePickQuery, EditorPickResult, PageTextQuery, PageTextQueryResult};
 export interface EditorPickingPort {
   pick(frame: Uint32Array): {status: number; words: Uint32Array};
   invalidate(): void;
 }
 export interface EditorPageOwner {
+  inspect(request: string, material: Uint8Array): string;
   prepare(request: string, material: Uint8Array, fonts: Uint8Array,
     decoder: DecoderPort, shaping: ShapingPort, raster: RasterPort): WasmFrame;
   command(request: string): string;
@@ -51,6 +54,18 @@ export class PresentationEditorPage {
   constructor(module: EditorPageModule) { this.#owner = new module.EditorPageSession(); }
   get closed(): boolean { return this.#closed; }
   get view(): string | null { return this.#view; }
+  /** Metadata only; the currently rendered view remains queryable. Author
+   * inspection takes no material. PPTX/retained inspection takes the source OPC. */
+  inspect(input: EditorDocumentInput, material: Uint8Array = new Uint8Array()): EditorDocumentInfo {
+    if (!(material instanceof Uint8Array) || material.byteLength > 128 * 1024 * 1024) throw new RangeError('Editor material exceeds byte limit');
+    const request = encode({operation: 'inspect', input});
+    return this.#run(() => {
+      const reply = response(this.#owner.inspect(request, material));
+      if (reply.status !== 'inspected') throw new Error('Invalid editor document inspection reply');
+      validateDocumentInfo(reply.info, input);
+      return reply.info;
+    });
+  }
   #run<T>(call: () => T): T {
     if (this.#closed || this.#busy) throw new Error('Editor page is closed or busy');
     this.#busy = true;

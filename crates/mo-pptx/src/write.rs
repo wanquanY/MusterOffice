@@ -119,11 +119,10 @@ fn prepare_package<'a>(
             ctx.relationships,
         )?;
     }
-    let mut slide_parts = Vec::new();
-    for (i, id) in document.slide_order.iter().enumerate() {
+    for binding in &plan.slides {
         cancelled(check)?;
-        let slide = &document.slides[id];
-        let path = part(format!("/ppt/slides/slide{}.xml", i + 1))?;
+        let slide = &document.slides[&binding.id];
+        let path = &binding.part;
         let layout = if let Some(id) = &slide.layout {
             &plan
                 .layouts
@@ -134,7 +133,7 @@ fn prepare_package<'a>(
         } else {
             &plan.layouts[0].part
         };
-        let mut ctx = context(author, &path, check);
+        let mut ctx = context(author, path, check);
         let bytes = definitions::slide(&mut ctx, slide, layout, max)?;
         add(
             &mut package,
@@ -143,7 +142,6 @@ fn prepare_package<'a>(
             bytes,
             ctx.relationships,
         )?;
-        slide_parts.push(path);
     }
     for (id, path) in &plan.images {
         cancelled(check)?;
@@ -191,12 +189,12 @@ fn prepare_package<'a>(
         x.raw("/>")?;
     }
     x.raw("</p:sldMasterIdLst>")?;
-    if !slide_parts.is_empty() {
+    if !plan.slides.is_empty() {
         x.raw("<p:sldIdLst>")?;
-        for (i, slide) in slide_parts.iter().enumerate() {
-            let rel = ctx.relationship("slide", slide)?;
+        for slide in &plan.slides {
+            let rel = ctx.relationship("slide", &slide.part)?;
             x.raw("<p:sldId")?;
-            x.attr("id", 256 + i as u32)?;
+            x.attr("id", slide.native_id)?;
             x.attr("r:id", rel)?;
             x.raw("/>")?;
         }

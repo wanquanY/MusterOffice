@@ -2,6 +2,10 @@
 
 export type EditorPageRequest =
   | {
+      input: EditorDocumentInput;
+      operation: "inspect";
+    }
+  | {
       operation: "prepare";
       request: EditorPagePreparation;
     }
@@ -20,21 +24,11 @@ export type EditorPageRequest =
       view: Digest;
     };
 /**
- * Canonical uint64 byte length. Range requires semantic validation.
+ * Page discovery needs no fonts, image bytes or rendering components. Author
+ * resource declarations remain part of the plan identity; prepare verifies
+ * their actual bytes. Retained and PPTX inputs use the OPC material channel.
  */
-export type ByteLength = string;
-export type Digest = string;
-export type FontManifestProfile = "explicit-font-resource-manifest-draft-v1";
-export type TypefaceMappingPolicy =
-  | {
-      kind: "exactFamily";
-    }
-  | {
-      kind: "substitution";
-      profileSha256: Digest;
-      reason: string;
-    };
-export type EditorPageInput =
+export type EditorDocumentInput =
   | {
       kind: "pptx";
     }
@@ -42,7 +36,6 @@ export type EditorPageInput =
       defaults: ExportDefaults;
       document: Document;
       kind: "author";
-      resources: AuthorResourceRange[];
     }
   | {
       document: Document;
@@ -266,6 +259,7 @@ export type ContainerId =
     };
 export type SlideId = string;
 export type ResourceKind = "font" | "picture" | "audio" | "video" | "sourcePackage" | "embeddedWorkbook" | "model3d";
+export type Digest = string;
 export type NativeEditConstraint =
   | "missingDirectTransform"
   | "retainedTransform"
@@ -425,6 +419,34 @@ export type PresentationRole =
 export type PresentationPreset = "appear" | "disappear" | "spin" | "growShrink" | "customMotion" | "fadeIn" | "fadeOut";
 export type PresentationTrigger = "click" | "withPrevious" | "afterPrevious";
 /**
+ * Canonical uint64 byte length. Range requires semantic validation.
+ */
+export type ByteLength = string;
+export type FontManifestProfile = "explicit-font-resource-manifest-draft-v1";
+export type TypefaceMappingPolicy =
+  | {
+      kind: "exactFamily";
+    }
+  | {
+      kind: "substitution";
+      profileSha256: Digest;
+      reason: string;
+    };
+export type EditorPageInput =
+  | {
+      kind: "pptx";
+    }
+  | {
+      defaults: ExportDefaults;
+      document: Document;
+      kind: "author";
+      resources: AuthorResourceRange[];
+    }
+  | {
+      document: Document;
+      kind: "retained";
+    };
+/**
  * Explicit source policy. An embedded snapshot is never silently substituted
  * for a requested linked source, nor does inspection grant network authority.
  */
@@ -471,73 +493,6 @@ export type CaretMove =
   | "textEnd";
 export type Affinity = "upstream" | "downstream";
 
-export interface EditorPagePreparation {
-  fonts: FontManifest;
-  input: EditorPageInput;
-  page: ResourcePageRequest;
-}
-/**
- * Explicit even for an empty page. An empty manifest needs no font bytes.
- */
-export interface FontManifest {
-  faces: ManifestFace[];
-  fonts: CascadeFont[];
-  profile: FontManifestProfile;
-  typefaces: ManifestTypeface[];
-}
-export interface ManifestFace {
-  family: FontNameBinding;
-  font: number;
-  postscript?: FontNameBinding | null;
-  subfamily: FontNameBinding;
-}
-export interface FontNameBinding {
-  expected: string;
-  /**
-   * Exact index in VerifiedFont metadata.names, preserving original record order.
-   */
-  record: number;
-}
-/**
- * Explicit resource bundle bindings, not system font names or legal permissions.
- */
-export interface CascadeFont {
-  byteLength: ByteLength;
-  expectedSha256: Digest;
-  faceIndex: number;
-  offset: ByteLength;
-}
-export interface ManifestTypeface {
-  bold?: ManifestInstance | null;
-  boldItalic?: ManifestInstance | null;
-  /**
-   * Ordered, explicit coverage fallbacks into this manifest's typefaces.
-   * Only these entries are tried; their own fallbacks are not expanded.
-   * Each candidate uses the requested style slot without synthesis.
-   */
-  fallbacks?: string[];
-  italic?: ManifestInstance | null;
-  policy: TypefaceMappingPolicy;
-  /**
-   * Explicit instance selection; no synthesized bold/slant or slot fallback.
-   */
-  regular?: ManifestInstance | null;
-  typeface: string;
-}
-export interface ManifestInstance {
-  face: number;
-  /**
-   * All axes are validated, including instances unused by this paragraph.
-   */
-  variations: ShapeVariation[];
-}
-export interface ShapeVariation {
-  tag: string;
-  /**
-   * Exact requested OpenType 16.16 design coordinate.
-   */
-  value1616: number;
-}
 export interface ExportDefaults {
   fontDelivery: FontDelivery;
   /**
@@ -1173,6 +1128,73 @@ export interface SequenceNavigation {
   nextConditions: TimeCondition[];
   previousAction: PreviousAction;
   previousConditions: TimeCondition[];
+}
+export interface EditorPagePreparation {
+  fonts: FontManifest;
+  input: EditorPageInput;
+  page: ResourcePageRequest;
+}
+/**
+ * Explicit even for an empty page. An empty manifest needs no font bytes.
+ */
+export interface FontManifest {
+  faces: ManifestFace[];
+  fonts: CascadeFont[];
+  profile: FontManifestProfile;
+  typefaces: ManifestTypeface[];
+}
+export interface ManifestFace {
+  family: FontNameBinding;
+  font: number;
+  postscript?: FontNameBinding | null;
+  subfamily: FontNameBinding;
+}
+export interface FontNameBinding {
+  expected: string;
+  /**
+   * Exact index in VerifiedFont metadata.names, preserving original record order.
+   */
+  record: number;
+}
+/**
+ * Explicit resource bundle bindings, not system font names or legal permissions.
+ */
+export interface CascadeFont {
+  byteLength: ByteLength;
+  expectedSha256: Digest;
+  faceIndex: number;
+  offset: ByteLength;
+}
+export interface ManifestTypeface {
+  bold?: ManifestInstance | null;
+  boldItalic?: ManifestInstance | null;
+  /**
+   * Ordered, explicit coverage fallbacks into this manifest's typefaces.
+   * Only these entries are tried; their own fallbacks are not expanded.
+   * Each candidate uses the requested style slot without synthesis.
+   */
+  fallbacks?: string[];
+  italic?: ManifestInstance | null;
+  policy: TypefaceMappingPolicy;
+  /**
+   * Explicit instance selection; no synthesized bold/slant or slot fallback.
+   */
+  regular?: ManifestInstance | null;
+  typeface: string;
+}
+export interface ManifestInstance {
+  face: number;
+  /**
+   * All axes are validated, including instances unused by this paragraph.
+   */
+  variations: ShapeVariation[];
+}
+export interface ShapeVariation {
+  tag: string;
+  /**
+   * Exact requested OpenType 16.16 design coordinate.
+   */
+  value1616: number;
 }
 export interface AuthorResourceRange {
   byteLength: ByteLength;

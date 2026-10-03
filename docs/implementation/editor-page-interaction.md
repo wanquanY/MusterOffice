@@ -64,11 +64,13 @@ Retained 使用渲染过程中已确定的 `native_paragraph` 范围映射到对
 身份验证见[执行记录](../reviews/evidence/2026-10-03-editor-text-identity.json)：27 份真实输入、752 条 Native/WASM 消息，
 包括 30 个模型段落、29 个片段身份、6 个自建单元格和 29 个明确未投影段落。缩放、清理和重新准备保留正确身份。
 旧文字导航的 18 份样本、679 条消息及 3,120 次移动查询继续通过。上述检查不替代从产品输入到正式保存的验收；
-公开文稿页映射/准备身份发现、高层表格与保留文字命令、共享编辑器和固定 SDK 接入仍须完成。
+公开文稿页映射/准备身份发现由后续[文稿查询接口](editor-document-inspection.md)补齐；
+高层表格与保留文字命令、共享编辑器和固定 SDK 接入仍须完成。
 
 Native Worker 使用 `--editor-page-session`，请求头为三个 LE u32（JSON、材料、字体长度），随后三个字节通道；
 回复头为两个 LE u32（JSON、RGBA 长度），随后两段内容。请求 32 MiB、材料/字体各 128 MiB；已有包、图片和渲染预算继续适用。
 WASM `EditorPageSession` 使用同一个 Rust owner；`PresentationEditorPage` 是同步薄接口，应在宿主 Worker 内调用。
+同一会话的 `inspect` 查询文稿页序、稳定 SlideId 和准备身份，不改变当前 view，且不接收字体或渲染组件。
 关闭可以幂等调用；回调内关闭延后到外层 Rust 借用返回，拒绝发布晚到结果。桥接异常释放 owner；类型化计算失败保留旧 owner。
 
 每页最多保留 262,144 个交互 cell、16,384 行；每批最多 64 查询、1,048,576 工作项和 65,536 选区片段（含段落分隔）。

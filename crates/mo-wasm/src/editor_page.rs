@@ -41,6 +41,12 @@ impl EditorPageSession {
             .dispatch_json(request, &[], &[], None, &|| false)
             .0
     }
+    /// Metadata-only discovery. No component imports or retained-view mutation.
+    pub fn inspect(&mut self, request: &str, material: &[u8]) -> String {
+        self.inner
+            .dispatch_json(request, material, &[], None, &|| false)
+            .0
+    }
     pub fn pick(&mut self, request: &str, raster: &raster::RasterComponent) -> String {
         self.inner
             .dispatch_json(

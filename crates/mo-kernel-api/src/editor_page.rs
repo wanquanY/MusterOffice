@@ -1,6 +1,7 @@
 //! One immutable rendered editor page per explicit owner. Preparation commits
 //! only a complete raster; subsequent queries borrow its original interaction.
 mod catalog;
+mod inspect;
 mod prepare;
 mod text_identity;
 mod types;
@@ -40,6 +41,9 @@ fn cancelled(check: &dyn Fn() -> bool) -> Result<(), PptxResourcePageFailure> {
         Ok(())
     }
 }
+fn source_error(error: mo_pptx::PptxError) -> PptxResourcePageFailure {
+    mo_presentation_compile::source_page::SourcePageError::Source(error).into()
+}
 impl EditorPageSession {
     fn bound(&self, view: &Digest) -> Result<&CurrentPage, PptxResourcePageFailure> {
         self.current
@@ -71,6 +75,22 @@ impl EditorPageSession {
                 ));
             }
             match request {
+                EditorPageRequest::Inspect { input } => {
+                    if !fonts.is_empty() {
+                        return Err(failure(
+                            PptxPageFailureCode::InputInvalid,
+                            "fonts supplied to editor document inspection",
+                        ));
+                    }
+                    let info = inspect::inspect(input, material, check)?;
+                    cancelled(check)?;
+                    Ok((
+                        EditorPageResponse::Inspected {
+                            info: Box::new(info),
+                        },
+                        vec![],
+                    ))
+                }
                 EditorPageRequest::Prepare { request } => {
                     let backends = match backends {
                         Some(EditorPageComponents::All(b)) => Some(b),

@@ -11,7 +11,7 @@ mod table;
 mod text;
 mod theme;
 use crate::{PptxError, cancelled, source::*, value as value_error};
-pub use bindings::{LayoutPlan, MasterPlan, NativeBindings};
+pub use bindings::{LayoutPlan, MasterPlan, NativeBindings, SlidePlan};
 pub use defaults::{COLOR_SLOTS, ExportDefaults, FontDelivery};
 use mo_common::{Digest, ResourceId};
 use mo_presentation_model::{Document, ValidationLimits};
