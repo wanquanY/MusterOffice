@@ -1,0 +1,436 @@
+{
+  "format": "musteroffice.paragraph-text-interaction-verification/1",
+  "date": "2026-10-03",
+  "gitParent": "e087b6586b93b67de058bff6416ecf1d054c71d7",
+  "environment": {
+    "os": "macOS-26.2-arm64-arm-64bit-Mach-O",
+    "architecture": "arm64",
+    "rustc": "rustc 1.92.0 (ded5c06cf 2025-12-08)",
+    "node": "v23.5.0",
+    "wasmBindgen": "0.2.126",
+    "fontTools": "4.61.1"
+  },
+  "sourceSha256": {
+    "contracts/generated/paragraph-interaction-request.schema.json": "4b3467f7e01f4f2bb5283af8b9b06f892236bee5e0829c88aee065596ffeadc1",
+    "contracts/generated/paragraph-interaction-response.schema.json": "4010ea542d7acbe89fd89ccf50ce232618b3a09a37bc66ea0beba71811deca08",
+    "crates/mo-harfbuzz-sys/tests/text_interaction.rs": "e7d8a8321fde1340f6efcc1254b1def89a28a7ca44713e0369b468e7343368aa",
+    "crates/mo-kernel-api/src/interaction.rs": "bfd5b39b6541b916cbf3fd42fadcf39c5e9452ff1306bee495e08a3514b22cc2",
+    "crates/mo-kernel-api/src/lib.rs": "6dcd87198d5298629d4224a30dae5869d57aca5e46cbacdbde914d2f5ac56270",
+    "crates/mo-text/src/geometry/mod.rs": "39897cae7d1d9dbe998dd296673ed3edeace882c113e99ca60e49e15f2999930",
+    "crates/mo-text/src/interaction/build.rs": "e65c7f81de9635297f5f960530b276de5a45b724aa065b53e5e6c796491b5617",
+    "crates/mo-text/src/interaction/mod.rs": "e579a11fe385fb565c8157de4bfb3817e8ad750fa2a062814a3392d701f65574",
+    "crates/mo-text/src/interaction/query.rs": "d98ffe278e616b2fc650e76f9fb8d520f53196b2338b8275a5cfa7c7a71aa371",
+    "crates/mo-text/src/interaction/tests.rs": "bd9384140817a30cd27d7370a37edbbb86e18b75ec8d60e73741006beb858379",
+    "crates/mo-text/src/interaction/types.rs": "a9059029fcf8cb386ca86b4898a80f43d334ee5c2f1d85731b50162d15d92057",
+    "crates/mo-text/src/lib.rs": "f5b67918672bd5795c3d84a95a62daf680f1ed75a81cf7c31faa7e207b824408",
+    "crates/mo-text/src/manifest/prepared.rs": "7931ea528616d74a4416be2c3eb7d7c6383951c63b7f2dbb640858820b06384c",
+    "crates/mo-text/src/manifest/prepared_tests.rs": "050a04da912c866333e8f1ab48e5156208532d1a960591a918dcaed941594e18",
+    "crates/mo-wasm/src/text.rs": "d1c4e447053f8f688b2aef18752c61c1f661a3cb5055d4889b611f0e70dc199a",
+    "fixtures/fonts/README.md": "73cf451cff068498c7ab337a1b6522d222d50a0e4ed244598754ecac1a595885",
+    "fixtures/fonts/owned-interaction.json": "43e0d145655b2f412adb470d69f326172377600bf31ac9b2db55b15710d9652b",
+    "fixtures/fonts/owned-interaction.ttf": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+    "packages/contracts/src/generated/paragraph-interaction-request.ts": "8234d92b2d9a476bf199991cf42fbbf87442aefce258296be0e9d06f3978807b",
+    "packages/contracts/src/generated/paragraph-interaction-response.ts": "b8d589d4eb58d059497b50b7a26812fe80e292ec192c7fe0aef57906119d58ea",
+    "packages/editor-client/README.md": "d67cbb39dd41d70a3bc23d54637ee359c996b7b8c1f48366e7f43ee501af4a91",
+    "packages/editor-client/src/index.ts": "f83648b07a78f3a9be72480a10bc1bf81a8a578badf038241eee50ff91512500",
+    "tools/mo-contract-codegen/src/main.rs": "dc0b69fad96352d1e432654871dd0b0f817fe19b004b0425c56f9d113c38e24d",
+    "tools/mo-text-worker/src/main.rs": "609f156fafc1e27e719b34f6e6dc919b3a69ce09e7cc1c95d35df561f6f99ce7",
+    "tools/verification/interaction-font-fixture.py": "3b9c3c74a9f1b7fa3522013a7bf6c74dc3b92249f3deed719259abaaf1c9c715",
+    "tools/verification/text-interaction-parity.mjs": "48682fdd5fe3c43bfa2cceb0e6b83501eadf6827638b5cf19456965194010163"
+  },
+  "verification": {
+    "textRustTests": 125,
+    "nativeInteractionTests": 6,
+    "nativeWasmBatches": 43,
+    "explicitInputFailures": 6,
+    "pinnedRealFontBatches": 10,
+    "clippy": "passed with -D warnings",
+    "schemaCheck": "passed",
+    "typeCheck": "passed",
+    "allObservedCancellationCheckpoints": "tested with layout and all three query variants",
+    "partialResultOnFailure": false,
+    "evaluatedBatches": 37,
+    "completeInteractionMaps": 33,
+    "unresolvedPrerequisites": 4
+  },
+  "parity": {
+    "format": "musteroffice.text-interaction-parity/1",
+    "nativeWasmByteEquality": true,
+    "rendererLayoutEquality": true,
+    "facadeEquality": true,
+    "fontOracle": "owned GDEF 173/431 + GPOS (37,11), advance 577; synthetic aliases are not language-quality claims",
+    "nativeWorkerSha256": "6c55ea349c07361c7951e4fbbea9f99f23837385cdfc4cd1a9871f1726fe141b",
+    "rustWasmSha256": "89fc123e8b97a35c1a3784703c51c6a2e8225a5dcbff6e836af2bc9ea31ff1fc",
+    "harfbuzzWasmSha256": "578348b8be2d1247e4560833dc2e0fd0a9186c5c07ceb7ee6836e584ade7f05e",
+    "cases": [
+      {
+        "label": "ligature",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "3439f864839348457d66aaad623436ad12892640d51eca69e8b5bef2be4247a0",
+        "responseSha256": "b727af585f81e647ea1059e9a0e926ac4fcbaa073eddfab7640609325f7ec876",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "bidi",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "be6a57be89525d4ba816fed40e3e1c258c92eec6720d2e32a40b95bf49aa2aab",
+        "responseSha256": "3680d7386dc5c32f776845602d937a4b108808d9dd01ef2dda579ef92b75f88d",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "combining",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "d0e5e7eb80c2ab5eaabe77ac8b56ccd29cfeb04c6d485da08dbb0ee57d588211",
+        "responseSha256": "aea6bdcbf8263c59900dc43c6374d51dc1c40af0f4a0ffd468597d9c07e829fb",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "empty",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "0384fb11eab0763a2c2de3abb77f9becbe9b2c3f4d4e7c60fef0de16bda6c77a",
+        "responseSha256": "f9fc1c2987648d676088b8a02328955ab5c0e349d54f460341d2e971c9e3b71a",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "soft-end",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "d0bdd294bab1ee7ddb59c469c83d2d027f160c0ff9cdfb9b6608ab17cc0b5b1a",
+        "responseSha256": "cf4299f37cddab10bf6d383f2474847597918788e50fe672ac471d4a4dba7268",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "paragraph-end",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "e5b59c4060b9be4bae4e30cba2efc97e012655f3abf2525aa446d1139606e8ec",
+        "responseSha256": "400c864b7a6d1154bca1a1708cd0c409c8ff10c384d7e7cd3f5cb05af8d8c054",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "crlf",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "1b63a6c0b153d137ba547297859fee20e71373f9eb78dbbc20ce0091efe3a9ab",
+        "responseSha256": "5a7c5a7c69de9f29cb8093ba487cd98b90fd734fd1318c704422ba7c1de148c9",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "soft-wrap",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "4705b5f7a5fb2dd1599cfb00d9fd8f11d26431df94a481bb6339756a30be3104",
+        "responseSha256": "805fe44c05e2cd3326a8dcbc7a2768ae0a6c4aade2f7f3f76c2d1986a1912dab",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "bidi-controls",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "6242fed31bb98e19166f2a3a167525f0fc28b45a03af9c9af9de132def06bbcc",
+        "responseSha256": "f731a842336239075e98100cfa3cac11b1d8da38860b9d98cc1e61a908dd480e",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "controls-only",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "652bfa6478833d15eb1065b990a3290ff168b153f8a3df3d9c8cc6794c237482",
+        "responseSha256": "c81f164018c3d1a52215953c326abcb84edc0b3473af0eeb1396434175a5373e",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "spaces",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "799ac6ac656abf2b50f984839949960a199deca21797da84841e84272ab6b90b",
+        "responseSha256": "52b6fe72a3eecf2aff85fe05d18cb892413afe0c62b914086ddeb487df132140",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "rtl",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "14675208dacb352451e7fc33162feb2f9d9a5fb08134d657a899a4cb5188def5",
+        "responseSha256": "d9c99be1e7ef264f00bb6fe2736b5be9da280f25e73f356f9b78019ee38f4877",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "isolates",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "c61a8ff215224ea41ba819f541d760cec1a854b5ad8c51a75330d70c44a0ac77",
+        "responseSha256": "729bd9634e78a903e3a3effa725be17355ebca15cd7f67eb8f44af0901ff4acf",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "zh-alias",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "f897b6d96058366ba373870c2ce6d223b4949fee0e460da67eb99600ed986677",
+        "responseSha256": "ae5ddd092f90203e0e0a75cb3d6c6bbbbe17997254b81592d61e3c6f03569516",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "tracking-100",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "7ef45c48ae24f012ebee3bd2447bd5837b897292d8e1eba872af6af4c8dfcf31",
+        "responseSha256": "0f0e48f072f0c93b9a33d7524343c7dd69c45395c653c3f5749581efd5ecc262",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "tracking--100",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "8dd4ae5a1d3d18ea6abf20a2c3a18d1c8b9a3d95c85f229e39aee06806e1fc62",
+        "responseSha256": "dd5b4def08049b5f90e5820788ff3c67ba7ca49581c127f61402312efd9cc957",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "tracking--700",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "b6e4f26e08071a952604b4955337d22682c0a0cfc11b148cc1e4f7860b0948b7",
+        "responseSha256": "cc16d9c33f22ef5989ec4216bba7242cb0ebe11ea1a0e399c3fdf0dd8e40c1f1",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "baseline-125",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "001994454109e9636a5ba3165d51ab85e0c854bfb3d138b69ecc9ba752a09f5a",
+        "responseSha256": "34cc43a3a9417c512a1d071c8daa87b700b2cb88f3bd2754a7b4f27ecbf142d6",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "baseline--125",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "ded8350e5b8c3a1cdfa06f391039527279cb7eb2f08575fa2777dd99d4bfde12",
+        "responseSha256": "32c7b59b2109dc42398f8990ba31ac87c1bce7a85fe652369aa9faeb6ac02514",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "line-height-0",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "e34c202a4ee9279dad5e07130e72d2f2b4d2f3c5c9398b50608ce7a5d72c1eb3",
+        "responseSha256": "57c5c28a3bef5e3be1847fdddd19dd042809b54ffbabecb23ca115a63708b4fb",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "line-height-500",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "bae1391cc2652ebb3028a196e6e4ff1e3564a7fb96bad893c4593487c8b15908",
+        "responseSha256": "c6e0baba84aa508a619476674cabdedd62b8b0fc4c004823224abfbabfb372d3",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "mixed-styles",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "ce9cc3bd77234d26433d6731e6d3610252e981ccd28fb9b9ecd20977b19b1eff",
+        "responseSha256": "b8fd641680a20d24460011dabc5f6455f8d64e54693333f485f9cf1ea21cf844",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "absent-carets",
+        "fontSha256": "1774e81d93d7cd47262ee6bfa00509e0defdaf0c0e362f0b4dd6853d5ad085fc",
+        "requestSha256": "38c7c5ab27ddd76397c718fa38d8c3f7f848fb50ef4ef5bf9aa8b7cf0881053b",
+        "responseSha256": "4ce0bcfe181046f19f6c943fc03510be5ffb7c3b8110cc16d38d619bd5a09531",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "prerequisite-9",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "91963902194737529b6a70aeb819a076d2c5331013e693ad37d9210fb15e88f9",
+        "responseSha256": "c4352913e616a1c254251396b4153883488c29e9f6bf69cd48403cfc8ddcd742",
+        "status": "evaluated",
+        "mapExpected": false
+      },
+      {
+        "label": "prerequisite-173",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "b6afdf94a1d524efb87cfed412270ffd68dd5582716a9d0c946bd1122d5a2858",
+        "responseSha256": "2d9f1ca3fb4a44201451932534565fe0f1cbfcb06df2012b904df142901fc26f",
+        "status": "evaluated",
+        "mapExpected": false
+      },
+      {
+        "label": "prerequisite-65532",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "09575a035654d619a12a29533a640112d354f101cbce20781e05a2a392d52bd1",
+        "responseSha256": "1a32bb7a66c73f952f4ada98c9d17444e5a7eef2ba92327b1f2dcc26a37c4ef7",
+        "status": "evaluated",
+        "mapExpected": false
+      },
+      {
+        "label": "prerequisite-110",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "41394c057676bdecd2ac02634072fed15e584288fffc29214ba7d0aec515b5ec",
+        "responseSha256": "0f1a514f6d98ad5a25be36e1eae5648dd56f874d798b943d9d5e8e96d783ad7b",
+        "status": "evaluated",
+        "mapExpected": false
+      },
+      {
+        "label": "notosans-10000",
+        "fontSha256": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d",
+        "requestSha256": "819cf20dc74570add1a0488aba1cbad02afdb8aa0c3cc9383d0bf72b29c6ff05",
+        "responseSha256": "d2dd84ab61cdc6d9fa2bc89015a745e58253cd297ec5c0f75e8415602154d022",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "notosans-2000",
+        "fontSha256": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d",
+        "requestSha256": "a729d2733ccb9880de73a4274677a1f9fe2f775a25ade79d1029c1e3019293cc",
+        "responseSha256": "6766032eb1d9b7697445959582af7e697f4113aa4ad27244ebff00283953ff63",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "notosansarabic-10000",
+        "fontSha256": "63111b5b2e074dd48cc67692e0a2726d86ee94c1c37fe8598257b7b4e87e869e",
+        "requestSha256": "4839d85be62132994484782dec2920d94ee8c4c600187ede3a5b5ff8607a8362",
+        "responseSha256": "2ef302932607478428b3adceb813bc24d2e7152b89baa69e73490c9c1b8768e9",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "notosansarabic-2000",
+        "fontSha256": "63111b5b2e074dd48cc67692e0a2726d86ee94c1c37fe8598257b7b4e87e869e",
+        "requestSha256": "d01499ae04c68f38de7838fb905ed262f53308ef219356666f32b483132baab1",
+        "responseSha256": "904334b124d23c2374f8ded971ea999f12a9a247a5aae778d8ef72eaab158aea",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "notosansdevanagari-10000",
+        "fontSha256": "14ec4af41f27482216d1c2229f417ff9b1425e1babb014e57d1d40d03229853e",
+        "requestSha256": "605c412086cb5072698b68ca0b1276ef065a98cf3486e483e74557bba42d90b6",
+        "responseSha256": "48fd7df30bf9160d570635d7a5dd9202ff548433fcff241b6c591609f5e41940",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "notosansdevanagari-2000",
+        "fontSha256": "14ec4af41f27482216d1c2229f417ff9b1425e1babb014e57d1d40d03229853e",
+        "requestSha256": "bef86d60f3c63d15a6c7c7513833c8e0da4f1ceaaef0886638b7e30c329b288f",
+        "responseSha256": "034caa22ca1efdeae411ebce5a0240f8c1182f8629c2df2210498f22320ebd18",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "notosanssc-10000",
+        "fontSha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da",
+        "requestSha256": "01da65f02418210b3d295bd47a9cb5b8316de924a5aaff27441c1a838de18d71",
+        "responseSha256": "87548adbcbcc3a078357f4ceb027d2458a8aa2d805fb0dca4d44a7f813b501e6",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "notosanssc-2000",
+        "fontSha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da",
+        "requestSha256": "29af8519605b43194c1f8d15755a133fee8b27847dc586e715e2a293b4b0ca3a",
+        "responseSha256": "7d87ccad373735f8c236df34e2b856746d7de3c955785fa0ccfcc61b22e34656",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "notoemoji-10000",
+        "fontSha256": "de6c18832938afc99caf132b39d6a30a19bac7f2e812e28db2535b4608d27551",
+        "requestSha256": "190c3a861dee67b51163dcceae864ec3e1b134d06e03c5dc0661e9d66af3a79d",
+        "responseSha256": "63815223433b5f8638eff01bb32cd15e3119d0823d1b3dbe6a3cbb5b08190bc2",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "notoemoji-2000",
+        "fontSha256": "de6c18832938afc99caf132b39d6a30a19bac7f2e812e28db2535b4608d27551",
+        "requestSha256": "4df174cc6e6645bc82dfb2470abe6796b316f8a4d98edef4092ef151fc5b3663",
+        "responseSha256": "b6a740892d2874cb3d103f1f830c0c177127bbe8d63702b360a700ec38a692f1",
+        "status": "evaluated",
+        "mapExpected": true
+      },
+      {
+        "label": "inside-grapheme",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "017a399e10accb56ce4f7b402e0abe8defe2bc6ceb107e174393245e7da1eb5e",
+        "responseSha256": "e4ee6bfcc56d1942908d58f8e1987a821965b1528f935098710e1ebc19453da8",
+        "status": "INPUT_INVALID",
+        "mapExpected": true
+      },
+      {
+        "label": "past-end",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "4871acc4f640e6fc75283e5829a33efb0aba6c4d5bdef34d8b1178a043a505d1",
+        "responseSha256": "e4ee6bfcc56d1942908d58f8e1987a821965b1528f935098710e1ebc19453da8",
+        "status": "INPUT_INVALID",
+        "mapExpected": true
+      },
+      {
+        "label": "query-limit",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "f2f2b3c49fb4a16b6f704a686703f648fbac5e5efc0fca3bb5edb9f99d98c4e4",
+        "responseSha256": "cb0b0f53b8df5ce24aaa87ddaba06d3abd638a3f6c3a68df39132d9644f97cd4",
+        "status": "LIMIT_EXCEEDED",
+        "mapExpected": true
+      },
+      {
+        "label": "unknown-field",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "485e23e8573f7e7563b3e00fa847c4fc5c03bfb7b862dbe60af619d24b82bbaf",
+        "responseSha256": "e3794a1074c88909927f28023d12c716eed8a117322677c3ffb19757f1d8ad04",
+        "status": "INPUT_INVALID",
+        "mapExpected": true
+      },
+      {
+        "label": "font-digest",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "a6a66c19b8e2c521ddbad1bacdce41a0ea3b1d7e181381e32017e436c33868ad",
+        "responseSha256": "11e77007244924f63db016625888c077bf360c600d499261634fe04d4b0a1aa7",
+        "status": "RESOURCE_CONFLICT",
+        "mapExpected": true
+      },
+      {
+        "label": "duplicate-key",
+        "fontSha256": "74c1ab9163bae9fdd7beb62dbe4e02a646a55f609bd48071bdc0f651e7180db8",
+        "requestSha256": "484a6a4dfdae806fdb33c142edb54763afaeaab4331d80d82a299e58bea4e20c",
+        "responseSha256": "deee0b4d36d79c67434f3b0f042803d6d45d6d52cf02e8070e327434a002728e",
+        "status": "INPUT_INVALID",
+        "mapExpected": true
+      }
+    ]
+  },
+  "logs": {
+    ".codex-work/text-interaction/text-tests-final.log": "29b5daf9b0aca7751d78c4f1090b11b96ee9eed679544b5755100d40e713be1f",
+    ".codex-work/text-interaction/native-tests.log": "23f502c08b5e7db6021733a4c61b648660e385d752525e1fb5585a8f96cad2ba",
+    ".codex-work/text-interaction/native-build.log": "13c55e61040bfab1ce5050817733a56b03205c4d557f3d109de3336074fc0148",
+    ".codex-work/text-interaction/wasm-build.log": "cac39c48c18f82a944bf874d07bc654df3fe5e59179df10154de5b412cd82eb7",
+    ".codex-work/text-interaction/parity.log": "c02d9e3740245b502cf2417cb2ab1fe680d88e0ec6eb7b151600839bd402c2c7",
+    ".codex-work/text-interaction/clippy-final.log": "55732ddc6a9830f84bbf4bbfab01f1fe27c13461fb8b7eb0267cc50f0b1138ac",
+    ".codex-work/text-interaction/schema-check.log": "20c825e676c43e2e774eeea435b2c79f6f36fc2029f07e2c6bdc8d99b6d0af90",
+    ".codex-work/text-interaction/typecheck-final.log": "cfe24a37679c79a3e64fa130d0af9cc2a16f9c506ccd9d6336daf04bd59a1420",
+    ".codex-work/text-interaction/font-corpus.log": "0cf5bb5046924c828b72d5010f437042414856ae19228c738c6c0a0498a8fbb0"
+  },
+  "resolvedFindings": [
+    "Bidi hit ownership prefers containing advance cell before the neighboring same-x caret.",
+    "Glyph clusters may start inside a pinned extended grapheme; merge overlapping EGC spans while retaining actual glyph order and pen placement."
+  ],
+  "notQualified": [
+    "page transforms, clipping and object hit order",
+    "keyboard movement and cross-paragraph selection",
+    "IME and browser/Electron UI",
+    "Windows/Linux runtime",
+    "product fixed SDK integration",
+    "independent fullscreen windows",
+    "product performance and Office/WPS interoperability"
+  ]
+}

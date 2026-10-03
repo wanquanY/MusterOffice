@@ -58,6 +58,13 @@ pub struct ManifestGeometryPaths {
     pub bindings: Vec<ManifestStyleBinding>,
     pub geometry: scene::ParagraphGeometryPaths,
 }
+#[derive(Debug, Clone, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct ManifestInteractionResult {
+    pub profile: String,
+    pub bindings: Vec<ManifestStyleBinding>,
+    pub interaction: crate::interaction::ParagraphInteractionResult,
+}
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ManifestLayoutResult {
@@ -201,6 +208,48 @@ impl<'m, 'font> PreparedManifest<'m, 'font> {
             profile: "explicit-font-resource-manifest-draft-v1".into(),
             bindings,
             geometry,
+        })
+    }
+    /// Shares the renderer's verified resources and line-flow engine. Source compilers
+    /// map these paragraph-local coordinates through the page placement.
+    pub fn paragraph_interaction(
+        &self,
+        input: ManifestFlowInput<'_>,
+        queries: &[crate::interaction::TextQuery],
+        backend: &mut dyn backend::TextBackend,
+        check: &dyn Fn() -> bool,
+    ) -> Result<ManifestInteractionResult, TextError> {
+        cancelled(check)?;
+        if input.styles.len() > 256 {
+            return Err(TextError::Limit("manifest geometry styles"));
+        }
+        let (paragraph, bindings) = binding::paragraph(
+            self.manifest,
+            &self.names,
+            input.paragraph,
+            self.limits,
+            check,
+        )?;
+        let interaction = crate::interaction::paragraph_using(
+            &flow::FlowInput {
+                paragraph: &paragraph,
+                styles: input.styles,
+                strut_style: input.strut_style,
+                spacing: input.spacing,
+                widths: input.widths,
+                overflow: input.overflow,
+                wrapping: input.wrapping,
+                hanging_punctuation: input.hanging_punctuation,
+            },
+            queries,
+            ResourceInput::Prepared(&self.resources),
+            backend,
+            check,
+        )?;
+        Ok(ManifestInteractionResult {
+            profile: "explicit-font-resource-manifest-draft-v1".into(),
+            bindings,
+            interaction,
         })
     }
     pub fn shape_paragraph(

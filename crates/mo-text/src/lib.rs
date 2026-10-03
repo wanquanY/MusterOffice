@@ -6,6 +6,7 @@ pub mod cascade;
 pub mod fallback;
 pub mod flow;
 pub mod geometry;
+pub mod interaction;
 pub mod itemize;
 pub mod lines;
 pub mod manifest;

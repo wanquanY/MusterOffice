@@ -18,3 +18,8 @@
 `owned.ttf` / `owned-outlines.ttf/.otf` 生成，验证非等距合字、GDEF 坐标/点/变体、复合与 off-curve 点、
 超限和不可计算点。清单为 `owned-carets.json`，许可状态与上述原创字体一致。
 FontTools 独立计算和 Native/WASM 证据见[合字光标](../../docs/implementation/font-ligature-carets.md)。
+
+`owned-interaction.ttf` 由 `tools/verification/interaction-font-fixture.py` 从原创
+`owned-carets.ttf` 派生，保留 GDEF 并增加 GPOS offset/advance 调整及 Hebrew/CJK 码点别名。
+清单见 `owned-interaction.json`；许可同上述原创资源，不属于运行字体包，也不证明语言字形质量。
+用于[段落交互计算](../../docs/implementation/paragraph-text-interaction.md)的独立坐标验证。

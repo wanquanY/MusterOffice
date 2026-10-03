@@ -5,12 +5,17 @@ import type { KernelResponse, KernelError } from '../../contracts/src/generated/
 import type { PagePlacementRequest } from '../../contracts/src/generated/page-placement-request.js';
 import type { PagePlacementResponse } from '../../contracts/src/generated/page-placement-response.js';
 import type { TextAnalysisResponse } from '../../contracts/src/generated/text-analysis-response.js';
+import type { ParagraphInteractionRequest } from '../../contracts/src/generated/paragraph-interaction-request.js';
+import type { ParagraphInteractionResponse } from '../../contracts/src/generated/paragraph-interaction-response.js';
+import type { ShapingPort } from '../../playback-client/src/ports.js';
 
 export type { Document, SnapshotRecord, Transaction, HistoryTransaction, TextEditCommand, KernelError };
 export type PreparedEdit = Extract<KernelResponse, { status: 'prepared' }>;
 export type PreparedTextEdit = Extract<KernelResponse, { status: 'textPrepared' }>['result'];
 export type PagePlacements = Extract<PagePlacementResponse, { status: 'evaluated' }>['result'];
 export type TextSegmentation = Extract<TextAnalysisResponse, { status: 'analyzed' }>['texts'][number];
+export type ParagraphInteraction = Extract<ParagraphInteractionResponse, { status: 'evaluated' }>['result'];
+export type { ParagraphInteractionRequest };
 
 /** Structural subset of the matching trusted WASM binding, never a remote
  * untrusted transport. The host verifies the module's release manifest. */
@@ -18,6 +23,7 @@ export interface EditorModule {
   dispatch_json(request: string): string;
   page_placements(request: string): string;
   analyze_text(request: string): string;
+  paragraph_interaction(request: string, fonts: Uint8Array, shaping: ShapingPort): string;
 }
 
 export class EditorComputationError extends Error {
@@ -72,6 +78,15 @@ export class PresentationEditor {
       throw new Error('Unexpected segmentation reply');
     }
     return result.texts[0];
+  }
+
+  /** Paragraph-local caret, selection and hit geometry from the renderer's
+   * exact line plan and glyph pen. Font bytes are explicit verified resources. */
+  paragraphInteraction(request: ParagraphInteractionRequest, fonts: Uint8Array, shaping: ShapingPort): ParagraphInteraction {
+    const result = JSON.parse(this.kernel.paragraph_interaction(JSON.stringify(request), fonts, shaping)) as ParagraphInteractionResponse;
+    if (result.status === 'error') throw new EditorComputationError(result.error);
+    if (result.status !== 'evaluated') throw new Error('Unexpected paragraph interaction reply');
+    return result.result;
   }
 
   private dispatch(request: KernelRequest): Exclude<KernelResponse, { status: 'error' }> {

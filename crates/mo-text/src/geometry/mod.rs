@@ -78,7 +78,8 @@ pub(crate) fn evaluate(
     backend: &mut dyn backend::TextBackend,
     check: &dyn Fn() -> bool,
 ) -> Result<LineGeometryResult, TextError> {
-    evaluate_impl(q, shaping, fonts, bindings, backend, check, false).map(|(result, _)| result)
+    evaluate_impl(q, shaping, fonts, bindings, backend, check, Retention::None)
+        .map(|(result, _)| result)
 }
 pub(crate) struct PreciseGlyph {
     pub line: u32,
@@ -86,9 +87,19 @@ pub(crate) struct PreciseGlyph {
     pub glyph: u32,
     pub origin: mo_geometry::Point,
 }
+pub(crate) struct PreciseFragment {
+    pub line: u32,
+    pub source: FragmentRef,
+    /// Baseline origin including the native baseline shift, y down.
+    pub origin: mo_geometry::Point,
+    pub ascent: Position,
+    pub descent: Position,
+}
 #[derive(Default)]
 pub(crate) struct PrecisePlacements {
     pub glyphs: Vec<PreciseGlyph>,
+    pub fragments: Vec<PreciseFragment>,
+    pub empty_line_carets: Vec<(Position, Position)>,
     pub layout: Option<PreciseGeometryLayout>,
 }
 pub(crate) fn evaluate_precise(
@@ -99,7 +110,39 @@ pub(crate) fn evaluate_precise(
     backend: &mut dyn backend::TextBackend,
     check: &dyn Fn() -> bool,
 ) -> Result<(LineGeometryResult, PrecisePlacements), TextError> {
-    evaluate_impl(q, shaping, fonts, bindings, backend, check, true)
+    evaluate_impl(
+        q,
+        shaping,
+        fonts,
+        bindings,
+        backend,
+        check,
+        Retention::Paths,
+    )
+}
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Retention {
+    None,
+    Paths,
+    Interaction,
+}
+pub(crate) fn evaluate_interaction(
+    q: &LineGeometryRequest,
+    shaping: lines::LineShapeResult,
+    fonts: &[mo_font::VerifiedFont<'_>],
+    bindings: &[usize],
+    backend: &mut dyn backend::TextBackend,
+    check: &dyn Fn() -> bool,
+) -> Result<(LineGeometryResult, PrecisePlacements), TextError> {
+    evaluate_impl(
+        q,
+        shaping,
+        fonts,
+        bindings,
+        backend,
+        check,
+        Retention::Interaction,
+    )
 }
 fn evaluate_impl(
     q: &LineGeometryRequest,
@@ -108,7 +151,7 @@ fn evaluate_impl(
     bindings: &[usize],
     backend: &mut dyn backend::TextBackend,
     check: &dyn Fn() -> bool,
-    retain: bool,
+    retain: Retention,
 ) -> Result<(LineGeometryResult, PrecisePlacements), TextError> {
     let mut issues = Vec::new();
     for item in &shaping.items {
@@ -170,7 +213,7 @@ fn place(
     measured: &metrics::Measurements,
     issues: &mut Vec<GeometryIssue>,
     check: &dyn Fn() -> bool,
-    retain: bool,
+    retain: Retention,
 ) -> Result<(Option<GeometryLayout>, PrecisePlacements), TextError> {
     let mut precise = PrecisePlacements::default();
     let mut precise_lines = Vec::new();
@@ -237,6 +280,30 @@ fn place(
         let mut glyphs = Vec::new();
         for &(reference, style) in &ordered.visible {
             cancelled(check)?;
+            if retain == Retention::Interaction {
+                let metric = &measured.instances[measured.fragments
+                    [reference.fallback_item as usize][reference.fragment as usize]
+                    .unwrap()];
+                let (ascent, descent, _) = extents(
+                    metric,
+                    GeometryStyle {
+                        baseline_shift: mo_common::Emu::ZERO.into(),
+                        ..style
+                    },
+                )?;
+                precise.fragments.push(PreciseFragment {
+                    line: line_index as u32,
+                    source: reference,
+                    origin: mo_geometry::Point {
+                        x,
+                        y: baseline
+                            .checked_sub(style.baseline_shift.position())?
+                            .checked_sub(pen_y)?,
+                    },
+                    ascent,
+                    descent,
+                });
+            }
             let FontFragment::Selected { shaped, .. } = &shaped.fallback.items
                 [reference.fallback_item as usize]
                 .fragments[reference.fragment as usize]
@@ -254,7 +321,7 @@ fn place(
                     .checked_sub(style.baseline_shift.position())?
                     .checked_sub(pen_y)?
                     .checked_sub(g.origin.y)?;
-                if retain {
+                if retain == Retention::Paths {
                     precise.glyphs.push(PreciseGlyph {
                         line: line_index as u32,
                         source: reference,
@@ -277,7 +344,13 @@ fn place(
             x = x.checked_add(pen.position().x)?;
             pen_y = pen_y.checked_add(pen.position().y)?;
         }
-        if retain {
+        if retain == Retention::Interaction {
+            precise.empty_line_carets.push((
+                baseline.checked_sub(strut.0)?,
+                baseline.checked_add(strut.1)?,
+            ));
+        }
+        if retain != Retention::None {
             precise_lines.push(PreciseLineGeometry {
                 top: y,
                 baseline,
@@ -304,7 +377,7 @@ fn place(
         });
         y = bottom;
     }
-    if retain {
+    if retain != Retention::None {
         precise.layout = Some(PreciseGeometryLayout {
             height: y,
             lines: precise_lines,

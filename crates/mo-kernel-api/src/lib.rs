@@ -52,6 +52,8 @@ mod placement;
 pub use placement::*;
 mod outlines;
 pub use outlines::*;
+mod interaction;
+pub use interaction::*;
 mod carets;
 pub use carets::*;
 mod metrics;

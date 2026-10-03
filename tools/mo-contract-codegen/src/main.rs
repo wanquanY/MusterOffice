@@ -22,6 +22,7 @@ use mo_kernel_api::{LineBreakRequest, LineBreakResponse};
 use mo_kernel_api::{LineGeometryRequest, LineGeometryResponse};
 use mo_kernel_api::{PageCompileResponse, PageRasterResponse, PageRenderRequest};
 use mo_kernel_api::{PagePlacementRequest, PagePlacementResponse};
+use mo_kernel_api::{ParagraphInteractionRequest, ParagraphInteractionResponse};
 use mo_kernel_api::{ParagraphLayoutRequest, ParagraphLayoutResponse};
 use mo_kernel_api::{ParagraphPathsRequest, ParagraphPathsResponse};
 use mo_kernel_api::{PathRasterRequest, PathRasterResponse};
@@ -316,6 +317,14 @@ fn main() -> Result<(), Box<dyn Error>> {
         ("line-geometry-response", schema::<LineGeometryResponse>()),
         ("font-outlines-request", schema::<FontOutlinesRequest>()),
         ("font-outlines-response", schema::<FontOutlinesResponse>()),
+        (
+            "paragraph-interaction-request",
+            schema::<ParagraphInteractionRequest>(),
+        ),
+        (
+            "paragraph-interaction-response",
+            schema::<ParagraphInteractionResponse>(),
+        ),
         ("font-carets-request", schema::<FontCaretsRequest>()),
         ("font-carets-response", schema::<FontCaretsResponse>()),
         ("font-metrics-request", schema::<FontMetricsRequest>()),

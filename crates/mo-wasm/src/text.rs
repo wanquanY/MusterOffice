@@ -185,3 +185,8 @@ pub fn outline_font(request: &str, font: &[u8], component: &ShapingComponent) ->
 pub fn paragraph_paths(request: &str, bundle: &[u8], component: &ShapingComponent) -> String {
     mo_kernel_api::paragraph_paths_json(request, bundle, &mut Backend(component), &|| false)
 }
+
+#[wasm_bindgen]
+pub fn paragraph_interaction(request: &str, bundle: &[u8], component: &ShapingComponent) -> String {
+    mo_kernel_api::paragraph_interaction_json(request, bundle, &mut Backend(component), &|| false)
+}

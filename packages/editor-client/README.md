@@ -11,7 +11,13 @@ atomic candidate, `prepareHistory` computes a guarded reversal, and
 selected character declarations without resolving unrelated inherited styles. `placements`
 uses the renderer's existing author placement engine; it is not yet a complete
 hit-test or caret API. `segment` returns the kernel's pinned grapheme boundaries
-with scalar, UTF-8 and UTF-16 offsets. Source-backed documents retain their
+with scalar, UTF-8 and UTF-16 offsets. `paragraphInteraction` takes explicit font
+bytes and a shaping component; caret, hit and selection queries share the
+renderer’s paragraph line plan and exact Q32 pen. It returns grapheme boundaries
+and separate upstream/downstream positions at bidi or soft-wrap boundaries.
+This paragraph API does not yet provide page-level transformed/clipped hits or
+IME handling. See [paragraph interaction](../../docs/implementation/paragraph-text-interaction.md).
+Source-backed documents retain their
 existing operation restrictions and require their source placement path.
 
 The receiving host authorizes all reads and writes, resolves original history

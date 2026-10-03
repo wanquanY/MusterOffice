@@ -249,3 +249,60 @@ fn cancellation_and_component_failure_publish_no_paths_and_leave_resources_reusa
         .unwrap();
     assert!(r.paths.scene.is_some());
 }
+
+#[test]
+fn interaction_uses_prepared_fonts_and_exact_asymmetric_flow_widths() {
+    use crate::interaction::{Affinity, TextPosition, TextQuery};
+    let q = request("A A");
+    let manifest =
+        PreparedManifest::load(&q.manifest, FONT, ManifestLimits::default(), &|| false).unwrap();
+    let input = ManifestFlowInput {
+        paragraph: (&q).into(),
+        styles: &STYLE,
+        strut_style: 0,
+        spacing: LineSpacing::Natural,
+        widths: flow::LineWidths {
+            first: Fixed::emu(Emu::new(120_000)),
+            rest: Fixed::emu(Emu::new(60_000)),
+        },
+        overflow: OverflowPolicy::KeepUnbreakable,
+        wrapping: Default::default(),
+        hanging_punctuation: Default::default(),
+    };
+    let queries = [TextQuery::Caret {
+        position: TextPosition {
+            scalar_offset: 2,
+            affinity: Affinity::Downstream,
+        },
+    }];
+    let r = manifest
+        .paragraph_interaction(input.clone(), &queries, &mut Backend::default(), &|| false)
+        .unwrap();
+    let paths = manifest
+        .paragraph_geometry(
+            input,
+            Fixed::from_raw(256),
+            &mut PathBackend::default(),
+            &|| false,
+        )
+        .unwrap();
+    assert_eq!(
+        serde_json::to_value(r.bindings).unwrap(),
+        serde_json::to_value(paths.bindings).unwrap()
+    );
+    assert_eq!(
+        serde_json::to_value(&r.interaction.layout).unwrap(),
+        serde_json::to_value(paths.geometry.paths.layout).unwrap()
+    );
+    let map = r.interaction.map.unwrap();
+    assert_eq!(map.lines.len(), 2);
+    assert_eq!(
+        map.caret(TextPosition {
+            scalar_offset: 2,
+            affinity: Affinity::Downstream
+        })
+        .unwrap()
+        .line,
+        1
+    );
+}
