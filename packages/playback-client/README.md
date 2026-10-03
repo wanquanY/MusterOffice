@@ -34,8 +34,8 @@ try {
 
 `prepareAuthor(request)` accepts the generated author prepare contract instead.
 
-`prepareDeliveryInputs({delivery, width}, contents)` derives deck-ordered source
-page requests, exact PPTX/font asset identities and the explicit font manifest
+`prepareDeliveryInputs({delivery, width, height?}, contents)` derives deck-ordered source
+page requests (uniformly fitted inside both bounds when height is present), exact PPTX/font asset identities and the explicit font manifest
 from a transported delivery. It runs the existing full byte/context inspection
 once and creates no playback owner or pixels. The portable content channel is
 bounded to 128 MiB; native receivers can instead reuse
@@ -61,6 +61,15 @@ re-admits static image grids for the new scale while retaining text paths and
 the source/timing index; animated image geometry continues to require exact grids.
 A candidate is certified before publication; invalid input, cancellation or a
 failed decoder leaves the prior viewport/resources usable.
+
+For a window or DPR change, use `resizeToFit(width, height)` for author playback,
+or `resizeToFit(width, height, {source, decoder})` for source playback. The host
+supplies its physical pixel box; Rust derives exact uniform scale and rounded
+allocation dimensions from the original document, applying the 8192-axis and
+16-megapixel limits. No dimensions are inferred from previously rounded frames.
+The wire operation is `resizeToFit`, with the same binding and viewport revision
+precondition as explicit resize. For initial preparation, pass optional `height`
+to `prepareDeliveryInputs` to fit before decoding the first page.
 
 Every accepted resize increments `info.viewportRevision` (u32, never wraps).
 The wire request requires `expectedViewportRevision`; stale requests fail with

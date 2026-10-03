@@ -32,6 +32,70 @@ pub(crate) fn validate(size: Size, viewport: &RasterViewport) -> Result<bool, Ra
     Ok(fractional)
 }
 
+/// Fit inside the host's physical pixel box using exact document extents.
+/// Only allocation dimensions round up; the uniform page scale stays rational.
+pub fn fit_page_viewport(
+    size: Size,
+    width: u32,
+    height: u32,
+    coordinate_tolerance: Fixed,
+    background: [u8; 4],
+) -> Result<RasterViewport, RasterError> {
+    let w = u64::try_from(size.width.get()).map_err(|_| RasterError::Invalid("page width"))?;
+    let h = u64::try_from(size.height.get()).map_err(|_| RasterError::Invalid("page height"))?;
+    if w == 0 || h == 0 || width == 0 || height == 0 {
+        return Err(RasterError::Invalid("page or viewport extent"));
+    }
+    let (width, height) = (width.min(8192), height.min(8192));
+    let (extent, maximum) =
+        if u128::from(width) * u128::from(h) <= u128::from(height) * u128::from(w) {
+            (w, width)
+        } else {
+            (h, height)
+        };
+    let dimensions = |n: u32| {
+        (
+            (u128::from(w) * u128::from(n)).div_ceil(u128::from(extent)),
+            (u128::from(h) * u128::from(n)).div_ceil(u128::from(extent)),
+        )
+    };
+    // At most 13 iterations, including square 8K displays whose area exceeds
+    // the renderer's allocation limit. Never enlarge a rounded previous frame.
+    let (mut low, mut high) = (1, maximum);
+    while low < high {
+        let mid = low + (high - low).div_ceil(2);
+        let (w, h) = dimensions(mid);
+        if w * h * 4 <= mo_raster::MAX_PIXEL_BYTES as u128 {
+            low = mid;
+        } else {
+            high = mid - 1;
+        }
+    }
+    let (w, h) = dimensions(low);
+    let (mut a, mut b) = (extent, u64::from(low));
+    while b != 0 {
+        (a, b) = (b, a % b);
+    }
+    let viewport = RasterViewport {
+        width: u32::try_from(w).map_err(|_| RasterError::Range)?,
+        height: u32::try_from(h).map_err(|_| RasterError::Range)?,
+        origin: Point {
+            x: Fixed::ZERO,
+            y: Fixed::ZERO,
+        },
+        scale: mo_raster::PixelScale {
+            numerator: (u64::from(low) / a) as u32,
+            denominator: u32::try_from(extent / a)
+                .map_err(|_| RasterError::Limit("page scale denominator"))?,
+        },
+        coordinate_tolerance,
+        background,
+    };
+    viewport.validate()?;
+    validate(size, &viewport)?;
+    Ok(viewport)
+}
+
 pub(crate) fn path(size: Size) -> [C; 5] {
     let zero = Fixed::ZERO;
     let w = Fixed::emu(size.width);
@@ -97,5 +161,63 @@ mod tests {
         v.width = 800;
         v.origin.x = Fixed::from_raw(1);
         assert!(validate(size, &v).is_err());
+    }
+}
+
+#[cfg(test)]
+mod fit_tests {
+    use super::*;
+    use mo_common::Emu;
+    #[test]
+    fn fit_preserves_exact_geometry_and_honors_both_axes_and_pixel_budget() {
+        for (w, h) in [(16, 9), (9, 16), (7_999_730, 4_499_610), (1, 1)] {
+            let size = Size {
+                width: Emu::new(w),
+                height: Emu::new(h),
+            };
+            for (width, height) in [
+                (1, 1),
+                (127, 83),
+                (83, 127),
+                (8192, 8192),
+                (u32::MAX, u32::MAX),
+            ] {
+                let v = fit_page_viewport(size, width, height, Fixed::from_raw(1 << 20), [0; 4])
+                    .unwrap();
+                assert!(v.width <= width && v.height <= height);
+                assert!(u64::from(v.width) * u64::from(v.height) <= 16777216);
+                validate(size, &v).unwrap();
+                let again =
+                    fit_page_viewport(size, width, height, v.coordinate_tolerance, v.background)
+                        .unwrap();
+                assert_eq!(
+                    serde_json::to_value(v).unwrap(),
+                    serde_json::to_value(again).unwrap()
+                );
+            }
+        }
+    }
+    #[test]
+    fn fit_rejects_empty_boxes_and_unrepresentable_scale() {
+        for (w, h, width, height) in [
+            (0, 1, 10, 10),
+            (1, 1, 0, 10),
+            (1, 1, 10, 0),
+            (i64::MAX, 1, 1, 1),
+        ] {
+            assert!(
+                fit_page_viewport(
+                    Size {
+                        width: Emu::new(w),
+                        height: Emu::new(h)
+                    },
+                    width,
+                    height,
+                    Fixed::from_raw(1 << 20),
+                    [0; 4]
+                )
+                .is_err()
+            );
+        }
     }
 }

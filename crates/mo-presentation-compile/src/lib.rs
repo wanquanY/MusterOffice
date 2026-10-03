@@ -42,6 +42,7 @@ pub mod source_text_page;
 mod trig;
 mod types;
 pub use page::{compile_page, render_page};
+pub use page_boundary::fit_page_viewport;
 pub use page_types::*;
 pub use placement::page_placements;
 pub use types::*;

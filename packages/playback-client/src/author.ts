@@ -1,4 +1,4 @@
-import {sameViewport} from './viewport.js';
+import {sameViewport, fitsViewport, type ViewportTarget} from './viewport.js';
 import type { PlaybackPrepareRequest, EventHistory, RationalTime, RasterViewport } from '../../contracts/src/generated/playback-session-request.js';
 import type { PlaybackSessionInfo, PlaybackSessionResponse, PlaybackRasterInfo, PlaybackTimingInfo } from '../../contracts/src/generated/playback-session-response.js';
 import type { Frame, PlaybackModule, RasterPort, WasmOwner } from './ports.js';
@@ -68,17 +68,23 @@ export class AuthorPlayback {
   }
   /** Changes only the view; playback generation, time and input history remain valid. */
   resize(viewport: RasterViewport): PlaybackSessionInfo {
+    return this.#resize({viewport});
+  }
+  resizeToFit(width: number, height: number): PlaybackSessionInfo {
+    return this.#resize({width, height});
+  }
+  #resize(target: ViewportTarget): PlaybackSessionInfo {
     return this.#owner.run(raw => {
-      const view = structuredClone(viewport);
-      const request = encode({operation: 'resize', binding: this.#info.binding,
-        expectedViewportRevision: this.#info.viewportRevision, viewport: view});
+      const view = structuredClone(target);
+      const request = encode({operation: 'viewport' in view ? 'resize' : 'resizeToFit', binding: this.#info.binding,
+        expectedViewportRevision: this.#info.viewportRevision, ...view});
       const reply = response(decode(raw.command(request)));
       requireResponse(reply.status === 'resized' && sameBinding(reply.info.binding, this.#info.binding) &&
         reply.info.profile === this.#info.profile && reply.info.slide === this.#info.slide &&
         reply.info.documentSha256 === this.#info.documentSha256 &&
-        reply.info.viewportRevision === this.#info.viewportRevision + 1 && sameViewport(reply.info.viewport, view));
+        reply.info.viewportRevision === this.#info.viewportRevision + 1 && fitsViewport(reply.info.viewport, view));
       this.#info = reply.info;
-      this.#size = [view.width, view.height];
+      this.#size = [reply.info.viewport.width, reply.info.viewport.height];
       return this.info;
     });
   }

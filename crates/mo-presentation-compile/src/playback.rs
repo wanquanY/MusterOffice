@@ -171,6 +171,21 @@ impl PlaybackPagePlan {
     pub fn viewport(&self) -> &mo_raster::RasterViewport {
         &self.request.viewport
     }
+    pub fn fit_viewport(
+        &self,
+        width: u32,
+        height: u32,
+    ) -> Result<mo_raster::RasterViewport, PlaybackError> {
+        crate::fit_page_viewport(
+            self.request.page.document.page_size,
+            width,
+            height,
+            self.request.viewport.coordinate_tolerance,
+            self.request.viewport.background,
+        )
+        .map_err(PageError::from)
+        .map_err(Into::into)
+    }
     pub fn defaults(&self) -> &crate::PagePaintDefaults {
         &self.request.defaults
     }

@@ -1,4 +1,4 @@
-import {sameViewport} from './viewport.js';
+import {sameViewport, fitsViewport, type ViewportTarget} from './viewport.js';
 import type { PptxPlaybackPrepareRequest, EventHistory, RationalTime, RasterViewport } from '../../contracts/src/generated/pptx-playback-session-request.js';
 import type { PptxPlaybackSessionInfo, PptxPlaybackSessionResponse, PptxPlaybackRasterInfo, PlaybackTimingInfo } from '../../contracts/src/generated/pptx-playback-session-response.js';
 import type { DecoderPort, Frame, PlaybackModule, RasterPort, ShapingPort, WasmSourceOwner } from './ports.js';
@@ -80,19 +80,25 @@ export class SourcePlayback {
   }
   /** Changes only the view; playback generation, time and input history remain valid. */
   resize(viewport: RasterViewport, inputs: Pick<SourceInputs, 'source' | 'decoder'>): PptxPlaybackSessionInfo {
+    return this.#resize({viewport}, inputs);
+  }
+  resizeToFit(width: number, height: number, inputs: Pick<SourceInputs, 'source' | 'decoder'>): PptxPlaybackSessionInfo {
+    return this.#resize({width, height}, inputs);
+  }
+  #resize(target: ViewportTarget, inputs: Pick<SourceInputs, 'source' | 'decoder'>): PptxPlaybackSessionInfo {
     return this.#owner.run(raw => {
       const {source, decoder} = inputs;
       inputBytes(source);
-      const view = structuredClone(viewport);
-      const request = encode({operation: 'resize', binding: this.#info.binding,
-        expectedViewportRevision: this.#info.viewportRevision, viewport: view});
+      const view = structuredClone(target);
+      const request = encode({operation: 'viewport' in view ? 'resize' : 'resizeToFit', binding: this.#info.binding,
+        expectedViewportRevision: this.#info.viewportRevision, ...view});
       const reply = response(decode(raw.resize(request, source, decoder)));
       requireResponse(reply.status === 'resized' && sameBinding(reply.info.binding, this.#info.binding) &&
         reply.info.profile === this.#info.profile && reply.info.slide === this.#info.slide &&
         reply.info.sourceSha256 === this.#info.sourceSha256 &&
-        reply.info.viewportRevision === this.#info.viewportRevision + 1 && sameViewport(reply.info.viewport, view));
+        reply.info.viewportRevision === this.#info.viewportRevision + 1 && fitsViewport(reply.info.viewport, view));
       this.#info = reply.info;
-      this.#size = [view.width, view.height];
+      this.#size = [reply.info.viewport.width, reply.info.viewport.height];
       return this.info;
     });
   }

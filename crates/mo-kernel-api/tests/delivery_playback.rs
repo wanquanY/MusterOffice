@@ -76,3 +76,20 @@ fn playback_preparation_does_not_weaken_delivery_admission() {
         matches!(result, DeliveryPlaybackResponse::Error { error } if matches!(error.code, PptxFailureCode::Cancelled))
     );
 }
+
+#[test]
+fn bounded_playback_inputs_use_document_geometry_before_owner_preparation() {
+    let mut q = request();
+    q["width"] = json!(1920);
+    q["height"] = json!(100);
+    let DeliveryPlaybackResponse::Prepared { inputs } = run(&q, BYTES) else {
+        panic!("fit input")
+    };
+    let viewport = &inputs.pages[0].request.page.viewport;
+    assert_eq!((viewport.width, viewport.height), (178, 100));
+    q["height"] = json!(0);
+    assert!(matches!(
+        run(&q, BYTES),
+        DeliveryPlaybackResponse::Error { .. }
+    ));
+}

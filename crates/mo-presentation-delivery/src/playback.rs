@@ -52,6 +52,40 @@ impl ReceivedDelivery {
         crate::cancel(cancelled)?;
         let material = &self.playback;
         let viewport = crate::preview::viewport(material.size, width)?;
+        self.playback_inputs_at_viewport(viewport, cancelled)
+    }
+    /// Fit inside an explicit host pixel box, sharing the renderer's exact
+    /// geometry and allocation limits with retained playback resize.
+    pub fn playback_inputs_fit(
+        &self,
+        width: u32,
+        height: u32,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<DeliveryPlaybackInputs, DeliveryError> {
+        crate::cancel(cancelled)?;
+        let viewport = mo_presentation_compile::fit_page_viewport(
+            self.playback.size,
+            width,
+            height,
+            mo_geometry::Fixed::from_raw(1 << 20),
+            [0; 4],
+        )
+        .map_err(|e| match e {
+            mo_raster::RasterError::Invalid(message) => DeliveryError::Invalid(message),
+            mo_raster::RasterError::Limit(message) => DeliveryError::Limit(message),
+            other => DeliveryError::Preview {
+                message: other.to_string(),
+                diagnostic: None,
+            },
+        })?;
+        self.playback_inputs_at_viewport(viewport, cancelled)
+    }
+    fn playback_inputs_at_viewport(
+        &self,
+        viewport: mo_raster::RasterViewport,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<DeliveryPlaybackInputs, DeliveryError> {
+        let material = &self.playback;
         let pages = material
             .pages
             .iter()

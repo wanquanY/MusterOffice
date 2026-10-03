@@ -19,8 +19,8 @@ function fixture(kind='author') {
       const q=JSON.parse(text);observed.commands.push(q);
       if(observed.commandOverride) return observed.commandOverride(q);
       if(q.operation==='prepare')return JSON.stringify({status:'prepared',info});
-      if(q.operation==='resize') {
-        info.viewport=structuredClone(q.viewport);info.viewportRevision++;
+      if(q.operation==='resize'||q.operation==='resizeToFit') {
+        info.viewport=q.operation==='resize'?structuredClone(q.viewport):{...viewport(),width:q.width,height:q.height};info.viewportRevision++;
         return JSON.stringify({status:'resized',info});
       }
       if(q.operation==='advance'){
@@ -279,3 +279,13 @@ for(const kind of ['author','source']) {
     }
   });
 }
+
+for(const kind of ['author','source']) test(`${kind}: fit request delegates geometry and enforces output bounds`,()=>{
+  const f=fixture(kind),owner=f.open();
+  const info=owner.resizeToFit(2,3,ports);
+  assert.equal(info.viewportRevision,1);
+  assert.deepEqual(f.observed.commands.at(-1),{operation:'resizeToFit',binding,expectedViewportRevision:0,width:2,height:3});
+  f.observed.commandOverride=()=>JSON.stringify({status:'resized',info:{...owner.info,viewportRevision:2,viewport:{...viewport(),width:3,height:3}}});
+  assert.throws(()=>owner.resizeToFit(2,3,ports),PlaybackStateError);
+  assert(owner.closed);
+});

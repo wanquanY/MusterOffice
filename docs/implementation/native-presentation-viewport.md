@@ -1,7 +1,7 @@
 # 原生放映视口切换
 
-日期：2026-10-03。状态：内核、生成合同和 WASM 薄客户端已实现并完成本机专项验证；
-Musterwork 的固定开发发行、窗口/DPR 接入与双端验收仍待完成。
+日期：2026-10-03。状态：内核、生成合同和 WASM 薄客户端已实现并完成本机专项验证，
+包含按窗口双轴适配；Musterwork 的固定开发发行、窗口/DPR 接入与双端验收另行留证。
 本实现属于 [原生交互编辑方案](native-presentation-editor.md) 的播放基础，
 不改变 [ADR 0009](../decisions/0009-product-editor-computation.md) 的内核/产品职责。
 
@@ -11,6 +11,12 @@ Author 和 Source session 都增加 `resize` 操作，载荷为原 `binding`、
 `expectedViewportRevision` 和完整 `RasterViewport`，成功返回 `resized` 及当前 `info`。
 `info.viewportRevision` 从 0 开始，每次成功递增，u32 耗尽明确拒绝，不回绕。
 旧版本请求返回 `VIEWPORT_CONFLICT`；播放 generation、来源 revision 和 slide 均不改变。
+
+`resizeToFit` 接收同样的 binding/revision 及宿主物理像素 `width/height`，
+内核根据原页面尺寸计算等比视口，再走同一原子提交路径。精确有理比例不从旧帧反推，
+仅分配尺寸向上取整，宽高不超过窗口、单轴 8192 和总计 16,777,216 像素。
+面积超限时在约束轴上二分，最多 13 次；无效页面、空窗口或无法表达的精确比例明确拒绝。
+Delivery 初始准备可附带 `height`，使用同一计算器；省略时保留已有按宽度准备的合同。
 
 视口的 origin、scale、像素上限与精度预算由 `RasterViewport::validate` 统一准入，
 实际页面仍需通过几何/图片/文字合成的原精度验证。Source preflight 直接调用此准入，
@@ -48,6 +54,7 @@ Source resize 再次接收确切原 PPTX 字节与 decoder，不接收字体字�
 
 - `AuthorPlayback.resize(viewport)`。
 - `SourcePlayback.resize(viewport, {source, decoder})`；宿主需要保留或重新提供已核验的 PPTX。
+- 两者均提供 `resizeToFit(width, height)`；Source 仍需 `{source, decoder}`。
 - WASM `PptxPlaybackSession.resize(request, source, decoder)`。
 - Native 原 framed session 传输 Source 字节，字体通道保持空。
 
@@ -75,6 +82,13 @@ WASM Skia/PNG/JPEG 从当前锁定源码重建至 `.codex-work/presentation-view
 最终本地产物：`.codex-work/presentation-viewport/parity-04/report.json`。
 相关日志为 `.codex-work/viewport-{regression,client-tests,parity,clippy,contract-check,types}.log`。
 旧路径 parity-01 是失败记录，parity-02/03 是中间结果，不作为最终代码绑定证据。
+
+双轴适配增量验证：134 项 Rust 测试（Kernel lib 5、Delivery 3、Author 15、Source 9、Compile 102）、
+27 项客户端测试、六个 TS 项目、四个相关 crate 严格 lib Clippy 均通过。
+Native/WASM 重建后 `.codex-work/presentation-viewport/fit-parity-01/report.json` 再次核验
+3 组输入、9 组配对帧和 6 个新准备视口对照；首次放大使用 `resizeToFit`，还原使用显式 `resize`。
+时间、事件游标和姿态保持一致，resize 字体调用为 0。
+日志位于 `.codex-work/player-fit-{tests,client-tests,types,clippy,parity}.log`。
 
 复现对照前先按开发指南构建上述当前组件、worker、Rust WASM/bindgen 及三个 TS adapter；再运行：
 

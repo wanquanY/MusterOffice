@@ -311,6 +311,13 @@ impl RetainedSourcePlaybackPlan {
     pub fn preparation(&self) -> &ResourcePreparationInfo {
         self.page.info()
     }
+    pub fn fit_viewport(
+        &self,
+        width: u32,
+        height: u32,
+    ) -> Result<mo_raster::RasterViewport, SourcePlaybackError> {
+        self.page.fit_viewport(width, height).map_err(Into::into)
+    }
     pub fn prepare_resize(
         &mut self,
         package: &dyn PackageRead,

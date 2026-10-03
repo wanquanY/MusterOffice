@@ -104,6 +104,41 @@
         "binding": {
           "$ref": "#/$defs/PlaybackBinding"
         },
+        "expectedViewportRevision": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "height": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "operation": {
+          "type": "string",
+          "const": "resizeToFit"
+        },
+        "width": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "binding",
+        "expectedViewportRevision",
+        "width",
+        "height"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "binding": {
+          "$ref": "#/$defs/PlaybackBinding"
+        },
         "generation": {
           "$ref": "#/$defs/PlaybackGeneration"
         },

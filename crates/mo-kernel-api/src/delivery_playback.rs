@@ -11,6 +11,9 @@ pub struct DeliveryPlaybackRequest {
     pub delivery: DeliveryInspectRequest,
     /// Pixel width; height/scale preserve the inspected document's geometry.
     pub width: u32,
+    /// When present, fit within both pixel dimensions using kernel geometry.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub height: Option<u32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
@@ -34,11 +37,14 @@ fn run<R: ReaderAt>(
     }
     let request: DeliveryPlaybackRequest = mo_common::from_json_str(input)
         .map_err(|_| DeliveryError::Invalid("delivery playback JSON"))?;
-    if request.width == 0 || request.width > 8192 {
+    if request.width == 0 || (request.height.is_none() && request.width > 8192) {
         return Err(DeliveryError::Invalid("playback width"));
     }
-    delivery::inspect_request(request.delivery, reader, length, check)?
-        .playback_inputs(request.width, check)
+    let delivery = delivery::inspect_request(request.delivery, reader, length, check)?;
+    match request.height {
+        Some(height) => delivery.playback_inputs_fit(request.width, height, check),
+        None => delivery.playback_inputs(request.width, check),
+    }
 }
 
 /// Native products can reuse ReceivedDelivery::playback_inputs without inline

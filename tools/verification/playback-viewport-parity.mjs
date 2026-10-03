@@ -119,15 +119,16 @@ async function run(kind, fixture) {
     enlarged.width *= 2; enlarged.height *= 2; enlarged.scale.numerator *= 2;
     for (const [index, next] of [enlarged, viewport].entries()) {
       const timing = owner.timing(), calls = textCalls;
-      const info = owner.resize(next, inputs);
-      const paired = await worker.send({operation:'resize', binding:sample.binding, expectedViewportRevision:index, viewport:next}, source);
+      const info = index === 0 ? owner.resizeToFit(next.width, next.height, inputs) : owner.resize(next, inputs);
+      const paired = await worker.send({operation:index === 0 ? 'resizeToFit' : 'resize', binding:sample.binding, expectedViewportRevision:index,
+        ...(index === 0 ? {width:next.width, height:next.height} : {viewport:next})}, source);
       assert.equal(paired.response.status, 'resized'); assert.deepEqual(paired.response.info, info);
       assert.deepEqual(owner.timing(), timing); assert.equal(textCalls, calls, 'resize must not shape, outline or upload fonts');
       const current = await render(index === 0 ? 'enlarged' : 'restored');
       assert.deepEqual(current.evaluated, base.evaluated, 'time, event cursor and animated properties');
       if (index === 1) assert.deepEqual(current.result.pixels, base.result.pixels);
       const freshRequest = structuredClone(request);
-      if (kind === 'author') freshRequest.viewport = next; else freshRequest.page.page.viewport = next;
+      if (kind === 'author') freshRequest.viewport = info.viewport; else freshRequest.page.page.viewport = info.viewport;
       const fresh = kind === 'author' ? sdk.prepareAuthor(freshRequest) : sdk.prepareSource(freshRequest, inputs);
       try {
         assert.equal(fresh.info.planId, owner.info.planId);

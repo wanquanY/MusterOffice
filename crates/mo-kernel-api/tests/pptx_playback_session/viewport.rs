@@ -168,3 +168,21 @@ fn rejected_viewports_leave_prepared_frames_and_live_metadata_usable() {
         )
         .unwrap();
 }
+
+#[test]
+fn resize_to_fit_uses_kernel_page_geometry_and_the_same_revision_fence() {
+    let (bytes, q) = fixture_input();
+    let mut owner = PptxPlaybackSession::default();
+    let prepared = send(&mut owner, &q, &bytes, &|| false);
+    let binding = &prepared["info"]["binding"];
+    let resize = json!({"operation":"resizeToFit","binding":binding,"expectedViewportRevision":0,"width":123,"height":83});
+    let resized = send(&mut owner, &resize, &bytes, &|| false);
+    assert_eq!(resized["status"], "resized", "{resized}");
+    assert_eq!(resized["info"]["binding"], *binding);
+    assert!(resized["info"]["viewport"]["width"].as_u64().unwrap() <= 123);
+    assert!(resized["info"]["viewport"]["height"].as_u64().unwrap() <= 83);
+    assert_eq!(
+        code(&send(&mut owner, &resize, &bytes, &|| false)),
+        "VIEWPORT_CONFLICT"
+    );
+}

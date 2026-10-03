@@ -56,6 +56,13 @@ pub enum PlaybackSessionRequest {
         expected_viewport_revision: u32,
         viewport: RasterViewport,
     },
+    ResizeToFit {
+        binding: PlaybackBinding,
+        #[serde(rename = "expectedViewportRevision")]
+        expected_viewport_revision: u32,
+        width: u32,
+        height: u32,
+    },
     Advance {
         binding: PlaybackBinding,
         generation: PlaybackGeneration,
@@ -286,6 +293,21 @@ impl PlaybackSession {
             } => R::Resized {
                 info: self.resize(&binding, expected_viewport_revision, viewport, check)?,
             },
+            Q::ResizeToFit {
+                binding,
+                expected_viewport_revision,
+                width,
+                height,
+            } => {
+                let viewport = self
+                    .ready(&binding)?
+                    .plan
+                    .fit_viewport(width, height)
+                    .map_err(computed)?;
+                R::Resized {
+                    info: self.resize(&binding, expected_viewport_revision, viewport, check)?,
+                }
+            }
             Q::Advance {
                 binding,
                 generation,

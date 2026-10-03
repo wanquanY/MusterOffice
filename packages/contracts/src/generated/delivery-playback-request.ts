@@ -70,6 +70,10 @@ export type PreviewSample = {
 export interface DeliveryPlaybackRequest {
   delivery: DeliveryInspectRequest;
   /**
+   * When present, fit within both pixel dimensions using kernel geometry.
+   */
+  height?: number | null;
+  /**
    * Pixel width; height/scale preserve the inspected document's geometry.
    */
   width: number;

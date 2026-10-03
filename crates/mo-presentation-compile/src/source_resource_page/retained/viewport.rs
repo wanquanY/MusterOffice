@@ -55,6 +55,24 @@ impl RetainedImages {
     }
 }
 impl ResourcePagePlan {
+    pub(crate) fn fit_viewport(
+        &self,
+        width: u32,
+        height: u32,
+    ) -> Result<mo_raster::RasterViewport, SourcePageError> {
+        let size = self
+            .index
+            .page_size
+            .ok_or(SourcePageError::Invalid("missing page size"))?;
+        crate::fit_page_viewport(
+            size,
+            width,
+            height,
+            self.request.viewport.coordinate_tolerance,
+            self.request.viewport.background,
+        )
+        .map_err(Into::into)
+    }
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn prepare_resize(
         &mut self,

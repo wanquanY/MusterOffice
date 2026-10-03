@@ -29,6 +29,13 @@ export type PlaybackSessionRequest =
     }
   | {
       binding: PlaybackBinding;
+      expectedViewportRevision: number;
+      height: number;
+      operation: "resizeToFit";
+      width: number;
+    }
+  | {
+      binding: PlaybackBinding;
       generation: PlaybackGeneration;
       operation: "advance";
     }

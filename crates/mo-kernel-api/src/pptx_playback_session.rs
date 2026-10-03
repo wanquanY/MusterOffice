@@ -43,6 +43,13 @@ pub enum PptxPlaybackSessionRequest {
         expected_viewport_revision: u32,
         viewport: mo_raster::RasterViewport,
     },
+    ResizeToFit {
+        binding: PlaybackBinding,
+        #[serde(rename = "expectedViewportRevision")]
+        expected_viewport_revision: u32,
+        width: u32,
+        height: u32,
+    },
     Advance {
         binding: PlaybackBinding,
         generation: PlaybackGeneration,
@@ -152,7 +159,10 @@ impl PptxPlaybackSession {
         use PptxPlaybackSessionRequest as Q;
         use PptxPlaybackSessionResponse as R;
         cancel(check)?;
-        let accepts_source = matches!(request, Q::Prepare { .. } | Q::Resize { .. });
+        let accepts_source = matches!(
+            request,
+            Q::Prepare { .. } | Q::Resize { .. } | Q::ResizeToFit { .. }
+        );
         let accepts_fonts = matches!(request, Q::Prepare { .. });
         if (!accepts_source && !source.is_empty()) || (!accepts_fonts && !fonts.is_empty()) {
             return Err(fail(
@@ -274,6 +284,31 @@ impl PptxPlaybackSession {
                 expected_viewport_revision,
                 viewport,
             } => {
+                let resources = resources
+                    .ok_or_else(|| fail(Code::InputInvalid, "resize requires an image decoder"))?;
+                R::Resized {
+                    info: self.resize(
+                        &binding,
+                        expected_viewport_revision,
+                        viewport,
+                        source,
+                        resources.decoder,
+                        check,
+                    )?,
+                }
+            }
+            Q::ResizeToFit {
+                binding,
+                expected_viewport_revision,
+                width,
+                height,
+            } => {
+                let viewport = self
+                    .state
+                    .ready(&binding)?
+                    .plan
+                    .fit_viewport(width, height)
+                    .map_err(|e| computed(crate::pptx_playback::failure(e)))?;
                 let resources = resources
                     .ok_or_else(|| fail(Code::InputInvalid, "resize requires an image decoder"))?;
                 R::Resized {
