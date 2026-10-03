@@ -1,4 +1,5 @@
 mod range;
+mod target;
 mod types;
 use crate::{
     EditError, Operation, OperationEntry, PreparedTransaction, Snapshot, Transaction,
@@ -52,23 +53,70 @@ pub fn prepare_text_edit(
             current: snapshot.revision().clone(),
         });
     }
-    let object = snapshot
-        .document()
-        .objects
-        .get(&command.object)
-        .ok_or_else(|| EditError::input("text object does not exist"))?;
-    let ObjectContent::Shape {
-        text: Some(body), ..
-    } = &object.content
-    else {
-        return Err(EditError::input("object has no authored shape text body"));
-    };
-    let mut next = body.clone();
+    let body = target::authored_body(snapshot.document(), command, check)?;
     let mut ids = Ids::new(command)?;
-    let (selection, range_change) = match &command.action {
+    let (next, selection, mut range_change) = match (&command.action, body) {
+        (TextEditAction::Initialize { text, setup }, None) => {
+            let (next, selection) = target::initialize(text, setup, command, &mut ids, check)?;
+            (next, selection, None)
+        }
+        (TextEditAction::Initialize { .. }, Some(_)) => {
+            return Err(EditError::input("text body already exists"));
+        }
+        (_, None) => return Err(EditError::input("text body requires initialization")),
+        (action, Some(body)) => {
+            let mut next = body.clone();
+            let (selection, change) = edit_body(body, &mut next, action, command, &mut ids, check)?;
+            (next, selection, change)
+        }
+    };
+    if let Some(change) = &mut range_change {
+        change.cell = command.cell.clone();
+    }
+    let transaction = Transaction {
+        document_id: command.document_id.clone(),
+        request_id: command.request_id.clone(),
+        base_revision: command.base_revision.clone(),
+        operations: vec![OperationEntry {
+            operation_id: command.operation_id.clone(),
+            operation: match &command.cell {
+                Some(cell) => Operation::EditTable {
+                    object: command.object.clone(),
+                    operation: crate::TableOperation::SetCellText {
+                        cell: cell.clone(),
+                        text: Some(next),
+                    },
+                },
+                None => Operation::SetText {
+                    object: command.object.clone(),
+                    text: next,
+                },
+            },
+        }],
+    };
+    let prepared = prepare_cancellable(snapshot, &transaction, limits, check)?;
+    Ok(PreparedTextEdit {
+        command_digest: text_edit_command_digest(command)?,
+        prepared,
+        transaction,
+        selection,
+        range_change,
+    })
+}
+
+fn edit_body(
+    body: &TextBody,
+    next: &mut TextBody,
+    action: &TextEditAction,
+    command: &TextEditCommand,
+    ids: &mut Ids,
+    check: &dyn Fn() -> bool,
+) -> Result<(TextSelection, Option<TextRangeChange>), EditError> {
+    Ok(match action {
+        TextEditAction::Initialize { .. } => unreachable!("initialization handled before editing"),
         TextEditAction::Replace { selection, text } => {
             let range = ordered(body, selection, check)?;
-            replace(&mut next, &range, text, &command.object, &mut ids, check)?
+            replace(next, &range, text, &command.object, ids, check)?
         }
         TextEditAction::SetCharacterStyle { selection, patch } => {
             let range = ordered(body, selection, check)?;
@@ -95,26 +143,6 @@ pub fn prepare_text_edit(
             ids.unique_runs(&mut next.paragraphs);
             (selection.clone(), None)
         }
-    };
-    let transaction = Transaction {
-        document_id: command.document_id.clone(),
-        request_id: command.request_id.clone(),
-        base_revision: command.base_revision.clone(),
-        operations: vec![OperationEntry {
-            operation_id: command.operation_id.clone(),
-            operation: Operation::SetText {
-                object: command.object.clone(),
-                text: next,
-            },
-        }],
-    };
-    let prepared = prepare_cancellable(snapshot, &transaction, limits, check)?;
-    Ok(PreparedTextEdit {
-        command_digest: text_edit_command_digest(command)?,
-        prepared,
-        transaction,
-        selection,
-        range_change,
     })
 }
 
@@ -152,14 +180,22 @@ fn replace(
             default_run_style: first.default_run_style.clone(),
             runs: if i == 0 { prefix.clone() } else { Vec::new() },
         };
-        if !piece.is_empty() {
-            p.runs.push(TextRun {
-                id: ids.run(),
-                style: style.clone(),
-                content: InlineContent::Text {
-                    text: (*piece).into(),
-                },
-            });
+        for (j, part) in piece.split('\t').enumerate() {
+            cancelled(check)?;
+            if j > 0 {
+                p.runs.push(TextRun {
+                    id: ids.run(),
+                    style: style.clone(),
+                    content: InlineContent::Tab,
+                });
+            }
+            if !part.is_empty() {
+                p.runs.push(TextRun {
+                    id: ids.run(),
+                    style: style.clone(),
+                    content: InlineContent::Text { text: part.into() },
+                });
+            }
         }
         if i + 1 == pieces.len() {
             p.runs.extend(suffix.clone());
@@ -188,6 +224,7 @@ fn replace(
     };
     let change = TextRangeChange {
         object: object.clone(),
+        cell: None,
         before: TextSelection {
             anchor: range.start.clone(),
             focus: range.end.clone(),

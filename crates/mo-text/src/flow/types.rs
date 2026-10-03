@@ -57,6 +57,7 @@ impl LineWidths {
 /// Borrowed computation input for a native frame compiler. The legacy wire
 /// request converts to this same input; there is only one line-search engine.
 pub struct FlowInput<'a> {
+    pub tabs: Option<&'a crate::geometry::LeftTabStops>,
     pub paragraph: &'a ParagraphShapeRequest,
     pub styles: &'a [GeometryStyle],
     pub strut_style: u32,
@@ -69,6 +70,7 @@ pub struct FlowInput<'a> {
 impl<'a> From<&'a ParagraphLayoutRequest> for FlowInput<'a> {
     fn from(q: &'a ParagraphLayoutRequest) -> Self {
         Self {
+            tabs: q.tabs.as_ref(),
             paragraph: &q.paragraph,
             styles: &q.styles,
             strut_style: q.strut_style,
@@ -83,6 +85,8 @@ impl<'a> From<&'a ParagraphLayoutRequest> for FlowInput<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ParagraphLayoutRequest {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tabs: Option<crate::geometry::LeftTabStops>,
     pub paragraph: ParagraphShapeRequest,
     pub styles: Vec<GeometryStyle>,
     pub strut_style: u32,

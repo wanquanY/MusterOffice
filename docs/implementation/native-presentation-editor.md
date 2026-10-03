@@ -81,7 +81,7 @@ TS facade 与 Native/WASM 使用同一计算。真实 GDEF 坐标叠加 GPOS；�
 
 ## 仍需完成
 
-1. 交互编辑所需的段落样式/表格与保留源文字操作、命中/光标查询、对象选区复制和精确能力矩阵。
+1. [自建单元格文字命令](editor-authored-cell-text.md)已复用形状算法实现范围替换、局部字符样式、空文字初始化与普通事务历史；保留源高层文字、段落样式、对象选区复制和精确能力矩阵继续实施。页面[文字交互](editor-page-interaction.md)、[对象拾取](editor-object-picking.md)和[文稿查询](editor-document-inspection.md)已有计算证据，尚需产品输入闭环。
 2. [内核导航反馈](presentation-step.md)和产品边界导航已接入；viewport 状态保持及共享播放器窗口/DPR 接入已完成，独立窗口、真实全屏/显示器与跨平台验收仍待完成。
 3. 后续新增内核能力继续通过统一 SDK/worker/WASM 清单集成；当前开发发行不等于远程发布资格。
 4. 产品侧关联原生草稿、持续发布、UI、独立放映和双端恢复/授权/性能验收。

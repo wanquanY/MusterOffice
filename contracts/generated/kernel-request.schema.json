@@ -4499,6 +4499,38 @@
         "overflow"
       ]
     },
+    "TextBodySetup": {
+      "type": "object",
+      "properties": {
+        "defaultRunStyle": {
+          "$ref": "#/$defs/CharacterStyle"
+        },
+        "insets": {
+          "$ref": "#/$defs/Insets"
+        },
+        "overflow": {
+          "$ref": "#/$defs/OverflowPolicy"
+        },
+        "paragraphStyle": {
+          "$ref": "#/$defs/ParagraphStyle"
+        },
+        "style": {
+          "$ref": "#/$defs/CharacterStyle"
+        },
+        "wrap": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "style",
+        "insets",
+        "wrap",
+        "overflow",
+        "paragraphStyle",
+        "defaultRunStyle"
+      ]
+    },
     "TextDirection": {
       "type": "string",
       "enum": [
@@ -4511,7 +4543,29 @@
     "TextEditAction": {
       "oneOf": [
         {
-          "description": "CRLF and CR become paragraph breaks. Surviving runs keep their style;\ninserted text inherits the declaration at the start caret's affinity.",
+          "description": "Create a missing authored text body. The kernel assigns all paragraph\nand run identities; the host supplies explicit layout/style defaults.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "initialize"
+            },
+            "setup": {
+              "$ref": "#/$defs/TextBodySetup"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "text",
+            "setup"
+          ]
+        },
+        {
+          "description": "CRLF and CR become paragraph breaks; tabs become typed inline tabs.\nSurviving runs keep their style;\ninserted text inherits the declaration at the start caret's affinity.",
           "type": "object",
           "properties": {
             "kind": {
@@ -4563,6 +4617,17 @@
         },
         "baseRevision": {
           "$ref": "#/$defs/Digest"
+        },
+        "cell": {
+          "description": "Required for an authored table cell; absent for shape text. Never a\nphysical row/column ordinal. Omission preserves existing command hashes.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CellId"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "documentId": {
           "$ref": "#/$defs/DocumentId"

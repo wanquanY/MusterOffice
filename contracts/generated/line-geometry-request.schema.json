@@ -22,6 +22,16 @@
       "items": {
         "$ref": "#/$defs/GeometryStyle"
       }
+    },
+    "tabs": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/LeftTabStops"
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "additionalProperties": false,
@@ -158,6 +168,36 @@
       "required": [
         "fontSize",
         "baselineShift"
+      ]
+    },
+    "LeftTabStops": {
+      "type": "object",
+      "properties": {
+        "continuationOffset": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "firstLineOffset": {
+          "description": "Line origins in the same coordinate system; accommodates first-line indent.",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "interval": {
+          "description": "Positive repeating grid used after the final explicit stop (or alone).",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "stops": {
+          "description": "Strictly increasing positions relative to the paragraph's left margin.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FixedQ32"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "interval",
+        "stops",
+        "firstLineOffset",
+        "continuationOffset"
       ]
     },
     "LineShapeRequest": {

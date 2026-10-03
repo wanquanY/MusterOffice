@@ -5,6 +5,7 @@ use std::cell::Cell;
 pub(super) fn q(text: &str, width: i64, overflow: OverflowPolicy) -> ParagraphLayoutRequest {
     let g = request(text);
     ParagraphLayoutRequest {
+        tabs: None,
         paragraph: g.shaping.paragraph,
         styles: vec![geometry::GeometryStyle {
             cluster_spacing: mo_geometry::Fixed::ZERO,
@@ -245,6 +246,7 @@ fn fitting_uses_internal_precision_not_rounded_output_advance() {
     // Whole-line 1.2 EMU rounds to 1 EMU, but it still must not fit width 1.
     let g = request("AA");
     let g = geometry::LineGeometryRequest {
+        tabs: None,
         styles: q.styles,
         ..g
     };

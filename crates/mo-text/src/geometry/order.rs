@@ -3,8 +3,35 @@ use super::*;
 use crate::{fallback::FallbackResult, itemize::TextItem, lines::ShapedLine};
 use mo_unicode::bidi::BidiLine;
 pub(crate) struct FragmentOrder {
-    pub visible: Vec<(FragmentRef, GeometryStyle)>,
+    pub visible: Vec<VisualItem>,
     pub removed: Vec<FragmentRef>,
+}
+#[derive(Clone, Copy)]
+pub(crate) enum VisualItem {
+    Fragment {
+        source: FragmentRef,
+        style: GeometryStyle,
+    },
+    Tab {
+        item: u32,
+    },
+}
+pub(crate) enum PlacedItem {
+    Fragment {
+        source: FragmentRef,
+        style: GeometryStyle,
+        origin: mo_geometry::Point,
+    },
+    Tab {
+        item: u32,
+        before: mo_geometry::Point,
+        after: mo_geometry::Point,
+    },
+}
+pub(crate) struct LinePlacement {
+    pub items: Vec<PlacedItem>,
+    pub advance: mo_geometry::Point,
+    pub bounds: PenBounds,
 }
 pub(crate) fn order(
     indices: &[u32],
@@ -39,25 +66,46 @@ pub(crate) fn order(
                 .copied()
                 .min();
             if let Some(rank) = rank {
-                visible.push((rank, reference, style));
+                visible.push((
+                    rank,
+                    VisualItem::Fragment {
+                        source: reference,
+                        style,
+                    },
+                ));
             } else {
                 removed.push(reference);
             }
         }
     }
+    for i in line.item_start..line.item_end {
+        cancelled(check)?;
+        let item = &items[i as usize];
+        if item.kind == TextItemKind::Tab {
+            let rank = ranks[(item.start.scalar_offset - line.start.scalar_offset) as usize]
+                .ok_or(TextError::Invalid("tab missing from visual order"))?;
+            visible.push((rank, VisualItem::Tab { item: i }));
+        }
+    }
     visible.sort_by_key(|v| v.0);
     Ok(FragmentOrder {
-        visible: visible.into_iter().map(|v| (v.1, v.2)).collect(),
+        visible: visible.into_iter().map(|v| v.1).collect(),
         removed,
     })
 }
-pub(crate) fn pen_bounds(
+pub(crate) fn place_line(
     fallback: &FallbackResult,
     order: &FragmentOrder,
     hanging: Option<std::ops::Range<u32>>,
+    tabs: Option<&LeftTabStops>,
+    line_start: u32,
+    retain: bool,
     check: &dyn Fn() -> bool,
-) -> Result<PenBounds, TextError> {
+) -> Result<LinePlacement, TextError> {
     let mut x = Position::ZERO;
+    let mut y = Position::ZERO;
+    // Candidate fitting needs only bounds, not a second retained placement list.
+    let mut items = Vec::with_capacity(if retain { order.visible.len() } else { 0 });
     let mut min = x;
     let mut max = x;
     let mut body: Option<(Position, Position)> = None;
@@ -65,7 +113,42 @@ pub(crate) fn pen_bounds(
     let mut during = false;
     let mut after = false;
     let mut disjoint = false;
-    for &(r, style) in &order.visible {
+    for &item in &order.visible {
+        cancelled(check)?;
+        let (r, style) = match item {
+            VisualItem::Fragment { source, style } => (source, style),
+            VisualItem::Tab { item } => {
+                let next = tabs
+                    .ok_or(TextError::Invalid("tab policy required"))?
+                    .next(x, line_start)?;
+                if retain {
+                    items.push(PlacedItem::Tab {
+                        item,
+                        before: mo_geometry::Point { x, y },
+                        after: mo_geometry::Point { x: next, y },
+                    });
+                }
+                min = min.min(next);
+                max = max.max(next);
+                if hanging.is_some() {
+                    if during {
+                        after = true;
+                    } else {
+                        before = true;
+                    }
+                    body = Some(body.map_or((x, next), |(lo, hi)| (lo.min(x), hi.max(next))));
+                }
+                x = next;
+                continue;
+            }
+        };
+        if retain {
+            items.push(PlacedItem::Fragment {
+                source: r,
+                style,
+                origin: mo_geometry::Point { x, y },
+            });
+        }
         let FontFragment::Selected { shaped, .. } =
             &fallback.items[r.fallback_item as usize].fragments[r.fragment as usize]
         else {
@@ -99,16 +182,21 @@ pub(crate) fn pen_bounds(
             }
         }
         x = x.checked_add(cursor.position().x)?;
+        y = y.checked_add(cursor.position().y)?;
     }
-    Ok(PenBounds {
-        min,
-        max,
-        // Bidi may put logical-final punctuation at either visual edge. Never
-        // subtract an interior cluster or a ligature containing preceding text.
-        body: if during && !disjoint && !(before && after) {
-            body
-        } else {
-            None
+    Ok(LinePlacement {
+        items,
+        advance: mo_geometry::Point { x, y },
+        bounds: PenBounds {
+            min,
+            max,
+            // Bidi may put logical-final punctuation at either visual edge. Never
+            // subtract an interior cluster or a ligature containing preceding text.
+            body: if during && !disjoint && !(before && after) {
+                body
+            } else {
+                None
+            },
         },
     })
 }

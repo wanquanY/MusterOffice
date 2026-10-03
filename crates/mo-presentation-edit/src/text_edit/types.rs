@@ -45,7 +45,11 @@ impl CharacterStylePatch {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "kind", rename_all = "camelCase", deny_unknown_fields)]
 pub enum TextEditAction {
-    /// CRLF and CR become paragraph breaks. Surviving runs keep their style;
+    /// Create a missing authored text body. The kernel assigns all paragraph
+    /// and run identities; the host supplies explicit layout/style defaults.
+    Initialize { text: String, setup: TextBodySetup },
+    /// CRLF and CR become paragraph breaks; tabs become typed inline tabs.
+    /// Surviving runs keep their style;
     /// inserted text inherits the declaration at the start caret's affinity.
     Replace {
         selection: TextSelection,
@@ -59,12 +63,27 @@ pub enum TextEditAction {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct TextBodySetup {
+    pub style: CharacterStyle,
+    pub insets: Insets,
+    pub wrap: bool,
+    pub overflow: OverflowPolicy,
+    pub paragraph_style: ParagraphStyle,
+    pub default_run_style: CharacterStyle,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct TextEditCommand {
     pub document_id: DocumentId,
     pub request_id: RequestId,
     pub base_revision: Digest,
     pub operation_id: OperationId,
     pub object: ObjectId,
+    /// Required for an authored table cell; absent for shape text. Never a
+    /// physical row/column ordinal. Omission preserves existing command hashes.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cell: Option<CellId>,
     pub action: TextEditAction,
 }
 
@@ -89,6 +108,8 @@ pub struct TextEditCandidate {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct TextRangeChange {
     pub object: ObjectId,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cell: Option<CellId>,
     pub before: TextSelection,
     pub after: TextSelection,
     pub before_paragraphs: Vec<ParagraphId>,
@@ -99,6 +120,7 @@ impl TextRangeChange {
     pub fn reversed(&self) -> Self {
         Self {
             object: self.object.clone(),
+            cell: self.cell.clone(),
             before: self.after.clone(),
             after: self.before.clone(),
             before_paragraphs: self.after_paragraphs.clone(),

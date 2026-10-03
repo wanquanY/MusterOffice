@@ -10,6 +10,17 @@
     "baseRevision": {
       "$ref": "#/$defs/Digest"
     },
+    "cell": {
+      "description": "Required for an authored table cell; absent for shape text. Never a\nphysical row/column ordinal. Omission preserves existing command hashes.",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/CellId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "documentId": {
       "$ref": "#/$defs/DocumentId"
     },
@@ -39,6 +50,71 @@
         "before",
         "after"
       ]
+    },
+    "Alignment": {
+      "type": "string",
+      "enum": [
+        "start",
+        "center",
+        "end",
+        "justify"
+      ]
+    },
+    "CellId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "CharacterStyle": {
+      "type": "object",
+      "properties": {
+        "bold": {
+          "$ref": "#/$defs/Inherited4",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "color": {
+          "$ref": "#/$defs/Inherited3",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "font": {
+          "$ref": "#/$defs/Inherited",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "italic": {
+          "$ref": "#/$defs/Inherited4",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "language": {
+          "$ref": "#/$defs/Inherited5",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "size": {
+          "$ref": "#/$defs/Inherited2",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "underline": {
+          "$ref": "#/$defs/Inherited4",
+          "default": {
+            "kind": "inherit"
+          }
+        }
+      },
+      "additionalProperties": false
     },
     "CharacterStylePatch": {
       "description": "Omitted fields keep their declarations; `inherit` explicitly resets one\nfield. Applying bold must not resolve or overwrite font/theme inheritance.",
@@ -360,6 +436,98 @@
         }
       ]
     },
+    "Inherited6": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "inherit"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "value"
+            },
+            "value": {
+              "$ref": "#/$defs/Alignment"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        }
+      ]
+    },
+    "Inherited7": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "inherit"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "value"
+            },
+            "value": {
+              "$ref": "#/$defs/TextDirection"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        }
+      ]
+    },
+    "Insets": {
+      "type": "object",
+      "properties": {
+        "bottom": {
+          "$ref": "#/$defs/Emu"
+        },
+        "left": {
+          "$ref": "#/$defs/Emu"
+        },
+        "right": {
+          "$ref": "#/$defs/Emu"
+        },
+        "top": {
+          "$ref": "#/$defs/Emu"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "left",
+        "top",
+        "right",
+        "bottom"
+      ]
+    },
     "ObjectId": {
       "type": "string",
       "maxLength": 128,
@@ -376,6 +544,14 @@
       },
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
     },
+    "OverflowPolicy": {
+      "type": "string",
+      "enum": [
+        "report",
+        "clip",
+        "growShape"
+      ]
+    },
     "ParagraphId": {
       "type": "string",
       "maxLength": 128,
@@ -383,6 +559,120 @@
         "pattern": "[^A-Za-z0-9_.:-]"
       },
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ParagraphLineSpacing": {
+      "description": "Native paragraph line spacing. Percentage is measured against the line's\nlargest font size by the shared layout engine; 100000 means 100%, 150000 150%.",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "percent"
+            },
+            "value": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "description": "Exact baseline spacing in EMU; must be representable in 1/100 point.",
+          "type": "object",
+          "properties": {
+            "height": {
+              "$ref": "#/$defs/Emu"
+            },
+            "kind": {
+              "type": "string",
+              "const": "exact"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "height"
+          ]
+        }
+      ]
+    },
+    "ParagraphStyle": {
+      "type": "object",
+      "properties": {
+        "alignment": {
+          "$ref": "#/$defs/Inherited6",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "direction": {
+          "$ref": "#/$defs/Inherited7",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "indent": {
+          "description": "Relative to the paragraph margin; negative values create a hanging indent.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Emu"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "leftMargin": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Emu"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lineSpacing": {
+          "description": "Omitted values retain native inheritance and historical document digests.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ParagraphLineSpacing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rightMargin": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Emu"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spaceAfter": {
+          "$ref": "#/$defs/Inherited2",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "spaceBefore": {
+          "$ref": "#/$defs/Inherited2",
+          "default": {
+            "kind": "inherit"
+          }
+        }
+      },
+      "additionalProperties": false
     },
     "RequestId": {
       "type": "string",
@@ -450,10 +740,73 @@
         "affinity"
       ]
     },
+    "TextBodySetup": {
+      "type": "object",
+      "properties": {
+        "defaultRunStyle": {
+          "$ref": "#/$defs/CharacterStyle"
+        },
+        "insets": {
+          "$ref": "#/$defs/Insets"
+        },
+        "overflow": {
+          "$ref": "#/$defs/OverflowPolicy"
+        },
+        "paragraphStyle": {
+          "$ref": "#/$defs/ParagraphStyle"
+        },
+        "style": {
+          "$ref": "#/$defs/CharacterStyle"
+        },
+        "wrap": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "style",
+        "insets",
+        "wrap",
+        "overflow",
+        "paragraphStyle",
+        "defaultRunStyle"
+      ]
+    },
+    "TextDirection": {
+      "type": "string",
+      "enum": [
+        "leftToRight",
+        "rightToLeft",
+        "verticalRightToLeft",
+        "verticalLeftToRight"
+      ]
+    },
     "TextEditAction": {
       "oneOf": [
         {
-          "description": "CRLF and CR become paragraph breaks. Surviving runs keep their style;\ninserted text inherits the declaration at the start caret's affinity.",
+          "description": "Create a missing authored text body. The kernel assigns all paragraph\nand run identities; the host supplies explicit layout/style defaults.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "initialize"
+            },
+            "setup": {
+              "$ref": "#/$defs/TextBodySetup"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "text",
+            "setup"
+          ]
+        },
+        {
+          "description": "CRLF and CR become paragraph breaks; tabs become typed inline tabs.\nSurviving runs keep their style;\ninserted text inherits the declaration at the start caret's affinity.",
           "type": "object",
           "properties": {
             "kind": {

@@ -11,6 +11,7 @@ pub(super) struct Measurements {
     pub instances: Vec<MetricInstance>,
     pub fragments: Vec<Vec<Option<usize>>>,
     pub strut: usize,
+    pub tabs: BTreeMap<u32, usize>,
 }
 pub(super) fn measure(
     q: &LineGeometryRequest,
@@ -44,6 +45,16 @@ pub(super) fn measure(
         Ok(i)
     };
     let strut = register(&styles[q.strut_style as usize].candidates[0])?;
+    let mut tabs = BTreeMap::new();
+    for item in &shaped.items {
+        cancelled(check)?;
+        if item.kind == TextItemKind::Tab && !tabs.contains_key(&item.style) {
+            tabs.insert(
+                item.style,
+                register(&styles[item.style as usize].candidates[0])?,
+            );
+        }
+    }
     let mut fragments = Vec::new();
     for (i, item) in shaped.fallback.items.iter().enumerate() {
         let style = &styles[shaped.items[shaped.shaped_item_indices[i] as usize].style as usize];
@@ -111,5 +122,6 @@ pub(super) fn measure(
         instances: measured.into_iter().map(Option::unwrap).collect(),
         fragments,
         strut,
+        tabs,
     })
 }

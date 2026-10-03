@@ -35,6 +35,7 @@ pub enum PartitionReason {
 #[serde(tag = "kind", rename_all = "camelCase", deny_unknown_fields)]
 pub enum CaretPlacement {
     GlyphEdges,
+    TabEdges,
     FontLigature,
     ClusterPartition { reason: PartitionReason },
     Invisible,

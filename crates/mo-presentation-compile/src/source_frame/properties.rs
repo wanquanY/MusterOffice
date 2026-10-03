@@ -110,6 +110,7 @@ pub(super) fn paragraph(
         return Err(mapping(SourceFrameIssue::InvalidRegion));
     }
     let mut result = FrameParagraphSpec {
+        tabs: tabs::read(index, ordinal, p, indent, input.text.contains('\t'), check)?,
         source_ordinal: p.source_ordinal,
         widths: LineWidths { first, rest },
         left,
@@ -138,6 +139,7 @@ pub(super) fn paragraph(
     for (slot, reference) in &p.declarations {
         cancel(check)?;
         match slot {
+            ParagraphSlot::Tabs => {}
             ParagraphSlot::LineSpacing | ParagraphSlot::SpaceBefore | ParagraphSlot::SpaceAfter => {
                 let (value, error) = spacing::read(index, ordinal, reference, input, check)?;
                 result.spacing_conversion_error = result.spacing_conversion_error.max(error);

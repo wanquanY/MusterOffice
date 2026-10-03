@@ -95,6 +95,7 @@ fn precise_line_metrics_are_retained_without_changing_legacy_glyph_paths() {
     let exact = manifest
         .paragraph_geometry(
             ManifestFlowInput {
+                tabs: None,
                 paragraph: (&q).into(),
                 styles: &styles,
                 strut_style: 0,
@@ -257,6 +258,7 @@ fn interaction_uses_prepared_fonts_and_exact_asymmetric_flow_widths() {
     let manifest =
         PreparedManifest::load(&q.manifest, FONT, ManifestLimits::default(), &|| false).unwrap();
     let input = ManifestFlowInput {
+        tabs: None,
         paragraph: (&q).into(),
         styles: &STYLE,
         strut_style: 0,

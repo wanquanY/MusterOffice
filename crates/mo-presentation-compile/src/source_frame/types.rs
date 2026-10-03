@@ -116,6 +116,8 @@ pub struct SourceFrameRegion {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct FrameParagraphSpec {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tabs: Option<mo_text::geometry::LeftTabStops>,
     pub source_ordinal: u32,
     pub widths: LineWidths,
     pub left: Fixed,

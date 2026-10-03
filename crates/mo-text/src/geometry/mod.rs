@@ -5,6 +5,7 @@ pub(crate) mod number;
 pub(crate) mod order;
 mod pen;
 mod spacing;
+mod tabs;
 #[cfg(test)]
 pub(crate) mod test_support;
 #[cfg(test)]
@@ -18,6 +19,7 @@ use crate::{
 use number::Position;
 pub use pen::{FragmentPen, GlyphPen};
 pub use spacing::line_style_maximum;
+pub use tabs::LeftTabStops;
 pub use types::*;
 pub fn layout_lines(
     q: &LineGeometryRequest,
@@ -49,6 +51,9 @@ pub(crate) fn styles_equal(
 }
 pub(crate) fn validate(q: &LineGeometryRequest, check: &dyn Fn() -> bool) -> Result<(), TextError> {
     cancelled(check)?;
+    if let Some(tabs) = &q.tabs {
+        tabs.validate()?;
+    }
     if q.styles.len() != q.shaping.paragraph.styles.len()
         || q.strut_style as usize >= q.styles.len()
     {
@@ -95,10 +100,19 @@ pub(crate) struct PreciseFragment {
     pub ascent: Position,
     pub descent: Position,
 }
+pub(crate) struct PreciseTab {
+    pub line: u32,
+    pub item: u32,
+    pub before: mo_geometry::Point,
+    pub after: mo_geometry::Point,
+    pub ascent: Position,
+    pub descent: Position,
+}
 #[derive(Default)]
 pub(crate) struct PrecisePlacements {
     pub glyphs: Vec<PreciseGlyph>,
     pub fragments: Vec<PreciseFragment>,
+    pub tabs: Vec<PreciseTab>,
     pub empty_line_carets: Vec<(Position, Position)>,
     pub layout: Option<PreciseGeometryLayout>,
 }
@@ -161,7 +175,7 @@ fn evaluate_impl(
 ) -> Result<(LineGeometryResult, PrecisePlacements), TextError> {
     let mut issues = Vec::new();
     for item in &shaping.items {
-        if item.kind == TextItemKind::Tab {
+        if item.kind == TextItemKind::Tab && q.tabs.is_none() {
             issues.push(GeometryIssue::Tab {
                 start: item.start.scalar_offset,
                 end: item.end.scalar_offset,
@@ -257,6 +271,18 @@ fn place(
                 gap = gap.max(g);
             }
         }
+        for item in &shaped.items[line.item_start as usize..line.item_end as usize] {
+            cancelled(check)?;
+            if item.kind == TextItemKind::Tab {
+                let (a, d, g) = extents(
+                    &measured.instances[measured.tabs[&item.style]],
+                    q.styles[item.style as usize],
+                )?;
+                ascent = ascent.max(a);
+                descent = descent.max(d);
+                gap = gap.max(g);
+            }
+        }
         let content = ascent.checked_add(descent)?;
         let natural = content.checked_add(gap)?;
         let height = match &q.spacing {
@@ -279,13 +305,63 @@ fn place(
             .checked_add(ascent)?
             .checked_add(height.checked_sub(content)?.half()?)?;
         let bottom = y.checked_add(height)?;
-        let mut x = Position::ZERO;
-        let mut pen_y = Position::ZERO;
-        let mut min = Position::ZERO;
-        let mut max = Position::ZERO;
+        let placement = order::place_line(
+            &shaped.fallback,
+            &ordered,
+            None,
+            q.tabs.as_ref(),
+            line.start.scalar_offset,
+            true,
+            check,
+        )?;
+        let x = placement.advance.x;
+        let pen_y = placement.advance.y;
+        let min = placement.bounds.min;
+        let max = placement.bounds.max;
         let mut glyphs = Vec::new();
-        for &(reference, style) in &ordered.visible {
+        for placed in placement.items {
             cancelled(check)?;
+            let (reference, style, origin) = match placed {
+                order::PlacedItem::Fragment {
+                    source,
+                    style,
+                    origin,
+                } => (source, style, origin),
+                order::PlacedItem::Tab {
+                    item,
+                    before,
+                    after,
+                } => {
+                    if matches!(
+                        retain,
+                        Retention::Interaction | Retention::PathsAndInteraction
+                    ) {
+                        let style_id = shaped.items[item as usize].style;
+                        let (a, d, _) = extents(
+                            &measured.instances[measured.tabs[&style_id]],
+                            q.styles[style_id as usize],
+                        )?;
+                        let point =
+                            |p: mo_geometry::Point| -> Result<mo_geometry::Point, TextError> {
+                                Ok(mo_geometry::Point {
+                                    x: p.x,
+                                    y: baseline.checked_sub(p.y)?,
+                                })
+                            };
+                        precise.tabs.push(PreciseTab {
+                            line: line_index as u32,
+                            item,
+                            before: point(before)?,
+                            after: point(after)?,
+                            ascent: a,
+                            descent: d,
+                        });
+                    }
+                    continue;
+                }
+            };
+            let x = origin.x;
+            let pen_y = origin.y;
             if matches!(
                 retain,
                 Retention::Interaction | Retention::PathsAndInteraction
@@ -344,14 +420,7 @@ fn place(
                     x: gx.wire()?,
                     y: gy.wire()?,
                 });
-                for endpoint in [g.unspaced_end.x, g.after.x] {
-                    let endpoint = x.checked_add(endpoint)?;
-                    min = min.min(endpoint);
-                    max = max.max(endpoint);
-                }
             }
-            x = x.checked_add(pen.position().x)?;
-            pen_y = pen_y.checked_add(pen.position().y)?;
         }
         if matches!(
             retain,
@@ -383,7 +452,14 @@ fn place(
             advance_y: Position::ZERO.checked_sub(pen_y)?.wire()?,
             pen_min: min.wire()?,
             pen_max: max.wire()?,
-            visual_fragments: ordered.visible.into_iter().map(|v| v.0).collect(),
+            visual_fragments: ordered
+                .visible
+                .into_iter()
+                .filter_map(|v| match v {
+                    order::VisualItem::Fragment { source, .. } => Some(source),
+                    order::VisualItem::Tab { .. } => None,
+                })
+                .collect(),
             removed_by_x9: ordered.removed,
             glyphs,
         });

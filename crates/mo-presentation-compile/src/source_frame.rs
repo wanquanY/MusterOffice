@@ -8,6 +8,7 @@ pub mod interaction;
 mod number;
 mod properties;
 mod spacing;
+mod tabs;
 mod types;
 use crate::source_text::{self, SourceParagraphPlan, SourceTextLimits, SourceTextPreparation};
 pub use clip::FrameClip;
@@ -226,6 +227,7 @@ pub(crate) fn compute_with_interaction(
     for (i, (p, spec)) in prepared.paragraphs().iter().zip(specs).enumerate() {
         cancel(check)?;
         let flow = ManifestFlowInput {
+            tabs: spec.tabs.as_ref(),
             paragraph: input(p),
             styles: &p.geometry,
             strut_style: p.end_style,

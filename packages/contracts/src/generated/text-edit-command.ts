@@ -6,6 +6,11 @@
  */
 export type TextEditAction =
   | {
+      kind: "initialize";
+      setup: TextBodySetup;
+      text: string;
+    }
+  | {
       kind: "replace";
       selection: TextSelection;
       text: string;
@@ -14,6 +19,79 @@ export type TextEditAction =
       kind: "setCharacterStyle";
       patch: CharacterStylePatch;
       selection: TextSelection;
+    };
+/**
+ * This interface was referenced by `TextEditCommand`'s JSON-Schema
+ * via the `definition` "Color".
+ */
+export type Color =
+  | {
+      kind: "srgb";
+      rgba: Rgba;
+    }
+  | {
+      kind: "theme";
+      slot: ThemeColor;
+    };
+/**
+ * This interface was referenced by `TextEditCommand`'s JSON-Schema
+ * via the `definition` "ThemeColor".
+ */
+export type ThemeColor =
+  | "dark1"
+  | "light1"
+  | "dark2"
+  | "light2"
+  | "accent1"
+  | "accent2"
+  | "accent3"
+  | "accent4"
+  | "accent5"
+  | "accent6"
+  | "hyperlink"
+  | "followedHyperlink";
+/**
+ * This interface was referenced by `TextEditCommand`'s JSON-Schema
+ * via the `definition` "FontId".
+ */
+export type FontId = string;
+/**
+ * Signed int64 EMU. 1 point = 12700 EMU. Range requires semantic validation.
+ *
+ * This interface was referenced by `TextEditCommand`'s JSON-Schema
+ * via the `definition` "Emu".
+ */
+export type Emu = string;
+/**
+ * This interface was referenced by `TextEditCommand`'s JSON-Schema
+ * via the `definition` "OverflowPolicy".
+ */
+export type OverflowPolicy = "report" | "clip" | "growShape";
+/**
+ * This interface was referenced by `TextEditCommand`'s JSON-Schema
+ * via the `definition` "Alignment".
+ */
+export type Alignment = "start" | "center" | "end" | "justify";
+/**
+ * This interface was referenced by `TextEditCommand`'s JSON-Schema
+ * via the `definition` "TextDirection".
+ */
+export type TextDirection = "leftToRight" | "rightToLeft" | "verticalRightToLeft" | "verticalLeftToRight";
+/**
+ * Native paragraph line spacing. Percentage is measured against the line's
+ * largest font size by the shared layout engine; 100000 means 100%, 150000 150%.
+ *
+ * This interface was referenced by `TextEditCommand`'s JSON-Schema
+ * via the `definition` "ParagraphLineSpacing".
+ */
+export type ParagraphLineSpacing =
+  | {
+      kind: "percent";
+      value: number;
+    }
+  | {
+      height: Emu;
+      kind: "exact";
     };
 /**
  * This interface was referenced by `TextEditCommand`'s JSON-Schema
@@ -51,36 +129,6 @@ export type Inherited3 =
     };
 /**
  * This interface was referenced by `TextEditCommand`'s JSON-Schema
- * via the `definition` "Color".
- */
-export type Color =
-  | {
-      kind: "srgb";
-      rgba: Rgba;
-    }
-  | {
-      kind: "theme";
-      slot: ThemeColor;
-    };
-/**
- * This interface was referenced by `TextEditCommand`'s JSON-Schema
- * via the `definition` "ThemeColor".
- */
-export type ThemeColor =
-  | "dark1"
-  | "light1"
-  | "dark2"
-  | "light2"
-  | "accent1"
-  | "accent2"
-  | "accent3"
-  | "accent4"
-  | "accent5"
-  | "accent6"
-  | "hyperlink"
-  | "followedHyperlink";
-/**
- * This interface was referenced by `TextEditCommand`'s JSON-Schema
  * via the `definition` "Inherited".
  */
 export type Inherited =
@@ -91,11 +139,6 @@ export type Inherited =
       kind: "value";
       value: FontId;
     };
-/**
- * This interface was referenced by `TextEditCommand`'s JSON-Schema
- * via the `definition` "FontId".
- */
-export type FontId = string;
 /**
  * This interface was referenced by `TextEditCommand`'s JSON-Schema
  * via the `definition` "Inherited5".
@@ -121,17 +164,15 @@ export type Inherited2 =
       value: Emu;
     };
 /**
- * Signed int64 EMU. 1 point = 12700 EMU. Range requires semantic validation.
- *
- * This interface was referenced by `TextEditCommand`'s JSON-Schema
- * via the `definition` "Emu".
- */
-export type Emu = string;
-/**
  * This interface was referenced by `TextEditCommand`'s JSON-Schema
  * via the `definition` "Digest".
  */
 export type Digest = string;
+/**
+ * This interface was referenced by `TextEditCommand`'s JSON-Schema
+ * via the `definition` "CellId".
+ */
+export type CellId = string;
 /**
  * This interface was referenced by `TextEditCommand`'s JSON-Schema
  * via the `definition` "DocumentId".
@@ -152,14 +193,185 @@ export type OperationId = string;
  * via the `definition` "RequestId".
  */
 export type RequestId = string;
+/**
+ * This interface was referenced by `TextEditCommand`'s JSON-Schema
+ * via the `definition` "Inherited6".
+ */
+export type Inherited6 =
+  | {
+      kind: "inherit";
+    }
+  | {
+      kind: "value";
+      value: Alignment;
+    };
+/**
+ * This interface was referenced by `TextEditCommand`'s JSON-Schema
+ * via the `definition` "Inherited7".
+ */
+export type Inherited7 =
+  | {
+      kind: "inherit";
+    }
+  | {
+      kind: "value";
+      value: TextDirection;
+    };
 
 export interface TextEditCommand {
   action: TextEditAction;
   baseRevision: Digest;
+  /**
+   * Required for an authored table cell; absent for shape text. Never a
+   * physical row/column ordinal. Omission preserves existing command hashes.
+   */
+  cell?: CellId | null;
   documentId: DocumentId;
   object: ObjectId;
   operationId: OperationId;
   requestId: RequestId;
+}
+/**
+ * This interface was referenced by `TextEditCommand`'s JSON-Schema
+ * via the `definition` "TextBodySetup".
+ */
+export interface TextBodySetup {
+  defaultRunStyle: CharacterStyle;
+  insets: Insets;
+  overflow: OverflowPolicy;
+  paragraphStyle: ParagraphStyle;
+  style: CharacterStyle;
+  wrap: boolean;
+}
+/**
+ * This interface was referenced by `TextEditCommand`'s JSON-Schema
+ * via the `definition` "CharacterStyle".
+ */
+export interface CharacterStyle {
+  bold?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: boolean;
+      };
+  color?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Color;
+      };
+  font?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: FontId;
+      };
+  italic?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: boolean;
+      };
+  language?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: string;
+      };
+  size?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Emu;
+      };
+  underline?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: boolean;
+      };
+}
+/**
+ * This interface was referenced by `TextEditCommand`'s JSON-Schema
+ * via the `definition` "Rgba".
+ */
+export interface Rgba {
+  alpha: number;
+  blue: number;
+  green: number;
+  red: number;
+}
+/**
+ * This interface was referenced by `TextEditCommand`'s JSON-Schema
+ * via the `definition` "Insets".
+ */
+export interface Insets {
+  bottom: Emu;
+  left: Emu;
+  right: Emu;
+  top: Emu;
+}
+/**
+ * This interface was referenced by `TextEditCommand`'s JSON-Schema
+ * via the `definition` "ParagraphStyle".
+ */
+export interface ParagraphStyle {
+  alignment?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Alignment;
+      };
+  direction?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: TextDirection;
+      };
+  /**
+   * Relative to the paragraph margin; negative values create a hanging indent.
+   */
+  indent?: Emu | null;
+  leftMargin?: Emu | null;
+  /**
+   * Omitted values retain native inheritance and historical document digests.
+   */
+  lineSpacing?: ParagraphLineSpacing | null;
+  rightMargin?: Emu | null;
+  spaceAfter?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Emu;
+      };
+  spaceBefore?:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "value";
+        value: Emu;
+      };
 }
 /**
  * This interface was referenced by `TextEditCommand`'s JSON-Schema
@@ -193,14 +405,4 @@ export interface CharacterStylePatch {
   language?: Inherited5 | null;
   size?: Inherited2 | null;
   underline?: Inherited4 | null;
-}
-/**
- * This interface was referenced by `TextEditCommand`'s JSON-Schema
- * via the `definition` "Rgba".
- */
-export interface Rgba {
-  alpha: number;
-  blue: number;
-  green: number;
-  red: number;
 }

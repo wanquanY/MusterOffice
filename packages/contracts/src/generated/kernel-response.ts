@@ -1337,6 +1337,7 @@ export interface TextRangeChange {
   afterParagraphs: ParagraphId[];
   before: TextSelection;
   beforeParagraphs: ParagraphId[];
+  cell?: CellId | null;
   object: ObjectId;
 }
 export interface TextSelection {

@@ -23,6 +23,12 @@ export type ParagraphId = string;
 
 /**
  * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "CellId".
+ */
+export type CellId = string;
+
+/**
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
  * via the `definition` "ObjectId".
  */
 export type ObjectId = string;
@@ -236,12 +242,6 @@ export type ObjectContent =
  * via the `definition` "ColumnId".
  */
 export type ColumnId = string;
-
-/**
- * This interface was referenced by `TextEditCandidate`'s JSON-Schema
- * via the `definition` "CellId".
- */
-export type CellId = string;
 
 /**
  * This interface was referenced by `TextEditCandidate`'s JSON-Schema
@@ -1109,6 +1109,7 @@ export interface TextRangeChange {
   afterParagraphs: ParagraphId[];
   before: TextSelection;
   beforeParagraphs: ParagraphId[];
+  cell?: CellId | null;
   object: ObjectId;
 }
 

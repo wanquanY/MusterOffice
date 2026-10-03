@@ -5,6 +5,8 @@ mod navigation;
 mod navigation_tests;
 mod query;
 #[cfg(test)]
+mod tab_tests;
+#[cfg(test)]
 mod tests;
 mod types;
 use crate::{TextError, backend::TextBackend, cancelled};

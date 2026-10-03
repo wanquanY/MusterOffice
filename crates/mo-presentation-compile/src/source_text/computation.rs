@@ -60,6 +60,11 @@ pub(crate) fn paragraph(
             return Ok(Err(issue));
         }
         let text = segment.text;
+        if text.contains('\t')
+            && let Some(issue) = style::audit_tab(segment.style, paragraph, i as u32)
+        {
+            return Ok(Err(issue));
+        }
         if plan.text.len().saturating_add(text.len()) > 262_144 {
             return Err(SourceTextError::Limit("source paragraph bytes"));
         }

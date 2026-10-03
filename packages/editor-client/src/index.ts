@@ -11,6 +11,8 @@ import type { ParagraphInteractionResponse } from '../../contracts/src/generated
 import type { ShapingPort } from '../../playback-client/src/ports.js';
 
 export type { Document, SnapshotRecord, Transaction, HistoryTransaction, TextEditCommand, KernelError };
+export type {TextEditAction, TextBodySetup, TextSelection} from '../../contracts/src/generated/kernel-request.js';
+export type {TextRangeChange} from '../../contracts/src/generated/kernel-response.js';
 export type PreparedEdit = Extract<KernelResponse, { status: 'prepared' }>;
 export type PreparedTextEdit = Extract<KernelResponse, { status: 'textPrepared' }>['result'];
 export type PagePlacements = Extract<PagePlacementResponse, { status: 'evaluated' }>['result'];

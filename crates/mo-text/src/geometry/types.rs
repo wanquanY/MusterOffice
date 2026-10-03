@@ -68,6 +68,8 @@ pub enum LineSpacing {
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct LineGeometryRequest {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tabs: Option<super::LeftTabStops>,
     pub shaping: LineShapeRequest,
     /// One geometry style for each paragraph shaping style.
     pub styles: Vec<GeometryStyle>,

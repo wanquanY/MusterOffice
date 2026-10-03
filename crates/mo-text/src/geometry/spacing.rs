@@ -3,7 +3,7 @@ use mo_geometry::Fixed;
 
 /// Shared logical-line style selection, independent of glyph visibility, font
 /// outlines and paragraph boundary placement. Non-text controls do not enlarge
-/// a line's text size; empty/control-only lines use the explicit strut style.
+/// a line's text size; tabs do participate; empty/control-only lines use the strut.
 pub fn line_style_maximum(
     shaped: &LineShapeResult,
     line: u32,
@@ -17,7 +17,10 @@ pub fn line_style_maximum(
         .get(line.item_start as usize..line.item_end as usize)
         .ok_or_else(invalid)?;
     let mut selected = None;
-    for item in items.iter().filter(|i| i.kind == TextItemKind::Text) {
+    for item in items
+        .iter()
+        .filter(|i| matches!(i.kind, TextItemKind::Text | TextItemKind::Tab))
+    {
         let value = *values.get(item.style as usize).ok_or_else(invalid)?;
         selected = Some(selected.map_or(value, |v: Fixed| v.max(value)));
     }

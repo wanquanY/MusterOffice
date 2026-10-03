@@ -652,3 +652,63 @@ fn no_wrap_keeps_native_text_and_actual_alignment_with_explicit_breaks() {
         );
     }
 }
+
+#[test]
+fn unsupported_native_tab_semantics_fail_before_component_work() {
+    let fonts = author();
+    let manifest = PreparedManifest::load(
+        &fonts.manifest,
+        include_bytes!("../../../fixtures/fonts/owned.ttf"),
+        Default::default(),
+        &|| false,
+    )
+    .unwrap();
+    for properties in [
+        "<a:pPr defTabSz=\"0\"/>",
+        "<a:pPr rtl=\"1\"/>",
+        "<a:pPr algn=\"ctr\"/>",
+        "<a:pPr><a:tabLst><a:tab pos=\"900000\" algn=\"ctr\"/></a:tabLst></a:pPr>",
+        "<a:pPr><a:tabLst><a:tab pos=\"900000\" algn=\"r\"/></a:tabLst></a:pPr>",
+        "<a:pPr><a:tabLst><a:tab pos=\"900000\" algn=\"dec\"/></a:tabLst></a:pPr>",
+        "<a:pPr><a:tabLst><a:tab pos=\"900000\"/></a:tabLst></a:pPr>",
+        "<a:pPr><a:tabLst><a:tab pos=\"900000\" algn=\"l\"/><a:tab pos=\"800000\" algn=\"l\"/></a:tabLst></a:pPr>",
+    ] {
+        let i = read(&fixture(
+            &format!("<a:p>{properties}<a:r><a:t>A\tA</a:t></a:r></a:p>"),
+            "",
+        ));
+        let mut backend = Counting::default();
+        assert!(
+            compile(
+                &i,
+                &request(&i),
+                &manifest,
+                &mut backend,
+                Default::default(),
+                &|| false
+            )
+            .is_err(),
+            "{properties}"
+        );
+        assert_eq!(backend.calls, 0);
+    }
+    for property in ["u=\"sng\"", "strike=\"sngStrike\""] {
+        let i = read(&fixture(
+            &format!("<a:p><a:r><a:rPr {property}/><a:t>A\tA</a:t></a:r></a:p>"),
+            "",
+        ));
+        let mut backend = Counting::default();
+        assert!(
+            compile(
+                &i,
+                &request(&i),
+                &manifest,
+                &mut backend,
+                Default::default(),
+                &|| false
+            )
+            .is_err()
+        );
+        assert_eq!(backend.calls, 0);
+    }
+}

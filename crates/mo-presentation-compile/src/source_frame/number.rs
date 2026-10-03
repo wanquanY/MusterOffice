@@ -4,7 +4,7 @@ use mo_presentation_source::source::{
     drawingml::NativeCoordinate, geometry::evaluate::EvaluatedGeometry,
 };
 
-fn coordinate(value: &NativeCoordinate) -> Result<I, SourceFrameError> {
+pub(super) fn coordinate(value: &NativeCoordinate) -> Result<I, SourceFrameError> {
     crate::source_number::coordinate_interval(value).map_err(|e| match e {
         crate::source_number::PercentageError::LexicalLimit => {
             SourceFrameError::Limit("frame coordinate lexical bytes")

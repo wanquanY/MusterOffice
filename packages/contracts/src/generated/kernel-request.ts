@@ -637,6 +637,11 @@ export type RequestId = string;
 export type HistoryDirection = "undo" | "redo";
 export type TextEditAction =
   | {
+      kind: "initialize";
+      setup: TextBodySetup;
+      text: string;
+    }
+  | {
       kind: "replace";
       selection: TextSelection;
       text: string;
@@ -1391,10 +1396,23 @@ export interface HistoryTransaction {
 export interface TextEditCommand {
   action: TextEditAction;
   baseRevision: Digest;
+  /**
+   * Required for an authored table cell; absent for shape text. Never a
+   * physical row/column ordinal. Omission preserves existing command hashes.
+   */
+  cell?: CellId | null;
   documentId: DocumentId;
   object: ObjectId;
   operationId: OperationId;
   requestId: RequestId;
+}
+export interface TextBodySetup {
+  defaultRunStyle: CharacterStyle;
+  insets: Insets;
+  overflow: OverflowPolicy;
+  paragraphStyle: ParagraphStyle;
+  style: CharacterStyle;
+  wrap: boolean;
 }
 export interface TextSelection {
   anchor: TextAnchor;

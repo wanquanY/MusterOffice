@@ -3,6 +3,27 @@ use mo_common::Emu;
 use mo_presentation_source::source::text::{cascade::*, fonts::*, *};
 use mo_text::{ShapeFeature, geometry::GeometryStyle};
 
+/// Tab advances have no glyph outline. Until the paint compiler consumes those
+/// advances as decoration spans, do not silently drop their underline/strike.
+pub(super) fn audit_tab(
+    style: &CascadedCharacterStyle,
+    paragraph: u32,
+    run: u32,
+) -> Option<SourceTextIssue> {
+    let property = if style.attributes.underline != Some(NativeTextUnderline::None) {
+        CharacterProperty::Underline
+    } else if style.attributes.strike != Some(NativeTextStrike::NoStrike) {
+        CharacterProperty::Strike
+    } else {
+        return None;
+    };
+    Some(SourceTextIssue::CharacterProperty {
+        paragraph,
+        run: Some(run),
+        property,
+    })
+}
+
 pub(super) fn audit(
     style: &CascadedCharacterStyle,
     paragraph: u32,

@@ -8,6 +8,7 @@ fn q(text: &str) -> ParagraphPathsRequest {
     let g = request(text);
     ParagraphPathsRequest {
         layout: flow::ParagraphLayoutRequest {
+            tabs: None,
             paragraph: g.shaping.paragraph,
             styles: vec![geometry::GeometryStyle {
                 cluster_spacing: mo_geometry::Fixed::ZERO,

@@ -312,6 +312,9 @@ export type CaretPlacement =
       kind: "glyphEdges";
     }
   | {
+      kind: "tabEdges";
+    }
+  | {
       kind: "fontLigature";
     }
   | {

@@ -6,6 +6,7 @@ use sha2::{Digest as _, Sha256};
 pub(crate) const FONT: &[u8] = include_bytes!("../../../../fixtures/fonts/owned.ttf");
 pub(crate) fn request(text: &str) -> LineGeometryRequest {
     LineGeometryRequest {
+        tabs: None,
         shaping: lines::LineShapeRequest {
             paragraph: ParagraphShapeRequest {
                 text: text.into(),

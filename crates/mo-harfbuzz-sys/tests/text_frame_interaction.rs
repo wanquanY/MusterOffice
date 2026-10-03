@@ -403,3 +403,52 @@ fn frame_navigation_rejects_invalid_sticky_coordinates_limits_and_cancellation()
         Err(SourceFrameError::Limit("frame interaction query work"))
     ));
 }
+
+#[test]
+fn native_tabs_reuse_exact_rendering_origins_and_source_selection_ranges() {
+    for (properties, expected) in [
+        (
+            "<a:pPr marL=\"11000\" indent=\"9000\"/>",
+            vec![914400 - 9000],
+        ),
+        (
+            "<a:pPr marL=\"11000\" indent=\"9000\" defTabSz=\"1000000\"><a:tabLst><a:tab pos=\"700000\" algn=\"l\"/></a:tabLst></a:pPr>",
+            vec![700000 - 9000],
+        ),
+    ] {
+        let s = shape(42, 100000, 100000, "", &colored("A\tA", "123456"))
+            .replace("cx=\"1000000\"", "cx=\"3000000\"")
+            .replace("<a:p>", &format!("<a:p>{properties}"));
+        let e = editor(&s, Default::default());
+        let p = &e.frame().paragraphs[0];
+        let map = &e.paragraphs()[0];
+        assert_eq!(
+            map.cells[1].placement,
+            mo_text::interaction::CaretPlacement::TabEdges
+        );
+        assert_eq!(map.cells[1].trailing.x, f(expected[0]));
+        let origin = p.line_offsets[0]
+            .x
+            .checked_add(map.cells[1].trailing.x)
+            .unwrap();
+        // The second A has zero GPOS x offset in the owned font.
+        assert_eq!(e.frame().glyphs[1].origin.x, origin);
+        let query = e
+            .query(
+                &[FrameTextQuery::Selection {
+                    anchor: position(0, 1),
+                    focus: position(0, 2),
+                }],
+                &|| false,
+            )
+            .unwrap();
+        let FrameTextQueryResult::Selection { fragments, .. } = &query[0] else {
+            panic!()
+        };
+        assert_eq!(fragments.len(), 1);
+        assert_eq!(
+            fragments[0].fragment.kind,
+            mo_text::itemize::TextItemKind::Tab
+        );
+    }
+}

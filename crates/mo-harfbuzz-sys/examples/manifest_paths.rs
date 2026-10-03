@@ -40,6 +40,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         for width in [100_000, 200_000] {
             let request = ParagraphPathsRequest {
                 layout: ParagraphLayoutRequest {
+                    tabs: None,
                     paragraph: ParagraphShapeRequest {
                         text: text.into(),
                         direction: fixture.direction,

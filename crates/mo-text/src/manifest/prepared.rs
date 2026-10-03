@@ -42,6 +42,7 @@ pub struct ManifestLayoutInput<'a> {
 }
 #[derive(Clone)]
 pub struct ManifestFlowInput<'a> {
+    pub tabs: Option<&'a crate::geometry::LeftTabStops>,
     pub paragraph: ManifestParagraphInput<'a>,
     pub styles: &'a [GeometryStyle],
     pub strut_style: u32,
@@ -217,6 +218,7 @@ impl<'m, 'font> PreparedManifest<'m, 'font> {
             check,
         )?;
         let flow = flow::FlowInput {
+            tabs: input.tabs,
             paragraph: &paragraph,
             styles: input.styles,
             strut_style: input.strut_style,
@@ -278,6 +280,7 @@ impl<'m, 'font> PreparedManifest<'m, 'font> {
         )?;
         let interaction = crate::interaction::paragraph_using(
             &flow::FlowInput {
+                tabs: input.tabs,
                 paragraph: &paragraph,
                 styles: input.styles,
                 strut_style: input.strut_style,
@@ -336,6 +339,7 @@ impl<'m, 'font> PreparedManifest<'m, 'font> {
         )?;
         Ok((
             ParagraphLayoutRequest {
+                tabs: None,
                 paragraph,
                 styles: input.styles.to_vec(),
                 strut_style: input.strut_style,

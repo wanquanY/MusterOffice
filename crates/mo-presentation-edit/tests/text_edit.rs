@@ -49,6 +49,7 @@ fn command(base: &Snapshot, action: TextEditAction) -> TextEditCommand {
         request_id: RequestId::new("text:1").unwrap(),
         operation_id: OperationId::new("text-op:1").unwrap(),
         object: id(),
+        cell: None,
         action,
     }
 }

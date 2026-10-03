@@ -75,6 +75,7 @@ export interface LineGeometryRequest {
    * One geometry style for each paragraph shaping style.
    */
   styles: GeometryStyle[];
+  tabs?: LeftTabStops | null;
 }
 /**
  * This interface was referenced by `LineGeometryRequest`'s JSON-Schema
@@ -180,4 +181,23 @@ export interface GeometryStyle {
    */
   clusterSpacing?: string;
   fontSize: Emu;
+}
+/**
+ * This interface was referenced by `LineGeometryRequest`'s JSON-Schema
+ * via the `definition` "LeftTabStops".
+ */
+export interface LeftTabStops {
+  continuationOffset: FixedQ32;
+  /**
+   * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
+   */
+  firstLineOffset: string;
+  /**
+   * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
+   */
+  interval: string;
+  /**
+   * Strictly increasing positions relative to the paragraph's left margin.
+   */
+  stops: FixedQ32[];
 }

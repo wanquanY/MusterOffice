@@ -111,14 +111,18 @@ impl Search<'_, '_> {
             check,
         )?;
         let terminal = hanging::terminal(self.q, &plan, self.segmentation);
-        let bounds = geometry::order::pen_bounds(
+        let bounds = geometry::order::place_line(
             &fallback,
             &order,
             terminal
                 .as_ref()
                 .map(|(from, to)| from.scalar_offset..to.scalar_offset),
+            self.q.tabs,
+            start,
+            false,
             check,
         )?;
+        let bounds = bounds.bounds;
         let width = self.q.widths.at(start);
         let fits = bounds.min >= Position::ZERO && bounds.max <= width;
         let hanging = if !fits {
@@ -295,6 +299,7 @@ pub(crate) fn layout_flow(
         return Err(TextError::Invalid("positive paragraph width"));
     }
     let geometry_request = geometry::LineGeometryRequest {
+        tabs: q.tabs.cloned(),
         shaping: lines::LineShapeRequest {
             paragraph: q.paragraph.clone(),
             line_ends: vec![],
@@ -352,7 +357,7 @@ pub(crate) fn layout_flow(
     for (i, c) in q.paragraph.text.chars().enumerate() {
         cancelled(check)?;
         let issue = match c {
-            '\t' => Some(FlowIssue::Tab { scalar: i as u32 }),
+            '\t' if q.tabs.is_none() => Some(FlowIssue::Tab { scalar: i as u32 }),
             '\u{ad}' => Some(FlowIssue::ConditionalHyphen { scalar: i as u32 }),
             '\u{fffc}' => Some(FlowIssue::ContingentObject { scalar: i as u32 }),
             _ => None,

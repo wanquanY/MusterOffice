@@ -305,6 +305,36 @@ pub(crate) fn build(
             });
         }
     }
+    for tab in &precise.tabs {
+        cancelled(check)?;
+        let item = &geometry.shaping.items[tab.item as usize];
+        let at = boundary(&boundaries, item.start.scalar_offset)?;
+        if at + 1 >= boundaries.len() || boundaries[at + 1] != item.end || cells[at].is_some() {
+            return Err(TextError::Invalid("tab interaction boundary"));
+        }
+        let edge = |p: Point| -> Result<CaretEdge, TextError> {
+            Ok(CaretEdge {
+                x: p.x,
+                top: p.y.checked_sub(tab.ascent)?,
+                bottom: p.y.checked_add(tab.descent)?,
+            })
+        };
+        let (leading, trailing) = if item.level % 2 == 0 {
+            (edge(tab.before)?, edge(tab.after)?)
+        } else {
+            (edge(tab.after)?, edge(tab.before)?)
+        };
+        cells[at] = Some(InteractionCell {
+            start: item.start.clone(),
+            end: item.end.clone(),
+            line: tab.line,
+            level: item.level,
+            kind: item.kind,
+            leading,
+            trailing,
+            placement: CaretPlacement::TabEdges,
+        });
+    }
     let layout = precise
         .layout
         .as_ref()

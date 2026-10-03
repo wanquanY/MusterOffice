@@ -10,6 +10,7 @@ pub(super) fn q(text: &str) -> ParagraphInteractionRequest {
     g.shaping.paragraph.styles[0].max_glyphs = 4096;
     ParagraphInteractionRequest {
         layout: crate::flow::ParagraphLayoutRequest {
+            tabs: None,
             paragraph: g.shaping.paragraph,
             styles: g.styles,
             strut_style: 0,
