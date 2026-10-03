@@ -130,6 +130,14 @@
         "bottom"
       ]
     },
+    "CellId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
     "CharacterProperty": {
       "type": "string",
       "enum": [
@@ -434,6 +442,24 @@
         "surface"
       ]
     },
+    "EditorParagraphIdentity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ParagraphId"
+        },
+        "runs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EditorTextRunIdentity"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "runs"
+      ]
+    },
     "EditorParagraphInfo": {
       "type": "object",
       "properties": {
@@ -442,6 +468,17 @@
           "items": {
             "$ref": "#/$defs/TextBoundary"
           }
+        },
+        "model": {
+          "description": "Actual model identities, never inferred from XML discovery ordinals.\nNone for raw PPTX, legacy opaque text or an authored empty cell body.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EditorParagraphIdentity"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "sourceOrdinal": {
           "type": "integer",
@@ -489,6 +526,17 @@
             }
           ]
         },
+        "cellId": {
+          "description": "Authored table cell identity. Retained cells use their paragraph/run IDs.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CellId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "frame": {
           "type": "integer",
           "format": "uint32",
@@ -519,6 +567,30 @@
         "frame",
         "object",
         "paragraphs"
+      ]
+    },
+    "EditorTextRunIdentity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/RunId"
+        },
+        "scalarEnd": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "scalarStart": {
+          "description": "Half-open offsets in the same displayed paragraph, in Unicode scalars.\nThese are identities, not editing permission or grapheme boundaries.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "id",
+        "scalarStart",
+        "scalarEnd"
       ]
     },
     "EffectiveFillRect": {
@@ -3086,6 +3158,14 @@
         }
       ]
     },
+    "ParagraphId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
     "ParagraphProperty": {
       "type": "string",
       "enum": [
@@ -3854,6 +3934,14 @@
         "line",
         "edge"
       ]
+    },
+    "RunId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
     },
     "SelectionFragment": {
       "type": "object",

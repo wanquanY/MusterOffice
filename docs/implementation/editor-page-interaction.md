@@ -40,6 +40,32 @@
 Author/Retained 输出包含实际模型 ObjectId，原始 PPTX 输出保留 native part/id；合并表格的 covered cell 不生成重复编辑框。
 对象目录及设备像素 `pick` 合同见[对象拾取](editor-object-picking.md#公开会话与对象目录)，不可与页面 EMU 文字命中混用。
 
+### 段落、文本片段与单元格身份
+
+每段文字的 `model` 在已投影时包含真实 `ParagraphId` 和按原有顺序排列的 `runs`。每项携带 `RunId`、
+`scalarStart` 与 `scalarEnd`，区间半开，来自本次排版保留的 `SourceScalarRange`，不会按 UTF-16 或 XML 发现序号推算。
+元数据构建同时校验模型文字、片段种类、次序及 scalar 长度与实际计算输入一致；不一致使整个准备失败并保留旧页。
+空片段保留零长区间；样式边界可能位于组合字素内部，因此片段边界不是合法光标边界，输入仍须使用 `boundaries`。
+
+原生 `a:br` 在计算输入中使用共享定义 `NATIVE_SOFT_BREAK`（U+2028），占一个 scalar 和一个 UTF-16 单位。
+普通 `a:t` 内容保持原样；不能全局替换换行符。排版 `text` 的 UTF-8 字节位置不等于模型编辑偏移，
+产品先按返回的字素表转换到 scalar，再使用模型段落身份形成编辑命令。
+
+自建形状按当前文本框段落绑定。自建表格按实际物理行/列找到模型单元格，返回稳定 `cellId`；
+已有文字仍用段落/片段身份。没有文字模型的自建空单元格返回真实 `cellId`、`model=null`，
+不为排版合成的空段落制造 ID，初始化文字使用既有单元格事务能力。
+Retained 使用渲染过程中已确定的 `native_paragraph` 范围映射到对象的原生物理段落序列，
+不会将各单元格的局部第零段都映射到对象第一段；Retained 不具有自建 `cellId`。
+
+原始 PPTX 没有模型身份；V1/V2 保留导入 profile 的表格文字仍是未投影内容。这两类段落保持 `model=null`，
+查询不升级 profile、不创建可写模型。身份绑定只说明文字属于哪个对象，不授予编辑权限；
+原生文字保护约束和高层文字命令支持范围仍由编辑内核决定。
+
+身份验证见[执行记录](../reviews/evidence/2026-10-03-editor-text-identity.json)：27 份真实输入、752 条 Native/WASM 消息，
+包括 30 个模型段落、29 个片段身份、6 个自建单元格和 29 个明确未投影段落。缩放、清理和重新准备保留正确身份。
+旧文字导航的 18 份样本、679 条消息及 3,120 次移动查询继续通过。上述检查不替代从产品输入到正式保存的验收；
+公开文稿页映射/准备身份发现、高层表格与保留文字命令、共享编辑器和固定 SDK 接入仍须完成。
+
 Native Worker 使用 `--editor-page-session`，请求头为三个 LE u32（JSON、材料、字体长度），随后三个字节通道；
 回复头为两个 LE u32（JSON、RGBA 长度），随后两段内容。请求 32 MiB、材料/字体各 128 MiB；已有包、图片和渲染预算继续适用。
 WASM `EditorPageSession` 使用同一个 Rust owner；`PresentationEditorPage` 是同步薄接口，应在宿主 Worker 内调用。

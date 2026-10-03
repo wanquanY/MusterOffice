@@ -33,6 +33,9 @@ export type ObjectId = string;
 export type SurfaceKind = "slide" | "master" | "layout";
 export type SourcePageProfile = "drawingml-static-solid-page-v1-draft";
 export type Digest = string;
+export type CellId = string;
+export type ParagraphId = string;
+export type RunId = string;
 export type PageTextQueryResult =
   | {
       caret: PageCaret;
@@ -1439,6 +1442,10 @@ export interface SourcePageLayer {
 }
 export interface EditorTextFrameInfo {
   cell?: SourceCellAddress | null;
+  /**
+   * Authored table cell identity. Retained cells use their paragraph/run IDs.
+   */
+  cellId?: CellId | null;
   frame: number;
   object: SourceObjectRef;
   /**
@@ -1453,6 +1460,11 @@ export interface SourceCellAddress {
 }
 export interface EditorParagraphInfo {
   boundaries: TextBoundary[];
+  /**
+   * Actual model identities, never inferred from XML discovery ordinals.
+   * None for raw PPTX, legacy opaque text or an authored empty cell body.
+   */
+  model?: EditorParagraphIdentity | null;
   sourceOrdinal: number;
   text: string;
 }
@@ -1460,6 +1472,19 @@ export interface TextBoundary {
   scalarOffset: number;
   utf16Offset: number;
   utf8Offset: number;
+}
+export interface EditorParagraphIdentity {
+  id: ParagraphId;
+  runs: EditorTextRunIdentity[];
+}
+export interface EditorTextRunIdentity {
+  id: RunId;
+  scalarEnd: number;
+  /**
+   * Half-open offsets in the same displayed paragraph, in Unicode scalars.
+   * These are identities, not editing permission or grapheme boundaries.
+   */
+  scalarStart: number;
 }
 export interface FrameWork {
   componentCalls: number;

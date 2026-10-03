@@ -164,36 +164,90 @@ fn editor(
             .unwrap(),
         )
         .unwrap();
+        if index
+            .surfaces
+            .values()
+            .any(|s| s.objects.iter().any(|o| o.table.is_some()))
+        {
+            use mo_presentation_model::{ObjectContent, SourceBindingProfile};
+            for (version, profile) in [
+                (1, SourceBindingProfile::PresentationmlRetainedFieldsV1),
+                (2, SourceBindingProfile::PresentationmlRetainedFieldsV2),
+            ] {
+                let mut legacy = changed.clone();
+                legacy.source_bindings.as_mut().unwrap().profile = profile;
+                if version == 1 {
+                    legacy.title.clear();
+                }
+                for (id, o) in &mut legacy.objects {
+                    o.accessibility = Default::default();
+                    let native = legacy
+                        .source_bindings
+                        .as_mut()
+                        .unwrap()
+                        .objects
+                        .get_mut(id)
+                        .unwrap();
+                    let source = index.surfaces[&native.part]
+                        .objects
+                        .iter()
+                        .find(|o| o.native_id == native.native_id)
+                        .unwrap();
+                    if source.table.is_some() {
+                        let ObjectContent::RetainedSource { paragraphs, .. } = &mut o.content
+                        else {
+                            panic!()
+                        };
+                        paragraphs.clear();
+                        native.runs.clear();
+                    }
+                }
+                let plan = mo_pptx::source::document::SourcePlan::new(
+                    &legacy,
+                    &package,
+                    Default::default(),
+                    &|| false,
+                )
+                .unwrap();
+                let mut page = q.clone();
+                page.expected_source_sha256 = plan.identity().clone();
+                std::fs::write(dir.join(format!("{name}-legacy-v{version}.pptx")), bytes).unwrap();
+                std::fs::write(dir.join(format!("{name}-legacy-v{version}.json")),serde_json::to_vec_pretty(&serde_json::json!({
+                    "operation":"prepare","request":{"input":{"kind":"retained","document":legacy},"fonts":fonts,
+                    "page":{"page":page,"imageSource":"embeddedSnapshot","sampling":"nearest"}}
+                })).unwrap()).unwrap();
+            }
+        }
     }
     Ok(result)
 }
 
+fn original_text(v: &mut serde_json::Value) {
+    match v {
+        serde_json::Value::Object(fields) => {
+            for (key, value) in fields {
+                if key == "text" && value.is_string() {
+                    *value = serde_json::json!("AAA");
+                } else {
+                    original_text(value);
+                }
+            }
+        }
+        serde_json::Value::Array(values) => {
+            for value in values {
+                original_text(value);
+            }
+        }
+        serde_json::Value::String(s) if s == "Arial" => *s = FONT.into(),
+        _ => (),
+    }
+}
 #[test]
 fn emit_authored_page_fixture_with_native_model_object_identity() {
     let mut input: serde_json::Value = serde_json::from_str(include_str!(
         "../../../fixtures/presentations/native-export/request.json"
     ))
     .unwrap();
-    fn original_text(v: &mut serde_json::Value) {
-        match v {
-            serde_json::Value::Object(fields) => {
-                for (key, value) in fields {
-                    if key == "text" && value.is_string() {
-                        *value = serde_json::json!("AAA");
-                    } else {
-                        original_text(value);
-                    }
-                }
-            }
-            serde_json::Value::Array(values) => {
-                for value in values {
-                    original_text(value);
-                }
-            }
-            serde_json::Value::String(s) if s == "Arial" => *s = FONT.into(),
-            _ => (),
-        }
-    }
     original_text(&mut input);
     let document = serde_json::from_value(input["document"].clone()).unwrap();
     let defaults = serde_json::from_value(input["defaults"].clone()).unwrap();
@@ -228,6 +282,82 @@ fn emit_authored_page_fixture_with_native_model_object_identity() {
                 }
             })).unwrap()).unwrap();
         }
+    }
+}
+
+#[test]
+fn emit_authored_table_with_physical_and_empty_cell_identity() {
+    use mo_presentation_model::{Document, Inherited, ObjectContent, Stroke, TableCellBorders};
+    let mut input: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../fixtures/presentations/native-tables/request.json"
+    ))
+    .unwrap();
+    original_text(&mut input);
+    let mut document: Document = serde_json::from_value(input["document"].clone()).unwrap();
+    let defaults = serde_json::from_value(input["defaults"].clone()).unwrap();
+    {
+        // The source fixture deliberately has conflicting shared borders.
+        // Preserve that rejection before probing a separate agreeing table.
+        let plan =
+            mo_pptx::AuthorPlan::new(&document, &defaults, Default::default(), &|| false).unwrap();
+        let images =
+            mo_pptx::source::images::AuthorImages::new(&plan, &mo_pptx::NoResources, &|| false)
+                .unwrap();
+        let fonts = fonts();
+        let manifest =
+            PreparedManifest::load(&fonts, FONT_BYTES, Default::default(), &|| false).unwrap();
+        let mut q = request(plan.declarations());
+        q.viewport.width = 400;
+        q.viewport.height = 225;
+        q.viewport.scale.denominator = 30480;
+        let result = source_editor_page::prepare(
+            &images,
+            plan.declarations(),
+            &q,
+            &mut NativeRaster,
+            TextPageContext {
+                manifest: &manifest,
+                backend: &mut NativeShaper::default(),
+            },
+            EditorPageOptions {
+                resources: options(),
+                interaction: Default::default(),
+            },
+            &|| false,
+        );
+        let Err(error) = result else {
+            panic!("conflicting table borders must remain a diagnostic");
+        };
+        assert!(error.to_string().contains("TableBorderConflict"), "{error}");
+    }
+    for object in document.objects.values_mut() {
+        if let ObjectContent::Table { table } = &mut object.content {
+            for cell in table.rows.iter_mut().flat_map(|r| &mut r.cells) {
+                cell.style.borders = TableCellBorders {
+                    left: Inherited::Value(Stroke::None {}),
+                    right: Inherited::Value(Stroke::None {}),
+                    top: Inherited::Value(Stroke::None {}),
+                    bottom: Inherited::Value(Stroke::None {}),
+                    top_left_to_bottom_right: Inherited::Value(Stroke::None {}),
+                    bottom_left_to_top_right: Inherited::Value(Stroke::None {}),
+                };
+            }
+        }
+    }
+    let plan =
+        mo_pptx::AuthorPlan::new(&document, &defaults, Default::default(), &|| false).unwrap();
+    if let Some(dir) = std::env::var_os("MO_EDITOR_PAGE_FIXTURES") {
+        let dir = std::path::PathBuf::from(dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        let mut q = request(plan.declarations());
+        q.viewport.width = 400;
+        q.viewport.height = 225;
+        q.viewport.scale.denominator = 30480;
+        std::fs::write(dir.join("author-table.pptx"), []).unwrap();
+        std::fs::write(dir.join("author-table.json"),serde_json::to_vec_pretty(&serde_json::json!({
+            "operation":"prepare","request":{"input":{"kind":"author","document":document,"defaults":defaults,"resources":[]},
+            "fonts":fonts(),"page":{"page":q,"imageSource":"embeddedSnapshot","sampling":"nearest"}}
+        })).unwrap()).unwrap();
     }
 }
 fn mapped(page: &SourceEditorPage, frame: usize, point: Point) -> Point {

@@ -2,6 +2,7 @@
 //! only a complete raster; subsequent queries borrow its original interaction.
 mod catalog;
 mod prepare;
+mod text_identity;
 mod types;
 use crate::{PptxPageFailureCode, PptxResourcePageFailure, pptx_resource_page::request_failure};
 use mo_common::Digest;

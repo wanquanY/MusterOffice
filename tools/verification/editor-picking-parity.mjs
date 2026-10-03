@@ -75,6 +75,33 @@ function checkHits(results,queries,info){
   }
  }
 }
+function textIdentities(info,input){
+ const seen=new Set();let paragraphs=0,runs=0,unprojected=0,cells=0;
+ for(const frame of info.textFrames){
+  const content=input.document?.objects[frame.objectId]?.content;
+  const cell=content?.kind==='table'?content.table.rows[frame.cell.row].cells[frame.cell.column]:null;
+  assert.equal(frame.cellId,cell?.id??null);if(cell)cells++;
+  const opaque=input.kind==='pptx'||(frame.cell&&input.kind==='retained'&&
+   ['presentationml-retained-fields-v1-draft','presentationml-retained-fields-v2-draft'].includes(input.document.sourceBindings.profile))||
+   (cell&&!cell.text);
+  const authored=content?.kind==='shape'?content.text:cell?.text;
+  for(const [i,p] of frame.paragraphs.entries()){
+   if(opaque){assert.equal(p.model,null);unprojected++;continue;}
+   assert.ok(p.model);assert.equal(seen.has(p.model.id),false);seen.add(p.model.id);paragraphs++;
+   const model=authored?authored.paragraphs[i]:content.paragraphs.find(p2=>p2.id===p.model.id);
+   assert.ok(model);assert.equal(model.id,p.model.id);assert.equal(model.runs.length,p.model.runs.length);
+   let offset=0,plain='';
+   for(const [j,r] of model.runs.entries()){
+    const value=authored?(r.content.kind==='break'?'\u2028':r.content.kind==='tab'?'\t':r.content.text):(r.kind==='break'?'\u2028':r.text);
+    const end=offset+[...value].length;
+    assert.deepEqual(p.model.runs[j],{id:r.id,scalarStart:offset,scalarEnd:end});
+    offset=end;plain+=value;runs++;
+   }
+   assert.equal(plain,p.text);assert.equal(p.boundaries.at(-1).scalarOffset,offset);
+  }
+ }
+ return {paragraphs,runs,unprojected,cells};
+}
 const cases=[];const coverage={kinds:new Set(),surfaces:new Set(),groupParents:0,textHits:0,nearbyHits:0,truncated:0,emptyTextPages:0};
 for(const name of readdirSync(join(root,'fixtures')).filter(n=>n.endsWith('.json')).sort()){
  const request=JSON.parse(readFileSync(join(root,'fixtures',name)));
@@ -89,6 +116,7 @@ for(const name of readdirSync(join(root,'fixtures')).filter(n=>n.endsWith('.json
  }
  try{
   const prepared=run(request,'prepared',material,fonts),{view,info}=prepared;catalog(info,request.request.input);
+  const identities=textIdentities(info,request.request.input);
   for(const o of info.objects){coverage.kinds.add(o.kind);coverage.surfaces.add(o.surface);if(o.parent!==null)coverage.groupParents++;}
   if(!info.textFrames.length)coverage.emptyTextPages++;
   const pick=(queries,hash=view)=>({operation:'pick',view:hash,queries});
@@ -141,6 +169,7 @@ for(const name of readdirSync(join(root,'fixtures')).filter(n=>n.endsWith('.json
   const resized=structuredClone(request),v=resized.request.page.page.viewport;
   v.scale.denominator*=2;v.width=Math.ceil(v.width/2);v.height=Math.ceil(v.height/2);
   const replacement=run(resized,'prepared',material,fonts);assert.notEqual(replacement.view,view);catalog(replacement.info,request.request.input);
+  assert.deepEqual(replacement.info.textFrames,info.textFrames,'viewport changes preserve native/model paragraph, run and cell identities');
   assert.equal(run(pick([queries[0]]),'error').error.error.code,'SOURCE_CONFLICT');
   run(pick([queries[0]],replacement.view));
   run({operation:'clear',view:replacement.view},'cleared');run(pick([queries[0]],replacement.view),'error');
@@ -171,7 +200,7 @@ for(const name of readdirSync(join(root,'fixtures')).filter(n=>n.endsWith('.json
    }
   }finally{client.close();client.close();assert.equal(client.closed,true);}
   cases.push({name,input:request.request.input.kind,materialSha256:sha(material),requestSha256:sha(JSON.stringify(request)),view,
-   objects:info.objects.length,frames:info.textFrames.length,pickingQueries:queries.length,nativeWasmMessages:expected.length,
+   objects:info.objects.length,frames:info.textFrames.length,textIdentities:identities,pickingQueries:queries.length,nativeWasmMessages:expected.length,
    pixelsSha256:sha(expected[0].pixels),responseSha256:sha(expected.map(r=>r.metadata).join('\n'))});
   console.log(`PASS ${name} (${info.objects.length} objects, ${queries.length} pick samples, ${expected.length} messages)`);
  }finally{owner.free();}

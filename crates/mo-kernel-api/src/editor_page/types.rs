@@ -1,4 +1,4 @@
-use mo_common::{Digest, ObjectId};
+use mo_common::{CellId, Digest, ObjectId, ParagraphId, RunId};
 use mo_pptx::{
     ExportDefaults,
     source::{SourceObjectKind, SourceObjectRef, SurfaceKind, table::SourceCellAddress},
@@ -61,6 +61,24 @@ pub struct EditorParagraphInfo {
     pub text: String,
     pub source_ordinal: u32,
     pub boundaries: Vec<TextBoundary>,
+    /// Actual model identities, never inferred from XML discovery ordinals.
+    /// None for raw PPTX, legacy opaque text or an authored empty cell body.
+    pub model: Option<EditorParagraphIdentity>,
+}
+#[derive(Debug, Clone, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct EditorParagraphIdentity {
+    pub id: ParagraphId,
+    pub runs: Vec<EditorTextRunIdentity>,
+}
+#[derive(Debug, Clone, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct EditorTextRunIdentity {
+    pub id: RunId,
+    /// Half-open offsets in the same displayed paragraph, in Unicode scalars.
+    /// These are identities, not editing permission or grapheme boundaries.
+    pub scalar_start: u32,
+    pub scalar_end: u32,
 }
 #[derive(Debug, Clone, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
@@ -70,6 +88,8 @@ pub struct EditorTextFrameInfo {
     /// Stable model identity for author and retained document inputs.
     pub object_id: Option<ObjectId>,
     pub cell: Option<SourceCellAddress>,
+    /// Authored table cell identity. Retained cells use their paragraph/run IDs.
+    pub cell_id: Option<CellId>,
     pub paragraphs: Vec<EditorParagraphInfo>,
 }
 #[derive(Debug, Clone, Serialize, JsonSchema)]

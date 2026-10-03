@@ -132,7 +132,7 @@ pub(super) fn prepare(
             (image, objects)
         }
     };
-    let info = info(&image.page, objects, &request.page.page.viewport, check)?;
+    let info = info(&image.page, objects, request, check)?;
     Ok((image, info))
 }
 fn model_id(id: Option<&ObjectId>) -> Result<Option<ObjectId>, PptxResourcePageFailure> {
@@ -186,11 +186,17 @@ fn render(
 fn info(
     page: &SourceEditorPage,
     objects: Vec<EditorPageObjectInfo>,
-    viewport: &mo_raster::RasterViewport,
+    request: &EditorPagePreparation,
     check: &dyn Fn() -> bool,
 ) -> Result<EditorPageInfo, PptxResourcePageFailure> {
     let plan = page.page();
     let text = plan.text.as_ref().expect("editor text context");
+    let document = match &request.input {
+        EditorPageInput::Pptx {} => None,
+        EditorPageInput::Author { document, .. } | EditorPageInput::Retained { document } => {
+            Some(document.as_ref())
+        }
+    };
     let ids: BTreeMap<_, _> = objects
         .iter()
         .map(|o| ((o.object.part.as_str(), o.object.native_id), &o.object_id))
@@ -199,34 +205,53 @@ fn info(
     for (frame, binding) in text.texts.iter().enumerate() {
         cancelled(check)?;
         let object = &binding.frame.text.object;
+        let object_id = ids
+            .get(&(object.part.as_str(), object.native_id))
+            .ok_or_else(|| {
+                failure(
+                    PptxPageFailureCode::InputInvalid,
+                    "editor text object identity",
+                )
+            })?
+            .as_ref();
+        let identity = text_identity::bind(document, object_id, binding.frame.text.cell)?;
         let mut paragraphs = Vec::with_capacity(binding.frame.inputs.len());
-        for (input, map) in binding
+        for (i, (input, map)) in binding
             .frame
             .inputs
             .iter()
             .zip(page.paragraphs(frame).expect("editor maps"))
+            .enumerate()
         {
             cancelled(check)?;
             paragraphs.push(EditorParagraphInfo {
                 text: input.text.clone(),
                 source_ordinal: input.source_ordinal,
                 boundaries: map.boundaries.clone(),
+                model: identity.paragraph(
+                    i,
+                    binding
+                        .frame
+                        .text
+                        .native_paragraph(i as u32)
+                        .ok_or_else(|| {
+                            failure(
+                                PptxPageFailureCode::InputInvalid,
+                                "editor native paragraph identity",
+                            )
+                        })? as usize,
+                    &input.text,
+                    &input.sources,
+                    check,
+                )?,
             });
         }
         frames.push(EditorTextFrameInfo {
             frame: frame as u32,
             object: object.clone(),
-            object_id: ids
-                .get(&(object.part.as_str(), object.native_id))
-                .ok_or_else(|| {
-                    failure(
-                        PptxPageFailureCode::InputInvalid,
-                        "editor text object identity",
-                    )
-                })?
-                .as_ref()
-                .cloned(),
+            object_id: object_id.cloned(),
             cell: binding.frame.text.cell,
+            cell_id: identity.cell_id().cloned(),
             paragraphs,
         });
     }
@@ -235,7 +260,7 @@ fn info(
         // The scene has already reserved part of this tolerance for upstream
         // placement. The public view describes the admitted host viewport;
         // internal remaining raster precision is not a new viewport revision.
-        viewport: viewport.clone(),
+        viewport: request.page.page.viewport.clone(),
         resources_sha256: plan.resources_sha256.clone(),
         text_work: text.text_work.clone(),
         text_frames: frames,

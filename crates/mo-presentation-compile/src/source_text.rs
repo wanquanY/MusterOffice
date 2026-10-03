@@ -16,6 +16,9 @@ pub use table::{TableTextCompiler, TableTextPreparation};
 pub use types::*;
 
 pub const PROFILE: &str = "drawingml-source-glyph-input-draft-v1";
+/// Native a:br occupies one scalar in computation and interaction text. A
+/// source a:t is never normalized to this marker or to a paragraph separator.
+pub const NATIVE_SOFT_BREAK: &str = "\u{2028}";
 
 /// Prepared plans are immutable and cannot be deserialized into executable
 /// compiler state. Source text/style origins are retained separately from the

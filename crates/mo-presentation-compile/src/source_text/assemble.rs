@@ -38,7 +38,7 @@ pub(super) fn paragraph(
             }));
         }
         let text = if native.kind == SourceRunKind::Break {
-            "\u{2028}"
+            NATIVE_SOFT_BREAK
         } else {
             native.text.as_str()
         };
