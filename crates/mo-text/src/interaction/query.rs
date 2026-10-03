@@ -144,6 +144,30 @@ impl InteractionMap {
             }
         }
         let (_, index) = best_line.ok_or(TextError::Invalid("empty interaction lines"))?;
+        self.hit_line(index, point, work, check)
+    }
+    /// Query an already selected line. Frame/page compilers choose the line
+    /// after applying native paragraph offsets, then reuse this hit policy.
+    pub fn hit_in_line(
+        &self,
+        line: u32,
+        point: Point,
+        check: &dyn Fn() -> bool,
+    ) -> Result<TextQueryResult, TextError> {
+        let index = line as usize;
+        if index >= self.lines.len() {
+            return Err(TextError::Invalid("interaction line index"));
+        }
+        self.hit_line(index, point, &mut 0, check)
+    }
+    fn hit_line(
+        &self,
+        index: usize,
+        point: Point,
+        work: &mut usize,
+        check: &dyn Fn() -> bool,
+    ) -> Result<TextQueryResult, TextError> {
+        cancelled(check)?;
         let line = &self.lines[index];
         charge(work, line.cells.len() * 2)?;
         let mut best = None;

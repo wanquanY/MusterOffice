@@ -109,6 +109,7 @@ pub(crate) fn evaluate_precise(
     bindings: &[usize],
     backend: &mut dyn backend::TextBackend,
     check: &dyn Fn() -> bool,
+    interaction: bool,
 ) -> Result<(LineGeometryResult, PrecisePlacements), TextError> {
     evaluate_impl(
         q,
@@ -117,7 +118,11 @@ pub(crate) fn evaluate_precise(
         bindings,
         backend,
         check,
-        Retention::Paths,
+        if interaction {
+            Retention::PathsAndInteraction
+        } else {
+            Retention::Paths
+        },
     )
 }
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -125,6 +130,7 @@ enum Retention {
     None,
     Paths,
     Interaction,
+    PathsAndInteraction,
 }
 pub(crate) fn evaluate_interaction(
     q: &LineGeometryRequest,
@@ -280,7 +286,10 @@ fn place(
         let mut glyphs = Vec::new();
         for &(reference, style) in &ordered.visible {
             cancelled(check)?;
-            if retain == Retention::Interaction {
+            if matches!(
+                retain,
+                Retention::Interaction | Retention::PathsAndInteraction
+            ) {
                 let metric = &measured.instances[measured.fragments
                     [reference.fallback_item as usize][reference.fragment as usize]
                     .unwrap()];
@@ -321,7 +330,7 @@ fn place(
                     .checked_sub(style.baseline_shift.position())?
                     .checked_sub(pen_y)?
                     .checked_sub(g.origin.y)?;
-                if retain == Retention::Paths {
+                if matches!(retain, Retention::Paths | Retention::PathsAndInteraction) {
                     precise.glyphs.push(PreciseGlyph {
                         line: line_index as u32,
                         source: reference,
@@ -344,7 +353,10 @@ fn place(
             x = x.checked_add(pen.position().x)?;
             pen_y = pen_y.checked_add(pen.position().y)?;
         }
-        if retain == Retention::Interaction {
+        if matches!(
+            retain,
+            Retention::Interaction | Retention::PathsAndInteraction
+        ) {
             precise.empty_line_carets.push((
                 baseline.checked_sub(strut.0)?,
                 baseline.checked_add(strut.1)?,

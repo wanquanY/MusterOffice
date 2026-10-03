@@ -7,7 +7,7 @@ use std::collections::BTreeMap;
 #[cfg(test)]
 mod tests;
 
-struct Bundle<'a>(BTreeMap<ResourceId, &'a [u8]>);
+pub(crate) struct Bundle<'a>(BTreeMap<ResourceId, &'a [u8]>);
 impl Resources for Bundle<'_> {
     fn open(&self, id: &ResourceId) -> Result<ResourceData<'_>, PptxError> {
         let bytes = self
@@ -23,18 +23,18 @@ impl Resources for Bundle<'_> {
 fn invalid(message: &'static str) -> PptxResourcePageFailure {
     request_failure(PptxPageFailureCode::InputInvalid, message.into())
 }
-fn bundle<'a>(
-    request: &AuthorResourceDocumentRequest,
+pub(crate) fn bundle<'a>(
+    ranges: &[source_resource_page::protocol::AuthorResourceRange],
     plan: &AuthorPlan<'_>,
     bytes: &'a [u8],
     check: &dyn Fn() -> bool,
 ) -> Result<Bundle<'a>, PptxResourcePageFailure> {
     let mut out = BTreeMap::new();
     let mut offset = 0u64;
-    if request.resources.len() != plan.bindings().images.len() {
+    if ranges.len() != plan.bindings().images.len() {
         return Err(invalid("author image coverage"));
     }
-    for range in &request.resources {
+    for range in ranges {
         if check() {
             return Err(page_failure(SourcePageError::Source(PptxError::Cancelled)));
         }
@@ -97,7 +97,7 @@ pub fn render_author_resource_document<E>(
         {
             return Err(page_failure(SourcePageError::SourceConflict));
         }
-        let bundle = bundle(request, &plan, resources, check)?;
+        let bundle = bundle(&request.resources, &plan, resources, check)?;
         let manifest = request
             .fonts
             .as_ref()

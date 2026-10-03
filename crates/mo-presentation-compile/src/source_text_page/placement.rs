@@ -67,7 +67,7 @@ pub(super) fn paint(
     Ok((instance, position, geometry))
 }
 
-pub(super) fn transform(
+pub(crate) fn transform(
     commands: &[PathCommand],
     origin: Point,
     uncertainty: Fixed,

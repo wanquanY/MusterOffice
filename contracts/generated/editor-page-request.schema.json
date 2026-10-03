@@ -1,0 +1,4790 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:editor-page-request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EditorPageRequest",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "const": "prepare"
+        },
+        "request": {
+          "$ref": "#/$defs/EditorPagePreparation"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "request"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "const": "query"
+        },
+        "queries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PageTextQuery"
+          }
+        },
+        "view": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "view",
+        "queries"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "const": "clear"
+        },
+        "view": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "view"
+      ]
+    }
+  ],
+  "$defs": {
+    "Accessibility": {
+      "type": "object",
+      "properties": {
+        "decorative": {
+          "type": "boolean"
+        },
+        "description": {
+          "type": "string",
+          "default": ""
+        },
+        "title": {
+          "type": "string",
+          "default": ""
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "decorative"
+      ]
+    },
+    "Affinity": {
+      "type": "string",
+      "enum": [
+        "upstream",
+        "downstream"
+      ]
+    },
+    "Alignment": {
+      "type": "string",
+      "enum": [
+        "start",
+        "center",
+        "end",
+        "justify"
+      ]
+    },
+    "Appearance": {
+      "type": "object",
+      "properties": {
+        "fill": {
+          "$ref": "#/$defs/Inherited",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "stroke": {
+          "$ref": "#/$defs/Inherited2",
+          "default": {
+            "kind": "inherit"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "AuthorResourceRange": {
+      "type": "object",
+      "properties": {
+        "byteLength": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "id": {
+          "$ref": "#/$defs/ResourceId"
+        },
+        "offset": {
+          "$ref": "#/$defs/ByteLength"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "offset",
+        "byteLength"
+      ]
+    },
+    "ByteLength": {
+      "description": "Canonical uint64 byte length. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9]"
+      },
+      "pattern": "^(0|[1-9][0-9]{0,19})$",
+      "x-integer-maximum": "18446744073709551615",
+      "x-integer-minimum": "0"
+    },
+    "CascadeFont": {
+      "description": "Explicit resource bundle bindings, not system font names or legal permissions.",
+      "type": "object",
+      "properties": {
+        "byteLength": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "expectedSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "faceIndex": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "offset": {
+          "$ref": "#/$defs/ByteLength"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "expectedSha256",
+        "faceIndex",
+        "offset",
+        "byteLength"
+      ]
+    },
+    "CellId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "CharacterStyle": {
+      "type": "object",
+      "properties": {
+        "bold": {
+          "$ref": "#/$defs/Inherited8",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "color": {
+          "$ref": "#/$defs/Inherited7",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "font": {
+          "$ref": "#/$defs/Inherited6",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "italic": {
+          "$ref": "#/$defs/Inherited8",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "language": {
+          "$ref": "#/$defs/Inherited9",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "size": {
+          "$ref": "#/$defs/Inherited5",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "underline": {
+          "$ref": "#/$defs/Inherited8",
+          "default": {
+            "kind": "inherit"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "Color": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "srgb"
+            },
+            "rgba": {
+              "$ref": "#/$defs/Rgba"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "rgba"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "theme"
+            },
+            "slot": {
+              "$ref": "#/$defs/ThemeColor"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "slot"
+          ]
+        }
+      ]
+    },
+    "ColorContext": {
+      "type": "object",
+      "properties": {
+        "placeholder": {
+          "description": "Explicit unassociated sRGB and alpha, supplied by the owning style.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "integer",
+            "format": "uint8",
+            "maximum": 255,
+            "minimum": 0
+          },
+          "maxItems": 4,
+          "minItems": 4
+        },
+        "systemColors": {
+          "type": "object",
+          "properties": {
+            "3dDkShadow": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "3dLight": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "activeBorder": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "activeCaption": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "appWorkspace": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "background": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "btnFace": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "btnHighlight": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "btnShadow": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "btnText": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "captionText": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "gradientActiveCaption": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "gradientInactiveCaption": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "grayText": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "highlight": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "highlightText": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "hotLight": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "inactiveBorder": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "inactiveCaption": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "inactiveCaptionText": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "infoBk": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "infoText": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "menu": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "menuBar": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "menuHighlight": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "menuText": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "scrollBar": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "window": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "windowFrame": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "windowText": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "systemColors"
+      ]
+    },
+    "ColumnId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ConnectorEndpoint": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "free"
+            },
+            "position": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "position"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "attached"
+            },
+            "object": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "site": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "object",
+            "site"
+          ]
+        }
+      ]
+    },
+    "ContainerDuration": {
+      "oneOf": [
+        {
+          "description": "End when every child has ended; an untriggered child keeps it unresolved.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "automatic"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "duration": {
+              "$ref": "#/$defs/RationalTime"
+            },
+            "kind": {
+              "type": "string",
+              "const": "fixed"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "duration"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "indefinite"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "ContainerId": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/SlideId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "slide"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/MasterId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "master"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/LayoutId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "layout"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "group"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ]
+        }
+      ]
+    },
+    "ContainerKind": {
+      "type": "string",
+      "enum": [
+        "parallel",
+        "sequence"
+      ]
+    },
+    "Crop": {
+      "type": "object",
+      "properties": {
+        "bottom": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "left": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "right": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "top": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "left",
+        "top",
+        "right",
+        "bottom"
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "Document": {
+      "description": "Document declarations and immutable source provenance. Revisions, compilation\ncaches, clocks and decoder state live outside this model.\nThe example is a complete editable 16:9 slide with a text shape. Coordinates\nand sizes are decimal EMU strings (12700 EMU per point). Empty theme, master,\nlayout, font and resource maps are valid; inherited text uses the caller's\nexplicit delivery defaults. Copy slides/objects with distinct IDs to expand\nthe deck. Inspect optional feature definitions only when those features are\nneeded; the example requires no system font discovery or external resources.",
+      "type": "object",
+      "properties": {
+        "fonts": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "$ref": "#/$defs/FontFace"
+            }
+          }
+        },
+        "format": {
+          "$ref": "#/$defs/ModelVersion"
+        },
+        "id": {
+          "$ref": "#/$defs/DocumentId"
+        },
+        "layouts": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "$ref": "#/$defs/Layout"
+            }
+          }
+        },
+        "masters": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "$ref": "#/$defs/Master"
+            }
+          }
+        },
+        "objects": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "$ref": "#/$defs/Object"
+            }
+          }
+        },
+        "pageSize": {
+          "$ref": "#/$defs/Size"
+        },
+        "resources": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "$ref": "#/$defs/Resource"
+            }
+          }
+        },
+        "slideOrder": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SlideId"
+          }
+        },
+        "slides": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "$ref": "#/$defs/Slide"
+            }
+          }
+        },
+        "sourceBindings": {
+          "description": "Immutable native addresses/constraints. Known fields are edited in\nobjects; this provenance never becomes a separate mutable document.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceBindings"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "themes": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "$ref": "#/$defs/Theme"
+            }
+          }
+        },
+        "timelines": {
+          "description": "Slide-owned animation graphs; empty storage preserves older author digests.",
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "$ref": "#/$defs/Timeline"
+            }
+          }
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "examples": [
+        {
+          "fonts": {},
+          "format": "musteroffice.presentation/0.1-draft",
+          "id": "document:example",
+          "layouts": {},
+          "masters": {},
+          "objects": {
+            "object:title": {
+              "accessibility": {
+                "decorative": false,
+                "description": "Editable text",
+                "title": "Title"
+              },
+              "appearance": {
+                "fill": {
+                  "kind": "value",
+                  "value": {
+                    "kind": "none"
+                  }
+                },
+                "stroke": {
+                  "kind": "value",
+                  "value": {
+                    "kind": "none"
+                  }
+                }
+              },
+              "content": {
+                "geometry": {
+                  "kind": "rectangle"
+                },
+                "kind": "shape",
+                "text": {
+                  "insets": {
+                    "bottom": "0",
+                    "left": "0",
+                    "right": "0",
+                    "top": "0"
+                  },
+                  "overflow": "report",
+                  "paragraphs": [
+                    {
+                      "defaultRunStyle": {},
+                      "id": "paragraph:title",
+                      "runs": [
+                        {
+                          "content": {
+                            "kind": "text",
+                            "text": "Your title"
+                          },
+                          "id": "run:title",
+                          "style": {}
+                        }
+                      ],
+                      "style": {}
+                    }
+                  ],
+                  "style": {
+                    "color": {
+                      "kind": "value",
+                      "value": {
+                        "kind": "srgb",
+                        "rgba": {
+                          "alpha": 255,
+                          "blue": 56,
+                          "green": 34,
+                          "red": 22
+                        }
+                      }
+                    },
+                    "size": {
+                      "kind": "value",
+                      "value": "457200"
+                    }
+                  },
+                  "wrap": true
+                }
+              },
+              "id": "object:title",
+              "parent": {
+                "id": "slide:1",
+                "kind": "slide"
+              },
+              "transform": {
+                "flipHorizontal": false,
+                "flipVertical": false,
+                "origin": {
+                  "x": "914400",
+                  "y": "914400"
+                },
+                "rotation": 0,
+                "size": {
+                  "height": "914400",
+                  "width": "10363200"
+                }
+              }
+            }
+          },
+          "pageSize": {
+            "height": "6858000",
+            "width": "12192000"
+          },
+          "resources": {},
+          "slideOrder": [
+            "slide:1"
+          ],
+          "slides": {
+            "slide:1": {
+              "background": {
+                "kind": "value",
+                "value": {
+                  "color": {
+                    "kind": "srgb",
+                    "rgba": {
+                      "alpha": 255,
+                      "blue": 255,
+                      "green": 255,
+                      "red": 255
+                    }
+                  },
+                  "kind": "solid"
+                }
+              },
+              "hidden": false,
+              "id": "slide:1",
+              "layout": null,
+              "name": "Introduction",
+              "objects": [
+                "object:title"
+              ]
+            }
+          },
+          "themes": {},
+          "title": "Editable presentation"
+        }
+      ],
+      "required": [
+        "format",
+        "id",
+        "title",
+        "pageSize",
+        "slideOrder",
+        "slides",
+        "objects",
+        "themes",
+        "masters",
+        "layouts",
+        "fonts",
+        "resources"
+      ]
+    },
+    "DocumentId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "EditorPageInput": {
+      "oneOf": [
+        {
+          "description": "Unmodified inspected OPC bytes in the separate material channel.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "pptx"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "description": "Direct semantic author projection; no temporary PPTX export/import.",
+          "type": "object",
+          "properties": {
+            "defaults": {
+              "$ref": "#/$defs/ExportDefaults"
+            },
+            "document": {
+              "$ref": "#/$defs/Document"
+            },
+            "kind": {
+              "type": "string",
+              "const": "author"
+            },
+            "resources": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/AuthorResourceRange"
+              }
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "document",
+            "defaults",
+            "resources"
+          ]
+        },
+        {
+          "description": "Validated field overlay over the original OPC material bytes.",
+          "type": "object",
+          "properties": {
+            "document": {
+              "$ref": "#/$defs/Document"
+            },
+            "kind": {
+              "type": "string",
+              "const": "retained"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "document"
+          ]
+        }
+      ]
+    },
+    "EditorPagePreparation": {
+      "type": "object",
+      "properties": {
+        "fonts": {
+          "description": "Explicit even for an empty page. An empty manifest needs no font bytes.",
+          "$ref": "#/$defs/FontManifest"
+        },
+        "input": {
+          "$ref": "#/$defs/EditorPageInput"
+        },
+        "page": {
+          "$ref": "#/$defs/ResourcePageRequest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "input",
+        "page",
+        "fonts"
+      ]
+    },
+    "Effect": {
+      "oneOf": [
+        {
+          "description": "Absolute local rotation in native 1/60000 degree units, including multi-turn.\nReplacement behavior; later activation wins, author order breaks ties.",
+          "type": "object",
+          "properties": {
+            "composition": {
+              "$ref": "#/$defs/RotationComposition"
+            },
+            "from": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "kind": {
+              "type": "string",
+              "const": "rotation"
+            },
+            "target": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "to": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "target",
+            "from",
+            "to"
+          ]
+        },
+        {
+          "description": "Object-local scale factors in thousandths of a percent. 100000 is\nidentity, zero collapses an axis. Independent of the rotation channel.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "$ref": "#/$defs/ScaleValue"
+            },
+            "kind": {
+              "type": "string",
+              "const": "scale"
+            },
+            "target": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "to": {
+              "$ref": "#/$defs/ScaleValue"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "target",
+            "from",
+            "to"
+          ]
+        },
+        {
+          "description": "Fixed property replacement while active or held. Before activation and\nafter removal, the underlying document/animation value is unchanged.\nThis does not imply the initial-hidden state of an entrance preset.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "setVisibility"
+            },
+            "target": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "value": {
+              "$ref": "#/$defs/Visibility"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "target",
+            "value"
+          ]
+        },
+        {
+          "description": "Straight native motion path, in slide fractions relative to the original\nlayout center. Translation is in slide axes, independent of local scale\nand rotation. This is not a multi-segment/curve path approximation.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "$ref": "#/$defs/MotionPoint"
+            },
+            "kind": {
+              "type": "string",
+              "const": "motionLine"
+            },
+            "target": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "to": {
+              "$ref": "#/$defs/MotionPoint"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "target",
+            "from",
+            "to"
+          ]
+        },
+        {
+          "description": "Connected lines and cubic Beziers, paced by normalized path length.\nThe original control points are retained for native editable export.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "motionPath"
+            },
+            "path": {
+              "$ref": "#/$defs/MotionPath"
+            },
+            "target": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "target",
+            "path"
+          ]
+        },
+        {
+          "description": "Native whole-object fade filter. Progress is supplied by the behavior\nclock; visibility remains an independent channel, including preset helpers.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "fade"
+            },
+            "target": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "transition": {
+              "$ref": "#/$defs/FadeTransition"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "target",
+            "transition"
+          ]
+        }
+      ]
+    },
+    "Emu": {
+      "description": "Signed int64 EMU. 1 point = 12700 EMU. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,18})$",
+      "x-integer-maximum": "9223372036854775807",
+      "x-integer-minimum": "-9223372036854775808"
+    },
+    "ExportDefaults": {
+      "type": "object",
+      "properties": {
+        "fontDelivery": {
+          "$ref": "#/$defs/FontDelivery"
+        },
+        "fontFamily": {
+          "description": "Explicit host choice. Export alone does not resolve, load or embed system fonts.",
+          "type": "string"
+        },
+        "pageBackground": {
+          "$ref": "#/$defs/Rgba"
+        },
+        "textColor": {
+          "$ref": "#/$defs/Rgba"
+        },
+        "textSize": {
+          "$ref": "#/$defs/Emu"
+        },
+        "themeColors": {
+          "description": "All 12 native theme color slots are required for generated fallback definitions.",
+          "type": "object",
+          "properties": {
+            "accent1": {
+              "$ref": "#/$defs/Rgba"
+            },
+            "accent2": {
+              "$ref": "#/$defs/Rgba"
+            },
+            "accent3": {
+              "$ref": "#/$defs/Rgba"
+            },
+            "accent4": {
+              "$ref": "#/$defs/Rgba"
+            },
+            "accent5": {
+              "$ref": "#/$defs/Rgba"
+            },
+            "accent6": {
+              "$ref": "#/$defs/Rgba"
+            },
+            "dark1": {
+              "$ref": "#/$defs/Rgba"
+            },
+            "dark2": {
+              "$ref": "#/$defs/Rgba"
+            },
+            "followedHyperlink": {
+              "$ref": "#/$defs/Rgba"
+            },
+            "hyperlink": {
+              "$ref": "#/$defs/Rgba"
+            },
+            "light1": {
+              "$ref": "#/$defs/Rgba"
+            },
+            "light2": {
+              "$ref": "#/$defs/Rgba"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "fontFamily",
+        "textSize",
+        "textColor",
+        "pageBackground",
+        "themeColors",
+        "fontDelivery"
+      ]
+    },
+    "FadeTransition": {
+      "type": "string",
+      "enum": [
+        "in",
+        "out"
+      ]
+    },
+    "Fill": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "none"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "color": {
+              "$ref": "#/$defs/Color"
+            },
+            "kind": {
+              "type": "string",
+              "const": "solid"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "color"
+          ]
+        }
+      ]
+    },
+    "FillMode": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "remove",
+            "freeze"
+          ]
+        },
+        {
+          "description": "Unlike freeze, persists when the next sequence sibling starts.",
+          "type": "string",
+          "const": "hold"
+        }
+      ]
+    },
+    "FixedQ32": {
+      "description": "Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,38})$",
+      "x-integer-maximum": "170141183460469231731687303715884105727",
+      "x-integer-minimum": "-170141183460469231731687303715884105728"
+    },
+    "FontDelivery": {
+      "oneOf": [
+        {
+          "description": "Retains editable font-family references. It is not a font fidelity guarantee.",
+          "type": "string",
+          "const": "referenceOnly"
+        }
+      ]
+    },
+    "FontFace": {
+      "type": "object",
+      "properties": {
+        "faceIndex": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "family": {
+          "type": "string"
+        },
+        "id": {
+          "$ref": "#/$defs/FontId"
+        },
+        "italic": {
+          "type": "boolean"
+        },
+        "resource": {
+          "$ref": "#/$defs/ResourceId"
+        },
+        "weight": {
+          "type": "integer",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "resource",
+        "faceIndex",
+        "family",
+        "weight",
+        "italic"
+      ]
+    },
+    "FontId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "FontManifest": {
+      "type": "object",
+      "properties": {
+        "faces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ManifestFace"
+          }
+        },
+        "fonts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CascadeFont"
+          }
+        },
+        "profile": {
+          "$ref": "#/$defs/FontManifestProfile"
+        },
+        "typefaces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ManifestTypeface"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "fonts",
+        "faces",
+        "typefaces"
+      ]
+    },
+    "FontManifestProfile": {
+      "type": "string",
+      "enum": [
+        "explicit-font-resource-manifest-draft-v1"
+      ]
+    },
+    "FontNameBinding": {
+      "type": "object",
+      "properties": {
+        "expected": {
+          "type": "string"
+        },
+        "record": {
+          "description": "Exact index in VerifiedFont metadata.names, preserving original record order.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "record",
+        "expected"
+      ]
+    },
+    "FrameTextPosition": {
+      "type": "object",
+      "properties": {
+        "paragraph": {
+          "description": "Index in this frame's native paragraphs, not an XML run index.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "position": {
+          "$ref": "#/$defs/TextPosition"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "paragraph",
+        "position"
+      ]
+    },
+    "Geometry": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "rectangle"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "ellipse"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "roundRectangle"
+            },
+            "radius": {
+              "$ref": "#/$defs/Emu"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "radius"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "commands": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/PathCommand"
+              }
+            },
+            "kind": {
+              "type": "string",
+              "const": "path"
+            },
+            "viewport": {
+              "$ref": "#/$defs/Size"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "commands",
+            "viewport"
+          ]
+        }
+      ]
+    },
+    "ImageSampling": {
+      "type": "string",
+      "enum": [
+        "nearest",
+        "linear"
+      ]
+    },
+    "ImageSourceSelection": {
+      "description": "Explicit source policy. An embedded snapshot is never silently substituted\nfor a requested linked source, nor does inspection grant network authority.",
+      "type": "string",
+      "enum": [
+        "embeddedSnapshot",
+        "linkedSource"
+      ]
+    },
+    "Inherited": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "inherit"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "value"
+            },
+            "value": {
+              "$ref": "#/$defs/Fill"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        }
+      ]
+    },
+    "Inherited10": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "inherit"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "value"
+            },
+            "value": {
+              "$ref": "#/$defs/TableVerticalAlignment"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        }
+      ]
+    },
+    "Inherited2": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "inherit"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "value"
+            },
+            "value": {
+              "$ref": "#/$defs/Stroke"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        }
+      ]
+    },
+    "Inherited3": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "inherit"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "value"
+            },
+            "value": {
+              "$ref": "#/$defs/Alignment"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        }
+      ]
+    },
+    "Inherited4": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "inherit"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "value"
+            },
+            "value": {
+              "$ref": "#/$defs/TextDirection"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        }
+      ]
+    },
+    "Inherited5": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "inherit"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "value"
+            },
+            "value": {
+              "$ref": "#/$defs/Emu"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        }
+      ]
+    },
+    "Inherited6": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "inherit"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "value"
+            },
+            "value": {
+              "$ref": "#/$defs/FontId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        }
+      ]
+    },
+    "Inherited7": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "inherit"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "value"
+            },
+            "value": {
+              "$ref": "#/$defs/Color"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        }
+      ]
+    },
+    "Inherited8": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "inherit"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "value"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        }
+      ]
+    },
+    "Inherited9": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "inherit"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "value"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        }
+      ]
+    },
+    "InlineContent": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "text"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "text"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "break"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "tab"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "Insets": {
+      "type": "object",
+      "properties": {
+        "bottom": {
+          "$ref": "#/$defs/Emu"
+        },
+        "left": {
+          "$ref": "#/$defs/Emu"
+        },
+        "right": {
+          "$ref": "#/$defs/Emu"
+        },
+        "top": {
+          "$ref": "#/$defs/Emu"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "left",
+        "top",
+        "right",
+        "bottom"
+      ]
+    },
+    "Layout": {
+      "type": "object",
+      "properties": {
+        "background": {
+          "$ref": "#/$defs/Inherited"
+        },
+        "defaultText": {
+          "$ref": "#/$defs/CharacterStyle"
+        },
+        "id": {
+          "$ref": "#/$defs/LayoutId"
+        },
+        "master": {
+          "$ref": "#/$defs/MasterId"
+        },
+        "name": {
+          "type": "string"
+        },
+        "objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectId"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "master",
+        "name",
+        "objects",
+        "background",
+        "defaultText"
+      ]
+    },
+    "LayoutId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "LineCap": {
+      "type": "string",
+      "enum": [
+        "flat",
+        "round",
+        "square"
+      ]
+    },
+    "LineJoin": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "round"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "bevel"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "miter"
+            },
+            "limit": {
+              "description": "Ratio in 1/100000 units: 400000 denotes four times line width.\nThe ratio compares full miter length with the full stroke width.",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "ManifestFace": {
+      "type": "object",
+      "properties": {
+        "family": {
+          "$ref": "#/$defs/FontNameBinding"
+        },
+        "font": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "postscript": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FontNameBinding"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "subfamily": {
+          "$ref": "#/$defs/FontNameBinding"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "font",
+        "family",
+        "subfamily"
+      ]
+    },
+    "ManifestInstance": {
+      "type": "object",
+      "properties": {
+        "face": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "variations": {
+          "description": "All axes are validated, including instances unused by this paragraph.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ShapeVariation"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "face",
+        "variations"
+      ]
+    },
+    "ManifestTypeface": {
+      "type": "object",
+      "properties": {
+        "bold": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ManifestInstance"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "boldItalic": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ManifestInstance"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fallbacks": {
+          "description": "Ordered, explicit coverage fallbacks into this manifest's typefaces.\nOnly these entries are tried; their own fallbacks are not expanded.\nEach candidate uses the requested style slot without synthesis.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "italic": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ManifestInstance"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "policy": {
+          "$ref": "#/$defs/TypefaceMappingPolicy"
+        },
+        "regular": {
+          "description": "Explicit instance selection; no synthesized bold/slant or slot fallback.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ManifestInstance"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "typeface": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "typeface",
+        "policy"
+      ]
+    },
+    "Master": {
+      "type": "object",
+      "properties": {
+        "background": {
+          "$ref": "#/$defs/Inherited"
+        },
+        "defaultText": {
+          "$ref": "#/$defs/CharacterStyle"
+        },
+        "id": {
+          "$ref": "#/$defs/MasterId"
+        },
+        "objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectId"
+          }
+        },
+        "theme": {
+          "$ref": "#/$defs/ThemeId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "theme",
+        "objects",
+        "background",
+        "defaultText"
+      ]
+    },
+    "MasterId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ModelVersion": {
+      "type": "string",
+      "enum": [
+        "musteroffice.presentation/0.1-draft"
+      ]
+    },
+    "MotionCoordinate": {
+      "description": "Exact decimal fraction of the slide dimension; canonicalized without rounding.",
+      "type": "string",
+      "maxLength": 29,
+      "not": {
+        "pattern": "[^0-9.\\-]"
+      },
+      "pattern": "^-?(0|[1-9][0-9]{0,8})(\\.[0-9]{1,18})?$"
+    },
+    "MotionPath": {
+      "description": "Connected native path. Coordinates are absolute offsets from the original\nlayout center, measured in slide fractions. Pacing uses length in this\nnormalized coordinate space, before scaling the axes to slide dimensions.",
+      "type": "object",
+      "properties": {
+        "from": {
+          "$ref": "#/$defs/MotionPoint"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MotionSegment"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "from",
+        "segments"
+      ]
+    },
+    "MotionPoint": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/MotionCoordinate"
+        },
+        "y": {
+          "$ref": "#/$defs/MotionCoordinate"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "MotionSegment": {
+      "description": "Source control points remain editable; subdivision belongs only to the\nimmutable playback plan. Close returns to the initial `from` point.",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "line"
+            },
+            "to": {
+              "$ref": "#/$defs/MotionPoint"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "control1": {
+              "$ref": "#/$defs/MotionPoint"
+            },
+            "control2": {
+              "$ref": "#/$defs/MotionPoint"
+            },
+            "kind": {
+              "type": "string",
+              "const": "cubic"
+            },
+            "to": {
+              "$ref": "#/$defs/MotionPoint"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "control1",
+            "control2",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "close"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "NativeEditConstraint": {
+      "type": "string",
+      "enum": [
+        "missingDirectTransform",
+        "retainedTransform",
+        "compatibilityBranch",
+        "structuredLeaf",
+        "dynamicField",
+        "timingReferences",
+        "retainedReferences"
+      ]
+    },
+    "NativeObjectBinding": {
+      "type": "object",
+      "properties": {
+        "nativeId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "part": {
+          "type": "string"
+        },
+        "runs": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "$ref": "#/$defs/NativeRunBinding"
+            }
+          }
+        },
+        "transformConstraint": {
+          "description": "None means the complete direct transform can be changed in place.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeEditConstraint"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "nativeId",
+        "runs"
+      ]
+    },
+    "NativeRunBinding": {
+      "type": "object",
+      "properties": {
+        "constraint": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeEditConstraint"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "paragraph": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "run": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "paragraph",
+        "run"
+      ]
+    },
+    "NavigationDirection": {
+      "type": "string",
+      "enum": [
+        "next",
+        "previous"
+      ]
+    },
+    "NextAction": {
+      "type": "string",
+      "enum": [
+        "none",
+        "seek"
+      ]
+    },
+    "NodeEvent": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "end",
+            "onEnd"
+          ]
+        },
+        {
+          "description": "A dependency on the referenced node's interval boundary.",
+          "type": "string",
+          "const": "begin"
+        },
+        {
+          "description": "A lifecycle notification delivered by the referenced timing node.\nThis is not an event on a shape or another external event target.\nPreserve the native distinction: presentation editors use onBegin to\nrecognize an automatic group attached to a main sequence.",
+          "type": "string",
+          "const": "onBegin"
+        }
+      ]
+    },
+    "Object": {
+      "type": "object",
+      "properties": {
+        "accessibility": {
+          "$ref": "#/$defs/Accessibility"
+        },
+        "appearance": {
+          "$ref": "#/$defs/Appearance"
+        },
+        "content": {
+          "$ref": "#/$defs/ObjectContent"
+        },
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "parent": {
+          "$ref": "#/$defs/ContainerId"
+        },
+        "transform": {
+          "description": "Missing only for retained native coordinates that cannot be represented\nas a complete direct declaration. Never substitute a resolved identity.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Transform"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "parent",
+        "appearance",
+        "accessibility",
+        "content"
+      ]
+    },
+    "ObjectContent": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "table"
+            },
+            "table": {
+              "$ref": "#/$defs/Table"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "table"
+          ]
+        },
+        {
+          "description": "Original geometry, styles, relationships and unknown extension semantics\nremain in the bound source. This is not a generic path/text promotion.",
+          "type": "object",
+          "properties": {
+            "children": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ObjectId"
+              }
+            },
+            "kind": {
+              "type": "string",
+              "const": "retainedSource"
+            },
+            "native_kind": {
+              "$ref": "#/$defs/RetainedObjectKind"
+            },
+            "paragraphs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/RetainedParagraph"
+              }
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "native_kind",
+            "children",
+            "paragraphs"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "geometry": {
+              "$ref": "#/$defs/Geometry"
+            },
+            "kind": {
+              "type": "string",
+              "const": "shape"
+            },
+            "text": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/TextBody"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "geometry"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "crop": {
+              "$ref": "#/$defs/Crop"
+            },
+            "kind": {
+              "type": "string",
+              "const": "picture"
+            },
+            "resource": {
+              "$ref": "#/$defs/ResourceId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "resource",
+            "crop"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "children": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ObjectId"
+              }
+            },
+            "kind": {
+              "type": "string",
+              "const": "group"
+            },
+            "viewport": {
+              "$ref": "#/$defs/Size"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "children",
+            "viewport"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "end": {
+              "$ref": "#/$defs/ConnectorEndpoint"
+            },
+            "kind": {
+              "type": "string",
+              "const": "connector"
+            },
+            "start": {
+              "$ref": "#/$defs/ConnectorEndpoint"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "start",
+            "end"
+          ]
+        }
+      ]
+    },
+    "ObjectId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "OverflowPolicy": {
+      "type": "string",
+      "enum": [
+        "report",
+        "clip",
+        "growShape"
+      ]
+    },
+    "PageTextAction": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "caret"
+            },
+            "position": {
+              "$ref": "#/$defs/FrameTextPosition"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "position"
+          ]
+        },
+        {
+          "description": "Q32 page EMU, before the device viewport transform.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "hit"
+            },
+            "point": {
+              "$ref": "#/$defs/Point2"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "point"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "anchor": {
+              "$ref": "#/$defs/FrameTextPosition"
+            },
+            "focus": {
+              "$ref": "#/$defs/FrameTextPosition"
+            },
+            "kind": {
+              "type": "string",
+              "const": "selection"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "anchor",
+            "focus"
+          ]
+        }
+      ]
+    },
+    "PageTextQuery": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "$ref": "#/$defs/PageTextAction"
+        },
+        "frame": {
+          "description": "Index in this immutable page's text binding list; includes table cells.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "frame",
+        "action"
+      ]
+    },
+    "Paragraph": {
+      "type": "object",
+      "properties": {
+        "defaultRunStyle": {
+          "$ref": "#/$defs/CharacterStyle"
+        },
+        "id": {
+          "$ref": "#/$defs/ParagraphId"
+        },
+        "runs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TextRun"
+          }
+        },
+        "style": {
+          "$ref": "#/$defs/ParagraphStyle"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "style",
+        "defaultRunStyle",
+        "runs"
+      ]
+    },
+    "ParagraphId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ParagraphLineSpacing": {
+      "description": "Native paragraph line spacing. Percentage is measured against the line's\nlargest font size by the shared layout engine; 100000 means 100%, 150000 150%.",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "percent"
+            },
+            "value": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ]
+        },
+        {
+          "description": "Exact baseline spacing in EMU; must be representable in 1/100 point.",
+          "type": "object",
+          "properties": {
+            "height": {
+              "$ref": "#/$defs/Emu"
+            },
+            "kind": {
+              "type": "string",
+              "const": "exact"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "height"
+          ]
+        }
+      ]
+    },
+    "ParagraphStyle": {
+      "type": "object",
+      "properties": {
+        "alignment": {
+          "$ref": "#/$defs/Inherited3",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "direction": {
+          "$ref": "#/$defs/Inherited4",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "indent": {
+          "description": "Relative to the paragraph margin; negative values create a hanging indent.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Emu"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "leftMargin": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Emu"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lineSpacing": {
+          "description": "Omitted values retain native inheritance and historical document digests.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ParagraphLineSpacing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rightMargin": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Emu"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spaceAfter": {
+          "$ref": "#/$defs/Inherited5",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "spaceBefore": {
+          "$ref": "#/$defs/Inherited5",
+          "default": {
+            "kind": "inherit"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "PathCommand": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "move"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "line"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "control": {
+              "$ref": "#/$defs/Point"
+            },
+            "kind": {
+              "type": "string",
+              "const": "quadratic"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "control",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "control1": {
+              "$ref": "#/$defs/Point"
+            },
+            "control2": {
+              "$ref": "#/$defs/Point"
+            },
+            "kind": {
+              "type": "string",
+              "const": "cubic"
+            },
+            "to": {
+              "$ref": "#/$defs/Point"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "control1",
+            "control2",
+            "to"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "close"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "PixelScale": {
+      "type": "object",
+      "properties": {
+        "denominator": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "numerator": {
+          "description": "Positive rational pixels per EMU; normalized internally.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "numerator",
+        "denominator"
+      ]
+    },
+    "Point": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/Emu"
+        },
+        "y": {
+          "$ref": "#/$defs/Emu"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "Point2": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "y": {
+          "$ref": "#/$defs/FixedQ32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "PresentationPreset": {
+      "type": "string",
+      "enum": [
+        "appear",
+        "disappear",
+        "spin",
+        "growShrink",
+        "customMotion",
+        "fadeIn",
+        "fadeOut"
+      ]
+    },
+    "PresentationRole": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "mainSequence"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "effect"
+            },
+            "preset": {
+              "$ref": "#/$defs/PresentationPreset"
+            },
+            "trigger": {
+              "$ref": "#/$defs/PresentationTrigger"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "preset",
+            "trigger"
+          ]
+        }
+      ]
+    },
+    "PresentationTrigger": {
+      "type": "string",
+      "enum": [
+        "click",
+        "withPrevious",
+        "afterPrevious"
+      ]
+    },
+    "PreviousAction": {
+      "type": "string",
+      "enum": [
+        "none",
+        "skipTimed"
+      ]
+    },
+    "RasterViewport": {
+      "type": "object",
+      "properties": {
+        "background": {
+          "description": "Straight sRGB RGBA8; output is premultiplied.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint8",
+            "maximum": 255,
+            "minimum": 0
+          },
+          "maxItems": 4,
+          "minItems": 4
+        },
+        "coordinateTolerance": {
+          "description": "Raw Q32 pixels; 256..=2^24 (at most 1/256 pixel).",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "height": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "origin": {
+          "description": "Q32 EMU. Subtracted before converting to device-space float32.",
+          "$ref": "#/$defs/Point2"
+        },
+        "scale": {
+          "$ref": "#/$defs/PixelScale"
+        },
+        "width": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height",
+        "origin",
+        "scale",
+        "coordinateTolerance",
+        "background"
+      ]
+    },
+    "RationalTime": {
+      "description": "Exact wire representation. Equality compares author values; compare_time compares instants.",
+      "type": "object",
+      "properties": {
+        "ticks": {
+          "$ref": "#/$defs/Ticks"
+        },
+        "timescale": {
+          "$ref": "#/$defs/Timescale"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "ticks",
+        "timescale"
+      ]
+    },
+    "RepeatCount": {
+      "description": "Finite values retain the existing integer wire form. Infinity is a named\nalternative, never a sentinel count or a pre-expanded list of iterations.",
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "indefinite"
+          ]
+        },
+        {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      ]
+    },
+    "RepeatDuration": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "indefinite"
+          ]
+        },
+        {
+          "$ref": "#/$defs/RationalTime"
+        }
+      ]
+    },
+    "Resource": {
+      "description": "Opaque authorized handle and declared content identity; byte verification belongs to the host.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ResourceId"
+        },
+        "kind": {
+          "$ref": "#/$defs/ResourceKind"
+        },
+        "mediaType": {
+          "type": "string"
+        },
+        "sha256": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "sha256",
+        "mediaType"
+      ]
+    },
+    "ResourceId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ResourceKind": {
+      "type": "string",
+      "enum": [
+        "font",
+        "picture",
+        "audio",
+        "video",
+        "sourcePackage",
+        "embeddedWorkbook",
+        "model3d"
+      ]
+    },
+    "ResourcePageRequest": {
+      "description": "Per-page input; immutable document and font resources belong to the session.",
+      "type": "object",
+      "properties": {
+        "imageSource": {
+          "$ref": "#/$defs/ImageSourceSelection"
+        },
+        "page": {
+          "$ref": "#/$defs/SourcePageRequest"
+        },
+        "sampling": {
+          "$ref": "#/$defs/ImageSampling"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "page",
+        "imageSource",
+        "sampling"
+      ]
+    },
+    "RestartMode": {
+      "description": "Admission of new begin instances within one parent activation. Ancestor\nreactivation resets this policy, including `Never`. Omission preserves the\nexisting draft's once-per-parent behavior, independently of native defaults.",
+      "type": "string",
+      "enum": [
+        "never",
+        "always",
+        "whenNotActive"
+      ]
+    },
+    "RetainedObjectKind": {
+      "type": "string",
+      "enum": [
+        "shape",
+        "picture",
+        "group",
+        "connector",
+        "graphicFrame"
+      ]
+    },
+    "RetainedParagraph": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ParagraphId"
+        },
+        "runs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RetainedTextRun"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "runs"
+      ]
+    },
+    "RetainedRunKind": {
+      "type": "string",
+      "enum": [
+        "text",
+        "break",
+        "field"
+      ]
+    },
+    "RetainedTextRun": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/RunId"
+        },
+        "kind": {
+          "$ref": "#/$defs/RetainedRunKind"
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "text"
+      ]
+    },
+    "Rgba": {
+      "type": "object",
+      "properties": {
+        "alpha": {
+          "type": "integer",
+          "format": "uint8",
+          "maximum": 255,
+          "minimum": 0
+        },
+        "blue": {
+          "type": "integer",
+          "format": "uint8",
+          "maximum": 255,
+          "minimum": 0
+        },
+        "green": {
+          "type": "integer",
+          "format": "uint8",
+          "maximum": 255,
+          "minimum": 0
+        },
+        "red": {
+          "type": "integer",
+          "format": "uint8",
+          "maximum": 255,
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "red",
+        "green",
+        "blue",
+        "alpha"
+      ]
+    },
+    "RotationComposition": {
+      "description": "Rotation is composed before object/group placement. Layout replaces earlier\nanimation offsets while preserving the document's local orientation. Add\nsums the sampled offset with the lower-priority visible rotation stack.",
+      "type": "string",
+      "enum": [
+        "absolute",
+        "layout",
+        "add"
+      ]
+    },
+    "RowId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "RunId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ScaleValue": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "y": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "SequenceNavigation": {
+      "description": "Sequence controls are document computation, independent of host buttons or\nkeyboard bindings. Conditions are disjunctions, like begin/end conditions.",
+      "type": "object",
+      "properties": {
+        "concurrent": {
+          "type": "boolean"
+        },
+        "nextAction": {
+          "$ref": "#/$defs/NextAction"
+        },
+        "nextConditions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimeCondition"
+          }
+        },
+        "previousAction": {
+          "$ref": "#/$defs/PreviousAction"
+        },
+        "previousConditions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimeCondition"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "concurrent",
+        "nextAction",
+        "previousAction",
+        "nextConditions",
+        "previousConditions"
+      ]
+    },
+    "ShapeVariation": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string"
+        },
+        "value1616": {
+          "description": "Exact requested OpenType 16.16 design coordinate.",
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "tag",
+        "value1616"
+      ]
+    },
+    "Size": {
+      "type": "object",
+      "properties": {
+        "height": {
+          "$ref": "#/$defs/Emu"
+        },
+        "width": {
+          "$ref": "#/$defs/Emu"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height"
+      ]
+    },
+    "Slide": {
+      "type": "object",
+      "properties": {
+        "background": {
+          "$ref": "#/$defs/Inherited"
+        },
+        "hidden": {
+          "type": "boolean"
+        },
+        "id": {
+          "$ref": "#/$defs/SlideId"
+        },
+        "layout": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LayoutId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectId"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "objects",
+        "background",
+        "hidden"
+      ]
+    },
+    "SlideId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "SourceBindingProfile": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "presentationml-retained-fields-v1-draft"
+          ]
+        },
+        {
+          "description": "Includes the package core title. V1 remains readable with its original\nunprojected metadata semantics, so old snapshots cannot erase a title.",
+          "type": "string",
+          "const": "presentationml-retained-fields-v2-draft"
+        },
+        {
+          "description": "Includes physical table-cell text. V1/V2 keep tables opaque in their\neditable document projection, while preserving their native bytes.",
+          "type": "string",
+          "const": "presentationml-retained-fields-v3-draft"
+        },
+        {
+          "description": "Projects title, description and the Office decorative accessibility\nmarker. Older bindings retain their original opaque accessibility view.",
+          "type": "string",
+          "const": "presentationml-retained-fields-v4-draft"
+        }
+      ]
+    },
+    "SourceBindings": {
+      "type": "object",
+      "properties": {
+        "identityScope": {
+          "description": "Immutable origin namespace used to derive source-local IDs. Absence\nretains the original document-ID-derived representation. A whole-deck\ninstance pins this namespace before changing its document identity.\nThis is provenance for calculation, never host access authority.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DocumentId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "layouts": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "type": "string"
+            }
+          }
+        },
+        "masters": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "type": "string"
+            }
+          }
+        },
+        "objects": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "$ref": "#/$defs/NativeObjectBinding"
+            }
+          }
+        },
+        "profile": {
+          "$ref": "#/$defs/SourceBindingProfile"
+        },
+        "resource": {
+          "$ref": "#/$defs/ResourceId"
+        },
+        "slides": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "type": "string"
+            }
+          }
+        },
+        "themes": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "resource",
+        "slides",
+        "masters",
+        "layouts",
+        "themes",
+        "objects"
+      ]
+    },
+    "SourcePageProfile": {
+      "type": "string",
+      "enum": [
+        "drawingml-static-solid-page-v1-draft"
+      ]
+    },
+    "SourcePageRequest": {
+      "type": "object",
+      "properties": {
+        "colorContext": {
+          "$ref": "#/$defs/ColorContext"
+        },
+        "expectedSourceSha256": {
+          "$ref": "#/$defs/Digest"
+        },
+        "profile": {
+          "$ref": "#/$defs/SourcePageProfile"
+        },
+        "slide": {
+          "type": "string"
+        },
+        "viewport": {
+          "$ref": "#/$defs/RasterViewport"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "expectedSourceSha256",
+        "slide",
+        "profile",
+        "viewport",
+        "colorContext"
+      ]
+    },
+    "StartCondition": {
+      "description": "A flat disjunction of native begin conditions. The single-condition wire\nrepresentation remains unchanged; alternatives cannot recursively nest.",
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "conditions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/TimeCondition"
+              },
+              "minItems": 1
+            },
+            "kind": {
+              "type": "string",
+              "const": "anyOf"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "conditions"
+          ]
+        },
+        {
+          "$ref": "#/$defs/TimeCondition"
+        }
+      ]
+    },
+    "Stroke": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "none"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "cap": {
+              "description": "Absent retains an unresolved declaration, not an implicit flat cap.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/LineCap"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "color": {
+              "$ref": "#/$defs/Color"
+            },
+            "join": {
+              "description": "Absent retains the source/default distinction.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/LineJoin"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "solid"
+            },
+            "width": {
+              "$ref": "#/$defs/Emu"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "color",
+            "width"
+          ]
+        }
+      ]
+    },
+    "Table": {
+      "type": "object",
+      "properties": {
+        "columns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TableColumn"
+          }
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TableRow"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "columns",
+        "rows"
+      ]
+    },
+    "TableCell": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Row/column/cell identities are table-scoped. Text identities remain\ndocument-scoped so existing anchors retain their unambiguous meaning.",
+          "$ref": "#/$defs/CellId"
+        },
+        "merge": {
+          "$ref": "#/$defs/TableCellMerge",
+          "default": {
+            "columns": 1,
+            "kind": "span",
+            "rows": 1
+          }
+        },
+        "style": {
+          "$ref": "#/$defs/TableCellStyle",
+          "default": {
+            "borders": {
+              "bottom": {
+                "kind": "inherit"
+              },
+              "bottomLeftToTopRight": {
+                "kind": "inherit"
+              },
+              "left": {
+                "kind": "inherit"
+              },
+              "right": {
+                "kind": "inherit"
+              },
+              "top": {
+                "kind": "inherit"
+              },
+              "topLeftToBottomRight": {
+                "kind": "inherit"
+              }
+            },
+            "fill": {
+              "kind": "inherit"
+            },
+            "verticalAlignment": {
+              "kind": "inherit"
+            }
+          }
+        },
+        "text": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TextBody"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id"
+      ]
+    },
+    "TableCellBorders": {
+      "type": "object",
+      "properties": {
+        "bottom": {
+          "$ref": "#/$defs/Inherited2",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "bottomLeftToTopRight": {
+          "$ref": "#/$defs/Inherited2",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "left": {
+          "$ref": "#/$defs/Inherited2",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "right": {
+          "$ref": "#/$defs/Inherited2",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "top": {
+          "$ref": "#/$defs/Inherited2",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "topLeftToBottomRight": {
+          "$ref": "#/$defs/Inherited2",
+          "default": {
+            "kind": "inherit"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "TableCellMerge": {
+      "oneOf": [
+        {
+          "description": "The origin is the upper-left cell. Counts include the origin.",
+          "type": "object",
+          "properties": {
+            "columns": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "span"
+            },
+            "rows": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "rows",
+            "columns"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "covered"
+            },
+            "origin": {
+              "$ref": "#/$defs/CellId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "origin"
+          ]
+        }
+      ]
+    },
+    "TableCellStyle": {
+      "type": "object",
+      "properties": {
+        "borders": {
+          "$ref": "#/$defs/TableCellBorders",
+          "default": {
+            "bottom": {
+              "kind": "inherit"
+            },
+            "bottomLeftToTopRight": {
+              "kind": "inherit"
+            },
+            "left": {
+              "kind": "inherit"
+            },
+            "right": {
+              "kind": "inherit"
+            },
+            "top": {
+              "kind": "inherit"
+            },
+            "topLeftToBottomRight": {
+              "kind": "inherit"
+            }
+          }
+        },
+        "fill": {
+          "$ref": "#/$defs/Inherited",
+          "default": {
+            "kind": "inherit"
+          }
+        },
+        "verticalAlignment": {
+          "$ref": "#/$defs/Inherited10",
+          "default": {
+            "kind": "inherit"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "TableColumn": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ColumnId"
+        },
+        "width": {
+          "$ref": "#/$defs/Emu"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "width"
+      ]
+    },
+    "TableRow": {
+      "type": "object",
+      "properties": {
+        "cells": {
+          "description": "One entry per grid column, even when covered by another cell.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TableCell"
+          }
+        },
+        "height": {
+          "$ref": "#/$defs/Emu"
+        },
+        "id": {
+          "$ref": "#/$defs/RowId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "height",
+        "cells"
+      ]
+    },
+    "TableVerticalAlignment": {
+      "type": "string",
+      "enum": [
+        "top",
+        "center",
+        "bottom",
+        "justified",
+        "distributed"
+      ]
+    },
+    "TextBody": {
+      "type": "object",
+      "properties": {
+        "insets": {
+          "$ref": "#/$defs/Insets"
+        },
+        "overflow": {
+          "$ref": "#/$defs/OverflowPolicy"
+        },
+        "paragraphs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Paragraph"
+          }
+        },
+        "style": {
+          "$ref": "#/$defs/CharacterStyle"
+        },
+        "wrap": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "paragraphs",
+        "style",
+        "insets",
+        "wrap",
+        "overflow"
+      ]
+    },
+    "TextDirection": {
+      "type": "string",
+      "enum": [
+        "leftToRight",
+        "rightToLeft",
+        "verticalRightToLeft",
+        "verticalLeftToRight"
+      ]
+    },
+    "TextPosition": {
+      "type": "object",
+      "properties": {
+        "affinity": {
+          "$ref": "#/$defs/Affinity"
+        },
+        "scalarOffset": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "scalarOffset",
+        "affinity"
+      ]
+    },
+    "TextRun": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "$ref": "#/$defs/InlineContent"
+        },
+        "id": {
+          "$ref": "#/$defs/RunId"
+        },
+        "style": {
+          "$ref": "#/$defs/CharacterStyle"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "style",
+        "content"
+      ]
+    },
+    "Theme": {
+      "type": "object",
+      "properties": {
+        "colors": {
+          "type": "object",
+          "properties": {
+            "accent1": {
+              "$ref": "#/$defs/Rgba"
+            },
+            "accent2": {
+              "$ref": "#/$defs/Rgba"
+            },
+            "accent3": {
+              "$ref": "#/$defs/Rgba"
+            },
+            "accent4": {
+              "$ref": "#/$defs/Rgba"
+            },
+            "accent5": {
+              "$ref": "#/$defs/Rgba"
+            },
+            "accent6": {
+              "$ref": "#/$defs/Rgba"
+            },
+            "dark1": {
+              "$ref": "#/$defs/Rgba"
+            },
+            "dark2": {
+              "$ref": "#/$defs/Rgba"
+            },
+            "followedHyperlink": {
+              "$ref": "#/$defs/Rgba"
+            },
+            "hyperlink": {
+              "$ref": "#/$defs/Rgba"
+            },
+            "light1": {
+              "$ref": "#/$defs/Rgba"
+            },
+            "light2": {
+              "$ref": "#/$defs/Rgba"
+            }
+          },
+          "additionalProperties": false
+        },
+        "defaultText": {
+          "$ref": "#/$defs/CharacterStyle"
+        },
+        "id": {
+          "$ref": "#/$defs/ThemeId"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "colors",
+        "defaultText"
+      ]
+    },
+    "ThemeColor": {
+      "type": "string",
+      "enum": [
+        "dark1",
+        "light1",
+        "dark2",
+        "light2",
+        "accent1",
+        "accent2",
+        "accent3",
+        "accent4",
+        "accent5",
+        "accent6",
+        "hyperlink",
+        "followedHyperlink"
+      ]
+    },
+    "ThemeId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "Ticks": {
+      "description": "Signed int64 ticks. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,18})$",
+      "x-integer-maximum": "9223372036854775807",
+      "x-integer-minimum": "-9223372036854775808"
+    },
+    "TimeCondition": {
+      "oneOf": [
+        {
+          "description": "An explicitly indefinite condition, never a fabricated zero-time event.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "never"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "at"
+            },
+            "offset": {
+              "$ref": "#/$defs/RationalTime"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "offset"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "delay": {
+              "$ref": "#/$defs/RationalTime"
+            },
+            "event": {
+              "$ref": "#/$defs/NodeEvent"
+            },
+            "kind": {
+              "type": "string",
+              "const": "after"
+            },
+            "node": {
+              "$ref": "#/$defs/TimingNodeId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "node",
+            "event",
+            "delay"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "delay": {
+              "$ref": "#/$defs/RationalTime"
+            },
+            "kind": {
+              "type": "string",
+              "const": "click"
+            },
+            "target": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/ObjectId"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "delay"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "delay": {
+              "$ref": "#/$defs/RationalTime"
+            },
+            "direction": {
+              "$ref": "#/$defs/NavigationDirection"
+            },
+            "kind": {
+              "type": "string",
+              "const": "navigation"
+            },
+            "target": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/ObjectId"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "direction",
+            "delay"
+          ]
+        }
+      ]
+    },
+    "TimeTransform": {
+      "description": "Local behavior clock. Percentages use native thousandths of one percent;\n100000 speed is normal playback. The clock is independent of effect values.",
+      "type": "object",
+      "properties": {
+        "accelerationMilliPercent": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "autoReverse": {
+          "type": "boolean"
+        },
+        "decelerationMilliPercent": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "speedMilliPercent": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "speedMilliPercent",
+        "autoReverse",
+        "accelerationMilliPercent",
+        "decelerationMilliPercent"
+      ]
+    },
+    "Timeline": {
+      "description": "Behaviors plus an optional explicit timing forest. The legacy graph retains\nits byte representation; version 0.2 owns every behavior through tree roots.",
+      "type": "object",
+      "properties": {
+        "format": {
+          "$ref": "#/$defs/TimelineVersion"
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimingNode"
+          }
+        },
+        "tree": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TimingTree"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "format",
+        "nodes"
+      ]
+    },
+    "TimelineVersion": {
+      "type": "string",
+      "enum": [
+        "musteroffice.timeline/0.1-draft",
+        "musteroffice.timeline/0.2-draft"
+      ]
+    },
+    "Timescale": {
+      "type": "integer",
+      "maximum": 1000000000,
+      "minimum": 1
+    },
+    "TimingContainer": {
+      "type": "object",
+      "properties": {
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimingNodeId"
+          }
+        },
+        "duration": {
+          "$ref": "#/$defs/ContainerDuration"
+        },
+        "endConditions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimeCondition"
+          }
+        },
+        "fill": {
+          "$ref": "#/$defs/FillMode"
+        },
+        "id": {
+          "$ref": "#/$defs/TimingNodeId"
+        },
+        "kind": {
+          "$ref": "#/$defs/ContainerKind"
+        },
+        "navigation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SequenceNavigation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "presentation": {
+          "description": "Native presentation identity. It participates in initial playback state\nand editable export; it never changes the container's declared clock.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PresentationRole"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "restart": {
+          "$ref": "#/$defs/RestartMode"
+        },
+        "start": {
+          "$ref": "#/$defs/StartCondition"
+        },
+        "timeTransform": {
+          "description": "Filter the container's simple time before its descendants consume it.\nCompilation validates the supported clock domain; this is never copied\ninto the leaves or interpreted as an independent per-effect easing.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TimeTransform"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "start",
+        "duration",
+        "fill",
+        "children"
+      ]
+    },
+    "TimingNode": {
+      "type": "object",
+      "properties": {
+        "duration": {
+          "$ref": "#/$defs/RationalTime"
+        },
+        "effect": {
+          "$ref": "#/$defs/Effect"
+        },
+        "endConditions": {
+          "description": "Earliest resolved eligible end; absent conditions add no end constraint.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimeCondition"
+          }
+        },
+        "fill": {
+          "$ref": "#/$defs/FillMode"
+        },
+        "id": {
+          "$ref": "#/$defs/TimingNodeId"
+        },
+        "repeatDuration": {
+          "description": "Additional bound in local active time, before speed scaling.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RepeatDuration"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "repeatMilli": {
+          "description": "Native count in thousandths, or explicit indefinite repetition.",
+          "$ref": "#/$defs/RepeatCount"
+        },
+        "restart": {
+          "$ref": "#/$defs/RestartMode"
+        },
+        "start": {
+          "$ref": "#/$defs/StartCondition"
+        },
+        "timeTransform": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TimeTransform"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "start",
+        "duration",
+        "repeatMilli",
+        "fill",
+        "effect"
+      ]
+    },
+    "TimingNodeId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "TimingTree": {
+      "type": "object",
+      "properties": {
+        "containers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimingContainer"
+          }
+        },
+        "roots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimingNodeId"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "roots",
+        "containers"
+      ]
+    },
+    "Transform": {
+      "type": "object",
+      "properties": {
+        "flipHorizontal": {
+          "type": "boolean"
+        },
+        "flipVertical": {
+          "type": "boolean"
+        },
+        "origin": {
+          "$ref": "#/$defs/Point"
+        },
+        "rotation": {
+          "description": "Units of 1/60000 degree. Author direction is preserved.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "size": {
+          "$ref": "#/$defs/Size"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "origin",
+        "size",
+        "rotation",
+        "flipHorizontal",
+        "flipVertical"
+      ]
+    },
+    "TypefaceMappingPolicy": {
+      "oneOf": [
+        {
+          "description": "The native typeface must exactly match the selected verified family name.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "exactFamily"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "description": "Explicit host-supplied substitution contract. A digest is evidence identity,\nnot proof of user permission, font licensing or layout equivalence.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "substitution"
+            },
+            "profileSha256": {
+              "$ref": "#/$defs/Digest"
+            },
+            "reason": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "profileSha256",
+            "reason"
+          ]
+        }
+      ]
+    },
+    "Visibility": {
+      "type": "string",
+      "enum": [
+        "visible",
+        "hidden"
+      ]
+    }
+  }
+}

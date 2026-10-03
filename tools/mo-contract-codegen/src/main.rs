@@ -68,6 +68,14 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
     let schemas = [
         (
+            "editor-page-request",
+            schema::<mo_kernel_api::EditorPageRequest>(),
+        ),
+        (
+            "editor-page-response",
+            schema::<mo_kernel_api::EditorPageResponse>(),
+        ),
+        (
             "template-definition",
             schema::<mo_presentation_template::TemplateDefinition>(),
         ),

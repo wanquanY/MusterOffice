@@ -54,6 +54,8 @@ mod outlines;
 pub use outlines::*;
 mod interaction;
 pub use interaction::*;
+mod editor_page;
+pub use editor_page::*;
 mod carets;
 pub use carets::*;
 mod metrics;

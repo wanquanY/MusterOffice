@@ -4,6 +4,7 @@
 pub(crate) mod backend;
 pub mod capacity;
 mod clip;
+pub mod interaction;
 mod number;
 mod properties;
 mod spacing;
@@ -194,6 +195,17 @@ pub(crate) fn compute(
     limits: SourceFrameLimits,
     check: &dyn Fn() -> bool,
 ) -> Result<SourceFramePlan, SourceFrameError> {
+    compute_with_interaction(frame, manifest, backend, limits, None, check)
+        .map(|r| r.into_parts().0)
+}
+pub(crate) fn compute_with_interaction(
+    frame: PreparedFrame,
+    manifest: &PreparedManifest<'_, '_>,
+    backend: &mut dyn TextBackend,
+    limits: SourceFrameLimits,
+    interaction_limits: Option<interaction::FrameInteractionLimits>,
+    check: &dyn Fn() -> bool,
+) -> Result<interaction::SourceFrameEditor, SourceFrameError> {
     let PreparedFrame {
         prepared,
         body,
@@ -207,26 +219,44 @@ pub(crate) fn compute(
         limits,
     };
     let mut paragraphs = Vec::new();
+    let mut maps = Vec::new();
+    let mut cells = 0usize;
+    let mut lines = 0usize;
     let mut y = Fixed::ZERO;
     for (i, (p, spec)) in prepared.paragraphs().iter().zip(specs).enumerate() {
         cancel(check)?;
-        let computed = manifest
-            .paragraph_geometry(
-                ManifestFlowInput {
-                    paragraph: input(p),
-                    styles: &p.geometry,
-                    strut_style: p.end_style,
-                    spacing: spec.spacing.clone(),
-                    widths: spec.widths,
-                    overflow: spec.overflow,
-                    wrapping: spec.wrapping,
-                    hanging_punctuation: spec.hanging_punctuation,
-                },
-                bounds_tolerance,
-                &mut worker,
-                check,
-            )
-            .map_err(|e| prepared.text_error(i as u32, e))?;
+        let flow = ManifestFlowInput {
+            paragraph: input(p),
+            styles: &p.geometry,
+            strut_style: p.end_style,
+            spacing: spec.spacing.clone(),
+            widths: spec.widths,
+            overflow: spec.overflow,
+            wrapping: spec.wrapping,
+            hanging_punctuation: spec.hanging_punctuation,
+        };
+        let computed = if let Some(interaction_limits) = interaction_limits {
+            let result = manifest
+                .paragraph_editor_geometry(flow, bounds_tolerance, &mut worker, check)
+                .map_err(|e| prepared.text_error(i as u32, e))?;
+            if let Some(map) = result.interaction {
+                cells = cells
+                    .checked_add(map.cells.len())
+                    .ok_or(SourceFrameError::Limit("frame interaction cells"))?;
+                lines = lines
+                    .checked_add(map.lines.len())
+                    .ok_or(SourceFrameError::Limit("frame interaction lines"))?;
+                if cells > interaction_limits.max_cells || lines > interaction_limits.max_lines {
+                    return Err(SourceFrameError::Limit("frame interaction geometry"));
+                }
+                maps.push(map);
+            }
+            result.computed
+        } else {
+            manifest
+                .paragraph_geometry(flow, bounds_tolerance, &mut worker, check)
+                .map_err(|e| prepared.text_error(i as u32, e))?
+        };
         let incomplete = || {
             mapping(SourceFrameIssue::IncompleteParagraph {
                 paragraph: prepared.source().paragraph_start + i as u32,
@@ -388,7 +418,7 @@ pub(crate) fn compute(
     } else {
         Fixed::ZERO
     };
-    Ok(SourceFramePlan {
+    let frame = SourceFramePlan {
         profile: PROFILE.into(),
         text,
         inputs,
@@ -401,6 +431,14 @@ pub(crate) fn compute(
         bounds,
         alignment_rounding_bound: align,
         work: worker.work,
+    };
+    if interaction_limits.is_some() && maps.len() != frame.paragraphs.len() {
+        return Err(mo_text::TextError::Invalid("incomplete frame interaction").into());
+    }
+    Ok(interaction::SourceFrameEditor {
+        frame,
+        maps,
+        limits: interaction_limits.unwrap_or_default(),
     })
 }
 

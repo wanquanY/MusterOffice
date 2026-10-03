@@ -27,6 +27,14 @@ pub struct ParagraphGeometryPaths {
     pub paths: ParagraphPathsResult,
     pub precise: Option<crate::geometry::PreciseGeometryLayout>,
 }
+/// One layout evaluation owns both rendering and editing coordinates. The map
+/// is computed data, not a deserializable replacement supplied by the host.
+#[derive(Debug, Clone, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct ParagraphEditorGeometry {
+    pub geometry: ParagraphGeometryPaths,
+    pub interaction: Option<crate::interaction::InteractionMap>,
+}
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "kind", rename_all = "camelCase", deny_unknown_fields)]
 pub enum PathSceneIssue {

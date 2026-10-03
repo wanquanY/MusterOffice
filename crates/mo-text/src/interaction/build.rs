@@ -60,12 +60,12 @@ fn boundary(boundaries: &[TextBoundary], scalar: u32) -> Result<usize, TextError
         .map_err(|_| TextError::Invalid("shaped cluster is not grapheme aligned"))
 }
 
-pub(super) struct Input<'a> {
+pub(crate) struct Input<'a> {
     pub q: &'a crate::geometry::LineGeometryRequest,
     pub geometry: &'a crate::geometry::LineGeometryResult,
     pub precise: &'a PrecisePlacements,
 }
-pub(super) fn build(
+pub(crate) fn build(
     input: Input<'_>,
     boundaries: Vec<TextBoundary>,
     fonts: &[VerifiedFont<'_>],

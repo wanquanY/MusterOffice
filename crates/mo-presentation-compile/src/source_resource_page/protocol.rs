@@ -43,7 +43,7 @@ pub struct RetainedResourceDocumentRequest<D = mo_presentation_model::Document> 
     pub fonts: Option<FontManifest>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct AuthorResourceRange {
     pub id: mo_common::ResourceId,

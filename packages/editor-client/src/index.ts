@@ -1,5 +1,6 @@
 /** Thin typed computation facade. Use in a host Worker; persistence, history
  * membership, authorization, cancellation and publication belong to the host. */
+export * from './page.js';
 import type { Document, SnapshotRecord, Transaction, HistoryTransaction, TextEditCommand, KernelRequest } from '../../contracts/src/generated/kernel-request.js';
 import type { KernelResponse, KernelError } from '../../contracts/src/generated/kernel-response.js';
 import type { PagePlacementRequest } from '../../contracts/src/generated/page-placement-request.js';

@@ -5,7 +5,7 @@ mod clip;
 mod decorations;
 mod glyphs;
 mod observations;
-mod placement;
+pub(crate) mod placement;
 mod precision;
 mod prepare;
 pub(crate) mod retained;
@@ -51,6 +51,10 @@ pub(crate) struct Compiler<'a, 'm, 'font> {
     sources: Vec<TextPagePaintSource>,
     decoration_sources: Vec<TextDecorationSource>,
     work: FrameWork,
+    interaction_limits: Option<interaction::FrameInteractionLimits>,
+    interaction_maps: Vec<Vec<mo_text::interaction::InteractionMap>>,
+    interaction_cells: usize,
+    interaction_lines: usize,
 }
 impl<'a, 'm, 'font> Compiler<'a, 'm, 'font> {
     pub(crate) fn new(
@@ -69,19 +73,44 @@ impl<'a, 'm, 'font> Compiler<'a, 'm, 'font> {
             sources: vec![],
             decoration_sources: vec![],
             work: FrameWork::default(),
+            interaction_limits: None,
+            interaction_maps: vec![],
+            interaction_cells: 0,
+            interaction_lines: 0,
         }
     }
+    pub(crate) fn retain_interaction(
+        mut self,
+        limits: interaction::FrameInteractionLimits,
+    ) -> Self {
+        self.interaction_limits = Some(limits);
+        self
+    }
     pub(crate) fn finish(self) -> Result<TextPageContent, SourcePageError> {
+        self.finish_with_interaction().map(|(text, _)| text)
+    }
+    pub(crate) fn finish_with_interaction(
+        self,
+    ) -> Result<(TextPageContent, Option<TextPageInteraction>), SourcePageError> {
         self.ensure_ready()?;
         if !self.pending.is_empty() {
             return Err(SourcePageError::Invalid("unpainted prepared source text"));
         }
-        Ok(TextPageContent {
-            texts: self.bindings,
-            text_sources: self.sources,
-            decoration_sources: self.decoration_sources,
-            text_work: self.work,
-        })
+        if self.interaction_limits.is_some() && self.interaction_maps.len() != self.bindings.len() {
+            return Err(SourcePageError::Invalid("incomplete page text interaction"));
+        }
+        Ok((
+            TextPageContent {
+                texts: self.bindings,
+                text_sources: self.sources,
+                decoration_sources: self.decoration_sources,
+                text_work: self.work,
+            },
+            self.interaction_limits.map(|limits| TextPageInteraction {
+                maps: self.interaction_maps,
+                limits,
+            }),
+        ))
     }
 
     fn ensure_ready(&self) -> Result<(), SourcePageError> {
@@ -146,13 +175,22 @@ impl<'a, 'm, 'font> Compiler<'a, 'm, 'font> {
         limits.max_request_words -= self.work.request_words;
         limits.max_glyphs -= self.work.glyphs;
         limits.max_path_commands -= self.work.path_commands;
-        let frame = source_frame::compute(
+        let interaction_limits = self.interaction_limits.map(|mut limits| {
+            limits.max_cells -= self.interaction_cells;
+            limits.max_lines -= self.interaction_lines;
+            limits
+        });
+        let editor = source_frame::compute_with_interaction(
             pending.frame,
             self.manifest,
             &mut self.backend,
             limits,
+            interaction_limits,
             check,
         )?;
+        let (frame, maps) = editor.into_parts();
+        self.interaction_cells += maps.iter().map(|m| m.cells.len()).sum::<usize>();
+        self.interaction_lines += maps.iter().map(|m| m.lines.len()).sum::<usize>();
         let (clusters, owners) = glyphs::bind(&frame, &pending.paints, check)?;
         let mut worker = source_frame::backend::FrameBackend {
             inner: &mut self.backend,
@@ -260,6 +298,9 @@ impl<'a, 'm, 'font> Compiler<'a, 'm, 'font> {
         } else {
             uncertainty.checked_add(Fixed::from_raw(8))?
         };
+        if self.interaction_limits.is_some() {
+            self.interaction_maps.push(maps);
+        }
         self.bindings.push(TextPageBinding {
             binding,
             page_ink: observations::place(

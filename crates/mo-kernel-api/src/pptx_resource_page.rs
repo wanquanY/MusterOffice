@@ -1,6 +1,6 @@
 //! Source bytes, explicit font resources, and independent component capabilities
 //! enter once. The host owns worker lifecycle, cancellation and publication.
-mod author;
+pub(crate) mod author;
 mod batch;
 pub use batch::{
     ResourceDocumentInputs, render_resource_document_images, render_resource_document_plan,

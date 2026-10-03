@@ -1,6 +1,7 @@
 //! Isolated raster worker. Explicit bytes only; the parent controls publication.
 use mo_harfbuzz_sys::NativeShaper;
 use mo_skia_sys::NativeRaster;
+mod editor_page;
 mod playback;
 mod preview_batch;
 mod source_playback;
@@ -8,6 +9,9 @@ use std::io::{self, Read, Write};
 type Execute = fn(&str, &mut dyn mo_raster::RasterBackend, &dyn Fn() -> bool) -> (String, Vec<u8>);
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = std::env::args_os().skip(1).collect();
+    if args.len() == 1 && args[0] == "--editor-page-session" {
+        return editor_page::run();
+    }
     if args.len() == 1 && args[0] == "--playback-session" {
         return playback::run();
     }

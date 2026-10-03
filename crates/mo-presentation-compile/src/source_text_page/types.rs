@@ -148,3 +148,9 @@ pub(crate) fn capacity(
         page_ink: Some(texts.iter().map(|text| text.page_ink.clone()).collect()),
     })
 }
+
+/// Private compiler-owned maps in exactly the text binding order of this page.
+pub(crate) struct TextPageInteraction {
+    pub maps: Vec<Vec<mo_text::interaction::InteractionMap>>,
+    pub limits: crate::source_frame::interaction::FrameInteractionLimits,
+}

@@ -1,3 +1,4 @@
+mod editor_page;
 mod image_decode;
 mod playback;
 use wasm_bindgen::prelude::*;

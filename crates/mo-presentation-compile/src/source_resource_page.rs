@@ -39,12 +39,14 @@ pub struct PreparedResourcePage {
     built: source_page::BuiltPage,
     text: Option<source_text_page::TextPageContent>,
     images: resources::Resources,
+    interaction: Option<source_text_page::TextPageInteraction>,
 }
 pub(crate) struct PageView<'a> {
     pub source_owner: Option<&'a std::sync::Arc<SourceIndex>>,
     pub request: &'a SourcePageRequest,
     pub transforms: Option<&'a crate::source_placement::SourceProperties>,
     pub decode_policy: DecodePolicy<'a>,
+    pub interaction_limits: Option<crate::source_frame::interaction::FrameInteractionLimits>,
 }
 pub fn prepare(
     package: &dyn PackageRead,
@@ -63,6 +65,7 @@ pub fn prepare(
             request: q,
             transforms: None,
             decode_policy: DecodePolicy::Viewport,
+            interaction_limits: None,
         },
         decoder,
         text,
@@ -109,6 +112,7 @@ pub fn prepare_input(
             request: q,
             transforms: None,
             decode_policy: DecodePolicy::Viewport,
+            interaction_limits: None,
         },
         decoder,
         text,
@@ -117,7 +121,7 @@ pub fn prepare_input(
     )
 }
 
-fn prepare_input_view(
+pub(crate) fn prepare_input_view(
     input: &dyn ImageInput,
     index: &SourceIndex,
     view: PageView<'_>,
@@ -133,8 +137,14 @@ fn prepare_input_view(
     let q = view.request;
     let mut prepared =
         source_page::preflight_sampled(index, q, text.is_some(), true, view.transforms, check)?;
-    let mut text =
-        text.map(|t| source_text_page::Compiler::new(t.manifest, t.backend, options.text_limits));
+    let mut text = text.map(|t| {
+        let compiler = source_text_page::Compiler::new(t.manifest, t.backend, options.text_limits);
+        if let Some(limits) = view.interaction_limits {
+            compiler.retain_interaction(limits)
+        } else {
+            compiler
+        }
+    });
     if let Some(text) = &mut text {
         text.preflight_shared(
             index,
@@ -170,13 +180,20 @@ fn prepare_input_view(
         &images.paints,
         check,
     )?;
-    let text = text.map(source_text_page::Compiler::finish).transpose()?;
+    let (text, interaction) = match text {
+        Some(text) => {
+            let (content, interaction) = text.finish_with_interaction()?;
+            (Some(content), interaction)
+        }
+        None => (None, None),
+    };
     cancel(check)?;
     Ok(PreparedResourcePage {
         tables,
         built,
         text,
         images,
+        interaction,
     })
 }
 impl PreparedResourcePage {
@@ -242,6 +259,48 @@ impl PreparedResourcePage {
                 encoded_bytes: resource_info.encoded_bytes,
                 gather_copy_bytes: resource_info.gather_copy_bytes,
             },
+            pixels: image.pixels,
+        })
+    }
+}
+
+impl PreparedResourcePage {
+    pub(crate) fn editor_plan(
+        mut self,
+        check: &dyn Fn() -> bool,
+    ) -> Result<crate::source_editor_page::SourceEditorPage, SourcePageError> {
+        let interaction = self.interaction.take().ok_or(SourcePageError::Invalid(
+            "page was not prepared for interaction",
+        ))?;
+        crate::source_editor_page::SourceEditorPage::new(self.plan(check)?, interaction)
+    }
+    pub(crate) fn editor_render(
+        self,
+        backend: &mut dyn RasterBackend,
+        check: &dyn Fn() -> bool,
+    ) -> Result<crate::source_editor_page::EditorPageImage, SourcePageError> {
+        let interaction = self.interaction.ok_or(SourcePageError::Invalid(
+            "page was not prepared for interaction",
+        ))?;
+        let images = PreparedImages::new(&self.images.manifest, &self.images.pixels, check)?;
+        let compiled = mo_render::compile_images(&self.built.raster, &images, check)?;
+        let page = self.built.finish(
+            compiled.work().clone(),
+            compiled.raster().work().coordinate_error_bound,
+        )?;
+        let plan = SourceResourcePagePlan {
+            profile: PROFILE.into(),
+            page,
+            text: self.text,
+            images: self.images.info,
+            image_work: compiled.raster().work().clone(),
+            resources_sha256: images.sha256().clone(),
+        };
+        let page = crate::source_editor_page::SourceEditorPage::new(plan, interaction)?;
+        let image = mo_render::render_compiled_images(compiled, backend, check)?;
+        cancel(check)?;
+        Ok(crate::source_editor_page::EditorPageImage {
+            page,
             pixels: image.pixels,
         })
     }

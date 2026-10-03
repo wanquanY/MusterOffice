@@ -390,6 +390,7 @@ impl SourcePlaybackSample<'_> {
                 request: &self.plan.page,
                 transforms: Some(&self.transforms),
                 decode_policy: DecodePolicy::Viewport,
+                interaction_limits: None,
             },
             decoder,
             text,

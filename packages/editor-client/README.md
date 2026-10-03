@@ -20,6 +20,18 @@ IME handling. See [paragraph interaction](../../docs/implementation/paragraph-te
 Source-backed documents retain their
 existing operation restrictions and require their source placement path.
 
+`PresentationEditorPage` now owns a rendered page and its original interaction
+maps. `prepare` accepts a PPTX, direct author document, or retained source overlay,
+explicit material/font bytes and decoder/shaper/raster ports. It returns RGBA
+pixels, a view identity, native/model text bindings and grapheme offsets. `query`
+reuses the retained page without invoking any component; it supports frame-targeted
+caret, hit and cross-paragraph selection in Q32 page EMU, including native clips,
+rotation, reflection and nested group transforms. `clear` releases that view;
+`close` frees the WASM owner and defers release during a component callback.
+Failed typed preparation preserves the previous page. Bridge traps close the
+owner. This is a computation API, not a persistence or authorization session.
+See [editor page interaction](../../docs/implementation/editor-page-interaction.md).
+
 The receiving host authorizes all reads and writes, resolves original history
 material from its own durable receipts, verifies resources, and commits the
 candidate and receipt with compare-and-swap. A successful calculation is not a

@@ -60,6 +60,12 @@ pub struct ManifestGeometryPaths {
 }
 #[derive(Debug, Clone, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
+pub struct ManifestEditorGeometry {
+    pub computed: ManifestGeometryPaths,
+    pub interaction: Option<crate::interaction::InteractionMap>,
+}
+#[derive(Debug, Clone, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct ManifestInteractionResult {
     pub profile: String,
     pub bindings: Vec<ManifestStyleBinding>,
@@ -177,6 +183,28 @@ impl<'m, 'font> PreparedManifest<'m, 'font> {
         backend: &mut dyn backend::TextBackend,
         check: &dyn Fn() -> bool,
     ) -> Result<ManifestGeometryPaths, TextError> {
+        self.paragraph_computation(input, bounds_tolerance, backend, check, false)
+            .map(|result| result.computed)
+    }
+    /// Compute paths and interaction from one line search, shaping and metric
+    /// evaluation. Normal preview/rendering does not allocate interaction data.
+    pub fn paragraph_editor_geometry(
+        &self,
+        input: ManifestFlowInput<'_>,
+        bounds_tolerance: Fixed,
+        backend: &mut dyn backend::TextBackend,
+        check: &dyn Fn() -> bool,
+    ) -> Result<ManifestEditorGeometry, TextError> {
+        self.paragraph_computation(input, bounds_tolerance, backend, check, true)
+    }
+    fn paragraph_computation(
+        &self,
+        input: ManifestFlowInput<'_>,
+        bounds_tolerance: Fixed,
+        backend: &mut dyn backend::TextBackend,
+        check: &dyn Fn() -> bool,
+        interaction: bool,
+    ) -> Result<ManifestEditorGeometry, TextError> {
         cancelled(check)?;
         if input.styles.len() > 256 {
             return Err(TextError::Limit("manifest geometry styles"));
@@ -188,26 +216,44 @@ impl<'m, 'font> PreparedManifest<'m, 'font> {
             self.limits,
             check,
         )?;
-        let geometry = scene::paragraph_geometry_using(
-            &flow::FlowInput {
-                paragraph: &paragraph,
-                styles: input.styles,
-                strut_style: input.strut_style,
-                spacing: input.spacing,
-                widths: input.widths,
-                overflow: input.overflow,
-                wrapping: input.wrapping,
-                hanging_punctuation: input.hanging_punctuation,
+        let flow = flow::FlowInput {
+            paragraph: &paragraph,
+            styles: input.styles,
+            strut_style: input.strut_style,
+            spacing: input.spacing,
+            widths: input.widths,
+            overflow: input.overflow,
+            wrapping: input.wrapping,
+            hanging_punctuation: input.hanging_punctuation,
+        };
+        let (geometry, interaction) = if interaction {
+            let r = scene::paragraph_editor_using(
+                &flow,
+                bounds_tolerance,
+                ResourceInput::Prepared(&self.resources),
+                backend,
+                check,
+            )?;
+            (r.geometry, r.interaction)
+        } else {
+            (
+                scene::paragraph_geometry_using(
+                    &flow,
+                    bounds_tolerance,
+                    ResourceInput::Prepared(&self.resources),
+                    backend,
+                    check,
+                )?,
+                None,
+            )
+        };
+        Ok(ManifestEditorGeometry {
+            computed: ManifestGeometryPaths {
+                profile: "explicit-font-resource-manifest-draft-v1".into(),
+                bindings,
+                geometry,
             },
-            bounds_tolerance,
-            ResourceInput::Prepared(&self.resources),
-            backend,
-            check,
-        )?;
-        Ok(ManifestGeometryPaths {
-            profile: "explicit-font-resource-manifest-draft-v1".into(),
-            bindings,
-            geometry,
+            interaction,
         })
     }
     /// Shares the renderer's verified resources and line-flow engine. Source compilers

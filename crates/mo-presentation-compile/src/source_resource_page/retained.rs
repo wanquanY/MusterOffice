@@ -91,6 +91,7 @@ impl ResourcePagePlan {
                 request: &request,
                 transforms: Some(visibility),
                 decode_policy,
+                interaction_limits: None,
             },
             decoder,
             text,
@@ -102,6 +103,7 @@ impl ResourcePagePlan {
             built,
             text,
             images,
+            interaction: _,
         } = prepared;
         let images = RetainedImages::new(
             images,
