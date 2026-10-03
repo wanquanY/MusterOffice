@@ -77,6 +77,33 @@
         "binding": {
           "$ref": "#/$defs/PlaybackBinding"
         },
+        "expectedViewportRevision": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "operation": {
+          "type": "string",
+          "const": "resize"
+        },
+        "viewport": {
+          "$ref": "#/$defs/RasterViewport"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "binding",
+        "expectedViewportRevision",
+        "viewport"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "binding": {
+          "$ref": "#/$defs/PlaybackBinding"
+        },
         "generation": {
           "$ref": "#/$defs/PlaybackGeneration"
         },

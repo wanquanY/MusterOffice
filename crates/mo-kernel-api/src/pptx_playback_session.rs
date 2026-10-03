@@ -1,5 +1,6 @@
 //! Explicit owner for imported source timing and immutable local resources.
 mod prepared;
+mod resize;
 use crate::playback_owner::{Bound, Owner};
 use crate::*;
 use mo_common::{Digest, from_json_str};
@@ -36,6 +37,12 @@ pub enum PptxPlaybackSessionRequest {
     Render {
         sample: PlaybackSampleRequest,
     },
+    Resize {
+        binding: PlaybackBinding,
+        #[serde(rename = "expectedViewportRevision")]
+        expected_viewport_revision: u32,
+        viewport: mo_raster::RasterViewport,
+    },
     Advance {
         binding: PlaybackBinding,
         generation: PlaybackGeneration,
@@ -50,6 +57,8 @@ pub struct PptxPlaybackSessionInfo {
     pub profile: String,
     /// In-process implementation/content identity, not host authorization.
     pub plan_id: Digest,
+    pub viewport: mo_raster::RasterViewport,
+    pub viewport_revision: u32,
     pub source_sha256: Digest,
     pub slide: String,
     pub binding: PlaybackBinding,
@@ -72,6 +81,7 @@ pub enum PptxPlaybackSessionResponse {
     Prepared { info: Box<PptxPlaybackSessionInfo> },
     Inspected { info: Box<PptxPlaybackSessionInfo> },
     TimingInspected { info: Box<PlaybackTimingInfo> },
+    Resized { info: Box<PptxPlaybackSessionInfo> },
     Advanced { info: Box<PptxPlaybackSessionInfo> },
     Disposed { binding: PlaybackBinding },
     Rendered { info: Box<PptxPlaybackRasterInfo> },
@@ -108,6 +118,7 @@ impl From<crate::playback_owner::Failure> for PptxPlaybackSessionFailure {
 struct Ready {
     plan: RetainedSourcePlaybackPlan,
     info: PptxPlaybackSessionInfo,
+    request: PptxResourcePageRequest,
 }
 impl Bound for Ready {
     fn binding(&self) -> &PlaybackBinding {
@@ -141,10 +152,12 @@ impl PptxPlaybackSession {
         use PptxPlaybackSessionRequest as Q;
         use PptxPlaybackSessionResponse as R;
         cancel(check)?;
-        if !matches!(request, Q::Prepare { .. }) && (!source.is_empty() || !fonts.is_empty()) {
+        let accepts_source = matches!(request, Q::Prepare { .. } | Q::Resize { .. });
+        let accepts_fonts = matches!(request, Q::Prepare { .. });
+        if (!accepts_source && !source.is_empty()) || (!accepts_fonts && !fonts.is_empty()) {
             return Err(fail(
                 Code::InputInvalid,
-                "source and font bytes are only admitted during prepare",
+                "source bytes require prepare or resize; font bytes require prepare",
             ));
         }
         let response = match request {
@@ -210,12 +223,18 @@ impl PptxPlaybackSession {
                 let info = PptxPlaybackSessionInfo {
                     profile: PPTX_PLAYBACK_SESSION_PROFILE.into(),
                     plan_id: id,
-                    source_sha256: q.page.page.expected_source_sha256,
-                    slide: q.page.page.slide,
+                    source_sha256: q.page.page.expected_source_sha256.clone(),
+                    viewport: q.page.page.viewport.clone(),
+                    viewport_revision: 0,
+                    slide: q.page.page.slide.clone(),
                     binding: q.binding,
                     preparation: plan.preparation().clone(),
                 };
-                let ready = Box::new(Ready { plan, info });
+                let ready = Box::new(Ready {
+                    plan,
+                    info,
+                    request: q.page,
+                });
                 let info = ready.info();
                 cancel(check)?;
                 self.state = Owner::Ready(ready);
@@ -249,6 +268,24 @@ impl PptxPlaybackSession {
                     },
                     page.pixels,
                 ));
+            }
+            Q::Resize {
+                binding,
+                expected_viewport_revision,
+                viewport,
+            } => {
+                let resources = resources
+                    .ok_or_else(|| fail(Code::InputInvalid, "resize requires an image decoder"))?;
+                R::Resized {
+                    info: self.resize(
+                        &binding,
+                        expected_viewport_revision,
+                        viewport,
+                        source,
+                        resources.decoder,
+                        check,
+                    )?,
+                }
             }
             Q::Advance {
                 binding,

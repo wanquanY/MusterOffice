@@ -1,4 +1,4 @@
-//! One source owner per isolated process; framed resource bytes only at prepare.
+//! One source owner per isolated process; framed source bytes at prepare/resize, fonts only at prepare.
 use std::io::{self, Read, Write};
 pub fn run() -> Result<(), Box<dyn std::error::Error>> {
     let mut input = io::stdin().lock();

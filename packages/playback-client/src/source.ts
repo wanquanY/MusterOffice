@@ -1,4 +1,5 @@
-import type { PptxPlaybackPrepareRequest, EventHistory, RationalTime } from '../../contracts/src/generated/pptx-playback-session-request.js';
+import {sameViewport} from './viewport.js';
+import type { PptxPlaybackPrepareRequest, EventHistory, RationalTime, RasterViewport } from '../../contracts/src/generated/pptx-playback-session-request.js';
 import type { PptxPlaybackSessionInfo, PptxPlaybackSessionResponse, PptxPlaybackRasterInfo, PlaybackTimingInfo } from '../../contracts/src/generated/pptx-playback-session-response.js';
 import type { DecoderPort, Frame, PlaybackModule, RasterPort, ShapingPort, WasmSourceOwner } from './ports.js';
 import type {SteppedRasterPort, WasmFrame} from './ports.js';
@@ -20,7 +21,7 @@ export interface SourceInputs {
 export class SourcePlayback {
   #info: PptxPlaybackSessionInfo;
   readonly #owner: Owner<WasmSourceOwner>;
-  readonly #size: readonly [number, number];
+  #size: readonly [number, number];
   private constructor(owner: Owner<WasmSourceOwner>, info: PptxPlaybackSessionInfo, size: readonly [number, number]) {
     this.#owner = owner; this.#info = info; this.#size = size;
   }
@@ -31,11 +32,13 @@ export class SourcePlayback {
       inputBytes(source); inputBytes(fonts);
       const binding = { ...request.binding }, slide = request.page.page.slide;
       const digest = request.page.page.expectedSourceSha256;
-      const size = [request.page.page.viewport.width, request.page.page.viewport.height] as const;
+      const viewport = structuredClone(request.page.page.viewport);
+      const size = [viewport.width, viewport.height] as const;
       const reply = response(decode(raw.prepare(encode({operation: 'prepare', request}),
         source, fonts, decoder, shaping)));
       requireResponse(reply.status === 'prepared' && sameBinding(reply.info.binding, binding) &&
-        reply.info.slide === slide && reply.info.sourceSha256 === digest);
+        reply.info.slide === slide && reply.info.sourceSha256 === digest &&
+        reply.info.viewportRevision === 0 && sameViewport(reply.info.viewport, viewport));
       return new SourcePlayback(owner, reply.info, size);
     }));
   }
@@ -66,7 +69,7 @@ export class SourcePlayback {
       reply.info.playback.sourceSha256 === this.#info.sourceSha256 && reply.info.playback.slide === this.#info.slide);
     const image = reply.info.page.page.scene.raster;
     frameSize(image.width, image.height, image.byteLength, result.pixels, this.#size);
-    return {info: reply.info, pixels: result.pixels};
+    return {info: reply.info, pixels: result.pixels, viewportRevision: this.#info.viewportRevision};
   }
   timing(): PlaybackTimingInfo {
     return this.#owner.run(raw => {
@@ -75,12 +78,31 @@ export class SourcePlayback {
       return reply.info;
     });
   }
+  /** Changes only the view; playback generation, time and input history remain valid. */
+  resize(viewport: RasterViewport, inputs: Pick<SourceInputs, 'source' | 'decoder'>): PptxPlaybackSessionInfo {
+    return this.#owner.run(raw => {
+      const {source, decoder} = inputs;
+      inputBytes(source);
+      const view = structuredClone(viewport);
+      const request = encode({operation: 'resize', binding: this.#info.binding,
+        expectedViewportRevision: this.#info.viewportRevision, viewport: view});
+      const reply = response(decode(raw.resize(request, source, decoder)));
+      requireResponse(reply.status === 'resized' && sameBinding(reply.info.binding, this.#info.binding) &&
+        reply.info.profile === this.#info.profile && reply.info.slide === this.#info.slide &&
+        reply.info.sourceSha256 === this.#info.sourceSha256 &&
+        reply.info.viewportRevision === this.#info.viewportRevision + 1 && sameViewport(reply.info.viewport, view));
+      this.#info = reply.info;
+      this.#size = [view.width, view.height];
+      return this.info;
+    });
+  }
   advance(generation: string): PptxPlaybackSessionInfo {
     return this.#owner.run(raw => {
       const reply = response(decode(raw.command(encode({operation: 'advance', binding: this.#info.binding, generation}))));
       requireResponse(reply.status === 'advanced' &&
         sameBinding(reply.info.binding, {...this.#info.binding, generation}) &&
         reply.info.profile === this.#info.profile && reply.info.planId === this.#info.planId &&
+        reply.info.viewportRevision === this.#info.viewportRevision && sameViewport(reply.info.viewport, this.#info.viewport) &&
         reply.info.slide === this.#info.slide && reply.info.sourceSha256 === this.#info.sourceSha256);
       this.#info = reply.info;
       return this.info;

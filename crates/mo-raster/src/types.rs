@@ -23,6 +23,27 @@ pub struct RasterViewport {
     /// Straight sRGB RGBA8; output is premultiplied.
     pub background: [u8; 4],
 }
+impl RasterViewport {
+    /// Shared admission for rendering and state-preserving viewport changes.
+    /// Actual geometry is still certified by the page/raster compiler.
+    pub fn validate(&self) -> Result<(), crate::RasterError> {
+        use crate::RasterError;
+        if self.width == 0 || self.height == 0 {
+            return Err(RasterError::Invalid("zero viewport size"));
+        }
+        if self.width > 8192
+            || self.height > 8192
+            || u64::from(self.width) * u64::from(self.height) > 16777216
+        {
+            return Err(RasterError::Limit("viewport pixels"));
+        }
+        if !(256..=1 << 24).contains(&self.coordinate_tolerance.raw()) {
+            return Err(RasterError::Invalid("coordinate tolerance"));
+        }
+        crate::number::Scale::new(self.scale)?;
+        Ok(())
+    }
+}
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum FillRule {

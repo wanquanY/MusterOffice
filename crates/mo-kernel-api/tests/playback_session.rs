@@ -521,3 +521,6 @@ fn validated_pixels_cannot_bypass_owner_plan_or_generation_fences() {
         }
     }
 }
+
+#[path = "playback_session/viewport.rs"]
+mod viewport;

@@ -62,6 +62,23 @@
         },
         "status": {
           "type": "string",
+          "const": "resized"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "info"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "info": {
+          "$ref": "#/$defs/PptxPlaybackSessionInfo"
+        },
+        "status": {
+          "type": "string",
           "const": "advanced"
         }
       },
@@ -3466,6 +3483,27 @@
         "denominator"
       ]
     },
+    "PixelScale": {
+      "type": "object",
+      "properties": {
+        "denominator": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "numerator": {
+          "description": "Positive rational pixels per EMU; normalized internally.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "numerator",
+        "denominator"
+      ]
+    },
     "PlaceholderMatchRule": {
       "type": "string",
       "enum": [
@@ -3624,6 +3662,7 @@
         "ALREADY_PREPARED",
         "DISPOSED",
         "BINDING_CONFLICT",
+        "VIEWPORT_CONFLICT",
         "GENERATION_NOT_INCREASING",
         "RASTER_REQUIRED"
       ]
@@ -3844,12 +3883,22 @@
         },
         "sourceSha256": {
           "$ref": "#/$defs/Digest"
+        },
+        "viewport": {
+          "$ref": "#/$defs/RasterViewport"
+        },
+        "viewportRevision": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
         }
       },
       "additionalProperties": false,
       "required": [
         "profile",
         "planId",
+        "viewport",
+        "viewportRevision",
         "sourceSha256",
         "slide",
         "binding",
@@ -4202,6 +4251,53 @@
         "sha256",
         "frameSha256",
         "work"
+      ]
+    },
+    "RasterViewport": {
+      "type": "object",
+      "properties": {
+        "background": {
+          "description": "Straight sRGB RGBA8; output is premultiplied.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint8",
+            "maximum": 255,
+            "minimum": 0
+          },
+          "maxItems": 4,
+          "minItems": 4
+        },
+        "coordinateTolerance": {
+          "description": "Raw Q32 pixels; 256..=2^24 (at most 1/256 pixel).",
+          "$ref": "#/$defs/FixedQ32"
+        },
+        "height": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "origin": {
+          "description": "Q32 EMU. Subtracted before converting to device-space float32.",
+          "$ref": "#/$defs/Point"
+        },
+        "scale": {
+          "$ref": "#/$defs/PixelScale"
+        },
+        "width": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height",
+        "origin",
+        "scale",
+        "coordinateTolerance",
+        "background"
       ]
     },
     "RasterWork": {

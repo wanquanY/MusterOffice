@@ -59,16 +59,7 @@ pub(crate) fn compile_inner(
 ) -> Result<(CompiledRaster, ImageWork), RasterError> {
     cancel(check)?;
     let v = &request.viewport;
-    if v.width == 0 || v.height == 0 {
-        return Err(RasterError::Invalid("zero viewport size"));
-    }
-    if v.width > 8192 || v.height > 8192 || u64::from(v.width) * u64::from(v.height) > 16777216 {
-        return Err(RasterError::Limit("viewport pixels"));
-    }
-    let tolerance = v.coordinate_tolerance.raw();
-    if !(256..=1 << 24).contains(&tolerance) {
-        return Err(RasterError::Invalid("coordinate tolerance"));
-    }
+    v.validate()?;
     let scale = Scale::new(v.scale)?;
     if request.paths.len() > 4096 || request.draws.len() > crate::MAX_DRAWS {
         return Err(RasterError::Limit("paths or draws"));

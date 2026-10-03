@@ -18,6 +18,10 @@ export type PptxPlaybackSessionResponse =
     }
   | {
       info: PptxPlaybackSessionInfo;
+      status: "resized";
+    }
+  | {
+      info: PptxPlaybackSessionInfo;
       status: "advanced";
     }
   | {
@@ -41,6 +45,11 @@ export type PlaybackGeneration = string;
 export type Digest = string;
 
 export type PlaybackSessionId = string;
+
+/**
+ * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
+ */
+export type FixedQ32 = string;
 
 /**
  * Canonical uint64 timeline work count; never wraps.
@@ -75,11 +84,6 @@ export type PhysicalPixelSize =
 export type Emu = string;
 
 export type SourceColor = "assumedSrgb" | "icc" | "pngColor";
-
-/**
- * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
- */
-export type FixedQ32 = string;
 
 export type SurfaceKind = "slide" | "master" | "layout";
 
@@ -128,6 +132,7 @@ export type PlaybackSessionFailureCode =
   | "ALREADY_PREPARED"
   | "DISPOSED"
   | "BINDING_CONFLICT"
+  | "VIEWPORT_CONFLICT"
   | "GENERATION_NOT_INCREASING"
   | "RASTER_REQUIRED";
 

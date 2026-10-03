@@ -311,6 +311,27 @@ impl RetainedSourcePlaybackPlan {
     pub fn preparation(&self) -> &ResourcePreparationInfo {
         self.page.info()
     }
+    pub fn prepare_resize(
+        &mut self,
+        package: &dyn PackageRead,
+        viewport: mo_raster::RasterViewport,
+        decoder: &mut dyn mo_image::ImageDecoder,
+        check: &dyn Fn() -> bool,
+    ) -> Result<SourceViewportUpdate<'_>, SourcePlaybackError> {
+        let page = self.page.prepare_resize(
+            package,
+            viewport.clone(),
+            &self.timing.resource_visibility,
+            DecodePolicy::Retained(&self.timing.geometry_owners),
+            decoder,
+            check,
+        )?;
+        Ok(SourceViewportUpdate {
+            page,
+            current: &mut self.timing.page.viewport,
+            viewport,
+        })
+    }
     pub fn advance_generation(
         &mut self,
         expected: &PlaybackBinding,
@@ -368,5 +389,22 @@ impl SourcePlaybackSample<'_> {
             options,
             check,
         )
+    }
+}
+
+/// Privately admitted resources borrowed from their exact owner. Dropping this
+/// candidate aborts; commit is infallible and cannot target another session.
+pub struct SourceViewportUpdate<'a> {
+    page: ResourceViewportUpdate<'a>,
+    current: &'a mut mo_raster::RasterViewport,
+    viewport: mo_raster::RasterViewport,
+}
+impl SourceViewportUpdate<'_> {
+    pub fn preparation(&self) -> &ResourcePreparationInfo {
+        self.page.info()
+    }
+    pub fn commit(self) {
+        self.page.commit();
+        *self.current = self.viewport;
     }
 }

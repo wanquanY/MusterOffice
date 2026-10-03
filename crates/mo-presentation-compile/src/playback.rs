@@ -134,6 +134,7 @@ impl PlaybackPagePlan {
         limits: TimelineLimits,
         check: &dyn Fn() -> bool,
     ) -> Result<Self, PlaybackError> {
+        request.viewport.validate().map_err(PageError::from)?;
         let base = crate::page_placements(&request.page, check).map_err(PageError::from)?;
         let empty = Timeline {
             format: TimelineVersion::V01,
@@ -166,6 +167,35 @@ impl PlaybackPagePlan {
     }
     pub fn binding(&self) -> &PlaybackBinding {
         &self.binding
+    }
+    pub fn viewport(&self) -> &mo_raster::RasterViewport {
+        &self.request.viewport
+    }
+    pub fn defaults(&self) -> &crate::PagePaintDefaults {
+        &self.request.defaults
+    }
+    /// Certifies the base pose at the new viewport before committing it. The
+    /// timing sampler and its consumed event prefix are neither replayed nor cleared.
+    pub fn resize(
+        &mut self,
+        viewport: mo_raster::RasterViewport,
+        check: &dyn Fn() -> bool,
+    ) -> Result<(), PlaybackError> {
+        viewport.validate().map_err(PageError::from)?;
+        let previous = std::mem::replace(&mut self.request.viewport, viewport);
+        let result = crate::page::prepare_page(&self.request, Some(&self.base), None, None, check)
+            .and_then(|_| {
+                if check() {
+                    Err(mo_raster::RasterError::Cancelled.into())
+                } else {
+                    Ok(())
+                }
+            });
+        if let Err(error) = result {
+            self.request.viewport = previous;
+            return Err(error.into());
+        }
+        Ok(())
     }
     pub fn timing_info(&self) -> TimelineSamplerInfo {
         self.timeline.info()

@@ -133,11 +133,11 @@ pub enum KernelRequest {
     },
     PrepareHistory {
         snapshot: SnapshotRecord,
-        transaction: HistoryTransaction,
+        transaction: Box<HistoryTransaction>,
     },
     PrepareText {
         snapshot: SnapshotRecord,
-        command: TextEditCommand,
+        command: Box<TextEditCommand>,
     },
 }
 

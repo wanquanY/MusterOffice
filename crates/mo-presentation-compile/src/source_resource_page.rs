@@ -20,6 +20,7 @@ use mo_presentation_source::source::{
     images::{ImageInput, PackageImages},
 };
 use mo_raster::{PreparedImages, RasterBackend, RasterError};
+pub(crate) use retained::ResourceViewportUpdate;
 pub use retained::{ResourcePagePlan, ResourcePreparationInfo};
 pub use types::*;
 pub const PROFILE: &str = "drawingml-resource-page-q32-v1-draft";

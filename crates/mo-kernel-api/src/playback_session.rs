@@ -1,5 +1,6 @@
 //! One bounded, explicitly owned page sampler. No clock, event queue or global handles.
 mod prepared;
+mod resize;
 pub use crate::playback_owner::PlaybackCompletionFailure;
 use crate::{PlaybackBinding, PlaybackCompiledFrame, PlaybackFailure, PlaybackRasterInfo};
 use mo_common::{Digest, RationalTime, SlideId, from_json_str};
@@ -49,6 +50,12 @@ pub enum PlaybackSessionRequest {
     Render {
         sample: PlaybackSampleRequest,
     },
+    Resize {
+        binding: PlaybackBinding,
+        #[serde(rename = "expectedViewportRevision")]
+        expected_viewport_revision: u32,
+        viewport: RasterViewport,
+    },
     Advance {
         binding: PlaybackBinding,
         generation: PlaybackGeneration,
@@ -64,6 +71,8 @@ pub struct PlaybackSessionInfo {
     /// Content identity for this implementation profile, not an authority token
     /// or a portable serialized-plan compatibility promise.
     pub plan_id: Digest,
+    pub viewport: RasterViewport,
+    pub viewport_revision: u32,
     pub document_sha256: Digest,
     pub slide: SlideId,
     pub binding: PlaybackBinding,
@@ -86,6 +95,7 @@ pub enum PlaybackSessionFailureCode {
     AlreadyPrepared,
     Disposed,
     BindingConflict,
+    ViewportConflict,
     GenerationNotIncreasing,
     RasterRequired,
 }
@@ -106,6 +116,7 @@ pub enum PlaybackSessionResponse {
     Prepared { info: PlaybackSessionInfo },
     Inspected { info: PlaybackSessionInfo },
     TimingInspected { info: Box<PlaybackTimingInfo> },
+    Resized { info: PlaybackSessionInfo },
     Advanced { info: PlaybackSessionInfo },
     Disposed { binding: PlaybackBinding },
     Compiled { frame: Box<PlaybackCompiledFrame> },
@@ -137,6 +148,7 @@ struct Ready {
     plan: PlaybackPagePlan,
     id: Digest,
     slide: SlideId,
+    viewport_revision: u32,
 }
 impl Ready {
     fn info(&self) -> PlaybackSessionInfo {
@@ -144,6 +156,8 @@ impl Ready {
             profile: PLAYBACK_SESSION_PROFILE.into(),
             plan_id: self.id.clone(),
             document_sha256: self.plan.document_sha256().clone(),
+            viewport: self.plan.viewport().clone(),
+            viewport_revision: self.viewport_revision,
             slide: self.slide.clone(),
             binding: self.plan.binding().clone(),
         }
@@ -223,6 +237,7 @@ impl PlaybackSession {
                     plan,
                     id,
                     slide: q.slide,
+                    viewport_revision: 0,
                 });
                 let info = ready.info();
                 cancel(check)?;
@@ -264,6 +279,13 @@ impl PlaybackSession {
                     image.pixels,
                 ));
             }
+            Q::Resize {
+                binding,
+                expected_viewport_revision,
+                viewport,
+            } => R::Resized {
+                info: self.resize(&binding, expected_viewport_revision, viewport, check)?,
+            },
             Q::Advance {
                 binding,
                 generation,

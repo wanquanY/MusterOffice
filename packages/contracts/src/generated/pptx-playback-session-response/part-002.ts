@@ -352,6 +352,8 @@ export interface PptxPlaybackSessionInfo {
   profile: string;
   slide: string;
   sourceSha256: Digest;
+  viewport: RasterViewport;
+  viewportRevision: number;
 }
 
 export interface PlaybackBinding {
@@ -380,6 +382,40 @@ export interface FrameWork {
   glyphs: number;
   pathCommands: number;
   requestWords: number;
+}
+
+export interface RasterViewport {
+  /**
+   * Straight sRGB RGBA8; output is premultiplied.
+   *
+   * @minItems 4
+   * @maxItems 4
+   */
+  background: [number, number, number, number];
+  /**
+   * Raw Q32 pixels; 256..=2^24 (at most 1/256 pixel).
+   */
+  coordinateTolerance: string;
+  height: number;
+  origin: Point;
+  scale: PixelScale;
+  width: number;
+}
+
+/**
+ * Q32 EMU. Subtracted before converting to device-space float32.
+ */
+export interface Point {
+  x: FixedQ32;
+  y: FixedQ32;
+}
+
+export interface PixelScale {
+  denominator: number;
+  /**
+   * Positive rational pixels per EMU; normalized internally.
+   */
+  numerator: number;
 }
 
 /**
@@ -481,9 +517,7 @@ export interface PixelExtent {
 export interface ImageWork {
   brushes: number;
   /**
-   * Bound for upstream uncertainty and affine/domain quantization, in Q32
-   * device pixels. Domain repetition is bounded over the viewport. Excludes
-   * inverse/shader arithmetic, filter output changes and sample coverage.
+   * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
    */
   coordinateErrorBound: string;
   draws: number;
@@ -727,11 +761,11 @@ export interface FrameLine {
 }
 
 export interface Rect {
-  max: Point;
-  min: Point;
+  max: Point1;
+  min: Point1;
 }
 
-export interface Point {
+export interface Point1 {
   x: FixedQ32;
   y: FixedQ32;
 }
@@ -740,8 +774,8 @@ export interface Point {
  * Q32 EMU before page/group/animation placement. Insets are already applied.
  */
 export interface Rect1 {
-  max: Point;
-  min: Point;
+  max: Point1;
+  min: Point1;
 }
 
 /**

@@ -10,6 +10,11 @@ export interface DecoderPort {
   invalidate(): void;
 }
 export interface ShapingPort {
+  registerFont(font: Uint8Array): number;
+  unregisterFont(handle: number): void;
+  shapeRegistered(handle: number, frame: Uint32Array): Uint32Array;
+  measureRegistered(handle: number, frame: Uint32Array): Uint32Array;
+  outlineRegistered(handle: number, frame: Uint32Array): Uint32Array;
   shapeBatch(font: Uint8Array, frame: Uint32Array): Uint32Array;
   outlineBatch(font: Uint8Array, frame: Uint32Array): Uint32Array;
   measureBatch(font: Uint8Array, frame: Uint32Array): Uint32Array;
@@ -47,6 +52,7 @@ export interface RasterTask {
 }
 export interface SteppedRasterPort { beginRaster(frame: Uint32Array, images?: Uint8Array): RasterStart; invalidate(): void; }
 export interface WasmSourceOwner extends WasmOwner {
+  resize(request: string, source: Uint8Array, decoder: DecoderPort): string;
   prepare(request: string, source: Uint8Array, fonts: Uint8Array,
     decoder: DecoderPort, shaping: ShapingPort): string;
 }
@@ -57,6 +63,8 @@ export interface PlaybackModule {
 }
 export interface Frame<Info> {
   info: Info;
+  /** Host publication fence, captured under the exclusive playback lease. */
+  viewportRevision: number;
   /** Caller-owned premultiplied sRGB RGBA8, independent of WASM memory. */
   pixels: Uint8Array;
 }

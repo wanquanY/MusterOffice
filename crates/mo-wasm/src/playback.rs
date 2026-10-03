@@ -11,7 +11,7 @@ pub struct PlaybackSession {
 }
 
 /// Source/font bytes and shaping/decoder components are consumed only by
-/// prepare. Host owns scheduling, result fencing, worker termination and free().
+/// prepare; resize re-admits source images without fonts. Host owns scheduling, result fencing, worker termination and free().
 #[wasm_bindgen]
 #[derive(Default)]
 pub struct PptxPlaybackSession {
@@ -39,6 +39,26 @@ impl PptxPlaybackSession {
                 Some(mo_kernel_api::PptxPlaybackResources {
                     decoder: &mut crate::image_decode::Backend(decoder),
                     text: Some(&mut crate::text::Backend(shaping)),
+                }),
+                None,
+                &|| false,
+            )
+            .0
+    }
+    pub fn resize(
+        &mut self,
+        request: &str,
+        source: &[u8],
+        decoder: &crate::image_decode::ImageDecoderComponent,
+    ) -> String {
+        self.inner
+            .dispatch_json(
+                request,
+                source,
+                &[],
+                Some(mo_kernel_api::PptxPlaybackResources {
+                    decoder: &mut crate::image_decode::Backend(decoder),
+                    text: None,
                 }),
                 None,
                 &|| false,

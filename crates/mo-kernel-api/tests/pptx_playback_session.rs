@@ -408,3 +408,6 @@ fn prepared_frames_are_bound_to_owner_generation_and_disposal() {
         })
     ));
 }
+
+#[path = "pptx_playback_session/viewport.rs"]
+mod viewport;

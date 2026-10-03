@@ -1,6 +1,7 @@
 //! Source-bound owned resources. Requests, source index and decoded pixels are
-//! immutable; each sample rebuilds/certifies world geometry and brush placement.
+//! retained; each sample rebuilds/certifies world geometry and brush placement.
 use super::*;
+mod viewport;
 use crate::{
     source_image_layout::ImageSourceLayoutPlan, source_image_paint,
     source_placement::SourceProperties, source_text_page::retained::RetainedText,
@@ -10,6 +11,8 @@ use mo_presentation_source::source::fill::resolve::FillOwner;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::{collections::BTreeMap, sync::Arc};
+pub(crate) use viewport::ResourceViewportUpdate;
+use viewport::RetainedImages;
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -35,10 +38,8 @@ pub struct ResourcePagePlan {
     tables: Option<crate::source_table::RetainedTables>,
     text_enabled: bool,
     text: Option<RetainedText>,
-    images: Arc<PreparedImages<'static>>,
-    uses: BTreeMap<FillOwner, ImageUse>,
-    decoded: Vec<mo_image::DecodedImageInfo>,
-    sampling: mo_raster::ImageSampling,
+    images: RetainedImages,
+    options: ResourcePageOptions,
     info: ResourcePreparationInfo,
 }
 impl ResourcePagePlan {
@@ -102,38 +103,20 @@ impl ResourcePagePlan {
             text,
             images,
         } = prepared;
-        let resources::Resources {
-            info,
-            paints: _,
-            manifest,
-            pixels,
-        } = images;
-        let images = PreparedImages::owned(&manifest, pixels, check)?;
-        let compiled = mo_render::compile_images(&built.raster, &images, check)?;
+        let images = RetainedImages::new(
+            images,
+            &built
+                .bindings
+                .iter()
+                .enumerate()
+                .map(|(i, binding)| (i as u32, binding))
+                .collect(),
+            check,
+        )?;
+        let compiled = mo_render::compile_images(&built.raster, &images.data, check)?;
         let text = text
             .map(|t| RetainedText::new(t, &built.bindings, check))
             .transpose()?;
-        let mut uses = BTreeMap::new();
-        for b in info.bindings {
-            cancel(check)?;
-            let key = FillOwner {
-                part: built.bindings[b.binding as usize].location.part.clone(),
-                target: b.paint.target.clone(),
-            };
-            if uses
-                .insert(
-                    key,
-                    ImageUse {
-                        object: built.bindings[b.binding as usize].location.object,
-                        region: built.bindings[b.binding as usize].region,
-                        layout: b.layout,
-                    },
-                )
-                .is_some()
-            {
-                return Err(SourcePageError::Invalid("duplicate retained image use"));
-            }
-        }
         // Preparation certifies the declared base pose.
         built.finish(
             compiled.work().clone(),
@@ -144,11 +127,11 @@ impl ResourcePagePlan {
             text_frames: text.as_ref().map_or(0, RetainedText::frames),
             text_work: text.as_ref().map(|t| t.work.clone()).unwrap_or_default(),
             text_path_bytes: text.as_ref().map_or(0, |t| t.path_bytes),
-            decoded_images: info.decoded.len() as u32,
-            decoded_pixel_bytes: images.bytes().len() as u64,
-            encoded_bytes: info.encoded_bytes,
-            gather_copy_bytes: info.gather_copy_bytes,
-            resources_sha256: images.sha256().clone(),
+            decoded_images: images.decoded.len() as u32,
+            decoded_pixel_bytes: images.data.bytes().len() as u64,
+            encoded_bytes: images.encoded_bytes,
+            gather_copy_bytes: images.gather_copy_bytes,
+            resources_sha256: images.data.sha256().clone(),
         };
         cancel(check)?;
         Ok(Self {
@@ -157,10 +140,8 @@ impl ResourcePagePlan {
             tables,
             text_enabled,
             text,
-            images: Arc::new(images),
-            uses,
-            decoded: info.decoded,
-            sampling: options.sampling,
+            images,
+            options,
             info: preparation,
         })
     }
@@ -172,9 +153,18 @@ impl ResourcePagePlan {
         transforms: &SourceProperties,
         check: &dyn Fn() -> bool,
     ) -> Result<PreparedResourceFrame, SourcePageError> {
+        self.prepare_view(&self.request, &self.images, transforms, check)
+    }
+    fn prepare_view(
+        &self,
+        request: &SourcePageRequest,
+        images: &RetainedImages,
+        transforms: &SourceProperties,
+        check: &dyn Fn() -> bool,
+    ) -> Result<PreparedResourceFrame, SourcePageError> {
         let mut prepared = source_page::preflight_retained(
             &self.index,
-            &self.request,
+            request,
             self.text_enabled,
             true,
             Some(transforms),
@@ -192,7 +182,7 @@ impl ResourcePagePlan {
                 part: owner.location.part.clone(),
                 target: fill.target.clone(),
             };
-            let usage = self
+            let usage = images
                 .uses
                 .get(&key)
                 .filter(|u| u.object == owner.location.object)
@@ -210,8 +200,8 @@ impl ResourcePagePlan {
             layout.placement = owner.placement.clone();
             let paint = source_image_paint::compile_sampled(
                 &layout,
-                &self.decoded[layout.resource as usize],
-                self.sampling,
+                &images.decoded[layout.resource as usize],
+                self.options.sampling,
                 check,
             )
             .map_err(|e| SourcePageError::from(e).at(&owner.location))?;
@@ -230,7 +220,7 @@ impl ResourcePagePlan {
                         .map(|o| (o.binding.location.part.clone(), o.binding.location.object)),
                 )
                 .collect();
-        let expected = self
+        let expected = images
             .uses
             .iter()
             .filter(|(key, usage)| visible.contains(&(key.part.clone(), usage.object)))
@@ -258,7 +248,7 @@ impl ResourcePagePlan {
             ),
         };
         let compiled =
-            mo_render::compile_shared_images(&built.raster, Arc::clone(&self.images), check)?;
+            mo_render::compile_shared_images(&built.raster, Arc::clone(&images.data), check)?;
         let (info, downstream) = {
             let page = built.finish(
                 compiled.work().clone(),
@@ -273,8 +263,8 @@ impl ResourcePagePlan {
             downstream,
             text_capacity,
             text_work,
-            decoded: self.decoded.clone(),
-            encoded_bytes: self.info.encoded_bytes,
+            decoded: images.decoded.clone(),
+            encoded_bytes: images.encoded_bytes,
         })
     }
 }

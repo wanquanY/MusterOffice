@@ -5,19 +5,24 @@ import {WasmPlayback, PlaybackComputationError, PlaybackStateError} from '../../
 import {fitsUtf8} from '../../.codex-work/playback-client/build/playback-client/src/owner.js';
 
 const binding={session:'test',revision:'a'.repeat(64),generation:'9007199254740993'};
-const authorRequest=()=>({binding:{...binding},snapshot:{semanticDigest:'b'.repeat(64)},slide:'one',viewport:{width:1,height:1}});
-const sourceRequest=()=>({binding:{...binding},page:{page:{slide:'/ppt/slides/slide1.xml',expectedSourceSha256:'c'.repeat(64),viewport:{width:1,height:1}}}});
+const viewport=()=>({width:1,height:1,origin:{x:'0',y:'0'},scale:{numerator:1,denominator:1},coordinateTolerance:'256',background:[0,0,0,0]});
+const authorRequest=()=>({binding:{...binding},snapshot:{semanticDigest:'b'.repeat(64)},slide:'one',viewport:viewport()});
+const sourceRequest=()=>({binding:{...binding},page:{page:{slide:'/ppt/slides/slide1.xml',expectedSourceSha256:'c'.repeat(64),viewport:viewport()}}});
 const failure={status:'error',error:{kind:'session',code:'GENERATION_NOT_INCREASING',message:'invalid'}};
 const ports={source:new Uint8Array(1),fonts:new Uint8Array(1),decoder:{},shaping:{}};
 function fixture(kind='author') {
   const observed={free:0,frameFree:0,take:0,commands:[],callback:null,badFrame:null,commandOverride:null,freeError:null};
-  const info={binding:{...binding},profile:'test',planId:'plan',slide:kind==='author'?'one':'/ppt/slides/slide1.xml',
+  const info={viewport:viewport(),viewportRevision:0,binding:{...binding},profile:'test',planId:'plan',slide:kind==='author'?'one':'/ppt/slides/slide1.xml',
     ...(kind==='author'?{documentSha256:'b'.repeat(64)}:{sourceSha256:'c'.repeat(64),preparation:{decodedImages:1}})};
   class Raw {
     command(text) {
       const q=JSON.parse(text);observed.commands.push(q);
       if(observed.commandOverride) return observed.commandOverride(q);
       if(q.operation==='prepare')return JSON.stringify({status:'prepared',info});
+      if(q.operation==='resize') {
+        info.viewport=structuredClone(q.viewport);info.viewportRevision++;
+        return JSON.stringify({status:'resized',info});
+      }
       if(q.operation==='advance'){
         if(BigInt(q.generation)<=BigInt(info.binding.generation))return JSON.stringify(failure);
         info.binding.generation=q.generation;return JSON.stringify({status:'advanced',info});
@@ -27,6 +32,7 @@ function fixture(kind='author') {
       throw Error('unexpected command');
     }
     prepare(text){return this.command(text);}
+    resize(text,source,decoder){observed.resizeInputs={source,decoder};return this.command(text);}
     prepare_render(text){
       observed.pendingCreated=(observed.pendingCreated??0)+1;
       return {request:text,failure:observed.prepareFailure??'',begin:raster=>raster.beginRaster(new Uint32Array(4)),
@@ -72,7 +78,7 @@ for(const kind of ['author','source']) {
     const copy=owner.info;copy.binding.generation='1';copy.planId='changed';
     assert.equal(owner.info.binding.generation,binding.generation);assert.equal(owner.info.planId,'plan');
     const frame=owner.sample({ticks:'0',timescale:4},{});
-    assert.equal(frame.pixels,observed.pixels);assert.equal(observed.take,1);assert.equal(observed.frameFree,0);
+    assert.equal(frame.viewportRevision,0);assert.equal(frame.pixels,observed.pixels);assert.equal(observed.take,1);assert.equal(observed.frameFree,0);
     assert.throws(()=>owner.advance('0'),PlaybackComputationError);assert.equal(owner.closed,false);
     assert.equal(owner.advance('9007199254740994').binding.generation,'9007199254740994');
     assert.equal(owner.timing().binding.generation,'9007199254740994');
@@ -88,7 +94,7 @@ for(const kind of ['author','source']) {
     const f=fixture(kind),owner=f.open();let callbacks=0;
     f.observed.callback=()=>{
       callbacks++;
-      for(const action of [()=>owner.close(),()=>owner.dispose(),()=>owner.timing()])
+      for(const action of [()=>owner.close(),()=>owner.dispose(),()=>owner.timing(),()=>owner.resize(viewport(),ports)])
         assert.throws(action,e=>e instanceof PlaybackStateError&&e.code==='BUSY');
       assert.equal(f.observed.free,0);
     };
@@ -165,7 +171,7 @@ for(const kind of ['author','source']) {
   test(`${kind}: stepped frame exclusively leases owner and consumes both handles once`,()=>{
     const f=stepped(kind),owner=f.open(),frame=owner.beginSample(zero,f.raster);
     for(const action of [()=>owner.sample(zero,{}),()=>owner.beginSample(zero,f.raster),()=>owner.timing(),
-      ()=>owner.advance('9007199254740994'),()=>owner.dispose(),()=>owner.close()])
+      ()=>owner.advance('9007199254740994'),()=>owner.resize(viewport(),ports),()=>owner.dispose(),()=>owner.close()])
       assert.throws(action,e=>e.code==='BUSY');
     assert.throws(()=>frame.take(),/incomplete/);assert.throws(()=>frame.step(0),RangeError);
     f.reenter=()=>assert.throws(()=>frame.step(),e=>e.code==='BUSY');
@@ -247,3 +253,29 @@ test('observed validation faults quarantine immediately, even if a caller would 
     assert.equal(f.observed.validationConsumed,1);assert.equal(f.observed.validationFreed??0,0);
   }
 });
+
+for(const kind of ['author','source']) {
+  test(`${kind}: resize validates its receipt and failed requests retain old dimensions`,()=>{
+    const f=fixture(kind),owner=f.open(),before=owner.info;
+    f.observed.commandOverride=()=>JSON.stringify(failure);
+    assert.throws(()=>owner.resize({...viewport(),width:2},ports),PlaybackComputationError);
+    assert.deepEqual(owner.info,before);assert.equal(owner.closed,false);
+    f.observed.commandOverride=null;
+    const next=owner.resize({...viewport(),width:2},ports);
+    assert.equal(next.viewportRevision,1);assert.equal(next.viewport.width,2);
+    assert.deepEqual(next.binding,before.binding);
+    if(kind==='source')assert.deepEqual(f.observed.resizeInputs,{source:ports.source,decoder:ports.decoder});
+    // Current dimensions reject a late frame with the old width.
+    assert.throws(()=>owner.sample({ticks:'0',timescale:1},{}),PlaybackStateError);
+    assert.equal(owner.closed,true);
+  });
+  test(`${kind}: resize rejects malformed revision and viewport receipts`,()=>{
+    for(const field of ['viewportRevision','viewport']) {
+      const f=fixture(kind),owner=f.open();
+      f.observed.commandOverride=q=>JSON.stringify({status:'resized',info:{...owner.info,
+        viewport:q.viewport,viewportRevision:1,[field]:owner.info[field]}});
+      assert.throws(()=>owner.resize({...viewport(),width:2},ports),PlaybackStateError);
+      assert.equal(owner.closed,true);
+    }
+  });
+}

@@ -15,6 +15,10 @@ export type PlaybackSessionResponse =
     }
   | {
       info: PlaybackSessionInfo;
+      status: "resized";
+    }
+  | {
+      info: PlaybackSessionInfo;
       status: "advanced";
     }
   | {
@@ -41,6 +45,10 @@ export type Digest = string;
 export type PlaybackSessionId = string;
 export type SlideId = string;
 /**
+ * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
+ */
+export type FixedQ32 = string;
+/**
  * Canonical uint64 timeline work count; never wraps.
  */
 export type TimelineWorkCount = string;
@@ -57,10 +65,6 @@ export type Timescale = number;
  * via the `patternProperty` "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$".
  */
 export type Visibility = "visible" | "hidden";
-/**
- * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
- */
-export type FixedQ32 = string;
 export type ContainerId =
   | {
       id: SlideId;
@@ -89,12 +93,12 @@ export type BlendMode = "sourceOver" | "source";
 export type GradientAlpha = "straight" | "premultiplied";
 export type GradientGeometry =
   | {
-      end: Point;
+      end: Point1;
       kind: "linear";
-      start: Point;
+      start: Point1;
     }
   | {
-      center: Point;
+      center: Point1;
       kind: "radial";
       radius: FixedQ32;
     }
@@ -199,22 +203,22 @@ export type StrokeJoin =
 export type PathCommand =
   | {
       kind: "move";
-      to: Point;
+      to: Point1;
     }
   | {
       kind: "line";
-      to: Point;
+      to: Point1;
     }
   | {
-      control: Point;
+      control: Point1;
       kind: "quadratic";
-      to: Point;
+      to: Point1;
     }
   | {
-      control1: Point;
-      control2: Point;
+      control1: Point1;
+      control2: Point1;
       kind: "cubic";
-      to: Point;
+      to: Point1;
     }
   | {
       kind: "close";
@@ -246,6 +250,7 @@ export type PlaybackSessionFailureCode =
   | "ALREADY_PREPARED"
   | "DISPOSED"
   | "BINDING_CONFLICT"
+  | "VIEWPORT_CONFLICT"
   | "GENERATION_NOT_INCREASING"
   | "RASTER_REQUIRED";
 export type PlaybackFailure =
@@ -303,11 +308,44 @@ export interface PlaybackSessionInfo {
   planId: string;
   profile: string;
   slide: SlideId;
+  viewport: RasterViewport;
+  viewportRevision: number;
 }
 export interface PlaybackBinding {
   generation: PlaybackGeneration;
   revision: Digest;
   session: PlaybackSessionId;
+}
+export interface RasterViewport {
+  /**
+   * Straight sRGB RGBA8; output is premultiplied.
+   *
+   * @minItems 4
+   * @maxItems 4
+   */
+  background: [number, number, number, number];
+  /**
+   * Raw Q32 pixels; 256..=2^24 (at most 1/256 pixel).
+   */
+  coordinateTolerance: string;
+  height: number;
+  origin: Point;
+  scale: PixelScale;
+  width: number;
+}
+/**
+ * Q32 EMU. Subtracted before converting to device-space float32.
+ */
+export interface Point {
+  x: FixedQ32;
+  y: FixedQ32;
+}
+export interface PixelScale {
+  denominator: number;
+  /**
+   * Positive rational pixels per EMU; normalized internally.
+   */
+  numerator: number;
 }
 /**
  * Read-only diagnostics. Counts successful timing evaluations, including those
@@ -582,41 +620,41 @@ export interface Gradient {
   stops: GradientStop[];
   tile: GradientTile;
 }
-export interface Point {
-  x: FixedQ32;
-  y: FixedQ32;
-}
-export interface GradientPlane {
-  origin: Point1;
-  tileX: GradientAxisTile;
-  tileY: GradientAxisTile;
-  uncertainty?: GradientPlaneUncertainty | null;
-  xStep: Point3;
-  yStep: Point;
-}
-/**
- * World Q32 EMU position of the unit tile's top-left corner.
- */
 export interface Point1 {
   x: FixedQ32;
   y: FixedQ32;
 }
-export interface GradientPlaneUncertainty {
+export interface GradientPlane {
   origin: Point2;
-  xStep: Point;
-  yStep: Point;
+  tileX: GradientAxisTile;
+  tileY: GradientAxisTile;
+  uncertainty?: GradientPlaneUncertainty | null;
+  xStep: Point4;
+  yStep: Point1;
+}
+/**
+ * World Q32 EMU position of the unit tile's top-left corner.
+ */
+export interface Point2 {
+  x: FixedQ32;
+  y: FixedQ32;
+}
+export interface GradientPlaneUncertainty {
+  origin: Point3;
+  xStep: Point1;
+  yStep: Point1;
 }
 /**
  * Nonnegative Q32 world EMU error per input parameter.
  */
-export interface Point2 {
+export interface Point3 {
   x: FixedQ32;
   y: FixedQ32;
 }
 /**
  * World displacement for a unit change in each tile coordinate.
  */
-export interface Point3 {
+export interface Point4 {
   x: FixedQ32;
   y: FixedQ32;
 }
@@ -632,7 +670,7 @@ export interface GradientStop {
   srgb: [number, number, number, number];
 }
 export interface ImageBrush {
-  origin: Point4;
+  origin: Point5;
   resource: number;
   sampling: ImageSampling;
   /**
@@ -647,13 +685,13 @@ export interface ImageBrush {
    * same device budget as float conversion, including repeated tile phase.
    */
   uncertainty?: ImageBrushUncertainty | null;
-  xStep: Point7;
-  yStep: Point;
+  xStep: Point8;
+  yStep: Point1;
 }
 /**
  * World Q32 EMU position of source pixel boundary (0, 0).
  */
-export interface Point4 {
+export interface Point5 {
   x: FixedQ32;
   y: FixedQ32;
 }
@@ -664,7 +702,7 @@ export interface ImageSourceDomain {
   top: FixedQ32;
 }
 export interface ImageBrushUncertainty {
-  origin: Point5;
+  origin: Point6;
   /**
    * Nonnegative Q32 source pixel errors, left/top/right/bottom. Must be zero
    * when the brush has no explicit source domain.
@@ -673,27 +711,27 @@ export interface ImageBrushUncertainty {
    * @maxItems 4
    */
   sourceDomain: [FixedQ32, FixedQ32, FixedQ32, FixedQ32];
-  xStep: Point6;
-  yStep: Point;
+  xStep: Point7;
+  yStep: Point1;
 }
 /**
  * Nonnegative Q32 world EMU errors; rebase never changes these bounds.
- */
-export interface Point5 {
-  x: FixedQ32;
-  y: FixedQ32;
-}
-/**
- * Nonnegative Q32 world EMU per source pixel.
  */
 export interface Point6 {
   x: FixedQ32;
   y: FixedQ32;
 }
 /**
- * World Q32 EMU displacement per source pixel, not endpoint coordinates.
+ * Nonnegative Q32 world EMU per source pixel.
  */
 export interface Point7 {
+  x: FixedQ32;
+  y: FixedQ32;
+}
+/**
+ * World Q32 EMU displacement per source pixel, not endpoint coordinates.
+ */
+export interface Point8 {
   x: FixedQ32;
   y: FixedQ32;
 }
@@ -745,45 +783,14 @@ export interface Affine {
    * @maxItems 4
    */
   linear: [FixedQ32, FixedQ32, FixedQ32, FixedQ32];
-  translation: Point8;
+  translation: Point9;
 }
 /**
  * Q32 in the same coordinate unit as the input point.
  */
-export interface Point8 {
-  x: FixedQ32;
-  y: FixedQ32;
-}
-export interface RasterViewport {
-  /**
-   * Straight sRGB RGBA8; output is premultiplied.
-   *
-   * @minItems 4
-   * @maxItems 4
-   */
-  background: [number, number, number, number];
-  /**
-   * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
-   */
-  coordinateTolerance: string;
-  height: number;
-  origin: Point9;
-  scale: PixelScale;
-  width: number;
-}
-/**
- * Q32 EMU. Subtracted before converting to device-space float32.
- */
 export interface Point9 {
   x: FixedQ32;
   y: FixedQ32;
-}
-export interface PixelScale {
-  denominator: number;
-  /**
-   * Positive rational pixels per EMU; normalized internally.
-   */
-  numerator: number;
 }
 export interface PagePlacements {
   documentSha256: Digest;
@@ -829,7 +836,7 @@ export interface Affine1 {
    * @maxItems 4
    */
   linear: [FixedQ32, FixedQ32, FixedQ32, FixedQ32];
-  translation: Point8;
+  translation: Point9;
 }
 /**
  * Subtract this exact source center before applying the evaluated affine.

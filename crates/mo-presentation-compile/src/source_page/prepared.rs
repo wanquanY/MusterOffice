@@ -114,16 +114,7 @@ pub(crate) fn preflight_retained<'a>(
         return Err(SourcePageError::SourceConflict);
     }
     let v = &q.viewport;
-    mo_raster::compile(
-        &PathRasterRequest {
-            opacity_groups: vec![],
-            clips: vec![],
-            viewport: v.clone(),
-            paths: vec![],
-            draws: vec![],
-        },
-        check,
-    )?;
+    v.validate()?;
     let size = index
         .page_size
         .ok_or(SourcePageError::Invalid("missing page size"))?;

@@ -92,7 +92,7 @@ impl PlaybackSession {
         if !Arc::ptr_eq(&self.identity, &prepared.owner) {
             return Err(reject(fail(
                 PlaybackSessionFailureCode::BindingConflict,
-                "frame belongs to another playback owner",
+                "frame belongs to another owner or viewport revision",
             )));
         }
         let ready = self.ready(prepared.frame.binding()).map_err(reject)?;

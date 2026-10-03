@@ -268,3 +268,118 @@ fn animated_geometry_protects_descendants_and_shared_images_but_not_static_resou
         assert_eq!(decoder.demands.len(), 2);
     }
 }
+
+#[test]
+fn retained_resize_readmits_larger_image_grids_and_abort_keeps_previous_resources() {
+    let bytes = image_fixture(&(image(42, "owned-image", "") + &image(43, "owned-copy", "")));
+    let package = Package::open(
+        bytes.as_slice(),
+        bytes.len() as u64,
+        PackageLimits::default(),
+        &|| false,
+    )
+    .unwrap();
+    let index = read(&bytes);
+    let mut decoder = Decoder::default();
+    let mut retained = playback(&bytes, &mut decoder);
+    let previous = serde_json::to_value(retained.preparation()).unwrap();
+    let mut viewport = request(&index).viewport;
+    viewport.width *= 2;
+    viewport.height *= 2;
+    viewport.scale.numerator *= 2;
+    let candidate = retained
+        .prepare_resize(&package, viewport.clone(), &mut decoder, &|| false)
+        .unwrap();
+    assert_eq!(candidate.preparation().decoded_pixel_bytes, 800 * 800 * 4);
+    drop(candidate);
+    assert_eq!(
+        serde_json::to_value(retained.preparation()).unwrap(),
+        previous
+    );
+    let candidate = retained
+        .prepare_resize(&package, viewport, &mut decoder, &|| false)
+        .unwrap();
+    candidate.commit();
+    assert_eq!(retained.preparation().decoded_pixel_bytes, 800 * 800 * 4);
+    assert_eq!(
+        decoder.demands,
+        vec![
+            Some(DecodeSize {
+                width: 400,
+                height: 400
+            }),
+            Some(DecodeSize {
+                width: 800,
+                height: 800
+            }),
+            Some(DecodeSize {
+                width: 800,
+                height: 800
+            })
+        ]
+    );
+    // A distinct package cannot supply replacement images to this source owner.
+    let other = image_fixture(&image(99, "owned-cyan", ""));
+    let other = Package::open(
+        other.as_slice(),
+        other.len() as u64,
+        PackageLimits::default(),
+        &|| false,
+    )
+    .unwrap();
+    let before = serde_json::to_value(retained.preparation()).unwrap();
+    assert!(
+        retained
+            .prepare_resize(&other, request(&index).viewport, &mut decoder, &|| false)
+            .is_err()
+    );
+    assert_eq!(decoder.demands.len(), 3);
+    assert_eq!(
+        serde_json::to_value(retained.preparation()).unwrap(),
+        before
+    );
+}
+
+#[test]
+fn failed_resize_decoder_keeps_live_pixels_and_diagnostics() {
+    struct Fail;
+    impl ImageDecoder for Fail {
+        fn decode(&mut self, _: &[u8]) -> Result<DecoderReply, ImageError> {
+            Err(ImageError::Host("injected resize decode failure"))
+        }
+        fn decode_sized(
+            &mut self,
+            bytes: &[u8],
+            _: DecodeSize,
+        ) -> Result<DecoderReply, ImageError> {
+            self.decode(bytes)
+        }
+        fn invalidate(&mut self) {}
+    }
+    let bytes = image_fixture(&image(42, "owned-image", ""));
+    let package = Package::open(
+        bytes.as_slice(),
+        bytes.len() as u64,
+        PackageLimits::default(),
+        &|| false,
+    )
+    .unwrap();
+    let mut retained = playback(&bytes, &mut Decoder::default());
+    let before = serde_json::to_value(retained.preparation()).unwrap();
+    let mut viewport = request(&read(&bytes)).viewport;
+    viewport.width *= 2;
+    viewport.height *= 2;
+    viewport.scale.numerator *= 2;
+    assert!(
+        retained
+            .prepare_resize(&package, viewport, &mut Fail, &|| false)
+            .is_err()
+    );
+    assert_eq!(
+        serde_json::to_value(retained.preparation()).unwrap(),
+        before
+    );
+    retained
+        .prepare_frame(mo_common::RationalTime::new(0, 1).unwrap(), None, &|| false)
+        .unwrap();
+}

@@ -53,7 +53,7 @@ Native CLI 与 WASM release 重建后，5 项真实 Native/WASM 对比通过，�
 ## 仍需完成
 
 1. 交互编辑所需的段落样式/表格与保留源文字操作、命中/光标查询、对象选区复制和精确能力矩阵。
-2. 动画导航与 viewport 改变时的状态保持合同。
+2. 动画导航反馈；viewport 状态保持内核已完成，产品窗口/DPR 接入与验收仍待完成，见[视口切换记录](native-presentation-viewport.md)。
 3. 固定新 SDK/worker/WASM 开发发行，由 Musterwork 统一清单接入；不发布远程包。
 4. 产品侧关联原生草稿、持续发布、UI、独立放映和双端恢复/授权/性能验收。
 

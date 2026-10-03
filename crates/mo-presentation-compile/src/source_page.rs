@@ -26,7 +26,7 @@ use mo_presentation_source::source::{
     geometry::{NativePathFill, evaluate::*},
     line::{colors::*, resolve::*},
 };
-use mo_raster::{Brush, PathRasterRequest, RasterBackend, RasterError};
+use mo_raster::{Brush, RasterBackend, RasterError};
 use mo_render::SceneRasterRequest;
 use objects::Object;
 pub(crate) use prepared::{BuiltPage, PreparedPage};

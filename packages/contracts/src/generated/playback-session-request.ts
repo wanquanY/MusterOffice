@@ -23,6 +23,12 @@ export type PlaybackSessionRequest =
     }
   | {
       binding: PlaybackBinding;
+      expectedViewportRevision: number;
+      operation: "resize";
+      viewport: RasterViewport;
+    }
+  | {
+      binding: PlaybackBinding;
       generation: PlaybackGeneration;
       operation: "advance";
     }

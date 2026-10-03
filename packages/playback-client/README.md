@@ -53,6 +53,26 @@ resource semantics; successful input derivation is not a playback quality claim.
 `dispose()` and idempotent `close()` cover the retained computation lifecycle.
 `info` is a detached copy; changes to it cannot change a live owner's binding.
 
+`AuthorPlayback.resize(viewport)` and
+`SourcePlayback.resize(viewport, {source, decoder})` preserve the playback
+binding, logical time and consumed event-prefix cache. Source resize requires
+exact original PPTX bytes again, but no font bytes or shaping component. It
+re-admits static image grids for the new scale while retaining text paths and
+the source/timing index; animated image geometry continues to require exact grids.
+A candidate is certified before publication; invalid input, cancellation or a
+failed decoder leaves the prior viewport/resources usable.
+
+Every accepted resize increments `info.viewportRevision` (u32, never wraps).
+The wire request requires `expectedViewportRevision`; stale requests fail with
+`VIEWPORT_CONFLICT`. `planId` remains a content identity and may return to its
+old value after A → B → A. A separate private owner epoch rejects prepared
+frames from every earlier viewport, including this ABA case. `Frame.viewportRevision`
+is captured by the thin client under its exclusive lease. The host must also
+fence messages already delivered to its queue against the current owner and
+viewport revision before displaying them. Close/take any stepped execution
+before calling resize, then sample the same time/history again. The product
+still owns DPR mapping, resize coalescing, clocks and fullscreen gestures.
+
 For cooperative scheduling, `beginSample(at, raster, history)` returns an explicit
 `PlaybackExecution`. The product chooses when to yield and when to cancel:
 
@@ -73,7 +93,7 @@ try {
 ```
 
 The execution exclusively leases its playback owner until take/close; attempts
-to sample, advance or dispose that owner meanwhile return BUSY. A healthy early
+to sample, resize, advance or dispose that owner meanwhile return BUSY. A healthy early
 close permits a new sample. Component faults quarantine the component and close
 the playback owner; the product must terminate that Worker. `step` accepts
 1–4096 work units, not a time budget. After rasterization, `step` snapshots the
