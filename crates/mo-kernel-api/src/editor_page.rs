@@ -1,5 +1,6 @@
 //! One immutable rendered editor page per explicit owner. Preparation commits
 //! only a complete raster; subsequent queries borrow its original interaction.
+mod catalog;
 mod prepare;
 mod types;
 use crate::{PptxPageFailureCode, PptxResourcePageFailure, pptx_resource_page::request_failure};
@@ -12,9 +13,18 @@ pub struct EditorPageBackends<'a> {
     pub text: &'a mut dyn mo_text::backend::TextBackend,
     pub raster: &'a mut dyn mo_raster::RasterBackend,
 }
+pub enum EditorPageComponents<'a> {
+    All(EditorPageBackends<'a>),
+    Raster(&'a mut dyn mo_raster::RasterBackend),
+}
+struct CurrentPage {
+    view: Digest,
+    page: SourceEditorPage,
+    objects: std::collections::BTreeMap<(String, u32), u32>,
+}
 #[derive(Default)]
 pub struct EditorPageSession {
-    current: Option<(Digest, SourceEditorPage)>,
+    current: Option<CurrentPage>,
 }
 fn failure(code: PptxPageFailureCode, message: &'static str) -> PptxResourcePageFailure {
     request_failure(code, message.into())
@@ -30,11 +40,10 @@ fn cancelled(check: &dyn Fn() -> bool) -> Result<(), PptxResourcePageFailure> {
     }
 }
 impl EditorPageSession {
-    fn bound(&self, view: &Digest) -> Result<&SourceEditorPage, PptxResourcePageFailure> {
+    fn bound(&self, view: &Digest) -> Result<&CurrentPage, PptxResourcePageFailure> {
         self.current
             .as_ref()
-            .filter(|(id, _)| id == view)
-            .map(|(_, page)| page)
+            .filter(|page| &page.view == view)
             .ok_or_else(|| {
                 failure(
                     PptxPageFailureCode::SourceConflict,
@@ -47,7 +56,7 @@ impl EditorPageSession {
         request: &EditorPageRequest,
         material: &[u8],
         fonts: &[u8],
-        backends: Option<EditorPageBackends<'_>>,
+        backends: Option<EditorPageComponents<'_>>,
         check: &dyn Fn() -> bool,
     ) -> (EditorPageResponse, Vec<u8>) {
         let result = (|| {
@@ -62,7 +71,11 @@ impl EditorPageSession {
             }
             match request {
                 EditorPageRequest::Prepare { request } => {
-                    let backends = backends.ok_or_else(|| {
+                    let backends = match backends {
+                        Some(EditorPageComponents::All(b)) => Some(b),
+                        _ => None,
+                    }
+                    .ok_or_else(|| {
                         failure(
                             PptxPageFailureCode::ResourceRequired,
                             "editor page components required",
@@ -78,7 +91,17 @@ impl EditorPageSession {
                             failure(PptxPageFailureCode::InputInvalid, "editor view identity")
                         })?;
                     cancelled(check)?;
-                    self.current = Some((view.clone(), image.page));
+                    let objects = info
+                        .objects
+                        .iter()
+                        .enumerate()
+                        .map(|(i, o)| ((o.object.part.clone(), o.object.native_id), i as u32))
+                        .collect();
+                    self.current = Some(CurrentPage {
+                        view: view.clone(),
+                        page: image.page,
+                        objects,
+                    });
                     Ok((
                         EditorPageResponse::Prepared {
                             view,
@@ -89,15 +112,63 @@ impl EditorPageSession {
                 }
                 _ if !material.is_empty() || !fonts.is_empty() => Err(failure(
                     PptxPageFailureCode::InputInvalid,
-                    "bytes supplied to editor query or clear",
+                    "bytes supplied to non-preparation editor command",
                 )),
                 EditorPageRequest::Query { view, queries } => {
                     let results = self
                         .bound(view)?
+                        .page
                         .query(queries, check)
                         .map_err(PptxResourcePageFailure::from)?;
                     Ok((
                         EditorPageResponse::Queried {
+                            view: view.clone(),
+                            results,
+                        },
+                        vec![],
+                    ))
+                }
+                EditorPageRequest::Pick { view, queries } => {
+                    let current = self.bound(view)?;
+                    let raster = match backends {
+                        Some(EditorPageComponents::All(b)) => b.raster,
+                        Some(EditorPageComponents::Raster(r)) => r,
+                        None => {
+                            return Err(failure(
+                                PptxPageFailureCode::ResourceRequired,
+                                "editor picking component required",
+                            ));
+                        }
+                    };
+                    let picked = current.page.pick(queries, raster, check)?;
+                    let mut results = Vec::with_capacity(picked.len());
+                    for result in picked {
+                        cancelled(check)?;
+                        let mut hits = Vec::with_capacity(result.hits.len());
+                        for hit in result.hits {
+                            cancelled(check)?;
+                            let object = *current
+                                .objects
+                                .get(&(hit.object.part, hit.object.native_id))
+                                .ok_or_else(|| {
+                                    failure(
+                                        PptxPageFailureCode::InputInvalid,
+                                        "editor picking object identity",
+                                    )
+                                })?;
+                            hits.push(EditorObjectHit {
+                                object,
+                                kind: hit.kind,
+                                text_frame: hit.text_frame,
+                            });
+                        }
+                        results.push(EditorPickResult {
+                            hits,
+                            truncated: result.truncated,
+                        });
+                    }
+                    Ok((
+                        EditorPageResponse::Picked {
                             view: view.clone(),
                             results,
                         },
@@ -126,7 +197,7 @@ impl EditorPageSession {
         request: &str,
         material: &[u8],
         fonts: &[u8],
-        backends: Option<EditorPageBackends<'_>>,
+        backends: Option<EditorPageComponents<'_>>,
         check: &dyn Fn() -> bool,
     ) -> (String, Vec<u8>) {
         let parsed = if request.len() > crate::MAX_REQUEST_BYTES {

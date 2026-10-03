@@ -12,6 +12,11 @@ export type EditorPageResponse =
       view: Digest;
     }
   | {
+      results: EditorPickResult[];
+      status: "picked";
+      view: Digest;
+    }
+  | {
       status: "cleared";
       view: Digest;
     }
@@ -23,10 +28,11 @@ export type EditorPageResponse =
  * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
  */
 export type FixedQ32 = string;
+export type SourceObjectKind = "shape" | "picture" | "group" | "connector" | "graphicFrame";
+export type ObjectId = string;
 export type SurfaceKind = "slide" | "master" | "layout";
 export type SourcePageProfile = "drawingml-static-solid-page-v1-draft";
 export type Digest = string;
-export type ObjectId = string;
 export type PageTextQueryResult =
   | {
       caret: PageCaret;
@@ -56,6 +62,7 @@ export type PageTextQueryResult =
     };
 export type Affinity = "upstream" | "downstream";
 export type TextItemKind = "text" | "tab" | "lineBreak" | "paragraphBreak" | "bidiControl";
+export type DrawHitKind = "exact" | "nearby";
 export type PptxResourcePageFailure =
   | {
       error: PptxPageFailure;
@@ -141,7 +148,6 @@ export type SourcePageIssue =
       redirects: FillRedirect[];
     };
 export type SourceVisualIssueKind = "element" | "attribute";
-export type SourceObjectKind = "shape" | "picture" | "group" | "connector" | "graphicFrame";
 export type SourcePlaceholderMatch =
   | {
       status: "notPlaceholder";
@@ -1379,11 +1385,31 @@ export type SystemColor =
 
 export interface EditorPageInfo {
   downstreamCoordinateErrorBound: FixedQ32;
+  /**
+   * Page paint targets and their group ancestors, in source paint preorder.
+   * Hit.object and parent refer to indices in this immutable view's list.
+   */
+  objects: EditorPageObjectInfo[];
   page: SourcePageInfo;
   resourcesSha256: Digest;
   textFrames: EditorTextFrameInfo[];
   textWork: FrameWork;
   viewport: RasterViewport;
+}
+export interface EditorPageObjectInfo {
+  kind: SourceObjectKind;
+  name: string;
+  object: SourceObjectRef;
+  objectId?: ObjectId | null;
+  /**
+   * None is a top-level object; the source shape-tree root is not a user group.
+   */
+  parent?: number | null;
+  surface: SurfaceKind;
+}
+export interface SourceObjectRef {
+  nativeId: number;
+  part: string;
 }
 export interface SourcePageInfo {
   arcSegments: number;
@@ -1424,10 +1450,6 @@ export interface EditorTextFrameInfo {
 export interface SourceCellAddress {
   column: number;
   row: number;
-}
-export interface SourceObjectRef {
-  nativeId: number;
-  part: string;
 }
 export interface EditorParagraphInfo {
   boundaries: TextBoundary[];
@@ -1556,6 +1578,15 @@ export interface SelectionFragment {
 export interface Rect {
   max: Point1;
   min: Point1;
+}
+export interface EditorPickResult {
+  hits: EditorObjectHit[];
+  truncated: boolean;
+}
+export interface EditorObjectHit {
+  kind: DrawHitKind;
+  object: number;
+  textFrame?: number | null;
 }
 export interface PptxPageFailure {
   code: PptxPageFailureCode;

@@ -7,11 +7,12 @@ import {resolve, join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 const root=resolve(process.argv[2]??'.codex-work/page-interaction');
-const wasm=createRequire(import.meta.url)(join(root,'wasm-node/mo_wasm.js'));
+const wasmRoot=resolve(process.env.MO_EDITOR_PAGE_WASM??join(root,'wasm-node'));
+const wasm=createRequire(import.meta.url)(join(wasmRoot,'mo_wasm.js'));
 const {ShapingComponent}=await import(pathToFileURL(resolve('.codex-work/caret/text-component/index.js')));
 const {RasterComponent}=await import(pathToFileURL(resolve('.codex-work/raster-component/index.js')));
 const hbRoot=resolve('.codex-work/caret/harfbuzz');
-const skiaRoot=resolve('.codex-work/font-fallback-20261003/playback/runtime');
+const skiaRoot=resolve(process.env.MO_EDITOR_PAGE_SKIA??'.codex-work/font-fallback-20261003/playback/runtime');
 const {default:hb}=await import(pathToFileURL(join(hbRoot,'mo-hb.mjs')));
 const {default:skia}=await import(pathToFileURL(join(skiaRoot,'mo-skia.mjs')));
 const shaping=await ShapingComponent.create(hb,new WebAssembly.Module(readFileSync(join(hbRoot,'mo-hb.wasm'))));
@@ -161,5 +162,5 @@ for(const name of readdirSync(join(root,'fixtures')).filter(n=>n.endsWith('.json
 mkdirSync(join(root,'parity'),{recursive:true});
 writeFileSync(join(root,'parity/report.json'),JSON.stringify({format:'musteroffice.editor-page-parity/1',cases,
  fontSha256:sha(fonts),nativeWorkerSha256:sha(readFileSync('target/release/mo-raster-worker')),
- wasmSha256:sha(readFileSync(join(root,'wasm-node/mo_wasm_bg.wasm')))},null,2)+'\n');
+ wasmSha256:sha(readFileSync(join(wasmRoot,'mo_wasm_bg.wasm')))},null,2)+'\n');
 console.log(`PASS ${cases.length} fixtures; ${cases.reduce((n,c)=>n+c.nativeWasmMessages,0)} Native/WASM messages`);

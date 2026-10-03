@@ -1,10 +1,10 @@
 use mo_common::{Digest, ObjectId};
 use mo_pptx::{
     ExportDefaults,
-    source::{SourceObjectRef, table::SourceCellAddress},
+    source::{SourceObjectKind, SourceObjectRef, SurfaceKind, table::SourceCellAddress},
 };
 use mo_presentation_compile::{
-    source_editor_page::{PageTextQuery, PageTextQueryResult},
+    source_editor_page::{PagePickQuery, PageTextQuery, PageTextQueryResult},
     source_frame::FrameWork,
     source_page::SourcePageInfo,
     source_resource_page::{ResourcePageRequest, protocol::AuthorResourceRange},
@@ -47,6 +47,10 @@ pub enum EditorPageRequest {
         view: Digest,
         queries: Vec<PageTextQuery>,
     },
+    Pick {
+        view: Digest,
+        queries: Vec<PagePickQuery>,
+    },
     Clear {
         view: Digest,
     },
@@ -76,7 +80,34 @@ pub struct EditorPageInfo {
     pub resources_sha256: Digest,
     pub text_work: FrameWork,
     pub text_frames: Vec<EditorTextFrameInfo>,
+    /// Page paint targets and their group ancestors, in source paint preorder.
+    /// Hit.object and parent refer to indices in this immutable view's list.
+    pub objects: Vec<EditorPageObjectInfo>,
     pub downstream_coordinate_error_bound: mo_geometry::Fixed,
+}
+#[derive(Debug, Clone, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct EditorPageObjectInfo {
+    pub object: SourceObjectRef,
+    pub object_id: Option<ObjectId>,
+    pub name: String,
+    pub kind: SourceObjectKind,
+    pub surface: SurfaceKind,
+    /// None is a top-level object; the source shape-tree root is not a user group.
+    pub parent: Option<u32>,
+}
+#[derive(Debug, Clone, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct EditorObjectHit {
+    pub object: u32,
+    pub kind: mo_raster::picking::DrawHitKind,
+    pub text_frame: Option<u32>,
+}
+#[derive(Debug, Clone, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct EditorPickResult {
+    pub hits: Vec<EditorObjectHit>,
+    pub truncated: bool,
 }
 #[derive(Debug, Clone, Serialize, JsonSchema)]
 #[serde(tag = "status", rename_all = "camelCase")]
@@ -88,6 +119,10 @@ pub enum EditorPageResponse {
     Queried {
         view: Digest,
         results: Vec<PageTextQueryResult>,
+    },
+    Picked {
+        view: Digest,
+        results: Vec<EditorPickResult>,
     },
     Cleared {
         view: Digest,

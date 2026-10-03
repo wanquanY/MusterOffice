@@ -27,7 +27,7 @@ pub(super) fn prepare(
     backends: EditorPageBackends<'_>,
     check: &dyn Fn() -> bool,
 ) -> Result<(EditorPageImage, EditorPageInfo), PptxResourcePageFailure> {
-    let (image, ids) = match &request.input {
+    let (image, objects) = match &request.input {
         EditorPageInput::Pptx {} => {
             let prepared = crate::prepare_pptx_resource_document_inputs(
                 &request.page.page.expected_source_sha256,
@@ -45,7 +45,8 @@ pub(super) fn prepare(
                 backends,
                 check,
             )?;
-            (image, BTreeMap::new())
+            let objects = catalog::build(&image.page, &prepared.index, |_| Ok(None), check)?;
+            (image, objects)
         }
         EditorPageInput::Author {
             document,
@@ -75,22 +76,13 @@ pub(super) fn prepare(
                 .iter()
                 .map(|(id, native)| (*native, id))
                 .collect();
-            let mut ids = BTreeMap::new();
-            for text in &image
-                .page
-                .page()
-                .text
-                .as_ref()
-                .expect("editor text context")
-                .texts
-            {
-                cancelled(check)?;
-                let object = &text.frame.text.object;
-                if let Some(id) = native_ids.get(&object.native_id) {
-                    ids.insert((object.part.clone(), object.native_id), (*id).clone());
-                }
-            }
-            (image, ids)
+            let objects = catalog::build(
+                &image.page,
+                plan.declarations(),
+                |object| model_id(native_ids.get(&object.native_id).copied()),
+                check,
+            )?;
+            (image, objects)
         }
         EditorPageInput::Retained { document } => {
             let package = Package::open(
@@ -121,7 +113,7 @@ pub(super) fn prepare(
                 backends,
                 check,
             )?;
-            let mut ids = BTreeMap::new();
+            let mut ids = ObjectIds::new();
             for (id, binding) in &document
                 .source_bindings
                 .as_ref()
@@ -131,11 +123,25 @@ pub(super) fn prepare(
                 cancelled(check)?;
                 ids.insert((binding.part.clone(), binding.native_id), id.clone());
             }
-            (image, ids)
+            let objects = catalog::build(
+                &image.page,
+                plan.declarations(),
+                |object| model_id(ids.get(&(object.part.clone(), object.native_id))),
+                check,
+            )?;
+            (image, objects)
         }
     };
-    let info = info(&image.page, &ids, &request.page.page.viewport, check)?;
+    let info = info(&image.page, objects, &request.page.page.viewport, check)?;
     Ok((image, info))
+}
+fn model_id(id: Option<&ObjectId>) -> Result<Option<ObjectId>, PptxResourcePageFailure> {
+    id.cloned().map(Some).ok_or_else(|| {
+        failure(
+            PptxPageFailureCode::InputInvalid,
+            "editor model object identity",
+        )
+    })
 }
 fn manifest<'a>(
     request: &'a EditorPagePreparation,
@@ -179,12 +185,16 @@ fn render(
 }
 fn info(
     page: &SourceEditorPage,
-    ids: &ObjectIds,
+    objects: Vec<EditorPageObjectInfo>,
     viewport: &mo_raster::RasterViewport,
     check: &dyn Fn() -> bool,
 ) -> Result<EditorPageInfo, PptxResourcePageFailure> {
     let plan = page.page();
     let text = plan.text.as_ref().expect("editor text context");
+    let ids: BTreeMap<_, _> = objects
+        .iter()
+        .map(|o| ((o.object.part.as_str(), o.object.native_id), &o.object_id))
+        .collect();
     let mut frames = Vec::with_capacity(text.texts.len());
     for (frame, binding) in text.texts.iter().enumerate() {
         cancelled(check)?;
@@ -206,7 +216,16 @@ fn info(
         frames.push(EditorTextFrameInfo {
             frame: frame as u32,
             object: object.clone(),
-            object_id: ids.get(&(object.part.clone(), object.native_id)).cloned(),
+            object_id: ids
+                .get(&(object.part.as_str(), object.native_id))
+                .ok_or_else(|| {
+                    failure(
+                        PptxPageFailureCode::InputInvalid,
+                        "editor text object identity",
+                    )
+                })?
+                .as_ref()
+                .cloned(),
             cell: binding.frame.text.cell,
             paragraphs,
         });
@@ -220,6 +239,7 @@ fn info(
         resources_sha256: plan.resources_sha256.clone(),
         text_work: text.text_work.clone(),
         text_frames: frames,
+        objects,
         downstream_coordinate_error_bound: plan.page.downstream_coordinate_error_bound,
     })
 }

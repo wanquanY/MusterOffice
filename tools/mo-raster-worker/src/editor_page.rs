@@ -33,11 +33,13 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
             std::str::from_utf8(&request)?,
             &material,
             &fonts,
-            Some(mo_kernel_api::EditorPageBackends {
-                decoder: &mut decoder,
-                text: &mut text,
-                raster: &mut raster,
-            }),
+            Some(mo_kernel_api::EditorPageComponents::All(
+                mo_kernel_api::EditorPageBackends {
+                    decoder: &mut decoder,
+                    text: &mut text,
+                    raster: &mut raster,
+                },
+            )),
             &|| false,
         );
         output.write_all(&u32::try_from(metadata.len())?.to_le_bytes())?;

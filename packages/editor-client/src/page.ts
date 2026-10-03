@@ -1,14 +1,19 @@
 /** Retained, immutable native page geometry. The host owns confirmed document
  * revisions, Worker scheduling and publication; this facade owns one Rust view. */
-import type {EditorPagePreparation, EditorPageRequest, PageTextQuery} from '../../contracts/src/generated/editor-page-request.js';
-import type {EditorPageInfo, EditorPageResponse, PageTextQueryResult, PptxResourcePageFailure} from '../../contracts/src/generated/editor-page-response.js';
+import type {EditorPagePreparation, EditorPageRequest, PagePickQuery, PageTextQuery} from '../../contracts/src/generated/editor-page-request.js';
+import type {EditorPageInfo, EditorPageResponse, EditorPickResult, PageTextQueryResult, PptxResourcePageFailure} from '../../contracts/src/generated/editor-page-response.js';
 import type {DecoderPort, RasterPort, ShapingPort, WasmFrame} from '../../playback-client/src/ports.js';
 import {sameViewport} from '../../playback-client/src/viewport.js';
-export type {EditorPagePreparation, EditorPageInfo, PageTextQuery, PageTextQueryResult};
+export type {EditorPagePreparation, EditorPageInfo, PagePickQuery, EditorPickResult, PageTextQuery, PageTextQueryResult};
+export interface EditorPickingPort {
+  pick(frame: Uint32Array): {status: number; words: Uint32Array};
+  invalidate(): void;
+}
 export interface EditorPageOwner {
   prepare(request: string, material: Uint8Array, fonts: Uint8Array,
     decoder: DecoderPort, shaping: ShapingPort, raster: RasterPort): WasmFrame;
   command(request: string): string;
+  pick(request: string, raster: EditorPickingPort): string;
   free(): void;
 }
 export interface EditorPageModule { EditorPageSession: new () => EditorPageOwner; }
@@ -41,6 +46,8 @@ export class PresentationEditorPage {
   #closed = false;
   #busy = false;
   #freed = false;
+  #objects = 0;
+  #textObjects: number[] = [];
   constructor(module: EditorPageModule) { this.#owner = new module.EditorPageSession(); }
   get closed(): boolean { return this.#closed; }
   get view(): string | null { return this.#view; }
@@ -86,7 +93,16 @@ export class PresentationEditorPage {
           !Number.isSafeInteger(width * height * 4) || pixels.length !== width * height * 4) {
           throw new Error('Invalid editor page frame');
         }
+        const ids = new Map(reply.info.objects.map((o,i) => [JSON.stringify([o.object.part,o.object.nativeId]),i]));
+        if (ids.size !== reply.info.objects.length) throw new Error('Duplicate editor object identity');
+        const textObjects = reply.info.textFrames.map(f => {
+          const object = ids.get(JSON.stringify([f.object.part,f.object.nativeId]));
+          if (object === undefined) throw new Error('Invalid editor text object identity');
+          return object;
+        });
         this.#view = reply.view;
+        this.#objects = reply.info.objects.length;
+        this.#textObjects = textObjects;
         return {view: reply.view, info: reply.info, pixels};
       } finally { if (!consumed) frame.free(); }
     });
@@ -99,6 +115,32 @@ export class PresentationEditorPage {
       const reply = response(this.#owner.command(request));
       if (reply.status !== 'queried' || reply.view !== view || reply.results.length !== queries.length) {
         throw new Error('Invalid editor page query reply');
+      }
+      return reply.results;
+    });
+  }
+  pick(queries: PagePickQuery[], raster: EditorPickingPort): EditorPickResult[] {
+    if (!this.#view) throw new Error('Editor page has not been prepared');
+    const view = this.#view;
+    const limits = queries.map(q => q.maxHits);
+    const request = encode({operation: 'pick', view, queries});
+    return this.#run(() => {
+      const reply = response(this.#owner.pick(request, raster));
+      if (reply.status !== 'picked' || reply.view !== view || reply.results.length !== limits.length) {
+        throw new Error('Invalid editor page picking reply');
+      }
+      for (const [i,result] of reply.results.entries()) {
+        const seen = new Set<number>();
+        if (typeof result.truncated !== 'boolean' || result.hits.length > limits[i]! ||
+            (result.truncated && result.hits.length !== limits[i])) throw new Error('Invalid editor pick limit');
+        for (const hit of result.hits) {
+          if (!Number.isInteger(hit.object) || hit.object < 0 || hit.object >= this.#objects || seen.has(hit.object) ||
+              !['exact','nearby'].includes(hit.kind) || (hit.textFrame != null &&
+              (!Number.isInteger(hit.textFrame) || hit.textFrame < 0 || this.#textObjects[hit.textFrame] !== hit.object))) {
+            throw new Error('Invalid editor pick identity');
+          }
+          seen.add(hit.object);
+        }
       }
       return reply.results;
     });

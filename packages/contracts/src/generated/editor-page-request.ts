@@ -11,6 +11,11 @@ export type EditorPageRequest =
       view: Digest;
     }
   | {
+      operation: "pick";
+      queries: PagePickQuery[];
+      view: Digest;
+    }
+  | {
       operation: "clear";
       view: Digest;
     };
@@ -1400,6 +1405,30 @@ export interface TextPosition {
   scalarOffset: number;
 }
 export interface Point21 {
+  x: FixedQ32;
+  y: FixedQ32;
+}
+export interface PagePickQuery {
+  device: DevicePickQuery;
+  /**
+   * 1..=256 unique objects, in reverse page paint order.
+   */
+  maxHits: number;
+}
+/**
+ * Device pixels of this exact prepared viewport, including pointer tolerance.
+ */
+export interface DevicePickQuery {
+  point: Point22;
+  /**
+   * Signed i128 integer divided by 2^32. Coordinate unit is specified by the owning geometry profile; semantic range validation required.
+   */
+  radius: string;
+}
+/**
+ * Q32 device pixels, in the exact prepared viewport.
+ */
+export interface Point22 {
   x: FixedQ32;
   y: FixedQ32;
 }

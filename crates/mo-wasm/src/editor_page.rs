@@ -25,11 +25,13 @@ impl EditorPageSession {
             request,
             material,
             fonts,
-            Some(mo_kernel_api::EditorPageBackends {
-                decoder: &mut image_decode::Backend(decoder),
-                text: &mut text::Backend(shaping),
-                raster: &mut raster::Backend(raster),
-            }),
+            Some(mo_kernel_api::EditorPageComponents::All(
+                mo_kernel_api::EditorPageBackends {
+                    decoder: &mut image_decode::Backend(decoder),
+                    text: &mut text::Backend(shaping),
+                    raster: &mut raster::Backend(raster),
+                },
+            )),
             &|| false,
         );
         raster::RenderedRaster { metadata, pixels }
@@ -37,6 +39,19 @@ impl EditorPageSession {
     pub fn command(&mut self, request: &str) -> String {
         self.inner
             .dispatch_json(request, &[], &[], None, &|| false)
+            .0
+    }
+    pub fn pick(&mut self, request: &str, raster: &raster::RasterComponent) -> String {
+        self.inner
+            .dispatch_json(
+                request,
+                &[],
+                &[],
+                Some(mo_kernel_api::EditorPageComponents::Raster(
+                    &mut raster::Backend(raster),
+                )),
+                &|| false,
+            )
             .0
     }
 }

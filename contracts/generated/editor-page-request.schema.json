@@ -49,6 +49,30 @@
       "properties": {
         "operation": {
           "type": "string",
+          "const": "pick"
+        },
+        "queries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PagePickQuery"
+          }
+        },
+        "view": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "view",
+        "queries"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
           "const": "clear"
         },
         "view": {
@@ -848,6 +872,24 @@
         "top",
         "right",
         "bottom"
+      ]
+    },
+    "DevicePickQuery": {
+      "type": "object",
+      "properties": {
+        "point": {
+          "description": "Q32 device pixels, in the exact prepared viewport.",
+          "$ref": "#/$defs/Point2"
+        },
+        "radius": {
+          "description": "Q32 device pixels, 0..=32. Expands geometry, never the clipping region.",
+          "$ref": "#/$defs/FixedQ32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "point",
+        "radius"
       ]
     },
     "Digest": {
@@ -2830,6 +2872,26 @@
         "report",
         "clip",
         "growShape"
+      ]
+    },
+    "PagePickQuery": {
+      "type": "object",
+      "properties": {
+        "device": {
+          "description": "Device pixels of this exact prepared viewport, including pointer tolerance.",
+          "$ref": "#/$defs/DevicePickQuery"
+        },
+        "maxHits": {
+          "description": "1..=256 unique objects, in reverse page paint order.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "device",
+        "maxHits"
       ]
     },
     "PageTextAction": {

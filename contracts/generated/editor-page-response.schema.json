@@ -49,6 +49,29 @@
     {
       "type": "object",
       "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EditorPickResult"
+          }
+        },
+        "status": {
+          "type": "string",
+          "const": "picked"
+        },
+        "view": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "required": [
+        "status",
+        "view",
+        "results"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
         "status": {
           "type": "string",
           "const": "cleared"
@@ -295,11 +318,50 @@
       },
       "pattern": "^[0-9a-f]{64}$"
     },
+    "DrawHitKind": {
+      "type": "string",
+      "enum": [
+        "exact",
+        "nearby"
+      ]
+    },
+    "EditorObjectHit": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/DrawHitKind"
+        },
+        "object": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "textFrame": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "object",
+        "kind"
+      ]
+    },
     "EditorPageInfo": {
       "type": "object",
       "properties": {
         "downstreamCoordinateErrorBound": {
           "$ref": "#/$defs/FixedQ32"
+        },
+        "objects": {
+          "description": "Page paint targets and their group ancestors, in source paint preorder.\nHit.object and parent refer to indices in this immutable view's list.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EditorPageObjectInfo"
+          }
         },
         "page": {
           "$ref": "#/$defs/SourcePageInfo"
@@ -326,7 +388,50 @@
         "resourcesSha256",
         "textWork",
         "textFrames",
+        "objects",
         "downstreamCoordinateErrorBound"
+      ]
+    },
+    "EditorPageObjectInfo": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/SourceObjectKind"
+        },
+        "name": {
+          "type": "string"
+        },
+        "object": {
+          "$ref": "#/$defs/SourceObjectRef"
+        },
+        "objectId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObjectId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parent": {
+          "description": "None is a top-level object; the source shape-tree root is not a user group.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "surface": {
+          "$ref": "#/$defs/SurfaceKind"
+        }
+      },
+      "required": [
+        "object",
+        "name",
+        "kind",
+        "surface"
       ]
     },
     "EditorParagraphInfo": {
@@ -351,6 +456,24 @@
         "text",
         "sourceOrdinal",
         "boundaries"
+      ]
+    },
+    "EditorPickResult": {
+      "type": "object",
+      "properties": {
+        "hits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EditorObjectHit"
+          }
+        },
+        "truncated": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "hits",
+        "truncated"
       ]
     },
     "EditorTextFrameInfo": {
