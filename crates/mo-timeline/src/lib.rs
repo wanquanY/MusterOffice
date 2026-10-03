@@ -11,6 +11,8 @@ mod motion;
 mod motion_path;
 pub use motion::*;
 mod plan;
+mod presentation_step;
+pub use presentation_step::*;
 mod sampler;
 mod tree;
 pub use generation::*;

@@ -1,6 +1,40 @@
 //! Editorial identity is part of presentation computation, not a host UI hint.
 //! Initial visibility is a lower layer than active/frozen property assignments.
 use super::*;
+
+impl Hierarchy {
+    /// Keep source listener order and pre-event arbitration when one product
+    /// gesture addresses both global onClick and onNext declarations.
+    pub(super) fn compile_presentation_steps(
+        &mut self,
+        check: &dyn Fn() -> bool,
+    ) -> Result<(), TimelineError> {
+        for direction in [NavigationDirection::Next, NavigationDirection::Previous] {
+            cancel(check)?;
+            let mut listeners = self
+                .input_listeners
+                .get(&InputEvent::Navigation {
+                    direction,
+                    target: None,
+                })
+                .cloned()
+                .unwrap_or_default();
+            if direction == NavigationDirection::Next {
+                if let Some(click) = self
+                    .input_listeners
+                    .get(&InputEvent::Click { target: None })
+                {
+                    listeners.extend_from_slice(click);
+                }
+                listeners.sort_unstable();
+                listeners.dedup();
+            }
+            self.input_listeners
+                .insert(InputEvent::PresentationStep { direction }, listeners);
+        }
+        Ok(())
+    }
+}
 use mo_common::ObjectId;
 use std::collections::BTreeSet;
 

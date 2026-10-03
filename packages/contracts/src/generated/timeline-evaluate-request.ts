@@ -35,6 +35,10 @@ export type PlaybackSessionId = string;
  */
 export type InputEvent =
   | {
+      direction: NavigationDirection;
+      kind: "presentationStep";
+    }
+  | {
       kind: "click";
       target?: ObjectId | null;
     }
@@ -45,14 +49,14 @@ export type InputEvent =
     };
 /**
  * This interface was referenced by `TimelineEvaluateRequest`'s JSON-Schema
- * via the `definition` "ObjectId".
- */
-export type ObjectId = string;
-/**
- * This interface was referenced by `TimelineEvaluateRequest`'s JSON-Schema
  * via the `definition` "NavigationDirection".
  */
 export type NavigationDirection = "next" | "previous";
+/**
+ * This interface was referenced by `TimelineEvaluateRequest`'s JSON-Schema
+ * via the `definition` "ObjectId".
+ */
+export type ObjectId = string;
 /**
  * This interface was referenced by `TimelineEvaluateRequest`'s JSON-Schema
  * via the `definition` "SlideId".

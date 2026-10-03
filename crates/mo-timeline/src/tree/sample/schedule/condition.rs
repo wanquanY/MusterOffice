@@ -53,10 +53,12 @@ impl Scheduler<'_> {
         listeners: &[(usize, ConditionIndex)],
         source: &Moment,
         external: bool,
-    ) -> Result<(), TimelineError> {
+        presentation_step: bool,
+    ) -> Result<bool, TimelineError> {
         // Compile appends listeners in node order, with starts before ends.
         // No global node scan is necessary, including long condition lists.
         let mut position = 0;
+        let mut consumed = false;
         while position < listeners.len() {
             self.step()?;
             let i = listeners[position].0;
@@ -102,6 +104,7 @@ impl Scheduler<'_> {
                             },
                         )?;
                         accepted_begin = true;
+                        consumed = true;
                     }
                     ConditionIndex::End(k) if end_allowed && !accepted_begin => {
                         let atom = &entry.ends()[k];
@@ -110,6 +113,7 @@ impl Scheduler<'_> {
                         self.eligible[i] = true;
                         self.bound(i, moment)?;
                         accepted_end = true;
+                        consumed = true;
                     }
                     index @ (ConditionIndex::Next(_) | ConditionIndex::Previous(_))
                         if active
@@ -126,6 +130,12 @@ impl Scheduler<'_> {
                         } else {
                             NavigationDirection::Previous
                         };
+                        // A sequence at its boundary cannot consume a slideshow
+                        // step merely because an onNext/onPrev listener exists.
+                        // Raw event scheduling retains its original semantics.
+                        if presentation_step && self.navigation_position(i, direction)?.is_none() {
+                            continue;
+                        }
                         let moment = self.delayed(i, source, entry.condition(index))?;
                         if let Some((prior, at)) = &navigation
                             && *prior != direction
@@ -155,9 +165,10 @@ impl Scheduler<'_> {
                         owner: self.intervals.identity(i),
                     },
                 )?;
+                consumed = true;
             }
         }
-        Ok(())
+        Ok(consumed)
     }
     fn delayed(
         &self,

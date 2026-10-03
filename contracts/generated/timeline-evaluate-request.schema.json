@@ -1410,6 +1410,24 @@
     "InputEvent": {
       "oneOf": [
         {
+          "description": "Shared slideshow keys/canvas gestures. Next routes to global click and\nnext conditions once; Previous routes to global previous conditions.\nObject-targeted interactions continue to use the raw events below.",
+          "type": "object",
+          "properties": {
+            "direction": {
+              "$ref": "#/$defs/NavigationDirection"
+            },
+            "kind": {
+              "type": "string",
+              "const": "presentationStep"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "direction"
+          ]
+        },
+        {
           "type": "object",
           "properties": {
             "kind": {

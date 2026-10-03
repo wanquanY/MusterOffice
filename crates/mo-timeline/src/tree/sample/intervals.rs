@@ -13,6 +13,7 @@ pub(super) struct Record {
     pub(super) interval: Interval,
 }
 pub(crate) struct Intervals {
+    pub(super) presentation_step: Option<PresentationStepReceipt>,
     records: Vec<Record>,
     current: Vec<usize>,
     by_node: Vec<Vec<usize>>,
@@ -115,6 +116,7 @@ impl Intervals {
             return Err(TimelineError::Limit("timing interval count"));
         }
         Ok(Self {
+            presentation_step: None,
             records: plan
                 .hierarchy
                 .parents

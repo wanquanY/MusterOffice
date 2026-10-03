@@ -1,5 +1,6 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { CharacterProperty, ColorUnresolved, EffectiveFillRect, EffectiveFillTile, FillOwner, FillRedirect, FlowIssue, GeometryIssue, ParagraphProperty, PathSceneIssue, PixelExtent, PlacementUnresolved, PlaybackBinding, PlaybackTimingInfo, PptxPageFailure, PptxPlaybackRasterInfo, PptxPlaybackSessionInfo, ShapeFailure, SourceCellAddress, SourceFontSelectionFailure, SourceImageBinding, SourceImageReference, SourceImageResult, SourceObjectRef, SourceTextIssue, SourceVisualIssue, TableBorderTarget, TextBodyProperty, TextDecorationIssue, TextPaintLocation, TextStyleDeclaration, TimelineFailure } from './part-002.js';
+import type { CharacterProperty, ColorUnresolved, EffectiveFillRect, EffectiveFillTile, FillOwner, FillRedirect, FlowIssue, GeometryIssue, ParagraphProperty, PathSceneIssue, PixelExtent, PlacementUnresolved, PlaybackBinding, PlaybackTimingInfo, PptxPageFailure, PptxPlaybackRasterInfo, PptxPlaybackSessionInfo, ShapeFailure, SourceCellAddress, SourceFontSelectionFailure, SourceImageBinding, SourceImageReference, SourceImageResult, SourceObjectRef, SourceTextIssue, SourceVisualIssue, TableBorderTarget, TextBodyProperty, TextDecorationIssue, TextPaintLocation, TextStyleDeclaration } from './part-002.js';
+import type { TimelineFailure } from './part-003.js';
 
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
 
@@ -97,6 +98,19 @@ export type ByteLength = string;
 export type TimingNodeId = string;
 
 export type NodePhase = "waiting" | "scheduled" | "active" | "frozen" | "finished" | "suppressed";
+
+export type NavigationDirection = "next" | "previous";
+
+export type PresentationStepOutcome =
+  | {
+      kind: "consumed";
+    }
+  | {
+      entry: PresentationPageEntry;
+      kind: "pageBoundary";
+    };
+
+export type PresentationPageEntry = "initial";
 
 export type RotationBasis = "absolute" | "layout";
 

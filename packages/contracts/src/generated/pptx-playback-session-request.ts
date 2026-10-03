@@ -78,6 +78,10 @@ export type Ticks = string;
 export type Timescale = number;
 export type InputEvent =
   | {
+      direction: NavigationDirection;
+      kind: "presentationStep";
+    }
+  | {
       kind: "click";
       target?: ObjectId | null;
     }
@@ -86,8 +90,8 @@ export type InputEvent =
       kind: "navigation";
       target?: ObjectId | null;
     };
-export type ObjectId = string;
 export type NavigationDirection = "next" | "previous";
+export type ObjectId = string;
 
 export interface PptxPlaybackPrepareRequest {
   binding: PlaybackBinding;

@@ -322,6 +322,7 @@ pub(crate) fn compile(
         }
     }
     causal.validate(check)?;
+    h.compile_presentation_steps(check)?;
     let domain = if tree.is_some() {
         "musteroffice.timeline-plan/0.2-draft"
     } else {

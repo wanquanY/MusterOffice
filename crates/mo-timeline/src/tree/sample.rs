@@ -100,6 +100,7 @@ pub(crate) fn sample(
     event_cursor: u32,
     check: &dyn Fn() -> bool,
 ) -> Result<EvaluatedFrame, TimelineError> {
+    let presentation_step = intervals.presentation_step.clone();
     let h = &plan.hierarchy;
     let selected = intervals.select(plan, at, check)?;
     let intervals = &selected;
@@ -320,6 +321,7 @@ pub(crate) fn sample(
         opacity,
         motion,
         sequences,
+        presentation_step,
     };
     cancel(check)?;
     let sha256 = mo_common::digest(profile, &state)?;

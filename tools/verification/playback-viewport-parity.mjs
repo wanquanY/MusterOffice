@@ -8,11 +8,12 @@ import {spawn} from 'node:child_process';
 import {createRequire} from 'node:module';
 import {pathToFileURL, fileURLToPath} from 'node:url';
 
-const [output, wasmDir, nativeWorker, skiaDir, hbDir, adapters, authorManifest, sourceManifest] = process.argv.slice(2);
+const [output, wasmDir, nativeWorker, skiaDir, hbDir, adapters, authorManifest, sourceManifest, inputMode] = process.argv.slice(2);
 assert(sourceManifest, 'output wasm-dir native-worker skia-dir hb-dir adapters-dir author-manifest source-manifest');
+assert(inputMode === undefined || inputMode === 'presentation-step', 'optional input mode: presentation-step');
 await fs.mkdir(output, {recursive: false});
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
-const evidence = {format:'musteroffice.playback-viewport-parity/1', inputs:{}, cases:[]};
+const evidence = {format:'musteroffice.playback-viewport-parity/1', inputMode:inputMode ?? 'fixture', inputs:{}, cases:[]};
 async function read(file) {
   const bytes = await fs.readFile(file);
   const actual = {byteLength:bytes.length, sha256:sha(bytes)};
@@ -114,6 +115,29 @@ async function run(kind, fixture) {
       frames.push({label, sha256:sha(result.pixels), byteLength:result.pixels.length});
       return {result, evaluated};
     }
+    const receipts = [];
+    if (inputMode === 'presentation-step') {
+      sample.at = {ticks:'0', timescale:1000};
+      sample.history = {binding:sample.binding, through:sample.at, events:[]};
+      const initial = await render('initial');
+      assert.equal(initial.evaluated.state.presentationStep, undefined);
+      for (const [index, direction] of ['next','next','next','next','previous','previous','previous'].entries()) {
+        const sequence = index + 1, milliseconds = sequence * 100;
+        sample.at = {ticks:String(milliseconds), timescale:1000};
+        sample.history.through = sample.at;
+        sample.history.events.push({at:sample.at, generation:sample.binding.generation, sequence,
+          event:{kind:'presentationStep', direction}});
+        const current = await render(`step-${sequence}`), state = current.evaluated.state;
+        assert.deepEqual(state.binding, sample.binding);
+        assert.equal(state.eventCursor, sequence);
+        const receipt = state.presentationStep;
+        assert.equal(receipt.sequence, sequence); assert.equal(receipt.direction, direction);
+        assert.equal(BigInt(receipt.at.numerator) * 1000n, BigInt(milliseconds) * BigInt(receipt.at.denominator));
+        assert(['consumed','pageBoundary'].includes(receipt.outcome.kind));
+        if (receipt.outcome.kind === 'pageBoundary') assert.equal(receipt.outcome.entry, 'initial');
+        receipts.push(receipt);
+      }
+    }
     const base = await render('before');
     const viewport = structuredClone(owner.info.viewport), enlarged = structuredClone(viewport);
     enlarged.width *= 2; enlarged.height *= 2; enlarged.scale.numerator *= 2;
@@ -136,7 +160,7 @@ async function run(kind, fixture) {
         assert.deepEqual(reference.pixels, current.result.pixels, 'resized output equals freshly prepared viewport');
       } finally { fresh.dispose(); }
     }
-    evidence.cases.push({kind, name:fixture.name, frames, viewportRevisions:owner.info.viewportRevision, timing:owner.timing()});
+    evidence.cases.push({kind, name:fixture.name, frames, receipts, viewportRevisions:owner.info.viewportRevision, timing:owner.timing()});
   } finally { owner?.close(); await worker.close(); }
 }
 const authorCases = JSON.parse(await read(authorManifest)).cases;
@@ -145,6 +169,10 @@ await run('author', authorCases.find(c => c.name === 'interactive-3'));
 await run('source', sourceCases.find(c => c.name === 'image-text-1'));
 await run('source', sourceCases.find(c => c.name === 'click-after'));
 assert(!raster.invalid); assert(!shaper.invalid);
+if (inputMode === 'presentation-step') {
+  const outcomes = evidence.cases.flatMap(c => c.receipts.map(r => r.outcome.kind));
+  assert(outcomes.includes('consumed')); assert(outcomes.includes('pageBoundary'));
+}
 for (const file of Object.keys(evidence.inputs)) await read(file);
 evidence.componentCalls = {text:textCalls, image:imageCalls};
 await fs.writeFile(path.join(output, 'report.json'), JSON.stringify(evidence, null, 2) + '\n');

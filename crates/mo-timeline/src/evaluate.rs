@@ -91,6 +91,12 @@ pub struct PlaybackEvent {
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "kind", rename_all = "camelCase", deny_unknown_fields)]
 pub enum InputEvent {
+    /// Shared slideshow keys/canvas gestures. Next routes to global click and
+    /// next conditions once; Previous routes to global previous conditions.
+    /// Object-targeted interactions continue to use the raw events below.
+    PresentationStep {
+        direction: crate::NavigationDirection,
+    },
     Click {
         target: Option<ObjectId>,
     },
@@ -152,6 +158,8 @@ pub struct FrameState {
     pub containers: Vec<NodeFrame>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub sequences: Vec<SequenceFrame>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub presentation_step: Option<crate::PresentationStepReceipt>,
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

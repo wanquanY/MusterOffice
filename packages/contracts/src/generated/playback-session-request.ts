@@ -430,6 +430,10 @@ export type PresentationTrigger = "click" | "withPrevious" | "afterPrevious";
 export type FixedQ32 = string;
 export type InputEvent =
   | {
+      direction: NavigationDirection;
+      kind: "presentationStep";
+    }
+  | {
       kind: "click";
       target?: ObjectId | null;
     }

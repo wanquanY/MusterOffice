@@ -69,6 +69,19 @@ export type TimingNodeId = string;
 
 export type NodePhase = "waiting" | "scheduled" | "active" | "frozen" | "finished" | "suppressed";
 
+export type NavigationDirection = "next" | "previous";
+
+export type PresentationStepOutcome =
+  | {
+      kind: "consumed";
+    }
+  | {
+      entry: PresentationPageEntry;
+      kind: "pageBoundary";
+    };
+
+export type PresentationPageEntry = "initial";
+
 export type RotationBasis = "absolute" | "layout";
 
 /**

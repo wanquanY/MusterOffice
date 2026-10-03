@@ -17,6 +17,16 @@ export type PlaybackGeneration = string;
 export type PlaybackSessionId = string;
 export type TimingNodeId = string;
 export type NodePhase = "waiting" | "scheduled" | "active" | "frozen" | "finished" | "suppressed";
+export type NavigationDirection = "next" | "previous";
+export type PresentationStepOutcome =
+  | {
+      kind: "consumed";
+    }
+  | {
+      entry: PresentationPageEntry;
+      kind: "pageBoundary";
+    };
+export type PresentationPageEntry = "initial";
 export type RotationBasis = "absolute" | "layout";
 /**
  * Signed int64 ticks. Range requires semantic validation.
@@ -268,6 +278,7 @@ export interface FrameState {
   opacity?: {
     [k: string]: ExactValue | undefined;
   };
+  presentationStep?: PresentationStepReceipt | null;
   profile: string;
   rotations: {
     [k: string]: ExactRotation | undefined;
@@ -315,6 +326,16 @@ export interface ExactValue {
 export interface ExactMotion {
   x: ExactValue;
   y: ExactValue;
+}
+/**
+ * The last presentation step in the sampled, validated event prefix. The
+ * enclosing frame binds document/session/generation and hashes this receipt.
+ */
+export interface PresentationStepReceipt {
+  at: ExactValue;
+  direction: NavigationDirection;
+  outcome: PresentationStepOutcome;
+  sequence: number;
 }
 /**
  * An exact angle with its document dependency still explicit. The layout

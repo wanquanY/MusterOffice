@@ -1,5 +1,5 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { ByteLength, Digest, EffectiveImageMode, Emu, FillOrigin, FillTarget, FixedQ32, FontMetric, FontSelectionReason, FontStyle, ImageFormat, NativeBlipCompression, NativeCoordinate, NativeFillAlignment, NativeFontCollectionIndex, NativeFontSlot, NativePercentage, NativeTableGridIssue, NativeTextElement, NativeTileFlip, NodePhase, PhysicalPixelSize, PlacementCause, PlaybackGeneration, PlaybackSessionId, PptxPageFailureCode, ResolutionSource, ResolutionUnit, RotationBasis, ShapeFailureCode, SourceColor, SourceImageOutcome, SourcePageIssue, SourcePageProfile, SourcePlaceholderMatch, SourceVisualIssueKind, SurfaceKind, TableCellEdge, TableStyleSelectionError, TextStyleOrigin, Ticks, Timescale, TimingNodeId, Visibility } from './part-001.js';
+import type { ByteLength, Digest, EffectiveImageMode, Emu, FillOrigin, FillTarget, FixedQ32, FontMetric, FontSelectionReason, FontStyle, ImageFormat, NativeBlipCompression, NativeCoordinate, NativeFillAlignment, NativeFontCollectionIndex, NativeFontSlot, NativePercentage, NativeTableGridIssue, NativeTextElement, NativeTileFlip, NavigationDirection, NodePhase, PhysicalPixelSize, PlacementCause, PlaybackGeneration, PlaybackSessionId, PptxPageFailureCode, PresentationStepOutcome, ResolutionSource, ResolutionUnit, RotationBasis, ShapeFailureCode, SourceColor, SourceImageOutcome, SourcePageIssue, SourcePageProfile, SourcePlaceholderMatch, SourceVisualIssueKind, SurfaceKind, TableCellEdge, TableStyleSelectionError, TextStyleOrigin, Ticks, Timescale, TimingNodeId, Visibility } from './part-001.js';
 
 export type TextCascadeUnresolved =
   | {
@@ -694,6 +694,7 @@ export interface FrameState {
   opacity?: {
     [k: string]: ExactValue | undefined;
   };
+  presentationStep?: PresentationStepReceipt | null;
   profile: string;
   rotations: {
     [k: string]: ExactRotation | undefined;
@@ -745,6 +746,17 @@ export interface ExactValue {
 export interface ExactMotion {
   x: ExactValue;
   y: ExactValue;
+}
+
+/**
+ * The last presentation step in the sampled, validated event prefix. The
+ * enclosing frame binds document/session/generation and hashes this receipt.
+ */
+export interface PresentationStepReceipt {
+  at: ExactValue;
+  direction: NavigationDirection;
+  outcome: PresentationStepOutcome;
+  sequence: number;
 }
 
 /**

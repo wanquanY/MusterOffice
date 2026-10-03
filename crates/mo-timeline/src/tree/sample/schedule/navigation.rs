@@ -67,6 +67,66 @@ impl Scheduler<'_> {
         self.intervals[i].position = Some(position);
         self.intervals[i].position_at = Some(moment.clone());
     }
+    fn presentation_sequence(&self, i: usize) -> bool {
+        matches!(
+            Entry::at(&self.plan.timeline, i),
+            Entry::Container(TimingContainer {
+                presentation: Some(PresentationRole::MainSequence),
+                ..
+            })
+        )
+    }
+    /// One cursor decision shared by input admission and actual navigation.
+    /// Delayed actions recompute against their owning activation when executed.
+    pub(super) fn navigation_position(
+        &mut self,
+        i: usize,
+        direction: NavigationDirection,
+    ) -> Result<Option<usize>, TimelineError> {
+        if self.closed[i] || self.intervals[i].end.is_some() || self.intervals[i].start.is_none() {
+            return Ok(None);
+        }
+        let current = self.intervals[i].position.expect("sequence cursor");
+        let children = &self.h.children[i];
+        if direction == NavigationDirection::Next {
+            return Ok(children.get(current).map(|&child| {
+                if self.intervals[child].start.is_none() {
+                    current
+                } else {
+                    current + 1
+                }
+            }));
+        }
+        let active_current = self.presentation_sequence(i)
+            && children
+                .get(current)
+                .is_some_and(|&child| self.intervals[child].start.is_some());
+        let Some(mut previous) = (if active_current {
+            Some(current)
+        } else {
+            current.checked_sub(1)
+        }) else {
+            return Ok(None);
+        };
+        let nav = Entry::at(&self.plan.timeline, i)
+            .navigation()
+            .expect("sequence navigation");
+        if nav.previous_action == PreviousAction::SkipTimed {
+            while previous > 0 {
+                self.step()?;
+                if Entry::at(&self.plan.timeline, children[previous])
+                    .start()
+                    .conditions()
+                    .iter()
+                    .all(|condition| matches!(condition, TimeCondition::Never {}))
+                {
+                    break;
+                }
+                previous -= 1;
+            }
+        }
+        Ok(Some(previous))
+    }
     pub(super) fn navigate(
         &mut self,
         i: usize,
@@ -94,16 +154,13 @@ impl Scheduler<'_> {
             .expect("sequence navigation");
         let current = self.intervals[i].position.expect("sequence cursor");
         let children = &self.h.children[i];
+        let Some(destination) = self.navigation_position(i, direction)? else {
+            return Ok(());
+        };
         match direction {
             NavigationDirection::Next => {
-                let Some(&child) = children.get(current) else {
-                    return Ok(());
-                };
-                let next = if self.intervals[child].start.is_none() {
-                    current
-                } else {
-                    current + 1
-                };
+                let child = children[current];
+                let next = destination;
                 self.move_cursor(i, next, &moment);
                 if next != current
                     && nav.next_action == NextAction::Seek
@@ -146,41 +203,8 @@ impl Scheduler<'_> {
                 }
             }
             NavigationDirection::Previous => {
-                let presentation = matches!(
-                    Entry::at(&self.plan.timeline, i),
-                    Entry::Container(TimingContainer {
-                        presentation: Some(PresentationRole::MainSequence),
-                        ..
-                    })
-                );
-                // A slideshow Previous undoes its last activated click group,
-                // including one that has not ended yet. Generic sequence
-                // navigation instead enters the preceding child directly.
-                let active_current = presentation
-                    && children
-                        .get(current)
-                        .is_some_and(|&c| self.intervals[c].start.is_some());
-                let Some(mut previous) = (if active_current {
-                    Some(current)
-                } else {
-                    current.checked_sub(1)
-                }) else {
-                    return Ok(());
-                };
-                if nav.previous_action == PreviousAction::SkipTimed {
-                    while previous > 0 {
-                        self.step()?;
-                        if Entry::at(&self.plan.timeline, children[previous])
-                            .start()
-                            .conditions()
-                            .iter()
-                            .all(|c| matches!(c, TimeCondition::Never {}))
-                        {
-                            break;
-                        }
-                        previous -= 1;
-                    }
-                }
+                let presentation = self.presentation_sequence(i);
+                let previous = destination;
                 // Close every affected branch before any end notification, then
                 // reset them all after notifications. Old events cannot leak
                 // into an already reset sibling during the same command.

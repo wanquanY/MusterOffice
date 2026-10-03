@@ -148,7 +148,22 @@ pub(super) fn run(
         s.step()?;
         if let Action::Input { event } = &p.action {
             s.next_event()?;
-            s.dispatch(&h.input_listeners[event], &p.moment, true)?;
+            let presentation = matches!(event, InputEvent::PresentationStep { .. });
+            let consumed = s.dispatch(&h.input_listeners[event], &p.moment, true, presentation)?;
+            if let InputEvent::PresentationStep { direction } = event {
+                s.intervals.presentation_step = Some(PresentationStepReceipt {
+                    sequence: p.moment.sequence,
+                    at: p.moment.time.wire(),
+                    direction: *direction,
+                    outcome: if consumed {
+                        PresentationStepOutcome::Consumed
+                    } else {
+                        PresentationStepOutcome::PageBoundary {
+                            entry: PresentationPageEntry::Initial,
+                        }
+                    },
+                });
+            }
             continue;
         }
         if s.closed[p.node] || s.epochs[p.node] != p.epoch {
@@ -382,7 +397,7 @@ impl Scheduler<'_> {
                 moment: moment.clone(),
                 serial,
             });
-            self.dispatch(&self.h.listeners[event], &moment, false)?;
+            self.dispatch(&self.h.listeners[event], &moment, false, false)?;
         }
         Ok(())
     }

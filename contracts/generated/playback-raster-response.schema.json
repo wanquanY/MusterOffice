@@ -300,6 +300,16 @@
             }
           }
         },
+        "presentationStep": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PresentationStepReceipt"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "profile": {
           "type": "string"
         },
@@ -352,6 +362,13 @@
         "eventCursor",
         "nodes",
         "rotations"
+      ]
+    },
+    "NavigationDirection": {
+      "type": "string",
+      "enum": [
+        "next",
+        "previous"
       ]
     },
     "NodeFrame": {
@@ -709,6 +726,78 @@
         "pattern": "[^A-Za-z0-9_.:-]"
       },
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "PresentationPageEntry": {
+      "oneOf": [
+        {
+          "description": "A new page owner with time zero and an empty input prefix. Previous does\nnot synthesize a terminal pose or guess clicks on an unbounded timeline.",
+          "type": "string",
+          "const": "initial"
+        }
+      ]
+    },
+    "PresentationStepOutcome": {
+      "oneOf": [
+        {
+          "description": "An eligible page condition admitted this event, including delayed work.\nThis remains consumed even if a later event cancels that scheduled work.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "consumed"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "description": "No eligible page condition admitted this event. The presentation host\nmay cross the requested boundary, using this kernel-defined entry state.",
+          "type": "object",
+          "properties": {
+            "entry": {
+              "$ref": "#/$defs/PresentationPageEntry"
+            },
+            "kind": {
+              "type": "string",
+              "const": "pageBoundary"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "entry"
+          ]
+        }
+      ]
+    },
+    "PresentationStepReceipt": {
+      "description": "The last presentation step in the sampled, validated event prefix. The\nenclosing frame binds document/session/generation and hashes this receipt.",
+      "type": "object",
+      "properties": {
+        "at": {
+          "$ref": "#/$defs/ExactValue"
+        },
+        "direction": {
+          "$ref": "#/$defs/NavigationDirection"
+        },
+        "outcome": {
+          "$ref": "#/$defs/PresentationStepOutcome"
+        },
+        "sequence": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sequence",
+        "at",
+        "direction",
+        "outcome"
+      ]
     },
     "RasterInfo": {
       "type": "object",
