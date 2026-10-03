@@ -19,7 +19,8 @@ static bool write_word(uint32_t value) {
 }
 int main(int argc, char** argv) {
     const bool images_mode = argc == 2 && std::strcmp(argv[1], "--images") == 0;
-    if (argc != 1 && !images_mode) return 2;
+    const bool pick_mode = argc == 2 && std::strcmp(argv[1], "--pick") == 0;
+    if (argc != 1 && !images_mode && !pick_mode) return 2;
     uint32_t count;
     if (!read_word(count) || count > 2908303u) return 2;
     std::vector<uint32_t> request(count);
@@ -29,6 +30,15 @@ int main(int argc, char** argv) {
     std::vector<uint8_t> data(input_bytes);
     if (input_bytes && std::fread(data.data(), 1, input_bytes, stdin) != input_bytes) return 2;
     if (std::getc(stdin) != EOF) return 2;
+    if (pick_mode) {
+        uint32_t* output = nullptr;
+        uint32_t words = 0;
+        const int status = mo_skia_pick(request.data(), count, &output, &words);
+        bool success = write_word(uint32_t(status)) && write_word(words * 4);
+        for (uint32_t i = 0; success && i < words; ++i) success = write_word(output[i]);
+        mo_skia_free(output);
+        return success ? 0 : 3;
+    }
     uint8_t* pixels = nullptr;
     uint32_t bytes = 0;
     const int32_t status = images_mode

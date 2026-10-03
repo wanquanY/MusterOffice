@@ -109,7 +109,7 @@ impl<S> SceneBuilder<S> {
         let instance = self.scene.instances.len() as u32;
         self.scene.instances.push(PathInstance {
             blend,
-            clip: clip.or(self.page_clip),
+            clip: self.effective_clip(clip),
             path,
             transform,
             brush,
@@ -118,6 +118,9 @@ impl<S> SceneBuilder<S> {
         self.paint_budget = budget;
         self.sources.push(source(instance));
         Ok(())
+    }
+    pub fn effective_clip(&self, clip: Option<u32>) -> Option<u32> {
+        clip.or(self.page_clip)
     }
     pub fn clip(&mut self, path: &FillPath, affine: Affine) -> Result<u32, RasterError> {
         if self.scene.clips.len() >= 8192 {

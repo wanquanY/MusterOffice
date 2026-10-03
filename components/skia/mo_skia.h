@@ -61,6 +61,9 @@ int32_t mo_skia_raster_take(MoSkiaRasterTask* task, uint8_t** pixels, uint32_t* 
 // Cancel or release. No pixel ownership escapes; null is permitted. An invalid
 // component must instead be quarantined by terminating its process/Worker.
 void mo_skia_raster_drop(MoSkiaRasterTask* task);
+// Geometry-only point queries; returned bitmaps use the shared allocator.
+uint32_t mo_skia_pick_abi(void);
+int32_t mo_skia_pick(const uint32_t* request, uint32_t words, uint32_t** output, uint32_t* output_words);
 void mo_skia_free(void *pixels);
 uint32_t mo_skia_abi(void);
 #ifdef __cplusplus

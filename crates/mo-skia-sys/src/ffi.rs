@@ -7,6 +7,13 @@ use mo_raster::{
 use std::{ffi::c_void, ptr, slice};
 unsafe extern "C" {
     fn mo_skia_abi() -> u32;
+    fn mo_skia_pick_abi() -> u32;
+    fn mo_skia_pick(
+        request: *const u32,
+        words: u32,
+        output: *mut *mut u32,
+        output_words: *mut u32,
+    ) -> i32;
     fn mo_skia_clips_abi() -> u32;
     fn mo_skia_gradient_planes_abi() -> u32;
     fn mo_skia_office_gradients_abi() -> u32;
@@ -220,4 +227,44 @@ pub(super) fn raster(frame: &[u32], images: Option<&[u8]>) -> Result<BackendRepl
         .map_err(|_| RasterError::Host("native pixels allocation"))?;
     pixels.extend_from_slice(data);
     Ok(BackendReply { status: 0, pixels })
+}
+
+/// The caller holds the sole native component lock for this complete call.
+pub(super) fn pick(frame: &[u32]) -> Result<mo_raster::picking::PickingReply, RasterError> {
+    use mo_raster::picking::*;
+    if frame.len() > MAX_PICK_FRAME_WORDS {
+        return Err(RasterError::Limit("native picking frame"));
+    }
+    // SAFETY: pure capability query on the serialized, pinned instance.
+    if unsafe { mo_skia_pick_abi() } != 1 {
+        return Err(RasterError::Host("picking ABI mismatch"));
+    }
+    let mut pointer = ptr::null_mut();
+    let mut words = 0;
+    // SAFETY: input is immutable for this synchronous call; outputs are distinct
+    // initialized slots. Successful allocation is owned by the shared guard.
+    let status =
+        unsafe { mo_skia_pick(frame.as_ptr(), frame.len() as u32, &mut pointer, &mut words) };
+    let _owned = Output(pointer.cast());
+    if !(0..=4).contains(&status) || (status != 0 && (!pointer.is_null() || words != 0)) {
+        return Err(RasterError::ComponentInvalid("native picking ownership"));
+    }
+    if status != 0 {
+        return Ok(PickingReply {
+            status: status as u32,
+            words: vec![],
+        });
+    }
+    if pointer.is_null() || !(7..=MAX_PICK_REPLY_WORDS).contains(&(words as usize)) {
+        return Err(RasterError::ComponentInvalid("native picking allocation"));
+    }
+    // SAFETY: the successful pinned ABI reports exactly this many initialized
+    // u32s, and the guard retains the allocation while they are copied.
+    let data = unsafe { slice::from_raw_parts(pointer, words as usize) };
+    let mut words = Vec::new();
+    words
+        .try_reserve_exact(data.len())
+        .map_err(|_| RasterError::Host("native picking allocation"))?;
+    words.extend_from_slice(data);
+    Ok(PickingReply { status: 0, words })
 }

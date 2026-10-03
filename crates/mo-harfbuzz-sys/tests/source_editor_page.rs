@@ -249,6 +249,36 @@ fn near(a: Point, b: Point, tolerance: Fixed) {
     assert!(a.x.raw().abs_diff(b.x.raw()) <= tolerance.raw() as u128);
     assert!(a.y.raw().abs_diff(b.y.raw()) <= tolerance.raw() as u128);
 }
+fn pick_query(e: &SourceEditorPage, page: Point, max_hits: u32) -> PagePickQuery {
+    let v = &e.page().page.raster.viewport;
+    let scale = |p: Fixed| {
+        Fixed::from_raw(p.raw() * i128::from(v.scale.numerator) / i128::from(v.scale.denominator))
+    };
+    PagePickQuery {
+        device: mo_raster::picking::DevicePickQuery {
+            point: Point {
+                x: scale(page.x),
+                y: scale(page.y),
+            },
+            radius: Fixed::ZERO,
+        },
+        max_hits,
+    }
+}
+fn frame_center(e: &SourceEditorPage, frame: usize) -> Point {
+    let r = e.page().text.as_ref().unwrap().texts[frame]
+        .frame
+        .region
+        .outer;
+    mapped(
+        e,
+        frame,
+        Point {
+            x: Fixed::from_raw((r.min.x.raw() + r.max.x.raw()) / 2),
+            y: Fixed::from_raw((r.min.y.raw() + r.max.y.raw()) / 2),
+        },
+    )
+}
 #[test]
 fn rotated_flipped_nested_page_queries_match_rendered_frame_and_resource_pixels() {
     for (orientation, nested) in [
@@ -286,6 +316,15 @@ fn rotated_flipped_nested_page_queries_match_rendered_frame_and_resource_pixels(
         let e = &image.page;
         assert_eq!(e.page().images.decoded.len(), 1);
         assert_eq!(e.page().text.as_ref().unwrap().texts.len(), 1);
+        let picked = e
+            .pick(
+                &[pick_query(e, frame_center(e, 0), 256)],
+                &mut NativeRaster,
+                &|| false,
+            )
+            .unwrap();
+        assert_eq!(picked[0].hits[0].object.native_id, 42);
+        assert_eq!(picked[0].hits[0].text_frame, Some(0));
         let answers = e.query(&[caret(0, 1), select(0, 0, 3)], &|| false).unwrap();
         let PageTextQueryResult::Caret { caret: c, .. } = &answers[0] else {
             panic!()
@@ -661,9 +700,199 @@ fn native_table_cells_keep_their_own_paragraph_and_empty_caret_bindings() {
         assert_eq!(c.local.paragraph, 0);
         assert_eq!(c.local.caret.position.scalar_offset, 0);
         assert!(c.visible.is_some());
+        let picked = e
+            .pick(
+                &[pick_query(e, frame_center(e, i), 256)],
+                &mut NativeRaster,
+                &|| false,
+            )
+            .unwrap();
+        assert_eq!(
+            picked[0].hits.len(),
+            1,
+            "table deduplicates its native object"
+        );
+        assert_eq!(picked[0].hits[0].text_frame, Some(i as u32));
     }
     assert_ne!(
         serde_json::to_value(&answers[0]).unwrap(),
         serde_json::to_value(&answers[1]).unwrap()
     );
+}
+
+#[test]
+fn object_picking_uses_curved_fill_and_reverse_paint_order_with_bounded_results() {
+    let back = receiver(
+        40,
+        [0, 0, 1600000, 1200000],
+        "",
+        "<a:solidFill><a:srgbClr val=\"ABCDEF\"/></a:solidFill>",
+    );
+    let ellipse = receiver(
+        41,
+        [200000, 200000, 1000000, 600000],
+        "",
+        "<a:solidFill><a:srgbClr val=\"FF0000\"/></a:solidFill>",
+    )
+    .replace("prst=\"rect\"", "prst=\"ellipse\"");
+    let image = editor(&fixture(&(back + &ellipse)), Default::default()).unwrap();
+    let e = &image.page;
+    let middle = Point {
+        x: f(700000),
+        y: f(500000),
+    };
+    let queries = [
+        pick_query(e, middle, 256),
+        pick_query(e, middle, 1),
+        pick_query(
+            e,
+            Point {
+                x: f(210000),
+                y: f(210000),
+            },
+            256,
+        ),
+    ];
+    let picked = e.pick(&queries, &mut NativeRaster, &|| false).unwrap();
+    assert_eq!(
+        picked[0]
+            .hits
+            .iter()
+            .map(|h| h.object.native_id)
+            .collect::<Vec<_>>(),
+        [41, 40]
+    );
+    assert!(!picked[0].truncated);
+    assert_eq!(picked[1].hits.len(), 1);
+    assert!(picked[1].truncated);
+    assert_eq!(
+        picked[2]
+            .hits
+            .iter()
+            .map(|h| h.object.native_id)
+            .collect::<Vec<_>>(),
+        [40]
+    );
+    assert_eq!(
+        e.objects().iter().map(|o| o.native_id).collect::<Vec<_>>(),
+        [40, 41]
+    );
+}
+
+#[test]
+fn empty_text_frame_retains_unused_native_clip_and_fractional_page_boundary() {
+    let empty = shape(42, 1500000, 900000, "rot=\"2700000\"", "")
+        .replace(
+            "<a:solidFill><a:srgbClr val=\"F4EADC\"/></a:solidFill>",
+            "<a:noFill/>",
+        )
+        .replace(
+            "<a:bodyPr ",
+            "<a:bodyPr horzOverflow=\"clip\" vertOverflow=\"clip\" ",
+        );
+    let bytes = rewrite(&fixture(&empty), "/ppt/presentation.xml", |s| {
+        s.replace(
+            "cx=\"1600000\" cy=\"1200000\"",
+            "cx=\"1600001\" cy=\"1200001\"",
+        )
+    });
+    let image = editor(&bytes, Default::default()).unwrap();
+    let e = &image.page;
+    let text = &e.page().text.as_ref().unwrap().texts[0];
+    assert!(text.frame.glyphs.is_empty());
+    assert!(text.frame.clip.is_some());
+    // Search only the geometric text rectangle, using the same independently
+    // forward-mapped local points as the existing native caret qualification.
+    let mut inside = 0;
+    for y in 0..10 {
+        for x in 0..10 {
+            let p = mapped(
+                e,
+                0,
+                Point {
+                    x: f(x * 100000 + 50000),
+                    y: f(y * 60000 + 30000),
+                },
+            );
+            let picked = e
+                .pick(&[pick_query(e, p, 256)], &mut NativeRaster, &|| false)
+                .unwrap();
+            if !picked[0].hits.is_empty() {
+                inside += 1;
+                assert_eq!(picked[0].hits[0].object.native_id, 42);
+                assert_eq!(picked[0].hits[0].text_frame, Some(0));
+                assert!(
+                    p.x >= Fixed::ZERO
+                        && p.x <= f(1600001)
+                        && p.y >= Fixed::ZERO
+                        && p.y <= f(1200001)
+                );
+            }
+        }
+    }
+    assert!(inside > 0 && inside < 100);
+    let v = &e.page().page.raster.viewport;
+    let q = PagePickQuery {
+        device: mo_raster::picking::DevicePickQuery {
+            point: Point {
+                x: Fixed::from_raw((i128::from(v.width) << 32) - (1 << 16)),
+                y: f(250),
+            },
+            radius: f(32),
+        },
+        max_hits: 256,
+    };
+    assert!(
+        e.pick(&[q], &mut NativeRaster, &|| false).unwrap()[0]
+            .hits
+            .is_empty(),
+        "pointer tolerance cannot extend the fractional page clip"
+    );
+}
+
+#[test]
+fn page_pick_preflight_and_cancellation_do_not_invoke_a_component() {
+    struct Unused;
+    impl mo_raster::RasterBackend for Unused {
+        fn raster(&mut self, _: &[u32]) -> Result<mo_raster::BackendReply, mo_raster::RasterError> {
+            panic!("unexpected raster call")
+        }
+        fn pick(
+            &mut self,
+            _: &[u32],
+        ) -> Result<mo_raster::picking::PickingReply, mo_raster::RasterError> {
+            panic!("unexpected picking call")
+        }
+        fn invalidate(&mut self) {
+            panic!("preflight cannot invalidate an untouched component")
+        }
+    }
+    let image = editor(&fixture(&shape(42, 0, 0, "", "")), Default::default()).unwrap();
+    let e = &image.page;
+    let good = pick_query(e, frame_center(e, 0), 256);
+    assert!(e.pick(&[], &mut Unused, &|| false).unwrap().is_empty());
+    for max_hits in [0, 257] {
+        assert!(
+            e.pick(
+                &[PagePickQuery {
+                    max_hits,
+                    ..good.clone()
+                }],
+                &mut Unused,
+                &|| false
+            )
+            .is_err()
+        );
+    }
+    assert!(
+        e.pick(&vec![good.clone(); 65], &mut Unused, &|| false)
+            .is_err()
+    );
+    let mut invalid = good.clone();
+    invalid.device.radius = f(-1);
+    assert!(e.pick(&[invalid], &mut Unused, &|| false).is_err());
+    assert!(matches!(
+        e.pick(&[good], &mut Unused, &|| true),
+        Err(SourcePageError::Raster(mo_raster::RasterError::Cancelled))
+    ));
 }

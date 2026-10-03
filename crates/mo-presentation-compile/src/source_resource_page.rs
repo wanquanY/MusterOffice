@@ -198,21 +198,41 @@ pub(crate) fn prepare_input_view(
 }
 impl PreparedResourcePage {
     pub fn plan(self, check: &dyn Fn() -> bool) -> Result<SourceResourcePagePlan, SourcePageError> {
+        self.plan_with_picking(None, check).map(|(plan, _)| plan)
+    }
+    fn plan_with_picking(
+        self,
+        interaction: Option<&mut source_text_page::TextPageInteraction>,
+        check: &dyn Fn() -> bool,
+    ) -> Result<
+        (
+            SourceResourcePagePlan,
+            Option<mo_raster::picking::CompiledPicking>,
+        ),
+        SourcePageError,
+    > {
         let images = PreparedImages::new(&self.images.manifest, &self.images.pixels, check)?;
-        let compiled = mo_render::compile_images(&self.built.raster, &images, check)?;
+        let retain = interaction.is_some();
+        let compiled = compile_editor_clips(&self.built.raster, &images, interaction, check)?;
+        let picking = retain
+            .then(|| compiled.raster().picking(check))
+            .transpose()?;
         let page = self.built.finish(
             compiled.work().clone(),
             compiled.raster().work().coordinate_error_bound,
         )?;
         cancel(check)?;
-        Ok(SourceResourcePagePlan {
-            profile: PROFILE.into(),
-            page,
-            text: self.text,
-            images: self.images.info,
-            image_work: compiled.raster().work().clone(),
-            resources_sha256: images.sha256().clone(),
-        })
+        Ok((
+            SourceResourcePagePlan {
+                profile: PROFILE.into(),
+                page,
+                text: self.text,
+                images: self.images.info,
+                image_work: compiled.raster().work().clone(),
+                resources_sha256: images.sha256().clone(),
+            },
+            picking,
+        ))
     }
     pub fn render(
         self,
@@ -269,21 +289,29 @@ impl PreparedResourcePage {
         mut self,
         check: &dyn Fn() -> bool,
     ) -> Result<crate::source_editor_page::SourceEditorPage, SourcePageError> {
-        let interaction = self.interaction.take().ok_or(SourcePageError::Invalid(
+        let mut interaction = self.interaction.take().ok_or(SourcePageError::Invalid(
             "page was not prepared for interaction",
         ))?;
-        crate::source_editor_page::SourceEditorPage::new(self.plan(check)?, interaction)
+        let (plan, picking) = self.plan_with_picking(Some(&mut interaction), check)?;
+        crate::source_editor_page::SourceEditorPage::new(
+            plan,
+            interaction,
+            picking.expect("retained picking"),
+            check,
+        )
     }
     pub(crate) fn editor_render(
         self,
         backend: &mut dyn RasterBackend,
         check: &dyn Fn() -> bool,
     ) -> Result<crate::source_editor_page::EditorPageImage, SourcePageError> {
-        let interaction = self.interaction.ok_or(SourcePageError::Invalid(
+        let mut interaction = self.interaction.ok_or(SourcePageError::Invalid(
             "page was not prepared for interaction",
         ))?;
         let images = PreparedImages::new(&self.images.manifest, &self.images.pixels, check)?;
-        let compiled = mo_render::compile_images(&self.built.raster, &images, check)?;
+        let compiled =
+            compile_editor_clips(&self.built.raster, &images, Some(&mut interaction), check)?;
+        let picking = compiled.raster().picking(check)?;
         let page = self.built.finish(
             compiled.work().clone(),
             compiled.raster().work().coordinate_error_bound,
@@ -296,7 +324,8 @@ impl PreparedResourcePage {
             image_work: compiled.raster().work().clone(),
             resources_sha256: images.sha256().clone(),
         };
-        let page = crate::source_editor_page::SourceEditorPage::new(plan, interaction)?;
+        let page =
+            crate::source_editor_page::SourceEditorPage::new(plan, interaction, picking, check)?;
         let image = mo_render::render_compiled_images(compiled, backend, check)?;
         cancel(check)?;
         Ok(crate::source_editor_page::EditorPageImage {
@@ -304,4 +333,25 @@ impl PreparedResourcePage {
             pixels: image.pixels,
         })
     }
+}
+fn compile_editor_clips<'a>(
+    raster: &mo_render::SceneRasterRequest,
+    images: &'a PreparedImages<'a>,
+    interaction: Option<&mut source_text_page::TextPageInteraction>,
+    check: &dyn Fn() -> bool,
+) -> Result<mo_render::CompiledImageScene<'a>, SourcePageError> {
+    let Some(interaction) = interaction else {
+        return Ok(mo_render::compile_images(raster, images, check)?);
+    };
+    let clips: std::collections::BTreeSet<_> =
+        interaction.clips.iter().flatten().copied().collect();
+    let clips: Vec<_> = clips.into_iter().collect();
+    let compiled = mo_render::compile_images_retaining_clips(raster, images, &clips, check)?;
+    for clip in interaction.clips.iter_mut().flatten() {
+        cancel(check)?;
+        *clip = compiled
+            .lowered_clip(*clip)
+            .ok_or(SourcePageError::Invalid("editor clip not retained"))?;
+    }
+    Ok(compiled)
 }

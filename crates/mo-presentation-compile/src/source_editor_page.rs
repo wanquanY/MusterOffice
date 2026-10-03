@@ -1,5 +1,6 @@
 //! Immutable editing geometry captured with the actual resource-enabled page.
 //! Source ownership, fonts, decoding, layer order and raster remain shared.
+mod picking;
 mod query;
 mod transform;
 mod types;
@@ -8,6 +9,7 @@ use crate::{source_page::*, source_resource_page::*, source_text_page::TextPageI
 use mo_image::ImageDecoder;
 use mo_presentation_source::source::{SourceIndex, images::ImageInput};
 use mo_raster::RasterBackend;
+pub use picking::{PageObjectHit, PagePickQuery, PagePickResult};
 pub use types::*;
 
 pub struct PreparedEditorPage {
@@ -18,6 +20,8 @@ pub struct PreparedEditorPage {
 pub struct SourceEditorPage {
     page: SourceResourcePagePlan,
     interaction: TextPageInteraction,
+    picking: mo_raster::picking::CompiledPicking,
+    pick_index: picking::PickIndex,
 }
 pub struct EditorPageImage {
     pub page: SourceEditorPage,
@@ -70,15 +74,22 @@ impl SourceEditorPage {
     pub(crate) fn new(
         page: SourceResourcePagePlan,
         interaction: TextPageInteraction,
+        picking: mo_raster::picking::CompiledPicking,
+        check: &dyn Fn() -> bool,
     ) -> Result<Self, SourcePageError> {
-        if page
-            .text
-            .as_ref()
-            .is_none_or(|text| text.texts.len() != interaction.maps.len())
-        {
+        if page.text.as_ref().is_none_or(|text| {
+            text.texts.len() != interaction.maps.len()
+                || text.texts.len() != interaction.clips.len()
+        }) {
             return Err(SourcePageError::Invalid("editor page interaction binding"));
         }
-        Ok(Self { page, interaction })
+        let pick_index = picking::PickIndex::new(&page, picking.draw_count(), check)?;
+        Ok(Self {
+            page,
+            interaction,
+            picking,
+            pick_index,
+        })
     }
     pub fn page(&self) -> &SourceResourcePagePlan {
         &self.page

@@ -9,8 +9,13 @@ use std::sync::Arc;
 pub struct CompiledImageScene<'a> {
     raster: CompiledImageRaster<'a>,
     work: SceneWork,
+    clip_indices: Vec<Option<u32>>,
 }
 impl CompiledImageScene<'_> {
+    /// Source scene clip identity after unused-node pruning and lowering.
+    pub fn lowered_clip(&self, source: u32) -> Option<u32> {
+        self.clip_indices.get(source as usize).copied().flatten()
+    }
     pub fn raster(&self) -> &CompiledImageRaster<'_> {
         &self.raster
     }
@@ -43,12 +48,27 @@ pub fn compile_images<'a>(
     images: &'a PreparedImages<'a>,
     check: &dyn Fn() -> bool,
 ) -> Result<CompiledImageScene<'a>, RasterError> {
-    let (raster, work) = compile_with(request, check, &|paths, check| {
-        let raster = mo_raster::compile_images(paths, images, check)?;
-        let bound = raster.raster_work().coordinate_error_bound;
-        Ok((raster, bound))
-    })?;
-    Ok(CompiledImageScene { raster, work })
+    compile_images_retaining_clips(request, images, &[], check)
+}
+/// Keep explicit semantic clip users (for example an empty editor text frame)
+/// in the same lowering, precision retry and device batch as the page pixels.
+pub fn compile_images_retaining_clips<'a>(
+    request: &SceneRasterRequest,
+    images: &'a PreparedImages<'a>,
+    retained_clips: &[u32],
+    check: &dyn Fn() -> bool,
+) -> Result<CompiledImageScene<'a>, RasterError> {
+    let (raster, work, clip_indices) =
+        compile_with(request, retained_clips, check, &|paths, check| {
+            let raster = mo_raster::compile_images(paths, images, check)?;
+            let bound = raster.raster_work().coordinate_error_bound;
+            Ok((raster, bound))
+        })?;
+    Ok(CompiledImageScene {
+        raster,
+        work,
+        clip_indices,
+    })
 }
 pub fn render_images(
     request: &SceneRasterRequest,
@@ -63,12 +83,16 @@ pub fn compile_shared_images(
     images: Arc<PreparedImages<'static>>,
     check: &dyn Fn() -> bool,
 ) -> Result<CompiledImageScene<'static>, RasterError> {
-    let (raster, work) = compile_with(request, check, &|paths, check| {
+    let (raster, work, clip_indices) = compile_with(request, &[], check, &|paths, check| {
         let raster = mo_raster::compile_shared_images(paths, Arc::clone(&images), check)?;
         let bound = raster.raster_work().coordinate_error_bound;
         Ok((raster, bound))
     })?;
-    Ok(CompiledImageScene { raster, work })
+    Ok(CompiledImageScene {
+        raster,
+        work,
+        clip_indices,
+    })
 }
 pub fn render_compiled_images(
     compiled: CompiledImageScene<'_>,

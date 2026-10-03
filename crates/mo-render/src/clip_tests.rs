@@ -3,6 +3,50 @@ use mo_geometry::{Affine, Fixed};
 use std::cell::Cell;
 
 #[test]
+fn semantic_clip_users_survive_pruning_with_explicit_source_identity() {
+    let mut q = tests::request();
+    q.scene.clips = vec![
+        ClipNode {
+            parent: None,
+            path: 0,
+            transform: Some(1),
+        },
+        ClipNode {
+            parent: None,
+            path: 0,
+            transform: Some(2),
+        },
+    ];
+    for draw in &mut q.scene.instances {
+        draw.clip = Some(1);
+    }
+    let images = mo_raster::PreparedImages::new(&[], &[], &|| false).unwrap();
+    let ordinary = compile_images(&q, &images, &|| false).unwrap();
+    assert_eq!(ordinary.lowered_clip(0), None);
+    assert_eq!(ordinary.lowered_clip(1), Some(0));
+    let retained = compile_images_retaining_clips(&q, &images, &[0], &|| false).unwrap();
+    assert_eq!(retained.lowered_clip(0), Some(0));
+    assert_eq!(retained.lowered_clip(1), Some(1));
+    assert_eq!(retained.work().clips.as_ref().unwrap().compiled_nodes, 2);
+    assert_eq!(
+        retained.raster().picking(&|| false).unwrap().draw_count(),
+        q.scene.instances.len() as u32
+    );
+    assert!(matches!(
+        compile_images_retaining_clips(&q, &images, &[2], &|| false),
+        Err(RasterError::Invalid(_))
+    ));
+    q.scene.instances.clear();
+    let retained = compile_images_retaining_clips(&q, &images, &[0], &|| false).unwrap();
+    assert_eq!(retained.lowered_clip(0), Some(0));
+    assert_eq!(retained.lowered_clip(1), None);
+    assert_eq!(
+        retained.raster().picking(&|| false).unwrap().draw_count(),
+        0
+    );
+}
+
+#[test]
 fn clip_and_draw_geometry_share_resources_and_original_transform_chain() {
     let mut q = tests::request();
     q.scene.clips = vec![

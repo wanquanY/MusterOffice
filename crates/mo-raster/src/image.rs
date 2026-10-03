@@ -115,6 +115,12 @@ impl ImageResources<'_> {
     }
 }
 impl CompiledImageRaster<'_> {
+    pub fn picking(
+        &self,
+        check: &dyn Fn() -> bool,
+    ) -> Result<crate::picking::CompiledPicking, RasterError> {
+        self.raster.picking(check)
+    }
     pub fn frame(&self) -> &[u32] {
         self.raster.frame()
     }

@@ -152,5 +152,7 @@ pub(crate) fn capacity(
 /// Private compiler-owned maps in exactly the text binding order of this page.
 pub(crate) struct TextPageInteraction {
     pub maps: Vec<Vec<mo_text::interaction::InteractionMap>>,
+    /// Renderer clip IDs, including the document boundary for empty frames.
+    pub clips: Vec<Option<u32>>,
     pub limits: crate::source_frame::interaction::FrameInteractionLimits,
 }

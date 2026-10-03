@@ -1,5 +1,7 @@
 /** No fetching, files, fonts, clock or ambient environment. Host owns code trust. */
 import {RasterExecution, type RasterExecutionStart} from './execution.js';
+import {pick, type PickingReply} from './picking.js';
+export type {PickingReply} from './picking.js';
 export {RasterExecution} from './execution.js';
 export type {RasterExecutionStart, RasterExecutionStep} from './execution.js';
 export interface RasterModule {
@@ -8,6 +10,8 @@ export interface RasterModule {
   _malloc(bytes: number): number;
   _free(pointer: number): void;
   _mo_skia_abi(): number;
+  _mo_skia_pick_abi?(): number;
+  _mo_skia_pick?(request: number, words: number, output: number, count: number): number;
   _mo_skia_clips_abi?(): number;
   _mo_skia_gradient_planes_abi?(): number;
   _mo_skia_office_gradients_abi?(): number;
@@ -161,6 +165,19 @@ export class RasterComponent {
       return !!m && typeof m._mo_skia_images_abi === "function" &&
         typeof m._mo_skia_raster_images === "function" && [1,2].includes(m._mo_skia_images_abi());
     } catch (error) { this.invalidate(); throw error; }
+  }
+  get supportsPicking(): boolean {
+    const m = this.#module;
+    try { return !!m && m._mo_skia_pick_abi?.() === 1 && typeof m._mo_skia_pick === 'function'; }
+    catch (error) { this.invalidate(); throw error; }
+  }
+  pick(frame: Uint32Array): PickingReply {
+    const m = this.#module;
+    if (!m || this.#busy) throw Error('Raster instance unavailable');
+    if (!this.supportsPicking) throw Error('Picking extension unavailable');
+    this.#busy = true;
+    try { return pick(m, frame, () => this.#module === m, () => this.invalidate()); }
+    finally { this.#busy = false; }
   }
   raster(frame: Uint32Array): RasterReply { return this.#raster(frame); }
   get supportsImageDomains(): boolean {

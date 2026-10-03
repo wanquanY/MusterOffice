@@ -45,6 +45,7 @@ pub use image::*;
 #[cfg(test)]
 mod gradient_tests;
 mod number;
+pub mod picking;
 mod profiles;
 mod stroke;
 #[cfg(test)]
@@ -128,6 +129,10 @@ impl BackendReply {
     }
 }
 pub trait RasterBackend {
+    /// Optional pure geometry extension using the renderer's device paths.
+    fn pick(&mut self, _frame: &[u32]) -> Result<picking::PickingReply, RasterError> {
+        Err(RasterError::Host("raster picking extension unavailable"))
+    }
     fn raster(&mut self, frame: &[u32]) -> Result<BackendReply, RasterError>;
     /// Optional extension. Hosts must provide the image-capable backend when
     /// selecting image rendering; no rasterization/quality fallback is allowed.

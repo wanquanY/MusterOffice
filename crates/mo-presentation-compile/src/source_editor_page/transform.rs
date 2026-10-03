@@ -92,6 +92,21 @@ fn rounded(mut n: BigInt, mut d: BigInt) -> Result<Fixed, GeometryError> {
         .map(Fixed::from_raw)
         .map_err(|_| GeometryError::Numeric)
 }
+/// Inverse viewport mapping without first rounding a scale coefficient.
+pub(super) fn page_point(viewport: &RasterViewport, point: Point) -> Result<Point, GeometryError> {
+    let denominator = BigInt::from(viewport.scale.numerator);
+    let numerator = BigInt::from(viewport.scale.denominator);
+    let axis = |p: Fixed, origin: Fixed| {
+        rounded(
+            BigInt::from(p.raw()) * &numerator + BigInt::from(origin.raw()) * &denominator,
+            denominator.clone(),
+        )
+    };
+    Ok(Point {
+        x: axis(point.x, viewport.origin.x)?,
+        y: axis(point.y, viewport.origin.y)?,
+    })
+}
 /// Invert the evaluated Q32 transform as one exact rational expression. Never
 /// round inverse coefficients before multiplying a possibly large page point.
 fn inverse(affine: Affine, point: Point) -> Result<Option<Point>, GeometryError> {

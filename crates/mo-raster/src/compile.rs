@@ -10,10 +10,17 @@ const ZERO: Point = Point {
 };
 pub struct CompiledRaster {
     frame: Vec<u32>,
+    geometry: crate::picking::GeometrySections,
     pub(crate) work: RasterWork,
     pixel_bytes: usize,
 }
 impl CompiledRaster {
+    pub fn picking(
+        &self,
+        check: &dyn Fn() -> bool,
+    ) -> Result<crate::picking::CompiledPicking, RasterError> {
+        self.geometry.extract(&self.frame, check)
+    }
     pub fn work(&self) -> &RasterWork {
         &self.work
     }
@@ -215,6 +222,7 @@ pub(crate) fn compile_inner(
     if groups.work.is_some() {
         frame.push(request.opacity_groups.len() as u32);
     }
+    let paths_start = frame.len();
     let mut origins = Vec::new();
     origins
         .try_reserve_exact(request.paths.len())
@@ -260,9 +268,11 @@ pub(crate) fn compile_inner(
             frame.extend_from_slice(&command);
         }
     }
+    let strokes_start = frame.len();
     for words in &strokes.words {
         frame.extend_from_slice(words);
     }
+    let strokes_end = frame.len();
     for words in &gradients.words {
         frame.extend_from_slice(words);
     }
@@ -274,6 +284,7 @@ pub(crate) fn compile_inner(
             frame.extend_from_slice(&brush[..brush_words]);
         }
     }
+    let clips_start = frame.len();
     let mut error_bound = 0;
     for clip in &request.clips {
         cancel(check)?;
@@ -295,6 +306,7 @@ pub(crate) fn compile_inner(
             device[1].to_bits(),
         ]);
     }
+    let clips_end = frame.len();
     for capture in &composite.captures {
         frame.push(capture.after_draws);
         if composite.scoped {
@@ -304,6 +316,7 @@ pub(crate) fn compile_inner(
     for group in &request.opacity_groups {
         frame.extend_from_slice(&[group.first_draw, group.end_draw, u32::from(group.opacity)]);
     }
+    let draws_start = frame.len();
     for ((draw, paint), (color, gradient, image, snapshot)) in
         request.draws.iter().zip(paints).zip(brushes)
     {
@@ -344,6 +357,13 @@ pub(crate) fn compile_inner(
     cancel(check)?;
     Ok((
         CompiledRaster {
+            geometry: crate::picking::GeometrySections {
+                paths: paths_start..strokes_start,
+                strokes: strokes_start..strokes_end,
+                clips: clips_start..clips_end,
+                draws: draws_start..frame.len(),
+                draw_words: 6 + usize::from(has_clips) + usize::from(has_composite),
+            },
             frame,
             pixel_bytes: v.width as usize * v.height as usize * 4,
             work: RasterWork {

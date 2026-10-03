@@ -35,6 +35,19 @@ impl NativeRaster {
     }
 }
 impl RasterBackend for NativeRaster {
+    fn pick(&mut self, frame: &[u32]) -> Result<mo_raster::picking::PickingReply, RasterError> {
+        let _guard = INSTANCE
+            .lock()
+            .map_err(|_| RasterError::Host("native raster lock poisoned"))?;
+        if self.is_invalid() {
+            return Err(RasterError::Host("native raster instance invalidated"));
+        }
+        let result = ffi::pick(frame);
+        if result.is_err() || result.as_ref().is_ok_and(|r| matches!(r.status, 2 | 4)) {
+            self.invalidate();
+        }
+        result
+    }
     fn raster(&mut self, frame: &[u32]) -> Result<BackendReply, RasterError> {
         self.call(frame, None)
     }

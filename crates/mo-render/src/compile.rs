@@ -64,7 +64,7 @@ pub fn compile(
     request: &SceneRasterRequest,
     check: &dyn Fn() -> bool,
 ) -> Result<CompiledScene, RasterError> {
-    let (raster, work) = compile_with(request, check, &|paths, check| {
+    let (raster, work, _) = compile_with(request, &[], check, &|paths, check| {
         let raster = mo_raster::compile(paths, check)?;
         let bound = raster.work().coordinate_error_bound;
         Ok((raster, bound))
@@ -75,11 +75,14 @@ pub fn compile(
 /// plain and image-bearing scenes. Only the final raster resource binding varies.
 pub(crate) fn compile_with<T>(
     request: &SceneRasterRequest,
+    retained_clips: &[u32],
     check: &dyn Fn() -> bool,
     finish: &impl Fn(&PathRasterRequest, &dyn Fn() -> bool) -> Result<(T, Fixed), RasterError>,
-) -> Result<(T, SceneWork), RasterError> {
-    match attempt(request, check, false, finish) {
-        Err(RasterError::Range | RasterError::Precision) => attempt(request, check, true, finish),
+) -> Result<(T, SceneWork, Vec<Option<u32>>), RasterError> {
+    match attempt(request, retained_clips, check, false, finish) {
+        Err(RasterError::Range | RasterError::Precision) => {
+            attempt(request, retained_clips, check, true, finish)
+        }
         result => result,
     }
 }
@@ -103,11 +106,12 @@ fn evaluated(
 }
 fn attempt<T>(
     request: &SceneRasterRequest,
+    retained_clips: &[u32],
     check: &dyn Fn() -> bool,
     original_chain: bool,
     finish: &impl Fn(&PathRasterRequest, &dyn Fn() -> bool) -> Result<(T, Fixed), RasterError>,
-) -> Result<(T, SceneWork), RasterError> {
-    let (lowered, mut work) = lower(request, check, original_chain)?;
+) -> Result<(T, SceneWork, Vec<Option<u32>>), RasterError> {
+    let (lowered, mut work, clips) = lower(request, retained_clips, check, original_chain)?;
     let (raster, device_error) = finish(&lowered, check)?;
     let v = &request.viewport;
     work.combined_coordinate_error_bound = work
@@ -120,15 +124,16 @@ fn attempt<T>(
         return Err(RasterError::Precision);
     }
     cancel(check)?;
-    Ok((raster, work))
+    Ok((raster, work, clips))
 }
 // Keep the substantial geometry computation non-generic: adding a resource
 // binding must not force a second monomorphization of the entire algorithm.
 fn lower(
     request: &SceneRasterRequest,
+    retained_clips: &[u32],
     check: &dyn Fn() -> bool,
     original_chain: bool,
-) -> Result<(PathRasterRequest, SceneWork), RasterError> {
+) -> Result<(PathRasterRequest, SceneWork, Vec<Option<u32>>), RasterError> {
     cancel(check)?;
     let scene = &request.scene;
     // Validate device policy before potentially expensive geometry work.
@@ -181,6 +186,15 @@ fn lower(
         return Err(RasterError::Limit("scene clip nodes"));
     }
     let mut clip_needed = vec![false; scene.clips.len()];
+    if retained_clips.len() > 8192 {
+        return Err(RasterError::Limit("retained scene clips"));
+    }
+    for &clip in retained_clips {
+        cancel(check)?;
+        *clip_needed
+            .get_mut(clip as usize)
+            .ok_or(RasterError::Invalid("retained scene clip reference"))? = true;
+    }
     let mut clip_depths = Vec::with_capacity(scene.clips.len());
     for (i, clip) in scene.clips.iter().enumerate() {
         cancel(check)?;
@@ -480,5 +494,5 @@ fn lower(
         }
     }
     work.compiled_paths = lowered.paths.len() as u32;
-    Ok((lowered, work))
+    Ok((lowered, work, clip_indices))
 }

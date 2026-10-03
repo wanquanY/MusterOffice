@@ -110,7 +110,7 @@ elliptic_sources = [component / name for name in ['mo_elliptic_field.cpp', 'mo_e
 if a.target == 'native':
     library = output / 'libskia.a'
     probe = directory / ('mo-skia-probe-asan' if a.sanitize else 'mo-skia-probe')
-    run([compiler, *common, component / 'mo_skia.cpp', component / 'mo_miter_clip.cpp', component / 'mo_gradient.cpp', component / 'mo_gradient_plane.cpp', component / 'mo_office_gradient.cpp', *elliptic_sources, component / 'mo_image.cpp', component / 'mo_image_domain.cpp', *codec_sources, root / 'tools/verification/skia-probe.cpp',
+    run([compiler, *common, component / 'mo_skia.cpp', component / 'mo_pick.cpp', component / 'mo_miter_clip.cpp', component / 'mo_gradient.cpp', component / 'mo_gradient_plane.cpp', component / 'mo_office_gradient.cpp', *elliptic_sources, component / 'mo_image.cpp', component / 'mo_image_domain.cpp', *codec_sources, root / 'tools/verification/skia-probe.cpp',
          library, *codec_libraries, *native_link_flags(native, directory / ('native-asan-link.map' if a.sanitize else 'native-link.map')), '-o', probe])
     artifacts = [library, probe]
     adapter_object = directory / ('mo-skia-adapter-asan.o' if a.sanitize else 'mo-skia-adapter.o')
@@ -118,6 +118,8 @@ if a.target == 'native':
     run([compiler, *common, '-c', component / 'mo_skia.cpp', '-o', adapter_object])
     join_object = directory / ('mo-miter-clip-asan.o' if a.sanitize else 'mo-miter-clip.o')
     run([compiler, *common, '-c', component / 'mo_miter_clip.cpp', '-o', join_object])
+    pick_object = directory / ('mo-pick-asan.o' if a.sanitize else 'mo-pick.o')
+    run([compiler, *common, '-c', component / 'mo_pick.cpp', '-o', pick_object])
     gradient_object = directory / ('mo-gradient-asan.o' if a.sanitize else 'mo-gradient.o')
     run([compiler, *common, '-c', component / 'mo_gradient.cpp', '-o', gradient_object])
     plane_object = directory / ('mo-gradient-plane-asan.o' if a.sanitize else 'mo-gradient-plane.o')
@@ -139,19 +141,19 @@ if a.target == 'native':
         run([compiler, *common, '-c', codec_source, '-o', obj])
         codec_objects.append(obj)
     adapter_archive.unlink(missing_ok=True)
-    run([archiver, 'rcsD', adapter_archive, adapter_object, join_object, gradient_object, plane_object, office_object, *elliptic_objects, image_object, domain_object, *codec_objects])
+    run([archiver, 'rcsD', adapter_archive, adapter_object, join_object, pick_object, gradient_object, plane_object, office_object, *elliptic_objects, image_object, domain_object, *codec_objects])
     artifacts.append(adapter_archive)
 else:
     library = output / 'libskia.wasm.a'
     module = directory / 'mo-skia.mjs'
-    exports = ['_mo_skia_snapshot_scopes_abi', '_mo_skia_opacity_groups_abi', '_mo_skia_elliptic_gradients_abi', '_mo_skia_rect_gradients_abi', '_mo_skia_office_gradients_abi', '_mo_skia_gradient_planes_abi', '_mo_skia_compositing_abi', '_mo_skia_clips_abi', '_mo_skia_raster_images', '_mo_skia_images_abi', '_mo_skia_raster', '_mo_skia_free', '_mo_skia_abi', '_malloc', '_free']
+    exports = ['_mo_skia_pick_abi', '_mo_skia_pick', '_mo_skia_snapshot_scopes_abi', '_mo_skia_opacity_groups_abi', '_mo_skia_elliptic_gradients_abi', '_mo_skia_rect_gradients_abi', '_mo_skia_office_gradients_abi', '_mo_skia_gradient_planes_abi', '_mo_skia_compositing_abi', '_mo_skia_clips_abi', '_mo_skia_raster_images', '_mo_skia_images_abi', '_mo_skia_raster', '_mo_skia_free', '_mo_skia_abi', '_malloc', '_free']
     exports += ['_mo_skia_execution_abi', '_mo_skia_raster_begin', '_mo_skia_raster_step', '_mo_skia_raster_take', '_mo_skia_raster_drop']
     if codec_sources:
         exports += ['_mo_image_decode', '_mo_image_decode_abi', '_mo_image_decode_sized', '_mo_image_decode_sized_abi']
     # Keep auditable import names. Emscripten -O3 enables JS/wasm meta-DCE and
     # renames imports; the library itself remains compiled with -O3.
     run([compiler, *common, '-O2', '-DSKVX_DISABLE_SIMD', '-DSK_FORCE_8_BYTE_ALIGNMENT',
-         component / 'mo_skia.cpp', component / 'mo_miter_clip.cpp', component / 'mo_gradient.cpp', component / 'mo_gradient_plane.cpp', component / 'mo_office_gradient.cpp', *elliptic_sources, component / 'mo_image.cpp', component / 'mo_image_domain.cpp', *codec_sources, library, *codec_libraries, '--no-entry', '-sMODULARIZE=1', '-sEXPORT_ES6=1',
+         component / 'mo_skia.cpp', component / 'mo_pick.cpp', component / 'mo_miter_clip.cpp', component / 'mo_gradient.cpp', component / 'mo_gradient_plane.cpp', component / 'mo_office_gradient.cpp', *elliptic_sources, component / 'mo_image.cpp', component / 'mo_image_domain.cpp', *codec_sources, library, *codec_libraries, '--no-entry', '-sMODULARIZE=1', '-sEXPORT_ES6=1',
          '-sENVIRONMENT=node,web', '-sFILESYSTEM=0', '-sALLOW_MEMORY_GROWTH=1',
          '-sMAXIMUM_MEMORY=268435456', '-sSTACK_SIZE=1048576', '-sABORTING_MALLOC=0',
          '-sDYNAMIC_EXECUTION=0',

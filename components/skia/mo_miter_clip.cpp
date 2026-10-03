@@ -64,12 +64,16 @@ void clipped_join(SkPathBuilder* outer, SkPathBuilder* inner,
 }
 }
 
-void mo_draw_miter_clip(SkCanvas& canvas, const SkPath& path, const SkPaint& paint) {
+SkPath mo_stroke_outline(const SkPath& path, const SkPaint& paint, bool clipped_miter) {
     const float width = paint.getStrokeWidth();
     SkStroke stroke(paint, width == 0 ? 1.0f : width);
     SkPathBuilder outline;
-    stroke.strokePathWithJoiner(path, &outline, clipped_join);
+    if (clipped_miter) stroke.strokePathWithJoiner(path, &outline, clipped_join);
+    else stroke.strokePath(path, &outline);
+    return outline.detach();
+}
+void mo_draw_miter_clip(SkCanvas& canvas, const SkPath& path, const SkPaint& paint) {
     SkPaint fill = paint;
     fill.setStyle(SkPaint::kFill_Style);
-    canvas.drawPath(outline.detach(), fill);
+    canvas.drawPath(mo_stroke_outline(path, paint, true), fill);
 }

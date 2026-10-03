@@ -1,4 +1,6 @@
 #include "mo_skia.h"
+#include "mo_path.h"
+#include "mo_skia_state.h"
 #include "mo_clip.h"
 #include "mo_composite.h"
 #include "mo_miter_clip.h"
@@ -128,11 +130,7 @@ int validate(const uint32_t* r, uint32_t words, const uint8_t* data,
     if (commands != r[7] || uint64_t(pos) + uint64_t(r[8]) * 4 > words) return 1;
     plan.strokes = pos;
     for (uint32_t i = 0; i < r[8]; ++i, pos += 4) {
-        const float width = scalar(r[pos]), miter = scalar(r[pos + 3]);
-        const uint32_t join = r[pos + 2];
-        if (!std::isfinite(width) || width < 0 || width > 32768 || r[pos + 1] > 2 || join > 3 ||
-            !std::isfinite(miter) || miter < 0 || miter > 1024 ||
-            (join == 3 && miter < 1) || ((join == 1 || join == 2) && r[pos + 3] != 0)) return 1;
+        if (!mo_valid_stroke(r + pos)) return 1;
     }
     uint32_t stops = 0;
     for (uint32_t i = 0; i < r[9]; ++i) {
@@ -221,6 +219,9 @@ int fail_allocation() {
 }
 }
 
+bool mo_skia_unavailable() { return invalid.load(std::memory_order_acquire); }
+int mo_skia_allocation_failure() { return fail_allocation(); }
+
 extern "C" uint32_t mo_skia_opacity_groups_abi(void) { return 1; }
 extern "C" uint32_t mo_skia_snapshot_scopes_abi(void) { return 1; }
 extern "C" uint32_t mo_skia_abi(void) { return 4; }
@@ -304,11 +305,7 @@ struct MoSkiaRasterTask {
         paint.setBlendMode(plan.draw_words == 8 && r[pos + 7] ? SkBlendMode::kSrc : SkBlendMode::kSrcOver);
         if (r[pos + 4]) {
             const uint32_t stroke = plan.strokes + (r[pos + 4] - 1) * 4;
-            paint.setStyle(SkPaint::kStroke_Style);
-            paint.setStrokeWidth(scalar(r[stroke]));
-            paint.setStrokeCap(r[stroke + 1] == 0 ? SkPaint::kButt_Cap : r[stroke + 1] == 1 ? SkPaint::kRound_Cap : SkPaint::kSquare_Cap);
-            paint.setStrokeJoin(r[stroke + 2] == 1 ? SkPaint::kRound_Join : r[stroke + 2] == 2 ? SkPaint::kBevel_Join : SkPaint::kMiter_Join);
-            paint.setStrokeMiter(scalar(r[stroke + 3]));
+            mo_configure_stroke(paint, r + stroke);
         } else paint.setStyle(SkPaint::kFill_Style);
         draw_ready = true;
         return 0;
@@ -438,16 +435,7 @@ struct MoSkiaRasterTask {
                     const uint32_t end = std::min(plan.counts[index], command + 4096);
                     for (; command < end; ++command) {
                         const uint32_t pos = offset + 2 + command * 7;
-                        const float a = scalar(r[pos + 1]), b = scalar(r[pos + 2]);
-                        const float c = scalar(r[pos + 3]), d = scalar(r[pos + 4]);
-                        const float e = scalar(r[pos + 5]), f = scalar(r[pos + 6]);
-                        switch (r[pos]) {
-                            case 1: builder->moveTo(a, b); break;
-                            case 2: builder->lineTo(a, b); break;
-                            case 3: builder->quadTo(a, b, c, d); break;
-                            case 4: builder->cubicTo(a, b, c, d, e, f); break;
-                            case 5: builder->close(); break;
-                        }
+                        mo_append_path_command(*builder, r + pos);
                     }
                     if (command == plan.counts[index]) {
                         paths.push_back(builder->detach()); builder.reset(); ++index; command = 0;

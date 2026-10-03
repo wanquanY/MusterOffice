@@ -5,6 +5,7 @@ const INTERFACE: &str = r#"
 export interface RasterReply { status: number; pixels: Uint8Array; }
 export interface RasterComponent {
     raster(frame: Uint32Array): {status: number; pixels: Uint8Array};
+    pick?(frame: Uint32Array): {status: number; words: Uint32Array};
     rasterImages?(frame: Uint32Array, images: Uint8Array): {status: number; pixels: Uint8Array};
     invalidate(): void;
 }
@@ -17,6 +18,16 @@ extern "C" {
     pub type Reply;
     #[wasm_bindgen(method, catch, js_name = raster)]
     fn invoke(this: &RasterComponent, frame: &[u32]) -> Result<Reply, JsValue>;
+    #[wasm_bindgen(method, catch, js_name = pick)]
+    fn invoke_pick(this: &RasterComponent, frame: &[u32]) -> Result<Reply, JsValue>;
+    #[wasm_bindgen(method, getter, catch, js_name = words)]
+    fn words(this: &Reply) -> Result<JsValue, JsValue>;
+    #[wasm_bindgen(js_name = Uint32Array)]
+    type PickWords;
+    #[wasm_bindgen(method, getter, catch, js_name = length)]
+    fn word_length(this: &PickWords) -> Result<f64, JsValue>;
+    #[wasm_bindgen(js_namespace = Uint32Array, js_name = "prototype.set.call", catch)]
+    fn copy_words(destination: &mut [u32], source: &PickWords) -> Result<(), JsValue>;
     #[wasm_bindgen(method, catch, js_name = rasterImages)]
     fn invoke_images(
         this: &RasterComponent,
@@ -86,6 +97,46 @@ pub(crate) fn read_reply(r: &Reply, frame: &[u32]) -> Result<BackendReply, Raste
 }
 
 impl RasterBackend for Backend<'_> {
+    fn pick(&mut self, frame: &[u32]) -> Result<mo_raster::picking::PickingReply, RasterError> {
+        let r = self
+            .0
+            .invoke_pick(frame)
+            .map_err(|_| RasterError::Host("WASM picking component call"))?;
+        let status = r
+            .status()
+            .map_err(|_| RasterError::ComponentInvalid("WASM picking status"))?;
+        if !status.is_finite() || status.fract() != 0.0 || !(0.0..=4.0).contains(&status) {
+            return Err(RasterError::ComponentInvalid("WASM picking status"));
+        }
+        let source = r
+            .words()
+            .map_err(|_| RasterError::ComponentInvalid("WASM picking words"))?
+            .dyn_into::<PickWords>()
+            .map_err(|_| RasterError::ComponentInvalid("WASM picking word type"))?;
+        let count = source
+            .word_length()
+            .map_err(|_| RasterError::ComponentInvalid("WASM picking length"))?;
+        let expected = if status == 0.0 {
+            7 + frame[9] as usize
+                * ((frame[8] as usize).div_ceil(32) * 2 + (frame[7] as usize + 1).div_ceil(32))
+        } else {
+            0
+        };
+        if expected > mo_raster::picking::MAX_PICK_REPLY_WORDS || count != expected as f64 {
+            return Err(RasterError::ComponentInvalid("WASM picking length"));
+        }
+        let mut words = Vec::new();
+        words
+            .try_reserve_exact(expected)
+            .map_err(|_| RasterError::Host("WASM picking allocation"))?;
+        words.resize(expected, 0);
+        copy_words(&mut words, &source)
+            .map_err(|_| RasterError::ComponentInvalid("WASM picking copy"))?;
+        Ok(mo_raster::picking::PickingReply {
+            status: status as u32,
+            words,
+        })
+    }
     fn raster(&mut self, frame: &[u32]) -> Result<BackendReply, RasterError> {
         self.call(frame, None)
     }

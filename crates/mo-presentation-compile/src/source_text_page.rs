@@ -53,6 +53,7 @@ pub(crate) struct Compiler<'a, 'm, 'font> {
     work: FrameWork,
     interaction_limits: Option<interaction::FrameInteractionLimits>,
     interaction_maps: Vec<Vec<mo_text::interaction::InteractionMap>>,
+    interaction_clips: Vec<Option<u32>>,
     interaction_cells: usize,
     interaction_lines: usize,
 }
@@ -75,6 +76,7 @@ impl<'a, 'm, 'font> Compiler<'a, 'm, 'font> {
             work: FrameWork::default(),
             interaction_limits: None,
             interaction_maps: vec![],
+            interaction_clips: vec![],
             interaction_cells: 0,
             interaction_lines: 0,
         }
@@ -108,6 +110,7 @@ impl<'a, 'm, 'font> Compiler<'a, 'm, 'font> {
             },
             self.interaction_limits.map(|limits| TextPageInteraction {
                 maps: self.interaction_maps,
+                clips: self.interaction_clips,
                 limits,
             }),
         ))
@@ -300,6 +303,7 @@ impl<'a, 'm, 'font> Compiler<'a, 'm, 'font> {
         };
         if self.interaction_limits.is_some() {
             self.interaction_maps.push(maps);
+            self.interaction_clips.push(builder.effective_clip(clip));
         }
         self.bindings.push(TextPageBinding {
             binding,

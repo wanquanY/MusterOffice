@@ -1,0 +1,484 @@
+{
+  "format": "musteroffice.editor-object-picking-evidence/1",
+  "createdAt": "2026-10-03T11:03:06.626267+00:00",
+  "sourceParent": "a246d652cdd1661c6acdd4c6c89fbedbdc5e9697",
+  "platform": {
+    "system": "Darwin",
+    "release": "25.2.0",
+    "machine": "arm64",
+    "macos": "26.2",
+    "rust": "rustc 1.92.0 (ded5c06cf 2025-12-08)",
+    "node": "v23.5.0"
+  },
+  "scope": {
+    "implemented": [
+      "certified raster geometry projection",
+      "shared Skia geometry picking",
+      "device clip membership",
+      "native source page object deduplication and text frame interiors",
+      "retained semantic clip users with source-to-device remapping",
+      "Native and TypeScript ownership adapters"
+    ],
+    "notQualified": [
+      "public editor session picking protocol",
+      "model object and ancestor identity mapping",
+      "Rust WASM page picking round trip",
+      "product editor and IME",
+      "real browser or Electron picking",
+      "Windows or Linux",
+      "warm interaction performance and memory SLO",
+      "new fixed SDK release",
+      "full product acceptance"
+    ]
+  },
+  "tests": {
+    "core": {
+      "total": 196,
+      "presentationCompile": 103,
+      "raster": 77,
+      "render": 16
+    },
+    "nativeGeometry": 6,
+    "nativeEditorPage": 9,
+    "typescriptClient": 7,
+    "strictClippy": true,
+    "typescriptGeneratedContractsChecked": true,
+    "rustWasmCompiled": true,
+    "parity": {
+      "format": "musteroffice.raster-picking-parity/1",
+      "cases": [
+        {
+          "name": "cap-Butt.json",
+          "status": 0,
+          "input": {
+            "path": ".codex-work/object-picking/fixtures/cap-Butt.json",
+            "bytes": 84049,
+            "sha256": "e3d3f89c3e2f2a70c8763c69f6942e9eee8504b7a40cae468d0c3a97f1b877ae"
+          },
+          "replySha256": "4b2099784de893aa8dc28424d2fb4b90fda93ea932707415105caa03576c0286",
+          "pixelsSha256": "681b269ecabb1a041c4541ecc986929a5ac8e28a1e95b2057017224d8f08c901"
+        },
+        {
+          "name": "cap-Round.json",
+          "status": 0,
+          "input": {
+            "path": ".codex-work/object-picking/fixtures/cap-Round.json",
+            "bytes": 84527,
+            "sha256": "62bff2d98ab1653e6d1839d59aa34d9a37a1ab31f641680b14be983a4a23432b"
+          },
+          "replySha256": "f8f9ac75eb2d7eb6376da54bba08b9834b2a72e4f572d333b84ef1c9d12a2a88",
+          "pixelsSha256": "3f52b2eca25834f9e3318f9ea0f3171b165b32043e7bc184fb6d8b414eaba857"
+        },
+        {
+          "name": "cap-Square.json",
+          "status": 0,
+          "input": {
+            "path": ".codex-work/object-picking/fixtures/cap-Square.json",
+            "bytes": 84649,
+            "sha256": "3e46a62916dbb71e050abd8dd532225f701af6b3bed19ef39c032af471ed7195"
+          },
+          "replySha256": "0b1e07d9cfe1edec392dcbeb4946c121889acf1bbcafd360ce26c28df33c2380",
+          "pixelsSha256": "e049a654a23c0d610b7cc07dcfb6ce965fdb0439136a98c9fcc0e103b5025a2f"
+        },
+        {
+          "name": "cubic-hairline.json",
+          "status": 0,
+          "input": {
+            "path": ".codex-work/object-picking/fixtures/cubic-hairline.json",
+            "bytes": 81123,
+            "sha256": "d427d8ece6405e53364d293f781eaf43d7a0efed9fa78b8421dd457ed2a46029"
+          },
+          "replySha256": "9f20cdf29ab10ec6a430497f6ed8240ed773616fe1e23d64700212c0b6f465a6",
+          "pixelsSha256": "b75ef3895a43e5fb32fd2c3d056aae315d8cf154322d5b03bfd70ec278e7fd61"
+        },
+        {
+          "name": "fill-hole-clip.json",
+          "status": 0,
+          "input": {
+            "path": ".codex-work/object-picking/fixtures/fill-hole-clip.json",
+            "bytes": 119897,
+            "sha256": "49f9ffa6538ea5246cbf3b4af9e81ebe544cf035586c8535a5988b1374e02e5e"
+          },
+          "replySha256": "53c9018e597958dea3366c8a2c75cf8ef5f5ada28639777338f8f7b6c8c8b311",
+          "pixelsSha256": "3e2cf4b060b7a76823067d924bd3852beb8feac441f8946e01f58d5036a68f4f"
+        },
+        {
+          "name": "implicit-fill-close.json",
+          "status": 0,
+          "input": {
+            "path": ".codex-work/object-picking/fixtures/implicit-fill-close.json",
+            "bytes": 91378,
+            "sha256": "a65fbe37458739d80bb6a92266a3fb41bdd19d3c446f8886699d5abb79714028"
+          },
+          "replySha256": "9f20cdf29ab10ec6a430497f6ed8240ed773616fe1e23d64700212c0b6f465a6",
+          "pixelsSha256": "074aee0347d1c4522e197a7e2dafa73df22ed3b321d18ea6238fbe25c61a9ec5"
+        },
+        {
+          "name": "independent-clip-origin.json",
+          "status": 0,
+          "input": {
+            "path": ".codex-work/object-picking/fixtures/independent-clip-origin.json",
+            "bytes": 119750,
+            "sha256": "4532ee332cf30f5b2dc1a2fb00afc9b044b8dcd31a94d2f2c4abc039636e34a2"
+          },
+          "replySha256": "34dccfaad63c8f680bf19313cd730c16c19aadb04eaf52d27b21557bd7ea1bdf",
+          "pixelsSha256": "0588fac013086997d963824e097efa32817173803d111e6624cc49f952c46901"
+        },
+        {
+          "name": "join-Bevel.json",
+          "status": 0,
+          "input": {
+            "path": ".codex-work/object-picking/fixtures/join-Bevel.json",
+            "bytes": 88526,
+            "sha256": "634d6ef72ca84fa32b819fe0e46a76a217d09c0a5c69d4ad18163d313d9d4f90"
+          },
+          "replySha256": "6a407e42dccfeccdc902e7f9462d804367d7ec5b82e9ec68895a2f8824ff65ce",
+          "pixelsSha256": "422fcf67d61406f861c3eb66a6de92ba745a1a18378e32f7042e4bde755d2bae"
+        },
+        {
+          "name": "join-Miter { limit: Fixed(17179869184) }.json",
+          "status": 0,
+          "input": {
+            "path": ".codex-work/object-picking/fixtures/join-Miter { limit: Fixed(17179869184) }.json",
+            "bytes": 88788,
+            "sha256": "9a796084c04b11358c9ad2b50b292c5a6bea69c1e23eecb83dfa69c2b34cb255"
+          },
+          "replySha256": "e1ed9db42c9e581e365641150603be129a902caff8416296c80203ae51362c9d",
+          "pixelsSha256": "0d4eeda2ef42971c9c4c9cfd517f35847977ffd10f95b55e3b753b472ff3e842"
+        },
+        {
+          "name": "join-MiterClip { limit: Fixed(4294967296) }.json",
+          "status": 0,
+          "input": {
+            "path": ".codex-work/object-picking/fixtures/join-MiterClip { limit: Fixed(4294967296) }.json",
+            "bytes": 88662,
+            "sha256": "0b4611ec482ae66e3303d766699f634a71b327610c8ceca9ba0d29c295943091"
+          },
+          "replySha256": "9e7e49f783d75ce66f0ed2f08c2251980ced6b4c5e0cd8f6292330c1b265c5eb",
+          "pixelsSha256": "60e724cb6af176046544df10115cfddf8c75cd6ef5f77633cb8c32bd0fd80fc0"
+        },
+        {
+          "name": "join-Round.json",
+          "status": 0,
+          "input": {
+            "path": ".codex-work/object-picking/fixtures/join-Round.json",
+            "bytes": 88624,
+            "sha256": "d1e1eaef02f1108efe25c971fe3694a9032b80fec9cdfc3011f7d9261f1fbae1"
+          },
+          "replySha256": "9e7e49f783d75ce66f0ed2f08c2251980ced6b4c5e0cd8f6292330c1b265c5eb",
+          "pixelsSha256": "f5ee6120eab12b596589a03fc7c0f4b125d925409fa670d5c24bc8835d11d92a"
+        },
+        {
+          "name": "many-transparent-huge-origin.json",
+          "status": 0,
+          "input": {
+            "path": ".codex-work/object-picking/fixtures/many-transparent-huge-origin.json",
+            "bytes": 87536,
+            "sha256": "962210181fa2ef9434233c4c76819378d96ecc5f205785084fe412cecf5e2a84"
+          },
+          "replySha256": "3831296c79347dbb155de3059dcb11972fd9836f4c69773331d9abc872e9c94e",
+          "pixelsSha256": "e7e2dcff542de95352682dc186432e98f0188084896773f1973276b0577d5305"
+        },
+        {
+          "name": "work-limit.json",
+          "status": 3,
+          "input": {
+            "path": ".codex-work/object-picking/fixtures/work-limit.json",
+            "bytes": 657113,
+            "sha256": "efccbf2b65bc04ad1079db2887bba2a137c5e8ff59ab5f842d46bcc2425d06fe"
+          },
+          "replySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "queries": 166,
+      "rendered": 12,
+      "invalidFrames": 209,
+      "component": {
+        "path": ".codex-work/object-picking/skia/mo-skia.wasm",
+        "bytes": 2403115,
+        "sha256": "ff9a1f93629b92ebee56bf5b09260595b0e35ed6bae74e1488018ddb921455df"
+      },
+      "baseline": {
+        "path": ".codex-work/font-fallback-20261003/playback/runtime/mo-skia.wasm",
+        "bytes": 2390550,
+        "sha256": "db8f421bf7713d8eb58a6110033ca5b546d4e9a8b88a045cbc2c75fca6e65906"
+      },
+      "adapter": {
+        "path": ".codex-work/raster-component/index.js",
+        "bytes": 18292,
+        "sha256": "ed13ad72877efe7e14abc2067c0c37b86fd4eaa6bcd8b517de20cac3b44688ca"
+      },
+      "pickingAdapter": {
+        "path": ".codex-work/raster-component/picking.js",
+        "bytes": 2661,
+        "sha256": "7babfc438a064877dee8016170028d7d0b30a82e70c7f2861c0a688d70d13418"
+      },
+      "sanitizer": {
+        "probe": {
+          "path": ".codex-work/object-picking/mo-skia-probe-adapter-asan",
+          "bytes": 2775000,
+          "sha256": "f7b8a48cd4bc7d054affdfee039a984fef48f2c3f2a14ad6abd8914a5c8d3b3c"
+        },
+        "calls": 222,
+        "scope": "adapter and probe instrumented with ASan/UBSan; reused Skia and codec archives uninstrumented",
+        "leakSanitizer": false
+      }
+    },
+    "deviceQueries": {
+      "successful": 102,
+      "rejected": 64
+    }
+  },
+  "provenance": {
+    "nativeAdapterBuild": {
+      "path": ".codex-work/object-picking/skia/native-build.json",
+      "byteLength": 49553,
+      "sha256": "061d0384730f847fe8b7ccc3b79ed5abcce6ea0df76995088e2c877ee95d1015"
+    },
+    "wasmAdapterBuild": {
+      "path": ".codex-work/object-picking/skia/wasm-build.json",
+      "byteLength": 38470,
+      "sha256": "e502ac328b5fe3c20faac68e122dba9afc36de7c8396ba38b7fa66b38fe4a2a1"
+    },
+    "adapterSanitizerBuild": {
+      "path": ".codex-work/object-picking/asan-build.json",
+      "byteLength": 2159,
+      "sha256": "9a1ecf3e7295f311cc7ae96c2cb8e7f3b0c1af39346999d6f0f724e988feb2eb"
+    },
+    "buildScope": "Recompiled adapters only against hash-verified unchanged core archives; full core rebuild was not performed in this batch."
+  },
+  "logs": {
+    "core-tests": {
+      "path": ".codex-work/object-picking/core-tests.log",
+      "byteLength": 19495,
+      "sha256": "ba6dad58b843ec9a264e86a3fafdcfbd2cc1cf77ec440db65c2f74e359835fdf"
+    },
+    "native-tests": {
+      "path": ".codex-work/object-picking/native-tests.log",
+      "byteLength": 1133,
+      "sha256": "e8024afa41c761352e6492e88b7f827834bad9070e260f4be36e17d49479ab27"
+    },
+    "page-tests": {
+      "path": ".codex-work/object-picking/page-tests.log",
+      "byteLength": 1231,
+      "sha256": "3ec3be107f782acd9315bb9707dc10e47ffb060817720b966db8efd07f06525c"
+    },
+    "client-tests": {
+      "path": ".codex-work/object-picking/client-tests.log",
+      "byteLength": 748,
+      "sha256": "a7ac0c94dd092d480d19abfd38de22e2c6b33e9e0c2e253c0eb50dad7eb3526e"
+    },
+    "clippy": {
+      "path": ".codex-work/object-picking/clippy.log",
+      "byteLength": 646,
+      "sha256": "f87a4975615a38bd8e7b3e911bbac406b0caafca33f019bb77ff04f8171d30ae"
+    },
+    "wasm-check": {
+      "path": ".codex-work/object-picking/wasm-check.log",
+      "byteLength": 833,
+      "sha256": "b02f1607285ff90ffb3039fe0b6ff8fe565ecb089abd07c19f6a22448af8961a"
+    },
+    "types": {
+      "path": ".codex-work/object-picking/types.log",
+      "byteLength": 5114,
+      "sha256": "de87020a0dcd24b7316ef76f7ca41401fe67014eb74a02ab80e77e3a4fd426e9"
+    },
+    "parity": {
+      "path": ".codex-work/object-picking/parity.log",
+      "byteLength": 82,
+      "sha256": "0b7d7ab4145d87bc4c75925d938ee3826a3cc92ed7fe21e4d6850aaf4afb7758"
+    },
+    "native-adapter": {
+      "path": ".codex-work/object-picking/native-adapter.log",
+      "byteLength": 1075,
+      "sha256": "82722b0083cf47ac48f13c4ec5adf5c187b23de49a44eeb8c531eae0f8d33740"
+    },
+    "wasm-adapter": {
+      "path": ".codex-work/object-picking/wasm-adapter.log",
+      "byteLength": 111,
+      "sha256": "6629dc59aeddaf703b06cc2c9371db74190ea3d1db0fb8959a95e12f48f34090"
+    },
+    "asan-build": {
+      "path": ".codex-work/object-picking/asan-build.log",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "sources": [
+    {
+      "path": "Cargo.lock",
+      "byteLength": 30647,
+      "sha256": "ee5d4a17b4409ebb19ad35328de63f01565ccd79450f0e2a44f2cfe06666bf4d"
+    },
+    {
+      "path": "components/skia/mo_miter_clip.cpp",
+      "byteLength": 3555,
+      "sha256": "8f3b88031d9b0e209977633b9286ef669945efed32c6433e90707cd4631a2a64"
+    },
+    {
+      "path": "components/skia/mo_miter_clip.h",
+      "byteLength": 427,
+      "sha256": "699a0e52b5140b52a5a1ea9108ee5f43591681b0b8f469acfdc82e7e0f43bc7b"
+    },
+    {
+      "path": "components/skia/mo_path.h",
+      "byteLength": 1418,
+      "sha256": "60b82d16a19db93710de49a4b44fe10049a44ab9e17811b701560ae74644a6ed"
+    },
+    {
+      "path": "components/skia/mo_pick.cpp",
+      "byteLength": 7699,
+      "sha256": "b2f49323172f6aa1b7eef5ca49ab86cb864e102a0bca378cb8270d276ff21de7"
+    },
+    {
+      "path": "components/skia/mo_skia.cpp",
+      "byteLength": 25923,
+      "sha256": "380a7ca00ca59c93841d2d054ff2db3b81036f2f922dc4b8001e56af61b525a9"
+    },
+    {
+      "path": "components/skia/mo_skia.h",
+      "byteLength": 4495,
+      "sha256": "0838947df1ab995cd2d69ef300f6974042df3cb6105e05d2df627056747ae935"
+    },
+    {
+      "path": "components/skia/mo_skia_state.h",
+      "byteLength": 152,
+      "sha256": "308b4afe7990d55539107023f1997702530a6580cd5e83a2768a6cbad1b56ae9"
+    },
+    {
+      "path": "crates/mo-harfbuzz-sys/tests/source_editor_page.rs",
+      "byteLength": 29999,
+      "sha256": "153f51db0b5336682f57bc6c21c1221f770d8b6056fd8006ab05046ad927a03c"
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/path_scene.rs",
+      "byteLength": 6766,
+      "sha256": "85c331c660f221aa8044ff56bf744e227845630f446a1c419cc666510c854477"
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_editor_page.rs",
+      "byteLength": 3375,
+      "sha256": "f62e4d3047a89fc5d969fc2e8773663627f42c4a7ef34c9d7a600dd56d363b74"
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_editor_page/picking.rs",
+      "byteLength": 9754,
+      "sha256": "f66c657a3cbb56097d142c7d17472d31634f929177d0b4ba71c3e925270af4b5"
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_editor_page/transform.rs",
+      "byteLength": 5455,
+      "sha256": "e34546181cf187ac4e7dbf4bfdeb2de07aa78e937944eede1acb0d9d9d629420"
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_resource_page.rs",
+      "byteLength": 12372,
+      "sha256": "a7598059a532f0c88cdc54abbdc016b5e6f88448fe8b0c46ac04d18c436bf615"
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_text_page.rs",
+      "byteLength": 14561,
+      "sha256": "f78435e8a76085548e9611642bbee307b0b19f82c2ff08ceeddcb9cf5a7c76b8"
+    },
+    {
+      "path": "crates/mo-presentation-compile/src/source_text_page/types.rs",
+      "byteLength": 5691,
+      "sha256": "f1c4a97ec1455094117678e58b8fcb7c0122e3f1c4206e58f7e4b5c9afe7e8cd"
+    },
+    {
+      "path": "crates/mo-raster/src/compile.rs",
+      "byteLength": 15035,
+      "sha256": "9afb801585f8d394bd4687369ff5893bf5ae53be9da4f424c660a00f4cbc6113"
+    },
+    {
+      "path": "crates/mo-raster/src/image.rs",
+      "byteLength": 7368,
+      "sha256": "04fd77c8141ec6652a0b9df4e12fdd1cca06633a8147d58dba28d5bd16e08578"
+    },
+    {
+      "path": "crates/mo-raster/src/lib.rs",
+      "byteLength": 6577,
+      "sha256": "6411015fe7052b3942168a23c74a309cd331c67bd82ee22b5bbb768e211a9330"
+    },
+    {
+      "path": "crates/mo-raster/src/picking.rs",
+      "byteLength": 10326,
+      "sha256": "0e80ba0550508730e05f651f117e6998b1b11c973a3305db088817fbf179ac10"
+    },
+    {
+      "path": "crates/mo-raster/src/picking/tests.rs",
+      "byteLength": 8017,
+      "sha256": "0d58f05d7c94a196c5ebe108396401f58039ef3a997a921ff187327de4f0cc4a"
+    },
+    {
+      "path": "crates/mo-render/src/clip_tests.rs",
+      "byteLength": 4859,
+      "sha256": "9e230aa757eaee7b2420fe2045f80119f5b1f69a41893f0454e761986227c2fb"
+    },
+    {
+      "path": "crates/mo-render/src/compile.rs",
+      "byteLength": 18512,
+      "sha256": "fb8f033a38cc998ca2504a14a77022c6183564412f23100db554f61782138721"
+    },
+    {
+      "path": "crates/mo-render/src/image.rs",
+      "byteLength": 4214,
+      "sha256": "78e4e6ae384b1ffee8e2f345498d6bf022ee488af64063b37c8c7256d5a90fbd"
+    },
+    {
+      "path": "crates/mo-skia-sys/Cargo.toml",
+      "byteLength": 598,
+      "sha256": "00ddcd7608fa9a9b97892c836d34fd4384febae69d5995424b05630c6d91fae4"
+    },
+    {
+      "path": "crates/mo-skia-sys/src/ffi.rs",
+      "byteLength": 10675,
+      "sha256": "2f2f15cfdfb08026f1dc9fc10d9e2e753dc81f64ecd84d9928e2129e3ecb51a8"
+    },
+    {
+      "path": "crates/mo-skia-sys/src/lib.rs",
+      "byteLength": 3452,
+      "sha256": "c6b35f0819249084ae1ca7d8410c92d6abf52c031154cf1400d7c94cd0c80938"
+    },
+    {
+      "path": "crates/mo-skia-sys/tests/picking.rs",
+      "byteLength": 12024,
+      "sha256": "43140c2612650858d2c0524270b8fd04c33982ab2e07e0043e4f96fc02bf24db"
+    },
+    {
+      "path": "crates/mo-wasm/src/raster.rs",
+      "byteLength": 10804,
+      "sha256": "0f0031a159dfb025466255c185f74f706e3c8d8268366b454c822ad3bb58e505"
+    },
+    {
+      "path": "packages/raster-component/src/index.ts",
+      "byteLength": 17829,
+      "sha256": "d1dd6beb9556b6463c6c37314d101afccfdc54ff8d00d4f89935d9b15fbeb1d4"
+    },
+    {
+      "path": "packages/raster-component/src/picking.ts",
+      "byteLength": 2487,
+      "sha256": "f813c49a386cd710858d99ee2b7a064cb7496746aece418b19c33f7355d7c672"
+    },
+    {
+      "path": "tools/components/build-skia.py",
+      "byteLength": 12323,
+      "sha256": "c5726a8939e259b8d0a91eed6e02a5566befeffb9001155f83cdb510c9a3d939"
+    },
+    {
+      "path": "tools/verification/raster-picking-client-tests.mjs",
+      "byteLength": 5692,
+      "sha256": "2d148714d377f1fd6d716beeff26f228f9aef71e9a558d044ddb8153771afde1"
+    },
+    {
+      "path": "tools/verification/raster-picking-parity.mjs",
+      "byteLength": 5307,
+      "sha256": "1f2116a7b48e84707180d371616a8f99f1fb2011552f51704fe12b1bfd71bf1e"
+    },
+    {
+      "path": "tools/verification/skia-probe.cpp",
+      "byteLength": 2373,
+      "sha256": "9d0d15a8975ecd93ef0f0118e67b329445bf8cc374be71f68493846b90151a07"
+    }
+  ]
+}
