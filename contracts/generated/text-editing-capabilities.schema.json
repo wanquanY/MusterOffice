@@ -1,0 +1,335 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:text-editing-capabilities",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TextEditingCapabilities",
+  "description": "Model/selection prerequisites only, not host authorization, font availability\nor a promise that arbitrary replacement text passes document limits.",
+  "type": "object",
+  "properties": {
+    "cell": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/CellId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "characterStyle": {
+      "$ref": "#/$defs/TextEditAvailability"
+    },
+    "delete": {
+      "description": "Deletion has no insertion-style owner; it can be legal beside a protected run.",
+      "$ref": "#/$defs/TextEditAvailability"
+    },
+    "documentId": {
+      "$ref": "#/$defs/DocumentId"
+    },
+    "initialize": {
+      "$ref": "#/$defs/TextEditAvailability"
+    },
+    "object": {
+      "$ref": "#/$defs/ObjectId"
+    },
+    "replace": {
+      "$ref": "#/$defs/TextEditAvailability"
+    },
+    "replacementPolicy": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TextReplacementPolicy"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revision": {
+      "$ref": "#/$defs/Digest"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "documentId",
+    "revision",
+    "object",
+    "initialize",
+    "replace",
+    "delete",
+    "characterStyle"
+  ],
+  "$defs": {
+    "CellId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "DocumentId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "NativeEditConstraint": {
+      "type": "string",
+      "enum": [
+        "missingDirectTransform",
+        "retainedTransform",
+        "compatibilityBranch",
+        "structuredLeaf",
+        "dynamicField",
+        "timingReferences",
+        "retainedReferences"
+      ]
+    },
+    "ObjectId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "RetainedRunKind": {
+      "type": "string",
+      "enum": [
+        "text",
+        "break",
+        "field"
+      ]
+    },
+    "RunId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "TextEditAvailability": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "available"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "unavailable"
+            },
+            "reason": {
+              "$ref": "#/$defs/TextEditRestriction"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reason"
+          ]
+        }
+      ]
+    },
+    "TextEditRestriction": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "unsupportedTarget"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "coveredCell"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingTextBody"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "textBodyExists"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "selectionRequired"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "nonemptySelectionRequired"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "nativeStructureRequired"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "retainedParagraphBoundary"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "nativeInsertionTarget"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "constraint": {
+              "$ref": "#/$defs/NativeEditConstraint"
+            },
+            "kind": {
+              "type": "string",
+              "const": "nativeRun"
+            },
+            "run": {
+              "$ref": "#/$defs/RunId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "run",
+            "constraint"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "structuredRun"
+            },
+            "run": {
+              "$ref": "#/$defs/RunId"
+            },
+            "runKind": {
+              "$ref": "#/$defs/RetainedRunKind"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "run",
+            "runKind"
+          ]
+        }
+      ]
+    },
+    "TextReplacementPolicy": {
+      "oneOf": [
+        {
+          "description": "Paragraph breaks and typed inline tabs, with authored style inheritance.",
+          "type": "string",
+          "const": "authoredBody"
+        },
+        {
+          "description": "Text leaves within one existing paragraph, with original run identities.\nInserted CR/LF/paragraph or line separators require native structure work.",
+          "type": "string",
+          "const": "retainedTextLeaves"
+        }
+      ]
+    }
+  }
+}

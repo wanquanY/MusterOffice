@@ -1,14 +1,23 @@
+mod capabilities;
+mod capability_types;
 mod range;
+mod retained;
 mod target;
 mod types;
 use crate::{
     EditError, Operation, OperationEntry, PreparedTransaction, Snapshot, Transaction,
     prepare_cancellable,
 };
+pub use capabilities::text_capabilities;
+pub use capability_types::*;
 use mo_common::*;
 use mo_presentation_model::*;
 use range::*;
 pub use types::*;
+
+fn restricted(reason: TextEditRestriction) -> EditError {
+    EditError::TextRestricted(Box::new(reason))
+}
 
 pub struct PreparedTextEdit {
     /// Binds the original intent, separately from its expanded transaction.
@@ -53,7 +62,18 @@ pub fn prepare_text_edit(
             current: snapshot.revision().clone(),
         });
     }
-    let body = target::authored_body(snapshot.document(), command, check)?;
+    let body = match target::resolve(
+        snapshot.document(),
+        &command.object,
+        command.cell.as_ref(),
+        check,
+    )? {
+        target::Target::Authored(body) => body,
+        target::Target::Retained(paragraphs) => {
+            return retained::prepare(snapshot, command, paragraphs, limits, check);
+        }
+        target::Target::Unavailable(reason) => return Err(restricted(reason)),
+    };
     let mut ids = Ids::new(command)?;
     let (next, selection, mut range_change) = match (&command.action, body) {
         (TextEditAction::Initialize { text, setup }, None) => {
@@ -61,9 +81,9 @@ pub fn prepare_text_edit(
             (next, selection, None)
         }
         (TextEditAction::Initialize { .. }, Some(_)) => {
-            return Err(EditError::input("text body already exists"));
+            return Err(restricted(TextEditRestriction::TextBodyExists));
         }
-        (_, None) => return Err(EditError::input("text body requires initialization")),
+        (_, None) => return Err(restricted(TextEditRestriction::MissingTextBody)),
         (action, Some(body)) => {
             let mut next = body.clone();
             let (selection, change) = edit_body(body, &mut next, action, command, &mut ids, check)?;
@@ -121,9 +141,7 @@ fn edit_body(
         TextEditAction::SetCharacterStyle { selection, patch } => {
             let range = ordered(body, selection, check)?;
             if range.first == range.last && range.start.scalar_offset == range.end.scalar_offset {
-                return Err(EditError::input(
-                    "character styling requires a nonempty selection",
-                ));
+                return Err(restricted(TextEditRestriction::NonemptySelectionRequired));
             }
             for i in range.first..=range.last {
                 cancelled(check)?;

@@ -19,7 +19,8 @@ const raster=await RasterComponent.create(skia,new WebAssembly.Module(readFileSy
 const {PresentationEditorPage,PresentationEditor}=await import(pathToFileURL(resolve('.codex-work/editor-client/build/editor-client/src/index.js')));
 const editor=new PresentationEditor(wasm),fonts=readFileSync('fixtures/fonts/owned-interaction.ttf');
 const empty=Buffer.alloc(0),sha=b=>createHash('sha256').update(b).digest('hex');
-const nativeCli=resolve('target/debug/mo-cli');
+const nativeCli=resolve(process.env.MUSTEROFFICE_EDITOR_NATIVE??'target/debug/mo-cli');
+const nativeWorker=resolve(process.env.MUSTEROFFICE_EDITOR_WORKER??'target/release/mo-raster-worker');
 function nativeEdit(q){
  const p=spawnSync(nativeCli,[],{input:JSON.stringify(q),encoding:'utf8',maxBuffer:32*1024*1024,timeout:60000});
  assert.equal(p.error,undefined);assert.equal(p.status,0,p.stderr);return JSON.parse(p.stdout);
@@ -104,12 +105,26 @@ for(const name of readdirSync(fixtures).filter(n=>n.endsWith('.json')).sort()){
     // The owned font covers alpha. Unlike another identical A prefix, this
     // also changes visible pixels in the narrow clipped-text fixture.
     const {frame,p,run,object}=chosen;
-    if(object.content.kind==='shape'){
+    if(object.content.kind==='shape'||object.content.kind==='retainedSource'){
      const caret={paragraph:p.model.id,scalarOffset:0,affinity:'after'};
      const command={documentId:original.document.id,baseRevision:original.revision,requestId:'editor:inspect:text',operationId:'inspect:text',
       object:frame.objectId,action:{kind:'replace',selection:{anchor:caret,focus:caret},text:'αA'}};
+     const capabilityQuery={object:frame.objectId,selection:command.action.selection};
+     const capabilities=editor.textCapabilities(original,capabilityQuery);
+     assert.deepEqual(capabilities,nativeEdit({operation:'textCapabilities',snapshot:original,query:capabilityQuery}).capabilities);
+     assert.equal(capabilities.replace.kind,'available');
      const result=editor.prepareText(original,command);
-     assert.deepEqual(result,nativeEdit({operation:'prepareText',snapshot:original,command}).result);snapshot=result.snapshot;coverage.authoredText++;
+     assert.deepEqual(result,nativeEdit({operation:'prepareText',snapshot:original,command}).result);snapshot=result.snapshot;
+     if(object.content.kind==='shape')coverage.authoredText++;else {
+      coverage.retainedText++;
+      assert.equal(capabilities.replacementPolicy,'retainedTextLeaves');
+      assert.deepEqual(snapshot.document.sourceBindings,original.document.sourceBindings);
+      const history={documentId:original.document.id,baseRevision:snapshot.revision,requestId:'inspect:undo',
+       direction:'undo',originalSnapshot:original,originalTransaction:result.transaction};
+      const undo=editor.prepareHistory(snapshot,history);
+      assert.deepEqual(undo,nativeEdit({operation:'prepareHistory',snapshot,transaction:history}));
+      assert.deepEqual(undo.snapshot.document,original.document);
+     }
     }else{
      const transaction={documentId:original.document.id,baseRevision:original.revision,requestId:'editor:inspect:splice',
       operations:[{operationId:'inspect:splice',operation:{kind:'spliceText',object:frame.objectId,paragraph:p.model.id,run:run.id,start:0,delete:0,insert:'αA'}}]};
@@ -161,7 +176,7 @@ for(const name of readdirSync(fixtures).filter(n=>n.endsWith('.json')).sort()){
    assert.equal(run(query(updated.view),'error').error.error.code,'SOURCE_CONFLICT');
    run(query(small.view),'queried');
   }
-  const native=spawnSync('target/release/mo-raster-worker',['--editor-page-session'],{input:Buffer.concat(messages),maxBuffer:128*1024*1024,timeout:60000});
+  const native=spawnSync(nativeWorker,['--editor-page-session'],{input:Buffer.concat(messages),maxBuffer:128*1024*1024,timeout:60000});
   assert.equal(native.error,undefined);assert.equal(native.status,0,native.stderr?.toString());let offset=0;
   for(const [i,result] of expected.entries()){
    const ml=native.stdout.readUInt32LE(offset),pl=native.stdout.readUInt32LE(offset+4);offset+=8;
@@ -179,7 +194,7 @@ for(const key of Object.keys(coverage))assert.ok(coverage[key]>0,`missing ${key}
 assert.equal(cases.length,27);
 mkdirSync(root,{recursive:true});
 writeFileSync(join(root,'report.json'),JSON.stringify({format:'musteroffice.editor-document-parity/1',cases,coverage,
- nativeWorkerSha256:sha(readFileSync('target/release/mo-raster-worker')),nativeEditorSha256:sha(readFileSync(nativeCli)),
+ nativeWorkerSha256:sha(readFileSync(nativeWorker)),nativeEditorSha256:sha(readFileSync(nativeCli)),
  wasmSha256:sha(readFileSync(join(root,'wasm-node/mo_wasm_bg.wasm'))),fontSha256:sha(fonts),
  skiaWasmSha256:sha(readFileSync(join(skiaRoot,'mo-skia.wasm'))),harfbuzzWasmSha256:sha(readFileSync(join(hbRoot,'mo-hb.wasm')))},null,2)+'\n');
 console.log(`PASS ${cases.length} fixtures; ${cases.reduce((n,c)=>n+c.messages,0)} Native/WASM messages`,coverage);

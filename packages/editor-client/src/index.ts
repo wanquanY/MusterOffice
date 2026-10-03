@@ -1,7 +1,7 @@
 /** Thin typed computation facade. Use in a host Worker; persistence, history
  * membership, authorization, cancellation and publication belong to the host. */
 export * from './page.js';
-import type { Document, SnapshotRecord, Transaction, HistoryTransaction, TextEditCommand, KernelRequest } from '../../contracts/src/generated/kernel-request.js';
+import type { Document, SnapshotRecord, Transaction, HistoryTransaction, TextEditCommand, TextCapabilitiesQuery, KernelRequest } from '../../contracts/src/generated/kernel-request.js';
 import type { KernelResponse, KernelError } from '../../contracts/src/generated/kernel-response.js';
 import type { PagePlacementRequest } from '../../contracts/src/generated/page-placement-request.js';
 import type { PagePlacementResponse } from '../../contracts/src/generated/page-placement-response.js';
@@ -10,7 +10,9 @@ import type { ParagraphInteractionRequest } from '../../contracts/src/generated/
 import type { ParagraphInteractionResponse } from '../../contracts/src/generated/paragraph-interaction-response.js';
 import type { ShapingPort } from '../../playback-client/src/ports.js';
 
-export type { Document, SnapshotRecord, Transaction, HistoryTransaction, TextEditCommand, KernelError };
+export type { Document, SnapshotRecord, Transaction, HistoryTransaction, TextEditCommand, TextCapabilitiesQuery, KernelError };
+export type {TextEditingCapabilities, TextEditAvailability, TextEditRestriction, TextReplacementPolicy} from '../../contracts/src/generated/kernel-response.js';
+export type TextCapabilities = Extract<KernelResponse, { status: 'textCapabilities' }>['capabilities'];
 export type {TextEditAction, TextBodySetup, TextSelection} from '../../contracts/src/generated/kernel-request.js';
 export type {TextRangeChange} from '../../contracts/src/generated/kernel-response.js';
 export type PreparedEdit = Extract<KernelResponse, { status: 'prepared' }>;
@@ -63,6 +65,14 @@ export class PresentationEditor {
     const result = this.dispatch({ operation: 'prepareText', snapshot, command });
     if (result.status !== 'textPrepared') throw new Error('Unexpected text preparation reply');
     return result.result;
+  }
+
+  /** Snapshot/selection prerequisites from the same validators as prepareText.
+   * This does not grant write authority or guarantee fonts/renderability. */
+  textCapabilities(snapshot: SnapshotRecord, query: TextCapabilitiesQuery): TextCapabilities {
+    const result = this.dispatch({ operation: 'textCapabilities', snapshot, query });
+    if (result.status !== 'textCapabilities') throw new Error('Unexpected text capabilities reply');
+    return result.capabilities;
   }
 
   placements(request: PagePlacementRequest): PagePlacements {

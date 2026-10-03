@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -116,4 +118,88 @@ test('slide duplication remaps its owned graph identically in native and WASM', 
   }
   const undo = editor.prepareHistory(result.snapshot, history(result.snapshot, original, request, 'undo'));
   assert.deepEqual(undo.snapshot.document, original.document);
+});
+
+
+test('text capability queries and structured rejections are identical in native/WASM/TS', () => {
+  const snapshot = editor.initialize(example);
+  const [object, shape] = Object.entries(snapshot.document.objects).find(([,o]) => o.content.kind === 'shape' && o.content.text);
+  const caret = {paragraph: shape.content.text.paragraphs[0].id, scalarOffset: 0, affinity: 'after'};
+  const query = {object, selection: {anchor: caret, focus: caret}};
+  const caps = editor.textCapabilities(snapshot, query);
+  assert.deepEqual(caps, nativeRequest({operation: 'textCapabilities', snapshot, query}).capabilities);
+  assert.equal(caps.revision, snapshot.revision);
+  assert.equal(caps.replace.kind, 'available');
+  assert.equal(caps.characterStyle.reason.kind, 'nonemptySelectionRequired');
+  const command = {documentId: snapshot.document.id, baseRevision: snapshot.revision, requestId: 'cap:style', operationId: 'cap:style',
+    object, action: {kind: 'setCharacterStyle', selection: query.selection, patch: {}}};
+  const failure = nativeRequest({operation: 'prepareText', snapshot, command});
+  assert.throws(() => editor.prepareText(snapshot, command), error => {
+    assert.ok(error instanceof EditorComputationError);
+    assert.deepEqual(error.diagnostic, failure.error);
+    assert.deepEqual(error.diagnostic.textRestriction, caps.characterStyle.reason);
+    return true;
+  });
+  const tampered = structuredClone(snapshot); tampered.document.title = 'changed without a revision';
+  assert.throws(() => editor.textCapabilities(tampered, query), EditorComputationError);
+});
+
+
+test('actual retained PPTX range export, reimport and capability diagnostics match native/WASM', () => {
+  const sourceRequest = JSON.parse(readFileSync('fixtures/presentations/native-export/request.json'));
+  const sourceResources = readFileSync('fixtures/presentations/native-export/resources.bin');
+  const shape = Object.values(sourceRequest.document.objects).find(o => o.content.kind === 'shape' && o.content.text);
+  const p = shape.content.text.paragraphs[0], style = p.runs[0].style;
+  p.runs = ['A😀', 'e', '\u0301中'].map((text,i) => ({id: `native-parity:${i}`, style, content: {kind: 'text', text}}));
+  const material = Buffer.from(wasm.export_pptx(JSON.stringify(sourceRequest), sourceResources));
+  const importRequest = bytes => ({documentId: 'retained:parity', resourceId: 'source:parity', expectedSourceSha256: createHash('sha256').update(bytes).digest('hex')});
+  const original = JSON.parse(wasm.import_pptx_document(JSON.stringify(importRequest(material)), material)).snapshot;
+  assert.ok(original);
+  assert.deepEqual(original, nativeRequest({operation: 'initialize', document: original.document}).snapshot);
+  const [object, content] = Object.entries(original.document.objects).map(([id,o]) => [id,o.content]).find(([,c]) =>
+    c.kind === 'retainedSource' && c.paragraphs.some(p => p.runs.map(r => r.text).join('') === 'A😀e\u0301中'));
+  const paragraph = content.paragraphs.find(p => p.runs.map(r => r.text).join('') === 'A😀e\u0301中');
+  const caret = scalarOffset => ({paragraph: paragraph.id, scalarOffset, affinity: 'after'});
+  const selected = {anchor: caret(4), focus: caret(1)};
+  const query = {object, selection: selected};
+  const caps = editor.textCapabilities(original, query);
+  assert.deepEqual(caps, nativeRequest({operation: 'textCapabilities', snapshot: original, query}).capabilities);
+  assert.equal(caps.replacementPolicy, 'retainedTextLeaves');
+  assert.equal(caps.replace.kind, 'available');
+  const command = {documentId: original.document.id, baseRevision: original.revision, requestId: 'native:range', operationId: 'native:range',
+    object, action: {kind: 'replace', selection: selected, text: 'α<&\t🚀'}};
+  const result = editor.prepareText(original, command);
+  assert.deepEqual(result, nativeRequest({operation: 'prepareText', snapshot: original, command}).result);
+  assert.deepEqual(result.snapshot.document.sourceBindings, original.document.sourceBindings);
+  const exportRequest = {document: result.snapshot.document, defaults: sourceRequest.defaults,
+    resourceBindings: [{resourceId: original.document.sourceBindings.resource, byteOffset: '0', byteLength: String(material.length)}]};
+  const exported = Buffer.from(wasm.export_pptx(JSON.stringify(exportRequest), material));
+  const dir = mkdtempSync(resolve(tmpdir(), 'mo-retained-parity-'));
+  try {
+    const requestPath = resolve(dir, 'request.json'), sourcePath = resolve(dir, 'source.pptx'), outputPath = resolve(dir, 'edited.pptx');
+    writeFileSync(requestPath, JSON.stringify(exportRequest)); writeFileSync(sourcePath, material);
+    const out = spawnSync(native, ['pptx-export', requestPath, sourcePath, outputPath], {encoding: 'utf8', timeout: 60000});
+    assert.equal(out.error, undefined); assert.equal(out.status, 0, out.stderr);
+    assert.deepEqual(readFileSync(outputPath), exported);
+    writeFileSync(requestPath, JSON.stringify(importRequest(exported)));
+    const reimport = spawnSync(native, ['pptx-import', requestPath, outputPath], {encoding: 'utf8', timeout: 60000});
+    assert.equal(reimport.error, undefined); assert.equal(reimport.status, 0, reimport.stderr);
+    const restored = JSON.parse(wasm.import_pptx_document(JSON.stringify(importRequest(exported)), exported));
+    assert.deepEqual(JSON.parse(reimport.stdout), restored);
+    assert.equal(restored.status, 'imported');
+    assert.ok(Object.values(restored.snapshot.document.objects).some(o => o.content.kind === 'retainedSource' &&
+      o.content.paragraphs.some(p => p.runs.map(r => r.text).join('') === 'Aα<&\t🚀中')));
+  } finally { rmSync(dir, {recursive: true, force: true}); }
+  const guarded = structuredClone(original.document);
+  guarded.sourceBindings.objects[object].runs[paragraph.runs[1].id].constraint = 'dynamicField';
+  const protectedSnapshot = editor.initialize(guarded);
+  const protectedCaps = editor.textCapabilities(protectedSnapshot, query);
+  assert.deepEqual(protectedCaps, nativeRequest({operation: 'textCapabilities', snapshot: protectedSnapshot, query}).capabilities);
+  assert.deepEqual(protectedCaps.replace.reason, {kind: 'nativeRun', run: paragraph.runs[1].id, constraint: 'dynamicField'});
+  const rejected = {...command, baseRevision: protectedSnapshot.revision};
+  const failure = nativeRequest({operation: 'prepareText', snapshot: protectedSnapshot, command: rejected});
+  assert.throws(() => editor.prepareText(protectedSnapshot, rejected), error => {
+    assert.deepEqual(error.diagnostic, failure.error);
+    assert.deepEqual(error.diagnostic.textRestriction, protectedCaps.replace.reason); return true;
+  });
 });

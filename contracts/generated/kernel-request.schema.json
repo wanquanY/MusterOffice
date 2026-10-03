@@ -6,6 +6,27 @@
     {
       "type": "object",
       "properties": {
+        "operation": {
+          "type": "string",
+          "const": "textCapabilities"
+        },
+        "query": {
+          "$ref": "#/$defs/TextCapabilitiesQuery"
+        },
+        "snapshot": {
+          "$ref": "#/$defs/SnapshotRecord"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "snapshot",
+        "query"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
         "document": {
           "$ref": "#/$defs/Document"
         },
@@ -4529,6 +4550,38 @@
         "overflow",
         "paragraphStyle",
         "defaultRunStyle"
+      ]
+    },
+    "TextCapabilitiesQuery": {
+      "type": "object",
+      "properties": {
+        "cell": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CellId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "object": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "selection": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TextSelection"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "object"
       ]
     },
     "TextDirection": {

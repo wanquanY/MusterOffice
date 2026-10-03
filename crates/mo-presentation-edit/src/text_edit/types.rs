@@ -104,6 +104,10 @@ pub struct TextEditCandidate {
 /// Coordinates are exact scalar offsets; joining text can turn a former
 /// boundary into the interior of a grapheme. A display caret must resolve the
 /// mapped offset against the resulting paragraph's grapheme boundaries.
+/// For a high-level text command this is the intent-level mapping. Apply it
+/// once, instead of additionally applying the expanded transaction's primitive
+/// anchor maps: a sequence of native leaf splices has different intermediate
+/// boundaries inside the deleted range.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct TextRangeChange {

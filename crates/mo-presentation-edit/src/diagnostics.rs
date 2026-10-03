@@ -18,6 +18,8 @@ pub enum EditDiagnosticCode {
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct EditDiagnostic {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub text_restriction: Option<crate::TextEditRestriction>,
     pub code: EditDiagnosticCode,
     pub message: String,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -55,6 +57,10 @@ impl EditError {
             _ => (EditDiagnosticCode::InputInvalid, None, None),
         };
         EditDiagnostic {
+            text_restriction: match leaf {
+                EditError::TextRestricted(reason) => Some((**reason).clone()),
+                _ => None,
+            },
             code,
             message: self.to_string(),
             operation_ids,

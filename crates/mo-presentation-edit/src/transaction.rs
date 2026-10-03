@@ -159,6 +159,8 @@ pub struct PreparedTransaction {
 
 #[derive(Debug, Error)]
 pub enum EditError {
+    #[error("text operation unavailable: {0:?}")]
+    TextRestricted(Box<crate::TextEditRestriction>),
     #[error("transaction preparation cancelled")]
     Cancelled,
     #[error("INPUT_INVALID: {0}")]

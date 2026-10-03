@@ -1,28 +1,33 @@
-//! An interactive text target is a shape or a visible authored cell. Covered
-//! cells retain independent storage for splitting, but are not editing targets.
+//! Resolve authored shapes/cells and native retained paragraphs in one place.
+//! Covered authored cells keep storage for splitting, but are not editing targets.
 use super::*;
 
-pub(super) fn authored_body<'a>(
+pub(super) enum Target<'a> {
+    Authored(Option<&'a TextBody>),
+    Retained(&'a [RetainedParagraph]),
+    Unavailable(TextEditRestriction),
+}
+
+pub(super) fn resolve<'a>(
     document: &'a Document,
-    command: &TextEditCommand,
+    id: &ObjectId,
+    cell: Option<&CellId>,
     check: &dyn Fn() -> bool,
-) -> Result<Option<&'a TextBody>, EditError> {
+) -> Result<Target<'a>, EditError> {
     let object = document
         .objects
-        .get(&command.object)
+        .get(id)
         .ok_or_else(|| EditError::input("text object does not exist"))?;
-    match (&object.content, &command.cell) {
-        (ObjectContent::Shape { text, .. }, None) => Ok(text.as_ref()),
+    match (&object.content, cell) {
+        (ObjectContent::Shape { text, .. }, None) => Ok(Target::Authored(text.as_ref())),
         (ObjectContent::Table { table }, Some(id)) => {
             for cell in table.rows.iter().flat_map(|r| &r.cells) {
                 cancelled(check)?;
                 if &cell.id == id {
                     if matches!(cell.merge, TableCellMerge::Covered { .. }) {
-                        return Err(EditError::input(
-                            "covered table cell is not a text editing target",
-                        ));
+                        return Ok(Target::Unavailable(TextEditRestriction::CoveredCell));
                     }
-                    return Ok(cell.text.as_ref());
+                    return Ok(Target::Authored(cell.text.as_ref()));
                 }
             }
             Err(EditError::input("text table cell does not exist"))
@@ -31,10 +36,10 @@ pub(super) fn authored_body<'a>(
             Err(EditError::input("table text requires a cell identity"))
         }
         (_, Some(_)) => Err(EditError::input("cell identity requires an authored table")),
-        (ObjectContent::RetainedSource { .. }, None) => {
-            Err(EditError::input("text action requires native preservation"))
+        (ObjectContent::RetainedSource { paragraphs, .. }, None) => {
+            Ok(Target::Retained(paragraphs))
         }
-        _ => Err(EditError::input("object cannot own an authored text body")),
+        _ => Ok(Target::Unavailable(TextEditRestriction::UnsupportedTarget)),
     }
 }
 

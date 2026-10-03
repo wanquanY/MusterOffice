@@ -2,6 +2,11 @@
 
 export type KernelRequest =
   | {
+      operation: "textCapabilities";
+      query: TextCapabilitiesQuery;
+      snapshot: SnapshotRecord;
+    }
+  | {
       document: Document;
       operation: "validate";
     }
@@ -24,6 +29,10 @@ export type KernelRequest =
       operation: "prepareText";
       snapshot: SnapshotRecord;
     };
+export type CellId = string;
+export type ObjectId = string;
+export type Affinity = "before" | "after";
+export type ParagraphId = string;
 export type FontId = string;
 export type ResourceId = string;
 export type ModelVersion = "musteroffice.presentation/0.1-draft";
@@ -72,7 +81,6 @@ export type ThemeColor =
 export type Emu = string;
 export type LayoutId = string;
 export type MasterId = string;
-export type ObjectId = string;
 export type ThemeId = string;
 export type Stroke =
   | {
@@ -139,10 +147,8 @@ export type ObjectContent =
       start: ConnectorEndpoint;
     };
 export type ColumnId = string;
-export type CellId = string;
 export type TableVerticalAlignment = "top" | "center" | "bottom" | "justified" | "distributed";
 export type OverflowPolicy = "report" | "clip" | "growShape";
-export type ParagraphId = string;
 export type InlineContent =
   | {
       kind: "text";
@@ -651,7 +657,6 @@ export type TextEditAction =
       patch: CharacterStylePatch;
       selection: TextSelection;
     };
-export type Affinity = "before" | "after";
 export type Inherited8 =
   | {
       kind: "inherit";
@@ -693,6 +698,28 @@ export type Inherited5 =
       value: Emu;
     };
 
+export interface TextCapabilitiesQuery {
+  cell?: CellId | null;
+  object: ObjectId;
+  selection?: TextSelection | null;
+}
+export interface TextSelection {
+  anchor: TextAnchor;
+  focus: TextAnchor;
+}
+export interface TextAnchor {
+  affinity: Affinity;
+  paragraph: ParagraphId;
+  scalarOffset: number;
+}
+/**
+ * Storage envelope owned by an authorized host. A digest is not an access token.
+ */
+export interface SnapshotRecord {
+  document: Document;
+  revision: Digest;
+  semanticDigest: Digest;
+}
 /**
  * Document declarations and immutable source provenance. Revisions, compilation
  * caches, clocks and decoder state live outside this model.
@@ -1302,14 +1329,6 @@ export interface SequenceNavigation {
   previousAction: PreviousAction;
   previousConditions: TimeCondition[];
 }
-/**
- * Storage envelope owned by an authorized host. A digest is not an access token.
- */
-export interface SnapshotRecord {
-  document: Document;
-  revision: Digest;
-  semanticDigest: Digest;
-}
 export interface Transaction {
   baseRevision: Digest;
   documentId: DocumentId;
@@ -1413,15 +1432,6 @@ export interface TextBodySetup {
   paragraphStyle: ParagraphStyle;
   style: CharacterStyle;
   wrap: boolean;
-}
-export interface TextSelection {
-  anchor: TextAnchor;
-  focus: TextAnchor;
-}
-export interface TextAnchor {
-  affinity: Affinity;
-  paragraph: ParagraphId;
-  scalarOffset: number;
 }
 /**
  * Omitted fields keep their declarations; `inherit` explicitly resets one

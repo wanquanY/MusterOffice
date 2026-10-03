@@ -956,6 +956,16 @@
               "type": "null"
             }
           ]
+        },
+        "textRestriction": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TextEditRestriction"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "additionalProperties": false,
@@ -3834,6 +3844,169 @@
         "rightToLeft",
         "verticalRightToLeft",
         "verticalLeftToRight"
+      ]
+    },
+    "TextEditRestriction": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "unsupportedTarget"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "coveredCell"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "missingTextBody"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "textBodyExists"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "selectionRequired"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "nonemptySelectionRequired"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "nativeStructureRequired"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "retainedParagraphBoundary"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "nativeInsertionTarget"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "constraint": {
+              "$ref": "#/$defs/NativeEditConstraint"
+            },
+            "kind": {
+              "type": "string",
+              "const": "nativeRun"
+            },
+            "run": {
+              "$ref": "#/$defs/RunId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "run",
+            "constraint"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "structuredRun"
+            },
+            "run": {
+              "$ref": "#/$defs/RunId"
+            },
+            "runKind": {
+              "$ref": "#/$defs/RetainedRunKind"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "run",
+            "runKind"
+          ]
+        }
       ]
     },
     "TextRun": {

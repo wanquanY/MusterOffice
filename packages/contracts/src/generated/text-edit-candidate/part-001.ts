@@ -1,5 +1,5 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { Accessibility, Appearance, Crop, Document, FontFace, Layout, Master, MotionPath, MotionPoint, Object, Point, PresentationSequence, RationalTime, Resource, RetainedParagraph, Rgba, ScaleValue, Size, Slide, Table, TableCell, TableCellStyle1, TableColumn, TableRow, TextBody, Theme, Timeline, Transaction, Transform } from './part-002.js';
+import type { Accessibility, Appearance, Crop, FontFace, Layout, Master, MotionPath, MotionPoint, Object, Point, PresentationSequence, RationalTime, Resource, RetainedParagraph, Rgba, ScaleValue, Size, Slide, SnapshotRecord, Table, TableCell, TableCellStyle1, TableColumn, TableRow, TextBody, Theme, Timeline, Transaction, Transform } from './part-002.js';
 
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
 
@@ -1100,6 +1100,10 @@ export interface TextEditCandidate {
  * Coordinates are exact scalar offsets; joining text can turn a former
  * boundary into the interior of a grapheme. A display caret must resolve the
  * mapped offset against the resulting paragraph's grapheme boundaries.
+ * For a high-level text command this is the intent-level mapping. Apply it
+ * once, instead of additionally applying the expanded transaction's primitive
+ * anchor maps: a sequence of native leaf splices has different intermediate
+ * boundaries inside the deleted range.
  *
  * This interface was referenced by `TextEditCandidate`'s JSON-Schema
  * via the `definition` "TextRangeChange".
@@ -1186,16 +1190,4 @@ export interface AnchorMap {
   inserted: number;
   paragraph: ParagraphId;
   start: number;
-}
-
-/**
- * Storage envelope owned by an authorized host. A digest is not an access token.
- *
- * This interface was referenced by `TextEditCandidate`'s JSON-Schema
- * via the `definition` "SnapshotRecord".
- */
-export interface SnapshotRecord {
-  document: Document;
-  revision: Digest;
-  semanticDigest: Digest;
 }

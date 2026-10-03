@@ -1,0 +1,106 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:text-capabilities-query",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TextCapabilitiesQuery",
+  "type": "object",
+  "properties": {
+    "cell": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/CellId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "object": {
+      "$ref": "#/$defs/ObjectId"
+    },
+    "selection": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TextSelection"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "object"
+  ],
+  "$defs": {
+    "Affinity": {
+      "type": "string",
+      "enum": [
+        "before",
+        "after"
+      ]
+    },
+    "CellId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ObjectId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ParagraphId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "TextAnchor": {
+      "type": "object",
+      "properties": {
+        "affinity": {
+          "$ref": "#/$defs/Affinity"
+        },
+        "paragraph": {
+          "$ref": "#/$defs/ParagraphId"
+        },
+        "scalarOffset": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "paragraph",
+        "scalarOffset",
+        "affinity"
+      ]
+    },
+    "TextSelection": {
+      "type": "object",
+      "properties": {
+        "anchor": {
+          "$ref": "#/$defs/TextAnchor"
+        },
+        "focus": {
+          "$ref": "#/$defs/TextAnchor"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "anchor",
+        "focus"
+      ]
+    }
+  }
+}

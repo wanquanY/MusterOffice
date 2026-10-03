@@ -2,6 +2,18 @@
 import type { Alignment, CellId, Color, ColumnId, ContainerDuration, ContainerId, ContainerKind, Digest, DocumentId, Effect, Emu, Fill, FillMode, FontId, Inherited, InlineContent, LayoutId, MasterId, ModelVersion, MotionCoordinate, MotionSegment, NativeEditConstraint, NextAction, ObjectContent, ObjectId, Operation, OperationId, OverflowPolicy, ParagraphId, ParagraphLineSpacing, PresentationRole, PreviousAction, RepeatCount, RepeatDuration, RequestId, ResourceId, ResourceKind, RestartMode, RetainedRunKind, RowId, RunId, SlideId, SourceBindingProfile, StartCondition, Stroke, TableVerticalAlignment, TextDirection, ThemeId, Ticks, TimeCondition, TimelineVersion, Timescale, TimingNodeId } from './part-001.js';
 
 /**
+ * Storage envelope owned by an authorized host. A digest is not an access token.
+ *
+ * This interface was referenced by `TextEditCandidate`'s JSON-Schema
+ * via the `definition` "SnapshotRecord".
+ */
+export interface SnapshotRecord {
+  document: Document;
+  revision: Digest;
+  semanticDigest: Digest;
+}
+
+/**
  * Document declarations and immutable source provenance. Revisions, compilation
  * caches, clocks and decoder state live outside this model.
  * The example is a complete editable 16:9 slide with a text shape. Coordinates

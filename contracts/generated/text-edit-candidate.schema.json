@@ -4477,7 +4477,7 @@
       ]
     },
     "TextRangeChange": {
-      "description": "Ordered before/after ranges, including paragraph identities. All unaffected\nparagraphs keep their anchors. Reversal swaps the two ranges and lists.\nCoordinates are exact scalar offsets; joining text can turn a former\nboundary into the interior of a grapheme. A display caret must resolve the\nmapped offset against the resulting paragraph's grapheme boundaries.",
+      "description": "Ordered before/after ranges, including paragraph identities. All unaffected\nparagraphs keep their anchors. Reversal swaps the two ranges and lists.\nCoordinates are exact scalar offsets; joining text can turn a former\nboundary into the interior of a grapheme. A display caret must resolve the\nmapped offset against the resulting paragraph's grapheme boundaries.\nFor a high-level text command this is the intent-level mapping. Apply it\nonce, instead of additionally applying the expanded transaction's primitive\nanchor maps: a sequence of native leaf splices has different intermediate\nboundaries inside the deleted range.",
       "type": "object",
       "properties": {
         "after": {

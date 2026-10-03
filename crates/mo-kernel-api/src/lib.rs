@@ -98,8 +98,9 @@ mod pptx_text_page;
 use mo_common::{Digest, from_json_str};
 pub use mo_pptx::source::{SourceLimits, SourceTextEdits, SourceTransformEdits};
 use mo_presentation_edit::{
-    EditError, HistoryTransaction, Snapshot, SnapshotRecord, TextEditCandidate, TextEditCommand,
-    Transaction, TransactionReceipt, prepare, prepare_history, prepare_text_edit,
+    EditError, HistoryTransaction, Snapshot, SnapshotRecord, TextCapabilitiesQuery,
+    TextEditCandidate, TextEditCommand, TextEditingCapabilities, Transaction, TransactionReceipt,
+    prepare, prepare_history, prepare_text_edit, text_capabilities,
 };
 use mo_presentation_model::{Document, ValidationLimits, ValidationReport, validate};
 pub use package::*;
@@ -127,6 +128,10 @@ pub const MAX_REQUEST_BYTES: usize = 32 * 1024 * 1024;
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "operation", rename_all = "camelCase", deny_unknown_fields)]
 pub enum KernelRequest {
+    TextCapabilities {
+        snapshot: SnapshotRecord,
+        query: TextCapabilitiesQuery,
+    },
     Validate {
         document: Document,
     },
@@ -150,6 +155,9 @@ pub enum KernelRequest {
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "status", rename_all = "camelCase", deny_unknown_fields)]
 pub enum KernelResponse {
+    TextCapabilities {
+        capabilities: Box<TextEditingCapabilities>,
+    },
     Validated {
         report: ValidationReport,
     },
@@ -183,6 +191,8 @@ pub enum ErrorCode {
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct KernelError {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub text_restriction: Option<mo_presentation_edit::TextEditRestriction>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub operation_ids: Vec<mo_common::OperationId>,
     pub code: ErrorCode,
@@ -196,6 +206,7 @@ pub struct KernelError {
 fn error(code: ErrorCode, message: String) -> KernelResponse {
     KernelResponse::Error {
         error: KernelError {
+            text_restriction: None,
             operation_ids: Vec::new(),
             code,
             message,
@@ -217,6 +228,7 @@ fn edit_error(error: EditError) -> KernelResponse {
     };
     KernelResponse::Error {
         error: KernelError {
+            text_restriction: diagnostic.text_restriction,
             code,
             message: diagnostic.message,
             operation_ids: diagnostic.operation_ids,
@@ -261,6 +273,16 @@ pub fn dispatch(request: KernelRequest, limits: ValidationLimits) -> KernelRespo
                 Ok(prepared) => KernelResponse::Prepared {
                     snapshot: prepared.snapshot.into_record(),
                     receipt: Box::new(prepared.receipt),
+                },
+                Err(error) => edit_error(error),
+            }
+        }
+        KernelRequest::TextCapabilities { snapshot, query } => {
+            match Snapshot::restore(snapshot, limits)
+                .and_then(|base| text_capabilities(&base, &query, &|| false))
+            {
+                Ok(capabilities) => KernelResponse::TextCapabilities {
+                    capabilities: Box::new(capabilities),
                 },
                 Err(error) => edit_error(error),
             }

@@ -363,6 +363,14 @@ fn main() -> Result<(), Box<dyn Error>> {
         ("document", schema::<Document>()),
         ("transaction", schema::<Transaction>()),
         (
+            "text-capabilities-query",
+            schema::<mo_presentation_edit::TextCapabilitiesQuery>(),
+        ),
+        (
+            "text-editing-capabilities",
+            schema::<mo_presentation_edit::TextEditingCapabilities>(),
+        ),
+        (
             "text-edit-command",
             schema::<mo_presentation_edit::TextEditCommand>(),
         ),

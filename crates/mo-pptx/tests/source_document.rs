@@ -367,3 +367,159 @@ fn source_transaction_rejects_unwritable_coordinates_and_text_before_commit() {
         assert!(prepare(&s, &transaction(&s, vec![operation]), Default::default()).is_err());
     }
 }
+
+#[test]
+fn high_level_native_range_roundtrips_with_opaque_parts_and_original_run_structure() {
+    use mo_presentation_edit::{TextEditAction, TextEditCommand, TextSelection, prepare_text_edit};
+    let (mut d, defaults) = support::input();
+    let first_slide = d.slide_order[0].clone();
+    let body = d
+        .objects
+        .values_mut()
+        .filter(|o| o.parent == ContainerId::Slide(first_slide.clone()))
+        .find_map(|o| match &mut o.content {
+            ObjectContent::Shape {
+                text: Some(body), ..
+            } => Some(body),
+            _ => None,
+        })
+        .unwrap();
+    let style = body.paragraphs[0].runs[0].style.clone();
+    body.paragraphs[0].runs = ["A😀", "e", "\u{301}中"]
+        .into_iter()
+        .enumerate()
+        .map(|(i, text)| TextRun {
+            id: RunId::new(format!("range:owned:{i}")).unwrap(),
+            style: style.clone(),
+            content: InlineContent::Text { text: text.into() },
+        })
+        .collect();
+    let raw = export(
+        &d,
+        &defaults,
+        &support::resources(),
+        Default::default(),
+        &|| false,
+    )
+    .unwrap();
+    let bytes = change(&raw, |s| {
+        s.replace("</p:sld>", "<p:extLst><p:ext uri=\"owned-range\"><x:opaque xmlns:x=\"urn:owned\" value=\"keep &amp; preserve\"/></p:ext></p:extLst></p:sld>")
+    });
+    let original = package(&bytes);
+    let d = import(&original);
+    let (id, paragraph) = d
+        .objects
+        .iter()
+        .find_map(|(id, o)| match &o.content {
+            ObjectContent::RetainedSource { paragraphs, .. } => paragraphs
+                .iter()
+                .find(|p| {
+                    p.runs.iter().map(|r| r.text.as_str()).collect::<String>() == "A😀e\u{301}中"
+                })
+                .map(|p| (id.clone(), p.id.clone())),
+            _ => None,
+        })
+        .unwrap();
+    let binding = d.source_bindings.as_ref().unwrap().objects[&id].clone();
+    let s = Snapshot::new(d, Default::default()).unwrap();
+    let anchor = TextAnchor {
+        paragraph: paragraph.clone(),
+        scalar_offset: 1,
+        affinity: Affinity::After,
+    };
+    let command = TextEditCommand {
+        document_id: s.document().id.clone(),
+        base_revision: s.revision().clone(),
+        request_id: RequestId::new("range:roundtrip").unwrap(),
+        operation_id: OperationId::new("range:operation").unwrap(),
+        object: id.clone(),
+        cell: None,
+        action: TextEditAction::Replace {
+            selection: TextSelection {
+                anchor: anchor.clone(),
+                focus: TextAnchor {
+                    scalar_offset: 4,
+                    ..anchor
+                },
+            },
+            text: "α<&\t🚀".into(),
+        },
+    };
+    let result = prepare_text_edit(&s, &command, Default::default(), &|| false).unwrap();
+    let plan = SourcePlan::new(
+        result.prepared.snapshot.document(),
+        &original,
+        Default::default(),
+        &|| false,
+    )
+    .unwrap();
+    let output = plan.write(&original, &|| false).unwrap();
+    let actual = package(&output);
+    assert_eq!(actual.relationships(), original.relationships());
+    assert_eq!(
+        actual.parts().keys().collect::<Vec<_>>(),
+        original.parts().keys().collect::<Vec<_>>()
+    );
+    for part in original.parts().keys() {
+        let before = original.read_part(part, 1 << 24, &|| false).unwrap();
+        let after = actual.read_part(part, 1 << 24, &|| false).unwrap();
+        if part.as_str() != binding.part {
+            assert_eq!(before, after, "{part}");
+        } else {
+            assert!(
+                String::from_utf8(after)
+                    .unwrap()
+                    .contains("value=\"keep &amp; preserve\"")
+            );
+        }
+    }
+    let restored = import(&actual);
+    let restored_id = restored
+        .source_bindings
+        .as_ref()
+        .unwrap()
+        .objects
+        .iter()
+        .find(|(_, b)| b.part == binding.part && b.native_id == binding.native_id)
+        .unwrap()
+        .0;
+    let ObjectContent::RetainedSource { paragraphs, .. } = &restored.objects[restored_id].content
+    else {
+        panic!()
+    };
+    assert!(
+        paragraphs
+            .iter()
+            .any(|p| p.runs.iter().map(|r| r.text.as_str()).collect::<String>() == "Aα<&\t🚀中")
+    );
+    assert_eq!(
+        result.prepared.snapshot.document().source_bindings,
+        s.document().source_bindings
+    );
+    let undo = mo_presentation_edit::prepare_history(
+        &result.prepared.snapshot,
+        &mo_presentation_edit::HistoryTransaction {
+            document_id: s.document().id.clone(),
+            base_revision: result.prepared.snapshot.revision().clone(),
+            request_id: RequestId::new("roundtrip:undo").unwrap(),
+            original_snapshot: s.clone().into_record(),
+            original_transaction: result.transaction,
+            direction: mo_presentation_edit::HistoryDirection::Undo,
+        },
+        Default::default(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(
+        SourcePlan::new(
+            undo.snapshot.document(),
+            &original,
+            Default::default(),
+            &|| false
+        )
+        .unwrap()
+        .write(&original, &|| false)
+        .unwrap(),
+        bytes
+    );
+}

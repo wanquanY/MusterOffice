@@ -450,6 +450,44 @@ export type ValidationCode =
   | "OWNERSHIP_CONFLICT"
   | "REFERENCE_CYCLE"
   | "LIMIT_EXCEEDED";
+export type TextEditRestriction =
+  | {
+      kind: "unsupportedTarget";
+    }
+  | {
+      kind: "coveredCell";
+    }
+  | {
+      kind: "missingTextBody";
+    }
+  | {
+      kind: "textBodyExists";
+    }
+  | {
+      kind: "selectionRequired";
+    }
+  | {
+      kind: "nonemptySelectionRequired";
+    }
+  | {
+      kind: "nativeStructureRequired";
+    }
+  | {
+      kind: "retainedParagraphBoundary";
+    }
+  | {
+      kind: "nativeInsertionTarget";
+    }
+  | {
+      constraint: NativeEditConstraint;
+      kind: "nativeRun";
+      run: RunId;
+    }
+  | {
+      kind: "structuredRun";
+      run: RunId;
+      runKind: RetainedRunKind;
+    };
 
 export interface TemplateDescription {
   definition: TemplateDefinition;
@@ -1187,6 +1225,7 @@ export interface EditDiagnostic {
   message: string;
   operationIds?: OperationId[];
   report?: ValidationReport | null;
+  textRestriction?: TextEditRestriction | null;
 }
 export interface ValidationReport {
   issues: ValidationIssue[];

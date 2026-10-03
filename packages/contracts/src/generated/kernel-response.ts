@@ -2,6 +2,10 @@
 
 export type KernelResponse =
   | {
+      capabilities: TextEditingCapabilities;
+      status: "textCapabilities";
+    }
+  | {
       report: ValidationReport;
       status: "validated";
     }
@@ -22,6 +26,67 @@ export type KernelResponse =
       error: KernelError;
       status: "error";
     };
+export type CellId = string;
+export type TextEditAvailability =
+  | {
+      kind: "available";
+    }
+  | {
+      kind: "unavailable";
+      reason: TextEditRestriction;
+    };
+export type TextEditRestriction =
+  | {
+      kind: "unsupportedTarget";
+    }
+  | {
+      kind: "coveredCell";
+    }
+  | {
+      kind: "missingTextBody";
+    }
+  | {
+      kind: "textBodyExists";
+    }
+  | {
+      kind: "selectionRequired";
+    }
+  | {
+      kind: "nonemptySelectionRequired";
+    }
+  | {
+      kind: "nativeStructureRequired";
+    }
+  | {
+      kind: "retainedParagraphBoundary";
+    }
+  | {
+      kind: "nativeInsertionTarget";
+    }
+  | {
+      constraint: NativeEditConstraint;
+      kind: "nativeRun";
+      run: RunId;
+    }
+  | {
+      kind: "structuredRun";
+      run: RunId;
+      runKind: RetainedRunKind;
+    };
+export type NativeEditConstraint =
+  | "missingDirectTransform"
+  | "retainedTransform"
+  | "compatibilityBranch"
+  | "structuredLeaf"
+  | "dynamicField"
+  | "timingReferences"
+  | "retainedReferences";
+export type RunId = string;
+export type RetainedRunKind = "text" | "break" | "field";
+export type DocumentId = string;
+export type ObjectId = string;
+export type TextReplacementPolicy = "authoredBody" | "retainedTextLeaves";
+export type Digest = string;
 export type ValidationCode =
   | "IDENTITY_MISMATCH"
   | "MISSING_REFERENCE"
@@ -33,7 +98,6 @@ export type ValidationCode =
 export type FontId = string;
 export type ResourceId = string;
 export type ModelVersion = "musteroffice.presentation/0.1-draft";
-export type DocumentId = string;
 export type Inherited =
   | {
       kind: "inherit";
@@ -78,7 +142,6 @@ export type ThemeColor =
 export type Emu = string;
 export type LayoutId = string;
 export type MasterId = string;
-export type ObjectId = string;
 export type ThemeId = string;
 export type Stroke =
   | {
@@ -145,7 +208,6 @@ export type ObjectContent =
       start: ConnectorEndpoint;
     };
 export type ColumnId = string;
-export type CellId = string;
 export type TableVerticalAlignment = "top" | "center" | "bottom" | "justified" | "distributed";
 export type OverflowPolicy = "report" | "clip" | "growShape";
 export type ParagraphId = string;
@@ -160,7 +222,6 @@ export type InlineContent =
   | {
       kind: "tab";
     };
-export type RunId = string;
 export type Alignment = "start" | "center" | "end" | "justify";
 export type TextDirection = "leftToRight" | "rightToLeft" | "verticalRightToLeft" | "verticalLeftToRight";
 /**
@@ -178,7 +239,6 @@ export type ParagraphLineSpacing =
     };
 export type RowId = string;
 export type RetainedObjectKind = "shape" | "picture" | "group" | "connector" | "graphicFrame";
-export type RetainedRunKind = "text" | "break" | "field";
 export type Geometry =
   | {
       kind: "rectangle";
@@ -247,15 +307,6 @@ export type ContainerId =
     };
 export type SlideId = string;
 export type ResourceKind = "font" | "picture" | "audio" | "video" | "sourcePackage" | "embeddedWorkbook" | "model3d";
-export type Digest = string;
-export type NativeEditConstraint =
-  | "missingDirectTransform"
-  | "retainedTransform"
-  | "compatibilityBranch"
-  | "structuredLeaf"
-  | "dynamicField"
-  | "timingReferences"
-  | "retainedReferences";
 export type SourceBindingProfile =
   | "presentationml-retained-fields-v1-draft"
   | "presentationml-retained-fields-v2-draft"
@@ -650,6 +701,31 @@ export type ErrorCode =
   | "LIMIT_EXCEEDED"
   | "INTERNAL_FAILURE";
 
+/**
+ * Model/selection prerequisites only, not host authorization, font availability
+ * or a promise that arbitrary replacement text passes document limits.
+ */
+export interface TextEditingCapabilities {
+  cell?: CellId | null;
+  characterStyle: TextEditAvailability;
+  /**
+   * Deletion has no insertion-style owner; it can be legal beside a protected run.
+   */
+  delete:
+    | {
+        kind: "available";
+      }
+    | {
+        kind: "unavailable";
+        reason: TextEditRestriction;
+      };
+  documentId: DocumentId;
+  initialize: TextEditAvailability;
+  object: ObjectId;
+  replace: TextEditAvailability;
+  replacementPolicy?: TextReplacementPolicy | null;
+  revision: Digest;
+}
 export interface ValidationReport {
   issues: ValidationIssue[];
   truncated: boolean;
@@ -1331,6 +1407,10 @@ export interface TextEditCandidate {
  * Coordinates are exact scalar offsets; joining text can turn a former
  * boundary into the interior of a grapheme. A display caret must resolve the
  * mapped offset against the resulting paragraph's grapheme boundaries.
+ * For a high-level text command this is the intent-level mapping. Apply it
+ * once, instead of additionally applying the expanded transaction's primitive
+ * anchor maps: a sequence of native leaf splices has different intermediate
+ * boundaries inside the deleted range.
  */
 export interface TextRangeChange {
   after: TextSelection;
@@ -1425,4 +1505,5 @@ export interface KernelError {
   message: string;
   operationIds?: OperationId[];
   report?: ValidationReport | null;
+  textRestriction?: TextEditRestriction | null;
 }
