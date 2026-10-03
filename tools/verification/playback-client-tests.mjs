@@ -10,6 +10,23 @@ const authorRequest=()=>({binding:{...binding},snapshot:{semanticDigest:'b'.repe
 const sourceRequest=()=>({binding:{...binding},page:{page:{slide:'/ppt/slides/slide1.xml',expectedSourceSha256:'c'.repeat(64),viewport:viewport()}}});
 const failure={status:'error',error:{kind:'session',code:'GENERATION_NOT_INCREASING',message:'invalid'}};
 const ports={source:new Uint8Array(1),fonts:new Uint8Array(1),decoder:{},shaping:{}};
+test('delivery: initial fit accepts the kernel dimensions and rejects out-of-box or invalid allocations',()=>{
+  const request={width:640,height:90,delivery:{expected:{documentId:'doc',revision:'rev'},bundle:{pptxAssetId:'pptx',previews:[{pageId:'page'}]}}};
+  const inputs={profile:'delivery-playback-inputs-v1-draft',documentId:'doc',revision:'rev',source:{id:'pptx',sha256:'hash'},
+    pages:[{pageId:'page',request:{page:{expectedSourceSha256:'hash',viewport:{...viewport(),width:160,height:90}}}}]};
+  const sdk=new WasmPlayback({prepare_delivery_playback:()=>JSON.stringify({status:'prepared',inputs})});
+  const prepare=()=>sdk.prepareDeliveryInputs(request,new Uint8Array());
+  assert.deepEqual(prepare(),inputs);
+  for(const [width,height] of [[641,90],[160,91],[0,90],[160,0],[1.5,90]]) {
+    Object.assign(inputs.pages[0].request.page.viewport,{width,height});
+    assert.throws(prepare,e=>e instanceof PlaybackStateError&&e.code==='INVALID_RESPONSE');
+  }
+  Object.assign(inputs.pages[0].request.page.viewport,{width:160,height:90});
+  delete request.height;
+  assert.throws(prepare,e=>e instanceof PlaybackStateError&&e.code==='INVALID_RESPONSE');
+  request.width=160;assert.deepEqual(prepare(),inputs);
+  request.height=null;assert.deepEqual(prepare(),inputs);
+});
 function fixture(kind='author') {
   const observed={free:0,frameFree:0,take:0,commands:[],callback:null,badFrame:null,commandOverride:null,freeError:null};
   const info={viewport:viewport(),viewportRevision:0,binding:{...binding},profile:'test',planId:'plan',slide:kind==='author'?'one':'/ppt/slides/slide1.xml',

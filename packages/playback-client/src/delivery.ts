@@ -2,6 +2,7 @@ import type { DeliveryPlaybackRequest } from '../../contracts/src/generated/deli
 import type { DeliveryPlaybackInputs, DeliveryPlaybackResponse, PptxFailure } from '../../contracts/src/generated/delivery-playback-response.js';
 import type { PlaybackModule } from './ports.js';
 import { decode, encode, inputBytes, requireResponse } from './owner.js';
+import { fitsViewport } from './viewport.js';
 
 export type { DeliveryPlaybackRequest, DeliveryPlaybackInputs };
 
@@ -30,7 +31,9 @@ export function prepareDeliveryInputs(
     inputs.source.id === request.delivery.bundle.pptxAssetId &&
     inputs.pages.length === request.delivery.bundle.previews.length &&
     inputs.pages.every((page, i) => page.pageId === request.delivery.bundle.previews[i]!.pageId &&
-      page.request.page.viewport.width === request.width &&
+      (request.height == null ? page.request.page.viewport.width === request.width &&
+        fitsViewport(page.request.page.viewport, {width: request.width, height: 8192}) :
+        fitsViewport(page.request.page.viewport, {width: request.width, height: request.height})) &&
       page.request.page.expectedSourceSha256 === inputs.source.sha256));
   return inputs;
 }
