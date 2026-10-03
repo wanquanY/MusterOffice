@@ -84,11 +84,20 @@ WASM Skia/PNG/JPEG 从当前锁定源码重建至 `.codex-work/presentation-view
 旧路径 parity-01 是失败记录，parity-02/03 是中间结果，不作为最终代码绑定证据。
 
 双轴适配增量验证：134 项 Rust 测试（Kernel lib 5、Delivery 3、Author 15、Source 9、Compile 102）、
-27 项客户端测试、六个 TS 项目、四个相关 crate 严格 lib Clippy 均通过。
+28 项客户端测试、六个 TS 项目、四个相关 crate 严格 lib Clippy 均通过。
 Native/WASM 重建后 `.codex-work/presentation-viewport/fit-parity-01/report.json` 再次核验
 3 组输入、9 组配对帧和 6 个新准备视口对照；首次放大使用 `resizeToFit`，还原使用显式 `resize`。
 时间、事件游标和姿态保持一致，resize 字体调用为 0。
 日志位于 `.codex-work/player-fit-{tests,client-tests,types,clippy,parity}.log`。
+
+产品真实 Worker 验证发现 Delivery 薄客户端仍按旧合同要求输出宽度等于请求宽度；
+当高度成为限制轴时会错误拒绝合法帧。该校验已改为复用双轴边界校验器，
+省略或传 null 高度时仍保留原按宽度合同；新增用例同时拒绝越界、零值和小数尺寸。
+最终类型/客户端日志使用 `player-fit-{types,client-tests}-final.log`。
+完整本地开发发行 `0.1.0-dev.viewport.20261003.2`（Musterwork registry）绑定 27 个 SDK 包、
+当前原生 export worker 与修订后的 WASM 薄客户端；独立消费者的真实导出验证通过，
+报告为 `.codex-work/component-release/viewport-20261003-verification-2/report.json`。
+先前 `.1` 仅保留失败排查记录，不作为产品最终绑定。未上传或发布远端组件。
 
 复现对照前先按开发指南构建上述当前组件、worker、Rust WASM/bindgen 及三个 TS adapter；再运行：
 
