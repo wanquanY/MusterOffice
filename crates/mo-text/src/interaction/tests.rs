@@ -5,7 +5,7 @@ use crate::{
     geometry::test_support::{Backend as GeometryBackend, FONT},
 };
 use std::cell::Cell;
-fn q(text: &str) -> ParagraphInteractionRequest {
+pub(super) fn q(text: &str) -> ParagraphInteractionRequest {
     let mut g = crate::geometry::test_support::request(text);
     g.shaping.paragraph.styles[0].max_glyphs = 4096;
     ParagraphInteractionRequest {

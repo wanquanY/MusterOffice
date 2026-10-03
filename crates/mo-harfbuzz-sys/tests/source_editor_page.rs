@@ -18,7 +18,7 @@ use mo_presentation_compile::{
 };
 use mo_skia_sys::NativeRaster;
 use mo_text::{
-    interaction::{Affinity, TextPosition},
+    interaction::{Affinity, CaretMove, TextPosition},
     manifest::{FontManifest, PreparedManifest},
 };
 use support::*;
@@ -290,6 +290,57 @@ fn rotated_flipped_nested_page_queries_match_rendered_frame_and_resource_pixels(
         let PageTextQueryResult::Caret { caret: c, .. } = &answers[0] else {
             panic!()
         };
+        let movement = e
+            .query(
+                &[PageTextQuery {
+                    frame: 0,
+                    action: PageTextAction::Move {
+                        position: position(0),
+                        movement: CaretMove::NextGrapheme,
+                        preferred_x: None,
+                    },
+                }],
+                &|| false,
+            )
+            .unwrap();
+        let PageTextQueryResult::Moved {
+            caret: moved,
+            exhausted,
+            preferred_x,
+            ..
+        } = &movement[0]
+        else {
+            panic!()
+        };
+        assert!(!exhausted);
+        assert!(preferred_x.is_none());
+        assert_eq!(moved.edge, c.edge);
+        assert_eq!(moved.visible, c.visible);
+        assert_eq!(moved.local.caret.position.affinity, Affinity::Upstream);
+        let resolved = e
+            .query(
+                &[PageTextQuery {
+                    frame: 0,
+                    action: PageTextAction::Caret {
+                        position: FrameTextPosition {
+                            paragraph: moved.local.paragraph,
+                            position: moved.local.caret.position,
+                        },
+                    },
+                }],
+                &|| false,
+            )
+            .unwrap();
+        let PageTextQueryResult::Caret {
+            caret: resolved, ..
+        } = &resolved[0]
+        else {
+            panic!()
+        };
+        assert_eq!(
+            serde_json::to_value(moved).unwrap(),
+            serde_json::to_value(resolved).unwrap()
+        );
         let local = c.local.caret.edge;
         near(
             c.edge[0],
@@ -509,7 +560,25 @@ fn page_query_failures_are_atomic_and_budgets_cover_all_text_frames() {
     )
     .unwrap();
     let e = &image.page;
-    let query = [select(0, 0, 2)];
+    let query = [
+        select(0, 0, 2),
+        PageTextQuery {
+            frame: 1,
+            action: PageTextAction::Move {
+                position: position(0),
+                movement: CaretMove::NextGrapheme,
+                preferred_x: None,
+            },
+        },
+        PageTextQuery {
+            frame: 0,
+            action: PageTextAction::Move {
+                position: position(1),
+                movement: CaretMove::Down,
+                preferred_x: Some(Fixed::ZERO),
+            },
+        },
+    ];
     let calls = std::cell::Cell::new(0usize);
     e.query(&query, &|| {
         calls.set(calls.get() + 1);

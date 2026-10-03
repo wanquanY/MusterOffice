@@ -355,6 +355,18 @@ pub(crate) fn build(
             }
             previous = Some(cells[at].as_ref().unwrap().trailing);
         }
+        let mut visual_cells = Vec::with_capacity(end - first);
+        let mut seen = vec![false; end - first];
+        for &scalar in &geometry.shaping.bidi.lines[index].visual_order {
+            cancelled(check)?;
+            let at = boundaries.partition_point(|b| b.scalar_offset <= scalar) - 1;
+            if !seen[at - first]
+                && cells[at].as_ref().unwrap().placement != CaretPlacement::Invisible
+            {
+                visual_cells.push(at as u32);
+                seen[at - first] = true;
+            }
+        }
         lines.push(InteractionLine {
             start: line.start.clone(),
             end: line.end.clone(),
@@ -362,6 +374,7 @@ pub(crate) fn build(
             bottom: box_.bottom,
             empty_caret: empty,
             cells: (first as u32..end as u32).collect(),
+            visual_cells,
         });
     }
     let cells = cells

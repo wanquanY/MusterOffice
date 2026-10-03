@@ -1,5 +1,5 @@
-use mo_geometry::{Point, Rect};
-use mo_text::interaction::{CaretEdge, ResolvedCaret, TextPosition};
+use mo_geometry::{Fixed, Point, Rect};
+use mo_text::interaction::{CaretEdge, CaretMove, ResolvedCaret, TextPosition};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Copy)]
@@ -27,8 +27,20 @@ pub struct FrameTextPosition {
     pub position: TextPosition,
 }
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
-#[serde(tag = "kind", rename_all = "camelCase", deny_unknown_fields)]
+#[serde(
+    tag = "kind",
+    rename_all = "camelCase",
+    rename_all_fields = "camelCase",
+    deny_unknown_fields
+)]
 pub enum FrameTextQuery {
+    Move {
+        position: FrameTextPosition,
+        movement: CaretMove,
+        /// Sticky inline coordinate in the text frame, including line placement.
+        #[serde(default)]
+        preferred_x: Option<Fixed>,
+    },
     Caret {
         position: FrameTextPosition,
     },
@@ -64,6 +76,11 @@ pub struct FrameSelectionFragment {
     rename_all_fields = "camelCase"
 )]
 pub enum FrameTextQueryResult {
+    Moved {
+        caret: FrameCaret,
+        preferred_x: Option<Fixed>,
+        exhausted: bool,
+    },
     Caret {
         caret: FrameCaret,
     },

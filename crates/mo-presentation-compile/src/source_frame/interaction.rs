@@ -1,5 +1,6 @@
 //! Text interaction retained from the same frame computation as glyph paths.
 //! The private owner binds maps to native line offsets and clip constraints.
+mod navigation;
 mod query;
 mod types;
 use super::{

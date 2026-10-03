@@ -432,6 +432,15 @@ export type FixedQ32 = string;
 export type ImageSampling = "nearest" | "linear";
 export type PageTextAction =
   | {
+      kind: "move";
+      movement: CaretMove;
+      position: FrameTextPosition;
+      /**
+       * Sticky inline coordinate in the local text frame, before group transforms.
+       */
+      preferredX?: FixedQ32 | null;
+    }
+  | {
       kind: "caret";
       position: FrameTextPosition;
     }
@@ -444,6 +453,17 @@ export type PageTextAction =
       focus: FrameTextPosition;
       kind: "selection";
     };
+export type CaretMove =
+  | "previousGrapheme"
+  | "nextGrapheme"
+  | "left"
+  | "right"
+  | "up"
+  | "down"
+  | "lineStart"
+  | "lineEnd"
+  | "textStart"
+  | "textEnd";
 export type Affinity = "upstream" | "downstream";
 
 export interface EditorPagePreparation {

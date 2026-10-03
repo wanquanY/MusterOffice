@@ -334,6 +334,10 @@ export type TextQueryResult =
       kind: "hit";
     }
   | {
+      kind: "moved";
+      result: CaretNavigation;
+    }
+  | {
       anchor: ResolvedCaret;
       focus: ResolvedCaret;
       fragments: SelectionFragment[];
@@ -690,6 +694,14 @@ export interface ResolvedCaret {
 export interface TextPosition {
   affinity: Affinity;
   scalarOffset: number;
+}
+export interface CaretNavigation {
+  caret: ResolvedCaret;
+  /**
+   * Directional movement reached the paragraph edge; containers may continue.
+   */
+  exhausted: boolean;
+  preferredX?: FixedQ32 | null;
 }
 export interface SelectionFragment {
   bounds: Rect;

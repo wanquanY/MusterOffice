@@ -74,6 +74,30 @@ for(const name of readdirSync(join(root,'fixtures')).filter(n=>n.endsWith('.json
   const cross=prepared.info.textFrames.filter(f=>f.paragraphs.length>1).map(f=>({frame:f.frame,action:{kind:'selection',
    anchor:position(f.paragraphs.length-1,f.paragraphs.at(-1).boundaries.at(-1).scalarOffset),focus:position(0,0)}}));
   if(cross.length)run(query(cross),undefined,undefined,'queried');
+  const movements=['previousGrapheme','nextGrapheme','left','right','up','down','lineStart','lineEnd','textStart','textEnd'];
+  const moves=prepared.info.textFrames.flatMap(f=>f.paragraphs.flatMap((p,i)=>p.boundaries.flatMap(b=>
+   ['upstream','downstream'].flatMap(affinity=>movements.map(movement=>({frame:f.frame,action:{kind:'move',
+    position:position(i,b.scalarOffset,affinity),movement,...(['up','down'].includes(movement)?{preferredX:'127'}:{})}}))))));
+  for(let offset=0;offset<moves.length;offset+=64) {
+   const batch=moves.slice(offset,offset+64), moved=run(query(batch),undefined,undefined,'queried');
+   const resolved=run(query(moved.results.map(r=>({frame:r.frame,action:{kind:'caret',position:{
+    paragraph:r.caret.local.paragraph,position:r.caret.local.caret.position}}}))),undefined,undefined,'queried');
+   for(const [i,r] of moved.results.entries()) {
+    assert.equal(r.kind,'moved');assert.deepEqual(r.caret,resolved.results[i].caret,'moved position resolves to exactly the returned page geometry');
+    assert.equal(r.preferredX,['up','down'].includes(batch[i].action.movement)?'127':null);
+    const action=batch[i].action, f=prepared.info.textFrames.find(f=>f.frame===r.frame), p=f.paragraphs[action.position.paragraph];
+    const index=p.boundaries.findIndex(b=>b.scalarOffset===action.position.position.scalarOffset);
+    if(action.movement==='nextGrapheme'||action.movement==='previousGrapheme') {
+     const next=action.movement==='nextGrapheme';let pi=action.position.paragraph,bi=index+(next?1:-1);
+     if(bi===p.boundaries.length && pi+1<f.paragraphs.length){pi++;bi=0;}
+     else if(bi<0 && pi>0){pi--;bi=f.paragraphs[pi].boundaries.length-1;}
+     const exhausted=bi<0||bi>=f.paragraphs[pi].boundaries.length;
+     assert.equal(r.exhausted,exhausted);
+     if(!exhausted){assert.equal(r.caret.local.paragraph,pi);assert.equal(r.caret.local.caret.position.scalarOffset,f.paragraphs[pi].boundaries[bi].scalarOffset);}
+    }
+   }
+  }
+  run(query([{frame:0,action:{kind:'move',position:position(0,0),movement:'right',preferredX:'0'}}]),undefined,undefined,'error');
   for(let i=0;i<10;i++)assert.deepEqual(run(query(queries),undefined,undefined,'queried'),answered);
   run(query(queries,'0'.repeat(64)),undefined,undefined,'error');
   run(query([{frame:0,action:{kind:'caret',position:position(999,0)}}]),undefined,undefined,'error');
@@ -129,7 +153,7 @@ for(const name of readdirSync(join(root,'fixtures')).filter(n=>n.endsWith('.json
   } finally {client.close();client.close();assert.equal(client.closed,true);}
   if(request.request.input.kind!=='pptx')assert.ok(prepared.info.textFrames.every(f=>typeof f.objectId==='string'));
   cases.push({name,input:request.request.input.kind,materialSha256:sha(material),requestSha256:sha(JSON.stringify(request)),view,
-   nativeWasmMessages:expected.length,frames:prepared.info.textFrames.length,pixelsSha256:sha(expected[0].pixels),
+   nativeWasmMessages:expected.length,navigationQueries:moves.length,frames:prepared.info.textFrames.length,pixelsSha256:sha(expected[0].pixels),
    responseSha256:sha(expected.map(r=>r.metadata).join('\n'))});
   console.log(`PASS ${name} (${expected.length} messages, ${prepared.info.textFrames.length} frames)`);
  } finally {owner.free();}

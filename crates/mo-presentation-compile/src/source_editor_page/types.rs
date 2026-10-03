@@ -1,10 +1,23 @@
 use crate::source_frame::interaction::{FrameCaret, FrameSelectionFragment, FrameTextPosition};
 use mo_geometry::{Fixed, Point};
+use mo_text::interaction::CaretMove;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
-#[serde(tag = "kind", rename_all = "camelCase", deny_unknown_fields)]
+#[serde(
+    tag = "kind",
+    rename_all = "camelCase",
+    rename_all_fields = "camelCase",
+    deny_unknown_fields
+)]
 pub enum PageTextAction {
+    Move {
+        position: FrameTextPosition,
+        movement: CaretMove,
+        /// Sticky inline coordinate in the local text frame, before group transforms.
+        #[serde(default)]
+        preferred_x: Option<Fixed>,
+    },
     Caret {
         position: FrameTextPosition,
     },
@@ -49,6 +62,12 @@ pub struct PageSelectionFragment {
     rename_all_fields = "camelCase"
 )]
 pub enum PageTextQueryResult {
+    Moved {
+        frame: u32,
+        caret: Box<PageCaret>,
+        preferred_x: Option<Fixed>,
+        exhausted: bool,
+    },
     Caret {
         frame: u32,
         caret: Box<PageCaret>,

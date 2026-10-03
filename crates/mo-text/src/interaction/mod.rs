@@ -1,5 +1,8 @@
 //! Interaction geometry computed from the same line planner and exact pen as rendering.
 pub(crate) mod build;
+mod navigation;
+#[cfg(test)]
+mod navigation_tests;
 mod query;
 #[cfg(test)]
 mod tests;

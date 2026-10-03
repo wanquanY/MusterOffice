@@ -30,6 +30,13 @@ export type ObjectId = string;
 export type PageTextQueryResult =
   | {
       caret: PageCaret;
+      exhausted: boolean;
+      frame: number;
+      kind: "moved";
+      preferredX?: FixedQ32 | null;
+    }
+  | {
+      caret: PageCaret;
       frame: number;
       kind: "caret";
     }

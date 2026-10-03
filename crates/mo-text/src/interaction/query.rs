@@ -16,8 +16,17 @@ pub(super) fn preflight(
     }
     for query in queries {
         cancelled(check)?;
+        if let TextQuery::Move {
+            movement,
+            preferred_x: Some(_),
+            ..
+        } = query
+            && !matches!(movement, CaretMove::Up | CaretMove::Down)
+        {
+            return Err(TextError::Invalid("sticky x requires vertical movement"));
+        }
         match query {
-            TextQuery::Caret { position } => {
+            TextQuery::Caret { position } | TextQuery::Move { position, .. } => {
                 boundary_at(boundaries, position.scalar_offset)?;
             }
             TextQuery::Selection { anchor, focus } => {
@@ -38,7 +47,7 @@ fn distance(value: Fixed, lo: Fixed, hi: Fixed) -> u128 {
         0
     }
 }
-fn resolved(cell: &InteractionCell, leading: bool) -> ResolvedCaret {
+pub(super) fn resolved(cell: &InteractionCell, leading: bool) -> ResolvedCaret {
     ResolvedCaret {
         position: TextPosition {
             scalar_offset: if leading {
@@ -61,7 +70,7 @@ fn resolved(cell: &InteractionCell, leading: bool) -> ResolvedCaret {
         edge: if leading { cell.leading } else { cell.trailing },
     }
 }
-fn empty(line: &InteractionLine, index: usize) -> ResolvedCaret {
+pub(super) fn empty(line: &InteractionLine, index: usize) -> ResolvedCaret {
     ResolvedCaret {
         position: TextPosition {
             scalar_offset: line.start.scalar_offset,
@@ -225,6 +234,16 @@ impl InteractionMap {
                     }
                 }
                 TextQuery::Hit { point } => self.hit(point, &mut work, check)?,
+                TextQuery::Move {
+                    position,
+                    movement,
+                    preferred_x,
+                } => {
+                    charge(&mut work, self.navigation_work())?;
+                    TextQueryResult::Moved {
+                        result: self.move_caret(position, movement, preferred_x, check)?,
+                    }
+                }
                 TextQuery::Selection { anchor, focus } => {
                     charge(&mut work, self.lines.len() * 2)?;
                     let a = boundary_at(&self.boundaries, anchor.scalar_offset)?;

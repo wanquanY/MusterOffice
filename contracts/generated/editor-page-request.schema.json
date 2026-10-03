@@ -147,6 +147,21 @@
       "x-integer-maximum": "18446744073709551615",
       "x-integer-minimum": "0"
     },
+    "CaretMove": {
+      "type": "string",
+      "enum": [
+        "previousGrapheme",
+        "nextGrapheme",
+        "left",
+        "right",
+        "up",
+        "down",
+        "lineStart",
+        "lineEnd",
+        "textStart",
+        "textEnd"
+      ]
+    },
     "CascadeFont": {
       "description": "Explicit resource bundle bindings, not system font names or legal permissions.",
       "type": "object",
@@ -2819,6 +2834,39 @@
     },
     "PageTextAction": {
       "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "move"
+            },
+            "movement": {
+              "$ref": "#/$defs/CaretMove"
+            },
+            "position": {
+              "$ref": "#/$defs/FrameTextPosition"
+            },
+            "preferredX": {
+              "description": "Sticky inline coordinate in the local text frame, before group transforms.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/FixedQ32"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "position",
+            "movement"
+          ]
+        },
         {
           "type": "object",
           "properties": {

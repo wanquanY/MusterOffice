@@ -61,6 +61,10 @@ pub struct InteractionLine {
     pub empty_caret: CaretEdge,
     /// Indices into the paragraph's logical-order cells.
     pub cells: Vec<u32>,
+    /// Renderer L2 order collapsed to EGCs; removed controls have no visual slot.
+    #[serde(skip)]
+    #[schemars(skip)]
+    pub(crate) visual_cells: Vec<u32>,
 }
 /// Computed, immutable data. Public queries accept this trusted Rust value,
 /// never an unvalidated serialized map supplied by an external caller.
@@ -82,7 +86,12 @@ pub struct InteractionWork {
     pub font_instances: u32,
 }
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
-#[serde(tag = "kind", rename_all = "camelCase", deny_unknown_fields)]
+#[serde(
+    tag = "kind",
+    rename_all = "camelCase",
+    rename_all_fields = "camelCase",
+    deny_unknown_fields
+)]
 pub enum TextQuery {
     Caret {
         position: TextPosition,
@@ -94,6 +103,35 @@ pub enum TextQuery {
         anchor: TextPosition,
         focus: TextPosition,
     },
+    Move {
+        position: TextPosition,
+        movement: CaretMove,
+        /// Paragraph-local sticky x for consecutive vertical moves.
+        #[serde(default)]
+        preferred_x: Option<Fixed>,
+    },
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum CaretMove {
+    PreviousGrapheme,
+    NextGrapheme,
+    Left,
+    Right,
+    Up,
+    Down,
+    LineStart,
+    LineEnd,
+    TextStart,
+    TextEnd,
+}
+#[derive(Debug, Clone, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct CaretNavigation {
+    pub caret: ResolvedCaret,
+    pub preferred_x: Option<Fixed>,
+    /// Directional movement reached the paragraph edge; containers may continue.
+    pub exhausted: bool,
 }
 #[derive(Debug, Clone, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
@@ -121,6 +159,9 @@ pub enum TextQueryResult {
     Hit {
         caret: ResolvedCaret,
         inside: bool,
+    },
+    Moved {
+        result: CaretNavigation,
     },
     Selection {
         anchor: ResolvedCaret,

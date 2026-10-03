@@ -243,3 +243,163 @@ fn native_axis_clips_apply_to_carets_selections_and_hit_inside_state() {
         assert!(!inside);
     }
 }
+
+fn navigation(
+    e: &SourceFrameEditor,
+    p: FrameTextPosition,
+    movement: mo_text::interaction::CaretMove,
+    preferred_x: Option<Fixed>,
+) -> (FrameCaret, Option<Fixed>, bool) {
+    let mut r = e
+        .query(
+            &[FrameTextQuery::Move {
+                position: p,
+                movement,
+                preferred_x,
+            }],
+            &|| false,
+        )
+        .unwrap();
+    let FrameTextQueryResult::Moved {
+        caret,
+        preferred_x,
+        exhausted,
+    } = r.remove(0)
+    else {
+        panic!()
+    };
+    (caret, preferred_x, exhausted)
+}
+fn at(c: &FrameCaret) -> FrameTextPosition {
+    FrameTextPosition {
+        paragraph: c.paragraph,
+        position: c.caret.position,
+    }
+}
+#[test]
+fn vertical_navigation_preserves_frame_x_across_alignment_and_empty_paragraphs() {
+    use mo_text::interaction::CaretMove::*;
+    let runs = colored("AAAA", "123456")
+        + "</a:p><a:p><a:pPr algn=\"r\"/>"
+        + &colored("A", "123456")
+        + "</a:p><a:p></a:p><a:p>"
+        + &colored("AAAA", "123456");
+    let e = editor(&shape(42, 0, 0, "", &runs), Default::default());
+    let (start, _, _) = navigation(&e, position(0, 1), LineStart, None);
+    let (start, _, _) = navigation(&e, at(&start), NextGrapheme, None);
+    let x = start.caret.edge.x;
+    let (r, sticky, exhausted) = navigation(&e, at(&start), Down, None);
+    assert_eq!((r.paragraph, r.caret.position.scalar_offset), (1, 0));
+    assert!(!exhausted);
+    assert_eq!(sticky, Some(x));
+    assert!(r.caret.edge.x > x);
+    let (r, sticky, _) = navigation(&e, at(&r), Down, sticky);
+    assert_eq!((r.paragraph, r.caret.position.scalar_offset), (2, 0));
+    assert_eq!(sticky, Some(x));
+    let (r, sticky, _) = navigation(&e, at(&r), Down, sticky);
+    assert_eq!((r.paragraph, r.caret.position.scalar_offset), (3, 1));
+    assert_eq!(r.caret.edge.x, x);
+    assert!(navigation(&e, at(&r), Down, sticky).2);
+    let (r, sticky, _) = navigation(&e, at(&r), Up, sticky);
+    let (r, sticky, _) = navigation(&e, at(&r), Up, sticky);
+    let (r, _, _) = navigation(&e, at(&r), Up, sticky);
+    assert_eq!((r.paragraph, r.caret.position.scalar_offset), (0, 1));
+    assert_eq!(r.caret.edge.x, x);
+}
+#[test]
+fn navigation_crosses_paragraph_separators_and_respects_each_target_direction() {
+    use mo_text::interaction::CaretMove::*;
+    let runs = colored("A", "123456")
+        + "</a:p><a:p><a:pPr rtl=\"1\"/>"
+        + &colored("אבג", "123456")
+        + "</a:p><a:p></a:p><a:p>"
+        + &colored("A", "123456");
+    let e = editor(
+        &shape(42, 0, 0, "", &runs).replace(
+            &format!("<a:latin typeface=\"{FONT}\"/>"),
+            &format!("<a:latin typeface=\"{FONT}\"/><a:cs typeface=\"{FONT}\"/>"),
+        ),
+        Default::default(),
+    );
+    assert_eq!(e.paragraphs()[1].paragraph_level, 1);
+    let (r, _, _) = navigation(&e, position(0, 1), Right, None);
+    assert_eq!((r.paragraph, r.caret.position.scalar_offset), (1, 0));
+    let (r, _, _) = navigation(&e, at(&r), Right, None);
+    assert_eq!((r.paragraph, r.caret.position.scalar_offset), (0, 1));
+    let (r, _, _) = navigation(&e, position(1, 3), Left, None);
+    assert_eq!((r.paragraph, r.caret.position.scalar_offset), (2, 0));
+    let (r, _, _) = navigation(&e, at(&r), Right, None);
+    assert_eq!((r.paragraph, r.caret.position.scalar_offset), (3, 0));
+    let (r, _, _) = navigation(&e, at(&r), PreviousGrapheme, None);
+    assert_eq!((r.paragraph, r.caret.position.scalar_offset), (2, 0));
+    let (r, _, _) = navigation(&e, at(&r), PreviousGrapheme, None);
+    assert_eq!((r.paragraph, r.caret.position.scalar_offset), (1, 3));
+    let (r, _, _) = navigation(&e, at(&r), TextEnd, None);
+    assert_eq!((r.paragraph, r.caret.position.scalar_offset), (3, 1));
+    assert!(navigation(&e, at(&r), NextGrapheme, None).2);
+    let (r, _, _) = navigation(&e, at(&r), TextStart, None);
+    assert_eq!((r.paragraph, r.caret.position.scalar_offset), (0, 0));
+    assert!(navigation(&e, at(&r), PreviousGrapheme, None).2);
+}
+#[test]
+fn frame_navigation_rejects_invalid_sticky_coordinates_limits_and_cancellation() {
+    use mo_text::interaction::CaretMove::*;
+    use std::cell::Cell;
+    let s = shape(
+        42,
+        0,
+        0,
+        "",
+        &(colored("AAAA", "123456") + "</a:p><a:p>" + &colored("AAAA", "123456")),
+    );
+    let e = editor(&s, Default::default());
+    let request = |movement, preferred_x| FrameTextQuery::Move {
+        position: position(0, 1),
+        movement,
+        preferred_x,
+    };
+    assert!(e.query(&[request(Right, Some(f(1)))], &|| false).is_err());
+    assert!(
+        e.query(
+            &[FrameTextQuery::Move {
+                position: position(4, 0),
+                movement: Down,
+                preferred_x: None
+            }],
+            &|| false
+        )
+        .is_err()
+    );
+    let queries = [
+        request(Down, None),
+        request(Left, None),
+        request(TextEnd, None),
+    ];
+    let count = Cell::new(0);
+    e.query(&queries, &|| {
+        count.set(count.get() + 1);
+        false
+    })
+    .unwrap();
+    for stop in 1..=count.get() {
+        let calls = Cell::new(0);
+        assert!(
+            e.query(&queries, &|| {
+                calls.set(calls.get() + 1);
+                calls.get() == stop
+            })
+            .is_err()
+        );
+    }
+    let e = editor(
+        &s,
+        FrameInteractionLimits {
+            max_query_work: 1,
+            ..Default::default()
+        },
+    );
+    assert!(matches!(
+        e.query(&queries, &|| false),
+        Err(SourceFrameError::Limit("frame interaction query work"))
+    ));
+}

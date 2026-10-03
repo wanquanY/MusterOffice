@@ -52,6 +52,20 @@ function run(label,q,bytes,expected='evaluated',mapExpected=true) {
    assert.equal(api.results.length,q.queries.length);
   } else assert.deepEqual(api.results,[]);
  }
+ if(result.status==='evaluated' && result.result.map && !label.endsWith('-navigation')) {
+  const map=result.result.map, sample=[...new Set([0,Math.floor((map.boundaries.length-1)/2),map.boundaries.length-1])];
+  const moves=sample.flatMap(i=>['upstream','downstream'].flatMap(affinity=>
+   ['previousGrapheme','nextGrapheme','left','right','up','down','lineStart','lineEnd','textStart','textEnd'].map(movement=>({
+    kind:'move',position:position(map.boundaries[i].scalarOffset,affinity),movement,
+    ...(['up','down'].includes(movement)?{preferredX:'127'}:{})}))));
+  const moved=run(label+'-navigation',{...q,queries:moves},bytes).result;
+  const resolved=editor.paragraphInteraction({...q,queries:moved.results.map(r=>({kind:'caret',position:r.result.caret.position}))},bytes,component);
+  for(const [i,r] of moved.results.entries()) {
+   assert.equal(r.kind,'moved');assert.deepEqual(r.result.caret,resolved.results[i].caret,label+' stable movement position');
+   assert.equal(r.result.preferredX,['up','down'].includes(moves[i].movement)?'127':null);
+   assert.ok(map.boundaries.some(b=>b.scalarOffset===r.result.caret.position.scalarOffset));
+  }
+ }
  writeFileSync(path.join(output,label+'.request.json'),json);writeFileSync(path.join(output,label+'.response.json'),n);
  cases.push({label,fontSha256:sha(bytes),requestSha256:sha(json),responseSha256:sha(n),status:expected,mapExpected});return result;
 }
@@ -109,6 +123,7 @@ for(const [name,change,code] of [
  ['past-end',q=>q.queries.push(caret(99)),'INPUT_INVALID'],
  ['query-limit',q=>q.queries=Array(65).fill(caret(0)),'LIMIT_EXCEEDED'],
  ['unknown-field',q=>q.clientGeometry={},'INPUT_INVALID'],
+ ['invalid-sticky',q=>q.queries.push({kind:'move',position:position(0),movement:'right',preferredX:'0'}),'INPUT_INVALID'],
  ['font-digest',q=>q.layout.paragraph.fonts[0].expectedSha256='0'.repeat(64),'RESOURCE_CONFLICT'],
 ]) {
  const q=query('A\u0301',owned);change(q);run(name,q,owned,code);

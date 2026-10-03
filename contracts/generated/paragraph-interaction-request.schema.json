@@ -57,6 +57,21 @@
       "x-integer-maximum": "18446744073709551615",
       "x-integer-minimum": "0"
     },
+    "CaretMove": {
+      "type": "string",
+      "enum": [
+        "previousGrapheme",
+        "nextGrapheme",
+        "left",
+        "right",
+        "up",
+        "down",
+        "lineStart",
+        "lineEnd",
+        "textStart",
+        "textEnd"
+      ]
+    },
     "CascadeFont": {
       "description": "Explicit resource bundle bindings, not system font names or legal permissions.",
       "type": "object",
@@ -536,6 +551,39 @@
             "kind",
             "anchor",
             "focus"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "move"
+            },
+            "movement": {
+              "$ref": "#/$defs/CaretMove"
+            },
+            "position": {
+              "$ref": "#/$defs/TextPosition"
+            },
+            "preferredX": {
+              "description": "Paragraph-local sticky x for consecutive vertical moves.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/FixedQ32"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "position",
+            "movement"
           ]
         }
       ]

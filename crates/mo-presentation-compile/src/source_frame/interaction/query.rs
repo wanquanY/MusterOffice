@@ -15,7 +15,7 @@ fn distance(value: Fixed, lo: Fixed, hi: Fixed) -> u128 {
         0
     }
 }
-fn charge(
+pub(super) fn charge(
     total: &mut usize,
     count: usize,
     max: usize,
@@ -50,7 +50,7 @@ impl FrameInteraction<'_> {
         }
         (rect.min.x <= rect.max.x && rect.min.y <= rect.max.y).then_some(rect)
     }
-    fn placed_caret(
+    pub(super) fn placed_caret(
         &self,
         paragraph: u32,
         mut caret: ResolvedCaret,
@@ -81,7 +81,10 @@ impl FrameInteraction<'_> {
             visible,
         })
     }
-    fn caret(&self, position: FrameTextPosition) -> Result<FrameCaret, SourceFrameError> {
+    pub(super) fn caret(
+        &self,
+        position: FrameTextPosition,
+    ) -> Result<FrameCaret, SourceFrameError> {
         self.placed_caret(
             position.paragraph,
             self.maps[position.paragraph as usize].caret(position.position)?,
@@ -180,8 +183,20 @@ impl FrameInteraction<'_> {
         }
         for query in queries {
             cancel(check)?;
+            if let FrameTextQuery::Move {
+                movement,
+                preferred_x: Some(_),
+                ..
+            } = query
+                && !matches!(
+                    movement,
+                    mo_text::interaction::CaretMove::Up | mo_text::interaction::CaretMove::Down
+                )
+            {
+                return Err(invalid("sticky x requires vertical movement"));
+            }
             match *query {
-                FrameTextQuery::Caret { position } => {
+                FrameTextQuery::Caret { position } | FrameTextQuery::Move { position, .. } => {
                     self.boundary(position)?;
                 }
                 FrameTextQuery::Selection { anchor, focus } => {
@@ -195,6 +210,11 @@ impl FrameInteraction<'_> {
         for query in queries {
             cancel(check)?;
             result.push(match *query {
+                FrameTextQuery::Move {
+                    position,
+                    movement,
+                    preferred_x,
+                } => self.move_caret(position, movement, preferred_x, work, check)?,
                 FrameTextQuery::Caret { position } => {
                     charge(
                         work,

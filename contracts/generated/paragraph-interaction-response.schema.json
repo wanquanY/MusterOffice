@@ -153,6 +153,32 @@
         "bottom"
       ]
     },
+    "CaretNavigation": {
+      "type": "object",
+      "properties": {
+        "caret": {
+          "$ref": "#/$defs/ResolvedCaret"
+        },
+        "exhausted": {
+          "description": "Directional movement reached the paragraph edge; containers may continue.",
+          "type": "boolean"
+        },
+        "preferredX": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FixedQ32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "caret",
+        "exhausted"
+      ]
+    },
     "CaretPlacement": {
       "oneOf": [
         {
@@ -2256,6 +2282,22 @@
             "kind",
             "caret",
             "inside"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "moved"
+            },
+            "result": {
+              "$ref": "#/$defs/CaretNavigation"
+            }
+          },
+          "required": [
+            "kind",
+            "result"
           ]
         },
         {

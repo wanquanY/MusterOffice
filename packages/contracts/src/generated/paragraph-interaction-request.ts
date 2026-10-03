@@ -73,12 +73,36 @@ export type TextQuery =
       anchor: TextPosition;
       focus: TextPosition;
       kind: "selection";
+    }
+  | {
+      kind: "move";
+      movement: CaretMove;
+      position: TextPosition;
+      /**
+       * Paragraph-local sticky x for consecutive vertical moves.
+       */
+      preferredX?: FixedQ32 | null;
     };
 /**
  * This interface was referenced by `ParagraphInteractionRequest`'s JSON-Schema
  * via the `definition` "Affinity".
  */
 export type Affinity = "upstream" | "downstream";
+/**
+ * This interface was referenced by `ParagraphInteractionRequest`'s JSON-Schema
+ * via the `definition` "CaretMove".
+ */
+export type CaretMove =
+  | "previousGrapheme"
+  | "nextGrapheme"
+  | "left"
+  | "right"
+  | "up"
+  | "down"
+  | "lineStart"
+  | "lineEnd"
+  | "textStart"
+  | "textEnd";
 /**
  * Keep legacy integer-EMU inputs while allowing native percentages to reach
  * layout without an intermediate integer-EMU rounding. Equality is numeric.

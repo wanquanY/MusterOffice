@@ -2834,6 +2834,42 @@
             "caret": {
               "$ref": "#/$defs/PageCaret"
             },
+            "exhausted": {
+              "type": "boolean"
+            },
+            "frame": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "moved"
+            },
+            "preferredX": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/FixedQ32"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "frame",
+            "caret",
+            "exhausted"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "caret": {
+              "$ref": "#/$defs/PageCaret"
+            },
             "frame": {
               "type": "integer",
               "format": "uint32",

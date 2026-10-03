@@ -109,6 +109,15 @@ impl SourceEditorPage {
                 uncertainty: text.local_coordinate_error_bound,
             };
             let action = match q.action {
+                PageTextAction::Move {
+                    position,
+                    movement,
+                    preferred_x,
+                } => FrameTextQuery::Move {
+                    position,
+                    movement,
+                    preferred_x,
+                },
                 PageTextAction::Caret { position } => FrameTextQuery::Caret { position },
                 PageTextAction::Selection { anchor, focus } => {
                     FrameTextQuery::Selection { anchor, focus }
@@ -141,6 +150,16 @@ impl SourceEditorPage {
                 .filter(|&n| n <= self.interaction.limits.max_query_work)
                 .ok_or(mo_raster::RasterError::Limit("page text query work"))?;
             results.push(match answer {
+                FrameTextQueryResult::Moved {
+                    caret: c,
+                    preferred_x,
+                    exhausted,
+                } => PageTextQueryResult::Moved {
+                    frame: q.frame,
+                    caret: Box::new(caret(&transform, c, check)?),
+                    preferred_x,
+                    exhausted,
+                },
                 FrameTextQueryResult::Caret { caret: c } => PageTextQueryResult::Caret {
                     frame: q.frame,
                     caret: Box::new(caret(&transform, c, check)?),
