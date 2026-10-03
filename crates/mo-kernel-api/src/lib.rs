@@ -128,6 +128,10 @@ pub const MAX_REQUEST_BYTES: usize = 32 * 1024 * 1024;
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "operation", rename_all = "camelCase", deny_unknown_fields)]
 pub enum KernelRequest {
+    /// Admit a persisted snapshot without resetting its revision or editing it.
+    Restore {
+        snapshot: SnapshotRecord,
+    },
     TextCapabilities {
         snapshot: SnapshotRecord,
         query: TextCapabilitiesQuery,
@@ -240,6 +244,12 @@ fn edit_error(error: EditError) -> KernelResponse {
 
 pub fn dispatch(request: KernelRequest, limits: ValidationLimits) -> KernelResponse {
     match request {
+        KernelRequest::Restore { snapshot } => match Snapshot::restore(snapshot, limits) {
+            Ok(snapshot) => KernelResponse::Initialized {
+                snapshot: snapshot.into_record(),
+            },
+            Err(error) => edit_error(error),
+        },
         KernelRequest::Validate { document } => KernelResponse::Validated {
             report: validate(&document, limits),
         },

@@ -47,6 +47,14 @@ export class PresentationEditor {
     return result.snapshot;
   }
 
+  /** Validate an authorized saved snapshot while retaining its revision.
+   * initialize(document) instead creates a new document's initial revision. */
+  restore(snapshot: SnapshotRecord): SnapshotRecord {
+    const result = this.dispatch({ operation: 'restore', snapshot });
+    if (result.status !== 'initialized') throw new Error('Unexpected restoration reply');
+    return result.snapshot;
+  }
+
   prepare(snapshot: SnapshotRecord, transaction: Transaction): PreparedEdit {
     const result = this.dispatch({ operation: 'prepare', snapshot, transaction });
     if (result.status !== 'prepared') throw new Error('Unexpected preparation reply');

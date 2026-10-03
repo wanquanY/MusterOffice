@@ -2,6 +2,10 @@
 
 export type KernelRequest =
   | {
+      operation: "restore";
+      snapshot: SnapshotRecord;
+    }
+  | {
       operation: "textCapabilities";
       query: TextCapabilitiesQuery;
       snapshot: SnapshotRecord;
@@ -29,10 +33,6 @@ export type KernelRequest =
       operation: "prepareText";
       snapshot: SnapshotRecord;
     };
-export type CellId = string;
-export type ObjectId = string;
-export type Affinity = "before" | "after";
-export type ParagraphId = string;
 export type FontId = string;
 export type ResourceId = string;
 export type ModelVersion = "musteroffice.presentation/0.1-draft";
@@ -81,6 +81,7 @@ export type ThemeColor =
 export type Emu = string;
 export type LayoutId = string;
 export type MasterId = string;
+export type ObjectId = string;
 export type ThemeId = string;
 export type Stroke =
   | {
@@ -147,8 +148,10 @@ export type ObjectContent =
       start: ConnectorEndpoint;
     };
 export type ColumnId = string;
+export type CellId = string;
 export type TableVerticalAlignment = "top" | "center" | "bottom" | "justified" | "distributed";
 export type OverflowPolicy = "report" | "clip" | "growShape";
+export type ParagraphId = string;
 export type InlineContent =
   | {
       kind: "text";
@@ -406,6 +409,7 @@ export type PresentationRole =
     };
 export type PresentationPreset = "appear" | "disappear" | "spin" | "growShrink" | "customMotion" | "fadeIn" | "fadeOut";
 export type PresentationTrigger = "click" | "withPrevious" | "afterPrevious";
+export type Affinity = "before" | "after";
 export type Operation =
   | {
       kind: "editTable";
@@ -698,20 +702,6 @@ export type Inherited5 =
       value: Emu;
     };
 
-export interface TextCapabilitiesQuery {
-  cell?: CellId | null;
-  object: ObjectId;
-  selection?: TextSelection | null;
-}
-export interface TextSelection {
-  anchor: TextAnchor;
-  focus: TextAnchor;
-}
-export interface TextAnchor {
-  affinity: Affinity;
-  paragraph: ParagraphId;
-  scalarOffset: number;
-}
 /**
  * Storage envelope owned by an authorized host. A digest is not an access token.
  */
@@ -1328,6 +1318,20 @@ export interface SequenceNavigation {
   nextConditions: TimeCondition[];
   previousAction: PreviousAction;
   previousConditions: TimeCondition[];
+}
+export interface TextCapabilitiesQuery {
+  cell?: CellId | null;
+  object: ObjectId;
+  selection?: TextSelection | null;
+}
+export interface TextSelection {
+  anchor: TextAnchor;
+  focus: TextAnchor;
+}
+export interface TextAnchor {
+  affinity: Affinity;
+  paragraph: ParagraphId;
+  scalarOffset: number;
 }
 export interface Transaction {
   baseRevision: Digest;

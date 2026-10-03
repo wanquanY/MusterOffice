@@ -175,3 +175,16 @@ The bundle is for local development, with releaseCleared false. Supplied notice
 records do not constitute a completed binary distribution license audit. Actual
 browser/platform acceptance, product Viewer/Player, complete capabilities and
 performance/size measurements are separate from SDK integration tests.
+
+
+## Editing page computation
+
+The same verified runtime provides `editor.restore(snapshot)` for an authorized
+saved snapshot, retaining its kernel revision, and `createEditorPage()` for an
+independent editor page owner. The page supports document inspection, preparation,
+text interaction and picking through the public SDK; consumers do not import the
+private WASM binding. Pass `runtime.raster` and `runtime.shaping` as explicit
+computation ports and close every page when finished. Multiple page owners share
+code and component instances, but each keeps its own current view and lifetime.
+These methods perform computation only; the product owns authorization, durable
+history, scheduling and save confirmation. See [editor API](../editor-client/README.md).

@@ -5,7 +5,7 @@ Rust/WASM module. Run it in the receiving product's Worker. It creates no UI,
 history store, account, network connection or durable editing session.
 
 The pinned playback runtime also returns `runtime.editor`, sharing its already
-initialized kernel. `initialize` verifies a document, `prepare` computes a new
+initialized kernel. `initialize` verifies a new document; `restore` validates an authorized saved SnapshotRecord and preserves its revision. `prepare` computes a new
 atomic candidate, `prepareHistory` computes a guarded reversal, and
 `prepareText` replaces grapheme-aligned ranges across runs/paragraphs or patches
 selected character declarations without resolving unrelated inherited styles. `placements`
@@ -20,7 +20,7 @@ IME handling. See [paragraph interaction](../../docs/implementation/paragraph-te
 Source-backed documents retain their
 existing operation restrictions and require their source placement path.
 
-`PresentationEditorPage` now owns a rendered page and its original interaction
+`runtime.createEditorPage()` creates an independent `PresentationEditorPage` using the already verified WASM runtime. The host must `close()` each page when it is no longer needed; creating or closing one page does not replace another page or a playback owner. The returned instance owns a rendered page and its original interaction
 maps. `prepare` accepts a PPTX, direct author document, or retained source overlay,
 explicit material/font bytes and decoder/shaper/raster ports. It returns RGBA
 pixels, a view identity, native/model text bindings and grapheme offsets. `query`
@@ -57,8 +57,7 @@ Text commands expand to ordinary semantic transactions, so validation, history
 and source-backed restrictions stay in the same engine. Persist both the original
 command (with its intent digest) and expanded transaction. Exact scalar change
 maps preserve range lineage; the returned display selection is on a resulting
-grapheme boundary, including when an edit forms a new emoji sequence. This API
-currently edits authored shape text, not table cells or retained source runs.
+grapheme boundary, including when an edit forms a new emoji sequence. This API edits authored shape and stable cell targets, supports explicit missing-body initialization, and replaces editable native text leaves within an existing retained paragraph. `textCapabilities` shares target/selection checks with execution and returns snapshot-bound structured restrictions; it does not grant authority or guarantee rendering. See [authored cells](../../docs/implementation/editor-authored-cell-text.md) and [retained text](../../docs/implementation/editor-retained-text.md).
 
 Validation uses real native and WASM builds:
 

@@ -3,7 +3,7 @@ import initializeKernel, * as kernel from './runtime/mo_wasm.js';
 import rasterFactory from './runtime/mo-skia.mjs';
 import textFactory from './runtime/mo-hb.mjs';
 import {WasmPlayback, RasterComponent, ShapingComponent} from './lib/playback-client/src/index.js';
-import {PresentationEditor} from './lib/editor-client/src/index.js';
+import {PresentationEditor, PresentationEditorPage} from './lib/editor-client/src/index.js';
 export * from './lib/playback-client/src/index.js';
 export * from './lib/editor-client/src/index.js';
 
@@ -20,5 +20,6 @@ export async function createPlaybackRuntime(modules) {
   const createRaster = () => RasterComponent.create(rasterFactory, rasterModule);
   const createShaping = () => ShapingComponent.create(textFactory, textModule);
   const [raster, shaping] = await Promise.all([createRaster(), createShaping()]);
-  return {playback: new WasmPlayback(kernel), editor: new PresentationEditor(kernel), raster, shaping, createRaster, createShaping};
+  const createEditorPage = () => new PresentationEditorPage(kernel);
+  return {playback: new WasmPlayback(kernel), editor: new PresentationEditor(kernel), createEditorPage, raster, shaping, createRaster, createShaping};
 }

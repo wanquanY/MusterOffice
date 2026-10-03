@@ -203,3 +203,23 @@ test('actual retained PPTX range export, reimport and capability diagnostics mat
     assert.deepEqual(error.diagnostic.textRestriction, protectedCaps.replace.reason); return true;
   });
 });
+
+
+test('persisted snapshots restore their revision and history without trusting tampered document bytes', () => {
+  const original = editor.initialize(example);
+  const request = transaction(original, 'restore:change', [{kind: 'setTitle', title: 'Saved title'}]);
+  const changed = editor.prepare(original, request).snapshot;
+  const restored = editor.restore(changed);
+  assert.deepEqual(restored, changed);
+  assert.deepEqual(restored, nativeRequest({operation: 'restore', snapshot: changed}).snapshot);
+  assert.notEqual(restored.revision, editor.initialize(restored.document).revision);
+  const undo = editor.prepareHistory(restored, history(restored, original, request, 'undo'));
+  assert.deepEqual(undo.snapshot.document, original.document);
+  const tampered = structuredClone(changed); tampered.document.title = 'unconfirmed replacement';
+  const failure = nativeRequest({operation: 'restore', snapshot: tampered});
+  assert.equal(failure.status, 'error');
+  assert.throws(() => editor.restore(tampered), error => {
+    assert.deepEqual(error.diagnostic, failure.error); return true;
+  });
+  assert.deepEqual(editor.restore(changed), restored);
+});

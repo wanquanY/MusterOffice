@@ -4,6 +4,24 @@
   "title": "KernelRequest",
   "oneOf": [
     {
+      "description": "Admit a persisted snapshot without resetting its revision or editing it.",
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "const": "restore"
+        },
+        "snapshot": {
+          "$ref": "#/$defs/SnapshotRecord"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "snapshot"
+      ]
+    },
+    {
       "type": "object",
       "properties": {
         "operation": {
