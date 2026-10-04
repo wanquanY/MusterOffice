@@ -1,10 +1,12 @@
 # MusterOffice
 
-**面向 AI Agent 的办公计算引擎，首先支持可编辑演示文稿。**
+**面向 AI Agent 的轻量办公内核，为原生与 WebAssembly 运行时优化计算性能。**
 
 [English](README.md) · 简体中文
 
 [在线体验 Musterwork](https://app.musterwork.com) · [模板示例](#模板示例) · [快速开始](#快速开始) · [接入-agent](#接入-agent)
+
+[核心特性](#为什么选择-musteroffice) · [平台支持](#平台支持) · [性能与体积](#性能与体积)
 
 MusterOffice 为 Agent 和应用提供结构化的演示文稿创建、查询、编辑、渲染和导出能力。
 Rust 核心在原生环境和 WebAssembly 中共享计算，通过薄 SDK、CLI 和 MCP 接入。
@@ -12,6 +14,21 @@ Rust 核心在原生环境和 WebAssembly 中共享计算，通过薄 SDK、CLI 
 项目已用于 [Musterwork](https://www.musterwork.com) 的演示文稿工作流。
 你可以直接在线体验，也可以从源码构建，将演示文稿计算接入自己的应用。
 引擎可以独立运行，无需依赖 Musterwork、特定模型服务或账号系统。
+
+## 为什么选择 MusterOffice
+
+- **原生计算。** Rust 负责文档语义与计算，精选 C/C++ 组件负责图形和文字。
+  原生渲染与 PPTX 导出无需安装办公软件，也无需启动浏览器进程。
+- **跨运行时共享内核。** 原生应用与 WebAssembly 使用同一套 Rust 文档模型和操作，
+  TypeScript 只承担薄接入。
+- **轻量接入。** 按需要选择 Rust SDK、CLI 或 MCP。普通计算无需数据库、持久任务服务
+  或随附产品 UI；需要原生渲染时再配置相应 worker。
+- **复用帧间计算。** 播放准备结果保留文档、字体状态并复用符合条件的几何数据。
+  应用直接通过 SDK 采样，不必每帧重启 worker 或调用 Agent。
+- **控制内存成本。** 原生 PPTX Writer 支持流式读取素材和写出结果，缓存与操作具有
+  明确预算；这些预算不等于整个进程的固定内存占用。
+- **保留可编辑性。** 已支持的文字、形状、图表和表格保留为原生 PPTX 对象，
+  包括图表数据与可编辑的表格单元格。
 
 ## 在线体验
 
@@ -190,6 +207,52 @@ cargo build -p mo-export-worker -p mo-raster-worker --locked
 SDK、worker 和 WASM 应来自同一套验证构建。字体字节由调用方显式提供；
 核心不会搜索系统字体，也不会自动获取外部资源。
 
+## 平台支持
+
+共享内核支持原生与 WASM 接入，已实际验证的配置及剩余工作如下：
+
+| 运行环境 | 当前证据与范围 |
+| --- | --- |
+| macOS 原生 | ARM64 SDK 与 worker 已有[实际运行证据](docs/implementation/native-playback-sdk.md)。另有 x86_64 组件构建配置，但尚未成为经过验证的发行目标。 |
+| Linux 原生 | x86_64 构建、原生 worker、CLI 和 MCP 由 [GitHub CI](.github/workflows/ci.yml)执行。另有 ARM64 组件构建配置；当前 CI 不覆盖 ARM64 实机执行。 |
+| WebAssembly | CI 执行 Node.js 接入与文档 Native/WASM 一致性检查。[Chrome、Edge 播放](docs/implementation/browser-playback-sdk.md)已用固定语料实测；Safari、Firefox 及各产品 WebView 仍需分别验证。 |
+| Windows 原生 | 原生图形构建支持尚未完成，目前没有经过验证的 Windows 原生发行包。 |
+
+构建配置见[原生平台工具](tools/components/native_platform.py)。文档行为一致性不等于
+所有环境的完整渲染一致性，也不等于 PowerPoint/WPS 互操作已全部通过。
+
+## 性能与体积
+
+实现通过原生计算、可复用的播放计划和流式 PPTX 写出来减少重复工作与不必要的内存复制。
+性能优化保留内容可编辑性、渲染质量和输出校验。
+
+以下是**指定日期的开发阶段实测**，不代表当前发行体积或所有演示文稿的性能：
+
+| 测量产物 | 已记录体积 | 统计范围 |
+| --- | ---: | --- |
+| [原生 CLI，2026-09-26](docs/implementation/sealed-export.md) | **9.73 MiB** | macOS ARM64 release 可执行文件；渲染 worker、字体和应用运行时另计。 |
+| [浏览器播放包，2026-09-27](docs/implementation/browser-playback-sdk.md) | 文件合计 **13.50 MiB**；gzip 归档 **3.90 MiB** | 包含 Rust、Skia、HarfBuzz WASM、JS 绑定、类型和接入示例；不含文稿素材、字体及宿主应用。文件合计不含清单自身。 |
+
+在一次[流式导出对比](docs/implementation/sealed-export.md)中，包含一张大 PNG 的两页 PPTX，
+峰值 RSS 中位数从 **46.66 降至 13.36 MiB**，耗时中位数从 **5.84 降至 3.89 秒**，
+输出字节完全一致；小型对照样本没有测得 RSS 下降。
+
+<details>
+<summary>测量方法与适用范围</summary>
+
+导出对比记录于 2026-09-26，设备为 Apple M4 Max、36 GiB 内存、macOS 26.2 ARM64，
+使用 Rust 1.92 debug CLI。大样本包含一张 2048×2048 RGBA PNG，素材为 16,780,612 字节。
+两版各预热一次，再交替执行三次，取中位数；操作系统缓存未清空。
+计时包含进程启动、写出、校验和本地文件发布，没有加载字体、排版或栅格绘制。
+链接中的报告记录了依赖范围、构建身份与两组输入。
+
+体积记录对应当时的具体开发产物，不是当前源码、完整离线安装包或 Musterwork 应用的体积。
+应用总量还需计入所选 worker、字体、素材、依赖和缓存。
+完整发行版本的延迟、吞吐、RSS 和体积仍待验收，不承诺通用 60 FPS 或跨平台加速倍率。
+统计要求见[性能测量口径](docs/design/presentations/runtime-performance.md)。
+
+</details>
+
 ## 当前状态与开发
 
 当前为早期源码版本，重点完善日常演示文稿工作流。
@@ -198,7 +261,7 @@ SDK、worker 和 WASM 应来自同一套验证构建。字体字节由调用方�
 分页文档与电子表格属于未来方向。
 
 目前没有公开的软件包管理器发行包或 GitHub 预编译发行包，请按上述说明从源码使用。
-原生渲染已有 macOS 和 Linux 构建配置，Windows 渲染支持尚未完成。
+请结合[平台支持状态](#平台支持)选择运行环境。
 
 开发 TypeScript 接入层需要 Node.js 22+ 和 pnpm 10.2.1，运行
 `pnpm install --frozen-lockfile` 与 `pnpm check:types`。
