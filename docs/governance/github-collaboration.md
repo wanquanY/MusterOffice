@@ -78,5 +78,7 @@ production deployment. Release approval is separate from merging a PR.
 Use the commands in the workflows and current verification guide. CI-only
 provisioning helpers live in `tools/ci`; they call the existing component builders.
 Reports are retained as Actions artifacts for 14 days and include actual failures.
-Inspect branch rules, security settings and Actions permissions after policy changes;
+Run `python3 tools/ci/check_github.py` with an authenticated administrator to compare
+GitHub against `.github/repository-settings.json` and `.github/rulesets/*.json`.
+The audit is read-only and rejects unexpected bypass actors. Inspect settings after policy changes;
 editing this document alone does not configure GitHub.
