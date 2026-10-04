@@ -66,7 +66,7 @@ jobs:
         id: native-cache
         with:
           path: .codex-work/ci-native
-          key: native-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('components/**', 'tools/components/**', 'tools/ci/prepare_native.py', 'tools/verification/*probe.cpp') }}
+          key: native-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('components/**', 'tools/components/*.py', 'tools/ci/prepare_native.py', 'tools/verification/*probe.cpp') }}
       - name: Build verified native components
         if: steps.native-cache.outputs.cache-hit != 'true'
         run: python tools/ci/prepare_native.py
@@ -75,7 +75,7 @@ jobs:
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .codex-work/ci-native
-          key: native-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('components/**', 'tools/components/**', 'tools/ci/prepare_native.py', 'tools/verification/*probe.cpp') }}
+          key: ${{ steps.native-cache.outputs.cache-primary-key }}
       - name: Fetch locked dependencies
         run: |
           cargo fetch --locked
