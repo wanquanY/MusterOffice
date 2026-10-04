@@ -13,7 +13,7 @@ Merged repository branches are deleted automatically. Auto-merge may be requeste
 on an authorized PR, but it still waits for required rules; dependency PRs are
 never automatically approved or merged by a workflow.
 
-Two independent branch rulesets keep approval policy separate from invariant checks:
+Independent branch rulesets keep approval policy separate from invariant checks:
 
 - **Main integrity:** no bypass actors. Require a PR, current base, resolved
   conversations, `CI required` and `Security required` checks from GitHub Actions,
