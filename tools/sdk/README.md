@@ -90,10 +90,11 @@ or commit authority. A separately pinned native worker performs graphics and
 font computation. The product supplies authorized immutable assets, bounded
 storage, cancellation, invocation fencing and atomic publication.
 
-This local bundle is not a published release or a project license decision.
-Registry package license declarations and included Unicode/ECMA notices are
-retained; complete binary distribution notices and platform acceptance remain
-required. The worker, fonts, media, browser bindings and product UI are separate.
+This local bundle is not a published release. Original project sources use
+Apache-2.0; see the repository LICENSE. Registry package license declarations
+and included Unicode/ECMA notices retain their original terms. Complete binary
+distribution notices and platform acceptance remain required. The worker, fonts,
+media, browser bindings and product UI are separate.
 
 The portable directory is an upstream build input. Product repositories consume
 independent versioned Cargo packages via the [release assembler](../release/README.md),
