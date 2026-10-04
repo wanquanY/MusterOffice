@@ -385,6 +385,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "mo-charts"
+version = "0.1.0"
+dependencies = [
+ "mo-geometry",
+ "num-bigint",
+ "schemars",
+ "serde",
+ "thiserror",
+]
+
+[[package]]
 name = "mo-color"
 version = "0.1.0"
 dependencies = [
@@ -399,6 +410,7 @@ dependencies = [
  "schemars",
  "serde",
  "serde_json",
+ "serde_path_to_error",
  "sha2",
  "thiserror",
 ]
@@ -477,6 +489,7 @@ dependencies = [
  "mo-presentation-delivery",
  "mo-presentation-edit",
  "mo-presentation-model",
+ "mo-presentation-operations",
  "mo-xml",
  "schemars",
  "serde",
@@ -489,29 +502,28 @@ dependencies = [
 name = "mo-pptx"
 version = "0.1.0"
 dependencies = [
- "libm",
- "mo-color",
  "mo-common",
  "mo-opc",
  "mo-presentation-model",
+ "mo-presentation-source",
  "mo-timeline",
  "mo-xml",
  "schemars",
  "serde",
- "sha2",
- "thiserror",
+ "serde_json",
 ]
 
 [[package]]
 name = "mo-presentation-compile"
 version = "0.1.0"
 dependencies = [
+ "mo-charts",
  "mo-common",
  "mo-geometry",
  "mo-image",
  "mo-opc",
- "mo-pptx",
  "mo-presentation-model",
+ "mo-presentation-source",
  "mo-raster",
  "mo-render",
  "mo-text",
@@ -554,6 +566,7 @@ dependencies = [
  "mo-common",
  "mo-presentation-model",
  "mo-timeline",
+ "mo-unicode",
  "schemars",
  "serde",
  "serde_json",
@@ -569,6 +582,57 @@ dependencies = [
  "schemars",
  "serde",
  "serde_json",
+ "thiserror",
+]
+
+[[package]]
+name = "mo-presentation-operations"
+version = "0.1.0"
+dependencies = [
+ "mo-common",
+ "mo-image",
+ "mo-opc",
+ "mo-pptx",
+ "mo-presentation-delivery",
+ "mo-presentation-edit",
+ "mo-presentation-model",
+ "mo-presentation-template",
+ "mo-xml",
+ "schemars",
+ "serde",
+ "serde_json",
+ "sha2",
+ "thiserror",
+]
+
+[[package]]
+name = "mo-presentation-source"
+version = "0.1.0"
+dependencies = [
+ "libm",
+ "mo-color",
+ "mo-common",
+ "mo-opc",
+ "mo-presentation-model",
+ "mo-timeline",
+ "mo-xml",
+ "schemars",
+ "serde",
+ "sha2",
+ "thiserror",
+]
+
+[[package]]
+name = "mo-presentation-template"
+version = "0.1.0"
+dependencies = [
+ "mo-common",
+ "mo-presentation-edit",
+ "mo-presentation-model",
+ "schemars",
+ "serde",
+ "serde_json",
+ "thiserror",
 ]
 
 [[package]]
@@ -861,6 +925,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde_path_to_error"
+version = "0.1.20"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "10a9ff822e371bb5403e391ecd83e182e0e77ba7f6fe0160b795797109d1b457"
+dependencies = [
+ "itoa",
+ "serde",
+ "serde_core",
+]
+
+[[package]]
 name = "sha2"
 version = "0.10.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -913,18 +988,18 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "2.0.20"
+version = "2.0.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ec86235f5fcc2a73650310756d2ac5b138a5780bbbdfae3eeccec992c435ba4f"
+checksum = "09e52cb86a36cede5cb101bf8908837b3e4c6e5e59fe7fd85c23fb56200d189e"
 dependencies = [
  "thiserror-impl",
 ]
 
 [[package]]
 name = "thiserror-impl"
-version = "2.0.20"
+version = "2.0.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bc04cd3e1236dd4a98afca4569f2deb3f120e5422a4023be2cb683f8486292af"
+checksum = "fe5197923287db20a58125f0bc85c062f7f2c892de97b18c356f9efb14b28524"
 dependencies = [
  "proc-macro2",
  "quote",
