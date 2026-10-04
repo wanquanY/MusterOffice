@@ -207,6 +207,10 @@ SDK、worker 和 WASM 应来自同一套验证构建。字体字节由调用方�
 及[决策记录](docs/decisions/README.md)。
 提交 [Issue](https://github.com/wanquanY/MusterOffice/issues) 时，请附最小复现、提交版本和运行平台。
 
+## 参与贡献
+
+分支、PR、审查和验证流程见[贡献指南](CONTRIBUTING.zh-CN.md)。漏洞请使用[私密安全报告](SECURITY.md)。
+
 ## 许可证
 
 项目原创源码和随附原创模板采用 [Apache License 2.0](LICENSE)。

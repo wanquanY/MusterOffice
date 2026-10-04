@@ -4,12 +4,14 @@
 
 ## 已确认
 
+- **GitHub 协作治理**：用户已授权补齐提交、审查、合并、CI 和安全机制；当前工作区使用功能分支，经 PR 合并 main，取代默认直接在 main 工作的旧约定。见 [ADR 0011](0011-github-collaboration.md)。
+
 - **公开开源与使用入口**：2026-10-04 用户要求公开现有 `wanquanY/MusterOffice` GitHub 仓库，并明确选择 Apache-2.0。默认 README 改为英文，提供中文切换，以使用方式为主；加入 Musterwork 公网体验地址及两套原创模板的 PPTX 和直接预览。见 [ADR 0010](0010-open-source-publication.md)。
 - **原生交互编辑专项**：2026-10-02 用户要求按 Musterwork 原生 PPT 编辑及独立放映方案，基于 main 在隔离 worktree 中实现至可合并；仅隔离 Musterwork；用户明确 Office 没有并行工作，Office 继续在主工作区 main 开发，已清理初建的多余 worktree。内核只提供计算，产品持有 UI、保存和窗口。见 [ADR 0009](0009-product-editor-computation.md)；开发授权不等于验收或部署。
 
 - **当前实施范围**：Musterwork 已接入并正常产出 PPT；继续按既有方案完善普通用户常用基础需求，准备下一次用户测试验收，不过度开发和设计。完整高级能力保留为长期路线，按反馈逐步完善，不再作为本次基础验收的前置条件。见 [ADR 0008](0008-everyday-presentation-acceptance.md)，该最新指示优先于下述历史完整一期门槛。
 - 产品名称：**MusterOffice**。
-- 建立独立本地项目，主分支 `main`，不创建额外 worktree。
+- 建立独立项目，主分支 `main`，不创建额外 worktree；日常功能分支与 PR 流程以 ADR 0011 为准。
 - 2026-09-27 用户另行要求 **Musterwork 接入工作使用独立 worktree**，释放其产品主工作区；此要求不改变 MusterOffice 自身的主工作区安排。迁移及执行边界见[产品工作区记录](../implementation/product-worktree.md)。
 - 2026-09-30 用户明确要求后续实现与验收直接在 **两个仓库的主工作区** 推进，取代上一项隔离工作区安排。MusterOffice 保持 `main`；Musterwork 保持用户选定的当前产品分支，不切换为落后的字面 `main`。保留已有改动和两仓各自的职责边界。
 - 面向 Agent，强调高性能、轻量化、多端跨平台。
@@ -33,7 +35,7 @@
 | 原有代码迁移               | 复用语义与测试，先审查来源和依赖          | Pending  |
 | 原生平台和浏览器版本       | v0.4 固定目标族及锁文件字段；实际 build/设备待登记 | Proposed |
 | 默认字体与离线分发         | 开放许可、可编辑嵌入、按家族分发          | Pending  |
-| 后续贡献流程               | 项目许可证已确认；另行贡献协议尚未制定     | Pending  |
+
 | 包名、命令名、版本策略     | 在接口和语言决定后冻结                    | Pending  |
 | 性能预算及验收设备         | v0.4 固定工作负载与计量口径；完整动态包预算和实测待 E0 | Proposed |
 

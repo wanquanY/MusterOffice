@@ -104,7 +104,7 @@ try {
   cases.push({ name: 'real-source-import', input, response });
   const snapshot = response.snapshot;
   assert.equal(snapshot.document.title, JSON.parse(exportRequest).document.title);
-  assert.equal(snapshot.document.sourceBindings.profile, 'presentationml-retained-fields-v4-draft');
+  assert.equal(snapshot.document.sourceBindings.profile, 'presentationml-retained-fields-v5-draft');
   const accessibility = doc => Object.values(doc.objects).map(o => o.accessibility)
     .sort((a, b) => a.title.localeCompare(b.title));
   assert.deepEqual(accessibility(snapshot.document), accessibility(JSON.parse(exportRequest).document));
@@ -124,7 +124,7 @@ try {
   legacyDocument.sourceBindings.profile = 'presentationml-retained-fields-v1-draft';
   legacyDocument.title = '';
   // Historical bindings did not project native accessibility. Reconstruct that
-  // old view explicitly instead of relabelling the new v4 projection as v1.
+  // old view explicitly instead of relabelling the current v5 projection as v1.
   for (const object of Object.values(legacyDocument.objects)) {
     object.accessibility = {title: '', description: '', decorative: false};
   }

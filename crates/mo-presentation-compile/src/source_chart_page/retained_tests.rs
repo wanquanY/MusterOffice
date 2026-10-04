@@ -75,7 +75,7 @@ fn check_retained(denominator: u32, grouped: bool) {
         &|| false,
     )
     .unwrap()
-    .render(&mut NativeRaster::default(), &|| false)
+    .render(&mut NativeRaster, &|| false)
     .unwrap();
     let plan =
         ResourcePagePlan::new(&package, index, q, &mut Decoder, None, options, &|| false).unwrap();
@@ -83,7 +83,7 @@ fn check_retained(denominator: u32, grouped: bool) {
     let base = plan
         .prepare_sampled(&empty, &|| false)
         .unwrap()
-        .render(&mut NativeRaster::default(), &|| false)
+        .render(&mut NativeRaster, &|| false)
         .unwrap();
     assert_eq!(expected.pixels, base.pixels);
     let mut hidden = empty.clone();
@@ -97,7 +97,7 @@ fn check_retained(denominator: u32, grouped: bool) {
     let hidden = plan
         .prepare_sampled(&hidden, &|| false)
         .unwrap()
-        .render(&mut NativeRaster::default(), &|| false)
+        .render(&mut NativeRaster, &|| false)
         .unwrap();
     assert!(hidden.info.page.page.charts.is_empty());
     assert_ne!(hidden.pixels, base.pixels);
@@ -115,7 +115,7 @@ fn check_retained(denominator: u32, grouped: bool) {
     let moved = plan
         .prepare_sampled(&moved, &|| false)
         .unwrap()
-        .render(&mut NativeRaster::default(), &|| false)
+        .render(&mut NativeRaster, &|| false)
         .unwrap();
     assert_eq!(
         moved.info.page.page.charts[0].chart_sha256,

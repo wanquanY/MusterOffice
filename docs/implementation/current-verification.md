@@ -21,11 +21,15 @@ python3 tools/verification/current.py \
 | lint | 当前门禁驱动自身测试；根 workspace fmt、所有 target 的 clippy，warnings 视为失败 |
 | rust | 根 workspace 测试 |
 | contracts | 当前 Rust 生成 Schema 与仓库产物一致 |
-| typescript | 生成类型检查、operation client 测试 |
+| typescript | 全部 TS 类型检查、operation / playback client 测试 |
 | native | 构建 CLI／宿主／渲染与导出 worker；绑定实际可执行文件摘要；显式运行 ignored 渲染／宿主导出测试及导出 worker 测试 |
 | mcp | 独立 MCP workspace 的 fmt、clippy、测试和构建 |
-| wasm | 纯 operation service WASM check、WASM build/bindgen、文档 Native/WASM parity（含真实 PPTX 导入、来源身份及统一事务） |
+| wasm | 纯 operation service WASM check、WASM build/bindgen、editor client 联测、文档 Native/WASM parity（含真实 PPTX 导入、来源身份及统一事务） |
 | mcp-protocol | 独立进程协议、transport、lifecycle、cancellation 检查 |
+
+editor client 联测由 wasm 组在 Native/WASM 构建完成后执行，并显式绑定本轮 CLI 与 WASM 路径；不读取本机历史产物。该组也需要 pnpm。
+
+Linux 原生构建通过 `.cargo/config.toml` 将完整调试信息放到 sidecar 文件，避免嵌入 DWARF 的 debug worker 超过既有 128 MiB 可执行文件准入上限；不放宽该上限或降低调试信息级别。WASM 保持其支持的默认配置。
 
 ## 结果解释
 

@@ -142,7 +142,7 @@ for era in ('2025-11-25', '2026-07-28'):
             action=dict(kind='import', documentId='native-source', source=dict(resourceId='source', assetId='source')))),
             [native_input])['snapshot']
         assert native['document']['title'] == source['document']['title']
-        assert native['document']['sourceBindings']['profile'] == 'presentationml-retained-fields-v4-draft'
+        assert native['document']['sourceBindings']['profile'] == 'presentationml-retained-fields-v5-draft'
         accessibility = lambda document: sorted(
             (o['accessibility']['title'], o['accessibility']['description'], o['accessibility']['decorative'])
             for o in document['objects'].values())
