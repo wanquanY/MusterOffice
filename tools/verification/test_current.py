@@ -24,6 +24,8 @@ class CurrentVerificationTests(unittest.TestCase):
         self.assertTrue(next(s for s in steps if s.name == "native-playback-tests").worker)
         self.assertIn("playback-client-tests", names)
         self.assertIn("editor-client-tests", names)
+        self.assertLess(names.index("native-build"), names.index("editor-client-tests"))
+        self.assertLess(names.index("wasm-bindgen"), names.index("editor-client-tests"))
         self.assertIn("playback-sdk-package-tests", names)
         self.assertIn("--ignored", next(s for s in steps if s.name == "native-render-tests").argv)
 

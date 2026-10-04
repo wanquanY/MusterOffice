@@ -60,7 +60,6 @@ def plan(groups, output, bindgen, python):
         add("types", "pnpm", "check:types")
         add("client-tests", "pnpm", "test:operation-client")
         add("playback-client-tests", "pnpm", "test:playback-client")
-        add("editor-client-tests", "pnpm", "test:editor-client")
     if "native" in groups or "wasm" in groups:
         add("native-build", "cargo", "build", *cargo, "-p", "mo-cli", "-p", "mo-host", "-p", "mo-raster-worker", "-p", "mo-export-worker")
     if "native" in groups:
@@ -86,6 +85,7 @@ def plan(groups, output, bindgen, python):
         add("legacy-host-wasm", "cargo", "check", *cargo, "-p", "mo-host-compat-wasm", "--target", "wasm32-unknown-unknown")
         add("wasm-build", "cargo", "build", *cargo, "--release", "-p", "mo-wasm", "--target", "wasm32-unknown-unknown")
         add("wasm-bindgen", bindgen, "target/wasm32-unknown-unknown/release/mo_wasm.wasm", "--target", "nodejs", "--out-dir", output / "wasm")
+        add("editor-client-tests", "pnpm", "test:editor-client")
         add("document-native-wasm-parity", "node", "tools/verification/native-wasm-parity.mjs", "target/debug/mo-cli", output / "wasm/mo_wasm.js")
     if "mcp-protocol" in groups:
         thin = ROOT / "tools/mo-mcp/target/debug/mo-mcp"
@@ -126,7 +126,10 @@ def source_identity():
 
 def prerequisites(groups, args):
     errors = []
-    for name in ("cargo", "git", *( ("pnpm", "node") if "typescript" in groups else ()), *( ("node",) if "wasm" in groups else ())):
+    required_tools = ["cargo", "git"]
+    if groups.intersection(("typescript", "wasm")):
+        required_tools.extend(("pnpm", "node"))
+    for name in required_tools:
         if not shutil.which(name):
             errors.append(f"executable unavailable: {name}")
     if groups.intersection(("lint", "rust", "native", "wasm")):
@@ -181,6 +184,9 @@ def main():
     env = dict(os.environ)
     # Commands and worker paths use this repository's known output locations.
     env.pop("CARGO_TARGET_DIR", None)
+    # Editor parity must use this run's builds, never historical local artifacts.
+    env["MUSTEROFFICE_EDITOR_NATIVE"] = str(ROOT / "target/debug/mo-cli")
+    env["MUSTEROFFICE_EDITOR_WASM"] = str(output / "wasm/mo_wasm.js")
     for key, value in (("MO_SKIA_LIB_DIR", args.skia_dir), ("MO_HARFBUZZ_LIB_DIR", args.harfbuzz_dir)):
         if value:
             env[key] = str(Path(value).resolve())
