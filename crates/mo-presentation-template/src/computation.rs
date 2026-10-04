@@ -34,13 +34,13 @@ pub enum TemplateResponse {
         instance: Box<TemplateInstance>,
     },
     Error {
-        error: TemplateDiagnostic,
+        error: Box<TemplateDiagnostic>,
     },
 }
 impl TemplateResponse {
     fn error(error: TemplateError) -> Self {
         Self::Error {
-            error: error.diagnostic(),
+            error: Box::new(error.diagnostic()),
         }
     }
 }
