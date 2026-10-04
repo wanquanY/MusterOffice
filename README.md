@@ -1,10 +1,12 @@
 # MusterOffice
 
-**An office engine for AI agents, starting with editable presentations.**
+**A lightweight office engine for AI agents, built for performance on native and WebAssembly runtimes.**
 
 English · [简体中文](README.zh-CN.md)
 
 [Try Musterwork](https://app.musterwork.com) · [Template examples](#template-examples) · [Quick start](#quick-start) · [Agent integration](#connect-an-agent)
+
+[Features](#why-musteroffice) · [Platforms](#platform-support) · [Performance and footprint](#performance-and-footprint)
 
 MusterOffice gives your agent or application structured operations to create,
 inspect, edit, render and export presentations. A shared Rust core powers native
@@ -14,6 +16,25 @@ It already powers presentation workflows in [Musterwork](https://www.musterwork.
 Use the hosted product to try the experience, or build this repository to integrate
 presentation computation into your own application. The engine runs independently
 of Musterwork and does not require a model provider or an account service.
+
+## Why MusterOffice
+
+- **Native computation.** Rust handles document semantics and computation, with
+  selected C/C++ components for graphics and text. Native rendering and PPTX export
+  run without an installed office suite or a browser process.
+- **One core across runtimes.** Native applications and WebAssembly share the
+  Rust document model and operations; TypeScript provides thin bindings.
+- **A small integration surface.** Choose the Rust SDK, CLI or MCP adapter.
+  Ordinary computation needs no database, persistent job service or bundled UI;
+  add native rendering workers when your workflow needs them.
+- **Reuse work between frames.** Prepared playback retains document and font
+  state, and reuses eligible geometry. Applications sample frames directly through
+  the SDK, without restarting a worker or invoking an agent for every frame.
+- **Control memory costs.** The native PPTX writer supports streaming resources
+  and output, while caches and operations have explicit budgets. These bounds do
+  not imply a fixed process memory footprint.
+- **Keep results editable.** Supported text, shapes, charts and tables remain
+  native PPTX objects, including chart data and editable table cells.
 
 ## Try it
 
@@ -208,6 +229,61 @@ cargo build -p mo-export-worker -p mo-raster-worker --locked
 Keep SDK, workers and WASM from the same verified build. Supply font bytes
 explicitly; the core does not search system fonts or fetch external resources.
 
+## Platform support
+
+The shared core supports native and WASM integration. The exercised configurations
+and remaining platform work are:
+
+| Runtime | Current evidence and scope |
+| --- | --- |
+| macOS native | ARM64 SDK and workers have [execution evidence](docs/implementation/native-playback-sdk.md). An x86_64 component build profile also exists, but is not a verified release target. |
+| Linux native | x86_64 builds, native workers, CLI and MCP run in [GitHub CI](.github/workflows/ci.yml). An ARM64 component build profile exists; ARM64 execution is not covered by this CI. |
+| WebAssembly | Node.js integration and document Native/WASM parity run in CI. [Chrome and Edge playback](docs/implementation/browser-playback-sdk.md) has been exercised on fixed fixtures; Safari, Firefox and each application's WebView need separate qualification. |
+| Windows native | Native graphics build support is incomplete; a verified Windows native distribution is not yet available. |
+
+Build profiles are defined in [native platform tooling](tools/components/native_platform.py).
+Document parity does not establish full renderer parity or PowerPoint/WPS
+interoperability across all these environments.
+
+## Performance and footprint
+
+The implementation uses native computation, reusable playback plans and streaming
+PPTX output to reduce repeated work and unnecessary memory copies. Performance
+work preserves editable content, rendering quality and output validation.
+
+The following are **dated development measurements**, not current release sizes
+or a benchmark for every presentation:
+
+| Measured artifact | Recorded size | Scope |
+| --- | ---: | --- |
+| [Native CLI, 2026-09-26](docs/implementation/sealed-export.md) | **9.73 MiB** | macOS ARM64 release binary; rendering workers, fonts and application runtime are separate. |
+| [Browser playback bundle, 2026-09-27](docs/implementation/browser-playback-sdk.md) | **13.50 MiB** of files; **3.90 MiB** gzip archive | Rust, Skia and HarfBuzz WASM, JS bindings, types and integration examples; excludes document assets, fonts and the host application. File total excludes the manifest. |
+
+In a [streaming export comparison](docs/implementation/sealed-export.md), a two-slide
+PPTX with one large PNG reduced median peak RSS from **46.66 to 13.36 MiB** and
+elapsed time from **5.84 to 3.89 seconds**, with identical output bytes. The small
+control fixture showed no RSS reduction.
+
+<details>
+<summary>Measurement method and limits</summary>
+
+The export comparison was recorded on 2026-09-26 using an Apple M4 Max, 36 GiB RAM,
+macOS 26.2 ARM64 and Rust 1.92 debug CLI builds. The large fixture contains one
+2048×2048 RGBA PNG (16,780,612 resource bytes). Each version ran once for warmup,
+then three alternating samples; values are medians, with OS caches not cleared.
+Timing includes process startup, writing, validation and local file publication.
+No font loading, layout or rasterization was performed. The linked report records
+the dependency scope, build identities and both fixtures.
+
+The size records refer to those exact development artifacts, not the current
+source tree, a complete offline installation or Musterwork's application size.
+An application's total footprint also includes its selected workers, fonts,
+assets, dependencies and caches. Full release latency, throughput, RSS and size
+qualification remains open; there is no general 60 FPS or cross-platform speedup
+claim. See the [performance measurement scope](docs/design/presentations/runtime-performance.md).
+
+</details>
+
 ## Status and development
 
 This is an early source release focused on everyday presentation workflows.
@@ -217,8 +293,8 @@ PowerPoint/WPS interoperability and all advanced presentation features are still
 in progress. Documents and spreadsheets are future domains.
 
 There is currently no public package-manager release or prebuilt GitHub release.
-Use the source instructions above. Native rendering currently has macOS and Linux
-build profiles; Windows rendering support remains incomplete.
+Use the source instructions above and check the [platform status](#platform-support)
+for your intended runtime.
 
 For TypeScript development, use Node.js 22+ and pnpm 10.2.1, then run
 `pnpm install --frozen-lockfile` and `pnpm check:types`.
