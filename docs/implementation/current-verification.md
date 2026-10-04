@@ -29,6 +29,8 @@ python3 tools/verification/current.py \
 
 editor client 联测由 wasm 组在 Native/WASM 构建完成后执行，并显式绑定本轮 CLI 与 WASM 路径；不读取本机历史产物。该组也需要 pnpm。
 
+Linux 原生构建通过 `.cargo/config.toml` 将完整调试信息放到 sidecar 文件，避免嵌入 DWARF 的 debug worker 超过既有 128 MiB 可执行文件准入上限；不放宽该上限或降低调试信息级别。WASM 保持其支持的默认配置。
+
 ## 结果解释
 
 每步保存命令、日志、退出码、耗时和执行状态；真实 worker 测试记录绑定的可执行文件 SHA-256。`report.json` 通过原子替换更新。先决条件缺失报告 `blocked`，命令失败报告 `failed`，后续步骤为 `not-run`；任一情况均返回非零。已有输出目录拒绝覆盖。

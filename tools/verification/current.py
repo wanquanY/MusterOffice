@@ -117,7 +117,7 @@ def source_identity():
     names = subprocess.check_output([
         "git", "ls-files", "-z", "--cached", "--others", "--exclude-standard", "--",
         "crates", "tools", "packages", "contracts", "components", "fixtures", "integrations",
-        "Cargo.toml", "Cargo.lock", "rust-toolchain.toml", "package.json", "pnpm-lock.yaml",
+        ".cargo", "Cargo.toml", "Cargo.lock", "rust-toolchain.toml", "package.json", "pnpm-lock.yaml",
     ], cwd=ROOT).decode().split("\0")
     entries = [(name, file_digest(ROOT / name) if (ROOT / name).is_file() else None)
                for name in sorted(set(names).difference({""}))]

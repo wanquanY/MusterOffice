@@ -1,0 +1,5 @@
+# Keep full native debug information in sidecar files. Embedding DWARF in
+# Linux debug executables can exceed the worker admission limit. WASM uses
+# its own supported defaults; release profiles still control debug/stripping.
+[target.'cfg(target_os = "linux")']
+rustflags = ["-C", "split-debuginfo=unpacked"]
