@@ -228,6 +228,10 @@ See [current verification](docs/implementation/current-verification.md),
 for detailed scope and evidence. Please include a minimal reproducer, your commit
 and platform when reporting an [issue](https://github.com/wanquanY/MusterOffice/issues).
 
+## Contributing
+
+See the [contribution guide](CONTRIBUTING.md) for branches, pull requests, review and validation. Report vulnerabilities through the [private security process](SECURITY.md).
+
 ## Licensing
 
 Original project source and the included original templates are licensed under

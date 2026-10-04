@@ -60,6 +60,7 @@ def plan(groups, output, bindgen, python):
         add("types", "pnpm", "check:types")
         add("client-tests", "pnpm", "test:operation-client")
         add("playback-client-tests", "pnpm", "test:playback-client")
+        add("editor-client-tests", "pnpm", "test:editor-client")
     if "native" in groups or "wasm" in groups:
         add("native-build", "cargo", "build", *cargo, "-p", "mo-cli", "-p", "mo-host", "-p", "mo-raster-worker", "-p", "mo-export-worker")
     if "native" in groups:

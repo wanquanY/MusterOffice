@@ -23,6 +23,7 @@ class CurrentVerificationTests(unittest.TestCase):
         self.assertTrue(next(s for s in steps if s.name == "native-render-tests").worker)
         self.assertTrue(next(s for s in steps if s.name == "native-playback-tests").worker)
         self.assertIn("playback-client-tests", names)
+        self.assertIn("editor-client-tests", names)
         self.assertIn("playback-sdk-package-tests", names)
         self.assertIn("--ignored", next(s for s in steps if s.name == "native-render-tests").argv)
 

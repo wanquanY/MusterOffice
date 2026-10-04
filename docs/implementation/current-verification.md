@@ -21,7 +21,7 @@ python3 tools/verification/current.py \
 | lint | 当前门禁驱动自身测试；根 workspace fmt、所有 target 的 clippy，warnings 视为失败 |
 | rust | 根 workspace 测试 |
 | contracts | 当前 Rust 生成 Schema 与仓库产物一致 |
-| typescript | 生成类型检查、operation client 测试 |
+| typescript | 生成类型检查、operation / playback / editor client 测试 |
 | native | 构建 CLI／宿主／渲染与导出 worker；绑定实际可执行文件摘要；显式运行 ignored 渲染／宿主导出测试及导出 worker 测试 |
 | mcp | 独立 MCP workspace 的 fmt、clippy、测试和构建 |
 | wasm | 纯 operation service WASM check、WASM build/bindgen、文档 Native/WASM parity（含真实 PPTX 导入、来源身份及统一事务） |
