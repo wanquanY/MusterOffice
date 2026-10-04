@@ -44,12 +44,20 @@ def download(record, path):
         temporary.unlink(missing_ok=True)
 
 
-def checkout(url, revision, directory):
+def checkout(url, revision, directory, *, full_history=False):
     directory.mkdir(parents=True, exist_ok=True)
     if not (directory / '.git').exists():
         run('git', 'init', directory)
         run('git', 'remote', 'add', 'origin', url, cwd=directory)
-    run('git', 'fetch', '--depth=1', 'origin', revision, cwd=directory)
+    if full_history:
+        # GN computes its locked version from the initial-commit tag and commit
+        # count. A shallow checkout cannot reproduce that upstream identity.
+        options = ['--tags']
+        if (directory / '.git/shallow').exists():
+            options.append('--unshallow')
+    else:
+        options = ['--depth=1']
+    run('git', 'fetch', *options, 'origin', revision, cwd=directory)
     run('git', 'checkout', '--detach', revision, cwd=directory)
     actual = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=directory, text=True).strip()
     if actual != revision:
@@ -70,7 +78,7 @@ def main():
     run('cmake', '-S', ninja, '-B', ninja / 'out', '-DBUILD_TESTING=OFF', '-DCMAKE_BUILD_TYPE=Release')
     run('cmake', '--build', ninja / 'out', '--parallel', '4')
     gn = DIRECTORY / 'tools/gn'
-    checkout('https://gn.googlesource.com/gn', skia['gnCommit'], gn)
+    checkout('https://gn.googlesource.com/gn', skia['gnCommit'], gn, full_history=True)
     run('python3', 'build/gen.py', cwd=gn)
     run(ninja / 'out/ninja', '-C', 'out', '-j', '4', cwd=gn)
     run('python3', 'tools/components/build-image-codecs.py', '--target', 'native',
