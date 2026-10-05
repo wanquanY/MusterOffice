@@ -9,6 +9,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "320119579fcad9c21884f5c4861d16174d0e06250625266f50fe6898340abefa"
 
 [[package]]
+name = "archery"
+version = "1.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "33ca55ee147b1926dbea904f50fe4902494e97bc742205abbbf10c709e43815f"
+dependencies = [
+ "triomphe",
+]
+
+[[package]]
 name = "autocfg"
 version = "1.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -345,6 +354,8 @@ dependencies = [
  "mo-presentation-model",
  "mo-presentation-operations",
  "mo-presentation-template",
+ "mo-video-edit",
+ "mo-video-model",
  "schemars",
  "serde_json",
 ]
@@ -843,10 +854,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "mo-time"
+version = "0.1.0"
+dependencies = [
+ "mo-common",
+ "num-bigint",
+ "proptest",
+ "thiserror",
+]
+
+[[package]]
 name = "mo-timeline"
 version = "0.1.0"
 dependencies = [
  "mo-common",
+ "mo-time",
  "num-bigint",
  "schemars",
  "serde",
@@ -862,6 +884,44 @@ dependencies = [
  "serde",
  "thiserror",
  "unicode-bidi",
+]
+
+[[package]]
+name = "mo-video-conformance"
+version = "0.1.0"
+dependencies = [
+ "mo-common",
+ "mo-video-edit",
+ "mo-video-model",
+ "serde",
+ "serde_json",
+ "wasm-bindgen",
+]
+
+[[package]]
+name = "mo-video-edit"
+version = "0.1.0"
+dependencies = [
+ "mo-common",
+ "mo-time",
+ "mo-video-model",
+ "schemars",
+ "serde",
+ "serde_json",
+ "thiserror",
+]
+
+[[package]]
+name = "mo-video-model"
+version = "0.1.0"
+dependencies = [
+ "mo-common",
+ "mo-time",
+ "rpds",
+ "schemars",
+ "serde",
+ "serde_json",
+ "thiserror",
 ]
 
 [[package]]
@@ -1082,6 +1142,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d6f6ff9a378485b298a5286656da665ba74413d36db0979633275d2e708145d4"
 
 [[package]]
+name = "rpds"
+version = "1.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e025feb26210bc196b908e72deb063b1b4000754304341cbc168a1e72c857ebc"
+dependencies = [
+ "archery",
+ "serde",
+ "smallvec",
+]
+
+[[package]]
 name = "rusqlite"
 version = "0.40.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1298,6 +1369,12 @@ dependencies = [
  "quote",
  "syn 3.0.6",
 ]
+
+[[package]]
+name = "triomphe"
+version = "0.1.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b40688ea6389c8171614b25491f71d4a27946e0c7ce2da1c6de27e25abf1a0ae"
 
 [[package]]
 name = "typenum"

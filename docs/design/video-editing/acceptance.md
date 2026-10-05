@@ -1,6 +1,6 @@
 # MusterOffice Video 完整验收规格
 
-2026-10-06 · v1.0 · 所有项目当前均为待实施/待验证。对应[产品需求](../video-editing.md#22-范围边界)及[技术合同](technical-spec.md)。本文件中的通过条件不是本轮已取得的测试结果。
+2026-10-06 · v1.0 · 完整验收矩阵尚未通过，部分基础证据见[实施记录](../../implementation/video-editing-progress.md)。对应[产品需求](../video-editing.md#22-范围边界)及[技术合同](technical-spec.md)。本文件中的通过条件不代表已经取得的完整验收结果。
 
 ## 1. 完成口径
 

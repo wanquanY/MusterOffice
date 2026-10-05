@@ -189,9 +189,9 @@ impl PathPlan {
             return endpoint(&self.first);
         }
         let distance = progress.mul(&Ratio::new(self.total.into(), 1.into(), bits)?, bits)?;
-        let index = self
-            .edges
-            .partition_point(|edge| BigInt::from(edge.end) * &distance.d < distance.n);
+        let index = self.edges.partition_point(|edge| {
+            BigInt::from(edge.end) * distance.denominator() < *distance.numerator()
+        });
         let edge = &self.edges[index.min(self.edges.len() - 1)];
         let fraction = distance
             .sub(&Ratio::new(edge.begin.into(), 1.into(), bits)?, bits)?

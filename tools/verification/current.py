@@ -54,6 +54,7 @@ def plan(groups, output, bindgen, python):
         add("clippy", "cargo", "clippy", "--workspace", "--all-targets", *cargo, "--", "-D", "warnings")
     if "rust" in groups:
         add("rust-tests", "cargo", "test", "--workspace", *cargo)
+        add("video-generated-transactions", "cargo", "test", *cargo, "--release", "-p", "mo-video-edit", "--test", "generated_sequences", "--", "--ignored", "--nocapture")
     if "contracts" in groups:
         add("schemas", "cargo", "run", "-p", "mo-contract-codegen", *cargo, "--", "check", "contracts/generated")
     if "typescript" in groups:
@@ -87,6 +88,10 @@ def plan(groups, output, bindgen, python):
         add("wasm-bindgen", bindgen, "target/wasm32-unknown-unknown/release/mo_wasm.wasm", "--target", "nodejs", "--out-dir", output / "wasm")
         add("editor-client-tests", "pnpm", "test:editor-client")
         add("document-native-wasm-parity", "node", "tools/verification/native-wasm-parity.mjs", "target/debug/mo-cli", output / "wasm/mo_wasm.js")
+        add("video-conformance-native", "cargo", "build", *cargo, "-p", "mo-video-conformance")
+        add("video-conformance-wasm", "cargo", "build", *cargo, "--release", "-p", "mo-video-conformance", "--lib", "--target", "wasm32-unknown-unknown")
+        add("video-conformance-bindgen", bindgen, "target/wasm32-unknown-unknown/release/mo_video_conformance.wasm", "--target", "nodejs", "--out-dir", output / "video-wasm")
+        add("video-domain-native-wasm-parity", "node", "tools/verification/video-domain-parity.mjs", "target/debug/mo-video-conformance", output / "video-wasm/mo_video_conformance.js", output / "video-domain-parity.json")
     if "mcp-protocol" in groups:
         thin = ROOT / "tools/mo-mcp/target/debug/mo-mcp"
         add("mcp-agent-package", python, "tools/agent-package/check.py", output / "mcp-agent-package", thin, ROOT / "target/debug/mo-export-worker")
@@ -212,6 +217,8 @@ def main():
             code = result.returncode
             if code == 0 and step.name == "wasm-bindgen":
                 (output / "wasm/package.json").write_text('{"private":true,"type":"commonjs"}\n')
+            if code == 0 and step.name == "video-conformance-bindgen":
+                (output / "video-wasm/package.json").write_text('{"private":true,"type":"commonjs"}\n')
         except (OSError, subprocess.TimeoutExpired) as error:
             record["error"] = str(error)
             code = 1

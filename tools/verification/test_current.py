@@ -27,6 +27,10 @@ class CurrentVerificationTests(unittest.TestCase):
         self.assertLess(names.index("native-build"), names.index("editor-client-tests"))
         self.assertLess(names.index("wasm-bindgen"), names.index("editor-client-tests"))
         self.assertIn("playback-sdk-package-tests", names)
+        self.assertIn("video-generated-transactions", names)
+        self.assertIn("--ignored", next(s for s in steps if s.name == "video-generated-transactions").argv)
+        for dependency in ("video-conformance-native", "video-conformance-wasm", "video-conformance-bindgen"):
+            self.assertLess(names.index(dependency), names.index("video-domain-native-wasm-parity"))
         self.assertIn("--ignored", next(s for s in steps if s.name == "native-render-tests").argv)
 
     def test_protocol_selection_declares_its_build_dependencies(self):

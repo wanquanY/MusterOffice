@@ -1,0 +1,58 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:video-validation-report",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ValidationReport",
+  "type": "object",
+  "properties": {
+    "issues": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ValidationIssue"
+      }
+    },
+    "truncated": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "issues",
+    "truncated"
+  ],
+  "$defs": {
+    "ValidationCode": {
+      "type": "string",
+      "enum": [
+        "invalid_value",
+        "missing_reference",
+        "duplicate_identity",
+        "ownership_conflict",
+        "reference_cycle",
+        "limit_exceeded",
+        "identity_mismatch",
+        "incompatible_track",
+        "overlap"
+      ]
+    },
+    "ValidationIssue": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/ValidationCode"
+        },
+        "message": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "path",
+        "message"
+      ]
+    }
+  }
+}

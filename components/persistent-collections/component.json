@@ -1,0 +1,96 @@
+{
+  "format": "musteroffice.persistent-collections-component/1",
+  "status": "video implementation; not a released component",
+  "purpose": "Ordered persistent video object maps; structural sharing across candidates and history. No parallel/rayon runtime or IO. Serde wire remains ordinary ordered maps.",
+  "directDependency": "rpds",
+  "features": [
+    "std",
+    "serde"
+  ],
+  "sourceUnmodified": true,
+  "packages": [
+    {
+      "name": "rpds",
+      "version": "1.2.1",
+      "archiveUrl": "https://static.crates.io/crates/rpds/rpds-1.2.1.crate",
+      "byteLength": 75113,
+      "sha256": "e025feb26210bc196b908e72deb063b1b4000754304341cbc168a1e72c857ebc",
+      "repository": "https://github.com/orium/rpds",
+      "declaredLicense": "MIT",
+      "selectedLicense": "MIT",
+      "licenseFiles": [
+        {
+          "path": "components/persistent-collections/licenses/rpds-1.2.1-LICENSE.md.txt",
+          "byteLength": 1068,
+          "sha256": "e326b5fef9084c437878cc2184ba6dfa15503f46e5359dd67246f51761ea709f"
+        }
+      ]
+    },
+    {
+      "name": "archery",
+      "version": "1.2.3",
+      "archiveUrl": "https://static.crates.io/crates/archery/archery-1.2.3.crate",
+      "byteLength": 19957,
+      "sha256": "33ca55ee147b1926dbea904f50fe4902494e97bc742205abbbf10c709e43815f",
+      "repository": "https://github.com/orium/archery",
+      "declaredLicense": "MIT",
+      "selectedLicense": "MIT",
+      "licenseFiles": [
+        {
+          "path": "components/persistent-collections/licenses/archery-1.2.3-LICENSE.md.txt",
+          "byteLength": 1068,
+          "sha256": "e326b5fef9084c437878cc2184ba6dfa15503f46e5359dd67246f51761ea709f"
+        }
+      ]
+    },
+    {
+      "name": "triomphe",
+      "version": "0.1.16",
+      "archiveUrl": "https://static.crates.io/crates/triomphe/triomphe-0.1.16.crate",
+      "byteLength": 37467,
+      "sha256": "b40688ea6389c8171614b25491f71d4a27946e0c7ce2da1c6de27e25abf1a0ae",
+      "repository": "https://github.com/Manishearth/triomphe",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "selectedLicense": "MIT",
+      "licenseFiles": [
+        {
+          "path": "components/persistent-collections/licenses/triomphe-0.1.16-LICENSE-APACHE.txt",
+          "byteLength": 10849,
+          "sha256": "a6b7260485462860838b76ad1846d21f1605e6d239141c3aa949a601d992676c"
+        },
+        {
+          "path": "components/persistent-collections/licenses/triomphe-0.1.16-LICENSE-MIT.txt",
+          "byteLength": 1074,
+          "sha256": "15656cc11a8331f28c0986b8ab97220d3e76f98e60ed388b5ffad37dfac4710c"
+        }
+      ]
+    },
+    {
+      "name": "smallvec",
+      "version": "1.16.2",
+      "archiveUrl": "https://static.crates.io/crates/smallvec/smallvec-1.16.2.crate",
+      "byteLength": 34874,
+      "sha256": "f9395f0f0eee849a9b707b2f06bb92a6a422090e2123bb2ef8e87a0e61892a8e",
+      "repository": "https://github.com/servo/rust-smallvec",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "selectedLicense": "MIT",
+      "licenseFiles": [
+        {
+          "path": "components/persistent-collections/licenses/smallvec-1.16.2-LICENSE-APACHE.txt",
+          "byteLength": 10847,
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+        },
+        {
+          "path": "components/persistent-collections/licenses/smallvec-1.16.2-LICENSE-MIT.txt",
+          "byteLength": 1072,
+          "sha256": "0b28172679e0009b655da42797c03fd163a3379d5cfa67ba1f1655e974a2a1a9"
+        }
+      ]
+    }
+  ],
+  "verification": [
+    "100000-object clone counter: cloning a snapshot clones zero records; editing one record clones one record",
+    "ordered JSON representation and Send/Sync test",
+    "Native and wasm32 compilation; see video implementation progress for actual runtime parity status"
+  ]
+}

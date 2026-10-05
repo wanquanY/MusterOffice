@@ -128,7 +128,7 @@ impl BehaviorClock {
             local
         };
         let position = local.div(&self.cycle, bits)?;
-        let mut iteration = &position.n / &position.d;
+        let mut iteration = position.numerator() / position.denominator();
         let mut progress = position.fraction(bits)?;
         // Endpoint sides depend on the cascaded direction, not only this leaf's
         // speed. Two reversals restore forward fill; a reversed ancestor enters

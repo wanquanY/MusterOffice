@@ -1,6 +1,6 @@
 # MusterOffice Video 技术规格
 
-2026-10-06 · v1.0 · 设计状态，未实现。上位：[完整方案](../video-editing.md)。依据：[研究证据](../../research/video-editing-2026-10-06.md)。本文件中的 API、crate 名称与格式版本是拟定合同，不是已发行接口。
+2026-10-06 · v1.0 · 完整技术目标，部分基础正在实现。上位：[完整方案](../video-editing.md)。依据：[研究证据](../../research/video-editing-2026-10-06.md)。本文件中的 API、crate 名称与格式版本不是已发行接口；实际源码与验证范围见[实施记录](../../implementation/video-editing-progress.md)。
 
 ## 1. 不变量
 

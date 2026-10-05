@@ -1,7 +1,7 @@
 # MusterOffice Video：面向 Agent 的视频创作与剪辑设计方案
 
 - 版本：1.0，2026-10-06。
-- 状态：研究后的完整目标设计；视频作为 MusterOffice 第二场景的方向来自用户明确指示，具体技术组合为本方案建议，尚未实现或验收。
+- 状态：完整目标已获用户开发授权，部分时间、领域模型及原子编辑源码正在落地；尚未完成整体产品验收。基础决定见 [ADR 0012](../decisions/0012-agent-video-domain.md)，实际范围与证据见[实施记录](../implementation/video-editing-progress.md)。
 - 产品目标：从素材生成、导入、理解、剪辑到人工调整、本地导出，形成同一可编辑工程上的闭环。
 - 交付格式：Markdown。本文为总入口；[技术规格](video-editing/technical-spec.md)规定数据、算法与执行合同；[调研与源码证据](../research/video-editing-2026-10-06.md)记录依据、反证和局限；[验收规格](video-editing/acceptance.md)规定完成条件。
 - 现有边界：[架构](../architecture/overview.md)、[ADR 0007](../decisions/0007-kernel-only-integration-boundary.md)、[工程规范](../../AGENTS.md)。本方案扩展第二领域，不改变演示文稿当前验收范围。

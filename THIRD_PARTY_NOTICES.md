@@ -15,6 +15,7 @@ This source repository keeps upstream notices alongside the relevant materials:
 | ECMA DrawingML preset shape data | [Copyright and permission](components/drawingml-presets/COPYRIGHT.txt), [provenance](components/drawingml-presets/README.md) |
 | Unicode bidi dependency | [Copyright](components/unicode-bidi/COPYRIGHT), [MIT license](components/unicode-bidi/LICENSE-MIT) |
 | Rust numeric dependencies | [Component record and licenses](components/rust-numeric/) |
+| Video persistent object collections (rpds, archery, triomphe, smallvec) | [Fixed source and license record](components/persistent-collections/component.json), [notices](components/persistent-collections/licenses/) |
 | rustix | [Component record and licenses](components/rustix/) |
 | base64 | [Component record and licenses](components/base64/) |
 | MCP SDK | [License](components/rmcp/LICENSE-UPSTREAM.txt), [component record](components/rmcp/component.json) |

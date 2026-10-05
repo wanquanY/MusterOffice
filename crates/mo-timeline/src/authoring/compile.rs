@@ -276,10 +276,10 @@ fn nonnegative(t: RationalTime, id: Option<&TimingNodeId>) -> Result<(), Timelin
     }
 }
 fn wire_time(r: &Ratio) -> Result<RationalTime, TimelineError> {
-    let ticks =
-        i64::try_from(&r.n).map_err(|_| TimelineError::Limit("presentation time numerator"))?;
-    let scale =
-        u32::try_from(&r.d).map_err(|_| TimelineError::Limit("presentation time denominator"))?;
+    let ticks = i64::try_from(r.numerator())
+        .map_err(|_| TimelineError::Limit("presentation time numerator"))?;
+    let scale = u32::try_from(r.denominator())
+        .map_err(|_| TimelineError::Limit("presentation time denominator"))?;
     RationalTime::new(ticks, scale).map_err(|_| TimelineError::Limit("presentation time"))
 }
 fn navigation(direction: NavigationDirection) -> TimeCondition {
