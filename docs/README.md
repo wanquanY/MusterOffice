@@ -1,5 +1,7 @@
 # MusterOffice 文档
 
+[视频创作与剪辑完整设计](design/video-editing.md)：第二个 Agent 办公场景的产品需求、原生与浏览器架构、技术合同和完整验收目标；附 25 项技术/产品对照、12 个仓库固定快照与本地时间实验。当前为研究设计，尚未实现或验收。
+
 [最新进度](implementation/progress.md)区分内核实现、产品固定版本和仍未完成的替换验收。以下阶段记录保留当时的验证范围。
 
 [现有模板兼容与本地原生启用](implementation/existing-template-compatibility.md)：修复母版声明与显式空白保留，单页中文模板完成原生／WASM 像素对照；两个平台原件存在结构问题，完整迁移和新材料激活继续处理。
