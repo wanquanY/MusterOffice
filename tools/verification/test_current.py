@@ -28,6 +28,7 @@ class CurrentVerificationTests(unittest.TestCase):
         self.assertLess(names.index("wasm-bindgen"), names.index("editor-client-tests"))
         self.assertIn("playback-sdk-package-tests", names)
         self.assertIn("video-generated-transactions", names)
+        self.assertIn("media-native-callbacks", names)
         self.assertIn("--ignored", next(s for s in steps if s.name == "video-generated-transactions").argv)
         for dependency in ("video-conformance-native", "video-conformance-wasm", "video-conformance-bindgen"):
             self.assertLess(names.index(dependency), names.index("video-domain-native-wasm-parity"))
@@ -38,6 +39,19 @@ class CurrentVerificationTests(unittest.TestCase):
         self.assertEqual(current.selected_groups("mcp-protocol"), {"native", "mcp", "mcp-protocol"})
         with self.assertRaises(ValueError):
             current.selected_groups("unknown")
+
+    def test_media_plan_consumes_explicit_component_and_missing_record_fails(self):
+        steps = current.plan({"media"}, Path("/output"), "unused", sys.executable, "/media-component")
+        self.assertEqual(len(steps), 1)
+        self.assertIn("/media-component", steps[0].argv)
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "run"
+            result = subprocess.run([sys.executable, str(Path(current.__file__)), "--groups", "media", "--output", str(output),
+                                     "--ffmpeg-dir", str(Path(directory) / "missing")], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 2)
+            report = json.loads((output / "report.json").read_text())
+            self.assertTrue(any("native-build.json" in e for e in report["prerequisiteErrors"]))
+            self.assertEqual(report["steps"][0]["status"], "not-run")
 
     def test_missing_components_never_report_a_successful_or_skipped_gate(self):
         with tempfile.TemporaryDirectory() as directory:

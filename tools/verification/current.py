@@ -19,7 +19,7 @@ import sys
 import time
 
 ROOT = Path(__file__).resolve().parents[2]
-GROUPS = ("lint", "rust", "contracts", "typescript", "native", "mcp", "wasm", "mcp-protocol")
+GROUPS = ("lint", "rust", "contracts", "typescript", "native", "media", "mcp", "wasm", "mcp-protocol")
 
 
 @dataclass(frozen=True)
@@ -38,7 +38,7 @@ def selected_groups(value):
     return groups
 
 
-def plan(groups, output, bindgen, python):
+def plan(groups, output, bindgen, python, ffmpeg_dir=None):
     steps = []
 
     def add(name, *argv, worker=False):
@@ -48,6 +48,7 @@ def plan(groups, output, bindgen, python):
     mcp = ("--manifest-path", "tools/mo-mcp/Cargo.toml")
     if "lint" in groups:
         add("verification-driver-tests", python, "-m", "unittest", "discover", "-s", "tools/verification", "-p", "test_current.py", "-v")
+        add("media-component-identity-tests", python, "-m", "unittest", "discover", "-s", "tools/verification", "-p", "test_media_component.py", "-v")
         add("agent-package-tests", python, "-m", "unittest", "discover", "-s", "tools/agent-package", "-p", "test_build.py", "-v")
         add("playback-sdk-package-tests", python, "-m", "unittest", "discover", "-s", "tools/playback-sdk", "-p", "test_build.py", "-v")
         add("format", "cargo", "fmt", "--all", "--", "--check")
@@ -57,6 +58,8 @@ def plan(groups, output, bindgen, python):
         add("video-generated-transactions", "cargo", "test", *cargo, "--release", "-p", "mo-video-edit", "--test", "generated_sequences", "--", "--ignored", "--nocapture")
     if "contracts" in groups:
         add("schemas", "cargo", "run", "-p", "mo-contract-codegen", *cargo, "--", "check", "contracts/generated")
+    if "media" in groups:
+        add("media-native-callbacks", python, "tools/verification/media-native-check.py", "--component", ffmpeg_dir or "UNCONFIGURED_FFMPEG_COMPONENT", "--output", output / "media-native")
     if "typescript" in groups:
         add("types", "pnpm", "check:types")
         add("client-tests", "pnpm", "test:operation-client")
@@ -135,6 +138,10 @@ def prerequisites(groups, args):
     required_tools = ["cargo", "git"]
     if groups.intersection(("typescript", "wasm")):
         required_tools.extend(("pnpm", "node"))
+    if "media" in groups:
+        required_tools.extend(("clang", "ffmpeg", "ffprobe"))
+        if not args.ffmpeg_dir or not (Path(args.ffmpeg_dir) / "native-build.json").is_file():
+            errors.append("--ffmpeg-dir must identify a prepared media component with native-build.json")
     for name in required_tools:
         if not shutil.which(name):
             errors.append(f"executable unavailable: {name}")
@@ -155,15 +162,18 @@ def main():
     parser.add_argument("--output", type=Path, required=True, help="new output directory; existing runs are never overwritten")
     parser.add_argument("--skia-dir", default=os.getenv("MO_SKIA_LIB_DIR"))
     parser.add_argument("--harfbuzz-dir", default=os.getenv("MO_HARFBUZZ_LIB_DIR"))
+    parser.add_argument("--ffmpeg-dir", default=os.getenv("MO_FFMPEG_LIB_DIR"))
     parser.add_argument("--bindgen", default=os.getenv("MO_WASM_BINDGEN_BIN"))
     parser.add_argument("--list", action="store_true", help="print the selected gate plan without running it")
     args = parser.parse_args()
+    if args.ffmpeg_dir:
+        args.ffmpeg_dir = str(Path(args.ffmpeg_dir).resolve())
     try:
         groups = selected_groups(args.groups)
     except ValueError as error:
         parser.error(str(error))
     output = args.output.resolve()
-    steps = plan(groups, output, args.bindgen or "wasm-bindgen", sys.executable)
+    steps = plan(groups, output, args.bindgen or "wasm-bindgen", sys.executable, args.ffmpeg_dir)
     if args.list:
         for step in steps:
             print(json.dumps({"name": step.name, "argv": step.argv}))

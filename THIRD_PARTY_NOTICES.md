@@ -10,6 +10,7 @@ This source repository keeps upstream notices alongside the relevant materials:
 | --- | --- |
 | Skia adaptations and upstream patch context; skcms and Khronos notices | [Notices](components/skia/THIRD-PARTY-NOTICES.txt), [source lock](components/skia/lock.json) |
 | HarfBuzz component | [Source and license record](components/harfbuzz/lock.json); upstream source is fetched separately and its COPYING file must be retained |
+| FFmpeg media component, selected LGPL configuration | [Fixed source/signature and build record](components/ffmpeg/README.md), [LGPL-2.1 text](components/ffmpeg/COPYING.LGPLv2.1), [upstream license inventory](components/ffmpeg/LICENSE.md); upstream source and per-file notices are distributed separately with binary components |
 | PNG, JPEG and zlib components | [Source lock](components/image-codec/lock.json), [license texts](components/image-codec/licenses/) |
 | Unicode data | [Unicode license](crates/mo-unicode/data/LICENSE-UNICODE) |
 | ECMA DrawingML preset shape data | [Copyright and permission](components/drawingml-presets/COPYRIGHT.txt), [provenance](components/drawingml-presets/README.md) |

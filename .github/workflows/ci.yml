@@ -45,6 +45,7 @@ jobs:
     env:
       MO_SKIA_LIB_DIR: ${{ github.workspace }}/.codex-work/ci-native/skia
       MO_HARFBUZZ_LIB_DIR: ${{ github.workspace }}/.codex-work/ci-native/harfbuzz
+      MO_FFMPEG_LIB_DIR: ${{ github.workspace }}/.codex-work/ci-native/ffmpeg
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -58,7 +59,7 @@ jobs:
       - name: Install build prerequisites
         run: |
           sudo apt-get update
-          sudo apt-get install --no-install-recommends -y clang llvm cmake ninja-build nasm pkg-config
+          sudo apt-get install --no-install-recommends -y clang llvm cmake ninja-build nasm pkg-config ffmpeg
           python -m pip install -r tools/ci/requirements.txt
           npm install --global pnpm@10.2.1
           rustup show

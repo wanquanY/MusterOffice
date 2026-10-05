@@ -68,9 +68,12 @@ def main():
     DIRECTORY.mkdir(parents=True, exist_ok=True)
     skia = json.loads((ROOT / 'components/skia/lock.json').read_text())
     hb = json.loads((ROOT / 'components/harfbuzz/lock.json').read_text())
+    ffmpeg = json.loads((ROOT / 'components/ffmpeg/lock.json').read_text())
     codecs = json.loads((ROOT / 'components/image-codec/lock.json').read_text())['dependencies']
     download(skia, DIRECTORY / 'skia' / f"skia-{skia['commit']}.tar.gz")
     download(hb, DIRECTORY / 'harfbuzz' / f"harfbuzz-{hb['version']}.tar.xz")
+    media_archive = DIRECTORY / 'archives' / f"ffmpeg-{ffmpeg['version']}.tar.xz"
+    download(ffmpeg, media_archive)
     for record in codecs:
         download(record, DIRECTORY / 'archives' / record['archive'])
     ninja = DIRECTORY / 'tools/ninja'
@@ -89,6 +92,9 @@ def main():
         '--directory', DIRECTORY / 'skia', '--gn', gn / 'out/gn',
         '--ninja', ninja / 'out/ninja', '--archiver', '/usr/bin/llvm-ar',
         '--image-codecs', DIRECTORY / 'codecs', '--jobs', '4')
+    run('python3', 'tools/components/build-ffmpeg.py', '--stage', 'libraries',
+        '--directory', DIRECTORY / 'ffmpeg', '--archive', media_archive, '--jobs', '4')
+    run('python3', 'tools/components/build-ffmpeg.py', '--stage', 'bridge', '--directory', DIRECTORY / 'ffmpeg')
 
 
 if __name__ == '__main__':
