@@ -25,8 +25,7 @@
 //!     let _second = container.select(1);
 //! }
 //! ```
-mod types;
-pub use types::*;
+pub use mo_media::*;
 #[allow(unsafe_code)]
 mod ffi;
 

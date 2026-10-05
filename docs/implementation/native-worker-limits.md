@@ -1,6 +1,6 @@
 # 原生 worker 资源限制
 
-2026-10-06 · `mo-native-limits` 已实现并在 macOS arm64 实际验证；视频 worker 尚未接入，不能因此声明产品解码已完成隔离。
+2026-10-06 · `mo-native-limits` 已实现并在 macOS arm64 实际验证；视频 worker 已接入启动限制；这不代表完整产品或系统调用隔离验收。
 
 ## 语义
 
@@ -41,4 +41,4 @@ cargo test --offline --locked -p mo-native-limits -- --nocapture
 
 本机记录 `.codex-work/media-process-limits-evidence-final.log` 含各子进程实际安装值、退出信号与观察时间。两个 CPU 子场景均约 1.02 秒后收到 SIGXCPU；文件增长收到 SIGXFSZ，pipe 输出此前已成功。该时间是本次测试观察值，不是跨设备性能保证。早期测试曾错误地只接受普通错误返回而忽略合法 SIGXFSZ，现已按真实内核行为修正断言，原失败日志保留。
 
-后续把该启动限制接入视频 worker，并实际验证宿主总调用 deadline、双向资源读取、frame payload 上限、取消/崩溃后的 kill/reap 与依赖闭包。仅此资源模块通过不能关闭这些验收项。
+[视频 worker](video-media-worker.md)已接入启动限制，并实际验证宿主总调用 deadline、双向资源读取、frame payload 上限、取消/崩溃后的 kill/reap 与依赖闭包。该 worker 的证据单独记录；资源限制本身仍不构成系统调用沙箱。

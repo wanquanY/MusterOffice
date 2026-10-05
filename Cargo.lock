@@ -507,11 +507,40 @@ dependencies = [
 ]
 
 [[package]]
+name = "mo-media"
+version = "0.1.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "mo-media-ffmpeg"
 version = "0.1.0"
 dependencies = [
+ "mo-media",
  "serde_json",
  "sha2",
+]
+
+[[package]]
+name = "mo-media-wire"
+version = "0.1.0"
+dependencies = [
+ "mo-media",
+ "mo-native-limits",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "mo-media-worker"
+version = "0.1.0"
+dependencies = [
+ "mo-media",
+ "mo-media-ffmpeg",
+ "mo-media-wire",
+ "mo-native-limits",
+ "serde",
 ]
 
 [[package]]
@@ -564,6 +593,20 @@ dependencies = [
  "rustix",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "mo-native-media"
+version = "0.1.0"
+dependencies = [
+ "mo-media",
+ "mo-media-wire",
+ "mo-native-limits",
+ "mo-native-worker",
+ "rustix",
+ "serde",
+ "serde_json",
+ "sha2",
 ]
 
 [[package]]

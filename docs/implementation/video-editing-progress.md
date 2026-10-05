@@ -16,7 +16,7 @@
 | 工作包 | 当前状态 | 退出条件 |
 | --- | --- | --- |
 | W1 视频领域与合同 | 基础已实现，未全部完成 | 独立模型、精确时间、受限解析与校验、Native/WASM 公共合同向量；补全效果、字幕、分析和工程包模型 |
-| W2 媒体与合成 | 纯计算计划、原生 C 解码及 Rust 安全接入已实现；worker/Browser 执行、合成/导出待实施 | 原生/浏览器媒体与合成、字体/色彩/音频及真实输出 |
+| W2 媒体与合成 | 纯计算计划、原生 C/Rust 及独立 worker 已实现；工程执行、Browser、合成/导出待实施 | 原生/浏览器媒体与合成、字体/色彩/音频及真实输出 |
 | W3 编辑与历史 | 原子事务基础已实现，未全部完成 | 全部编辑操作、候选、冲突与有条件逆操作及增量索引 |
 | W4 产品执行 | 待实施新内核接入 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
 | W5 创作与交互 | 保留原 worktree，未完成替换 | 整理现有生成/Admin/计费、技能、人机共享编辑与消息卡片 |
@@ -58,9 +58,9 @@ VFR 呈现窗口按真实样本覆盖区间选择源帧，区分已知 gap 与�
 
 后续已实现 `mo-media-ffmpeg` 的 Rust RAII、回调 panic/错误边界、类型约束的单次流选择、线程归属与独立拥有的帧平面。构建时逐字段核对 C/Rust ABI，核实实际加载别名指向的固定组件；任何操作错误关闭 native context，取消/失败不返回部分帧。[执行边界记录](video-media-native.md)包含具体生命周期、panic 语义与复现。
 
-这仍是媒体计算的叶子组件：可终止 worker、与工程采样计划连接、GPU/浏览器和编码导出尚未接入；不能把 C/Rust 测试进程的成功当成产品已经可用。内部 vendor 的全部内存/CPU 仍需要后续进程级限制。
+可终止 worker 已完成：`mo-media` 分离无 codec 链接的数据，`mo-media-wire` 提供有界头与原始平面协议，`mo-native-media` 持有宿主资源和进程。总 deadline 不随读往返重置，错误/取消/崩溃会停止并回收进程；开发包校验固定摘要和 loader 闭包。详见[worker 实施及实际证据](video-media-worker.md)。与工程采样计划连接、GPU/浏览器和编码导出仍未接入，不能把 worker 测试成功当成产品已经可用。
 
-`mo-native-limits` 已提供后续 worker 启动使用的进程资源限制，实际验证 CPU 超限终止、地址增长拒绝、文件增长失败和继承限制。该模块尚未接入视频 worker；地址增长额度不等于 RSS 硬限额，也不是文件/网络沙箱。[平台边界与测试](native-worker-limits.md)明确保留这些区别。
+`mo-native-limits` 已提供后续 worker 启动使用的进程资源限制，实际验证 CPU 超限终止、地址增长拒绝、文件增长失败和继承限制。该模块已在视频 worker 接收素材前安装并读回核验；地址增长额度不等于 RSS 硬限额，也不是文件/网络沙箱。[平台边界与测试](native-worker-limits.md)明确保留这些区别。
 
 ### 合同与验证入口
 
@@ -87,9 +87,10 @@ VFR 呈现窗口按真实样本覆盖区间选择源帧，区分已知 gap 与�
 | 区间索引 | 2,048 组随机查询与独立扫描一致；10 万稀疏区间的四处查询均少于 64 节点访问 | 不是全工程编译、播放帧率或 UI 延迟基准 |
 | 原生真实媒体 | macOS arm64 固定 FFmpeg 9.0.2；77 帧 B-frame/VFR 的时间/像素 MD5 与独立 CLI 解码一致；前后 seek、13 字节短读、EOF、取消与预算通过 | 仅这一实际素材/平台，不是浏览器、硬件、多 codec/多平台矩阵 |
 | 原生 AAC | 已知 3 秒/48k 源返回 144,000 样本且时间连续；与参考 PCM 最大差 `2.24e-8`、RMS `3.32e-9` | 已明确处理参考旧版 CLI 多出的尾 padding；不是完整混音/保调/音质测试 |
-| Rust 原生所有权 | 8 项行为测试与 3 项 compile-fail 通过；真实 WAV 逐字节往返、资源 drop、C 内回调 panic、逐检查点取消、独立拥有帧和预算 | 包装不能抢占阻塞回调或限制全部 vendor 私有分配；仍须 worker |
+| Rust 原生所有权 | 8 项行为测试与 3 项 compile-fail 通过；真实 WAV 逐字节往返、资源 drop、C 内回调 panic、逐检查点取消、独立拥有帧和预算 | 包装不能抢占阻塞回调或限制全部 vendor 私有分配；worker 证据单独记录 |
 | Rust 真实媒体 | 显式执行 1 项真实素材测试并独立核验：77 帧像素 SHA-256/PTS、前后 seek 及 BT.709 标签一致；144,000 AAC 样本与参考误差同上 | 不是 renderer/浏览器/产品执行，原生 adapter 只在本机 macOS arm64 验证 |
-| 进程限制基础 | 6 项父测试实际启动隔离子进程，验证地址增长拒绝、内核 CPU 终止、继承限制、非法参数、文件描述符与文件增长受限 | 尚未与视频 worker 连接；不是 RSS、系统调用沙箱或完整产品隔离验收 |
+| 进程限制基础 | 6 项父测试实际启动隔离子进程，验证地址增长拒绝、内核 CPU 终止、继承限制、非法参数、文件描述符与文件增长受限 | 已与视频 worker 连接；不是 RSS、系统调用沙箱或完整产品隔离验收 |
+| 原生媒体 worker | 默认协议/宿主 8 项，真实 worker 6 项、包完整性 3 项、真实压缩媒体 1 项均通过；77 帧/144,000 音频样本与参考一致，1.5 MiB 大媒体包经短读成功；宿主无 codec 链接 | macOS arm64 开发包；无完整系统调用沙箱、浏览器或用户时间线验收 |
 | 媒体内存检查 | wrapper 与 FFmpeg C 实现分别构建 ASan/UBSan 档案，同一真实检查通过 | 汇编与平台框架不因此被插桩；不是 hostile-media 隔离保证 |
 | 原生媒体库体积 | 本机 release 配置 5 个 FFmpeg 库及 C wrapper 共 7,392,248 bytes | 不包含 Rust worker、字体、GPU、额外 codec 或系统框架，不是最终应用体积 |
 | 代码与合同 | 整个 Rust 工作区 strict Clippy、WASM 编译、全部 schema/TypeScript 合同检查通过；新增视频 schema 使用相同生成/检查入口 | 未发布新版 SDK、组件频道或 UI |
@@ -123,3 +124,5 @@ cargo test --release --offline --locked -p mo-video-edit --test generated_sequen
 Rust 接入增量记录：`.codex-work/media-rust-gate-final/report.json`、其 `media-rust/report.json` 和 `.codex-work/media-rust-workspace-clippy.log`。media 分组现在顺序执行 C/Rust 真实媒体门禁，固定组件缺失仍报告失败。
 
 进程额度增量记录：`.codex-work/media-process-limits-evidence-final.log`。父测试自动拉起专用 child fixture，完成后等待回收；该 fixture 的 ignored 标记不表示六项真实子进程检查被跳过。
+
+跨进程媒体增量记录：`.codex-work/media-worker-gate-final/report.json`、其 `media-worker/report.json`、`.codex-work/media-worker-workspace-clippy-final.log`。media 分组顺序执行 C、Rust、构建 bundle 和实际 worker 四步；详细协议、额度与发行边界见 [worker 记录](video-media-worker.md)。

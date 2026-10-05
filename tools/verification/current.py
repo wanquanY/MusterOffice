@@ -61,6 +61,8 @@ def plan(groups, output, bindgen, python, ffmpeg_dir=None):
     if "media" in groups:
         add("media-native-callbacks", python, "tools/verification/media-native-check.py", "--component", ffmpeg_dir or "UNCONFIGURED_FFMPEG_COMPONENT", "--output", output / "media-native")
         add("media-rust-ownership", python, "tools/verification/media-rust-check.py", "--component", ffmpeg_dir or "UNCONFIGURED_FFMPEG_COMPONENT", "--native-evidence", output / "media-native", "--output", output / "media-rust")
+        add("media-worker-bundle", python, "tools/media-worker/build.py", "--component", ffmpeg_dir or "UNCONFIGURED_FFMPEG_COMPONENT", "--output", output / "media-worker-bundle")
+        add("media-worker-execution", python, "tools/verification/media-rust-check.py", "--component", ffmpeg_dir or "UNCONFIGURED_FFMPEG_COMPONENT", "--native-evidence", output / "media-native", "--worker-bundle", output / "media-worker-bundle", "--output", output / "media-worker")
     if "typescript" in groups:
         add("types", "pnpm", "check:types")
         add("client-tests", "pnpm", "test:operation-client")
@@ -141,6 +143,12 @@ def prerequisites(groups, args):
         required_tools.extend(("pnpm", "node"))
     if "media" in groups:
         required_tools.extend(("clang", "ffmpeg", "ffprobe"))
+        if sys.platform == "darwin":
+            required_tools.append("otool")
+        elif sys.platform.startswith("linux"):
+            required_tools.append("readelf")
+        else:
+            errors.append("media worker bundle currently requires macOS or Linux")
     if groups.intersection(("media", "lint", "rust")):
         if not args.ffmpeg_dir or not (Path(args.ffmpeg_dir) / "native-build.json").is_file():
             errors.append("--ffmpeg-dir must identify a prepared media component with native-build.json")

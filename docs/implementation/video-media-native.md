@@ -1,6 +1,6 @@
 # 原生媒体执行边界
 
-2026-10-06 · 开发中。已完成固定 C 解码组件及 Rust 安全接入；可终止 worker、工程采样执行和产品集成尚未完成。
+2026-10-06 · 开发中。已完成固定 C 解码组件、Rust 安全接入及可终止 worker；工程采样执行和产品集成尚未完成。
 
 ## 组件和职责
 
@@ -20,7 +20,7 @@
 
 `ReadAt` 可以短读，不能在声明的资源末端之前返回零或超出目标容量。回调返回异常数值或 I/O 错误都会失败。C 分配的 AVIO 缓冲可能未初始化，因此包装在形成安全 Rust `&mut [u8]` 前初始化目标缓冲；安全回调允许读取它，不能把未初始化内存交给 safe Rust。
 
-read/cancel 回调用 `catch_unwind` 拦截 Rust unwind，记录首次失败并阻止后续回调；I/O 错误与 panic 不穿过 C ABI。panic payload 的析构也可能 panic，因此首次 panic payload 被有意遗忘，每个失败会话至多一份，最终进程退出回收；这不是长期复用失败会话的理由。`panic=abort`、内存耗尽或本机崩溃仍可能终止进程，必须由后续 worker 层处理。宿主回调必须及时返回；包装不能抢占一个不返回的同线程回调。
+read/cancel 回调用 `catch_unwind` 拦截 Rust unwind，记录首次失败并阻止后续回调；I/O 错误与 panic 不穿过 C ABI。panic payload 的析构也可能 panic，因此首次 panic payload 被有意遗忘，每个失败会话至多一份，最终进程退出回收；这不是长期复用失败会话的理由。`panic=abort`、内存耗尽或本机崩溃仍可能终止进程，由独立 worker 层处理。宿主回调必须及时返回；包装不能抢占一个不返回的同线程回调。
 
 ## ABI 与固定构建
 
@@ -36,7 +36,7 @@ read/cancel 回调用 `catch_unwind` 拦截 Rust unwind，记录首次失败并�
 - 3 项 compile-fail 文档测试：不能 Send、不能 Sync、不能重复选择同一容器。
 - runner 生成真实 H.264 B-frame/VFR + AAC 素材，另执行显式 ignored 的 Rust 测试。77 帧的 active pixel SHA-256/PTS 与独立 CLI 一致；前后 seek generation 与 suffix/完整序列一致；BT.709 元数据保留。
 - AAC 共 144,000 样本，PTS 连续；与独立参考 PCM 最大绝对差 `2.24e-8`、RMS `3.32e-9`。参考旧版 CLI 的尾 padding 处理沿用组件记录中已知源长度的明确规则。
-- `current.py --groups media` 顺序执行 C 和 Rust 实际检查，Rust 检查绑定本次 C evidence 的素材、组件摘要，不用预录媒体输出替代执行。
+- `current.py --groups media` 顺序执行 C、Rust、worker 构建及跨进程实际检查，Rust 检查绑定本次 C evidence 的素材、组件摘要，不用预录媒体输出替代执行。
 
 ```sh
 MO_FFMPEG_LIB_DIR="$PWD/.codex-work/ffmpeg-native" cargo test --locked --offline -p mo-media-ffmpeg
@@ -48,8 +48,8 @@ python3 tools/verification/current.py --groups media \
 
 ## 进程限制基础
 
-后续已实现独立 `mo-native-limits`，用于 disposable worker 启动时安装并核验进程 CPU、地址增长、文件描述符和文件增长上限；实际子进程故障测试已通过，详见[限制语义与证据](native-worker-limits.md)。它尚未接入视频 worker，也不是文件/网络沙箱或 RSS 硬限额；不能据此把下面的执行链标为完成。
+后续已实现独立 `mo-native-limits`，用于 disposable worker 启动时安装并核验进程 CPU、地址增长、文件描述符和文件增长上限；实际子进程故障测试已通过，详见[限制语义与证据](native-worker-limits.md)。现已接入[视频 worker](video-media-worker.md)，在接收素材前安装并由宿主核验；它不是文件/网络沙箱或 RSS 硬限额，不能据此把完整产品执行链标为完成。
 
 ## 下一层必须完成
 
-可终止进程、双向资源读取与有界 IPC、总调用时限和进程内存/CPU 限制；使用实际帧建立呈现索引并执行工程采样；原生/浏览器共享渲染与音频处理、编码导出、产品 SDK 和界面。当前 Rust 安全 API 不等于敌意输入隔离，不能把它直接放到 UI 进程里当成已完成的产品边界。
+可终止进程、双向资源读取、有界 IPC、总调用时限和进程额度已在 worker 层实现并实测。下一层需要使用实际帧建立呈现索引并执行工程采样；原生/浏览器共享渲染与音频处理、编码导出、产品 SDK 和界面。当前 Rust 安全 API 不等于敌意输入隔离，不能把它直接放到 UI 进程里当成已完成的产品边界。

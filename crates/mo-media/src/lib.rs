@@ -1,3 +1,6 @@
+//! Media byte capabilities and decoded values without any native codec linkage.
+//! Codec metadata is preserved; this is not a document or color-transform contract.
+use serde::{Deserialize, Serialize};
 use std::{fmt, io};
 
 /// A host capability over immutable resource bytes. No path or URL is accepted.
@@ -14,7 +17,8 @@ impl<F: FnMut(u64, &mut [u8]) -> io::Result<usize>> ReadAt for F {
 
 /// Explicit per-session admission/work limits, including total copied frame bytes.
 /// These are not a bound on all allocations inside a vendor decoder.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct DecodeLimits {
     pub max_input_bytes: u64,
     pub max_read_bytes: u64,
@@ -25,7 +29,8 @@ pub struct DecodeLimits {
     pub max_channels: u32,
     pub max_decode_steps: u32,
 }
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub enum ErrorKind {
     Invalid,
     Io,
@@ -38,14 +43,15 @@ pub enum ErrorKind {
     CallbackContract,
     Abi,
 }
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct MediaError {
     pub kind: ErrorKind,
     pub upstream_code: Option<i32>,
     pub message: String,
 }
 impl MediaError {
-    pub(crate) fn new(kind: ErrorKind, message: impl Into<String>) -> Self {
+    pub fn new(kind: ErrorKind, message: impl Into<String>) -> Self {
         Self {
             kind,
             upstream_code: None,
@@ -60,21 +66,24 @@ impl fmt::Display for MediaError {
 }
 impl std::error::Error for MediaError {}
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub enum MediaKind {
     Video,
     Audio,
     Other,
 }
 /// Source ticks, deliberately not rescaled into average FPS or floating seconds.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct TimeBase {
     pub numerator: u32,
     pub denominator: u32,
 }
 /// The pinned codec's numeric color tags; unknown/reserved values are retained.
 /// This is a native adapter type, not the portable document/color contract.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct CodecColorTags {
     pub primaries: i32,
     pub transfer: i32,
@@ -82,7 +91,8 @@ pub struct CodecColorTags {
     pub range: i32,
     pub chroma_location: i32,
 }
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct StreamInfo {
     pub index: u32,
     pub kind: MediaKind,
@@ -101,7 +111,8 @@ pub struct StreamInfo {
     /// FFmpeg's fixed-point container display matrix, preserved without rounding.
     pub display_matrix: Option<[i32; 9]>,
 }
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct FrameInfo {
     pub generation: u64,
     pub kind: MediaKind,
