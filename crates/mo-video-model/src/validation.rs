@@ -460,8 +460,23 @@ impl Validator<'_> {
                 &path,
                 "link group requires at least two clips",
             );
+            let mut sequence = None;
             for clip in &group.members {
+                self.poll()?;
                 self.reference(d.clips.contains_key(clip), &path);
+                if let Some(owner) = self
+                    .clip_owners
+                    .get(clip)
+                    .and_then(|t| self.track_owners.get(t))
+                    .cloned()
+                {
+                    self.require(
+                        sequence.as_ref().is_none_or(|s| s == &owner),
+                        &path,
+                        "linked clips must share a sequence time coordinate",
+                    );
+                    sequence = Some(owner);
+                }
                 if !linked.insert(clip) {
                     self.issue(
                         ValidationCode::OwnershipConflict,

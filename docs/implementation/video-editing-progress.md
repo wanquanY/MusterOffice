@@ -38,7 +38,7 @@
 
 ### 原子编辑与逆操作
 
-`mo-video-edit` 提供快照、`prepare` 和 `prepare_inverse`，实现标题、序列/轨道/资源管理、插入、删除、移动、分割、裁切、波纹插入/裁切、slip、roll、slide、基础效果/来源替换、关联/解除关联。波纹轨道集合、关联策略与分割后的新身份必须显式给出。
+`mo-video-edit` 提供快照、`prepare` 和 `prepare_inverse`，实现标题、序列/轨道/资源管理、插入、删除、移动、分割、裁切、波纹插入/裁切、slip、roll、slide、基础效果/来源替换、关联/解除关联，以及覆盖、区间删除和显式音频策略的变速。波纹轨道集合、关联策略与分割后的新身份必须显式给出。区间/变速规则见[详细合同](video-editing-transactions.md)。
 
 所有操作先在共享结构的候选中执行，完成后统一验证、计算摘要、读写集合、条件逆操作和预览失效范围。错误或取消不改变基线。逆操作按对象及关联依赖检查冲突，允许保留其他轨道的独立修改；新建关联、解除关联后成员被修改等情况不能被撤销静默覆盖。嵌套序列依赖和 solo 导致的其他轨道变化进入失效传播。
 
@@ -56,14 +56,14 @@
 | --- | --- | --- |
 | 原 PPT 时间线 | 168 项既有测试通过共享算术适配 | 不等于新的媒体渲染已实现 |
 | Rust 工作区回归 | 一次完整运行 1,675 passed、28 ignored；后续视频限定修正另跑专项 | ignored 中需要独立环境/worker 的检查不伪装通过；不是所有 CI 分组重跑 |
-| 最新时间/模型/事务专项 | 37 passed、1 个长序列测试默认 ignored 并另外执行 | 不代表所有最终编辑功能已实现 |
+| 最新时间/模型/事务专项 | 55 passed、1 个长序列测试默认 ignored 并另外执行 | 不代表所有最终编辑功能已实现 |
 | 既有 MCP 纯计算入口 | 17 项测试通过，独立 Cargo.lock 已纳入共享 mo-time | 未增加视频 MCP 工具，legacy-host/HTTP 组合本次未全部重跑 |
 | 精确时间生成测试 | 4,096 组有理算术性质；107,892 帧的 30000/1001 时间及 48k 音频累计边界 | 这是样本调度数学，未播放或编码真实一小时视频 |
-| 事务长序列 | 固定种子 100,000 次；49,662 成功、50,338 拒绝、49,662 次逆操作精确恢复 | 语料覆盖当前操作子集，不足以关闭完整 SEM-06 |
+| 事务长序列 | 固定种子 100,000 次；47,422 成功、52,578 拒绝、47,422 次逆操作精确恢复（已扩展区间与变速语料） | 语料覆盖当前操作子集，不足以关闭完整 SEM-06 |
 | 原子失败/取消 | 每个观察到的取消检查点拒绝候选，基线不变；中途失败、锁轨、缺素材、超预算验证通过 | 未检验数据库断电和业务 outbox |
-| Native/WASM 实际运行 | macOS arm64 Native 与 Node v23.5.0 的 WASM，19 步：15 次成功、4 次拒绝，结果完全一致；重复键两端均拒绝 | 不等于浏览器媒体、WebGPU/WebCodecs、Windows/Linux 原生或产品验收 |
-| 跨端 fixture 摘要 | `b9ccde061f503f48d2496db852f665c5a6f50069fe467554ec3782b69f855e15` | 绑定本次基础语料，不是最终媒体档案 |
-| 跨端结果摘要 | `defaffdace5a667d7ce57a9909393a79a1592f0a946d68939ba98fe80bf52b58` | 同上 |
+| Native/WASM 实际运行 | macOS arm64 Native 与 Node v23.5.0 的 WASM，25 步：20 次成功、5 次拒绝，结果完全一致；重复键两端均拒绝 | 不等于浏览器媒体、WebGPU/WebCodecs、Windows/Linux 原生或产品验收 |
+| 跨端 fixture 摘要 | `568babf4de9b90e46fca80bee7377ef437167f9ae1053254355c736fd008be5a` | 绑定本次基础语料，不是最终媒体档案 |
+| 跨端结果摘要 | `3bc203a14d17be214aec45b5c9588f221296ab9b6229f28c8518adb5b126195a` | 同上 |
 | 代码与合同 | strict Clippy、WASM 编译和既有合同检查通过；新增视频 schema 使用相同生成/检查入口 | 未发布新版 SDK、组件频道或 UI |
 
 长序列复现：
@@ -76,7 +76,7 @@ cargo test --release --offline --locked -p mo-video-edit --test generated_sequen
 
 ## 明确尚未完成
 
-- overwrite、区间 ripple delete、完整 retime/音频策略、转场、关键帧、字幕词锚点、分析与互操作等最终语义仍待补全。
+- 当前已支持锚点线性变速；完整曲线变速/反查、转场、关键帧、字幕词锚点、分析与互操作等最终语义仍待补全。音频策略已保存，实际保调/重采样等处理仍待实现。
 - 没有新内核的真实解码、seek、音频混音、GPU 合成或容器输出；FFmpeg、浏览器 I/O 与相关组件尚未接入。
 - 生产 SDK/MCP/CLI、Device/Browser Host、Agent 技能、新时间线 UI、保存恢复和项目包尚未接入新内核。
 - CE.SDK 仍存在于产品旧 worktree，未宣称依赖退役；旧 scene 数据须审计、迁移或保留可导出的原件，不能仅换 engineId。
@@ -86,4 +86,4 @@ cargo test --release --offline --locked -p mo-video-edit --test generated_sequen
 
 发布核验材料：忽略目录 `.codex-work/stable-release-20261006/`。产品旧实现快照：其 worktree 的 `.codex-work/video-native-migration-20261006/`。
 
-测试记录：`.codex-work/video-foundation-workspace-tests-02.log`、`video-domain-tests-final.log`、`video-edit-generated-100k-02.log`、`video-domain-conformance.json`、`video-foundation-clippy-workspace.log`、`video-final-component-clippy.log`、`video-schema-check.log`。这些本地记录不进入发行依赖。
+测试记录：`.codex-work/video-foundation-workspace-tests-02.log`、`video-domain-tests-final.log`、`video-edit-generated-100k-02.log`、`video-domain-conformance.json`、`video-foundation-clippy-workspace.log`、`video-final-component-clippy.log`、`video-schema-check.log`。区间编辑增量记录：`video-range-tests-final.log`、`video-range-generated-100k.log`、`video-range-conformance.json`、`video-range-clippy-final.log`、`video-range-schema-check.log`。这些本地记录不进入发行依赖。

@@ -1,6 +1,6 @@
 mod support;
 use mo_video_edit::*;
-use mo_video_model::validate;
+use mo_video_model::{AudioTimePolicy, ClipSource, validate};
 use support::*;
 
 /// Long-form acceptance corpus; run explicitly in release mode. Fixed seed and failing index
@@ -22,7 +22,24 @@ fn one_hundred_thousand_seeded_transactions_preserve_atomicity_and_inverse() {
         }
         let delta = (seed % 7) as i64 - 3;
         let id = ["a", "b", "c", "x"][(seed as usize >> 8) % 4];
-        let operation = match (seed >> 16) % 7 {
+        let start = ((seed >> 24) % 25) as i64;
+        let end = start + 1 + ((seed >> 32) % 4) as i64;
+        let remainders = || {
+            current.document().tracks[&track_id("main-video")]
+                .clips
+                .iter()
+                .filter_map(|id| {
+                    let c = &current.document().clips[id];
+                    (c.timeline.start.compare_time(time(start)).is_lt()
+                        && c.timeline.end.compare_time(time(end)).is_gt())
+                    .then(|| SplitTarget {
+                        clip: id.clone(),
+                        right: clip_id(&format!("fragment-{index}-{id}")),
+                    })
+                })
+                .collect::<Vec<_>>()
+        };
+        let operation = match (seed >> 16) % 10 {
             0 => move_clip(id, delta),
             1 => Operation::Slip {
                 clips: vec![clip_id(id)],
@@ -60,7 +77,39 @@ fn one_hundred_thousand_seeded_transactions_preserve_atomicity_and_inverse() {
                 ripple_tracks: vec![track_id("main-video")],
                 linked_policy: LinkedPolicy::RequireAll,
             },
-            _ => split(id, &format!("right-{index}"), 5),
+            6 => split(id, &format!("right-{index}"), 5),
+            7 => Operation::DeleteRange {
+                edit: RangeEdit {
+                    tracks: vec![track_id("main-video")],
+                    range: range(start, end),
+                    ripple: seed & 1 == 0,
+                    remainders: remainders(),
+                    right_groups: vec![],
+                    linked_policy: LinkedPolicy::RequireAll,
+                },
+            },
+            8 => Operation::Overwrite {
+                track: track_id("main-video"),
+                clip: shot(&format!("overwrite-{index}"), start, end),
+                remainders: remainders(),
+                right_groups: vec![],
+                linked_policy: LinkedPolicy::RequireAll,
+            },
+            _ => {
+                let ClipSource::Media { time_map, .. } = source(20, 30, 5 + delta) else {
+                    unreachable!()
+                };
+                Operation::Retime {
+                    targets: vec![RetimeTarget {
+                        clip: clip_id(id),
+                        time_map,
+                        audio: AudioTimePolicy::default(),
+                    }],
+                    effects: EffectTimingPolicy::PreserveClipTime,
+                    ripple_tracks: vec![],
+                    linked_policy: LinkedPolicy::RequireAll,
+                }
+            }
         };
         let digest = current.digest().clone();
         match apply(&current, vec![operation]) {

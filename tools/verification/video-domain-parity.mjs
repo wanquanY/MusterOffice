@@ -47,6 +47,12 @@ const fixture = { document, transactions: [
   [{ type: 'split', targets: [{ clip: 'x', right: 'x2' }], at: t(4), rightGroups: [], ...requireAll }],
   [{ type: 'setTrack', track: 'overlay', name: 'Locked', locked: true, muted: false, solo: true }],
   [{ type: 'delete', clips: ['x2'], ...requireAll }],
+  [{ type: 'overwrite', track: 'video', clip: clip('overwrite',13,15), remainders: [{clip:'b',right:'b2'}], rightGroups: [], ...requireAll }],
+  [{ type: 'deleteRange', edit: { tracks:['video'], range:range(12,16), ripple:true, remainders:[], rightGroups:[], ...requireAll } }],
+  [{ type: 'retime', targets: [{clip:'b2',timeMap:map(36,41,10),audio:{rate:'preservePitch',reverse:'mute',hold:'silence'}}], effects:'scaleToDuration',rippleTracks:['video'], ...requireAll }],
+  [{ type: 'setTrack', track: 'overlay', name: 'Overlay', locked:false,muted:false,solo:false }],
+  [{ type: 'deleteRange', edit: { tracks:['overlay'], range:range(2,3), ripple:false,remainders:[{clip:'x',right:'x3'}],rightGroups:[], ...requireAll } }],
+  [{ type: 'retime', targets: [{clip:'x2',timeMap:map(100,100,7),audio:{rate:'resample',reverse:'reverse',hold:'silence'}}],effects:'preserveClipTime',rippleTracks:[], ...requireAll }],
 ] }
 const raw = JSON.stringify(fixture)
 const native = spawnSync(resolve(nativePath), [], { input: raw, encoding: 'utf8', maxBuffer: 32*1024*1024 })
@@ -57,7 +63,8 @@ const wasmResult = JSON.parse(wasm.video_conformance(raw))
 assert.deepEqual(wasmResult, nativeResult)
 const prepared = nativeResult.steps.filter(s => s.status === 'prepared').length
 const rejected = nativeResult.steps.length - prepared
-assert(prepared >= 12 && rejected >= 4)
+const rejectedSteps = new Set([1,7,14,18,24])
+assert.deepEqual(nativeResult.steps.map(s => s.status), fixture.transactions.map((_,i) => rejectedSteps.has(i) ? 'rejected' : 'prepared'))
 // The duplicate-key path must also match across the strict JSON boundary.
 const malformed = '{"document":null,"document":null,"transactions":[]}'
 const invalidNative = spawnSync(resolve(nativePath), [], { input: malformed, encoding:'utf8' })
@@ -69,6 +76,7 @@ const report = { format:'musteroffice.video-domain-conformance/1', status:'pass'
   platform:process.platform, arch:process.arch, fixtureSha256:sha256(raw), resultSha256:sha256(native.stdout),
   steps:fixture.transactions.length, prepared, rejected, duplicateKeyRejected:true,
   nativeSha256:sha256(readFileSync(resolve(nativePath))), wasmBindingSha256:sha256(readFileSync(resolve(wasmPath))),
+  wasmBinarySha256:sha256(readFileSync(resolve(wasmPath.replace(/\.js$/, '_bg.wasm')))),
   scope:'Native/WASM exact document, diagnostics, read/write sets, invalidations and conditional inverse parity. Test-only binding; no media/render, durable host or product acceptance.' }
 writeFileSync(reportPath, `${JSON.stringify(report,null,2)}\n`)
 console.log(JSON.stringify(report))

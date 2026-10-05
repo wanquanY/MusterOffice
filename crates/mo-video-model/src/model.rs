@@ -94,6 +94,37 @@ pub struct Clip {
     pub timeline: TimeRange,
     pub source: ClipSource,
     pub effects: Vec<Effect>,
+    /// Explicitly persisted even for silent visual clips; only an audio-track compiler consumes it.
+    #[serde(default)]
+    pub audio: AudioTimePolicy,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AudioTimePolicy {
+    pub rate: AudioRatePolicy,
+    pub reverse: ReverseAudioPolicy,
+    pub hold: HoldAudioPolicy,
+}
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum AudioRatePolicy {
+    Resample,
+    #[default]
+    PreservePitch,
+}
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum ReverseAudioPolicy {
+    Reverse,
+    #[default]
+    Mute,
+}
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum HoldAudioPolicy {
+    #[default]
+    Silence,
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "kind", rename_all = "camelCase", deny_unknown_fields)]

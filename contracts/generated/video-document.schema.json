@@ -60,6 +60,33 @@
     "linkGroups"
   ],
   "$defs": {
+    "AudioRatePolicy": {
+      "type": "string",
+      "enum": [
+        "resample",
+        "preservePitch"
+      ]
+    },
+    "AudioTimePolicy": {
+      "type": "object",
+      "properties": {
+        "hold": {
+          "$ref": "#/$defs/HoldAudioPolicy"
+        },
+        "rate": {
+          "$ref": "#/$defs/AudioRatePolicy"
+        },
+        "reverse": {
+          "$ref": "#/$defs/ReverseAudioPolicy"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "rate",
+        "reverse",
+        "hold"
+      ]
+    },
     "ByteLength": {
       "description": "Canonical uint64 byte length. Range requires semantic validation.",
       "type": "string",
@@ -93,6 +120,15 @@
     "Clip": {
       "type": "object",
       "properties": {
+        "audio": {
+          "description": "Explicitly persisted even for silent visual clips; only an audio-track compiler consumes it.",
+          "$ref": "#/$defs/AudioTimePolicy",
+          "default": {
+            "hold": "silence",
+            "rate": "preservePitch",
+            "reverse": "mute"
+          }
+        },
         "effects": {
           "type": "array",
           "items": {
@@ -364,6 +400,12 @@
         "denominator"
       ]
     },
+    "HoldAudioPolicy": {
+      "type": "string",
+      "enum": [
+        "silence"
+      ]
+    },
     "LinkGroup": {
       "type": "object",
       "properties": {
@@ -617,6 +659,13 @@
         "pattern": "[^A-Za-z0-9_.:-]"
       },
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ReverseAudioPolicy": {
+      "type": "string",
+      "enum": [
+        "reverse",
+        "mute"
+      ]
     },
     "Sequence": {
       "type": "object",

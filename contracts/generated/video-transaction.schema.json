@@ -24,6 +24,33 @@
     "operations"
   ],
   "$defs": {
+    "AudioRatePolicy": {
+      "type": "string",
+      "enum": [
+        "resample",
+        "preservePitch"
+      ]
+    },
+    "AudioTimePolicy": {
+      "type": "object",
+      "properties": {
+        "hold": {
+          "$ref": "#/$defs/HoldAudioPolicy"
+        },
+        "rate": {
+          "$ref": "#/$defs/AudioRatePolicy"
+        },
+        "reverse": {
+          "$ref": "#/$defs/ReverseAudioPolicy"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "rate",
+        "reverse",
+        "hold"
+      ]
+    },
     "ByteLength": {
       "description": "Canonical uint64 byte length. Range requires semantic validation.",
       "type": "string",
@@ -57,6 +84,15 @@
     "Clip": {
       "type": "object",
       "properties": {
+        "audio": {
+          "description": "Explicitly persisted even for silent visual clips; only an audio-track compiler consumes it.",
+          "$ref": "#/$defs/AudioTimePolicy",
+          "default": {
+            "hold": "silence",
+            "rate": "preservePitch",
+            "reverse": "mute"
+          }
+        },
         "effects": {
           "type": "array",
           "items": {
@@ -313,6 +349,13 @@
         }
       ]
     },
+    "EffectTimingPolicy": {
+      "type": "string",
+      "enum": [
+        "preserveClipTime",
+        "scaleToDuration"
+      ]
+    },
     "FrameRate": {
       "type": "object",
       "properties": {
@@ -331,6 +374,12 @@
       "required": [
         "numerator",
         "denominator"
+      ]
+    },
+    "HoldAudioPolicy": {
+      "type": "string",
+      "enum": [
+        "silence"
       ]
     },
     "LinkGroup": {
@@ -628,6 +677,97 @@
             "track",
             "clip",
             "rippleTracks"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "clip": {
+              "$ref": "#/$defs/Clip"
+            },
+            "linkedPolicy": {
+              "$ref": "#/$defs/LinkedPolicy"
+            },
+            "remainders": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/SplitTarget"
+              }
+            },
+            "rightGroups": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/LinkGroup"
+              }
+            },
+            "track": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "type": {
+              "type": "string",
+              "const": "overwrite"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "track",
+            "clip",
+            "remainders",
+            "rightGroups",
+            "linkedPolicy"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "edit": {
+              "$ref": "#/$defs/RangeEdit"
+            },
+            "type": {
+              "type": "string",
+              "const": "deleteRange"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "edit"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "effects": {
+              "$ref": "#/$defs/EffectTimingPolicy"
+            },
+            "linkedPolicy": {
+              "$ref": "#/$defs/LinkedPolicy"
+            },
+            "rippleTracks": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ObjectId"
+              }
+            },
+            "targets": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/RetimeTarget"
+              }
+            },
+            "type": {
+              "type": "string",
+              "const": "retime"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "targets",
+            "effects",
+            "rippleTracks",
+            "linkedPolicy"
           ]
         },
         {
@@ -937,6 +1077,48 @@
         }
       ]
     },
+    "RangeEdit": {
+      "description": "Right-side IDs are needed exactly for the clips straddling both range boundaries.\nThe track set uses one sequence's time coordinate, never a hidden global/default scope.",
+      "type": "object",
+      "properties": {
+        "linkedPolicy": {
+          "$ref": "#/$defs/LinkedPolicy"
+        },
+        "range": {
+          "$ref": "#/$defs/TimeRange"
+        },
+        "remainders": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SplitTarget"
+          }
+        },
+        "rightGroups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LinkGroup"
+          }
+        },
+        "ripple": {
+          "type": "boolean"
+        },
+        "tracks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectId"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "tracks",
+        "range",
+        "ripple",
+        "remainders",
+        "rightGroups",
+        "linkedPolicy"
+      ]
+    },
     "RationalTime": {
       "description": "Exact wire representation. Equality compares author values; compare_time compares instants.",
       "type": "object",
@@ -1031,6 +1213,33 @@
         "pattern": "[^A-Za-z0-9_.:-]"
       },
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "RetimeTarget": {
+      "type": "object",
+      "properties": {
+        "audio": {
+          "$ref": "#/$defs/AudioTimePolicy"
+        },
+        "clip": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "timeMap": {
+          "$ref": "#/$defs/TimeMap"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "clip",
+        "timeMap",
+        "audio"
+      ]
+    },
+    "ReverseAudioPolicy": {
+      "type": "string",
+      "enum": [
+        "reverse",
+        "mute"
+      ]
     },
     "Sequence": {
       "type": "object",

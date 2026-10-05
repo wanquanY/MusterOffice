@@ -102,6 +102,7 @@ fn document() -> VideoDocument {
                 time_map: map(-1, 1, 2),
             },
             effects: vec![],
+            audio: AudioTimePolicy::default(),
         },
     );
     doc
@@ -129,6 +130,7 @@ fn add_solid(d: &mut VideoDocument, id: &str, start: i64, end: i64) {
                 rgba: [0, 0, 0, 255],
             },
             effects: vec![],
+            audio: AudioTimePolicy::default(),
         },
     );
 }
@@ -343,6 +345,7 @@ fn nested(d: &mut VideoDocument, name: &str, target: Option<&str>) {
             timeline: range(0, 2),
             source,
             effects: vec![],
+            audio: AudioTimePolicy::default(),
         },
     );
 }

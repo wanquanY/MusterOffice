@@ -40,6 +40,34 @@ pub struct SplitTarget {
     pub right: ClipId,
 }
 
+/// Right-side IDs are needed exactly for the clips straddling both range boundaries.
+/// The track set uses one sequence's time coordinate, never a hidden global/default scope.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct RangeEdit {
+    pub tracks: Vec<TrackId>,
+    pub range: TimeRange,
+    pub ripple: bool,
+    pub remainders: Vec<SplitTarget>,
+    pub right_groups: Vec<LinkGroup>,
+    pub linked_policy: LinkedPolicy,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum EffectTimingPolicy {
+    PreserveClipTime,
+    ScaleToDuration,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct RetimeTarget {
+    pub clip: ClipId,
+    pub time_map: TimeMap,
+    pub audio: AudioTimePolicy,
+}
+
 /// Ripple never guesses a track set. An empty scope leaves the other clips in place.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "type", rename_all = "camelCase", deny_unknown_fields)]
@@ -76,6 +104,26 @@ pub enum Operation {
         clip: Clip,
         #[serde(rename = "rippleTracks")]
         ripple_tracks: Vec<TrackId>,
+    },
+    Overwrite {
+        track: TrackId,
+        clip: Clip,
+        remainders: Vec<SplitTarget>,
+        #[serde(rename = "rightGroups")]
+        right_groups: Vec<LinkGroup>,
+        #[serde(rename = "linkedPolicy")]
+        linked_policy: LinkedPolicy,
+    },
+    DeleteRange {
+        edit: RangeEdit,
+    },
+    Retime {
+        targets: Vec<RetimeTarget>,
+        effects: EffectTimingPolicy,
+        #[serde(rename = "rippleTracks")]
+        ripple_tracks: Vec<TrackId>,
+        #[serde(rename = "linkedPolicy")]
+        linked_policy: LinkedPolicy,
     },
     Delete {
         clips: Vec<ClipId>,

@@ -1,12 +1,15 @@
 use crate::{timing::*, *};
 use mo_common::RationalTime;
 use std::collections::{BTreeMap, BTreeSet};
+mod range;
+mod retime;
 
 pub(crate) struct State<'a> {
     pub document: VideoDocument,
     pub reads: BTreeSet<ObjectKey>,
     pub writes: BTreeSet<ObjectKey>,
     owners: BTreeMap<ClipId, TrackId>,
+    track_sequences: BTreeMap<TrackId, SequenceId>,
     limits: EditLimits,
     cancelled: &'a dyn Fn() -> bool,
 }
@@ -21,11 +24,17 @@ impl<'a> State<'a> {
             .values()
             .flat_map(|t| t.clips.iter().map(move |c| (c.clone(), t.id.clone())))
             .collect();
+        let track_sequences = document
+            .sequences
+            .values()
+            .flat_map(|s| s.tracks.iter().map(move |t| (t.clone(), s.id.clone())))
+            .collect();
         Self {
             document,
             reads: BTreeSet::new(),
             writes: BTreeSet::new(),
             owners,
+            track_sequences,
             limits,
             cancelled,
         }
@@ -147,12 +156,35 @@ impl<'a> State<'a> {
         }
         Ok(())
     }
+    fn sequence_for(&mut self, track: &TrackId) -> Result<SequenceId> {
+        let sequence = self
+            .track_sequences
+            .get(track)
+            .cloned()
+            .ok_or(EditError::InvalidOperation("unowned track"))?;
+        self.reads.insert(ObjectKey::Sequence(sequence.clone()));
+        Ok(sequence)
+    }
+    fn selection_sequence(&mut self, ids: &BTreeSet<ClipId>) -> Result<SequenceId> {
+        let tracks: BTreeSet<_> = ids.iter().map(|id| self.owners[id].clone()).collect();
+        let sequences = tracks
+            .iter()
+            .map(|t| self.sequence_for(t))
+            .collect::<Result<BTreeSet<_>>>()?;
+        if sequences.len() != 1 {
+            return Err(EditError::InvalidOperation(
+                "ripple targets must share one sequence",
+            ));
+        }
+        Ok(sequences.into_iter().next().expect("one sequence"))
+    }
     fn ripple(
         &mut self,
         tracks: &[TrackId],
         at: RationalTime,
         delta: RationalTime,
         exclude: &BTreeSet<ClipId>,
+        sequence: &SequenceId,
     ) -> Result<()> {
         let unique: BTreeSet<_> = tracks.iter().collect();
         if unique.len() != tracks.len() {
@@ -160,6 +192,11 @@ impl<'a> State<'a> {
         }
         let mut shifted_ids = vec![];
         for id in tracks {
+            if &self.sequence_for(id)? != sequence {
+                return Err(EditError::InvalidOperation(
+                    "ripple cannot cross sequence time coordinates",
+                ));
+            }
             for clip_id in self.track(id, true)?.clips.clone() {
                 if exclude.contains(&clip_id) {
                     continue;
@@ -236,6 +273,8 @@ impl<'a> State<'a> {
                 seq.tracks.insert(index, track.id.clone());
                 self.write(skey);
                 self.document.sequences.insert(sequence.clone(), seq);
+                self.track_sequences
+                    .insert(track.id.clone(), sequence.clone());
                 self.put_track(track.clone());
             }
             Operation::RemoveTrack { track } => {
@@ -257,6 +296,7 @@ impl<'a> State<'a> {
                 self.document.sequences.insert(seq.id.clone(), seq);
                 self.write(ObjectKey::Track(track.clone()));
                 self.document.tracks.remove(track);
+                self.track_sequences.remove(track);
             }
             Operation::SetTrack {
                 track,
@@ -297,11 +337,13 @@ impl<'a> State<'a> {
             } => {
                 self.fresh_clip(&clip.id)?;
                 self.track(track, true)?;
+                let sequence = self.sequence_for(track)?;
                 self.ripple(
                     ripple_tracks,
                     clip.timeline.start,
                     clip.timeline.duration(self.bits())?.to_time_exact()?,
                     &BTreeSet::new(),
+                    &sequence,
                 )?;
                 let mut owner = self.track(track, true)?.clone();
                 owner.clips.push(clip.id.clone());
@@ -309,6 +351,37 @@ impl<'a> State<'a> {
                 self.owners.insert(clip.id.clone(), track.clone());
                 self.put_clip(clip.clone());
             }
+            Operation::Overwrite {
+                track,
+                clip,
+                remainders,
+                right_groups,
+                linked_policy,
+            } => {
+                self.fresh_clip(&clip.id)?;
+                self.delete_range(&RangeEdit {
+                    tracks: vec![track.clone()],
+                    range: clip.timeline,
+                    ripple: false,
+                    remainders: remainders.clone(),
+                    right_groups: right_groups.clone(),
+                    linked_policy: *linked_policy,
+                })?;
+                // A right remainder must not consume the replacement's identity.
+                self.fresh_clip(&clip.id)?;
+                let mut owner = self.track(track, true)?.clone();
+                owner.clips.push(clip.id.clone());
+                self.put_track(owner);
+                self.owners.insert(clip.id.clone(), track.clone());
+                self.put_clip(clip.clone());
+            }
+            Operation::DeleteRange { edit } => self.delete_range(edit)?,
+            Operation::Retime {
+                targets,
+                effects,
+                ripple_tracks,
+                linked_policy,
+            } => self.retime(targets, *effects, ripple_tracks, *linked_policy)?,
             Operation::Delete {
                 clips,
                 linked_policy,
@@ -627,7 +700,8 @@ impl<'a> State<'a> {
             } else {
                 delta
             };
-            self.ripple(ripple_tracks, at, shift, &selection)?;
+            let sequence = self.selection_sequence(&selection)?;
+            self.ripple(ripple_tracks, at, shift, &selection, &sequence)?;
         }
         Ok(())
     }

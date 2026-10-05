@@ -47,6 +47,7 @@ pub fn shot(id: &str, start: i64, end: i64) -> Clip {
         timeline: range(start, end),
         source: source(start + 20, end + 20, end - start),
         effects: vec![],
+        audio: AudioTimePolicy::default(),
     }
 }
 pub fn document() -> VideoDocument {

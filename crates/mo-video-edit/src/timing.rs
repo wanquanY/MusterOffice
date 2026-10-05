@@ -98,9 +98,12 @@ pub(crate) fn window(
         *time_map = TimeMap { anchors };
     }
     for effect in &mut out.effects {
-        if let Effect::Fade { envelope, .. } = effect {
-            envelope.start = sub(envelope.start, local_start, bits)?;
-            envelope.end = sub(envelope.end, local_start, bits)?;
+        match effect {
+            Effect::Fade { envelope, .. } => {
+                envelope.start = sub(envelope.start, local_start, bits)?;
+                envelope.end = sub(envelope.end, local_start, bits)?;
+            }
+            Effect::Transform { .. } | Effect::Gain { .. } => {}
         }
     }
     Ok(out)
