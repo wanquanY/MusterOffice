@@ -60,6 +60,7 @@ def plan(groups, output, bindgen, python, ffmpeg_dir=None):
         add("schemas", "cargo", "run", "-p", "mo-contract-codegen", *cargo, "--", "check", "contracts/generated")
     if "media" in groups:
         add("media-native-callbacks", python, "tools/verification/media-native-check.py", "--component", ffmpeg_dir or "UNCONFIGURED_FFMPEG_COMPONENT", "--output", output / "media-native")
+        add("media-rust-ownership", python, "tools/verification/media-rust-check.py", "--component", ffmpeg_dir or "UNCONFIGURED_FFMPEG_COMPONENT", "--native-evidence", output / "media-native", "--output", output / "media-rust")
     if "typescript" in groups:
         add("types", "pnpm", "check:types")
         add("client-tests", "pnpm", "test:operation-client")
@@ -140,6 +141,7 @@ def prerequisites(groups, args):
         required_tools.extend(("pnpm", "node"))
     if "media" in groups:
         required_tools.extend(("clang", "ffmpeg", "ffprobe"))
+    if groups.intersection(("media", "lint", "rust")):
         if not args.ffmpeg_dir or not (Path(args.ffmpeg_dir) / "native-build.json").is_file():
             errors.append("--ffmpeg-dir must identify a prepared media component with native-build.json")
     for name in required_tools:
@@ -203,7 +205,7 @@ def main():
     # Editor parity must use this run's builds, never historical local artifacts.
     env["MUSTEROFFICE_EDITOR_NATIVE"] = str(ROOT / "target/debug/mo-cli")
     env["MUSTEROFFICE_EDITOR_WASM"] = str(output / "wasm/mo_wasm.js")
-    for key, value in (("MO_SKIA_LIB_DIR", args.skia_dir), ("MO_HARFBUZZ_LIB_DIR", args.harfbuzz_dir)):
+    for key, value in (("MO_SKIA_LIB_DIR", args.skia_dir), ("MO_HARFBUZZ_LIB_DIR", args.harfbuzz_dir), ("MO_FFMPEG_LIB_DIR", args.ffmpeg_dir)):
         if value:
             env[key] = str(Path(value).resolve())
     report["status"] = "running"

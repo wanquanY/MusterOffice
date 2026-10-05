@@ -29,6 +29,7 @@ class CurrentVerificationTests(unittest.TestCase):
         self.assertIn("playback-sdk-package-tests", names)
         self.assertIn("video-generated-transactions", names)
         self.assertIn("media-native-callbacks", names)
+        self.assertLess(names.index("media-native-callbacks"), names.index("media-rust-ownership"))
         self.assertIn("--ignored", next(s for s in steps if s.name == "video-generated-transactions").argv)
         for dependency in ("video-conformance-native", "video-conformance-wasm", "video-conformance-bindgen"):
             self.assertLess(names.index(dependency), names.index("video-domain-native-wasm-parity"))
@@ -42,8 +43,10 @@ class CurrentVerificationTests(unittest.TestCase):
 
     def test_media_plan_consumes_explicit_component_and_missing_record_fails(self):
         steps = current.plan({"media"}, Path("/output"), "unused", sys.executable, "/media-component")
-        self.assertEqual(len(steps), 1)
+        self.assertEqual(len(steps), 2)
         self.assertIn("/media-component", steps[0].argv)
+        self.assertIn("/media-component", steps[1].argv)
+        self.assertIn("/output/media-native", steps[1].argv)
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "run"
             result = subprocess.run([sys.executable, str(Path(current.__file__)), "--groups", "media", "--output", str(output),
