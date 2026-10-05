@@ -1,4 +1,5 @@
 //! Bounded exact arithmetic shared by office time domains. No clocks, I/O or media state.
+mod wire;
 use mo_common::RationalTime;
 use num_bigint::BigInt;
 use std::cmp::Ordering;
@@ -81,6 +82,9 @@ impl ExactRatio {
     }
     pub fn denominator(&self) -> &BigInt {
         &self.d
+    }
+    pub fn check_budget(&self, bits: u64) -> Result<(), TimeError> {
+        Self::budget(&self.n, &self.d, bits)
     }
     pub fn add(&self, b: &Self, bits: u64) -> Result<Self, TimeError> {
         self.operands(b, bits)?;

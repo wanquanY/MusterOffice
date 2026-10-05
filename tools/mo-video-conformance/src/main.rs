@@ -4,7 +4,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     std::io::stdin()
         .take(32 * 1024 * 1024 + 1)
         .read_to_string(&mut input)?;
-    let output = mo_video_conformance::video_conformance(&input);
+    let output = match std::env::args().skip(1).collect::<Vec<_>>().as_slice() {
+        [] => mo_video_conformance::video_conformance(&input),
+        [mode] if mode == "--projection" => {
+            mo_video_conformance::video_projection_conformance(&input)
+        }
+        _ => return Err("usage: mo-video-conformance [--projection]".into()),
+    };
     std::io::stdout().write_all(output.as_bytes())?;
     Ok(())
 }

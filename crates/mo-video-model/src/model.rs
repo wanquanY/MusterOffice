@@ -135,6 +135,8 @@ pub enum ClipSource {
         #[serde(rename = "timeMap")]
         time_map: TimeMap,
     },
+    /// A video-track instance projects child visuals; an audio-track instance projects child audio.
+    /// A host creates linked instances when inserting both buses of a compound composition.
     Sequence {
         sequence: SequenceId,
         #[serde(rename = "timeMap")]

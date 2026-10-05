@@ -354,6 +354,7 @@ dependencies = [
  "mo-presentation-model",
  "mo-presentation-operations",
  "mo-presentation-template",
+ "mo-video-compile",
  "mo-video-edit",
  "mo-video-model",
  "schemars",
@@ -860,6 +861,9 @@ dependencies = [
  "mo-common",
  "num-bigint",
  "proptest",
+ "schemars",
+ "serde",
+ "serde_json",
  "thiserror",
 ]
 
@@ -887,10 +891,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "mo-video-compile"
+version = "0.1.0"
+dependencies = [
+ "mo-common",
+ "mo-time",
+ "mo-video-model",
+ "proptest",
+ "schemars",
+ "serde",
+ "serde_json",
+ "thiserror",
+]
+
+[[package]]
 name = "mo-video-conformance"
 version = "0.1.0"
 dependencies = [
  "mo-common",
+ "mo-video-compile",
  "mo-video-edit",
  "mo-video-model",
  "serde",

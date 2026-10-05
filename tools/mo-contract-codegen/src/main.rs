@@ -71,6 +71,18 @@ fn main() -> Result<(), Box<dyn Error>> {
         ("video-transaction", schema::<mo_video_edit::Transaction>()),
         ("video-inverse", schema::<mo_video_edit::Inverse>()),
         (
+            "video-frame-plan",
+            schema::<mo_video_compile::VideoFramePlan>(),
+        ),
+        (
+            "video-audio-sample-plan",
+            schema::<mo_video_compile::AudioSamplePlan>(),
+        ),
+        (
+            "video-presentation-window",
+            schema::<mo_video_compile::PresentationWindow>(),
+        ),
+        (
             "video-validation-report",
             schema::<mo_video_model::ValidationReport>(),
         ),

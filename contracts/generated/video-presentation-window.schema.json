@@ -1,0 +1,118 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:video-presentation-window",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PresentationWindow",
+  "description": "Host-supplied bounded presentation-order metadata, independent of packet decode order.\nA window does not claim that the whole source was indexed; outside-window requires another read.",
+  "type": "object",
+  "properties": {
+    "coverage": {
+      "$ref": "#/$defs/TimeRange"
+    },
+    "resourceDigest": {
+      "$ref": "#/$defs/Digest"
+    },
+    "samples": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/PresentationSample"
+      }
+    },
+    "stream": {
+      "$ref": "#/$defs/ObjectId"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "resourceDigest",
+    "stream",
+    "coverage",
+    "samples"
+  ],
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "ObjectId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "PresentationSample": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Opaque identity assigned by the host in this window, not an inferred CFR frame number.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "interval": {
+          "$ref": "#/$defs/TimeRange"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "interval"
+      ]
+    },
+    "RationalTime": {
+      "description": "Exact wire representation. Equality compares author values; compare_time compares instants.",
+      "type": "object",
+      "properties": {
+        "ticks": {
+          "$ref": "#/$defs/Ticks"
+        },
+        "timescale": {
+          "$ref": "#/$defs/Timescale"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "ticks",
+        "timescale"
+      ]
+    },
+    "Ticks": {
+      "description": "Signed int64 ticks. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,18})$",
+      "x-integer-maximum": "9223372036854775807",
+      "x-integer-minimum": "-9223372036854775808"
+    },
+    "TimeRange": {
+      "description": "Half-open [start,end). Source ranges may begin before zero; timeline placement may not.",
+      "type": "object",
+      "properties": {
+        "end": {
+          "$ref": "#/$defs/RationalTime"
+        },
+        "start": {
+          "$ref": "#/$defs/RationalTime"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end"
+      ]
+    },
+    "Timescale": {
+      "type": "integer",
+      "maximum": 1000000000,
+      "minimum": 1
+    }
+  }
+}

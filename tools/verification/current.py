@@ -92,6 +92,7 @@ def plan(groups, output, bindgen, python):
         add("video-conformance-wasm", "cargo", "build", *cargo, "--release", "-p", "mo-video-conformance", "--lib", "--target", "wasm32-unknown-unknown")
         add("video-conformance-bindgen", bindgen, "target/wasm32-unknown-unknown/release/mo_video_conformance.wasm", "--target", "nodejs", "--out-dir", output / "video-wasm")
         add("video-domain-native-wasm-parity", "node", "tools/verification/video-domain-parity.mjs", "target/debug/mo-video-conformance", output / "video-wasm/mo_video_conformance.js", output / "video-domain-parity.json")
+        add("video-projection-native-wasm-parity", "node", "tools/verification/video-projection-parity.mjs", "target/debug/mo-video-conformance", output / "video-wasm/mo_video_conformance.js", output / "video-projection-parity.json")
     if "mcp-protocol" in groups:
         thin = ROOT / "tools/mo-mcp/target/debug/mo-mcp"
         add("mcp-agent-package", python, "tools/agent-package/check.py", output / "mcp-agent-package", thin, ROOT / "target/debug/mo-export-worker")

@@ -408,9 +408,9 @@ impl Validator<'_> {
                     );
                     self.time_map(time_map, clip.timeline, available, &path)?;
                     self.require(
-                        owner == Some(TrackKind::Video),
+                        matches!(owner, Some(TrackKind::Video | TrackKind::Audio)),
                         &path,
-                        "nested composition requires a video track",
+                        "nested composition requires a video or audio track",
                     );
                 }
                 ClipSource::Solid { .. } => self.require(

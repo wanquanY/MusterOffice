@@ -1,0 +1,550 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:video-frame-plan",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VideoFramePlan",
+  "type": "object",
+  "properties": {
+    "canvas": {
+      "$ref": "#/$defs/Canvas"
+    },
+    "documentDigest": {
+      "$ref": "#/$defs/Digest"
+    },
+    "frameIndex": {
+      "$ref": "#/$defs/Ticks"
+    },
+    "layers": {
+      "description": "Bottom-to-top compositing order. Nested groups must be composited before group effects.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/VisualNode"
+      }
+    },
+    "sample": {
+      "$ref": "#/$defs/TimeSample"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "documentDigest",
+    "frameIndex",
+    "sample",
+    "canvas",
+    "layers"
+  ],
+  "$defs": {
+    "Canvas": {
+      "type": "object",
+      "properties": {
+        "height": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "width": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height"
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "ExactRatio": {
+      "description": "Exact computed fraction. Decimal strings are bounded to 4096 bits and canonicalized by the kernel; each computation can impose a smaller budget.",
+      "type": "object",
+      "properties": {
+        "denominator": {
+          "type": "string",
+          "maxLength": 1234,
+          "minLength": 1,
+          "not": {
+            "pattern": "[^0-9]"
+          },
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "numerator": {
+          "type": "string",
+          "maxLength": 1235,
+          "minLength": 1,
+          "not": {
+            "pattern": "[^0-9-]"
+          },
+          "pattern": "^(0|-?[1-9][0-9]*)$"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "numerator",
+        "denominator"
+      ]
+    },
+    "FrameRate": {
+      "type": "object",
+      "properties": {
+        "denominator": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "numerator": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "numerator",
+        "denominator"
+      ]
+    },
+    "MappedTime": {
+      "type": "object",
+      "properties": {
+        "rate": {
+          "$ref": "#/$defs/ExactRatio"
+        },
+        "sample": {
+          "$ref": "#/$defs/TimeSample"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sample",
+        "rate"
+      ]
+    },
+    "MediaBinding": {
+      "type": "object",
+      "properties": {
+        "descriptor": {
+          "$ref": "#/$defs/MediaStream"
+        },
+        "digest": {
+          "$ref": "#/$defs/Digest"
+        },
+        "resource": {
+          "$ref": "#/$defs/ResourceId"
+        },
+        "stream": {
+          "$ref": "#/$defs/ObjectId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "resource",
+        "digest",
+        "stream",
+        "descriptor"
+      ]
+    },
+    "MediaStream": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "available": {
+              "$ref": "#/$defs/TimeRange"
+            },
+            "dimensions": {
+              "$ref": "#/$defs/Canvas"
+            },
+            "frameRate": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/FrameRate"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "video"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "available",
+            "dimensions"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "available": {
+              "$ref": "#/$defs/TimeRange"
+            },
+            "channels": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "audio"
+            },
+            "sampleRate": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "available",
+            "sampleRate",
+            "channels"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "dimensions": {
+              "$ref": "#/$defs/Canvas"
+            },
+            "kind": {
+              "type": "string",
+              "const": "image"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "dimensions"
+          ]
+        }
+      ]
+    },
+    "ObjectId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "RationalTime": {
+      "description": "Exact wire representation. Equality compares author values; compare_time compares instants.",
+      "type": "object",
+      "properties": {
+        "ticks": {
+          "$ref": "#/$defs/Ticks"
+        },
+        "timescale": {
+          "$ref": "#/$defs/Timescale"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "ticks",
+        "timescale"
+      ]
+    },
+    "ResourceId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "SampleSide": {
+      "description": "A one-sided sample at an exact instant. Reversal flips the side rather than inventing an epsilon.",
+      "type": "string",
+      "enum": [
+        "after",
+        "before"
+      ]
+    },
+    "Ticks": {
+      "description": "Signed int64 ticks. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,18})$",
+      "x-integer-maximum": "9223372036854775807",
+      "x-integer-minimum": "-9223372036854775808"
+    },
+    "TimeRange": {
+      "description": "Half-open [start,end). Source ranges may begin before zero; timeline placement may not.",
+      "type": "object",
+      "properties": {
+        "end": {
+          "$ref": "#/$defs/RationalTime"
+        },
+        "start": {
+          "$ref": "#/$defs/RationalTime"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end"
+      ]
+    },
+    "TimeSample": {
+      "type": "object",
+      "properties": {
+        "side": {
+          "$ref": "#/$defs/SampleSide"
+        },
+        "time": {
+          "$ref": "#/$defs/ExactRatio"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "time",
+        "side"
+      ]
+    },
+    "Timescale": {
+      "type": "integer",
+      "maximum": 1000000000,
+      "minimum": 1
+    },
+    "VisualEffect": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "transform"
+            },
+            "opacityPpm": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "rotationMilliDegrees": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "scaleXPpm": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "scaleYPpm": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "xMilliPixels": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "yMilliPixels": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "xMilliPixels",
+            "yMilliPixels",
+            "scaleXPpm",
+            "scaleYPpm",
+            "rotationMilliDegrees",
+            "opacityPpm"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "factor": {
+              "$ref": "#/$defs/ExactRatio"
+            },
+            "kind": {
+              "type": "string",
+              "const": "opacity"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "factor"
+          ]
+        }
+      ]
+    },
+    "VisualNode": {
+      "type": "object",
+      "properties": {
+        "clip": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "effects": {
+          "description": "Ordered effects; group opacity is NOT distributive over child layers.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/VisualEffect"
+          }
+        },
+        "local": {
+          "$ref": "#/$defs/TimeSample"
+        },
+        "source": {
+          "$ref": "#/$defs/VisualSource"
+        },
+        "track": {
+          "$ref": "#/$defs/ObjectId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "track",
+        "clip",
+        "local",
+        "effects",
+        "source"
+      ]
+    },
+    "VisualSource": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "binding": {
+              "$ref": "#/$defs/MediaBinding"
+            },
+            "kind": {
+              "type": "string",
+              "const": "media"
+            },
+            "mapping": {
+              "$ref": "#/$defs/MappedTime"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "binding",
+            "mapping"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "group"
+            },
+            "layers": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/VisualNode"
+              }
+            },
+            "mapping": {
+              "$ref": "#/$defs/MappedTime"
+            },
+            "sequence": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sequence",
+            "mapping",
+            "layers"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "solid"
+            },
+            "rgba": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 4,
+              "minItems": 4
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "rgba"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "faceIndex": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "font": {
+              "$ref": "#/$defs/ResourceId"
+            },
+            "fontDigest": {
+              "$ref": "#/$defs/Digest"
+            },
+            "fontSizeMilliPixels": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "text"
+            },
+            "rgba": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 4,
+              "minItems": 4
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "text",
+            "font",
+            "fontDigest",
+            "faceIndex",
+            "fontSizeMilliPixels",
+            "rgba"
+          ]
+        }
+      ]
+    }
+  }
+}

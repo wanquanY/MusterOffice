@@ -60,6 +60,50 @@ pub struct TimeAnchor {
 pub struct TimeMap {
     pub anchors: Vec<TimeAnchor>,
 }
+
+/// A one-sided sample at an exact instant. Reversal flips the side rather than inventing an epsilon.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum SampleSide {
+    After,
+    Before,
+}
+impl SampleSide {
+    pub fn reversed(self) -> Self {
+        match self {
+            Self::After => Self::Before,
+            Self::Before => Self::After,
+        }
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct TimeSample {
+    pub time: ExactRatio,
+    pub side: SampleSide,
+}
+impl TimeSample {
+    pub fn after(time: RationalTime) -> Self {
+        Self {
+            time: ExactRatio::from_time(time),
+            side: SampleSide::After,
+        }
+    }
+    pub fn covers(&self, range: TimeRange) -> bool {
+        let start = ExactRatio::from_time(range.start).compare(&self.time);
+        let end = self.time.compare(&ExactRatio::from_time(range.end));
+        match self.side {
+            SampleSide::After => start.is_le() && end.is_lt(),
+            SampleSide::Before => start.is_lt() && end.is_le(),
+        }
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct MappedTime {
+    pub sample: TimeSample,
+    pub rate: ExactRatio,
+}
 impl TimeMap {
     /// Edit-time boundary lookup. This endpoint must not be used to request a media sample.
     pub fn map_boundary(
@@ -70,26 +114,44 @@ impl TimeMap {
         if let Some(last) = self.anchors.last()
             && last.local.compare_time(local).is_eq()
         {
-            return Ok(Some(ExactRatio::from_time(last.source)));
+            let time = ExactRatio::from_time(last.source);
+            time.check_budget(bits)?;
+            return Ok(Some(time));
         }
         self.map(local, bits)
     }
     /// Piecewise linear, reverse and hold mapping. Caller supplies a validated map.
     /// Half-open lookup deliberately does not return a sample for the final boundary.
     pub fn map(&self, local: RationalTime, bits: u64) -> Result<Option<ExactRatio>, TimeError> {
-        let right = self
-            .anchors
-            .partition_point(|a| a.local.compare_time(local).is_le());
+        self.sample(&TimeSample::after(local), bits)
+            .map(|mapped| mapped.map(|m| m.sample.time))
+    }
+    /// Caller supplies a validated map. This preserves arbitrary exact intermediate time across
+    /// nested sequences and returns the source-side limit and local derivative used by media I/O.
+    pub fn sample(&self, local: &TimeSample, bits: u64) -> Result<Option<MappedTime>, TimeError> {
+        local.time.check_budget(bits)?;
+        let right = self.anchors.partition_point(|a| match local.side {
+            SampleSide::After => ExactRatio::from_time(a.local).compare(&local.time).is_le(),
+            SampleSide::Before => ExactRatio::from_time(a.local).compare(&local.time).is_lt(),
+        });
         if right == 0 || right == self.anchors.len() {
             return Ok(None);
         }
         let a = self.anchors[right - 1];
         let b = self.anchors[right];
-        let elapsed = ExactRatio::from_time(local).sub(&ExactRatio::from_time(a.local), bits)?;
+        let elapsed = local.time.sub(&ExactRatio::from_time(a.local), bits)?;
         let duration = ExactRatio::from_time(b.local).sub(&ExactRatio::from_time(a.local), bits)?;
         let span = ExactRatio::from_time(b.source).sub(&ExactRatio::from_time(a.source), bits)?;
-        ExactRatio::from_time(a.source)
-            .add(&span.mul(&elapsed.div(&duration, bits)?, bits)?, bits)
-            .map(Some)
+        let rate = span.div(&duration, bits)?;
+        let time = ExactRatio::from_time(a.source).add(&rate.mul(&elapsed, bits)?, bits)?;
+        let side = match rate.compare(&ExactRatio::integer(0)) {
+            std::cmp::Ordering::Greater => local.side,
+            std::cmp::Ordering::Less => local.side.reversed(),
+            std::cmp::Ordering::Equal => SampleSide::After,
+        };
+        Ok(Some(MappedTime {
+            sample: TimeSample { time, side },
+            rate,
+        }))
     }
 }

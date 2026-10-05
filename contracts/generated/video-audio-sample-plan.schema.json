@@ -1,0 +1,492 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:video-audio-sample-plan",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AudioSamplePlan",
+  "description": "Point inspection/oracle, not a PCM block-processing API. Production DSP must schedule spans.",
+  "type": "object",
+  "properties": {
+    "documentDigest": {
+      "$ref": "#/$defs/Digest"
+    },
+    "sample": {
+      "$ref": "#/$defs/TimeSample"
+    },
+    "sampleIndex": {
+      "$ref": "#/$defs/Ticks"
+    },
+    "sampleRate": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0
+    },
+    "voices": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/AudioNode"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "documentDigest",
+    "sampleIndex",
+    "sampleRate",
+    "sample",
+    "voices"
+  ],
+  "$defs": {
+    "AudioEffect": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "gain"
+            },
+            "milliDecibels": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "milliDecibels"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "factor": {
+              "$ref": "#/$defs/ExactRatio"
+            },
+            "kind": {
+              "type": "string",
+              "const": "amplitude"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "factor"
+          ]
+        }
+      ]
+    },
+    "AudioNode": {
+      "type": "object",
+      "properties": {
+        "clip": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AudioEffect"
+          }
+        },
+        "local": {
+          "$ref": "#/$defs/TimeSample"
+        },
+        "mapping": {
+          "description": "Each hierarchy stage retains its own rate/pitch policy and gain; do not flatten DSP stages.",
+          "$ref": "#/$defs/MappedTime"
+        },
+        "policy": {
+          "$ref": "#/$defs/AudioTimePolicy"
+        },
+        "source": {
+          "$ref": "#/$defs/AudioSource"
+        },
+        "track": {
+          "$ref": "#/$defs/ObjectId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "track",
+        "clip",
+        "local",
+        "mapping",
+        "policy",
+        "effects",
+        "source"
+      ]
+    },
+    "AudioRatePolicy": {
+      "type": "string",
+      "enum": [
+        "resample",
+        "preservePitch"
+      ]
+    },
+    "AudioSource": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "binding": {
+              "$ref": "#/$defs/MediaBinding"
+            },
+            "kind": {
+              "type": "string",
+              "const": "media"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "binding"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "group"
+            },
+            "sequence": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "voices": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/AudioNode"
+              }
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sequence",
+            "voices"
+          ]
+        }
+      ]
+    },
+    "AudioTimePolicy": {
+      "type": "object",
+      "properties": {
+        "hold": {
+          "$ref": "#/$defs/HoldAudioPolicy"
+        },
+        "rate": {
+          "$ref": "#/$defs/AudioRatePolicy"
+        },
+        "reverse": {
+          "$ref": "#/$defs/ReverseAudioPolicy"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "rate",
+        "reverse",
+        "hold"
+      ]
+    },
+    "Canvas": {
+      "type": "object",
+      "properties": {
+        "height": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "width": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height"
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "ExactRatio": {
+      "description": "Exact computed fraction. Decimal strings are bounded to 4096 bits and canonicalized by the kernel; each computation can impose a smaller budget.",
+      "type": "object",
+      "properties": {
+        "denominator": {
+          "type": "string",
+          "maxLength": 1234,
+          "minLength": 1,
+          "not": {
+            "pattern": "[^0-9]"
+          },
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "numerator": {
+          "type": "string",
+          "maxLength": 1235,
+          "minLength": 1,
+          "not": {
+            "pattern": "[^0-9-]"
+          },
+          "pattern": "^(0|-?[1-9][0-9]*)$"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "numerator",
+        "denominator"
+      ]
+    },
+    "FrameRate": {
+      "type": "object",
+      "properties": {
+        "denominator": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "numerator": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "numerator",
+        "denominator"
+      ]
+    },
+    "HoldAudioPolicy": {
+      "type": "string",
+      "enum": [
+        "silence"
+      ]
+    },
+    "MappedTime": {
+      "type": "object",
+      "properties": {
+        "rate": {
+          "$ref": "#/$defs/ExactRatio"
+        },
+        "sample": {
+          "$ref": "#/$defs/TimeSample"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sample",
+        "rate"
+      ]
+    },
+    "MediaBinding": {
+      "type": "object",
+      "properties": {
+        "descriptor": {
+          "$ref": "#/$defs/MediaStream"
+        },
+        "digest": {
+          "$ref": "#/$defs/Digest"
+        },
+        "resource": {
+          "$ref": "#/$defs/ResourceId"
+        },
+        "stream": {
+          "$ref": "#/$defs/ObjectId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "resource",
+        "digest",
+        "stream",
+        "descriptor"
+      ]
+    },
+    "MediaStream": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "available": {
+              "$ref": "#/$defs/TimeRange"
+            },
+            "dimensions": {
+              "$ref": "#/$defs/Canvas"
+            },
+            "frameRate": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/FrameRate"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "video"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "available",
+            "dimensions"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "available": {
+              "$ref": "#/$defs/TimeRange"
+            },
+            "channels": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "audio"
+            },
+            "sampleRate": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "available",
+            "sampleRate",
+            "channels"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "dimensions": {
+              "$ref": "#/$defs/Canvas"
+            },
+            "kind": {
+              "type": "string",
+              "const": "image"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "dimensions"
+          ]
+        }
+      ]
+    },
+    "ObjectId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "RationalTime": {
+      "description": "Exact wire representation. Equality compares author values; compare_time compares instants.",
+      "type": "object",
+      "properties": {
+        "ticks": {
+          "$ref": "#/$defs/Ticks"
+        },
+        "timescale": {
+          "$ref": "#/$defs/Timescale"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "ticks",
+        "timescale"
+      ]
+    },
+    "ResourceId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ReverseAudioPolicy": {
+      "type": "string",
+      "enum": [
+        "reverse",
+        "mute"
+      ]
+    },
+    "SampleSide": {
+      "description": "A one-sided sample at an exact instant. Reversal flips the side rather than inventing an epsilon.",
+      "type": "string",
+      "enum": [
+        "after",
+        "before"
+      ]
+    },
+    "Ticks": {
+      "description": "Signed int64 ticks. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,18})$",
+      "x-integer-maximum": "9223372036854775807",
+      "x-integer-minimum": "-9223372036854775808"
+    },
+    "TimeRange": {
+      "description": "Half-open [start,end). Source ranges may begin before zero; timeline placement may not.",
+      "type": "object",
+      "properties": {
+        "end": {
+          "$ref": "#/$defs/RationalTime"
+        },
+        "start": {
+          "$ref": "#/$defs/RationalTime"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end"
+      ]
+    },
+    "TimeSample": {
+      "type": "object",
+      "properties": {
+        "side": {
+          "$ref": "#/$defs/SampleSide"
+        },
+        "time": {
+          "$ref": "#/$defs/ExactRatio"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "time",
+        "side"
+      ]
+    },
+    "Timescale": {
+      "type": "integer",
+      "maximum": 1000000000,
+      "minimum": 1
+    }
+  }
+}
