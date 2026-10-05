@@ -27,12 +27,17 @@
   ],
   "features": [
     "fs",
-    "std"
+    "std",
+    "process",
+    "param"
   ],
   "defaultFeatures": false,
-  "scope": "Unix native host open flags only, preventing lease/directory symlink traversal. File locks use Rust std. Existing locked version; no Rustix dependency in pure document or WASM code.",
+  "scope": "Unix native host open flags and disposable worker resource limits. Native worker startup reads and lowers CPU/address/file ceilings through process APIs; Linux obtains page size through param. File locks use Rust std. No Rustix dependency in pure document or WASM code.",
   "evidence": "../../docs/implementation/execution-spool-recovery.md",
   "remaining": [
     "Complete platform validation and transitive distribution notices before release."
+  ],
+  "additionalEvidence": [
+    "../../docs/implementation/native-worker-limits.md"
   ]
 }

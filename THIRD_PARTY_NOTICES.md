@@ -18,6 +18,7 @@ This source repository keeps upstream notices alongside the relevant materials:
 | Rust numeric dependencies | [Component record and licenses](components/rust-numeric/) |
 | Video persistent object collections (rpds, archery, triomphe, smallvec) | [Fixed source and license record](components/persistent-collections/component.json), [notices](components/persistent-collections/licenses/) |
 | rustix | [Component record and licenses](components/rustix/) |
+| libc system ABI bindings | [Fixed component and license record](components/libc/component.json), [MIT notice](components/libc/LICENSE-MIT), [Apache-2.0 license](components/libc/LICENSE-APACHE) |
 | base64 | [Component record and licenses](components/base64/) |
 | MCP SDK | [License](components/rmcp/LICENSE-UPSTREAM.txt), [component record](components/rmcp/component.json) |
 | I/O and optional HTTP runtime dependencies | [I/O notices](components/io-runtime/licenses/), [HTTP notices](components/http-runtime/licenses/) |

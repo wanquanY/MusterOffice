@@ -46,6 +46,10 @@ python3 tools/verification/current.py --groups media \
 
 默认 Rust 测试显示 1 项 ignored；上面的 media 分组必须显式执行它，缺少真实素材/组件时失败，不以 skipped 计作通过。本机证据 `.codex-work/media-rust-gate-final/report.json` 及其 `media-rust/report.json`，macOS arm64；没有新增 Linux/Windows、浏览器或性能验收结论。
 
+## 进程限制基础
+
+后续已实现独立 `mo-native-limits`，用于 disposable worker 启动时安装并核验进程 CPU、地址增长、文件描述符和文件增长上限；实际子进程故障测试已通过，详见[限制语义与证据](native-worker-limits.md)。它尚未接入视频 worker，也不是文件/网络沙箱或 RSS 硬限额；不能据此把下面的执行链标为完成。
+
 ## 下一层必须完成
 
 可终止进程、双向资源读取与有界 IPC、总调用时限和进程内存/CPU 限制；使用实际帧建立呈现索引并执行工程采样；原生/浏览器共享渲染与音频处理、编码导出、产品 SDK 和界面。当前 Rust 安全 API 不等于敌意输入隔离，不能把它直接放到 UI 进程里当成已完成的产品边界。
