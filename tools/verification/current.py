@@ -63,6 +63,7 @@ def plan(groups, output, bindgen, python, ffmpeg_dir=None):
         add("media-rust-ownership", python, "tools/verification/media-rust-check.py", "--component", ffmpeg_dir or "UNCONFIGURED_FFMPEG_COMPONENT", "--native-evidence", output / "media-native", "--output", output / "media-rust")
         add("media-worker-bundle", python, "tools/media-worker/build.py", "--component", ffmpeg_dir or "UNCONFIGURED_FFMPEG_COMPONENT", "--output", output / "media-worker-bundle")
         add("media-worker-execution", python, "tools/verification/media-rust-check.py", "--component", ffmpeg_dir or "UNCONFIGURED_FFMPEG_COMPONENT", "--native-evidence", output / "media-native", "--worker-bundle", output / "media-worker-bundle", "--output", output / "media-worker")
+        add("video-source-projection", python, "tools/verification/video-source-check.py", "--native-evidence", output / "media-native", "--media-evidence", output / "media-worker", "--worker-bundle", output / "media-worker-bundle", "--output", output / "video-source")
     if "typescript" in groups:
         add("types", "pnpm", "check:types")
         add("client-tests", "pnpm", "test:operation-client")

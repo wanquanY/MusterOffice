@@ -174,6 +174,8 @@ Probe 返回实际流信息、旋转矩阵、像素比例、色彩标记、采�
 
 索引至少包含 packet offset/size、DTS/PTS/timebase、随机访问点及 codec 初始化信息。解析和探测在隔离 worker、有界输入下执行；只在需要的区域延迟读取数据。ISO BMFF edit list、解码前导和破损时间戳必须诊断。
 
+连续呈现区间必须来自容器/索引语义，不能由平均 FPS、模型时长或单个 `AVFrame.duration` 推断。已确认连续区间内用相邻 PTS 定义覆盖，末帧用有证据的区间终点；真实间隙不跨越补帧。原始 duration 保留供诊断，缺失/重复/倒序 PTS 不能静默修补。[实际反例与当前采样实现](../../implementation/video-source-presentation.md)记录了 B 帧/VFR 的 duration 重叠，以及 stream duration 与 edit list 终点不相同的语料。
+
 ### 5.2 Seek 与连续播放
 
 1. 工程时间经片段 `TimeMap` 转为源时间。

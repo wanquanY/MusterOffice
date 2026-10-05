@@ -1,0 +1,28 @@
+[package]
+name = "mo-video-source"
+license.workspace = true
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[features]
+default = []
+native = ["dep:mo-native-media"]
+
+[dependencies]
+mo-common.workspace = true
+mo-time.workspace = true
+mo-media.workspace = true
+mo-video-model.workspace = true
+mo-video-compile.workspace = true
+mo-native-media = { workspace = true, optional = true }
+thiserror.workspace = true
+
+[dev-dependencies]
+mo-native-limits.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+
+[lints]
+workspace = true
