@@ -18,7 +18,7 @@
 | W1 视频领域与合同 | 基础已实现，未全部完成 | 独立模型、精确时间、受限解析与校验、Native/WASM 公共合同向量；补全效果、字幕、分析和工程包模型 |
 | W2 媒体与合成 | 原生解码/采样、CPU/Metal 合成及音频块处理基础已实现；保调工程图及派生 PCM 已实现；Browser、导出及产品显示待实施 | 原生/浏览器媒体与合成、字体/色彩/音频及真实输出 |
 | W3 编辑与历史 | 原子事务基础已实现，未全部完成 | 全部编辑操作、候选、冲突与有条件逆操作及增量索引 |
-| W4 产品执行 | 独立 Native/WASM SDK、Browser Host 基础、Native 计算、SQLite 工程存储、产品预写及原 Tool 原子提交端口已实现；公共授权执行器/UI/媒体任务待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
+| W4 产品执行 | 独立 Native/WASM SDK、Browser Host 基础、Native 计算、SQLite 工程存储、产品预写及正式 Agent authoring 工具已实现；手动公共命令/UI/媒体任务待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
 | W5 创作与交互 | 保留原 worktree，未完成替换 | 整理现有生成/Admin/计费、技能、人机共享编辑与消息卡片 |
 | W6 完整验收 | 仅有下列内核基础证据 | 完整验收矩阵与可供用户实际操作的本地环境 |
 
@@ -76,7 +76,17 @@ Musterwork worktree 提交 `82aaa621b` 已接入固定的独立视频 SDK（上�
 
 本轮去重后 32 项测试通过，无 ignored；联合外键收紧后的 5 项提交和 1 项迁移复跑不重复计数。SQLite/MusterOffice lib 及依赖 strict Clippy 通过。证据分别为产品 `.codex-work/video-resource-closure-report.json` 和 `video-tool-commit-report.json`，固定提交和日志摘要，并声明原 worktree 未提交修改的边界。提交测试复用已有已准入 Tool fixture，不能当成正式视频技能/工具已经发布。
 
-这些仍是内部宿主端口。接下来需连接真正的用户/Agent 命令执行器与实时素材授权、注册工具和技能、IPC、原生媒体 Host、消息/右侧面板及时间线；完整本地产品验收尚未达成。详细约束见产品 `docs/architecture/native-video-tool-commits.md`。
+这些提交记录的是内部宿主端口；后续正式 Agent 执行器及素材授权进展见下节。用户命令、技能、IPC、原生媒体 Host、消息/右侧面板及时间线仍待接入，完整本地产品验收尚未达成。详细约束见产品 `docs/architecture/native-video-tool-commits.md`。
+
+### 正式 Agent authoring 与 Device 装配
+
+产品提交 `fcc171179` 新增 Device v69 的 `artifact.video.author@1`（wire `video_author`），仅在 desktop surface 注册。完整 SDK 编辑 schema 从固定的 registry crate 导出，产品增加工程 pin 和已有文件引用合同；旧工具/技能材料保持不可变，Cloud head 仍为 f52。原 material source、授权、Attempt、停止和 journal 负责实际调用，Device 不需要配置 PPT 渲染 worker 即可进行视频 metadata 编辑，两种办公场景共用 native compute 并发额度。
+
+工具支持 create、inspect、list、frame plan、edit、undo 和 history；查询与模型回复有界。新素材经原 FileQueryService 验证精确文件身份和版本，计算后再次核验；不接受裸 ContentRef/URL/文件路径作为导入权限。撤销由宿主读取同一私有工程历史的原 inverse，验证原始基线与结果；删除素材的恢复只使用该历史前驱保留的资源。候选仍由原 Tool/Ledger 同事务提交，无新的视频任务 owner。
+
+新增 5 项实际 SDK/SQLite/正式工具合同集成测试，加 63 项 catalog、3 项 Device manifest、3 项 Office 生命周期、2 项诊断回归及 5 项 Python profile，共 81 项通过；adapter、Tool executor、Device runtime strict Clippy 通过。Office 恢复使用实际固定发行 worker，显式运行集成测试而非跳过；产品提交 `726a470d6` 同时修正了该旧测试前置条件和大尺寸诊断错误的内存表示。
+
+证据为产品 `.codex-work/video-agent-authoring-report.json`，绑定日志摘要和提交；原工作树未提交的生成/视频选择改动继续保留。集成 fixture 沿用原合成 Run compute placement，素材权限变化使用受控 FileQuery authority 注入；这不是登录桌面或真实模型验收。工具 `frame` 返回合成计划，不是视频图片/文件；媒体导入/probe、大文件、播放和导出仍待接入。技能自动装载、用户手动入口、桌面 IPC 与右侧工作台未完成。详细合同见产品 `docs/architecture/native-video-authoring.md`。
 
 ### 精确时间
 
