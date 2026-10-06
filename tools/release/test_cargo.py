@@ -40,7 +40,8 @@ class CargoDistributionTests(unittest.TestCase):
             sdk = root / "sdk"
             crate = sdk / "crates/mo-embedded-sdk"
             (crate / "src").mkdir(parents=True)
-            (crate / "src/lib.rs").write_text('pub const DATA: &[u8] = include_bytes!("../../../components/owned/data.bin");\n')
+            (crate / "src/lib.rs").write_text('pub const DATA: &[u8] = include_bytes!("../../../components/owned/data.bin");\npub const LICENSE: &str = include_str!("../../../LICENSE");\n')
+            (sdk / "LICENSE").write_text("Owned fixture license notice\n")
             (sdk / "components/owned").mkdir(parents=True)
             (sdk / "components/owned/data.bin").write_bytes(b"owned")
             (sdk / "Cargo.toml").write_bytes(toml_bytes({"workspace": {"package": {"version": "0.1.0", "edition": "2024", "rust-version": "1.92"}, "dependencies": {}, "lints": {}}}))

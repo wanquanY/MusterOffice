@@ -51,3 +51,21 @@ python3 tools/verification/current.py --groups video-authoring,contracts,typescr
 测试涵盖真实 Native/WASM 编辑候选、逆操作、分页、帧计划、资源闭包和错误一致；实际打包 ESM 的加载、编辑、释放和重复初始化；宿主字节预算、损坏快照、旧 cursor、未知/重复 JSON 字段与包完整性拒绝。原生 conformance 测试驱动含其他视频测试模块，因此构建该驱动需要既有 DSP；独立 WASM SDK 自身没有 DSP 或媒体依赖。
 
 本地证据存放 `.codex-work/video-authoring-gate-final/` 和 `.codex-work/video-authoring-clippy-final.log`。这些证据不代表浏览器媒体设备、真实用户存储/断电恢复、时间线 UI、完整视频效果或整体验收已经完成。
+
+## 独立原生 Cargo 交付
+
+`tools/video-sdk/rust.py` 将六个纯计算 crate（common、time、video-model、video-edit、video-compile、video-operations）组成独立的本地 Cargo registry 包。普通 Rust 用户可以直接使用类型、取消检查和预算；包不包含 PPT、Tokio、数据库、系统 codec 或构建脚本。`model` / `edit` 重导出保留真实内核类型，接入方无需定义另一套模型。
+
+原生包记录完整源码输入、锁定外部依赖、组件许可、LICENSE/NOTICE、各 `.crate` 和 index 身份。SDK 中保留源码用于审计；`tools/video-sdk/check-rust.py` 只把 registry 交付给隔离消费工程，实际用标准 Cargo 离线编译并运行创建/编辑/撤销/查询和损坏拒绝，检查 Cargo.lock 的包来源、版本与 checksum，不能通过源仓库 path 依赖冒充发行消费。
+
+原生视频包与 PPT registry 的来源、版本及校验分别绑定。产品仍须同时验证每一个已配置的组件，不能为接入视频而跳过 PPT 的锁定校验。当前为 `musteroffice.video-rust-sdk/1-draft` / `releaseCleared: false` 本地开发交付，不表示已公开发布 registry 或完成 Device Runtime 接入。
+
+```sh
+python3 tools/video-sdk/rust.py --output /new/video-sdk \
+  --version 0.1.0-video.20261006.1 \
+  --registry sparse+https://example.invalid/video/index/
+python3 tools/video-sdk/check-rust.py --bundle /new/video-sdk \
+  --sha256 EXPLICIT_MANIFEST_SHA256 --output /new/consumer-check
+```
+
+Registry URL 是消费者固定的来源身份；本地开发通过标准 Cargo source replacement 使用已验证文件，不需要将该 registry 部署到公网。

@@ -125,7 +125,7 @@ def build_registry(sdk: Path, sdk_manifest: dict, output: Path, version: str, re
             own_source = relative.startswith(f"crates/{name}/") and not relative.endswith("Cargo.toml")
             # The portable SDK owns this exact production-data closure. Preserve
             # its license records as well as the external compile-time includes.
-            if own_source or relative.startswith("components/"):
+            if own_source or relative.startswith("components/") or relative in {"LICENSE", "NOTICE"}:
                 files[relative] = (sdk / relative).read_bytes()
         prefix = f"{name}-{version}"
         data = archive_bytes({f"{prefix}/{key}": value for key, value in files.items()})
