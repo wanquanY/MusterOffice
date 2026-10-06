@@ -1,5 +1,7 @@
 //! Exact, bounded video projection. Pure authoring computation; no codec, I/O, GPU or host state.
+mod audio_block;
 mod contract;
+pub use audio_block::*;
 mod effects;
 mod index;
 mod presentation;

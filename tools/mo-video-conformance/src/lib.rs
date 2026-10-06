@@ -1,4 +1,6 @@
 //! Test-only cross-target driver, not a product SDK or durable host.
+mod audio;
+pub use audio::video_audio_conformance;
 mod projection;
 mod render;
 use mo_common::from_json_str_with_path;

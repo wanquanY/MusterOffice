@@ -8,17 +8,17 @@ use std::collections::BTreeMap;
 /// the host owns cache eviction. This first compiler does not claim incremental recompilation.
 #[derive(Debug)]
 pub struct CompiledDocument {
-    document: VideoDocument,
-    digest: Digest,
-    tracks: BTreeMap<TrackId, IntervalIndex>,
-    sequences: BTreeMap<SequenceId, SequenceIndex>,
-    bits: u64,
+    pub(crate) document: VideoDocument,
+    pub(crate) digest: Digest,
+    pub(crate) tracks: BTreeMap<TrackId, IntervalIndex>,
+    pub(crate) sequences: BTreeMap<SequenceId, SequenceIndex>,
+    pub(crate) bits: u64,
 }
 #[derive(Debug)]
-struct SequenceIndex {
+pub(crate) struct SequenceIndex {
     duration: R,
     visual_tracks: Vec<TrackId>,
-    audio_tracks: Vec<TrackId>,
+    pub(crate) audio_tracks: Vec<TrackId>,
 }
 
 impl CompiledDocument {
@@ -219,7 +219,7 @@ impl CompiledDocument {
         let voices = self.audio(&self.document.root_sequence, sample, 1, &mut work)?;
         self.finish(voices, limits, work)
     }
-    fn finish<T: serde::Serialize>(
+    pub(crate) fn finish<T: serde::Serialize>(
         &self,
         value: T,
         limits: QueryLimits,
@@ -246,7 +246,11 @@ impl CompiledDocument {
         map.sample(local, self.bits)?
             .ok_or(CompileError::Invariant("selected clip lacks time mapping"))
     }
-    fn binding(&self, resource: &mo_common::ResourceId, stream: &StreamId) -> Result<MediaBinding> {
+    pub(crate) fn binding(
+        &self,
+        resource: &mo_common::ResourceId,
+        stream: &StreamId,
+    ) -> Result<MediaBinding> {
         let r = self
             .document
             .resources

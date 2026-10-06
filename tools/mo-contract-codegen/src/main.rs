@@ -75,6 +75,10 @@ fn main() -> Result<(), Box<dyn Error>> {
             schema::<mo_video_compile::VideoFramePlan>(),
         ),
         (
+            "video-audio-block-plan",
+            schema::<mo_video_compile::AudioBlockPlan>(),
+        ),
+        (
             "video-audio-sample-plan",
             schema::<mo_video_compile::AudioSamplePlan>(),
         ),

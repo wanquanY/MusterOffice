@@ -68,6 +68,46 @@ impl IntervalIndex {
         hits.sort_unstable();
         Ok(hits)
     }
+    /// Clips intersecting a half-open span; same original order as point queries.
+    pub fn range(
+        &self,
+        start: &ExactRatio,
+        end: &ExactRatio,
+        work: &mut Work<'_>,
+    ) -> Result<Vec<usize>> {
+        let mut hits = vec![];
+        self.query_range(self.root, start, end, work, &mut hits)?;
+        hits.sort_unstable();
+        Ok(hits)
+    }
+    fn query_range(
+        &self,
+        id: Option<usize>,
+        start: &ExactRatio,
+        end: &ExactRatio,
+        work: &mut Work<'_>,
+        hits: &mut Vec<usize>,
+    ) -> Result<()> {
+        let Some(id) = id else {
+            return Ok(());
+        };
+        work.visit()?;
+        let node = &self.nodes[id];
+        if ExactRatio::from_time(node.max_end).compare(start).is_le() {
+            return Ok(());
+        }
+        self.query_range(node.left, start, end, work, hits)?;
+        if ExactRatio::from_time(node.range.start).compare(end).is_ge() {
+            return Ok(());
+        }
+        if ExactRatio::from_time(node.range.end).compare(start).is_gt() {
+            if hits.len() >= work.limits.max_nodes {
+                return Err(CompileError::Budget);
+            }
+            hits.push(node.order);
+        }
+        self.query_range(node.right, start, end, work, hits)
+    }
     fn query(
         &self,
         id: Option<usize>,
@@ -128,7 +168,11 @@ mod tests {
             let expected: Vec<_> = entries.iter().filter(|(_,r)| if before {
                 r.start.ticks.get()<tick && tick<=r.end.ticks.get()
             }else{r.start.ticks.get()<=tick && tick<r.end.ticks.get()}).map(|(n,_)|*n).collect();
-            let index = IntervalIndex::new(entries,&||false).unwrap();
+            let index = IntervalIndex::new(entries.clone(),&||false).unwrap();
+            let end=tick+37;
+            let expected_range:Vec<_>=entries.iter().filter(|(_,r)|r.start.ticks.get()<end && r.end.ticks.get()>tick).map(|(n,_)|*n).collect();
+            let mut range_work=Work::new(QueryLimits::default(),&||false).unwrap();
+            prop_assert_eq!(index.range(&ExactRatio::integer(tick),&ExactRatio::integer(end),&mut range_work).unwrap(),expected_range);
             let mut work=Work::new(QueryLimits::default(),&||false).unwrap();
             prop_assert_eq!(index.at(&sample,&mut work).unwrap(),expected);
         }
@@ -152,6 +196,19 @@ mod tests {
                 .unwrap();
             assert!(work.stats.visited < 64, "{} visits", work.stats.visited);
             assert_eq!(hits.len(), usize::from(tick % 2 == 0 && tick < 200000));
+            let mut work = Work::new(QueryLimits::default(), &|| false).unwrap();
+            let hits = index
+                .range(
+                    &ExactRatio::integer(tick),
+                    &ExactRatio::integer(tick + 3),
+                    &mut work,
+                )
+                .unwrap();
+            assert!(work.stats.visited < 64);
+            let expected: Vec<_> = (0..100_000)
+                .filter(|n| (*n as i64) * 2 < tick + 3 && (*n as i64) * 2 + 1 > tick)
+                .collect();
+            assert_eq!(hits, expected);
         }
     }
 }
