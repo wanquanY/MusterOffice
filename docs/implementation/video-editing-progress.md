@@ -18,7 +18,7 @@
 | W1 视频领域与合同 | 基础已实现，未全部完成 | 独立模型、精确时间、受限解析与校验、Native/WASM 公共合同向量；补全效果、字幕、分析和工程包模型 |
 | W2 媒体与合成 | 原生解码/采样、CPU/Metal 合成及音频块处理基础已实现；保调工程图及派生 PCM 已实现；Browser、导出及产品显示待实施 | 原生/浏览器媒体与合成、字体/色彩/音频及真实输出 |
 | W3 编辑与历史 | 原子事务基础已实现，未全部完成 | 全部编辑操作、候选、冲突与有条件逆操作及增量索引 |
-| W4 产品执行 | 独立 Native/WASM SDK、Browser Host 基础、Native 计算、SQLite 工程存储、产品预写及正式 Agent authoring 工具已实现；手动公共命令/UI/媒体任务待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
+| W4 产品执行 | 独立 Native/WASM SDK、Browser Host 基础、Native 计算、SQLite 工程、Agent authoring、共享手动执行及认证桌面 RPC/IPC 已实现；时间线 UI/媒体任务待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
 | W5 创作与交互 | 视频技能与显式工具装载、无生成模型的剪辑准入已接通；工作台及旧引擎替换未完成 | 整理现有生成/Admin/计费、技能、人机共享编辑与消息卡片 |
 | W6 完整验收 | 仅有下列内核基础证据 | 完整验收矩阵与可供用户实际操作的本地环境 |
 
@@ -54,7 +54,7 @@ Musterwork worktree 提交 `82aaa621b` 已接入固定的独立视频 SDK（上�
 
 另有真实固定 Rust SDK 与存储组合验证：保存创建和修改后的工程，重启后逐一打开原/新快照、恢复逆操作报告，并核对没有创建虚假 Run / Invocation。10 项存储/迁移、该组合测试、6 项提交回调、6 项原计算、39 项原生编辑/重试及 1 项桌面组件控制回归共 63 项通过，无 ignored；SQLite lib 及依赖 strict Clippy 通过。产品证据 `.codex-work/video-native-project-persistence-report.json` 固定提交、组件摘要及日志 SHA-256，并明确测试包含原 worktree 尚未提交的视频选择改动，不声称是干净 HEAD 或完整产品验收。
 
-完整 Host 仍未交付：手动编辑输出预留现已补齐（见下节）；Agent 原调用与工程同事务提交也已补齐（见下节）；必须继续完成受授权资源准备、公共执行器、IPC 和时间线。历史目前引用完整快照，历史压缩、工程删除/保留政策、GC、大媒体和断电/磁盘满验证仍待完成。产品详细边界见 worktree `docs/architecture/native-video-project-persistence.md`。
+完整 Host 仍未交付：手动编辑输出预留、Agent 原调用与工程同事务提交、受授权资源准备、公共执行器和桌面 IPC 已由后续增量补齐（见下文），时间线仍须接入。历史目前引用完整快照，历史压缩、工程删除/保留政策、GC、大媒体和断电/磁盘满验证仍待完成。产品详细边界见 worktree `docs/architecture/native-video-project-persistence.md`。
 
 ### 手动产品命令的原生预写
 
@@ -76,7 +76,7 @@ Musterwork worktree 提交 `82aaa621b` 已接入固定的独立视频 SDK（上�
 
 本轮去重后 32 项测试通过，无 ignored；联合外键收紧后的 5 项提交和 1 项迁移复跑不重复计数。SQLite/MusterOffice lib 及依赖 strict Clippy 通过。证据分别为产品 `.codex-work/video-resource-closure-report.json` 和 `video-tool-commit-report.json`，固定提交和日志摘要，并声明原 worktree 未提交修改的边界。提交测试复用已有已准入 Tool fixture，不能当成正式视频技能/工具已经发布。
 
-这些提交记录的是内部宿主端口；后续正式 Agent 执行器及素材授权进展见下节。用户命令、技能、IPC、原生媒体 Host、消息/右侧面板及时间线仍待接入，完整本地产品验收尚未达成。详细约束见产品 `docs/architecture/native-video-tool-commits.md`。
+这些提交记录的是内部宿主端口；后续正式 Agent 执行器、技能、素材授权及用户命令/IPC 进展见下文。原生媒体 Host、消息/右侧面板及时间线仍待接入，完整本地产品验收尚未达成。详细约束见产品 `docs/architecture/native-video-tool-commits.md`。
 
 ### 正式 Agent authoring 与 Device 装配
 
@@ -91,6 +91,16 @@ Musterwork worktree 提交 `82aaa621b` 已接入固定的独立视频 SDK（上�
 后续产品提交 `af81cfc6f` 已补齐源码中的技能装载：Skill v52 新增 `musterwork-video-creation@1`，以可选依赖连接本地 authoring、视频/图片生成和文件读取。原 ProductSnapshot 的显式技能选择现在依据精确 capability identity 装载本次已授权的工具；缺少可选能力不封锁剩余流程，也不补造权限。旧 Skill 材料不改写。
 
 输入框 Auto 在无生成模型或目录暂时不可用时仍能发送已有素材的剪辑请求，参数仍只在技能选中时出现；手动指定模型的版本和组合继续严格校验，未静默改成 Auto。Backend Auto 消息准入不依赖生成数据库；真正付费生成继续走原签名能力/用户约束/计费边界。37 项 ProductSnapshot、13 项 Skill、7 项 Python、10 项发行校验器及 5 项 Vue 控件测试共 72 项通过；strict Clippy 和共享 UI 类型检查通过。全部 93 份历史包材料校验通过，当前 HEAD 锚定检查包含新增包；本地报告为产品 `.codex-work/video-skill-report.json`。这些是实际源码与端口/组件验证，不是已完成账号启动、模型对话、右侧工作台及整个本地验收。
+
+### 手动执行、共享历史与认证桌面命令
+
+产品提交 `a00b9a14b` 新增 `NativeVideoProductCommands`，与 Agent 共用请求解析、精确版本规划、SDK 调用、FileQuery 素材授权和历史 inverse 验证。用户编辑使用原 CommandId/产品账户，不伪造 Run 或 Invocation；双方提交进入同一工程、资源库存和历史。原命令的精确字节及作用域绑定不可变 operation identity，丢失回应后即使 head 已前进，仍可恢复原回执。
+
+`LocalVideoProjectService` 在原认证 UDS 上装配，resident product authority 绑定 User Actor，外部请求不能自行指定 tenant/principal。桌面主进程复用原协商 channel；IPC 注入真实 renderer sender，取消、页面关闭和 Runtime shutdown 传播到原执行。Renderer API 固定原命令身份和字节，结果不确定时不自动重发新命令。公开请求 metadata 上限4 MiB、结果64 KiB、执行60秒；媒体不通过 JSON 传入，也不依赖 PPT worker。
+
+四项真实 SDK/SQLite 手动执行测试、五项 Agent 回归和一项实际人机交错测试通过：用户先保存后，已准备的旧 Agent 候选被拒绝；Agent 读取最新 head 继续修改，双方能相互撤销原历史。五个工程 revision 仅有三个真实 Agent commit，Run 仍为原来的一个。连同30项 Device transport、80项 Electron 通信/命令/IPC scope、两项 Renderer、15项协议/跨语言检查，共137项通过，无 ignored；相关 Rust production lib strict Clippy、Renderer API 类型检查通过。扩大到 all-targets 的检查在既有 artifact 测试 `unwrap_used` 上失败，没有宣称通过或增加 lint 抑制。
+
+产品 `.codex-work/video-product-execution-report.json` 固定源提交、原 SDK manifest 和日志摘要。协议检查包含原 worktree 未提交视频选择字段及对应生成锁；本次只提交独立 local_video 合同，暂存中的88个 proto 另经实际 vendored protoc 构建并与暂存 descriptor 逐字节一致。受控 gRPC fixture 验证通信，不能冒充真实登录产品。时间线页面、工程变化订阅、待确认命令恢复 UI、媒体 probe/大文件/播放/导出和浏览器跨端仍待完成；未发布新 SDK 或宣称完整验收。详细合同在产品 `docs/architecture/native-video-product-execution.md`。
 
 ### 精确时间
 
@@ -224,7 +234,7 @@ cargo test --release --offline --locked -p mo-video-edit --test generated_sequen
 
 - 当前已支持锚点线性变速；完整曲线变速/反查、转场、关键帧、字幕词锚点、分析与互操作等最终语义仍待补全。音频策略已保存，实际重采样/混音基础已实现，非原速保调及工程派生图已实现，生产 Host 接入和完整音频处理仍待完成。
 - 原生 worker 已通过连续区间的真实工程采样测试，CPU/Metal GPU 已执行同源合成，但尚未成为产品播放链；音频混音已有内核实现，设备播放、GPU 显示/纹理互操作、产品工程导出与浏览器 I/O 尚未接入；编码/容器的 leaf adapter 已实现，编码 worker 已连接，宿主交付仍待连接。
-- 已有独立开发 SDK 和 Browser Host 基础；生产 SDK/MCP/CLI、Device Host、Agent 技能、新时间线 UI、完整恢复和项目包尚未接入新内核。
+- 已有独立开发 SDK、Browser Host 基础、Device metadata 工程执行和源码中的 Agent 技能/桌面 RPC/IPC；生产 SDK/MCP/CLI、媒体 Host、新时间线 UI、完整恢复和项目包仍待接入。
 - CE.SDK 仍存在于产品旧 worktree，未宣称依赖退役；旧 scene 数据须审计、迁移或保留可导出的原件，不能仅换 engineId。
 - 完整功能、媒体质量、性能、体积、多平台与真实 provider 计费没有完成验收；当前不能交付为“用户已可验收全部视频功能”。
 
