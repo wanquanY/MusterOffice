@@ -11,7 +11,7 @@
 
 ## 明确的颜色档案
 
-草案档案标识为 `musteroffice.video.linear2020-d65-203nits-premul-cpu-v1-draft`。内部为 **BT.2020 / D65 / 线性显示光 / RGBA32F / 预乘 alpha**，线性值 1 对齐 203 nit；在输出前保留可表示的负 RGB、广色域和高光。
+初始草案档案为 `musteroffice.video.linear2020-d65-203nits-premul-cpu-v1-draft`；后续为统一 CPU/GPU 空间坐标升级到 `...cpu-v2-draft`，颜色数学不变，见[GPU 实施记录](video-gpu-composition.md)。内部为 **BT.2020 / D65 / 线性显示光 / RGBA32F / 预乘 alpha**，线性值 1 对齐 203 nit；在输出前保留可表示的负 RGB、广色域和高光。
 
 `InputColor` 显式携带原色、transfer、YUV matrix、full/limited range、色度位置和 alpha 方式。由原始 codec 标签构造解释时：
 
@@ -47,7 +47,7 @@ PQ 按绝对亮度换算，HLG 使用逆 OETF 后的亮度相关 OOTF；非物�
 - 视频返回的呈现区间必须覆盖请求的精确 before/after 采样，内容/流绑定、尺寸和可用区间必须匹配。静态图片不能伪造视频时间区间。
 - 有理透明度在渲染边界以 Q32、nearest-ties-even 量化，每个因子误差不超过 `2^-33`；作者时间与工程不改变。
 
-当前 quad 边界采用中心覆盖判定，未加入 MSAA/解析边缘覆盖；双线性也不等价于高质量大比例缩小过滤。文本、裁剪、模糊、遮罩、完整转场/关键帧、GPU 和更高质量过滤未在本模块中完成，不关闭相关最终验收项。
+当前 quad 边界采用中心覆盖判定，未加入 MSAA/解析边缘覆盖；双线性也不等价于高质量大比例缩小过滤。文本、裁剪、模糊、遮罩、完整转场/关键帧和更高质量过滤未在本模块中完成，不关闭相关最终验收项。GPU 后端后续已经[独立实现和验证](video-gpu-composition.md)，不改变此处 CPU 证据的范围。
 
 ## 预算与取消
 

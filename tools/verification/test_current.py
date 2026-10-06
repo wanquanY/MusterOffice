@@ -28,6 +28,7 @@ class CurrentVerificationTests(unittest.TestCase):
         self.assertLess(names.index("wasm-bindgen"), names.index("editor-client-tests"))
         self.assertIn("playback-sdk-package-tests", names)
         self.assertIn("video-generated-transactions", names)
+        self.assertIn("video-gpu-component-identity", names)
         self.assertIn("media-native-callbacks", names)
         self.assertLess(names.index("media-native-callbacks"), names.index("media-rust-ownership"))
         self.assertLess(names.index("media-native-callbacks"), names.index("media-worker-execution"))

@@ -47,6 +47,7 @@ def plan(groups, output, bindgen, python, ffmpeg_dir=None):
     cargo = ("--locked", "--offline")
     mcp = ("--manifest-path", "tools/mo-mcp/Cargo.toml")
     if "lint" in groups:
+        add("video-gpu-component-identity", python, "tools/components/record-video-gpu.py")
         add("verification-driver-tests", python, "-m", "unittest", "discover", "-s", "tools/verification", "-p", "test_current.py", "-v")
         add("media-component-identity-tests", python, "-m", "unittest", "discover", "-s", "tools/verification", "-p", "test_media_component.py", "-v")
         add("agent-package-tests", python, "-m", "unittest", "discover", "-s", "tools/agent-package", "-p", "test_build.py", "-v")

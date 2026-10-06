@@ -243,6 +243,8 @@ WebGPU external texture 可能避免复制，但标准不保证；原生硬件�
 
 CPU 参考后端用于正确性和有限能力运行，不以 CPU 低性能静默满足已经承诺的实时档案。高级效果缺失时保存工程、报告 capability mismatch；不把它变成透明空操作。
 
+当前 CPU/GPU 共用 plan executor。空间采样逆矩阵在渲染边界量化为 Q32.32，整数像素中心计算统一覆盖和最近邻索引；双线性只将局部小数转为 float。极端不可表达变换报告 capability mismatch。实际 Metal 检查与未完成的显示/浏览器/性能边界见 [GPU 实施记录](../../implementation/video-gpu-composition.md)。此量化不影响作者时间、before/after 选帧或工程存储。
+
 ## 7. 色彩、文字和音频
 
 ### 7.1 色彩与画面

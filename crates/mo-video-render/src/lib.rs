@@ -1,17 +1,22 @@
 //! Video-only linear-light reference compositor. No native codec/GPU/host linkage.
+mod backend;
 mod color;
 mod composite;
+mod coordinates;
+mod cpu;
 mod frame;
 mod geometry;
 mod layout;
 mod output;
+pub use backend::*;
 pub use color::*;
 pub use composite::*;
+pub use coordinates::RasterCoordinates;
 pub use frame::{NormalizedFrame, normalize_frame};
 pub use geometry::*;
 pub use output::*;
 
-pub const PROFILE: &str = "musteroffice.video.linear2020-d65-203nits-premul-cpu-v1-draft";
+pub const PROFILE: &str = "musteroffice.video.linear2020-d65-203nits-premul-cpu-v2-draft";
 #[derive(Debug, thiserror::Error)]
 pub enum RenderError {
     #[error("invalid video render input: {0}")]

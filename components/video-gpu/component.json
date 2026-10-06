@@ -1,0 +1,2990 @@
+{
+  "format": "musteroffice.video-gpu-component/1",
+  "status": "development; not a released binary component",
+  "directDependencies": {
+    "wgpu": "29.0.3",
+    "bytemuck": "1.25.2",
+    "pollster": "0.4.0"
+  },
+  "sourceUnmodified": true,
+  "scope": "Locked resolved closure for native wgpu and its test driver, including target-dependent branches. Browser media/WebGPU host is separate. No wgpu, codec or native dependency added to the pure CPU renderer.",
+  "selection": "wgpu 29.0.3 supports the existing wasm-bindgen 0.2.126 toolchain; 30.0.1 requires >=0.2.127. Core/hal/naga resolve to 29.0.4 in Cargo.lock. Native Metal/Vulkan/DX12 and WGSL enabled; no noop, GLES, runtime network or copied editor implementation.",
+  "packages": [
+    {
+      "name": "allocator-api2",
+      "version": "0.2.21",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/zakarumych/allocator-api2",
+      "archive": {
+        "url": "https://static.crates.io/crates/allocator-api2/allocator-api2-0.2.21.crate",
+        "sha256": "683d7910e743518b0e34f1186f92494becacb047c7b6bf616c96772180fef923",
+        "byteLength": 63622
+      },
+      "features": [
+        "alloc"
+      ],
+      "notices": [
+        {
+          "path": "licenses/allocator-api2-0.2.21-LICENSE-APACHE.txt",
+          "sha256": "20fe7b00e904ed690e3b9fd6073784d3fc428141dbd10b81c01fd143d0797f58",
+          "byteLength": 9899,
+          "archivePath": "allocator-api2-0.2.21/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/allocator-api2-0.2.21-LICENSE-MIT.txt",
+          "sha256": "36516aefdc84c5d5a1e7485425913a22dbda69eb1930c5e84d6ae4972b5194b9",
+          "byteLength": 1046,
+          "archivePath": "allocator-api2-0.2.21/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "android_system_properties",
+      "version": "0.1.6",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/nical/android_system_properties",
+      "archive": {
+        "url": "https://static.crates.io/crates/android_system_properties/android_system_properties-0.1.6.crate",
+        "sha256": "ae221649c9976a6f6c56ae1facf410f3ddb33cc661c4b7b61020a912d4237fbc",
+        "byteLength": 5625
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/android_system_properties-0.1.6-LICENSE-APACHE.txt",
+          "sha256": "216486f29671a4262efe32af6d84a75bef398127f8c5f369b5c8305983887a06",
+          "byteLength": 554,
+          "archivePath": "android_system_properties-0.1.6/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/android_system_properties-0.1.6-LICENSE-MIT.txt",
+          "sha256": "80f275e90d799911ed3830a7f242a2ef5a4ade2092fe0aa07bfb2d2cf2f2b95e",
+          "byteLength": 1080,
+          "archivePath": "android_system_properties-0.1.6/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "arrayvec",
+      "version": "0.7.8",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/bluss/arrayvec",
+      "archive": {
+        "url": "https://static.crates.io/crates/arrayvec/arrayvec-0.7.8.crate",
+        "sha256": "d3fb67a6e08acf24fdeccbac2cb6ac4305825bd1f117462e0e6f2f193345ad56",
+        "byteLength": 33260
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/arrayvec-0.7.8-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "arrayvec-0.7.8/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/arrayvec-0.7.8-LICENSE-MIT.txt",
+          "sha256": "4da95ec4ecb65b738d470b7d762894ad9c97da93e6cbfb18b570fc2c96f4b871",
+          "byteLength": 1071,
+          "archivePath": "arrayvec-0.7.8/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "ash",
+      "version": "0.38.0+1.3.281",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/ash-rs/ash",
+      "archive": {
+        "url": "https://static.crates.io/crates/ash/ash-0.38.0+1.3.281.crate",
+        "sha256": "0bb44936d800fea8f016d7f2311c6a4f97aebd5dc86f09906139ec848cf3a46f",
+        "byteLength": 457775
+      },
+      "features": [
+        "debug",
+        "default",
+        "libloading",
+        "loaded",
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/ash-0.38.0+1.3.281-LICENSE-APACHE.txt",
+          "sha256": "0e8a410375e1ee5c75c6198b08b534fec6e5edef766cf971bab4a404542636ab",
+          "byteLength": 9691,
+          "archivePath": "ash-0.38.0+1.3.281/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/ash-0.38.0+1.3.281-LICENSE-MIT.txt",
+          "sha256": "c733ccf8ab25df175a63d9d844677b98e3a5ab8f8de1c1616087e6868a7f948e",
+          "byteLength": 1047,
+          "archivePath": "ash-0.38.0+1.3.281/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "autocfg",
+      "version": "1.5.1",
+      "declaredLicense": "Apache-2.0 OR MIT",
+      "repository": "https://github.com/cuviper/autocfg",
+      "archive": {
+        "url": "https://static.crates.io/crates/autocfg/autocfg-1.5.1.crate",
+        "sha256": "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53",
+        "byteLength": 18911
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/autocfg-1.5.1-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "autocfg-1.5.1/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/autocfg-1.5.1-LICENSE-MIT.txt",
+          "sha256": "27995d58ad5c1145c1a8cd86244ce844886958a35eb2b78c6b772748669999ac",
+          "byteLength": 1054,
+          "archivePath": "autocfg-1.5.1/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "bit-set",
+      "version": "0.9.1",
+      "declaredLicense": "Apache-2.0 OR MIT",
+      "repository": "https://github.com/contain-rs/bit-set",
+      "archive": {
+        "url": "https://static.crates.io/crates/bit-set/bit-set-0.9.1.crate",
+        "sha256": "34ddef2995421ab6a5c779542c81ee77c115206f4ad9d5a8e05f4ff49716a3dd",
+        "byteLength": 20389
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/bit-set-0.9.1-LICENSE-APACHE.txt",
+          "sha256": "8173d5c29b4f956d532781d2b86e4e30f83e6b7878dce18c919451d6ba707c90",
+          "byteLength": 10850,
+          "archivePath": "bit-set-0.9.1/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/bit-set-0.9.1-LICENSE-MIT.txt",
+          "sha256": "6b56ddc7cd80419e5e22e075f2252d720f6cbe17e3e2c17383095ee2712bcffa",
+          "byteLength": 1071,
+          "archivePath": "bit-set-0.9.1/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "bit-vec",
+      "version": "0.9.1",
+      "declaredLicense": "Apache-2.0 OR MIT",
+      "repository": "https://github.com/contain-rs/bit-vec",
+      "archive": {
+        "url": "https://static.crates.io/crates/bit-vec/bit-vec-0.9.1.crate",
+        "sha256": "b71798fca2c1fe1086445a7258a4bc81e6e49dcd24c8d0dd9a1e57395b603f51",
+        "byteLength": 29177
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/bit-vec-0.9.1-LICENSE-APACHE.txt",
+          "sha256": "8173d5c29b4f956d532781d2b86e4e30f83e6b7878dce18c919451d6ba707c90",
+          "byteLength": 10850,
+          "archivePath": "bit-vec-0.9.1/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/bit-vec-0.9.1-LICENSE-MIT.txt",
+          "sha256": "f51ac2c59a222f7476ce507ca879960e2b64ea64bb2786eefdbeb7b0b538d1b7",
+          "byteLength": 1071,
+          "archivePath": "bit-vec-0.9.1/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "bitflags",
+      "version": "2.13.2",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/bitflags/bitflags",
+      "archive": {
+        "url": "https://static.crates.io/crates/bitflags/bitflags-2.13.2.crate",
+        "sha256": "3ded4057c258ba199e2d26386d3af3780957ecaee6c4ef4041c6b4b8b97c0b06",
+        "byteLength": 51678
+      },
+      "features": [
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/bitflags-2.13.2-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "bitflags-2.13.2/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/bitflags-2.13.2-LICENSE-MIT.txt",
+          "sha256": "6485b8ed310d3f0340bf1ad1f47645069ce4069dcc6bb46c7d5c6faf41de1fdb",
+          "byteLength": 1071,
+          "archivePath": "bitflags-2.13.2/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "block2",
+      "version": "0.6.2",
+      "declaredLicense": "MIT",
+      "repository": "https://github.com/madsmtm/objc2",
+      "archive": {
+        "url": "https://static.crates.io/crates/block2/block2-0.6.2.crate",
+        "sha256": "cdeb9d870516001442e364c5220d3574d2da8dc765554b4a617230d33fa58ef5",
+        "byteLength": 34505
+      },
+      "features": [
+        "alloc",
+        "default",
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/upstream-7f976f7e9cb2d87d.txt",
+          "url": "https://api.github.com/repos/madsmtm/objc2/git/blobs/540ae4c81adb5f64a9f61e222b688880da24300e",
+          "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54",
+          "byteLength": 1339
+        }
+      ]
+    },
+    {
+      "name": "bumpalo",
+      "version": "3.20.3",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/fitzgen/bumpalo",
+      "archive": {
+        "url": "https://static.crates.io/crates/bumpalo/bumpalo-3.20.3.crate",
+        "sha256": "72f5acc6cb2ba439de613abc23857ec3d78374d8ed5ac84e9d11336e87da8649",
+        "byteLength": 98671
+      },
+      "features": [
+        "default"
+      ],
+      "notices": [
+        {
+          "path": "licenses/bumpalo-3.20.3-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "bumpalo-3.20.3/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/bumpalo-3.20.3-LICENSE-MIT.txt",
+          "sha256": "65f94e99ddaf4f5d1782a6dae23f35d4293a9a01444a13135a6887017d353cee",
+          "byteLength": 1059,
+          "archivePath": "bumpalo-3.20.3/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "bytemuck",
+      "version": "1.25.2",
+      "declaredLicense": "Zlib OR Apache-2.0 OR MIT",
+      "repository": "https://github.com/Lokathor/bytemuck",
+      "archive": {
+        "url": "https://static.crates.io/crates/bytemuck/bytemuck-1.25.2.crate",
+        "sha256": "95832e849adfb21180ccb6826a99da14e5d266ae5c2e668e1602cf234f153797",
+        "byteLength": 54075
+      },
+      "features": [
+        "bytemuck_derive",
+        "derive",
+        "extern_crate_alloc",
+        "min_const_generics"
+      ],
+      "notices": [
+        {
+          "path": "licenses/bytemuck-1.25.2-LICENSE-APACHE.txt",
+          "sha256": "e3ba223bb1423f0aad8c3dfce0fe3148db48926d41e6fbc3afbbf5ff9e1c89cb",
+          "byteLength": 10398,
+          "archivePath": "bytemuck-1.25.2/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/bytemuck-1.25.2-LICENSE-MIT.txt",
+          "sha256": "9df9ba60a11af705f2e451b53762686e615d86f76b169cf075c3237730dbd7e2",
+          "byteLength": 1110,
+          "archivePath": "bytemuck-1.25.2/LICENSE-MIT"
+        },
+        {
+          "path": "licenses/bytemuck-1.25.2-LICENSE-ZLIB.txt",
+          "sha256": "84b34dd7608f7fb9b17bd588a6bf392bf7de504e2716f024a77d89f1b145a151",
+          "byteLength": 851,
+          "archivePath": "bytemuck-1.25.2/LICENSE-ZLIB"
+        }
+      ]
+    },
+    {
+      "name": "bytemuck_derive",
+      "version": "1.12.1",
+      "declaredLicense": "Zlib OR Apache-2.0 OR MIT",
+      "repository": "https://github.com/Lokathor/bytemuck",
+      "archive": {
+        "url": "https://static.crates.io/crates/bytemuck_derive/bytemuck_derive-1.12.1.crate",
+        "sha256": "6a1f896587b6f2c069c73d2f0913e2d590c3990285cd2f0b6aa02b786b4c679c",
+        "byteLength": 26509
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/bytemuck_derive-1.12.1-LICENSE-APACHE.txt",
+          "sha256": "e3ba223bb1423f0aad8c3dfce0fe3148db48926d41e6fbc3afbbf5ff9e1c89cb",
+          "byteLength": 10398,
+          "archivePath": "bytemuck_derive-1.12.1/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/bytemuck_derive-1.12.1-LICENSE-MIT.txt",
+          "sha256": "9df9ba60a11af705f2e451b53762686e615d86f76b169cf075c3237730dbd7e2",
+          "byteLength": 1110,
+          "archivePath": "bytemuck_derive-1.12.1/LICENSE-MIT"
+        },
+        {
+          "path": "licenses/bytemuck_derive-1.12.1-LICENSE-ZLIB.txt",
+          "sha256": "84b34dd7608f7fb9b17bd588a6bf392bf7de504e2716f024a77d89f1b145a151",
+          "byteLength": 851,
+          "archivePath": "bytemuck_derive-1.12.1/LICENSE-ZLIB"
+        }
+      ]
+    },
+    {
+      "name": "cfg-if",
+      "version": "1.0.5",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/rust-lang/cfg-if",
+      "archive": {
+        "url": "https://static.crates.io/crates/cfg-if/cfg-if-1.0.5.crate",
+        "sha256": "4e7648175b45a9a48536d676f68d918270699102aa8dab5496df06904c914600",
+        "byteLength": 9578
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/cfg-if-1.0.5-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "cfg-if-1.0.5/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/cfg-if-1.0.5-LICENSE-MIT.txt",
+          "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397",
+          "byteLength": 1057,
+          "archivePath": "cfg-if-1.0.5/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "cfg_aliases",
+      "version": "0.2.2",
+      "declaredLicense": "MIT",
+      "repository": "https://github.com/katharostech/cfg_aliases",
+      "archive": {
+        "url": "https://static.crates.io/crates/cfg_aliases/cfg_aliases-0.2.2.crate",
+        "sha256": "f079e83a288787bcd14a6aea84cee5c87a67c5a3e660c30f557a3d24761b3527",
+        "byteLength": 6527
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/cfg_aliases-0.2.2-LICENSE.txt",
+          "sha256": "31b94860253d8ec7b4529f51901044d3b459d6292d996504a36b1bae3a36a812",
+          "byteLength": 1076,
+          "archivePath": "cfg_aliases-0.2.2/LICENSE"
+        },
+        {
+          "path": "licenses/cfg_aliases-0.2.2-NOTICES.md.txt",
+          "sha256": "1e2b7ade3fb228130408b9990cae6a7618eb314c75aa0b164bfe485d9d9756ee",
+          "byteLength": 1472,
+          "archivePath": "cfg_aliases-0.2.2/NOTICES.md"
+        }
+      ]
+    },
+    {
+      "name": "codespan-reporting",
+      "version": "0.13.1",
+      "declaredLicense": "Apache-2.0",
+      "repository": "https://github.com/brendanzab/codespan",
+      "archive": {
+        "url": "https://static.crates.io/crates/codespan-reporting/codespan-reporting-0.13.1.crate",
+        "sha256": "af491d569909a7e4dee0ad7db7f5341fef5c614d5b8ec8cf765732aba3cff681",
+        "byteLength": 57424
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/codespan-reporting-0.13.1-LICENSE.txt",
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+          "byteLength": 11357,
+          "archivePath": "codespan-reporting-0.13.1/LICENSE"
+        }
+      ]
+    },
+    {
+      "name": "crunchy",
+      "version": "0.2.4",
+      "declaredLicense": "MIT",
+      "repository": "https://github.com/eira-fransham/crunchy",
+      "archive": {
+        "url": "https://static.crates.io/crates/crunchy/crunchy-0.2.4.crate",
+        "sha256": "460fbee9c2c2f33933d720630a6a0bac33ba7053db5344fac858d4b8952d77d5",
+        "byteLength": 3887
+      },
+      "features": [
+        "default",
+        "limit_128"
+      ],
+      "notices": [
+        {
+          "path": "licenses/crunchy-0.2.4-LICENSE.txt",
+          "sha256": "3eab77734a181b2a2e8418af9004f960f715f04aac4d76a26cf774f63a7b13d1",
+          "byteLength": 1082,
+          "archivePath": "crunchy-0.2.4/LICENSE"
+        }
+      ]
+    },
+    {
+      "name": "dispatch2",
+      "version": "0.3.1",
+      "declaredLicense": "Zlib OR Apache-2.0 OR MIT",
+      "repository": "https://github.com/madsmtm/objc2",
+      "archive": {
+        "url": "https://static.crates.io/crates/dispatch2/dispatch2-0.3.1.crate",
+        "sha256": "1e0e367e4e7da84520dedcac1901e4da967309406d1e51017ae1abfb97adbd38",
+        "byteLength": 55299
+      },
+      "features": [
+        "alloc",
+        "objc2"
+      ],
+      "notices": [
+        {
+          "path": "licenses/upstream-7f976f7e9cb2d87d.txt",
+          "url": "https://api.github.com/repos/madsmtm/objc2/git/blobs/540ae4c81adb5f64a9f61e222b688880da24300e",
+          "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54",
+          "byteLength": 1339
+        }
+      ]
+    },
+    {
+      "name": "document-features",
+      "version": "0.2.12",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/slint-ui/document-features",
+      "archive": {
+        "url": "https://static.crates.io/crates/document-features/document-features-0.2.12.crate",
+        "sha256": "d4b8a88685455ed29a21542a33abd9cb6510b6b129abadabdcef0f4c55bc8f61",
+        "byteLength": 14739
+      },
+      "features": [
+        "default"
+      ],
+      "notices": [
+        {
+          "path": "licenses/document-features-0.2.12-LICENSE-APACHE.txt",
+          "sha256": "074e6e32c86a4c0ef8b3ed25b721ca23aca83df277cd88106ef7177c354615ff",
+          "byteLength": 10280,
+          "archivePath": "document-features-0.2.12/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/document-features-0.2.12-LICENSE-MIT.txt",
+          "sha256": "aa893340d14b9844625be6a50ac644169a01b52f0211cbf81b09e1874c8cd81d",
+          "byteLength": 1082,
+          "archivePath": "document-features-0.2.12/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "equivalent",
+      "version": "1.0.2",
+      "declaredLicense": "Apache-2.0 OR MIT",
+      "repository": "https://github.com/indexmap-rs/equivalent",
+      "archive": {
+        "url": "https://static.crates.io/crates/equivalent/equivalent-1.0.2.crate",
+        "sha256": "877a4ace8713b0bcf2a4e7eec82529c029f1d0619886d18145fea96c3ffe5c0f",
+        "byteLength": 7419
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/equivalent-1.0.2-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "equivalent-1.0.2/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/equivalent-1.0.2-LICENSE-MIT.txt",
+          "sha256": "7365cc8878a1d7ce155a58c4ca09c3d7a6be413efa5334a80ea842912b669349",
+          "byteLength": 1049,
+          "archivePath": "equivalent-1.0.2/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "foldhash",
+      "version": "0.1.5",
+      "declaredLicense": "Zlib",
+      "repository": "https://github.com/orlp/foldhash",
+      "archive": {
+        "url": "https://static.crates.io/crates/foldhash/foldhash-0.1.5.crate",
+        "sha256": "d9c4f5dac5e15c24eb999c26181a6ca40b39fe946cbe4c263c7209467bc83af2",
+        "byteLength": 21901
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/foldhash-0.1.5-LICENSE.txt",
+          "sha256": "b1181a40b2a7b25cf66fd01481713bc1005df082c53ef73e851e55071b102744",
+          "byteLength": 856,
+          "archivePath": "foldhash-0.1.5/LICENSE"
+        }
+      ]
+    },
+    {
+      "name": "foldhash",
+      "version": "0.2.0",
+      "declaredLicense": "Zlib",
+      "repository": "https://github.com/orlp/foldhash",
+      "archive": {
+        "url": "https://static.crates.io/crates/foldhash/foldhash-0.2.0.crate",
+        "sha256": "77ce24cb58228fbb8aa041425bb1050850ac19177686ea6e0f41a70416f56fdb",
+        "byteLength": 23329
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/foldhash-0.2.0-LICENSE.txt",
+          "sha256": "b1181a40b2a7b25cf66fd01481713bc1005df082c53ef73e851e55071b102744",
+          "byteLength": 856,
+          "archivePath": "foldhash-0.2.0/LICENSE"
+        }
+      ]
+    },
+    {
+      "name": "futures-core",
+      "version": "0.3.34",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/rust-lang/futures-rs",
+      "archive": {
+        "url": "https://static.crates.io/crates/futures-core/futures-core-0.3.34.crate",
+        "sha256": "92d699e522242e69e3003b94ecc1f960f3a5e015aa7c5d7486e65ad01dd94f5e",
+        "byteLength": 14692
+      },
+      "features": [
+        "alloc",
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/futures-core-0.3.34-LICENSE-APACHE.txt",
+          "sha256": "275c491d6d1160553c32fd6127061d7f9606c3ea25abfad6ca3f6ed088785427",
+          "byteLength": 10874,
+          "archivePath": "futures-core-0.3.34/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/futures-core-0.3.34-LICENSE-MIT.txt",
+          "sha256": "6652c868f35dfe5e8ef636810a4e576b9d663f3a17fb0f5613ad73583e1b88fd",
+          "byteLength": 1094,
+          "archivePath": "futures-core-0.3.34/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "futures-task",
+      "version": "0.3.34",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/rust-lang/futures-rs",
+      "archive": {
+        "url": "https://static.crates.io/crates/futures-task/futures-task-0.3.34.crate",
+        "sha256": "cd417de3d1d015fc3bfd2b1ea46dfc7bab72ef86f1cc7cc9c78e728b34a6d1fd",
+        "byteLength": 11376
+      },
+      "features": [
+        "alloc",
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/futures-task-0.3.34-LICENSE-APACHE.txt",
+          "sha256": "275c491d6d1160553c32fd6127061d7f9606c3ea25abfad6ca3f6ed088785427",
+          "byteLength": 10874,
+          "archivePath": "futures-task-0.3.34/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/futures-task-0.3.34-LICENSE-MIT.txt",
+          "sha256": "6652c868f35dfe5e8ef636810a4e576b9d663f3a17fb0f5613ad73583e1b88fd",
+          "byteLength": 1094,
+          "archivePath": "futures-task-0.3.34/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "futures-util",
+      "version": "0.3.34",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/rust-lang/futures-rs",
+      "archive": {
+        "url": "https://static.crates.io/crates/futures-util/futures-util-0.3.34.crate",
+        "sha256": "0d50a92467f8ba5dd6e3ee5d4bd04d73ab2e4e1c44474a0674821dfce14b79bc",
+        "byteLength": 169782
+      },
+      "features": [
+        "alloc",
+        "slab",
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/futures-util-0.3.34-LICENSE-APACHE.txt",
+          "sha256": "275c491d6d1160553c32fd6127061d7f9606c3ea25abfad6ca3f6ed088785427",
+          "byteLength": 10874,
+          "archivePath": "futures-util-0.3.34/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/futures-util-0.3.34-LICENSE-MIT.txt",
+          "sha256": "6652c868f35dfe5e8ef636810a4e576b9d663f3a17fb0f5613ad73583e1b88fd",
+          "byteLength": 1094,
+          "archivePath": "futures-util-0.3.34/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "gpu-allocator",
+      "version": "0.28.0",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/Traverse-Research/gpu-allocator",
+      "archive": {
+        "url": "https://static.crates.io/crates/gpu-allocator/gpu-allocator-0.28.0.crate",
+        "sha256": "51255ea7cfaadb6c5f1528d43e92a82acb2b96c43365989a28b2d44ee38f8795",
+        "byteLength": 54791
+      },
+      "features": [
+        "d3d12",
+        "hashbrown",
+        "vulkan"
+      ],
+      "notices": [
+        {
+          "path": "licenses/gpu-allocator-0.28.0-LICENSE-APACHE.txt",
+          "sha256": "0178e21322b0e88aa3aeb3146f6a9611bc1f8df6d98bdfb34be28b9dd56a8107",
+          "byteLength": 10845,
+          "archivePath": "gpu-allocator-0.28.0/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/gpu-allocator-0.28.0-LICENSE-MIT.txt",
+          "sha256": "ad41be6cc6538b29b9346648f41432b5e460bad6be073b5eeaa41320ea2921dc",
+          "byteLength": 1065,
+          "archivePath": "gpu-allocator-0.28.0/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "gpu-descriptor",
+      "version": "0.3.2",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/zakarumych/gpu-descriptor",
+      "archive": {
+        "url": "https://static.crates.io/crates/gpu-descriptor/gpu-descriptor-0.3.2.crate",
+        "sha256": "b89c83349105e3732062a895becfc71a8f921bb71ecbbdd8ff99263e3b53a0ca",
+        "byteLength": 7943
+      },
+      "features": [
+        "default",
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/upstream-f72143f7e9d9fb8b.txt",
+          "url": "https://api.github.com/repos/zakarumych/gpu-descriptor/git/blobs/9eca5fed017db6917cc476f67dcff36b0364bd48",
+          "sha256": "f72143f7e9d9fb8bd336b139fa22f825a299591c29f2f7338c5566347b137613",
+          "byteLength": 352
+        },
+        {
+          "path": "licenses/upstream-6bec8c944a6d4251.txt",
+          "url": "https://api.github.com/repos/zakarumych/gpu-descriptor/git/blobs/cfaf4615fc4eafe17df4df25b135ae82a73f142d",
+          "sha256": "6bec8c944a6d4251be50ac86bb4ca360bcce5aea472505dee2800e160bf1cdbf",
+          "byteLength": 574
+        },
+        {
+          "path": "licenses/upstream-5226e27d5fbc683d.txt",
+          "url": "https://api.github.com/repos/zakarumych/gpu-descriptor/git/blobs/6fb305333b5577c09ea210cdf2e1fcf6793e9b01",
+          "sha256": "5226e27d5fbc683db56c52853cdb9d15b69abadb525a60f95c862c2dbd77cdc8",
+          "byteLength": 1080
+        }
+      ]
+    },
+    {
+      "name": "gpu-descriptor-types",
+      "version": "0.2.0",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/zakarumych/gpu-descriptor",
+      "archive": {
+        "url": "https://static.crates.io/crates/gpu-descriptor-types/gpu-descriptor-types-0.2.0.crate",
+        "sha256": "fdf242682df893b86f33a73828fb09ca4b2d3bb6cc95249707fc684d27484b91",
+        "byteLength": 2169
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/upstream-f72143f7e9d9fb8b.txt",
+          "url": "https://api.github.com/repos/zakarumych/gpu-descriptor/git/blobs/9eca5fed017db6917cc476f67dcff36b0364bd48",
+          "sha256": "f72143f7e9d9fb8bd336b139fa22f825a299591c29f2f7338c5566347b137613",
+          "byteLength": 352
+        },
+        {
+          "path": "licenses/upstream-6bec8c944a6d4251.txt",
+          "url": "https://api.github.com/repos/zakarumych/gpu-descriptor/git/blobs/cfaf4615fc4eafe17df4df25b135ae82a73f142d",
+          "sha256": "6bec8c944a6d4251be50ac86bb4ca360bcce5aea472505dee2800e160bf1cdbf",
+          "byteLength": 574
+        },
+        {
+          "path": "licenses/upstream-5226e27d5fbc683d.txt",
+          "url": "https://api.github.com/repos/zakarumych/gpu-descriptor/git/blobs/6fb305333b5577c09ea210cdf2e1fcf6793e9b01",
+          "sha256": "5226e27d5fbc683db56c52853cdb9d15b69abadb525a60f95c862c2dbd77cdc8",
+          "byteLength": 1080
+        }
+      ]
+    },
+    {
+      "name": "half",
+      "version": "2.7.1",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/VoidStarKat/half-rs",
+      "archive": {
+        "url": "https://static.crates.io/crates/half/half-2.7.1.crate",
+        "sha256": "6ea2d84b969582b4b1864a92dc5d27cd2b77b622a8d79306834f1be5ba20d84b",
+        "byteLength": 61040
+      },
+      "features": [
+        "num-traits"
+      ],
+      "notices": [
+        {
+          "path": "licenses/half-2.7.1-LICENSE-APACHE.txt",
+          "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9",
+          "byteLength": 10173,
+          "archivePath": "half-2.7.1/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/half-2.7.1-LICENSE-MIT.txt",
+          "sha256": "508a77d2e7b51d98adeed32648ad124b7b30241a8e70b2e72c99f92d8e5874d1",
+          "byteLength": 1036,
+          "archivePath": "half-2.7.1/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "hashbrown",
+      "version": "0.15.5",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/rust-lang/hashbrown",
+      "archive": {
+        "url": "https://static.crates.io/crates/hashbrown/hashbrown-0.15.5.crate",
+        "sha256": "9229cfe53dfd69f0609a49f65461bd93001ea1ef889cd5529dd176593f5338a1",
+        "byteLength": 140908
+      },
+      "features": [
+        "default-hasher"
+      ],
+      "notices": [
+        {
+          "path": "licenses/hashbrown-0.15.5-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "hashbrown-0.15.5/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/hashbrown-0.15.5-LICENSE-MIT.txt",
+          "sha256": "ff8f68cb076caf8cefe7a6430d4ac086ce6af2ca8ce2c4e5a2004d4552ef52a2",
+          "byteLength": 1060,
+          "archivePath": "hashbrown-0.15.5/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "hashbrown",
+      "version": "0.16.1",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/rust-lang/hashbrown",
+      "archive": {
+        "url": "https://static.crates.io/crates/hashbrown/hashbrown-0.16.1.crate",
+        "sha256": "841d1cc9bed7f9236f321df977030373f4a4163ae1a7dbfe1a51a2c1a51d9100",
+        "byteLength": 147785
+      },
+      "features": [
+        "allocator-api2",
+        "default",
+        "default-hasher",
+        "equivalent",
+        "inline-more",
+        "raw-entry"
+      ],
+      "notices": [
+        {
+          "path": "licenses/hashbrown-0.16.1-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "hashbrown-0.16.1/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/hashbrown-0.16.1-LICENSE-MIT.txt",
+          "sha256": "ff8f68cb076caf8cefe7a6430d4ac086ce6af2ca8ce2c4e5a2004d4552ef52a2",
+          "byteLength": 1060,
+          "archivePath": "hashbrown-0.16.1/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "hashbrown",
+      "version": "0.17.1",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/rust-lang/hashbrown",
+      "archive": {
+        "url": "https://static.crates.io/crates/hashbrown/hashbrown-0.17.1.crate",
+        "sha256": "ed5909b6e89a2db4456e54cd5f673791d7eca6732202bbf2a9cc504fe2f9b84a",
+        "byteLength": 155512
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/hashbrown-0.17.1-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "hashbrown-0.17.1/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/hashbrown-0.17.1-LICENSE-MIT.txt",
+          "sha256": "ff8f68cb076caf8cefe7a6430d4ac086ce6af2ca8ce2c4e5a2004d4552ef52a2",
+          "byteLength": 1060,
+          "archivePath": "hashbrown-0.17.1/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "hexf-parse",
+      "version": "0.2.1",
+      "declaredLicense": "CC0-1.0",
+      "repository": "https://github.com/lifthrasiir/hexf",
+      "archive": {
+        "url": "https://static.crates.io/crates/hexf-parse/hexf-parse-0.2.1.crate",
+        "sha256": "dfa686283ad6dd069f105e5ab091b04c62850d3e4cf5d67debad1933f55023df",
+        "byteLength": 4662
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/upstream-a2010f343487d3f7.txt",
+          "url": "https://api.github.com/repos/spdx/license-list-data/git/blobs/0e259d42c996742e9e3cba14c677129b2c1b6311",
+          "sha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
+          "byteLength": 7048
+        }
+      ]
+    },
+    {
+      "name": "indexmap",
+      "version": "2.14.2",
+      "declaredLicense": "Apache-2.0 OR MIT",
+      "repository": "https://github.com/indexmap-rs/indexmap",
+      "archive": {
+        "url": "https://static.crates.io/crates/indexmap/indexmap-2.14.2.crate",
+        "sha256": "cc4e190f5d26ca7051642629da2c52fc03bde85a03197c99408dcd291734c855",
+        "byteLength": 103014
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/indexmap-2.14.2-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "indexmap-2.14.2/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/indexmap-2.14.2-LICENSE-MIT.txt",
+          "sha256": "ecc269ef87fd38a1d98e30bfac9ba964a9dbd9315c3770fed98d4d7cb5882055",
+          "byteLength": 1049,
+          "archivePath": "indexmap-2.14.2/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "js-sys",
+      "version": "0.3.103",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/wasm-bindgen/wasm-bindgen/tree/master/crates/js-sys",
+      "archive": {
+        "url": "https://static.crates.io/crates/js-sys/js-sys-0.3.103.crate",
+        "sha256": "53b44bfcdb3f8d5837a46dae1ca9660a837176eee74a28b229bc626816589102",
+        "byteLength": 108366
+      },
+      "features": [
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/js-sys-0.3.103-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "js-sys-0.3.103/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/js-sys-0.3.103-LICENSE-MIT.txt",
+          "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397",
+          "byteLength": 1057,
+          "archivePath": "js-sys-0.3.103/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "libc",
+      "version": "0.2.189",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/rust-lang/libc",
+      "archive": {
+        "url": "https://static.crates.io/crates/libc/libc-0.2.189.crate",
+        "sha256": "3eaf3ede3fee6db1a4c2ee091bf8a8b4dccdc6d17f656fb07896ee72867612f2",
+        "byteLength": 851502
+      },
+      "features": [
+        "default",
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/libc-0.2.189-LICENSE-APACHE.txt",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+          "byteLength": 9723,
+          "archivePath": "libc-0.2.189/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/libc-0.2.189-LICENSE-MIT.txt",
+          "sha256": "123a331b5dbf04c30097fa43b8f858bc85df671fe776de498d01f3d6b7c1f69e",
+          "byteLength": 1066,
+          "archivePath": "libc-0.2.189/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "libloading",
+      "version": "0.8.9",
+      "declaredLicense": "ISC",
+      "repository": "https://github.com/nagisa/rust_libloading/",
+      "archive": {
+        "url": "https://static.crates.io/crates/libloading/libloading-0.8.9.crate",
+        "sha256": "d7c4b02199fee7c5d21a5ae7d8cfa79a6ef5bb2fc834d6e9058e89c825efdc55",
+        "byteLength": 30222
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/libloading-0.8.9-LICENSE.txt",
+          "sha256": "b29f8b01452350c20dd1af16ef83b598fea3053578ccc1c7a0ef40e57be2620f",
+          "byteLength": 736,
+          "archivePath": "libloading-0.8.9/LICENSE"
+        }
+      ]
+    },
+    {
+      "name": "libm",
+      "version": "0.2.16",
+      "declaredLicense": "MIT",
+      "repository": "https://github.com/rust-lang/compiler-builtins",
+      "archive": {
+        "url": "https://static.crates.io/crates/libm/libm-0.2.16.crate",
+        "sha256": "b6d2cec3eae94f9f509c767b45932f1ada8350c4bdb85af2fcab4a3c14807981",
+        "byteLength": 164243
+      },
+      "features": [
+        "arch",
+        "default",
+        "force-soft-floats"
+      ],
+      "notices": [
+        {
+          "path": "licenses/libm-0.2.16-LICENSE.txt.txt",
+          "sha256": "3823dda7cf046602f4b4e77ec8e227863dc4736037cc85bb33d9f19febe16bb7",
+          "byteLength": 14088,
+          "archivePath": "libm-0.2.16/LICENSE.txt"
+        }
+      ]
+    },
+    {
+      "name": "litrs",
+      "version": "1.0.0",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/LukasKalbertodt/litrs",
+      "archive": {
+        "url": "https://static.crates.io/crates/litrs/litrs-1.0.0.crate",
+        "sha256": "11d3d7f243d5c5a8b9bb5d6dd2b1602c0cb0b9db1621bafc7ed66e35ff9fe092",
+        "byteLength": 46610
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/litrs-1.0.0-LICENSE-APACHE.txt",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+          "byteLength": 9723,
+          "archivePath": "litrs-1.0.0/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/litrs-1.0.0-LICENSE-MIT.txt",
+          "sha256": "7dc1552e88f49132cb358b1b962fc5e79fa42d70bcbb88c526d33e45b8e98036",
+          "byteLength": 1062,
+          "archivePath": "litrs-1.0.0/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "lock_api",
+      "version": "0.4.14",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/Amanieu/parking_lot",
+      "archive": {
+        "url": "https://static.crates.io/crates/lock_api/lock_api-0.4.14.crate",
+        "sha256": "224399e74b87b5f3557511d98dff8b14089b3dadafcab6bb93eab67d3aace965",
+        "byteLength": 29249
+      },
+      "features": [
+        "atomic_usize",
+        "default"
+      ],
+      "notices": [
+        {
+          "path": "licenses/lock_api-0.4.14-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "lock_api-0.4.14/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/lock_api-0.4.14-LICENSE-MIT.txt",
+          "sha256": "c9a75f18b9ab2927829a208fc6aa2cf4e63b8420887ba29cdb265d6619ae82d5",
+          "byteLength": 1071,
+          "archivePath": "lock_api-0.4.14/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "log",
+      "version": "0.4.34",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/rust-lang/log",
+      "archive": {
+        "url": "https://static.crates.io/crates/log/log-0.4.34.crate",
+        "sha256": "f9f8bd3e56ce4dfc153cf470fffbfa98c7620958b312ca5c3a4b8d5181fd13c6",
+        "byteLength": 53395
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/log-0.4.34-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "log-0.4.34/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/log-0.4.34-LICENSE-MIT.txt",
+          "sha256": "6485b8ed310d3f0340bf1ad1f47645069ce4069dcc6bb46c7d5c6faf41de1fdb",
+          "byteLength": 1071,
+          "archivePath": "log-0.4.34/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "naga",
+      "version": "29.0.4",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/gfx-rs/wgpu",
+      "archive": {
+        "url": "https://static.crates.io/crates/naga/naga-29.0.4.crate",
+        "sha256": "b2bf919621e7975acb27d881bae2fb993e0d45c8e0446e85e6272971e00dc8df",
+        "byteLength": 842943
+      },
+      "features": [
+        "default",
+        "hlsl-out",
+        "msl-out",
+        "spv-out",
+        "wgsl-in"
+      ],
+      "notices": [
+        {
+          "path": "licenses/naga-29.0.4-LICENSE.APACHE.txt",
+          "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9",
+          "byteLength": 10173,
+          "archivePath": "naga-29.0.4/LICENSE.APACHE"
+        },
+        {
+          "path": "licenses/naga-29.0.4-LICENSE.MIT.txt",
+          "sha256": "dc0d97139e8205818c703741c7be7cb3b96888bd5917b8d6fc6133731e403c21",
+          "byteLength": 1078,
+          "archivePath": "naga-29.0.4/LICENSE.MIT"
+        }
+      ]
+    },
+    {
+      "name": "num-traits",
+      "version": "0.2.19",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/rust-num/num-traits",
+      "archive": {
+        "url": "https://static.crates.io/crates/num-traits/num-traits-0.2.19.crate",
+        "sha256": "071dfc062690e90b734c0b2273ce72ad0ffa95f0c74596bc250dcfd960262841",
+        "byteLength": 51631
+      },
+      "features": [
+        "i128",
+        "libm",
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/num-traits-0.2.19-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "num-traits-0.2.19/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/num-traits-0.2.19-LICENSE-MIT.txt",
+          "sha256": "6485b8ed310d3f0340bf1ad1f47645069ce4069dcc6bb46c7d5c6faf41de1fdb",
+          "byteLength": 1071,
+          "archivePath": "num-traits-0.2.19/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "objc2",
+      "version": "0.6.5",
+      "declaredLicense": "MIT",
+      "repository": "https://github.com/madsmtm/objc2",
+      "archive": {
+        "url": "https://static.crates.io/crates/objc2/objc2-0.6.5.crate",
+        "sha256": "08849bbd4767dfae9457696856ae1c84fe4e0281bbe4a7abff2d0e06fb7981f8",
+        "byteLength": 276781
+      },
+      "features": [
+        "alloc",
+        "default",
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/upstream-7f976f7e9cb2d87d.txt",
+          "url": "https://api.github.com/repos/madsmtm/objc2/git/blobs/540ae4c81adb5f64a9f61e222b688880da24300e",
+          "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54",
+          "byteLength": 1339
+        }
+      ]
+    },
+    {
+      "name": "objc2-core-foundation",
+      "version": "0.3.2",
+      "declaredLicense": "Zlib OR Apache-2.0 OR MIT",
+      "repository": "https://github.com/madsmtm/objc2",
+      "archive": {
+        "url": "https://static.crates.io/crates/objc2-core-foundation/objc2-core-foundation-0.3.2.crate",
+        "sha256": "2a180dd8642fa45cdb7dd721cd4c11b1cadd4929ce112ebd8b9f5803cc79d536",
+        "byteLength": 180804
+      },
+      "features": [
+        "CFArray",
+        "CFAttributedString",
+        "CFCGTypes",
+        "CFCalendar",
+        "CFCharacterSet",
+        "CFData",
+        "CFDate",
+        "CFDictionary",
+        "CFError",
+        "CFFileSecurity",
+        "CFLocale",
+        "CFMachPort",
+        "CFMessagePort",
+        "CFRunLoop",
+        "CFSet",
+        "CFStream",
+        "CFURL",
+        "alloc",
+        "bitflags",
+        "objc2",
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/upstream-7f976f7e9cb2d87d.txt",
+          "url": "https://api.github.com/repos/madsmtm/objc2/git/blobs/540ae4c81adb5f64a9f61e222b688880da24300e",
+          "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54",
+          "byteLength": 1339
+        }
+      ]
+    },
+    {
+      "name": "objc2-encode",
+      "version": "4.1.0",
+      "declaredLicense": "MIT",
+      "repository": "https://github.com/madsmtm/objc2",
+      "archive": {
+        "url": "https://static.crates.io/crates/objc2-encode/objc2-encode-4.1.0.crate",
+        "sha256": "ef25abbcd74fb2609453eb695bd2f860d389e457f67dc17cafc8b8cbc89d0c33",
+        "byteLength": 21004
+      },
+      "features": [
+        "alloc",
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/upstream-7f976f7e9cb2d87d.txt",
+          "url": "https://api.github.com/repos/madsmtm/objc2/git/blobs/540ae4c81adb5f64a9f61e222b688880da24300e",
+          "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54",
+          "byteLength": 1339
+        }
+      ]
+    },
+    {
+      "name": "objc2-foundation",
+      "version": "0.3.2",
+      "declaredLicense": "MIT",
+      "repository": "https://github.com/madsmtm/objc2",
+      "archive": {
+        "url": "https://static.crates.io/crates/objc2-foundation/objc2-foundation-0.3.2.crate",
+        "sha256": "e3e0adef53c21f888deb4fa59fc59f7eb17404926ee8a6f59f5df0fd7f9f3272",
+        "byteLength": 345384
+      },
+      "features": [
+        "NSArray",
+        "NSBundle",
+        "NSData",
+        "NSDictionary",
+        "NSEnumerator",
+        "NSError",
+        "NSGeometry",
+        "NSKeyValueObserving",
+        "NSNull",
+        "NSObjCRuntime",
+        "NSObject",
+        "NSProcessInfo",
+        "NSRange",
+        "NSString",
+        "NSThread",
+        "NSURL",
+        "NSValue",
+        "alloc",
+        "bitflags",
+        "objc2-core-foundation",
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/upstream-7f976f7e9cb2d87d.txt",
+          "url": "https://api.github.com/repos/madsmtm/objc2/git/blobs/540ae4c81adb5f64a9f61e222b688880da24300e",
+          "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54",
+          "byteLength": 1339
+        }
+      ]
+    },
+    {
+      "name": "objc2-metal",
+      "version": "0.3.2",
+      "declaredLicense": "Zlib OR Apache-2.0 OR MIT",
+      "repository": "https://github.com/madsmtm/objc2",
+      "archive": {
+        "url": "https://static.crates.io/crates/objc2-metal/objc2-metal-0.3.2.crate",
+        "sha256": "a0125f776a10d00af4152d74616409f0d4a2053a6f57fa5b7d6aa2854ac04794",
+        "byteLength": 226999
+      },
+      "features": [
+        "MTLAccelerationStructure",
+        "MTLAccelerationStructureCommandEncoder",
+        "MTLAccelerationStructureTypes",
+        "MTLAllocation",
+        "MTLArgument",
+        "MTLBlitCommandEncoder",
+        "MTLBlitPass",
+        "MTLBuffer",
+        "MTLCaptureManager",
+        "MTLCaptureScope",
+        "MTLCommandBuffer",
+        "MTLCommandEncoder",
+        "MTLCommandQueue",
+        "MTLComputeCommandEncoder",
+        "MTLComputePass",
+        "MTLComputePipeline",
+        "MTLCounters",
+        "MTLDataType",
+        "MTLDepthStencil",
+        "MTLDevice",
+        "MTLDrawable",
+        "MTLEvent",
+        "MTLGPUAddress",
+        "MTLLibrary",
+        "MTLPipeline",
+        "MTLPixelFormat",
+        "MTLRenderCommandEncoder",
+        "MTLRenderPass",
+        "MTLRenderPipeline",
+        "MTLResidencySet",
+        "MTLResource",
+        "MTLSampler",
+        "MTLStageInputOutputDescriptor",
+        "MTLTexture",
+        "MTLTypes",
+        "MTLVertexDescriptor",
+        "alloc",
+        "bitflags",
+        "block2",
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/upstream-7f976f7e9cb2d87d.txt",
+          "url": "https://api.github.com/repos/madsmtm/objc2/git/blobs/540ae4c81adb5f64a9f61e222b688880da24300e",
+          "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54",
+          "byteLength": 1339
+        }
+      ]
+    },
+    {
+      "name": "objc2-quartz-core",
+      "version": "0.3.2",
+      "declaredLicense": "Zlib OR Apache-2.0 OR MIT",
+      "repository": "https://github.com/madsmtm/objc2",
+      "archive": {
+        "url": "https://static.crates.io/crates/objc2-quartz-core/objc2-quartz-core-0.3.2.crate",
+        "sha256": "96c1358452b371bf9f104e21ec536d37a650eb10f7ee379fff67d2e08d537f1f",
+        "byteLength": 30036
+      },
+      "features": [
+        "CALayer",
+        "CAMetalLayer",
+        "alloc",
+        "bitflags",
+        "objc2-core-foundation",
+        "objc2-metal",
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/upstream-7f976f7e9cb2d87d.txt",
+          "url": "https://api.github.com/repos/madsmtm/objc2/git/blobs/540ae4c81adb5f64a9f61e222b688880da24300e",
+          "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54",
+          "byteLength": 1339
+        }
+      ]
+    },
+    {
+      "name": "once_cell",
+      "version": "1.21.4",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/matklad/once_cell",
+      "archive": {
+        "url": "https://static.crates.io/crates/once_cell/once_cell-1.21.4.crate",
+        "sha256": "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50",
+        "byteLength": 35010
+      },
+      "features": [
+        "alloc",
+        "race",
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/once_cell-1.21.4-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "once_cell-1.21.4/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/once_cell-1.21.4-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "byteLength": 1023,
+          "archivePath": "once_cell-1.21.4/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "ordered-float",
+      "version": "5.5.0",
+      "declaredLicense": "MIT",
+      "repository": "https://github.com/reem/rust-ordered-float",
+      "archive": {
+        "url": "https://static.crates.io/crates/ordered-float/ordered-float-5.5.0.crate",
+        "sha256": "8c7c9e0d9b23589f26070720bac724174bfec1083e82f7854cdd0267518343c0",
+        "byteLength": 34706
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/ordered-float-5.5.0-LICENSE-MIT.txt",
+          "sha256": "f7715d38a3fa1b4ac97c5729740752505a39cb92ee83ab5b102aeb5eaa7cdea4",
+          "byteLength": 1057,
+          "archivePath": "ordered-float-5.5.0/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "parking_lot",
+      "version": "0.12.5",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/Amanieu/parking_lot",
+      "archive": {
+        "url": "https://static.crates.io/crates/parking_lot/parking_lot-0.12.5.crate",
+        "sha256": "93857453250e3077bd71ff98b6a65ea6621a19bb0f559a85248955ac12c45a1a",
+        "byteLength": 46735
+      },
+      "features": [
+        "default"
+      ],
+      "notices": [
+        {
+          "path": "licenses/parking_lot-0.12.5-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "parking_lot-0.12.5/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/parking_lot-0.12.5-LICENSE-MIT.txt",
+          "sha256": "c9a75f18b9ab2927829a208fc6aa2cf4e63b8420887ba29cdb265d6619ae82d5",
+          "byteLength": 1071,
+          "archivePath": "parking_lot-0.12.5/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "parking_lot_core",
+      "version": "0.9.12",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/Amanieu/parking_lot",
+      "archive": {
+        "url": "https://static.crates.io/crates/parking_lot_core/parking_lot_core-0.9.12.crate",
+        "sha256": "2621685985a2ebf1c516881c026032ac7deafcda1a2c9b7850dc81e3dfcb64c1",
+        "byteLength": 34110
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/parking_lot_core-0.9.12-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "parking_lot_core-0.9.12/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/parking_lot_core-0.9.12-LICENSE-MIT.txt",
+          "sha256": "c9a75f18b9ab2927829a208fc6aa2cf4e63b8420887ba29cdb265d6619ae82d5",
+          "byteLength": 1071,
+          "archivePath": "parking_lot_core-0.9.12/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "pin-project-lite",
+      "version": "0.2.17",
+      "declaredLicense": "Apache-2.0 OR MIT",
+      "repository": "https://github.com/taiki-e/pin-project-lite",
+      "archive": {
+        "url": "https://static.crates.io/crates/pin-project-lite/pin-project-lite-0.2.17.crate",
+        "sha256": "a89322df9ebe1c1578d689c92318e070967d1042b512afbe49518723f4e6d5cd",
+        "byteLength": 31034
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/pin-project-lite-0.2.17-LICENSE-APACHE.txt",
+          "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+          "byteLength": 10174,
+          "archivePath": "pin-project-lite-0.2.17/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/pin-project-lite-0.2.17-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "byteLength": 1023,
+          "archivePath": "pin-project-lite-0.2.17/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "pollster",
+      "version": "0.4.0",
+      "declaredLicense": "Apache-2.0/MIT",
+      "repository": "https://github.com/zesterer/pollster",
+      "archive": {
+        "url": "https://static.crates.io/crates/pollster/pollster-0.4.0.crate",
+        "sha256": "2f3a9f18d041e6d0e102a0a46750538147e5e8992d3b4873aaafee2520b00ce3",
+        "byteLength": 9840
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/pollster-0.4.0-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "pollster-0.4.0/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/pollster-0.4.0-LICENSE-MIT.txt",
+          "sha256": "cc02a53316678ca2575cc69d12daa7b1833935d4b7742c31fbab7bd74a481077",
+          "byteLength": 1064,
+          "archivePath": "pollster-0.4.0/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "portable-atomic",
+      "version": "1.15.0",
+      "declaredLicense": "Apache-2.0 OR MIT",
+      "repository": "https://github.com/taiki-e/portable-atomic",
+      "archive": {
+        "url": "https://static.crates.io/crates/portable-atomic/portable-atomic-1.15.0.crate",
+        "sha256": "05c8b63e8d9609db387f0324918f81d68fe27748f084ef092fb35954d0539a85",
+        "byteLength": 202705
+      },
+      "features": [
+        "default",
+        "fallback",
+        "require-cas"
+      ],
+      "notices": [
+        {
+          "path": "licenses/portable-atomic-1.15.0-LICENSE-APACHE.txt",
+          "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+          "byteLength": 10174,
+          "archivePath": "portable-atomic-1.15.0/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/portable-atomic-1.15.0-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "byteLength": 1023,
+          "archivePath": "portable-atomic-1.15.0/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "portable-atomic-util",
+      "version": "0.2.8",
+      "declaredLicense": "Apache-2.0 OR MIT",
+      "repository": "https://github.com/taiki-e/portable-atomic-util",
+      "archive": {
+        "url": "https://static.crates.io/crates/portable-atomic-util/portable-atomic-util-0.2.8.crate",
+        "sha256": "10ab3eb7f3becc3a1cbc4f2c6f20267996cfc1a6467a873763411b136a122715",
+        "byteLength": 53874
+      },
+      "features": [
+        "alloc",
+        "default"
+      ],
+      "notices": [
+        {
+          "path": "licenses/portable-atomic-util-0.2.8-LICENSE-APACHE.txt",
+          "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+          "byteLength": 10174,
+          "archivePath": "portable-atomic-util-0.2.8/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/portable-atomic-util-0.2.8-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "byteLength": 1023,
+          "archivePath": "portable-atomic-util-0.2.8/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "presser",
+      "version": "0.3.1",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/EmbarkStudios/presser",
+      "archive": {
+        "url": "https://static.crates.io/crates/presser/presser-0.3.1.crate",
+        "sha256": "e8cf8e6a8aa66ce33f63993ffc4ea4271eb5b0530a9002db8455ea6050c77bfa",
+        "byteLength": 20946
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/presser-0.3.1-LICENSE-APACHE.txt",
+          "sha256": "8173d5c29b4f956d532781d2b86e4e30f83e6b7878dce18c919451d6ba707c90",
+          "byteLength": 10850,
+          "archivePath": "presser-0.3.1/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/presser-0.3.1-LICENSE-MIT.txt",
+          "sha256": "090a294a492ab2f41388252312a65cf2f0e423330b721a68c6665ac64766753b",
+          "byteLength": 1058,
+          "archivePath": "presser-0.3.1/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "proc-macro2",
+      "version": "1.0.107",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/dtolnay/proc-macro2",
+      "archive": {
+        "url": "https://static.crates.io/crates/proc-macro2/proc-macro2-1.0.107.crate",
+        "sha256": "985e7ec9bb745e6ce6535b544d84d6cd6f7ad8bd711c398938ae983b91a766d9",
+        "byteLength": 59588
+      },
+      "features": [
+        "default",
+        "proc-macro"
+      ],
+      "notices": [
+        {
+          "path": "licenses/proc-macro2-1.0.107-LICENSE-APACHE.txt",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+          "byteLength": 9723,
+          "archivePath": "proc-macro2-1.0.107/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/proc-macro2-1.0.107-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "byteLength": 1023,
+          "archivePath": "proc-macro2-1.0.107/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "profiling",
+      "version": "1.0.18",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/aclysma/profiling",
+      "archive": {
+        "url": "https://static.crates.io/crates/profiling/profiling-1.0.18.crate",
+        "sha256": "3d595e54a326bc53c1c197b32d295e14b169e3cfeaa8dc82b529f947fba6bcf5",
+        "byteLength": 11931
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/upstream-10d30a673cd5e934.txt",
+          "url": "https://api.github.com/repos/aclysma/profiling/git/blobs/139dce95d473c201a8561ef17536314d8b8cda65",
+          "sha256": "10d30a673cd5e9349bdc02aeb48f14b3386d27d0da32df8f0a555d4aa16aa551",
+          "byteLength": 10818
+        },
+        {
+          "path": "licenses/upstream-c8167fdeeed46d3f.txt",
+          "url": "https://api.github.com/repos/aclysma/profiling/git/blobs/6a84e059ad8b43e03c2b06bc2af4dc1d8442808d",
+          "sha256": "c8167fdeeed46d3f244d3f85c5bf998ce889343691c32be2c61a8bc4b5c08333",
+          "byteLength": 1093
+        }
+      ]
+    },
+    {
+      "name": "quote",
+      "version": "1.0.47",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/dtolnay/quote",
+      "archive": {
+        "url": "https://static.crates.io/crates/quote/quote-1.0.47.crate",
+        "sha256": "1fbf4db142a473a8d80c26bbf18454ed458bf8d26c8219c331daecfdbd079001",
+        "byteLength": 31622
+      },
+      "features": [
+        "default",
+        "proc-macro"
+      ],
+      "notices": [
+        {
+          "path": "licenses/quote-1.0.47-LICENSE-APACHE.txt",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+          "byteLength": 9723,
+          "archivePath": "quote-1.0.47/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/quote-1.0.47-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "byteLength": 1023,
+          "archivePath": "quote-1.0.47/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "range-alloc",
+      "version": "0.1.5",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/gfx-rs/range-alloc",
+      "archive": {
+        "url": "https://static.crates.io/crates/range-alloc/range-alloc-0.1.5.crate",
+        "sha256": "ca45419789ae5a7899559e9512e58ca889e41f04f1f2445e9f4b290ceccd1d08",
+        "byteLength": 11163
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/range-alloc-0.1.5-LICENSE.APACHE.txt",
+          "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9",
+          "byteLength": 10173,
+          "archivePath": "range-alloc-0.1.5/LICENSE.APACHE"
+        },
+        {
+          "path": "licenses/range-alloc-0.1.5-LICENSE.MIT.txt",
+          "sha256": "ba00052102ed87948bb8822d6e1c496260c83042887b22bb5caad922ec025a60",
+          "byteLength": 1078,
+          "archivePath": "range-alloc-0.1.5/LICENSE.MIT"
+        }
+      ]
+    },
+    {
+      "name": "raw-window-handle",
+      "version": "0.6.2",
+      "declaredLicense": "MIT OR Apache-2.0 OR Zlib",
+      "repository": "https://github.com/rust-windowing/raw-window-handle",
+      "archive": {
+        "url": "https://static.crates.io/crates/raw-window-handle/raw-window-handle-0.6.2.crate",
+        "sha256": "20675572f6f24e9e76ef639bc5552774ed45f1c30e2951e1e99c59888861c539",
+        "byteLength": 20234
+      },
+      "features": [
+        "alloc",
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/raw-window-handle-0.6.2-LICENSE-APACHE.md.txt",
+          "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+          "byteLength": 10174,
+          "archivePath": "raw-window-handle-0.6.2/LICENSE-APACHE.md"
+        },
+        {
+          "path": "licenses/raw-window-handle-0.6.2-LICENSE-MIT.md.txt",
+          "sha256": "9c5a80639a57c1c945570e7ebbca0706305849ce3c098021325cca9db2f7acc4",
+          "byteLength": 1064,
+          "archivePath": "raw-window-handle-0.6.2/LICENSE-MIT.md"
+        },
+        {
+          "path": "licenses/raw-window-handle-0.6.2-LICENSE-ZLIB.md.txt",
+          "sha256": "ae895c8576e682f310fb70d93d9f99b1dd82872094c54a8f6cdfe2ca5c2d6ecb",
+          "byteLength": 836,
+          "archivePath": "raw-window-handle-0.6.2/LICENSE-ZLIB.md"
+        }
+      ]
+    },
+    {
+      "name": "raw-window-metal",
+      "version": "1.1.0",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/rust-windowing/raw-window-metal",
+      "archive": {
+        "url": "https://static.crates.io/crates/raw-window-metal/raw-window-metal-1.1.0.crate",
+        "sha256": "40d213455a5f1dc59214213c7330e074ddf8114c9a42411eb890c767357ce135",
+        "byteLength": 15277
+      },
+      "features": [
+        "alloc",
+        "default",
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/raw-window-metal-1.1.0-LICENSE-APACHE.txt",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+          "byteLength": 11358,
+          "archivePath": "raw-window-metal-1.1.0/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/raw-window-metal-1.1.0-LICENSE-MIT.txt",
+          "sha256": "f9c4c77baa3828004ee54b8a4f2db2e88ed44a6237a493965bf551fac0fcb62d",
+          "byteLength": 1023,
+          "archivePath": "raw-window-metal-1.1.0/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "redox_syscall",
+      "version": "0.5.18",
+      "declaredLicense": "MIT",
+      "repository": "https://gitlab.redox-os.org/redox-os/syscall",
+      "archive": {
+        "url": "https://static.crates.io/crates/redox_syscall/redox_syscall-0.5.18.crate",
+        "sha256": "ed2bf2547551a7053d6fdfafda3f938979645c44812fbfcda098faae3f1a362d",
+        "byteLength": 30747
+      },
+      "features": [
+        "default",
+        "userspace"
+      ],
+      "notices": [
+        {
+          "path": "licenses/redox_syscall-0.5.18-LICENSE.txt",
+          "sha256": "efcfee7981ff72431fffb06925cad00a23dce079ed4354f61030ad5abdb78829",
+          "byteLength": 1076,
+          "archivePath": "redox_syscall-0.5.18/LICENSE"
+        }
+      ]
+    },
+    {
+      "name": "renderdoc-sys",
+      "version": "1.1.0",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/ebkalderon/renderdoc-rs",
+      "archive": {
+        "url": "https://static.crates.io/crates/renderdoc-sys/renderdoc-sys-1.1.0.crate",
+        "sha256": "19b30a45b0cd0bcca8037f3d0dc3421eaf95327a17cad11964fb8179b4fc4832",
+        "byteLength": 10366
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/renderdoc-sys-1.1.0-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "renderdoc-sys-1.1.0/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/renderdoc-sys-1.1.0-LICENSE-MIT.txt",
+          "sha256": "24b2f2eff5a7622e87162823e260f00c6dfbce0e26d585d3d28c785f1edc80ed",
+          "byteLength": 1057,
+          "archivePath": "renderdoc-sys-1.1.0/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "rustc-hash",
+      "version": "1.1.0",
+      "declaredLicense": "Apache-2.0/MIT",
+      "repository": "https://github.com/rust-lang-nursery/rustc-hash",
+      "archive": {
+        "url": "https://static.crates.io/crates/rustc-hash/rustc-hash-1.1.0.crate",
+        "sha256": "08d43f7aa6b08d49f382cde6a7982047c3426db949b1424bc4b7ec9ae12c6ce2",
+        "byteLength": 9331
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/rustc-hash-1.1.0-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "rustc-hash-1.1.0/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/rustc-hash-1.1.0-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "byteLength": 1023,
+          "archivePath": "rustc-hash-1.1.0/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "rustversion",
+      "version": "1.0.23",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/dtolnay/rustversion",
+      "archive": {
+        "url": "https://static.crates.io/crates/rustversion/rustversion-1.0.23.crate",
+        "sha256": "cf54715a573b99ac80df0bc206da022bcd442c974952c7b9720069370852e21f",
+        "byteLength": 21013
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/rustversion-1.0.23-LICENSE-APACHE.txt",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+          "byteLength": 9723,
+          "archivePath": "rustversion-1.0.23/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/rustversion-1.0.23-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "byteLength": 1023,
+          "archivePath": "rustversion-1.0.23/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "scopeguard",
+      "version": "1.2.0",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/bluss/scopeguard",
+      "archive": {
+        "url": "https://static.crates.io/crates/scopeguard/scopeguard-1.2.0.crate",
+        "sha256": "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49",
+        "byteLength": 11619
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/scopeguard-1.2.0-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "scopeguard-1.2.0/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/scopeguard-1.2.0-LICENSE-MIT.txt",
+          "sha256": "fb77f0a9c53e473abe5103c8632ef9f0f2874d4fb3f17cb2d8c661aab9cee9d7",
+          "byteLength": 1097,
+          "archivePath": "scopeguard-1.2.0/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "slab",
+      "version": "0.4.12",
+      "declaredLicense": "MIT",
+      "repository": "https://github.com/tokio-rs/slab",
+      "archive": {
+        "url": "https://static.crates.io/crates/slab/slab-0.4.12.crate",
+        "sha256": "0c790de23124f9ab44544d7ac05d60440adc586479ce501c1d6d7da3cd8c9cf5",
+        "byteLength": 19080
+      },
+      "features": [
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/slab-0.4.12-LICENSE.txt",
+          "sha256": "8ce0830173fdac609dfb4ea603fdc002c2f4af0dc9b1a005653f5da9cf534b18",
+          "byteLength": 1055,
+          "archivePath": "slab-0.4.12/LICENSE"
+        }
+      ]
+    },
+    {
+      "name": "smallvec",
+      "version": "1.16.2",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/servo/rust-smallvec",
+      "archive": {
+        "url": "https://static.crates.io/crates/smallvec/smallvec-1.16.2.crate",
+        "sha256": "f9395f0f0eee849a9b707b2f06bb92a6a422090e2123bb2ef8e87a0e61892a8e",
+        "byteLength": 34874
+      },
+      "features": [
+        "const_generics",
+        "union"
+      ],
+      "notices": [
+        {
+          "path": "licenses/smallvec-1.16.2-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "smallvec-1.16.2/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/smallvec-1.16.2-LICENSE-MIT.txt",
+          "sha256": "0b28172679e0009b655da42797c03fd163a3379d5cfa67ba1f1655e974a2a1a9",
+          "byteLength": 1072,
+          "archivePath": "smallvec-1.16.2/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "spirv",
+      "version": "0.4.0+sdk-1.4.341.0",
+      "declaredLicense": "Apache-2.0",
+      "repository": "https://github.com/gfx-rs/rspirv",
+      "archive": {
+        "url": "https://static.crates.io/crates/spirv/spirv-0.4.0+sdk-1.4.341.0.crate",
+        "sha256": "d9571ea910ebd84c86af4b3ed27f9dbdc6ad06f17c5f96146b2b671e2976744f",
+        "byteLength": 41285
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/upstream-cfc7749b96f63bd3.txt",
+          "url": "https://api.github.com/repos/gfx-rs/rspirv/git/blobs/d645695673349e3947e8e5ae42332d0ac3164cd7",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+          "byteLength": 11358
+        }
+      ]
+    },
+    {
+      "name": "static_assertions",
+      "version": "1.1.0",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/nvzqz/static-assertions-rs",
+      "archive": {
+        "url": "https://static.crates.io/crates/static_assertions/static_assertions-1.1.0.crate",
+        "sha256": "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f",
+        "byteLength": 18480
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/static_assertions-1.1.0-LICENSE-APACHE.txt",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+          "byteLength": 11358,
+          "archivePath": "static_assertions-1.1.0/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/static_assertions-1.1.0-LICENSE-MIT.txt",
+          "sha256": "ea084a2373ebc1f0902c09266e7bf25a05ab3814c1805bb017ffa7308f90c061",
+          "byteLength": 1072,
+          "archivePath": "static_assertions-1.1.0/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "syn",
+      "version": "2.0.119",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/dtolnay/syn",
+      "archive": {
+        "url": "https://static.crates.io/crates/syn/syn-2.0.119.crate",
+        "sha256": "872831b642d1a07999a962a351ed35b955ea2cfc8f3862091e2a240a84f17297",
+        "byteLength": 307407
+      },
+      "features": [
+        "clone-impls",
+        "default",
+        "derive",
+        "extra-traits",
+        "full",
+        "parsing",
+        "printing",
+        "proc-macro",
+        "visit",
+        "visit-mut"
+      ],
+      "notices": [
+        {
+          "path": "licenses/syn-2.0.119-LICENSE-APACHE.txt",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+          "byteLength": 9723,
+          "archivePath": "syn-2.0.119/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/syn-2.0.119-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "byteLength": 1023,
+          "archivePath": "syn-2.0.119/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "syn",
+      "version": "3.0.6",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/dtolnay/syn",
+      "archive": {
+        "url": "https://static.crates.io/crates/syn/syn-3.0.6.crate",
+        "sha256": "8593e8e72159ed2257d083c7a454a85cbf854f37a0966d8d483aff8c8a3ebcee",
+        "byteLength": 313821
+      },
+      "features": [
+        "clone-impls",
+        "default",
+        "derive",
+        "parsing",
+        "printing",
+        "proc-macro"
+      ],
+      "notices": [
+        {
+          "path": "licenses/syn-3.0.6-LICENSE-APACHE.txt",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+          "byteLength": 9723,
+          "archivePath": "syn-3.0.6/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/syn-3.0.6-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "byteLength": 1023,
+          "archivePath": "syn-3.0.6/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "thiserror",
+      "version": "2.0.20",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/dtolnay/thiserror",
+      "archive": {
+        "url": "https://static.crates.io/crates/thiserror/thiserror-2.0.20.crate",
+        "sha256": "ec86235f5fcc2a73650310756d2ac5b138a5780bbbdfae3eeccec992c435ba4f",
+        "byteLength": 28969
+      },
+      "features": [
+        "default",
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/thiserror-2.0.20-LICENSE-APACHE.txt",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+          "byteLength": 9723,
+          "archivePath": "thiserror-2.0.20/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/thiserror-2.0.20-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "byteLength": 1023,
+          "archivePath": "thiserror-2.0.20/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "thiserror-impl",
+      "version": "2.0.20",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/dtolnay/thiserror",
+      "archive": {
+        "url": "https://static.crates.io/crates/thiserror-impl/thiserror-impl-2.0.20.crate",
+        "sha256": "bc04cd3e1236dd4a98afca4569f2deb3f120e5422a4023be2cb683f8486292af",
+        "byteLength": 21436
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/thiserror-impl-2.0.20-LICENSE-APACHE.txt",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+          "byteLength": 9723,
+          "archivePath": "thiserror-impl-2.0.20/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/thiserror-impl-2.0.20-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "byteLength": 1023,
+          "archivePath": "thiserror-impl-2.0.20/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "unicode-ident",
+      "version": "1.0.26",
+      "declaredLicense": "(MIT OR Apache-2.0) AND Unicode-3.0",
+      "repository": "https://github.com/dtolnay/unicode-ident",
+      "archive": {
+        "url": "https://static.crates.io/crates/unicode-ident/unicode-ident-1.0.26.crate",
+        "sha256": "d245f478577f809a851594d02313b640fb437e0bb33866753cff937863096954",
+        "byteLength": 48425
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/unicode-ident-1.0.26-LICENSE-APACHE.txt",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+          "byteLength": 9723,
+          "archivePath": "unicode-ident-1.0.26/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/unicode-ident-1.0.26-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "byteLength": 1023,
+          "archivePath": "unicode-ident-1.0.26/LICENSE-MIT"
+        },
+        {
+          "path": "licenses/unicode-ident-1.0.26-LICENSE-UNICODE.txt",
+          "sha256": "f7db81051789b729fea528a63ec4c938fdcb93d9d61d97dc8cc2e9df6d47f2a1",
+          "byteLength": 1995,
+          "archivePath": "unicode-ident-1.0.26/LICENSE-UNICODE"
+        }
+      ]
+    },
+    {
+      "name": "unicode-width",
+      "version": "0.2.2",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/unicode-rs/unicode-width",
+      "archive": {
+        "url": "https://static.crates.io/crates/unicode-width/unicode-width-0.2.2.crate",
+        "sha256": "b4ac048d71ede7ee76d585517add45da530660ef4390e49b098733c6e897f254",
+        "byteLength": 282768
+      },
+      "features": [
+        "cjk",
+        "default"
+      ],
+      "notices": [
+        {
+          "path": "licenses/unicode-width-0.2.2-COPYRIGHT.txt",
+          "sha256": "23860c2a7b5d96b21569afedf033469bab9fe14a1b24a35068b8641c578ce24d",
+          "byteLength": 321,
+          "archivePath": "unicode-width-0.2.2/COPYRIGHT"
+        },
+        {
+          "path": "licenses/unicode-width-0.2.2-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "unicode-width-0.2.2/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/unicode-width-0.2.2-LICENSE-MIT.txt",
+          "sha256": "7b63ecd5f1902af1b63729947373683c32745c16a10e8e6292e2e2dcd7e90ae0",
+          "byteLength": 1071,
+          "archivePath": "unicode-width-0.2.2/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "wasm-bindgen",
+      "version": "0.2.126",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/wasm-bindgen/wasm-bindgen",
+      "archive": {
+        "url": "https://static.crates.io/crates/wasm-bindgen/wasm-bindgen-0.2.126.crate",
+        "sha256": "4b067c0c11094aef6b7a801c1e34a26affafdf3d051dba08456b868789aaf9a4",
+        "byteLength": 67461
+      },
+      "features": [
+        "default",
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/wasm-bindgen-0.2.126-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "wasm-bindgen-0.2.126/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/wasm-bindgen-0.2.126-LICENSE-MIT.txt",
+          "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397",
+          "byteLength": 1057,
+          "archivePath": "wasm-bindgen-0.2.126/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "wasm-bindgen-futures",
+      "version": "0.4.76",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/wasm-bindgen/wasm-bindgen/tree/master/crates/futures",
+      "archive": {
+        "url": "https://static.crates.io/crates/wasm-bindgen-futures/wasm-bindgen-futures-0.4.76.crate",
+        "sha256": "c62df1340f32221cb9c54d6a27b030e3dba64361d4a95bed55f9aacb44da291d",
+        "byteLength": 8262
+      },
+      "features": [
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/wasm-bindgen-futures-0.4.76-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "wasm-bindgen-futures-0.4.76/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/wasm-bindgen-futures-0.4.76-LICENSE-MIT.txt",
+          "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397",
+          "byteLength": 1057,
+          "archivePath": "wasm-bindgen-futures-0.4.76/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "wasm-bindgen-macro",
+      "version": "0.2.126",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/wasm-bindgen/wasm-bindgen/tree/master/crates/macro",
+      "archive": {
+        "url": "https://static.crates.io/crates/wasm-bindgen-macro/wasm-bindgen-macro-0.2.126.crate",
+        "sha256": "167ce5e579f6bcf889c4f7175a8a5a585de84e8ff93976ce393efa5f2837aab1",
+        "byteLength": 9303
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/wasm-bindgen-macro-0.2.126-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "wasm-bindgen-macro-0.2.126/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/wasm-bindgen-macro-0.2.126-LICENSE-MIT.txt",
+          "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397",
+          "byteLength": 1057,
+          "archivePath": "wasm-bindgen-macro-0.2.126/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "wasm-bindgen-macro-support",
+      "version": "0.2.126",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/wasm-bindgen/wasm-bindgen/tree/master/crates/macro-support",
+      "archive": {
+        "url": "https://static.crates.io/crates/wasm-bindgen-macro-support/wasm-bindgen-macro-support-0.2.126.crate",
+        "sha256": "f3997c7839262f4ef12cf90b818d6340c18e80f263f1a94bf157d0ec4420380e",
+        "byteLength": 82688
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/wasm-bindgen-macro-support-0.2.126-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "wasm-bindgen-macro-support-0.2.126/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/wasm-bindgen-macro-support-0.2.126-LICENSE-MIT.txt",
+          "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397",
+          "byteLength": 1057,
+          "archivePath": "wasm-bindgen-macro-support-0.2.126/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "wasm-bindgen-shared",
+      "version": "0.2.126",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/wasm-bindgen/wasm-bindgen/tree/master/crates/shared",
+      "archive": {
+        "url": "https://static.crates.io/crates/wasm-bindgen-shared/wasm-bindgen-shared-0.2.126.crate",
+        "sha256": "dc1b4cb0cc549fcf58d7dfc081778139b3d283a081644e833e84682ad71cea24",
+        "byteLength": 11287
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/wasm-bindgen-shared-0.2.126-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "wasm-bindgen-shared-0.2.126/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/wasm-bindgen-shared-0.2.126-LICENSE-MIT.txt",
+          "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397",
+          "byteLength": 1057,
+          "archivePath": "wasm-bindgen-shared-0.2.126/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "web-sys",
+      "version": "0.3.103",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/wasm-bindgen/wasm-bindgen/tree/master/crates/web-sys",
+      "archive": {
+        "url": "https://static.crates.io/crates/web-sys/web-sys-0.3.103.crate",
+        "sha256": "8622dcb61c0bcc9fffa6938bed81210af2da9a7e4a1a834b2e37a59b6dfb6141",
+        "byteLength": 675560
+      },
+      "features": [
+        "Element",
+        "EventTarget",
+        "HtmlCanvasElement",
+        "HtmlElement",
+        "HtmlImageElement",
+        "HtmlMediaElement",
+        "HtmlVideoElement",
+        "ImageBitmap",
+        "ImageData",
+        "Node",
+        "OffscreenCanvas",
+        "VideoFrame",
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/web-sys-0.3.103-LICENSE-APACHE.txt",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "byteLength": 10847,
+          "archivePath": "web-sys-0.3.103/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/web-sys-0.3.103-LICENSE-MIT.txt",
+          "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397",
+          "byteLength": 1057,
+          "archivePath": "web-sys-0.3.103/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "wgpu",
+      "version": "29.0.3",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/gfx-rs/wgpu",
+      "archive": {
+        "url": "https://static.crates.io/crates/wgpu/wgpu-29.0.3.crate",
+        "sha256": "bb3feacc458f7bee8bc1737149b42b6c731aa461039a4264a67bb6681646b250",
+        "byteLength": 209309
+      },
+      "features": [
+        "dx12",
+        "metal",
+        "std",
+        "vulkan",
+        "wgsl"
+      ],
+      "notices": [
+        {
+          "path": "licenses/wgpu-29.0.3-LICENSE.APACHE.txt",
+          "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9",
+          "byteLength": 10173,
+          "archivePath": "wgpu-29.0.3/LICENSE.APACHE"
+        },
+        {
+          "path": "licenses/wgpu-29.0.3-LICENSE.MIT.txt",
+          "sha256": "dc0d97139e8205818c703741c7be7cb3b96888bd5917b8d6fc6133731e403c21",
+          "byteLength": 1078,
+          "archivePath": "wgpu-29.0.3/LICENSE.MIT"
+        }
+      ]
+    },
+    {
+      "name": "wgpu-core",
+      "version": "29.0.4",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/gfx-rs/wgpu",
+      "archive": {
+        "url": "https://static.crates.io/crates/wgpu-core/wgpu-core-29.0.4.crate",
+        "sha256": "2f519832254e56965a9940c4af57dcb75f702b6f6fa4a0b172f685395843a4d7",
+        "byteLength": 345969
+      },
+      "features": [
+        "default",
+        "dx12",
+        "metal",
+        "portable-atomic",
+        "renderdoc",
+        "std",
+        "vulkan",
+        "wgpu-core-deps-apple",
+        "wgpu-core-deps-windows-linux-android",
+        "wgsl"
+      ],
+      "notices": [
+        {
+          "path": "licenses/wgpu-core-29.0.4-LICENSE.APACHE.txt",
+          "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9",
+          "byteLength": 10173,
+          "archivePath": "wgpu-core-29.0.4/LICENSE.APACHE"
+        },
+        {
+          "path": "licenses/wgpu-core-29.0.4-LICENSE.MIT.txt",
+          "sha256": "dc0d97139e8205818c703741c7be7cb3b96888bd5917b8d6fc6133731e403c21",
+          "byteLength": 1078,
+          "archivePath": "wgpu-core-29.0.4/LICENSE.MIT"
+        }
+      ]
+    },
+    {
+      "name": "wgpu-core-deps-apple",
+      "version": "29.0.4",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/gfx-rs/wgpu",
+      "archive": {
+        "url": "https://static.crates.io/crates/wgpu-core-deps-apple/wgpu-core-deps-apple-29.0.4.crate",
+        "sha256": "f5e39e26c4c0e07589e67d18546cf79ff45383659fc72fca4dd293358a0347f3",
+        "byteLength": 11985
+      },
+      "features": [
+        "metal"
+      ],
+      "notices": [
+        {
+          "path": "licenses/wgpu-core-deps-apple-29.0.4-LICENSE.APACHE.txt",
+          "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9",
+          "byteLength": 10173,
+          "archivePath": "wgpu-core-deps-apple-29.0.4/LICENSE.APACHE"
+        },
+        {
+          "path": "licenses/wgpu-core-deps-apple-29.0.4-LICENSE.MIT.txt",
+          "sha256": "dc0d97139e8205818c703741c7be7cb3b96888bd5917b8d6fc6133731e403c21",
+          "byteLength": 1078,
+          "archivePath": "wgpu-core-deps-apple-29.0.4/LICENSE.MIT"
+        }
+      ]
+    },
+    {
+      "name": "wgpu-core-deps-windows-linux-android",
+      "version": "29.0.4",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/gfx-rs/wgpu",
+      "archive": {
+        "url": "https://static.crates.io/crates/wgpu-core-deps-windows-linux-android/wgpu-core-deps-windows-linux-android-29.0.4.crate",
+        "sha256": "4e592c1bbef6ad047647ae6e666ebd8cee7a32bb4544d9700ec96cbf73230257",
+        "byteLength": 12049
+      },
+      "features": [
+        "dx12",
+        "renderdoc",
+        "vulkan"
+      ],
+      "notices": [
+        {
+          "path": "licenses/wgpu-core-deps-windows-linux-android-29.0.4-LICENSE.APACHE.txt",
+          "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9",
+          "byteLength": 10173,
+          "archivePath": "wgpu-core-deps-windows-linux-android-29.0.4/LICENSE.APACHE"
+        },
+        {
+          "path": "licenses/wgpu-core-deps-windows-linux-android-29.0.4-LICENSE.MIT.txt",
+          "sha256": "dc0d97139e8205818c703741c7be7cb3b96888bd5917b8d6fc6133731e403c21",
+          "byteLength": 1078,
+          "archivePath": "wgpu-core-deps-windows-linux-android-29.0.4/LICENSE.MIT"
+        }
+      ]
+    },
+    {
+      "name": "wgpu-hal",
+      "version": "29.0.4",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/gfx-rs/wgpu",
+      "archive": {
+        "url": "https://static.crates.io/crates/wgpu-hal/wgpu-hal-29.0.4.crate",
+        "sha256": "97ace1c17727311c22a46e4e3faf56ea6de81af99dcc839bdfb54857b94d448d",
+        "byteLength": 427805
+      },
+      "features": [
+        "dx12",
+        "metal",
+        "portable-atomic",
+        "renderdoc",
+        "vulkan"
+      ],
+      "notices": [
+        {
+          "path": "licenses/wgpu-hal-29.0.4-LICENSE.APACHE.txt",
+          "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9",
+          "byteLength": 10173,
+          "archivePath": "wgpu-hal-29.0.4/LICENSE.APACHE"
+        },
+        {
+          "path": "licenses/wgpu-hal-29.0.4-LICENSE.MIT.txt",
+          "sha256": "dc0d97139e8205818c703741c7be7cb3b96888bd5917b8d6fc6133731e403c21",
+          "byteLength": 1078,
+          "archivePath": "wgpu-hal-29.0.4/LICENSE.MIT"
+        }
+      ]
+    },
+    {
+      "name": "wgpu-naga-bridge",
+      "version": "29.0.4",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/gfx-rs/wgpu",
+      "archive": {
+        "url": "https://static.crates.io/crates/wgpu-naga-bridge/wgpu-naga-bridge-29.0.4.crate",
+        "sha256": "95226013f547544b223281cd16a4fb549aa9dcb562adbda0faae4c73ffbbc161",
+        "byteLength": 9417
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/wgpu-naga-bridge-29.0.4-LICENSE.APACHE.txt",
+          "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9",
+          "byteLength": 10173,
+          "archivePath": "wgpu-naga-bridge-29.0.4/LICENSE.APACHE"
+        },
+        {
+          "path": "licenses/wgpu-naga-bridge-29.0.4-LICENSE.MIT.txt",
+          "sha256": "dc0d97139e8205818c703741c7be7cb3b96888bd5917b8d6fc6133731e403c21",
+          "byteLength": 1078,
+          "archivePath": "wgpu-naga-bridge-29.0.4/LICENSE.MIT"
+        }
+      ]
+    },
+    {
+      "name": "wgpu-types",
+      "version": "29.0.4",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/gfx-rs/wgpu",
+      "archive": {
+        "url": "https://static.crates.io/crates/wgpu-types/wgpu-types-29.0.4.crate",
+        "sha256": "84bf84cd9ca8ca45e2b223a3868f1adf9bfc0c66aeac212e76ee7e40fdadf8f5",
+        "byteLength": 127824
+      },
+      "features": [
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/wgpu-types-29.0.4-LICENSE.APACHE.txt",
+          "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9",
+          "byteLength": 10173,
+          "archivePath": "wgpu-types-29.0.4/LICENSE.APACHE"
+        },
+        {
+          "path": "licenses/wgpu-types-29.0.4-LICENSE.MIT.txt",
+          "sha256": "dc0d97139e8205818c703741c7be7cb3b96888bd5917b8d6fc6133731e403c21",
+          "byteLength": 1078,
+          "archivePath": "wgpu-types-29.0.4/LICENSE.MIT"
+        }
+      ]
+    },
+    {
+      "name": "windows",
+      "version": "0.62.2",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/microsoft/windows-rs",
+      "archive": {
+        "url": "https://static.crates.io/crates/windows/windows-0.62.2.crate",
+        "sha256": "527fadee13e0c05939a6a05d5bd6eec6cd2e3dbd648b9f8e447c6518133d8580",
+        "byteLength": 9360572
+      },
+      "features": [
+        "Win32",
+        "Win32_Devices",
+        "Win32_Devices_DeviceAndDriverInstallation",
+        "Win32_Foundation",
+        "Win32_Graphics",
+        "Win32_Graphics_Direct3D",
+        "Win32_Graphics_Direct3D12",
+        "Win32_Graphics_Direct3D_Dxc",
+        "Win32_Graphics_Direct3D_Fxc",
+        "Win32_Graphics_DirectComposition",
+        "Win32_Graphics_Dxgi",
+        "Win32_Graphics_Dxgi_Common",
+        "Win32_Security",
+        "Win32_System",
+        "Win32_System_Diagnostics",
+        "Win32_System_Diagnostics_Debug",
+        "Win32_System_Kernel",
+        "Win32_System_Performance",
+        "Win32_System_Threading",
+        "Win32_UI",
+        "Win32_UI_WindowsAndMessaging",
+        "default",
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/windows-0.62.2-license-apache-2.0.txt",
+          "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b",
+          "byteLength": 11351,
+          "archivePath": "windows-0.62.2/license-apache-2.0"
+        },
+        {
+          "path": "licenses/windows-0.62.2-license-mit.txt",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+          "byteLength": 1141,
+          "archivePath": "windows-0.62.2/license-mit"
+        }
+      ]
+    },
+    {
+      "name": "windows-collections",
+      "version": "0.3.2",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/microsoft/windows-rs",
+      "archive": {
+        "url": "https://static.crates.io/crates/windows-collections/windows-collections-0.3.2.crate",
+        "sha256": "23b2d95af1a8a14a3c7367e1ed4fc9c20e0a26e79551b1454d72583c97cc6610",
+        "byteLength": 13510
+      },
+      "features": [
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/windows-collections-0.3.2-license-apache-2.0.txt",
+          "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b",
+          "byteLength": 11351,
+          "archivePath": "windows-collections-0.3.2/license-apache-2.0"
+        },
+        {
+          "path": "licenses/windows-collections-0.3.2-license-mit.txt",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+          "byteLength": 1141,
+          "archivePath": "windows-collections-0.3.2/license-mit"
+        }
+      ]
+    },
+    {
+      "name": "windows-core",
+      "version": "0.62.2",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/microsoft/windows-rs",
+      "archive": {
+        "url": "https://static.crates.io/crates/windows-core/windows-core-0.62.2.crate",
+        "sha256": "b8e83a14d34d0623b51dce9581199302a221863196a1dde71a7663a4c2be9deb",
+        "byteLength": 36932
+      },
+      "features": [
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/windows-core-0.62.2-license-apache-2.0.txt",
+          "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b",
+          "byteLength": 11351,
+          "archivePath": "windows-core-0.62.2/license-apache-2.0"
+        },
+        {
+          "path": "licenses/windows-core-0.62.2-license-mit.txt",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+          "byteLength": 1141,
+          "archivePath": "windows-core-0.62.2/license-mit"
+        }
+      ]
+    },
+    {
+      "name": "windows-future",
+      "version": "0.3.2",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/microsoft/windows-rs",
+      "archive": {
+        "url": "https://static.crates.io/crates/windows-future/windows-future-0.3.2.crate",
+        "sha256": "e1d6f90251fe18a279739e78025bd6ddc52a7e22f921070ccdc67dde84c605cb",
+        "byteLength": 17944
+      },
+      "features": [
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/windows-future-0.3.2-license-apache-2.0.txt",
+          "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b",
+          "byteLength": 11351,
+          "archivePath": "windows-future-0.3.2/license-apache-2.0"
+        },
+        {
+          "path": "licenses/windows-future-0.3.2-license-mit.txt",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+          "byteLength": 1141,
+          "archivePath": "windows-future-0.3.2/license-mit"
+        }
+      ]
+    },
+    {
+      "name": "windows-implement",
+      "version": "0.60.2",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/microsoft/windows-rs",
+      "archive": {
+        "url": "https://static.crates.io/crates/windows-implement/windows-implement-0.60.2.crate",
+        "sha256": "053e2e040ab57b9dc951b72c264860db7eb3b0200ba345b4e4c3b14f67855ddf",
+        "byteLength": 15325
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/windows-implement-0.60.2-license-apache-2.0.txt",
+          "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b",
+          "byteLength": 11351,
+          "archivePath": "windows-implement-0.60.2/license-apache-2.0"
+        },
+        {
+          "path": "licenses/windows-implement-0.60.2-license-mit.txt",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+          "byteLength": 1141,
+          "archivePath": "windows-implement-0.60.2/license-mit"
+        }
+      ]
+    },
+    {
+      "name": "windows-interface",
+      "version": "0.59.3",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/microsoft/windows-rs",
+      "archive": {
+        "url": "https://static.crates.io/crates/windows-interface/windows-interface-0.59.3.crate",
+        "sha256": "3f316c4a2570ba26bbec722032c4099d8c8bc095efccdc15688708623367e358",
+        "byteLength": 11809
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/windows-interface-0.59.3-license-apache-2.0.txt",
+          "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b",
+          "byteLength": 11351,
+          "archivePath": "windows-interface-0.59.3/license-apache-2.0"
+        },
+        {
+          "path": "licenses/windows-interface-0.59.3-license-mit.txt",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+          "byteLength": 1141,
+          "archivePath": "windows-interface-0.59.3/license-mit"
+        }
+      ]
+    },
+    {
+      "name": "windows-link",
+      "version": "0.2.1",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/microsoft/windows-rs",
+      "archive": {
+        "url": "https://static.crates.io/crates/windows-link/windows-link-0.2.1.crate",
+        "sha256": "f0805222e57f7521d6a62e36fa9163bc891acd422f971defe97d64e70d0a4fe5",
+        "byteLength": 6133
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/windows-link-0.2.1-license-apache-2.0.txt",
+          "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b",
+          "byteLength": 11351,
+          "archivePath": "windows-link-0.2.1/license-apache-2.0"
+        },
+        {
+          "path": "licenses/windows-link-0.2.1-license-mit.txt",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+          "byteLength": 1141,
+          "archivePath": "windows-link-0.2.1/license-mit"
+        }
+      ]
+    },
+    {
+      "name": "windows-numerics",
+      "version": "0.3.1",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/microsoft/windows-rs",
+      "archive": {
+        "url": "https://static.crates.io/crates/windows-numerics/windows-numerics-0.3.1.crate",
+        "sha256": "6e2e40844ac143cdb44aead537bbf727de9b044e107a0f1220392177d15b0f26",
+        "byteLength": 9772
+      },
+      "features": [
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/windows-numerics-0.3.1-license-apache-2.0.txt",
+          "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b",
+          "byteLength": 11351,
+          "archivePath": "windows-numerics-0.3.1/license-apache-2.0"
+        },
+        {
+          "path": "licenses/windows-numerics-0.3.1-license-mit.txt",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+          "byteLength": 1141,
+          "archivePath": "windows-numerics-0.3.1/license-mit"
+        }
+      ]
+    },
+    {
+      "name": "windows-result",
+      "version": "0.4.1",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/microsoft/windows-rs",
+      "archive": {
+        "url": "https://static.crates.io/crates/windows-result/windows-result-0.4.1.crate",
+        "sha256": "7781fa89eaf60850ac3d2da7af8e5242a5ea78d1a11c49bf2910bb5a73853eb5",
+        "byteLength": 13381
+      },
+      "features": [
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/windows-result-0.4.1-license-apache-2.0.txt",
+          "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b",
+          "byteLength": 11351,
+          "archivePath": "windows-result-0.4.1/license-apache-2.0"
+        },
+        {
+          "path": "licenses/windows-result-0.4.1-license-mit.txt",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+          "byteLength": 1141,
+          "archivePath": "windows-result-0.4.1/license-mit"
+        }
+      ]
+    },
+    {
+      "name": "windows-strings",
+      "version": "0.5.1",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/microsoft/windows-rs",
+      "archive": {
+        "url": "https://static.crates.io/crates/windows-strings/windows-strings-0.5.1.crate",
+        "sha256": "7837d08f69c77cf6b07689544538e017c1bfcf57e34b4c0ff58e6c2cd3b37091",
+        "byteLength": 13966
+      },
+      "features": [
+        "std"
+      ],
+      "notices": [
+        {
+          "path": "licenses/windows-strings-0.5.1-license-apache-2.0.txt",
+          "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b",
+          "byteLength": 11351,
+          "archivePath": "windows-strings-0.5.1/license-apache-2.0"
+        },
+        {
+          "path": "licenses/windows-strings-0.5.1-license-mit.txt",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+          "byteLength": 1141,
+          "archivePath": "windows-strings-0.5.1/license-mit"
+        }
+      ]
+    },
+    {
+      "name": "windows-threading",
+      "version": "0.2.1",
+      "declaredLicense": "MIT OR Apache-2.0",
+      "repository": "https://github.com/microsoft/windows-rs",
+      "archive": {
+        "url": "https://static.crates.io/crates/windows-threading/windows-threading-0.2.1.crate",
+        "sha256": "3949bd5b99cafdf1c7ca86b43ca564028dfe27d66958f2470940f73d86d75b37",
+        "byteLength": 9686
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/windows-threading-0.2.1-license-apache-2.0.txt",
+          "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b",
+          "byteLength": 11351,
+          "archivePath": "windows-threading-0.2.1/license-apache-2.0"
+        },
+        {
+          "path": "licenses/windows-threading-0.2.1-license-mit.txt",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+          "byteLength": 1141,
+          "archivePath": "windows-threading-0.2.1/license-mit"
+        }
+      ]
+    },
+    {
+      "name": "zerocopy",
+      "version": "0.8.57",
+      "declaredLicense": "BSD-2-Clause OR Apache-2.0 OR MIT",
+      "repository": "https://github.com/google/zerocopy",
+      "archive": {
+        "url": "https://static.crates.io/crates/zerocopy/zerocopy-0.8.57.crate",
+        "sha256": "d35102a9f36d089ccae9e4c6802bc118be4487b80aaffc0ab4e0cf5ce92d2873",
+        "byteLength": 285690
+      },
+      "features": [
+        "derive",
+        "simd",
+        "zerocopy-derive"
+      ],
+      "notices": [
+        {
+          "path": "licenses/zerocopy-0.8.57-LICENSE-APACHE.txt",
+          "sha256": "9d185ac6703c4b0453974c0d85e9eee43e6941009296bb1f5eb0b54e2329e9f3",
+          "byteLength": 11350,
+          "archivePath": "zerocopy-0.8.57/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/zerocopy-0.8.57-LICENSE-BSD.txt",
+          "sha256": "83c1763356e822adde0a2cae748d938a73fdc263849ccff6b27776dff213bd32",
+          "byteLength": 1275,
+          "archivePath": "zerocopy-0.8.57/LICENSE-BSD"
+        },
+        {
+          "path": "licenses/zerocopy-0.8.57-LICENSE-MIT.txt",
+          "sha256": "1a2f5c12ddc934d58956aa5dbdd3255fe55fd957633ab7d0d39e4f0daa73f7df",
+          "byteLength": 1060,
+          "archivePath": "zerocopy-0.8.57/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "zerocopy-derive",
+      "version": "0.8.57",
+      "declaredLicense": "BSD-2-Clause OR Apache-2.0 OR MIT",
+      "repository": "https://github.com/google/zerocopy",
+      "archive": {
+        "url": "https://static.crates.io/crates/zerocopy-derive/zerocopy-derive-0.8.57.crate",
+        "sha256": "146c01f5ab44258da43cf276c74a2763db2ff3969c9c652c3f2de07041d0b2bc",
+        "byteLength": 106175
+      },
+      "features": [],
+      "notices": [
+        {
+          "path": "licenses/zerocopy-derive-0.8.57-LICENSE-APACHE.txt",
+          "sha256": "9d185ac6703c4b0453974c0d85e9eee43e6941009296bb1f5eb0b54e2329e9f3",
+          "byteLength": 11350,
+          "archivePath": "zerocopy-derive-0.8.57/LICENSE-APACHE"
+        },
+        {
+          "path": "licenses/zerocopy-derive-0.8.57-LICENSE-BSD.txt",
+          "sha256": "83c1763356e822adde0a2cae748d938a73fdc263849ccff6b27776dff213bd32",
+          "byteLength": 1275,
+          "archivePath": "zerocopy-derive-0.8.57/LICENSE-BSD"
+        },
+        {
+          "path": "licenses/zerocopy-derive-0.8.57-LICENSE-MIT.txt",
+          "sha256": "1a2f5c12ddc934d58956aa5dbdd3255fe55fd957633ab7d0d39e4f0daa73f7df",
+          "byteLength": 1060,
+          "archivePath": "zerocopy-derive-0.8.57/LICENSE-MIT"
+        }
+      ]
+    }
+  ],
+  "remaining": [
+    "Native Windows/Linux hardware execution",
+    "Browser WebGPU execution",
+    "Signed distribution and platform runtime/driver packaging"
+  ]
+}

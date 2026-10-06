@@ -17,6 +17,10 @@ impl Affine {
             m: [1., 0., 0., 1., 0., 0.],
         }
     }
+    /// Row-vector coefficients for an explicitly chosen backend precision.
+    pub fn coefficients(self) -> [f64; 6] {
+        self.m
+    }
     pub fn map(self, x: f64, y: f64) -> (f64, f64) {
         let [a, b, c, d, tx, ty] = self.m;
         (a * x + c * y + tx, b * x + d * y + ty)

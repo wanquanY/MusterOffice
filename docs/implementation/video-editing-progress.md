@@ -16,7 +16,7 @@
 | 工作包 | 当前状态 | 退出条件 |
 | --- | --- | --- |
 | W1 视频领域与合同 | 基础已实现，未全部完成 | 独立模型、精确时间、受限解析与校验、Native/WASM 公共合同向量；补全效果、字幕、分析和工程包模型 |
-| W2 媒体与合成 | 原生解码/采样和线性光 CPU 参考合成已实现；GPU、Browser、音频/导出待实施 | 原生/浏览器媒体与合成、字体/色彩/音频及真实输出 |
+| W2 媒体与合成 | 原生解码/采样、CPU 和 Metal GPU 线性合成已实现；Browser、音频/导出及产品显示待实施 | 原生/浏览器媒体与合成、字体/色彩/音频及真实输出 |
 | W3 编辑与历史 | 原子事务基础已实现，未全部完成 | 全部编辑操作、候选、冲突与有条件逆操作及增量索引 |
 | W4 产品执行 | 待实施新内核接入 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
 | W5 创作与交互 | 保留原 worktree，未完成替换 | 整理现有生成/Admin/计费、技能、人机共享编辑与消息卡片 |
@@ -58,7 +58,7 @@ VFR 呈现窗口按真实样本覆盖区间选择源帧，区分已知 gap 与�
 
 后续已实现 `mo-media-ffmpeg` 的 Rust RAII、回调 panic/错误边界、类型约束的单次流选择、线程归属与独立拥有的帧平面。构建时逐字段核对 C/Rust ABI，核实实际加载别名指向的固定组件；任何操作错误关闭 native context，取消/失败不返回部分帧。[执行边界记录](video-media-native.md)包含具体生命周期、panic 语义与复现。
 
-可终止 worker 已完成：`mo-media` 分离无 codec 链接的数据，`mo-media-wire` 提供有界头与原始平面协议，`mo-native-media` 持有宿主资源和进程。总 deadline 不随读往返重置，错误/取消/崩溃会停止并回收进程；开发包校验固定摘要和 loader 闭包。详见[worker 实施及实际证据](video-media-worker.md)。连续区间的真实帧已接通工程采样计划；GPU/浏览器和编码导出仍未接入，不能把 worker 测试成功当成产品已经可用。
+可终止 worker 已完成：`mo-media` 分离无 codec 链接的数据，`mo-media-wire` 提供有界头与原始平面协议，`mo-native-media` 持有宿主资源和进程。总 deadline 不随读往返重置，错误/取消/崩溃会停止并回收进程；开发包校验固定摘要和 loader 闭包。详见[worker 实施及实际证据](video-media-worker.md)。连续区间的真实帧已接通工程采样计划；产品 GPU 显示、浏览器和编码导出仍未接入，不能把 worker 测试成功当成产品已经可用。
 
 `mo-native-limits` 已提供后续 worker 启动使用的进程资源限制，实际验证 CPU 超限终止、地址增长拒绝、文件增长失败和继承限制。该模块已在视频 worker 接收素材前安装并读回核验；地址增长额度不等于 RSS 硬限额，也不是文件/网络沙箱。[平台边界与测试](native-worker-limits.md)明确保留这些区别。
 
@@ -68,7 +68,11 @@ VFR 呈现窗口按真实样本覆盖区间选择源帧，区分已知 gap 与�
 
 ### 色彩与参考合成
 
-`mo-color::rgb` 和 `mo-video-render` 已接通原始平面解释、明确显示 transfer、BT.2020/D65 线性预乘合成、SAR/显示矩阵、作者变换和组透明度。真实 worker 帧经过工程采样输出合成 PNG；CPU 原生/WASM 小向量包含 f32 bits 的完全一致验证。未知色彩解释、HDR 缺 tone-map、缺资源、预算及取消不会返回伪造成功。当前只提供参考过滤和简单显式 tone-map；文字、GPU 与最终效果/导出仍待实现。详见[色彩与合成记录](video-color-composition.md)。
+`mo-color::rgb` 和 `mo-video-render` 已接通原始平面解释、明确显示 transfer、BT.2020/D65 线性预乘合成、SAR/显示矩阵、作者变换和组透明度。真实 worker 帧经过工程采样输出合成 PNG；CPU 原生/WASM 小向量包含 f32 bits 的完全一致验证。未知色彩解释、HDR 缺 tone-map、缺资源、预算及取消不会返回伪造成功。当前只提供参考过滤和简单显式 tone-map；文字与最终效果/导出仍待实现，GPU 后续进展见下一节。详见[色彩与合成记录](video-color-composition.md)。
+
+### GPU 合成
+
+`mo-video-gpu` 已通过共用 plan executor 接入真实 Metal GPU。CPU/GPU 使用一致的定点栅格坐标决策，修复浮点矩阵在最近邻边界选不同像素的问题；WGSL 执行同一分组/透明度语义。29 项硬件对照包含 1080p、最大宽度、HDR 线性值和四帧真实素材，并验证取消、预算、callback panic 后的恢复。当前返回未提交的 GPU 候选，仍需宿主显示、时钟和设备丢失处理；不代表实时工作台已可用。详见[GPU 实施记录](video-gpu-composition.md)。
 
 ### 合同与验证入口
 
@@ -100,8 +104,9 @@ VFR 呈现窗口按真实样本覆盖区间选择源帧，区分已知 gap 与�
 | 进程限制基础 | 6 项父测试实际启动隔离子进程，验证地址增长拒绝、内核 CPU 终止、继承限制、非法参数、文件描述符与文件增长受限 | 已与视频 worker 连接；不是 RSS、系统调用沙箱或完整产品隔离验收 |
 | 原生媒体 worker | 默认协议/宿主 8 项，真实 worker 6 项、包完整性 3 项、真实压缩媒体 1 项均通过；77 帧/144,000 音频样本与参考一致，1.5 MiB 大媒体包经短读成功；宿主无 codec 链接 | macOS arm64 开发包；无完整系统调用沙箱、浏览器或用户时间线验收 |
 | 真实工程源采样 | 10 项时间/行为测试；90 正放 + 90 倒放 + 8 随机定位均与独立像素/PTS/覆盖区间一致，实际使用 Rust 工程和 worker；缓存最高 221,184 active bytes | 仅已知连续区间语料，无通用 edit list 解析、GPU、音频 DSP、浏览器或产品播放 |
-| 色彩与参考合成 | 18 项单测及显式真实用例通过；77 帧的 2,838,528 个线性通道值与独立 zscale 最大误差 `4.768e-7`、RMS `6.967e-8`；真实计划输出四帧及旋转/透明度合成 | CPU 参考档案，不是高质量缩放、GPU、全 HDR 或成片导出 |
+| 色彩与参考合成 | 19 项单测（含后续定点坐标检查）及显式真实用例通过；77 帧的 2,838,528 个线性通道值与独立 zscale 最大误差 `4.768e-7`、RMS `6.967e-8`；真实计划输出四帧及旋转/透明度合成 | CPU 参考档案，不是高质量缩放、GPU、全 HDR 或成片导出 |
 | 像素跨端一致 | Native/WASM 9 查询、7 渲染/2 拒绝，f32 bits、RGBA8 和诊断一致；编辑 25 步/编译 15 查询回归摘要不变 | 未执行浏览器 WebCodecs、WebGPU 或实际播放器 |
+| 实际 GPU 合成 | Apple M4 Max/Metal，29 用例最大线性误差 `7.153e-7`，RGBA8 最大差 1；26 取消点、三类预算、callback panic 恢复通过 | 未验收 Windows/Linux/浏览器、设备丢失恢复、实时 FPS、零拷贝或产品显示 |
 | 媒体内存检查 | wrapper 与 FFmpeg C 实现分别构建 ASan/UBSan 档案，同一真实检查通过 | 汇编与平台框架不因此被插桩；不是 hostile-media 隔离保证 |
 | 原生媒体库体积 | 本机 release 配置 5 个 FFmpeg 库及 C wrapper 共 7,392,248 bytes | 不包含 Rust worker、字体、GPU、额外 codec 或系统框架，不是最终应用体积 |
 | 代码与合同 | 整个 Rust 工作区 strict Clippy、WASM 编译、全部 schema/TypeScript 合同检查通过；新增视频 schema 使用相同生成/检查入口 | 未发布新版 SDK、组件频道或 UI |
@@ -117,7 +122,7 @@ cargo test --release --offline --locked -p mo-video-edit --test generated_sequen
 ## 明确尚未完成
 
 - 当前已支持锚点线性变速；完整曲线变速/反查、转场、关键帧、字幕词锚点、分析与互操作等最终语义仍待补全。音频策略已保存，实际保调/重采样等处理仍待实现。
-- 原生 worker 已通过连续区间的真实工程采样测试，但尚未成为产品执行链；音频混音、GPU 合成、编码/容器输出与浏览器 I/O 尚未接入。
+- 原生 worker 已通过连续区间的真实工程采样测试，CPU/Metal GPU 已执行同源合成，但尚未成为产品播放链；音频混音、GPU 显示/纹理互操作、编码/容器输出与浏览器 I/O 尚未接入。
 - 生产 SDK/MCP/CLI、Device/Browser Host、Agent 技能、新时间线 UI、保存恢复和项目包尚未接入新内核。
 - CE.SDK 仍存在于产品旧 worktree，未宣称依赖退役；旧 scene 数据须审计、迁移或保留可导出的原件，不能仅换 engineId。
 - 完整功能、媒体质量、性能、体积、多平台与真实 provider 计费没有完成验收；当前不能交付为“用户已可验收全部视频功能”。
@@ -141,3 +146,5 @@ Rust 接入增量记录：`.codex-work/media-rust-gate-final/report.json`、其 
 工程源采样增量记录：`.codex-work/video-source-gate-final/report.json`、其 `video-source/report.json`、`video-source-workspace-clippy-final.log`、`video-source-wasm-check.log`。media 分组已增加第五步实际工程采样检查；WASM 此处只验证编译，不宣称浏览器解码通过。
 
 色彩与参考合成增量记录：`.codex-work/video-render-gate-final/report.json`、其 `video-render/report.json`、`video-render-parity.json`、`video-render-domain-regression.json`、`video-render-projection-regression.json`、`video-render-workspace-clippy.log`。media 分组已增加第六步真实色彩/合成，WASM 分组增加独立像素向量；边界与具体证据见[实施记录](video-color-composition.md)。
+
+GPU 增量记录：`.codex-work/video-gpu-gate-final/report.json`、其 `hardware.json`、`video-gpu-color-regression/report.json`、`video-gpu-{render,domain,projection}-parity.json`、`video-gpu-workspace-clippy-final.log`。独立硬件门禁为 `tools/verification/video-gpu-check.py`；通用 CI 的 ignored 不视为硬件通过。

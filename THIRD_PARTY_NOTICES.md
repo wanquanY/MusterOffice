@@ -17,6 +17,7 @@ This source repository keeps upstream notices alongside the relevant materials:
 | Unicode bidi dependency | [Copyright](components/unicode-bidi/COPYRIGHT), [MIT license](components/unicode-bidi/LICENSE-MIT) |
 | Rust numeric dependencies | [Component record and licenses](components/rust-numeric/) |
 | Video persistent object collections (rpds, archery, triomphe, smallvec) | [Fixed source and license record](components/persistent-collections/component.json), [notices](components/persistent-collections/licenses/) |
+| Video GPU execution (wgpu, shader compiler, platform bindings and test dependencies) | [Locked dependency closure](components/video-gpu/component.json), [original notices](components/video-gpu/licenses/), [supplemental upstream notice identity](components/video-gpu/upstream-notices.json) |
 | rustix | [Component record and licenses](components/rustix/) |
 | libc system ABI bindings | [Fixed component and license record](components/libc/component.json), [MIT notice](components/libc/LICENSE-MIT), [Apache-2.0 license](components/libc/LICENSE-APACHE) |
 | base64 | [Component record and licenses](components/base64/) |
