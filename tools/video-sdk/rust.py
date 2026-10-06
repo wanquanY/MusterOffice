@@ -1,4 +1,4 @@
-"""Build the independent video computation Cargo closure as a local registry.
+"""Build a reviewed video Cargo profile as a local registry.
 
 No publishing, product code, private paths in manifests, codecs or build scripts.
 The receiving product uses an external manifest pin and Cargo source replacement.
@@ -14,6 +14,21 @@ import tomllib
 ROOT = Path(__file__).resolve().parents[2]
 ROOT_CRATE = "mo-video-operations"
 FORMAT = "musteroffice.video-rust-sdk/1-draft"
+PROFILES = {
+    "operations": {
+        "root": ROOT_CRATE,
+        "profile": "musteroffice.video.operations/1-draft",
+        "crates": {"mo-common", "mo-time", "mo-video-model", "mo-video-edit", "mo-video-compile", ROOT_CRATE},
+    },
+    "runtime": {
+        "root": "mo-video-runtime",
+        "profile": "musteroffice.video.runtime/1-draft",
+        "crates": {"mo-common", "mo-time", "mo-video-model", "mo-video-edit", "mo-video-compile", ROOT_CRATE,
+                   "mo-media", "mo-media-wire", "mo-native-media", "mo-native-worker", "mo-native-limits",
+                   "mo-video-source", "mo-color", "mo-video-render", "mo-video-audio", "mo-video-pcm",
+                   "mo-video-export", "mo-video-gpu", "mo-video-runtime"},
+    },
+}
 
 
 def module(name, path):
@@ -28,10 +43,11 @@ cargo = module("cargo_package_builder", ROOT / "tools/release/cargo.py")
 wasm_builder = module("video_wasm_builder", ROOT / "tools/video-sdk/build.py")
 
 
-def closure():
+def closure(profile="operations"):
+    selected_profile = PROFILES[profile]
     workspace = tomllib.loads((ROOT / "Cargo.toml").read_text())["workspace"]
     declarations = workspace["dependencies"]
-    pending, selected, dependencies = [ROOT_CRATE], {}, set()
+    pending, selected, dependencies = [selected_profile["root"]], {}, set()
     while pending:
         name = pending.pop()
         if name in selected:
@@ -43,7 +59,7 @@ def closure():
         if (manifest["package"]["name"] != name or (directory / "build.rs").exists()
                 or any(key in manifest for key in ["build-dependencies", "bin", "example", "test", "bench"])
                 or "build" in manifest["package"]):
-            raise ValueError("video SDK must contain only portable computation libraries")
+            raise ValueError("video SDK must contain only libraries without native build scripts")
         production = source_builder.production_dependencies(manifest)
         manifest["package"].update(workspace="../..", autobins=False, autoexamples=False, autotests=False, autobenches=False)
         manifest.setdefault("lib", {}).update(test=False, doctest=False, bench=False)
@@ -54,8 +70,7 @@ def closure():
             dependencies.add(key)
             if isinstance(declarations[key], dict) and "path" in declarations[key]:
                 pending.append(key)
-    expected = {"mo-common", "mo-time", "mo-video-model", "mo-video-edit", "mo-video-compile", ROOT_CRATE}
-    if set(selected) != expected:
+    if set(selected) != selected_profile["crates"]:
         raise ValueError("video computation dependency closure changed; review packaging profile")
     generated = {"workspace": {"resolver": workspace["resolver"], "package": workspace["package"],
                   "members": [declarations[name]["path"] for name in sorted(selected)],
@@ -68,18 +83,22 @@ def verify(root, pin):
     if root.is_symlink() or path.is_symlink() or not path.is_file() or path.stat().st_size > 4 << 20 or wasm_builder.sha(path) != pin:
         raise ValueError("video Rust manifest differs from external pin")
     manifest = json.loads(path.read_text())
-    if manifest["format"] != FORMAT or manifest["releaseCleared"] is not False or manifest["rootCrate"] != ROOT_CRATE:
+    selected = next((p for p in PROFILES.values() if p["profile"] == manifest.get("profile")), None)
+    if (manifest["format"] != FORMAT or manifest["releaseCleared"] is not False or not selected
+            or manifest["rootCrate"] != selected["root"]
+            or sorted(p["name"] for p in manifest["packages"]) != sorted(selected["crates"])):
         raise ValueError("unsupported video Rust SDK")
     if manifest["files"] != wasm_builder.inventory(root, ("video-rust-manifest.json",)):
         raise ValueError("video Rust SDK inventory differs")
     return manifest
 
 
-def build(output, version, registry):
+def build(output, version, registry, profile="operations"):
+    selected_profile = PROFILES[profile]
     output = output.resolve()
     if any(output.is_relative_to(ROOT / name) for name in ["crates", "tools", "packages", "components", "contracts"]):
         raise ValueError("video SDK output overlaps source")
-    selected, workspace = closure()
+    selected, workspace = closure(profile)
     inputs = {ROOT / "Cargo.toml", ROOT / "Cargo.lock", ROOT / "LICENSE", ROOT / "NOTICE",
               Path(__file__).resolve(), ROOT / "tools/release/cargo.py", ROOT / "tools/sdk/build.py", ROOT / "tools/video-sdk/build.py"}
     for directory, _manifest in selected.values():
@@ -119,14 +138,14 @@ def build(output, version, registry):
     packages = cargo.build_registry(source, source_manifest, output / "registry", version, registry)
     if wasm_builder.record(sorted(inputs)) != before:
         raise ValueError("source changed while building video SDK")
-    manifest = {"format": FORMAT, "releaseCleared": False, "rootCrate": ROOT_CRATE, "version": version,
-                "registry": registry, "profile": "musteroffice.video.operations/1-draft",
+    manifest = {"format": FORMAT, "releaseCleared": False, "rootCrate": selected_profile["root"], "version": version,
+                "registry": registry, "profile": selected_profile["profile"],
                 "sourceCommit": wasm_builder.run(["git", "rev-parse", "HEAD"]).strip(),
                 "sourceDirty": bool(wasm_builder.run(["git", "status", "--porcelain"])),
                 "sourceInputs": before, "packages": packages,
                 "registryPackages": [{"name": p["name"], "version": p["version"], "source": p["source"], "license": p["license"]} for p in metadata["packages"] if p["source"] is not None],
                 "files": wasm_builder.inventory(output),
-                "scope": "Independent computation Cargo development package. No codecs, device authority, UI, publishing or formal release acceptance."}
+                "scope": "Independent video Cargo development package. Runtime profile includes optional native-worker and GPU adapters. No codec binaries, device authority, UI, publishing or formal release acceptance."}
     path = output / "video-rust-manifest.json"
     path.write_text(json.dumps(manifest, sort_keys=True, indent=2) + "\n")
     pin = wasm_builder.sha(path)
@@ -139,6 +158,7 @@ def main():
     parser.add_argument("--output", type=Path)
     parser.add_argument("--version")
     parser.add_argument("--registry")
+    parser.add_argument("--profile", choices=sorted(PROFILES), default="operations")
     parser.add_argument("--verify", type=Path)
     parser.add_argument("--sha256")
     args = parser.parse_args()
@@ -148,7 +168,7 @@ def main():
     else:
         if not all((args.output, args.version, args.registry)):
             parser.error("--output, --version and --registry required")
-        print(json.dumps(build(args.output, args.version, args.registry)))
+        print(json.dumps(build(args.output, args.version, args.registry, args.profile)))
 
 
 if __name__ == "__main__":

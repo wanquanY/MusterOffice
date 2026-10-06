@@ -1,0 +1,30 @@
+[package]
+name = "mo-video-runtime"
+license.workspace = true
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[features]
+default = []
+native = ["dep:mo-native-media", "dep:mo-native-limits", "mo-video-source/native"]
+gpu = ["dep:mo-video-gpu"]
+
+[dependencies]
+mo-common.workspace = true
+mo-time.workspace = true
+mo-video-compile.workspace = true
+mo-video-operations.workspace = true
+mo-media.workspace = true
+mo-video-source.workspace = true
+mo-video-render.workspace = true
+mo-video-audio.workspace = true
+mo-video-pcm.workspace = true
+mo-video-export.workspace = true
+mo-native-media = { workspace = true, optional = true }
+mo-native-limits = { workspace = true, optional = true }
+mo-video-gpu = { workspace = true, optional = true }
+
+[lints]
+workspace = true

@@ -2,6 +2,7 @@
 import argparse
 import importlib.util
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -34,8 +35,10 @@ fn main() {
 '''
 
 
-def check(bundle, pin, output):
+def check(bundle, pin, output, *, program=PROGRAM, root_crate="mo-video-operations", features=(), environment=None):
     manifest = sdk.verify(bundle, pin)
+    if manifest["rootCrate"] != root_crate:
+        raise ValueError("consumer root differs from reviewed SDK profile")
     output = output.resolve()
     output.mkdir(parents=True, exist_ok=False)
     # Only registry archives/index reach the consumer. The source SDK directory
@@ -50,11 +53,11 @@ def check(bundle, pin, output):
                          "pinned": {"local-registry": str(output / "registry")}}}
     (consumer / ".cargo/config.toml").write_bytes(sdk.cargo.toml_bytes(config))
     cargo = {"workspace": {}, "package": {"name": "video-sdk-consumer", "version": "0.0.0", "edition": "2024"},
-             "dependencies": {"mo-video-operations": {"version": "=" + manifest["version"], "registry": "video"}}}
+             "dependencies": {root_crate: {"version": "=" + manifest["version"], "registry": "video", "features": list(features)}}}
     (consumer / "Cargo.toml").write_bytes(sdk.cargo.toml_bytes(cargo))
-    (consumer / "src/main.rs").write_text(PROGRAM)
+    (consumer / "src/main.rs").write_text(program)
     shutil.copyfile(bundle / "source/Cargo.lock", consumer / "Cargo.lock")
-    completed = subprocess.run(["cargo", "run", "--offline", "--quiet"], cwd=consumer, capture_output=True, text=True)
+    completed = subprocess.run(["cargo", "run", "--offline", "--quiet"], cwd=consumer, capture_output=True, text=True, env={**os.environ, **(environment or {})})
     (output / "cargo.log").write_text(completed.stderr)
     completed.check_returncode()
     summary = json.loads(completed.stdout)
@@ -71,9 +74,10 @@ def check(bundle, pin, output):
     if external(lock) != external(before):
         raise ValueError("consumer external Cargo graph drifted")
     report = {"format": "musteroffice.video-rust-consumer/1", "status": "passed", "manifestSha256": pin,
+              "rootCrate": root_crate, "features": list(features), "programSha256": sdk.wasm_builder.sha(consumer / "src/main.rs"),
               "version": manifest["version"], "packages": len(packages), "summary": summary,
               "consumerLockSha256": sdk.wasm_builder.sha(consumer / "Cargo.lock"),
-              "scope": "Actual independent registry crates and fixed external Cargo graph; create, edit, undo, summary, resources, query and refusal behavior. No product authority/media/UI acceptance."}
+              "scope": "Actual independent registry crates and fixed external Cargo graph. Operation evidence is in summary and the hashed consumer program; this is not product authority/UI or full media acceptance."}
     (output / "report.json").write_text(json.dumps(report, indent=2) + "\n")
     return report
 
