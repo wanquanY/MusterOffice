@@ -16,11 +16,11 @@
 | 工作包 | 当前状态 | 退出条件 |
 | --- | --- | --- |
 | W1 视频领域与合同 | 基础已实现，未全部完成 | 独立模型、精确时间、受限解析与校验、Native/WASM 公共合同向量；补全效果、字幕、分析和工程包模型 |
-| W2 媒体与合成 | 原生解码/采样、CPU/Metal 合成及音频块处理基础已实现；保调工程图及派生 PCM 已实现；Browser、导出及产品显示待实施 | 原生/浏览器媒体与合成、字体/色彩/音频及真实输出 |
+| W2 媒体与合成 | 原生解码/采样、CPU/Metal 合成、音频/保调图、候选导出及独立真实素材 SDK 闭环已实现；Browser 和产品播放/导出待实施 | 原生/浏览器媒体与合成、字体/色彩/音频及真实输出 |
 | W3 编辑与历史 | 原子事务基础已实现，未全部完成 | 全部编辑操作、候选、冲突与有条件逆操作及增量索引 |
-| W4 产品执行 | 独立 Native/WASM SDK、Browser Host 基础、Native 计算、SQLite 工程、Agent authoring、共享手动执行、认证 RPC/IPC、工程订阅、基础时间线、消息工程卡片/右侧面板、待确认命令持久恢复与物理执行退出等待已实现；媒体任务/完整产品恢复验收待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
+| W4 产品执行 | 独立 Native/WASM SDK、Browser Host 基础、Native 计算、SQLite 工程、Agent authoring、共享手动执行、认证 RPC/IPC、工程订阅、基础时间线、消息工程卡片/右侧面板、待确认命令持久恢复与物理执行退出等待已实现；新增固定媒体 runtime/worker 消费和授权 probe；完整媒体任务/产品恢复验收待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
 | W5 创作与交互 | 视频技能与显式工具装载、无生成模型的剪辑准入已接通；工作台及旧引擎替换未完成 | 整理现有生成/Admin/计费、技能、人机共享编辑与消息卡片 |
-| W6 完整验收 | 仅有下列内核基础证据 | 完整验收矩阵与可供用户实际操作的本地环境 |
+| W6 完整验收 | 已有下列内核与部分产品路径证据，整体验收未完成 | 完整验收矩阵与可供用户实际操作的本地环境 |
 
 ## 已实现的计算基础
 
@@ -147,6 +147,18 @@ Musterwork worktree 提交 `82aaa621b` 已接入固定的独立视频 SDK（上�
 40项 Device transport、4项真实固定 SDK/SQLite 手动执行、15项共享 session/实际 Rust WASM，以及8项 Desktop 端口/工程作用域/正常消息入口检查通过，共67项。真实 Chrome 154 的11项 IDB/Web Locks 检查覆盖刷新、Renderer 崩溃、浏览器进程重启、多窗口、账号变化、作用域拒绝、quota 故障注入和容量边界；另13项生产 Vue 时间线交互回归通过。Rust production lib strict Clippy、共享及相关 Desktop 类型检查、前端/Docker/桌面依赖边界全部通过。
 
 报告 `.codex-work/video-pending-edit-report.json` 绑定提交、30个路径（含改名旧路径）与10份日志摘要；详细合同在产品 `docs/architecture/native-video-edit-recovery.md`。浏览器重启使用同一 profile/origin；没有冒充操作系统断电、真实磁盘耗尽或登录桌面全应用重启/升级验收。原生物理生命周期由受控阻塞端口验证，SDK/SQLite 单独集成验证；真实媒体和完整本地产品验收仍待完成。下一工作重点为固定媒体 SDK/worker 消费、原素材导入/probe、像素与声音预览及本地导出。
+
+### 固定媒体运行时、worker 与授权探测
+
+本仓库提交 `bfc9398` 新增 `mo-video-runtime` 公共入口，复用原有工程、采样、合成、音频和导出类型，默认无 native/GPU feature。独立 `runtime` registry 档案包含 19 个自有包，原 6 包 authoring 档案继续存在；组件构建、消费和 source/index/checksum 检查不引用产品或相邻源码。独立消费者从真实素材创建工程、修改叠加层、定位、预览并导出 75 帧，独立解码的 1,382,400 字节 YUV 与编码输入完全相同。另验证 AAC 144,000 样本；导出无音轨，GPU 在此消费者只编译，不扩大验收结论。详见[媒体 SDK 记录](video-runtime-sdk.md)。
+
+Musterwork 提交 `89c9c1d7e` 固定 `0.1.0-video.20261007.1`、manifest `d26836cfaa20f356de1d87917cc5b3d6435fb6255bcbc7cda75e44667afe9227`。PPT 固定版本与包身份保持不变；新旧视频发行的 6 个编辑领域 crate 源码相同。实际产品检查包括 12 项准备器/版本测试、4 项真实编辑/权限集成、1 项持久重开及适配器 strict Clippy。
+
+产品提交 `2f40ad4fd` 新增明确来源的 worker 安装器及 `NativeVideoMediaHost::probe`。已构建并安装 macOS arm64 release worker，7 个二进制共 8,152,280 bytes；这不包含应用、GPU、字体和模型。逐文件、相对 loader alias、目录与 SDK 绑定验证后原子安装；缓存损坏明确失败。原生 SDK 在启动子进程前再次核验。21 项安装完整性/并发测试通过；上游消费者使用**产品已安装的 release worker** 重跑实际导出和独立解码，结果相同。
+
+probe 通过原 FileQueryService 和 VerifiedContentReader 读取原授权文件，并在返回前复核来源及权限，不接受 digest/路径代替授权。计算共用原 Office semaphore/WorkScope；调用方离开后，物理工作结束才释放额度。2 项显式实际 SDK/worker/SQLite 测试通过（0 ignored），覆盖流信息、权限晚撤销、来源变化、输入限额、取消、验证后字节被修改和阻塞读取期间调用方退出；既有 4 项编辑回归与生产/新测试 strict Clippy 再次通过。共 40 项不同的产品检查通过，重复运行不累计。
+
+当前仅有内部授权探测入口，不是正式 probe RPC/技能或用户导入完成。容器 duration 不证明连续呈现区间；通用 demux/edit-list 索引、内容存储大素材支持（当前沿用 264 MiB + 12 bytes 上限）、真实像素/PCM 播放、输出校验发布、完整属性 UI、Browser 和 CE.SDK 替换仍须完成。报告为产品 `.codex-work/video-media-runtime-report.json`；保留原 worktree 未提交的生成/Admin/多模态代码，不宣称干净 HEAD 全应用验收。
 
 ### 精确时间
 
@@ -280,7 +292,7 @@ cargo test --release --offline --locked -p mo-video-edit --test generated_sequen
 
 - 当前已支持锚点线性变速；完整曲线变速/反查、转场、关键帧、字幕词锚点、分析与互操作等最终语义仍待补全。音频策略已保存，实际重采样/混音基础已实现，非原速保调及工程派生图已实现，生产 Host 接入和完整音频处理仍待完成。
 - 原生 worker 已通过连续区间的真实工程采样测试，CPU/Metal GPU 已执行同源合成，但尚未成为产品播放链；音频混音已有内核实现，设备播放、GPU 显示/纹理互操作、产品工程导出与浏览器 I/O 尚未接入；编码/容器的 leaf adapter 已实现，编码 worker 已连接，宿主交付仍待连接。
-- 已有独立开发 SDK、Browser Host 基础、Device metadata 工程执行、Agent 技能/桌面 RPC/IPC、基础时间线和待确认命令恢复；生产 SDK/MCP/CLI、媒体 Host、完整属性 UI、完整应用恢复验收和项目包仍待接入。
+- 已有独立开发 SDK、Browser Host 基础、Device metadata 工程执行、Agent 技能/桌面 RPC/IPC、基础时间线、待确认命令恢复及固定媒体 runtime/worker 和授权 probe；生产 SDK/MCP/CLI、完整媒体 Host、属性 UI、完整应用恢复验收和项目包仍待接入。
 - CE.SDK 仍存在于产品旧 worktree，未宣称依赖退役；旧 scene 数据须审计、迁移或保留可导出的原件，不能仅换 engineId。
 - 完整功能、媒体质量、性能、体积、多平台与真实 provider 计费没有完成验收；当前不能交付为“用户已可验收全部视频功能”。
 
