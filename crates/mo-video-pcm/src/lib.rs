@@ -3,7 +3,9 @@
 mod builder;
 mod reader;
 mod resource;
+mod retime;
 pub use resource::*;
+pub use retime::*;
 mod source;
 pub use builder::*;
 use mo_common::{ByteLength, Digest, Ticks};

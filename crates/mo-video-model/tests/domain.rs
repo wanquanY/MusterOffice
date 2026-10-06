@@ -93,6 +93,7 @@ fn document() -> VideoDocument {
     doc.clips.insert(
         c.clone(),
         Clip {
+            audio_context: None,
             id: c,
             name: String::new(),
             timeline: range(0, 2),
@@ -123,6 +124,7 @@ fn add_solid(d: &mut VideoDocument, id: &str, start: i64, end: i64) {
     d.clips.insert(
         c.clone(),
         Clip {
+            audio_context: None,
             id: c,
             name: String::new(),
             timeline: range(start, end),
@@ -340,6 +342,7 @@ fn nested(d: &mut VideoDocument, name: &str, target: Option<&str>) {
     d.clips.insert(
         c.clone(),
         Clip {
+            audio_context: None,
             id: c,
             name: String::new(),
             timeline: range(0, 2),

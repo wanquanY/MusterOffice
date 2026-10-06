@@ -42,6 +42,7 @@ pub fn source(a: i64, b: i64, duration: i64) -> ClipSource {
 }
 pub fn shot(id: &str, start: i64, end: i64) -> Clip {
     Clip {
+        audio_context: None,
         id: clip_id(id),
         name: id.into(),
         timeline: range(start, end),

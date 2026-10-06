@@ -31,6 +31,23 @@
         "preservePitch"
       ]
     },
+    "AudioRenderContext": {
+      "type": "object",
+      "properties": {
+        "offset": {
+          "description": "Clip-local zero in context-local time. The source binding remains the\nclip's binding; this cannot reference a different resource or sequence.",
+          "$ref": "#/$defs/RationalTime"
+        },
+        "timeMap": {
+          "$ref": "#/$defs/TimeMap"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "timeMap",
+        "offset"
+      ]
+    },
     "AudioTimePolicy": {
       "type": "object",
       "properties": {
@@ -92,6 +109,17 @@
             "rate": "preservePitch",
             "reverse": "mute"
           }
+        },
+        "audioContext": {
+          "description": "The complete pre-trim processing map. Visible cuts are views of this\ncontinuous DSP context, so cutting a clip does not restart its vocoder.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AudioRenderContext"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "effects": {
           "type": "array",

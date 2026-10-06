@@ -12,15 +12,15 @@ fn pending_source_is_structured_and_becomes_readable_after_publication() {
         PcmReadLimits::default(),
     )
     .unwrap();
-    let asset = resource.describe(source.binding()).unwrap();
+    let asset = resource.describe(source.binding().unwrap()).unwrap();
     let range = PcmRange::new(500, 600).unwrap();
     assert!(
-        matches!(resource.read(source.binding(),&asset,range,PcmLimits::default(),&||false),Err(AudioError::PendingSource{resource:id,first_sample:500,end_sample:600}) if id==source.binding().resource)
+        matches!(resource.read(source.binding().unwrap(),&asset,range,PcmLimits::default(),&||false),Err(AudioError::PendingSource{resource:id,first_sample:500,end_sample:600}) if id==source.binding().unwrap().resource)
     );
     *resource.store_mut() = materialize(Arc::clone(&source), &[37, 997]);
     let pcm = resource
         .read(
-            source.binding(),
+            source.binding().unwrap(),
             &asset,
             range,
             PcmLimits::default(),
@@ -40,7 +40,7 @@ fn mixer_request_budget_is_checked_before_storage_access() {
     .unwrap();
     assert!(matches!(
         resource.read(
-            source.binding(),
+            source.binding().unwrap(),
             source.asset(),
             PcmRange::new(0, 100).unwrap(),
             PcmLimits {

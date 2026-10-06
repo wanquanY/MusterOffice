@@ -1,4 +1,5 @@
 //! Portable video authoring data and bounded validation. No product, filesystem or codec owner.
+mod audio_context;
 mod ids;
 mod model;
 mod object_map;

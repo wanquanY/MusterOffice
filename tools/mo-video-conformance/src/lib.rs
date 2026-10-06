@@ -1,9 +1,11 @@
 //! Test-only cross-target driver, not a product SDK or durable host.
 mod audio;
 mod pcm;
+mod retime;
 mod stretch;
 pub use audio::video_audio_conformance;
 pub use pcm::video_pcm_conformance;
+pub use retime::video_retime_conformance;
 pub use stretch::video_stretch_conformance;
 mod projection;
 mod render;

@@ -1,9 +1,9 @@
 //! Canonical, sequential pitch-preserving stream. Chunk boundaries are part of
 //! the processing profile, never chosen by UI/decoder/audio-device callbacks.
-use crate::{AudioError, ChannelLayout, PcmBlock, PcmLimits, Result, cancel};
+use crate::{AudioError, ChannelLayout, PcmBlock, PcmLimits, Result, StretchSchedule, cancel};
 
 pub const STRETCH_QUANTUM: u32 = 128;
-pub const STRETCH_PROFILE: &str = "musteroffice.audio.stretch-sequential-q128/1-draft";
+pub const STRETCH_PROFILE: &str = "musteroffice.audio.stretch-sequential-q128/2-draft";
 
 #[derive(Debug, Clone, Copy)]
 pub struct StretchInfo {
@@ -52,6 +52,7 @@ pub struct StretchStream<E> {
     sample_rate: u32,
     source_frames: u64,
     output_frames: u64,
+    schedule: StretchSchedule,
     processed: u64,
     begun: bool,
     poisoned: bool,
@@ -68,6 +69,23 @@ impl<E: StretchEngine> StretchStream<E> {
         output_frames: u64,
         limits: StretchLimits,
     ) -> Result<Self> {
+        Self::from_schedule(
+            engine,
+            sample_rate,
+            layout,
+            StretchSchedule::constant(source_frames, output_frames)?,
+            limits,
+        )
+    }
+    pub fn from_schedule(
+        engine: E,
+        sample_rate: u32,
+        layout: ChannelLayout,
+        schedule: StretchSchedule,
+        limits: StretchLimits,
+    ) -> Result<Self> {
+        let source_frames = schedule.source_frames();
+        let output_frames = schedule.output_frames();
         let info = engine.info();
         if !(8000..=384000).contains(&sample_rate)
             || info.sample_rate != sample_rate
@@ -80,8 +98,6 @@ impl<E: StretchEngine> StretchStream<E> {
             || output_frames == 0
             || source_frames > i64::MAX as u64
             || output_frames > i64::MAX as u64
-            || u128::from(source_frames) > u128::from(output_frames) * 64
-            || u128::from(output_frames) > u128::from(source_frames) * 64
             || limits.max_buffer_bytes > 128 << 20
             || limits.max_preroll_calls == 0
         {
@@ -93,7 +109,7 @@ impl<E: StretchEngine> StretchStream<E> {
         if (count + out_count * 2) * 4 > limits.max_buffer_bytes {
             return Err(AudioError::Budget);
         }
-        if limits.max_preroll_calls <= info.output_latency as usize / STRETCH_QUANTUM as usize {
+        if limits.max_preroll_calls < schedule.preroll_calls(info.output_latency) {
             return Err(AudioError::Budget);
         }
         let input = crate::pcm::allocate(count)?;
@@ -105,6 +121,7 @@ impl<E: StretchEngine> StretchStream<E> {
             sample_rate,
             source_frames,
             output_frames,
+            schedule,
             processed: 0,
             begun: false,
             poisoned: false,
@@ -141,11 +158,8 @@ impl<E: StretchEngine> StretchStream<E> {
             // Also fail closed if a custom host engine panics and its caller
             // catches the unwind. A mutation cannot leave a reusable stream.
             self.poisoned = true;
-            let rate_q32 = (u128::from(self.source_frames) << 32) / u128::from(self.output_frames);
-            if let Err(error) = self
-                .engine
-                .begin(&self.input[..n], rate_q32 as f64 / 4294967296.)
-            {
+            let rate_hint = self.schedule.initial_rate_hint()?;
+            if let Err(error) = self.engine.begin(&self.input[..n], rate_hint) {
                 self.poisoned = true;
                 return Err(error);
             }
@@ -159,15 +173,15 @@ impl<E: StretchEngine> StretchStream<E> {
             if self.processed == end {
                 return Ok(None);
             }
-            let next = (self.processed + u64::from(STRETCH_QUANTUM)).min(end);
-            // Products fit u128 because all operands are <= i64::MAX+65536.
-            let position = |frame: u64| -> u64 {
-                u64::from(self.info.input_latency)
-                    + (u128::from(frame) * u128::from(self.source_frames)
-                        / u128::from(self.output_frames)) as u64
-            };
-            let first = position(self.processed);
-            let in_frames = (position(next) - first) as usize;
+            let next = self.schedule.next_boundary(
+                self.processed,
+                (self.processed + u64::from(STRETCH_QUANTUM)).min(end),
+            );
+            let first = u64::from(self.info.input_latency)
+                + self.schedule.input_position(self.processed)?;
+            let in_frames = (u64::from(self.info.input_latency)
+                + self.schedule.input_position(next)?
+                - first) as usize;
             let out_frames = (next - self.processed) as usize;
             self.read(source, first, in_frames, check)?;
             let channels = self.layout.len();

@@ -10,12 +10,17 @@ use serde::Serialize;
 /// stream must not be used to independently synthesize canonical tiles.
 #[derive(Debug, Clone)]
 pub struct PcmSource {
-    binding: MediaBinding,
+    origin: PcmOrigin,
     asset: AudioAsset,
     identity: Digest,
     tile_frames: u32,
     tile_count: u32,
     bits: u64,
+}
+#[derive(Debug, Clone)]
+enum PcmOrigin {
+    Decoded(MediaBinding),
+    Retimed(Digest),
 }
 impl PcmSource {
     pub fn new(
@@ -66,7 +71,7 @@ impl PcmSource {
             },
         )?;
         Ok(Self {
-            binding,
+            origin: PcmOrigin::Decoded(binding),
             asset,
             identity,
             tile_frames,
@@ -74,8 +79,48 @@ impl PcmSource {
             bits,
         })
     }
-    pub fn binding(&self) -> &MediaBinding {
-        &self.binding
+    pub fn binding(&self) -> Option<&MediaBinding> {
+        match &self.origin {
+            PcmOrigin::Decoded(binding) => Some(binding),
+            _ => None,
+        }
+    }
+    pub fn retime_identity(&self) -> Option<&Digest> {
+        match &self.origin {
+            PcmOrigin::Retimed(identity) => Some(identity),
+            _ => None,
+        }
+    }
+    pub fn retimed(
+        request: &mo_video_audio::RetimeRequest,
+        tile_frames: u32,
+        bits: u64,
+    ) -> Result<Self> {
+        if !(256..=65536).contains(&tile_frames) || !(128..=4096).contains(&bits) {
+            return Err(PcmError::Invalid("derived source limits"));
+        }
+        let frames = request.plan().output_frames();
+        let tile_count = u32::try_from(
+            (i128::from(frames) + i128::from(tile_frames) - 1) / i128::from(tile_frames),
+        )
+        .map_err(|_| PcmError::Budget)?;
+        let identity = digest(
+            "musteroffice.pcm.retimed-f32le-tiles/1-draft",
+            &(PROFILE, request.identity(), tile_frames),
+        )?;
+        Ok(Self {
+            origin: PcmOrigin::Retimed(request.identity().clone()),
+            asset: AudioAsset {
+                sample_rate: request.plan().sample_rate(),
+                layout: request.layout().clone(),
+                sample_zero: R::integer(0),
+                available: mo_video_audio::PcmRange::new(0, frames)?,
+            },
+            identity,
+            tile_frames,
+            tile_count,
+            bits,
+        })
     }
     pub fn asset(&self) -> &AudioAsset {
         &self.asset
@@ -134,6 +179,11 @@ impl PcmSource {
         limits: PcmLimits,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PcmBlock> {
+        if self.binding().is_none() {
+            return Err(PcmError::Invalid(
+                "derived source cannot bind a decoder frame",
+            ));
+        }
         if generation == 0 || frame.info.generation != generation {
             return Err(PcmError::Invalid("decoder generation"));
         }

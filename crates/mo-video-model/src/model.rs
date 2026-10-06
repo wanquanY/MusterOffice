@@ -97,6 +97,19 @@ pub struct Clip {
     /// Explicitly persisted even for silent visual clips; only an audio-track compiler consumes it.
     #[serde(default)]
     pub audio: AudioTimePolicy,
+    /// The complete pre-trim processing map. Visible cuts are views of this
+    /// continuous DSP context, so cutting a clip does not restart its vocoder.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub audio_context: Option<AudioRenderContext>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AudioRenderContext {
+    pub time_map: TimeMap,
+    /// Clip-local zero in context-local time. The source binding remains the
+    /// clip's binding; this cannot reference a different resource or sequence.
+    pub offset: RationalTime,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]

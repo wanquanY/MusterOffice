@@ -14,6 +14,7 @@ pub struct MixLimits {
     pub pcm: PcmLimits,
     pub max_active_pcm_bytes: usize,
     pub max_kernel_bytes: usize,
+    pub max_retime_plan_bytes: usize,
     pub max_multiply_adds: usize,
     pub max_automation_steps: usize,
     pub max_visits: usize,
@@ -27,6 +28,7 @@ impl Default for MixLimits {
             pcm: PcmLimits::default(),
             max_active_pcm_bytes: 256 << 20,
             max_kernel_bytes: 32 << 20,
+            max_retime_plan_bytes: 16 << 20,
             max_multiply_adds: 64_000_000,
             max_automation_steps: 8_000_000,
             max_visits: 1_000_000,
@@ -47,6 +49,7 @@ pub struct MixStats {
     /// allocations, plans and retained filter kernels (reported separately).
     pub peak_pcm_bytes: usize,
     pub retained_kernel_bytes: usize,
+    pub retained_retime_plan_bytes: usize,
 }
 #[derive(Debug)]
 pub struct MixedAudio {
@@ -61,6 +64,7 @@ pub struct AudioMixer<'a> {
     output: ChannelLayout,
     limits: MixLimits,
     kernels: Vec<(R, Arc<SincResampler>)>,
+    retime_plans: crate::retime_cache::RetimeCache,
 }
 impl<'a> AudioMixer<'a> {
     pub fn new(
@@ -73,6 +77,7 @@ impl<'a> AudioMixer<'a> {
             || !(64..=4096).contains(&limits.arithmetic_bits)
             || limits.max_active_pcm_bytes > 1 << 30
             || limits.max_kernel_bytes > 128 << 20
+            || limits.max_retime_plan_bytes > 128 << 20
         {
             return Err(AudioError::Invalid("mix limits"));
         }
@@ -81,6 +86,7 @@ impl<'a> AudioMixer<'a> {
             output,
             limits,
             kernels: Vec::new(),
+            retime_plans: crate::retime_cache::RetimeCache::default(),
         })
     }
     pub fn render(
@@ -112,6 +118,82 @@ impl<'a> AudioMixer<'a> {
             .iter()
             .map(|(_, k)| k.kernel_bytes())
             .sum();
+        session.stats.retained_retime_plan_bytes = session.mixer.retime_plans.retained_bytes();
+        cancel(check)?;
+        Ok(MixedAudio {
+            pcm,
+            stats: session.stats,
+        })
+    }
+    /// Materialize input for a continuous derived stage. Child sequences are
+    /// rendered on their own lattice with their own pitch policies first. A
+    /// host prepares missing child-derived data before retrying this window.
+    pub fn render_retime_input(
+        &mut self,
+        resources: &mut dyn AudioResources,
+        request: &crate::RetimeRequest,
+        first: u64,
+        frames: u32,
+        check: &dyn Fn() -> bool,
+    ) -> Result<MixedAudio> {
+        request.validate_document(self.document)?;
+        if request.layout() != &self.output
+            || &resources.retime_profile()? != request.profile()
+            || frames == 0
+            || frames > 65536
+            || first
+                .checked_add(u64::from(frames))
+                .is_none_or(|n| n > request.plan().schedule().source_frames())
+        {
+            return Err(AudioError::Invalid("retime input request binding"));
+        }
+        let plan = request.plan();
+        let offset = R::integer(i64::try_from(first).map_err(|_| AudioError::Budget)?)
+            .mul(&R::integer(plan.direction), self.limits.arithmetic_bits)?
+            .div(
+                &R::integer(i64::from(plan.sample_rate)),
+                self.limits.arithmetic_bits,
+            )?;
+        let voice = AudioSpanVoice {
+            track: mo_video_model::TrackId::new("retime-input").expect("static ID"),
+            clip: plan.clip.clone(),
+            first_sample: mo_common::Ticks::new(first as i64),
+            frames,
+            local_start: R::integer(0),
+            mapping: mo_video_model::MappedTime {
+                sample: mo_video_model::TimeSample {
+                    time: plan.input_zero.add(&offset, self.limits.arithmetic_bits)?,
+                    side: if plan.direction < 0 {
+                        SampleSide::Before
+                    } else {
+                        SampleSide::After
+                    },
+                },
+                rate: R::integer(plan.direction),
+            },
+            policy: mo_video_model::AudioTimePolicy {
+                rate: AudioRatePolicy::Resample,
+                reverse: mo_video_model::ReverseAudioPolicy::Reverse,
+                hold: mo_video_model::HoldAudioPolicy::Silence,
+            },
+            effects: vec![],
+            source: plan.source.clone(),
+        };
+        let mut session = Session {
+            mixer: self,
+            resources,
+            check,
+            stats: MixStats::default(),
+            active_bytes: 0,
+        };
+        let pcm = session.resampled_voice(&voice, plan.sample_rate, 1)?;
+        session.stats.retained_kernel_bytes = session
+            .mixer
+            .kernels
+            .iter()
+            .map(|(_, k)| k.kernel_bytes())
+            .sum();
+        session.stats.retained_retime_plan_bytes = session.mixer.retime_plans.retained_bytes();
         cancel(check)?;
         Ok(MixedAudio {
             pcm,
@@ -300,12 +382,88 @@ impl Session<'_, '_> {
         )
     }
     fn voice(&mut self, voice: &AudioSpanVoice, rate: u32, depth: usize) -> Result<PcmBlock> {
-        let bits = self.mixer.limits.arithmetic_bits;
-        let unit = voice.mapping.rate.compare(&R::integer(1)).is_eq()
-            || voice.mapping.rate.compare(&R::integer(-1)).is_eq();
-        if voice.policy.rate == AudioRatePolicy::PreservePitch && !unit {
-            return Err(AudioError::Unsupported("non-unit preserve-pitch DSP"));
+        if voice.policy.rate == AudioRatePolicy::PreservePitch
+            && let Some(request) = self.retime_request(voice)?
+        {
+            let first = voice
+                .first_sample
+                .get()
+                .checked_sub(request.plan().first_sample())
+                .ok_or(AudioError::Budget)?;
+            let range = crate::PcmRange::new(
+                first,
+                first
+                    .checked_add(i64::from(voice.frames))
+                    .ok_or(AudioError::Budget)?,
+            )?;
+            let limits = self.pcm_limits();
+            crate::pcm::admit(rate, &self.mixer.output, voice.frames as usize, limits)?;
+            self.reserve(voice.frames as usize * self.mixer.output.len() * 4)?;
+            let mut pcm = self
+                .resources
+                .read_retimed(&request, range, limits, self.check)?;
+            cancel(self.check)?;
+            if pcm.sample_rate() != rate
+                || pcm.layout() != &self.mixer.output
+                || pcm.first_frame() != range.first
+                || pcm.end_frame() != range.end
+            {
+                return Err(AudioError::Invalid("derived audio window binding"));
+            }
+            pcm.first_frame = voice.first_sample.get();
+            return Ok(pcm);
         }
+        self.resampled_voice(voice, rate, depth)
+    }
+    fn retime_request(&mut self, voice: &AudioSpanVoice) -> Result<Option<crate::RetimeRequest>> {
+        let first = voice.first_sample.get();
+        let found = if let Some(found) = self.mixer.retime_plans.lookup(&voice.clip, first)? {
+            found
+        } else {
+            let admission = crate::retime_plan::admit_clip(
+                self.mixer.document,
+                &voice.clip,
+                self.mixer.limits.arithmetic_bits,
+                self.mixer
+                    .limits
+                    .max_visits
+                    .saturating_sub(self.stats.visited),
+                self.check,
+            )?;
+            self.stats.visited += admission.visits;
+            self.mixer
+                .retime_plans
+                .admit(admission.charge, self.mixer.limits.max_retime_plan_bytes)?;
+            let plans = crate::retime_plan::compile_clip(
+                self.mixer.document,
+                &voice.source,
+                admission,
+                self.mixer.limits.arithmetic_bits,
+                self.check,
+            )?;
+            self.mixer.retime_plans.insert(voice.clip.clone(), plans)?;
+            self.mixer
+                .retime_plans
+                .lookup(&voice.clip, first)?
+                .flatten()
+        };
+        found
+            .map(|plan| {
+                crate::RetimeRequest::new(
+                    plan,
+                    self.mixer.output.clone(),
+                    self.resources.retime_profile()?,
+                )
+            })
+            .transpose()
+    }
+    fn resampled_voice(
+        &mut self,
+        voice: &AudioSpanVoice,
+        rate: u32,
+        depth: usize,
+    ) -> Result<PcmBlock> {
+        let bits = self.mixer.limits.arithmetic_bits;
         let asset = match &voice.source {
             AudioSpanSource::Media { binding } => {
                 let asset = self.resources.describe(binding)?;

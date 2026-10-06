@@ -71,7 +71,7 @@ fn random_reverse_windows_equal_the_continuous_stream_under_bounded_cache() {
         let end = (first + 87).min(10000);
         let read = reader
             .read(
-                source.binding(),
+                source.binding().unwrap(),
                 PcmRange::new(first, end).unwrap(),
                 &mut store,
                 &|| false,
@@ -84,7 +84,7 @@ fn random_reverse_windows_equal_the_continuous_stream_under_bounded_cache() {
     let reads = store.reads;
     reader
         .read(
-            source.binding(),
+            source.binding().unwrap(),
             PcmRange::new(637, 650).unwrap(),
             &mut store,
             &|| false,
@@ -92,7 +92,7 @@ fn random_reverse_windows_equal_the_continuous_stream_under_bounded_cache() {
         .unwrap();
     let hit = reader
         .read(
-            source.binding(),
+            source.binding().unwrap(),
             PcmRange::new(638, 649).unwrap(),
             &mut store,
             &|| false,
@@ -104,7 +104,7 @@ fn random_reverse_windows_equal_the_continuous_stream_under_bounded_cache() {
 #[test]
 fn identity_is_content_based_and_invalidates_on_decoder_or_geometry_changes() {
     let a = source(0, 1024, 256);
-    let mut binding = a.binding().clone();
+    let mut binding = a.binding().unwrap().clone();
     binding.resource = mo_common::ResourceId::new("other-project-resource").unwrap();
     let same = PcmSource::new(
         binding,
@@ -117,7 +117,7 @@ fn identity_is_content_based_and_invalidates_on_decoder_or_geometry_changes() {
     assert_eq!(a.identity(), same.identity());
     for (profile, frames) in [(3, 256), (2, 512)] {
         let b = PcmSource::new(
-            a.binding().clone(),
+            a.binding().unwrap().clone(),
             a.asset().clone(),
             &Digest::from_sha256([profile; 32]),
             frames,
@@ -134,7 +134,7 @@ fn missing_corrupted_or_misbound_tiles_never_become_silence_or_nearest_data() {
     let mut reader = PcmTileReader::new(Arc::clone(&source), PcmReadLimits::default()).unwrap();
     assert!(matches!(
         reader.read(
-            source.binding(),
+            source.binding().unwrap(),
             PcmRange::new(500, 600).unwrap(),
             &mut store,
             &|| false
@@ -145,7 +145,7 @@ fn missing_corrupted_or_misbound_tiles_never_become_silence_or_nearest_data() {
     store.wrong_index = true;
     assert!(matches!(
         reader.read(
-            source.binding(),
+            source.binding().unwrap(),
             PcmRange::new(500, 600).unwrap(),
             &mut store,
             &|| false
@@ -156,7 +156,7 @@ fn missing_corrupted_or_misbound_tiles_never_become_silence_or_nearest_data() {
     store.tiles.get_mut(&1).unwrap().bytes[1] ^= 1;
     assert!(matches!(
         reader.read(
-            source.binding(),
+            source.binding().unwrap(),
             PcmRange::new(500, 600).unwrap(),
             &mut store,
             &|| false
@@ -168,14 +168,14 @@ fn missing_corrupted_or_misbound_tiles_never_become_silence_or_nearest_data() {
     assert!(
         reader
             .read(
-                source.binding(),
+                source.binding().unwrap(),
                 PcmRange::new(500, 600).unwrap(),
                 &mut store,
                 &|| false
             )
             .is_err()
     );
-    let mut wrong = source.binding().clone();
+    let mut wrong = source.binding().unwrap().clone();
     wrong.digest = Digest::from_sha256([3; 32]);
     assert!(
         reader
@@ -241,7 +241,7 @@ fn read_cancellation_and_memory_budgets_never_return_partial_audio() {
     let range = PcmRange::new(77, 1537).unwrap();
     let calls = Cell::new(0);
     let expected = reader
-        .read(source.binding(), range, &mut store, &|| {
+        .read(source.binding().unwrap(), range, &mut store, &|| {
             calls.set(calls.get() + 1);
             false
         })
@@ -250,7 +250,7 @@ fn read_cancellation_and_memory_budgets_never_return_partial_audio() {
         let count = Cell::new(0);
         assert!(
             reader
-                .read(source.binding(), range, &mut store, &|| {
+                .read(source.binding().unwrap(), range, &mut store, &|| {
                     count.set(count.get() + 1);
                     count.get() == stop
                 })
@@ -258,7 +258,7 @@ fn read_cancellation_and_memory_budgets_never_return_partial_audio() {
         );
         assert_eq!(
             reader
-                .read(source.binding(), range, &mut store, &|| false)
+                .read(source.binding().unwrap(), range, &mut store, &|| false)
                 .unwrap()
                 .pcm
                 .samples(),
@@ -276,7 +276,7 @@ fn read_cancellation_and_memory_budgets_never_return_partial_audio() {
     .unwrap();
     assert!(matches!(
         reader.read(
-            source.binding(),
+            source.binding().unwrap(),
             PcmRange::new(0, 10).unwrap(),
             &mut store,
             &|| false

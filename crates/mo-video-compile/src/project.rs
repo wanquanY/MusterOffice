@@ -12,6 +12,7 @@ pub struct CompiledDocument {
     pub(crate) digest: Digest,
     pub(crate) tracks: BTreeMap<TrackId, IntervalIndex>,
     pub(crate) sequences: BTreeMap<SequenceId, SequenceIndex>,
+    pub(crate) audio_digests: BTreeMap<SequenceId, Digest>,
     pub(crate) bits: u64,
 }
 #[derive(Debug)]
@@ -101,6 +102,7 @@ impl CompiledDocument {
             return Err(CompileError::Cancelled);
         }
         let digest = document.content_digest()?;
+        let audio_digests = crate::audio_identity::identities(&document, &sequences, check)?;
         if check() {
             return Err(CompileError::Cancelled);
         }
@@ -109,6 +111,7 @@ impl CompiledDocument {
             digest,
             tracks,
             sequences,
+            audio_digests,
             bits: limits.validation.exact_bits,
         })
     }

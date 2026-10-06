@@ -484,6 +484,9 @@ impl<'a> State<'a> {
                         self.poll()?;
                         anchor.source = add(anchor.source, *delta, self.bits())?;
                     }
+                    // A source-content edit deliberately starts a new processing
+                    // context. It must not reuse the old cut's hidden source map.
+                    clip.audio_context = None;
                     self.put_clip(clip);
                 }
             }
@@ -533,6 +536,7 @@ impl<'a> State<'a> {
                 self.owner(clip)?;
                 let mut value = self.clip(clip)?;
                 value.source = source.clone();
+                value.audio_context = None;
                 self.put_clip(value);
             }
             Operation::Link { group } => self.link(group)?,

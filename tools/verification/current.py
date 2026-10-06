@@ -112,6 +112,7 @@ def plan(groups, output, bindgen, python, ffmpeg_dir=None, stretch_wasm_dir=None
             add("video-conformance-native", "cargo", "build", *cargo, "-p", "mo-video-conformance")
             add("video-conformance-wasm", "cargo", "build", *cargo, "--release", "-p", "mo-video-conformance", "--lib", "--target", "wasm32-unknown-unknown")
             add("video-conformance-bindgen", bindgen, "target/wasm32-unknown-unknown/release/mo_video_conformance.wasm", "--target", "nodejs", "--out-dir", output / "video-wasm")
+        add("retime-graph-native", "cargo", "test", *cargo, "-p", "mo-video-pcm", "--test", "retime", "--test", "retime_boundaries")
         add("stretch-native-behavior", "cargo", "test", *cargo, "-p", "mo-stretch-sys")
         add("stretch-component-adapter", "pnpm", "build:stretch-component")
         directory = Path(stretch_wasm_dir or "UNCONFIGURED_STRETCH_WASM_COMPONENT")

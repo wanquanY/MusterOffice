@@ -39,6 +39,89 @@ fn sample_boundary(map: &TimeMap, local: RationalTime, bits: u64) -> Result<Rati
         .to_time_exact()?)
 }
 
+fn window_map(map: &TimeMap, start: RationalTime, end: RationalTime, bits: u64) -> Result<TimeMap> {
+    let mut anchors = vec![TimeAnchor {
+        local: zero(),
+        source: sample_boundary(map, start, bits)?,
+    }];
+    for anchor in &map.anchors {
+        if anchor.local.compare_time(start).is_gt() && anchor.local.compare_time(end).is_lt() {
+            anchors.push(TimeAnchor {
+                local: sub(anchor.local, start, bits)?,
+                source: anchor.source,
+            });
+        }
+    }
+    anchors.push(TimeAnchor {
+        local: sub(end, start, bits)?,
+        source: sample_boundary(map, end, bits)?,
+    });
+    Ok(TimeMap { anchors })
+}
+
+fn needs_context(map: &TimeMap, policy: AudioTimePolicy, bits: u64) -> Result<bool> {
+    if policy.rate != AudioRatePolicy::PreservePitch {
+        return Ok(false);
+    }
+    for pair in map.anchors.windows(2) {
+        let duration = ExactRatio::from_time(pair[1].local)
+            .sub(&ExactRatio::from_time(pair[0].local), bits)?;
+        let span = ExactRatio::from_time(pair[1].source)
+            .sub(&ExactRatio::from_time(pair[0].source), bits)?;
+        if span.compare(&ExactRatio::integer(0)).is_ne()
+            && span.compare(&duration).is_ne()
+            && span
+                .compare(&ExactRatio::integer(0).sub(&duration, bits)?)
+                .is_ne()
+        {
+            return Ok(true);
+        }
+    }
+    Ok(false)
+}
+
+fn preserved_context(
+    clip: &Clip,
+    map: &TimeMap,
+    start: RationalTime,
+    end: RationalTime,
+    bits: u64,
+) -> Result<Option<AudioRenderContext>> {
+    if clip.audio_context.is_none() && !needs_context(map, clip.audio, bits)? {
+        return Ok(None);
+    }
+    let mut context = clip
+        .audio_context
+        .clone()
+        .unwrap_or_else(|| AudioRenderContext {
+            time_map: map.clone(),
+            offset: zero(),
+        });
+    let offset = add(context.offset, start, bits)?;
+    let visible_end = add(context.offset, end, bits)?;
+    let context_end = context
+        .time_map
+        .anchors
+        .last()
+        .ok_or(EditError::InvalidOperation("empty audio context"))?
+        .local;
+    let lo = if offset.compare_time(zero()).is_lt() {
+        offset
+    } else {
+        zero()
+    };
+    let hi = if visible_end.compare_time(context_end).is_gt() {
+        visible_end
+    } else {
+        context_end
+    };
+    if lo.ticks.get() != 0 || hi.compare_time(context_end).is_ne() {
+        context.time_map = window_map(&context.time_map, lo, hi, bits)?;
+    }
+    context.offset = sub(offset, lo, bits)?;
+    Ok(Some(context))
+}
+
 /// Keeps piecewise source mapping and effect phase without sampling or rounding them.
 pub(crate) fn window(
     clip: &Clip,
@@ -54,7 +137,6 @@ pub(crate) fn window(
     }
     let local_start = sub(start, clip.timeline.start, bits)?;
     let local_end = sub(end, clip.timeline.start, bits)?;
-    let duration = sub(end, start, bits)?;
     let mut out = clip.clone();
     out.timeline = TimeRange { start, end };
     if let ClipSource::Media { time_map, .. } | ClipSource::Sequence { time_map, .. } =
@@ -75,27 +157,22 @@ pub(crate) fn window(
         {
             return Err(EditError::InvalidOperation("invalid source clip time map"));
         }
-        let source_start = sample_boundary(time_map, local_start, bits)?;
-        let source_end = sample_boundary(time_map, local_end, bits)?;
-        let mut anchors = vec![TimeAnchor {
-            local: zero(),
-            source: source_start,
-        }];
-        for anchor in &time_map.anchors {
-            if anchor.local.compare_time(local_start).is_gt()
-                && anchor.local.compare_time(local_end).is_lt()
-            {
-                anchors.push(TimeAnchor {
-                    local: sub(anchor.local, local_start, bits)?,
-                    source: anchor.source,
-                });
-            }
+        if local_start.ticks.get() != 0
+            || old_duration
+                .compare(&ExactRatio::from_time(local_end))
+                .is_ne()
+        {
+            out.audio_context = preserved_context(clip, time_map, local_start, local_end, bits)?;
         }
-        anchors.push(TimeAnchor {
-            local: duration,
-            source: source_end,
-        });
-        *time_map = TimeMap { anchors };
+        *time_map = match &out.audio_context {
+            Some(context) => window_map(
+                &context.time_map,
+                context.offset,
+                add(context.offset, sub(end, start, bits)?, bits)?,
+                bits,
+            )?,
+            None => window_map(time_map, local_start, local_end, bits)?,
+        };
     }
     for effect in &mut out.effects {
         match effect {

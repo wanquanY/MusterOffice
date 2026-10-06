@@ -49,6 +49,7 @@ impl State<'_> {
             };
             *time_map = target.time_map.clone();
             clip.audio = target.audio;
+            clip.audio_context = None;
             clip.timeline.end = add(clip.timeline.start, new_duration, self.bits())?;
             if effects == EffectTimingPolicy::ScaleToDuration {
                 let scale = ExactRatio::from_time(new_duration).div(&old_duration, self.bits())?;

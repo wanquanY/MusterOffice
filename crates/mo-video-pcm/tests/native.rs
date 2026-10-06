@@ -179,7 +179,7 @@ fn project(source: &PcmSource, length: u64) -> CompiledDocument {
     let root = SequenceId::new("main").unwrap();
     let track = TrackId::new("audio").unwrap();
     let clip = ClipId::new("reversed").unwrap();
-    let binding = source.binding();
+    let binding = source.binding().unwrap();
     let mut d = VideoDocument::empty(
         DocumentId::new("canonical-audio-project").unwrap(),
         root.clone(),
@@ -223,6 +223,7 @@ fn project(source: &PcmSource, length: u64) -> CompiledDocument {
     d.clips.insert(
         clip.clone(),
         Clip {
+            audio_context: None,
             id: clip,
             name: "Reverse".into(),
             timeline: TimeRange {
@@ -334,7 +335,7 @@ fn actual_canonical_tiles_random_read_and_mixer() {
         for (first, n) in windows {
             let read = random
                 .read(
-                    source.binding(),
+                    source.binding().unwrap(),
                     PcmRange::new(first, first + n).unwrap(),
                     &mut disk,
                     &|| false,
@@ -374,7 +375,7 @@ fn actual_canonical_tiles_random_read_and_mixer() {
             assert!(end > start);
             let canonical = random
                 .read(
-                    source.binding(),
+                    source.binding().unwrap(),
                     PcmRange::new(start, end).unwrap(),
                     &mut disk,
                     &|| false,
@@ -413,7 +414,7 @@ fn actual_canonical_tiles_random_read_and_mixer() {
             reversed.write_all(&bytes(&block.pcm)).unwrap();
             first += i64::from(n);
         }
-        reports.push(json!({"name":name,"fixtureSha256":source.binding().digest,"sourceIdentity":source.identity(),"continuousSha256":format!("{:x}",linear.finalize()),"frames":frames,"tiles":builder.completed_tiles(),"maxBuilderCarryBytes":max_carry,"maxReaderWorkingBytes":peak,"seekZeroAfterWarmupMaximumDifference":seek_errors[0],"afterTwentyFramesMaximumDifference":seek_errors[1],"queries":queries}));
+        reports.push(json!({"name":name,"fixtureSha256":source.binding().unwrap().digest,"sourceIdentity":source.identity(),"continuousSha256":format!("{:x}",linear.finalize()),"frames":frames,"tiles":builder.completed_tiles(),"maxBuilderCarryBytes":max_carry,"maxReaderWorkingBytes":peak,"seekZeroAfterWarmupMaximumDifference":seek_errors[0],"afterTwentyFramesMaximumDifference":seek_errors[1],"queries":queries}));
     }
     fs::write(
         output.join("report.json"),

@@ -139,7 +139,7 @@ fn run(input: &str) -> std::result::Result<Value, String> {
             .get()
             .checked_add(q.frames as i64)
             .ok_or("query overflow")?;
-        match reader.read(source.binding(),PcmRange::new(q.first.get(),end).map_err(|e|e.to_string())?,&mut store,&||false) {
+        match reader.read(source.binding().unwrap(),PcmRange::new(q.first.get(),end).map_err(|e|e.to_string())?,&mut store,&||false) {
             Ok(read)=>results.push(json!({"status":"read","bits":read.pcm.samples().iter().map(|v|v.to_bits()).collect::<Vec<_>>(),"tileReads":read.stats.tile_reads,"cacheHits":read.stats.cache_hits,"peakBytes":read.stats.peak_working_bytes})),
             Err(error)=>results.push(json!({"status":"rejected","error":error.to_string()})),
         }

@@ -16,6 +16,18 @@ export type AudioRatePolicy = "resample" | "preservePitch";
  */
 export type ReverseAudioPolicy = "reverse" | "mute";
 /**
+ * Signed int64 ticks. Range requires semantic validation.
+ *
+ * This interface was referenced by `VideoDocument`'s JSON-Schema
+ * via the `definition` "Ticks".
+ */
+export type Ticks = string;
+/**
+ * This interface was referenced by `VideoDocument`'s JSON-Schema
+ * via the `definition` "Timescale".
+ */
+export type Timescale = number;
+/**
  * This interface was referenced by `VideoDocument`'s JSON-Schema
  * via the `definition` "Effect".
  */
@@ -35,22 +47,10 @@ export type Effect =
     }
   | {
       envelope: TimeRange;
-      fadeIn: RationalTime;
-      fadeOut: RationalTime;
+      fadeIn: RationalTime1;
+      fadeOut: RationalTime1;
       kind: "fade";
     };
-/**
- * Signed int64 ticks. Range requires semantic validation.
- *
- * This interface was referenced by `VideoDocument`'s JSON-Schema
- * via the `definition` "Ticks".
- */
-export type Ticks = string;
-/**
- * This interface was referenced by `VideoDocument`'s JSON-Schema
- * via the `definition` "Timescale".
- */
-export type Timescale = number;
 /**
  * This interface was referenced by `VideoDocument`'s JSON-Schema
  * via the `definition` "ObjectId".
@@ -207,6 +207,11 @@ export interface ObjectMap3 {
  */
 export interface Clip {
   audio?: AudioTimePolicy;
+  /**
+   * The complete pre-trim processing map. Visible cuts are views of this
+   * continuous DSP context, so cutting a clip does not restart its vocoder.
+   */
+  audioContext?: AudioRenderContext | null;
   effects: Effect[];
   id: ObjectId;
   name: string;
@@ -222,17 +227,16 @@ export interface AudioTimePolicy {
   reverse: ReverseAudioPolicy;
 }
 /**
- * Fade phase in clip-local time; splitting shifts this range without restarting it.
+ * This interface was referenced by `VideoDocument`'s JSON-Schema
+ * via the `definition` "AudioRenderContext".
  */
-export interface TimeRange {
-  end: RationalTime;
-  start: RationalTime;
+export interface AudioRenderContext {
+  offset: RationalTime;
+  timeMap: TimeMap;
 }
 /**
- * Exact wire representation. Equality compares author values; compare_time compares instants.
- *
- * This interface was referenced by `VideoDocument`'s JSON-Schema
- * via the `definition` "RationalTime".
+ * Clip-local zero in context-local time. The source binding remains the
+ * clip's binding; this cannot reference a different resource or sequence.
  */
 export interface RationalTime {
   ticks: Ticks;
@@ -252,8 +256,25 @@ export interface TimeMap {
  * via the `definition` "TimeAnchor".
  */
 export interface TimeAnchor {
-  local: RationalTime;
-  source: RationalTime;
+  local: RationalTime1;
+  source: RationalTime1;
+}
+/**
+ * Exact wire representation. Equality compares author values; compare_time compares instants.
+ *
+ * This interface was referenced by `VideoDocument`'s JSON-Schema
+ * via the `definition` "RationalTime".
+ */
+export interface RationalTime1 {
+  ticks: Ticks;
+  timescale: Timescale;
+}
+/**
+ * Fade phase in clip-local time; splitting shifts this range without restarting it.
+ */
+export interface TimeRange {
+  end: RationalTime1;
+  start: RationalTime1;
 }
 /**
  * Half-open [start,end). Source ranges may begin before zero; timeline placement may not.
@@ -262,8 +283,8 @@ export interface TimeAnchor {
  * via the `definition` "TimeRange".
  */
 export interface TimeRange1 {
-  end: RationalTime;
-  start: RationalTime;
+  end: RationalTime1;
+  start: RationalTime1;
 }
 /**
  * This interface was referenced by `VideoDocument`'s JSON-Schema

@@ -63,6 +63,8 @@ impl ValidationReport {
 pub enum ValidationError {
     #[error("invalid validation limits")]
     Limits,
+    #[error(transparent)]
+    Time(#[from] mo_time::TimeError),
     #[error("video validation cancelled")]
     Cancelled,
     #[error("video document exceeds admission budget")]
@@ -389,6 +391,12 @@ impl Validator<'_> {
                         media.and_then(MediaStream::available),
                         &path,
                     )?;
+                    self.audio_context(
+                        clip,
+                        time_map,
+                        media.and_then(MediaStream::available),
+                        &path,
+                    )?;
                     if matches!(media, Some(MediaStream::Image { .. })) {
                         self.require(
                             time_map.anchors.iter().all(|a| a.source.ticks.get() == 0),
@@ -407,6 +415,9 @@ impl Validator<'_> {
                         "nested sequence has no playable duration",
                     );
                     self.time_map(time_map, clip.timeline, available, &path)?;
+                    // Hidden context may outlive an edited child sequence. Such input is
+                    // explicit silence; the visible map must still fit the child.
+                    self.audio_context(clip, time_map, None, &path)?;
                     self.require(
                         matches!(owner, Some(TrackKind::Video | TrackKind::Audio)),
                         &path,
@@ -441,6 +452,16 @@ impl Validator<'_> {
                         &path,
                     );
                 }
+            }
+            if !matches!(
+                clip.source,
+                ClipSource::Media { .. } | ClipSource::Sequence { .. }
+            ) {
+                self.require(
+                    clip.audio_context.is_none(),
+                    &path,
+                    "audio context requires a mapped source",
+                );
             }
             self.effects(clip, owner, &path);
         }
@@ -492,6 +513,41 @@ impl Validator<'_> {
     }
     fn sequence_end(&self, id: &SequenceId) -> Option<RationalTime> {
         self.sequence_ends.get(id).copied()
+    }
+    fn audio_context(
+        &mut self,
+        clip: &Clip,
+        visible: &TimeMap,
+        available: Option<TimeRange>,
+        path: &str,
+    ) -> Result<(), ValidationError> {
+        let Some(context) = &clip.audio_context else {
+            return Ok(());
+        };
+        let path = format!("{path}/audioContext");
+        let end = context.time_map.anchors.last().map_or(zero(), |a| a.local);
+        self.time_map(
+            &context.time_map,
+            TimeRange { start: zero(), end },
+            available,
+            &path,
+        )?;
+        let matches = match clip.timeline.duration(self.limits.exact_bits) {
+            Ok(duration) => {
+                match context.matches_window(visible, &duration, self.limits.exact_bits, self.check)
+                {
+                    Err(ValidationError::Time(_)) => false,
+                    result => result?,
+                }
+            }
+            Err(_) => false,
+        };
+        self.require(
+            matches,
+            &path,
+            "audio context does not match the visible source map",
+        );
+        Ok(())
     }
     fn time_map(
         &mut self,

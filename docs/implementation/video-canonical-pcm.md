@@ -70,4 +70,4 @@ node tools/verification/video-pcm-parity.mjs \
 
 `current.py` 已分别在 `media`/`wasm` 组接入。实际本地材料为 `.codex-work/video-pcm-gate-verified/report.json`、`video-pcm-parity.json`、`video-pcm-workspace-clippy.log`，不把 ignored 的真实测试当作默认已通过。
 
-后续仍需：Device/Browser Host 存储与任务接入、统一磁盘缓存预算、权限和恢复验收；通用容器时间/priming 元数据；保调 DSP；声音设备与 A/V 时钟；工程 UI 与 Agent 操作；完整编码导出及产品验收。该模块没有独立发布新版组件频道，也没有启用服务器音频渲染。
+后续仍需：Device/Browser Host 存储与任务接入、统一磁盘缓存预算、权限和恢复验收；通用容器时间/priming 元数据；生产保调任务调度（[计算和派生分块已实现](video-audio-retime.md)）；声音设备与 A/V 时钟；工程 UI 与 Agent 操作；完整编码导出及产品验收。该模块没有独立发布新版组件频道，也没有启用服务器音频渲染。

@@ -109,6 +109,7 @@ fn document(binding: &MediaBinding, length: u64) -> CompiledDocument {
     doc.clips.insert(
         id.clone(),
         Clip {
+            audio_context: None,
             id,
             name: "Fixture".into(),
             timeline: span(),

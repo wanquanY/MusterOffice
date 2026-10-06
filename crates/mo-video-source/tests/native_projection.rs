@@ -77,6 +77,7 @@ fn make_document(binding: &MediaBinding, length: u64, reverse: bool) -> Compiled
     doc.clips.insert(
         clip.clone(),
         Clip {
+            audio_context: None,
             id: clip,
             name: "Generated fixture".into(),
             timeline: span(),

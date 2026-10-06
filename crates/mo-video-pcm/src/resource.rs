@@ -10,6 +10,11 @@ pub struct CanonicalAudioResource<S> {
 }
 impl<S: PcmTileStore> CanonicalAudioResource<S> {
     pub fn new(source: Arc<PcmSource>, store: S, limits: PcmReadLimits) -> Result<Self> {
+        if source.binding().is_none() {
+            return Err(PcmError::Invalid(
+                "decoded resource requires a media binding",
+            ));
+        }
         Ok(Self {
             reader: PcmTileReader::new(source, limits)?,
             store,
@@ -30,7 +35,7 @@ impl<S: PcmTileStore> CanonicalAudioResource<S> {
 }
 impl<S: PcmTileStore> AudioResources for CanonicalAudioResource<S> {
     fn describe(&mut self, binding: &MediaBinding) -> mo_video_audio::Result<AudioAsset> {
-        if binding != self.source().binding() {
+        if Some(binding) != self.source().binding() {
             return Err(AudioError::Invalid("changed canonical PCM binding"));
         }
         Ok(self.source().asset().clone())

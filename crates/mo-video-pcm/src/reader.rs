@@ -96,9 +96,30 @@ impl PcmTileReader {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<ReadPcm> {
         check(cancelled)?;
-        if binding != self.source.binding() {
+        if Some(binding) != self.source.binding() {
             return Err(PcmError::Invalid("changed source binding"));
         }
+        self.read_window(range, store, cancelled)
+    }
+    pub fn read_retimed(
+        &mut self,
+        request: &mo_video_audio::RetimeRequest,
+        range: PcmRange,
+        store: &mut dyn PcmTileStore,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<ReadPcm> {
+        check(cancelled)?;
+        if self.source.retime_identity() != Some(request.identity()) {
+            return Err(PcmError::Invalid("changed derived PCM binding"));
+        }
+        self.read_window(range, store, cancelled)
+    }
+    fn read_window(
+        &mut self,
+        range: PcmRange,
+        store: &mut dyn PcmTileStore,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<ReadPcm> {
         let asset = self.source.asset();
         if range.first > range.end
             || range.first < asset.available.first

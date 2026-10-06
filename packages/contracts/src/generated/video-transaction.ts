@@ -386,6 +386,11 @@ export interface FrameRate {
  */
 export interface Clip {
   audio?: AudioTimePolicy;
+  /**
+   * The complete pre-trim processing map. Visible cuts are views of this
+   * continuous DSP context, so cutting a clip does not restart its vocoder.
+   */
+  audioContext?: AudioRenderContext | null;
   effects: Effect[];
   id: ObjectId;
   name: string;
@@ -401,11 +406,19 @@ export interface AudioTimePolicy {
   reverse: ReverseAudioPolicy;
 }
 /**
- * Half-open [start,end). Source ranges may begin before zero; timeline placement may not.
+ * This interface was referenced by `Transaction`'s JSON-Schema
+ * via the `definition` "AudioRenderContext".
  */
-export interface TimeRange1 {
-  end: RationalTime;
-  start: RationalTime;
+export interface AudioRenderContext {
+  offset: RationalTime1;
+  timeMap: TimeMap;
+}
+/**
+ * Exact wire representation. Equality compares author values; compare_time compares instants.
+ */
+export interface RationalTime1 {
+  ticks: Ticks;
+  timescale: Timescale;
 }
 /**
  * Source-time anchors are the authority; a separate mutable speed curve is forbidden.
@@ -423,6 +436,13 @@ export interface TimeMap {
 export interface TimeAnchor {
   local: RationalTime;
   source: RationalTime;
+}
+/**
+ * Half-open [start,end). Source ranges may begin before zero; timeline placement may not.
+ */
+export interface TimeRange1 {
+  end: RationalTime;
+  start: RationalTime;
 }
 /**
  * This interface was referenced by `Transaction`'s JSON-Schema

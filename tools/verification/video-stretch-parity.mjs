@@ -95,6 +95,22 @@ for (const {name,...fixture} of cases) {
     nativeSha256:digest(JSON.stringify(native.samples)),wasmSha256:digest(JSON.stringify(wasm.samples)),
     fixtureSha256:digest(JSON.stringify(fixture)),retries:retryNative.retries});
 }
+// Complete graph and persistent PCM path, including nested policies and split
+// contexts. Pass exactly the same f32 fixtures to both targets.
+const stepped=Array.from({length:32000},(_,i)=>Math.fround(.3*Math.sin(2*Math.PI*[220,440,880,1760][Math.floor(i/8000)]*i/8000)));
+const retimeFixture={stepped,tone:sine(16000,8000)};
+const retimeNative=JSON.parse(execFileSync(binary,['--retime'],{input:JSON.stringify(retimeFixture),maxBuffer:16<<20}));
+assert.equal(retimeNative.status,'complete',JSON.stringify(retimeNative));
+const retimeComponents=[];
+let retimeWasm;
+try {
+  for(let i=0;i<5;i++) retimeComponents.push(await StretchComponent.create(factory,compiled,8000,1));
+  retimeWasm=JSON.parse(rust.video_retime_conformance(JSON.stringify(retimeFixture),retimeComponents));
+} finally { for(const component of retimeComponents) component.dispose(); }
+assert.deepEqual(retimeWasm,retimeNative,'graph/tile PCM and metadata must be bit-identical');
+assert.deepEqual(retimeWasm.jobs,[1,2,2]);
+const retime={fixtureSha256:digest(JSON.stringify(retimeFixture)),resultSha256:digest(JSON.stringify(retimeNative)),
+  bitIdentical:true,jobs:retimeWasm.jobs,outputSamples:retimeWasm.full.length+retimeWasm.split.length+retimeWasm.windows.flat().length+retimeWasm.nestedResample.length+retimeWasm.nestedPreserve.length+retimeWasm.reverseHold.length};
 // Adapter validation and lifetime work against the real module, not a mock.
 const component=await StretchComponent.create(factory,compiled,48000,1);
 assert.throws(()=>component.begin(new Float32Array(component.inputLatency).fill(NaN),1));
@@ -107,6 +123,6 @@ component.dispose();component.dispose();
 assert.throws(()=>component.process(new Float32Array(128),silence));
 const report={format:'musteroffice.stretch-parity/1',runtime:process.version,
   artifacts:[binary,rustWasm,componentJs,componentWasm,adapterJs].map(p=>({path:p,sha256:digest(fs.readFileSync(p))})),
-  tolerance:{maximum:2e-4,rms:2e-5},cases:results};
+  tolerance:{maximum:2e-4,rms:2e-5},retime,cases:results};
 fs.mkdirSync(path.dirname(reportPath),{recursive:true});fs.writeFileSync(reportPath,JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify({cases:results.length,bitIdentical:results.every(v=>v.bitIdentical),maximum:Math.max(...results.map(v=>v.maximum)),maxRms:Math.max(...results.map(v=>v.rms)),report:reportPath}));

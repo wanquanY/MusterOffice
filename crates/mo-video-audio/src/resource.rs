@@ -50,6 +50,25 @@ impl AudioAsset {
 /// Implementations must verify immutable digest/stream binding and honor limits
 /// and cancellation. The core validates every returned PCM window as well.
 pub trait AudioResources {
+    /// Identity of all output-affecting host bindings: decoded PCM profile,
+    /// channel matrices and actual DSP numerical build. No filename/version guess.
+    fn retime_profile(&mut self) -> Result<mo_common::Digest> {
+        Err(AudioError::Unsupported("non-unit preserve-pitch DSP"))
+    }
+    fn read_retimed(
+        &mut self,
+        request: &crate::RetimeRequest,
+        range: PcmRange,
+        _limits: PcmLimits,
+        check: &dyn Fn() -> bool,
+    ) -> Result<PcmBlock> {
+        crate::cancel(check)?;
+        Err(AudioError::PendingDerived {
+            identity: request.identity().clone(),
+            first_sample: range.first,
+            end_sample: range.end,
+        })
+    }
     fn describe(&mut self, binding: &MediaBinding) -> Result<AudioAsset>;
     fn read(
         &mut self,

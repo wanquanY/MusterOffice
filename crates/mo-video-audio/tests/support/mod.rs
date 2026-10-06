@@ -125,6 +125,7 @@ pub fn clip(d: &mut VideoDocument, track: &str, id: &str, range: TimeRange, sour
     d.clips.insert(
         cid(id),
         Clip {
+            audio_context: None,
             id: cid(id),
             name: id.into(),
             timeline: range,
