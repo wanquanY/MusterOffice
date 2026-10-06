@@ -16,7 +16,7 @@
 | 工作包 | 当前状态 | 退出条件 |
 | --- | --- | --- |
 | W1 视频领域与合同 | 基础已实现，未全部完成 | 独立模型、精确时间、受限解析与校验、Native/WASM 公共合同向量；补全效果、字幕、分析和工程包模型 |
-| W2 媒体与合成 | 编译计划、原生解码 worker 及连续区间源帧采样已实现；Browser、合成/导出待实施 | 原生/浏览器媒体与合成、字体/色彩/音频及真实输出 |
+| W2 媒体与合成 | 原生解码/采样和线性光 CPU 参考合成已实现；GPU、Browser、音频/导出待实施 | 原生/浏览器媒体与合成、字体/色彩/音频及真实输出 |
 | W3 编辑与历史 | 原子事务基础已实现，未全部完成 | 全部编辑操作、候选、冲突与有条件逆操作及增量索引 |
 | W4 产品执行 | 待实施新内核接入 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
 | W5 创作与交互 | 保留原 worktree，未完成替换 | 整理现有生成/Admin/计费、技能、人机共享编辑与消息卡片 |
@@ -66,6 +66,10 @@ VFR 呈现窗口按真实样本覆盖区间选择源帧，区分已知 gap 与�
 
 `mo-video-source` 默认无 native 依赖，按精确源时间和 before/after 侧选择实际帧，使用有界缓存及 lookahead；可选 native adapter 复用既有 worker。真实素材暴露出 decoder duration 与相邻 PTS 重叠的问题，当前以宿主有证据的连续区间为前提，以相邻 PTS 定义呈现覆盖，保留原始元数据。seek/倒放不按平均帧号寻址，过冲先重读而不伪造 gap；取消/失败丢弃缓存并释放 decoder。[详细语义与局限](video-source-presentation.md)。
 
+### 色彩与参考合成
+
+`mo-color::rgb` 和 `mo-video-render` 已接通原始平面解释、明确显示 transfer、BT.2020/D65 线性预乘合成、SAR/显示矩阵、作者变换和组透明度。真实 worker 帧经过工程采样输出合成 PNG；CPU 原生/WASM 小向量包含 f32 bits 的完全一致验证。未知色彩解释、HDR 缺 tone-map、缺资源、预算及取消不会返回伪造成功。当前只提供参考过滤和简单显式 tone-map；文字、GPU 与最终效果/导出仍待实现。详见[色彩与合成记录](video-color-composition.md)。
+
 ### 合同与验证入口
 
 `contracts/generated/video-*.schema.json` 从相同 Rust 类型生成，并生成对应的草案 TypeScript 类型，包含工程、编辑请求、逆操作、校验结果、视频帧/音频点计划和呈现窗口。它们是开发中的合同，还未独立发行或接入真实产品。
@@ -96,6 +100,8 @@ VFR 呈现窗口按真实样本覆盖区间选择源帧，区分已知 gap 与�
 | 进程限制基础 | 6 项父测试实际启动隔离子进程，验证地址增长拒绝、内核 CPU 终止、继承限制、非法参数、文件描述符与文件增长受限 | 已与视频 worker 连接；不是 RSS、系统调用沙箱或完整产品隔离验收 |
 | 原生媒体 worker | 默认协议/宿主 8 项，真实 worker 6 项、包完整性 3 项、真实压缩媒体 1 项均通过；77 帧/144,000 音频样本与参考一致，1.5 MiB 大媒体包经短读成功；宿主无 codec 链接 | macOS arm64 开发包；无完整系统调用沙箱、浏览器或用户时间线验收 |
 | 真实工程源采样 | 10 项时间/行为测试；90 正放 + 90 倒放 + 8 随机定位均与独立像素/PTS/覆盖区间一致，实际使用 Rust 工程和 worker；缓存最高 221,184 active bytes | 仅已知连续区间语料，无通用 edit list 解析、GPU、音频 DSP、浏览器或产品播放 |
+| 色彩与参考合成 | 18 项单测及显式真实用例通过；77 帧的 2,838,528 个线性通道值与独立 zscale 最大误差 `4.768e-7`、RMS `6.967e-8`；真实计划输出四帧及旋转/透明度合成 | CPU 参考档案，不是高质量缩放、GPU、全 HDR 或成片导出 |
+| 像素跨端一致 | Native/WASM 9 查询、7 渲染/2 拒绝，f32 bits、RGBA8 和诊断一致；编辑 25 步/编译 15 查询回归摘要不变 | 未执行浏览器 WebCodecs、WebGPU 或实际播放器 |
 | 媒体内存检查 | wrapper 与 FFmpeg C 实现分别构建 ASan/UBSan 档案，同一真实检查通过 | 汇编与平台框架不因此被插桩；不是 hostile-media 隔离保证 |
 | 原生媒体库体积 | 本机 release 配置 5 个 FFmpeg 库及 C wrapper 共 7,392,248 bytes | 不包含 Rust worker、字体、GPU、额外 codec 或系统框架，不是最终应用体积 |
 | 代码与合同 | 整个 Rust 工作区 strict Clippy、WASM 编译、全部 schema/TypeScript 合同检查通过；新增视频 schema 使用相同生成/检查入口 | 未发布新版 SDK、组件频道或 UI |
@@ -133,3 +139,5 @@ Rust 接入增量记录：`.codex-work/media-rust-gate-final/report.json`、其 
 跨进程媒体增量记录：`.codex-work/media-worker-gate-final/report.json`、其 `media-worker/report.json`、`.codex-work/media-worker-workspace-clippy-final.log`。media 分组顺序执行 C、Rust、构建 bundle 和实际 worker 四步；详细协议、额度与发行边界见 [worker 记录](video-media-worker.md)。
 
 工程源采样增量记录：`.codex-work/video-source-gate-final/report.json`、其 `video-source/report.json`、`video-source-workspace-clippy-final.log`、`video-source-wasm-check.log`。media 分组已增加第五步实际工程采样检查；WASM 此处只验证编译，不宣称浏览器解码通过。
+
+色彩与参考合成增量记录：`.codex-work/video-render-gate-final/report.json`、其 `video-render/report.json`、`video-render-parity.json`、`video-render-domain-regression.json`、`video-render-projection-regression.json`、`video-render-workspace-clippy.log`。media 分组已增加第六步真实色彩/合成，WASM 分组增加独立像素向量；边界与具体证据见[实施记录](video-color-composition.md)。

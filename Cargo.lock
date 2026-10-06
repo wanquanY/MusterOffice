@@ -970,9 +970,11 @@ name = "mo-video-conformance"
 version = "0.1.0"
 dependencies = [
  "mo-common",
+ "mo-media",
  "mo-video-compile",
  "mo-video-edit",
  "mo-video-model",
+ "mo-video-render",
  "serde",
  "serde_json",
  "wasm-bindgen",
@@ -1001,6 +1003,26 @@ dependencies = [
  "schemars",
  "serde",
  "serde_json",
+ "thiserror",
+]
+
+[[package]]
+name = "mo-video-render"
+version = "0.1.0"
+dependencies = [
+ "libm",
+ "mo-color",
+ "mo-common",
+ "mo-image",
+ "mo-media",
+ "mo-native-limits",
+ "mo-native-media",
+ "mo-time",
+ "mo-video-compile",
+ "mo-video-model",
+ "mo-video-source",
+ "serde_json",
+ "sha2",
  "thiserror",
 ]
 

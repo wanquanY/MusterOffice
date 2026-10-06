@@ -33,10 +33,15 @@ class CurrentVerificationTests(unittest.TestCase):
         self.assertLess(names.index("media-native-callbacks"), names.index("media-worker-execution"))
         self.assertLess(names.index("media-worker-bundle"), names.index("media-worker-execution"))
         self.assertLess(names.index("media-worker-execution"), names.index("video-source-projection"))
+        self.assertLess(names.index("video-source-projection"), names.index("video-color-composition"))
         self.assertIn("--ignored", next(s for s in steps if s.name == "video-generated-transactions").argv)
         for dependency in ("video-conformance-native", "video-conformance-wasm", "video-conformance-bindgen"):
             self.assertLess(names.index(dependency), names.index("video-domain-native-wasm-parity"))
             self.assertLess(names.index(dependency), names.index("video-projection-native-wasm-parity"))
+            self.assertLess(names.index(dependency), names.index("video-render-native-wasm-parity"))
+        reports = [s.argv[-1] for s in steps if s.name.startswith("video-") and s.name.endswith("native-wasm-parity")]
+        self.assertEqual(len(reports), 3)
+        self.assertEqual(len(set(reports)), len(reports), "Each evidence file must remain independently readable")
         self.assertIn("--ignored", next(s for s in steps if s.name == "native-render-tests").argv)
 
     def test_protocol_selection_declares_its_build_dependencies(self):
@@ -46,12 +51,13 @@ class CurrentVerificationTests(unittest.TestCase):
 
     def test_media_plan_consumes_explicit_component_and_missing_record_fails(self):
         steps = current.plan({"media"}, Path("/output"), "unused", sys.executable, "/media-component")
-        self.assertEqual(len(steps), 5)
+        self.assertEqual(len(steps), 6)
         self.assertIn("/media-component", steps[0].argv)
         self.assertIn("/media-component", steps[1].argv)
         self.assertIn("/output/media-native", steps[1].argv)
         self.assertIn("/output/media-worker-bundle", steps[3].argv)
         self.assertIn("/output/media-worker", steps[4].argv)
+        self.assertIn("/output/media-worker", steps[5].argv)
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "run"
             result = subprocess.run([sys.executable, str(Path(current.__file__)), "--groups", "media", "--output", str(output),

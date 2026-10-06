@@ -1,5 +1,6 @@
 //! Pure color arithmetic. Author declarations stay in their owning format/model.
 //! Components are unassociated (not premultiplied); no host color or ICC state.
+pub mod rgb;
 mod space;
 pub use space::{linear_to_srgb, srgb_to_linear};
 

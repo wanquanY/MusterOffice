@@ -249,7 +249,9 @@ CPU 参考后端用于正确性和有限能力运行，不以 CPU 低性能静�
 
 必须携带 primaries、transfer、matrix、range、alpha 方式、像素比例和旋转信息。视频 YUV、浏览器已转换 RGB、图片 ICC/sRGB 是不同输入路径；平台已做过颜色转换时不能再次套用 YUV 矩阵。
 
-基础交付档案为 SDR，内部工作空间明确为线性 RGB、预乘 alpha；合成完成后转换为目标 transfer/range。高精度 GPU 中间目标按能力使用浮点格式，基础输出 H.264/AAC MP4 或受支持的 WebM。HDR/广色域原素材必须识别；SDR 输出显式 tone map，不隐式当普通 SDR 丢弃元数据。HDR 成片属于单独的完整质量档案，未验收时不在导出中显示支持。
+基础交付档案为 SDR，内部工作空间为 BT.2020 / D65 线性显示光、预乘 alpha，线性值 1 对齐 203 nit；合成完成后转换为目标 transfer/range。SDR 电视成片采用 BT.1886 参考显示 EOTF，不能误用摄像机侧 BT.709 inverse OETF。sRGB、PQ、HLG 各有明确转换，HLG 必须声明参考显示参数。原始标签与选用的解释同时保留，未知必要解释不能从文件名或分辨率猜测。
+
+高精度 GPU 中间目标按能力使用浮点格式，基础输出 H.264/AAC MP4 或受支持的 WebM。HDR/广色域原素材必须识别；SDR 输出显式 tone map，不隐式当普通 SDR 丢弃元数据。HDR 成片属于单独的完整质量档案，未验收时不在导出中显示支持。当前 [CPU 色彩与合成实现](../../implementation/video-color-composition.md)已有真实帧参考证据；其中简单 Reinhard 曲线和双线性过滤不代表最终 HDR/高质量缩放档案。
 
 基础效果包括变换/裁剪、颜色调整、模糊、遮罩、简单混合、淡化和方向转场。关键帧的 step/linear/cubic 插值有版本化定义；角度是否走最短路径、颜色在哪个空间插值都不能随前端库默认值改变。
 

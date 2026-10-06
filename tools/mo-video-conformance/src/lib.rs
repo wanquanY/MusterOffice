@@ -1,9 +1,11 @@
-//! Test-only cross-target driver, not a product SDK, durable host or media renderer.
+//! Test-only cross-target driver, not a product SDK or durable host.
 mod projection;
+mod render;
 use mo_common::from_json_str_with_path;
 use mo_video_edit::*;
 use mo_video_model::*;
 pub use projection::video_projection_conformance;
+pub use render::video_render_conformance;
 use serde::Deserialize;
 use serde_json::{Value, json};
 use wasm_bindgen::prelude::*;
