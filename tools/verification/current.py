@@ -19,7 +19,7 @@ import sys
 import time
 
 ROOT = Path(__file__).resolve().parents[2]
-GROUPS = ("lint", "rust", "contracts", "typescript", "native", "media", "encode", "mcp", "wasm", "stretch", "mcp-protocol")
+GROUPS = ("lint", "rust", "contracts", "typescript", "native", "media", "encode", "mcp", "wasm", "stretch", "video-authoring", "mcp-protocol")
 
 
 @dataclass(frozen=True)
@@ -115,9 +115,20 @@ def plan(groups, output, bindgen, python, ffmpeg_dir=None, stretch_wasm_dir=None
         add("video-audio-native-wasm-parity", "node", "tools/verification/video-audio-parity.mjs", "target/debug/mo-video-conformance", output / "video-wasm/mo_video_conformance.js", output / "video-audio-parity.json")
         add("video-pcm-native-wasm-parity", "node", "tools/verification/video-pcm-parity.mjs", "target/debug/mo-video-conformance", output / "video-wasm/mo_video_conformance.js", output / "video-pcm-parity.json")
         add("video-export-native-wasm-parity", "node", "tools/verification/video-export-parity.mjs", "target/debug/mo-video-conformance", output / "video-wasm/mo_video_conformance.js", output / "video-export-parity.json")
-    if "stretch" in groups:
+    if "video-authoring" in groups or "wasm" in groups:
         if "wasm" not in groups:
             add("video-conformance-native", "cargo", "build", *cargo, "-p", "mo-video-conformance")
+        add("video-authoring-tests", "cargo", "test", *cargo, "-p", "mo-video-operations", "-p", "mo-video-wasm")
+        add("video-sdk-inventory-tests", python, "-m", "unittest", "discover", "-s", "tools/video-sdk", "-p", "test_build.py", "-v")
+        add("video-authoring-client", "pnpm", "build:video-client")
+        add("video-authoring-sdk", python, "tools/video-sdk/build.py", "--output", output / "video-sdk", "--bindgen", bindgen)
+        add("video-authoring-bindgen", bindgen, "target/wasm32-unknown-unknown/release/mo_video_wasm.wasm", "--target", "nodejs", "--out-dir", output / "video-authoring-wasm")
+        add("video-operations-native-wasm-parity", "node", "tools/verification/video-operations-parity.mjs", "target/debug/mo-video-conformance", output / "video-authoring-wasm/mo_video_wasm.js", ".codex-work/video-client/build/video-client/src/index.js", output / "video-operations-parity.json")
+        add("video-authoring-package-runtime", "node", "tools/verification/video-sdk-check.mjs", output / "video-sdk", output / "video-sdk-runtime.json")
+    if "stretch" in groups:
+        if "wasm" not in groups:
+            if "video-authoring" not in groups:
+                add("video-conformance-native", "cargo", "build", *cargo, "-p", "mo-video-conformance")
             add("video-conformance-wasm", "cargo", "build", *cargo, "--release", "-p", "mo-video-conformance", "--lib", "--target", "wasm32-unknown-unknown")
             add("video-conformance-bindgen", bindgen, "target/wasm32-unknown-unknown/release/mo_video_conformance.wasm", "--target", "nodejs", "--out-dir", output / "video-wasm")
         add("retime-graph-native", "cargo", "test", *cargo, "-p", "mo-video-pcm", "--test", "retime", "--test", "retime_boundaries")
@@ -168,7 +179,7 @@ def source_identity():
 def prerequisites(groups, args):
     errors = []
     required_tools = ["cargo", "git"]
-    if groups.intersection(("typescript", "wasm", "stretch")):
+    if groups.intersection(("typescript", "wasm", "stretch", "video-authoring")):
         required_tools.extend(("pnpm", "node"))
     if "encode" in groups:
         required_tools.extend(("ffmpeg", "ffprobe"))
@@ -190,13 +201,13 @@ def prerequisites(groups, args):
         for name, value in (("--skia-dir", args.skia_dir), ("--harfbuzz-dir", args.harfbuzz_dir)):
             if not value or not Path(value).is_dir():
                 errors.append(f"{name} must identify a prepared component directory; see component build documentation")
-    if groups.intersection(("lint", "rust", "wasm", "stretch")):
+    if groups.intersection(("lint", "rust", "wasm", "stretch", "video-authoring")):
         if not args.stretch_dir or not (Path(args.stretch_dir) / "build.json").is_file():
             errors.append("--stretch-dir must identify a prepared native DSP component with build.json")
     if "stretch" in groups:
         if not args.stretch_wasm_dir or not (Path(args.stretch_wasm_dir) / "build.json").is_file():
             errors.append("--stretch-wasm-dir must identify a prepared WASM DSP component with build.json")
-    if groups.intersection(("wasm", "stretch")) and (not args.bindgen or not shutil.which(args.bindgen)):
+    if groups.intersection(("wasm", "stretch", "video-authoring")) and (not args.bindgen or not shutil.which(args.bindgen)):
         errors.append("--bindgen must identify a compatible wasm-bindgen executable")
     if "mcp-protocol" in groups and importlib.util.find_spec("jsonschema") is None:
         errors.append("the runner Python environment requires jsonschema for MCP protocol checks")
@@ -279,6 +290,8 @@ def main():
                 (output / "wasm/package.json").write_text('{"private":true,"type":"commonjs"}\n')
             if code == 0 and step.name == "video-conformance-bindgen":
                 (output / "video-wasm/package.json").write_text('{"private":true,"type":"commonjs"}\n')
+            if code == 0 and step.name == "video-authoring-bindgen":
+                (output / "video-authoring-wasm/package.json").write_text('{"private":true,"type":"commonjs"}\n')
         except (OSError, subprocess.TimeoutExpired) as error:
             record["error"] = str(error)
             code = 1

@@ -1,0 +1,233 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:video-operation-failure",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Failure",
+  "type": "object",
+  "properties": {
+    "code": {
+      "$ref": "#/$defs/FailureCode"
+    },
+    "message": {
+      "type": "string"
+    },
+    "objects": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ObjectKey"
+      }
+    },
+    "operation": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "format": "uint32",
+      "minimum": 0
+    },
+    "validation": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ValidationReport"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "code",
+    "message",
+    "objects"
+  ],
+  "$defs": {
+    "FailureCode": {
+      "type": "string",
+      "enum": [
+        "INPUT_INVALID",
+        "SNAPSHOT_CORRUPT",
+        "STALE_SNAPSHOT",
+        "CONFLICT",
+        "LOCKED",
+        "LINKED_SELECTION",
+        "NOT_FOUND",
+        "LIMIT_EXCEEDED",
+        "CANCELLED",
+        "OUTSIDE_PROJECT",
+        "INTERNAL_INVARIANT"
+      ]
+    },
+    "ObjectId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ObjectKey": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "header"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "sequence"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "track"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "clip"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/ResourceId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "resource"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "linkGroup"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ]
+        }
+      ]
+    },
+    "ResourceId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ValidationCode": {
+      "type": "string",
+      "enum": [
+        "invalid_value",
+        "missing_reference",
+        "duplicate_identity",
+        "ownership_conflict",
+        "reference_cycle",
+        "limit_exceeded",
+        "identity_mismatch",
+        "incompatible_track",
+        "overlap"
+      ]
+    },
+    "ValidationIssue": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/ValidationCode"
+        },
+        "message": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "path",
+        "message"
+      ]
+    },
+    "ValidationReport": {
+      "type": "object",
+      "properties": {
+        "issues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ValidationIssue"
+          }
+        },
+        "truncated": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "issues",
+        "truncated"
+      ]
+    }
+  }
+}

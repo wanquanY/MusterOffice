@@ -1,0 +1,95 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:video-project-create",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CreateProject",
+  "type": "object",
+  "properties": {
+    "audioSampleRate": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0
+    },
+    "canvas": {
+      "$ref": "#/$defs/Canvas"
+    },
+    "documentId": {
+      "$ref": "#/$defs/DocumentId"
+    },
+    "frameRate": {
+      "$ref": "#/$defs/FrameRate"
+    },
+    "rootSequence": {
+      "$ref": "#/$defs/ObjectId"
+    },
+    "title": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "documentId",
+    "title",
+    "rootSequence",
+    "canvas",
+    "frameRate",
+    "audioSampleRate"
+  ],
+  "$defs": {
+    "Canvas": {
+      "type": "object",
+      "properties": {
+        "height": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "width": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height"
+      ]
+    },
+    "DocumentId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "FrameRate": {
+      "type": "object",
+      "properties": {
+        "denominator": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "numerator": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "numerator",
+        "denominator"
+      ]
+    },
+    "ObjectId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    }
+  }
+}

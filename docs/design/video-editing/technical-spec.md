@@ -2,6 +2,8 @@
 
 2026-10-06 · v1.0 · 完整技术目标，部分基础正在实现。上位：[完整方案](../video-editing.md)。依据：[研究证据](../../research/video-editing-2026-10-06.md)。本文件中的 API、crate 名称与格式版本不是已发行接口；实际源码与验证范围见[实施记录](../../implementation/video-editing-progress.md)。
 
+视频高层计算接口和独立 WASM 的实际开发合同、预算、生命周期与宿主提交边界见[接口实施记录](../../implementation/video-authoring-api.md)，不将拟定产品工具名视为已经发布的工具。
+
 ## 1. 不变量
 
 - 同一快照、资源字节、计算档案与操作，必须产生相同编辑结果及结构诊断；媒体硬件输出不要求字节相同。

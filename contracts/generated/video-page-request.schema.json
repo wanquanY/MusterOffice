@@ -1,0 +1,219 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:video-page-request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PageRequest",
+  "type": "object",
+  "properties": {
+    "cursor": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PageCursor"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "format": "uint16",
+      "maximum": 65535,
+      "minimum": 0
+    },
+    "query": {
+      "$ref": "#/$defs/ListQuery"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "query",
+    "limit"
+  ],
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "ListQuery": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "sequences"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "tracks"
+            },
+            "sequence": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sequence"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "clips"
+            },
+            "range": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/TimeRange"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "track": {
+              "$ref": "#/$defs/ObjectId"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "track"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "resources"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "clip": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/ObjectId"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "linkGroups"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    },
+    "ObjectId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "PageCursor": {
+      "type": "object",
+      "properties": {
+        "documentDigest": {
+          "$ref": "#/$defs/Digest"
+        },
+        "offset": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "queryDigest": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "documentDigest",
+        "queryDigest",
+        "offset"
+      ]
+    },
+    "RationalTime": {
+      "description": "Exact wire representation. Equality compares author values; compare_time compares instants.",
+      "type": "object",
+      "properties": {
+        "ticks": {
+          "$ref": "#/$defs/Ticks"
+        },
+        "timescale": {
+          "$ref": "#/$defs/Timescale"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "ticks",
+        "timescale"
+      ]
+    },
+    "Ticks": {
+      "description": "Signed int64 ticks. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,18})$",
+      "x-integer-maximum": "9223372036854775807",
+      "x-integer-minimum": "-9223372036854775808"
+    },
+    "TimeRange": {
+      "description": "Half-open [start,end). Source ranges may begin before zero; timeline placement may not.",
+      "type": "object",
+      "properties": {
+        "end": {
+          "$ref": "#/$defs/RationalTime"
+        },
+        "start": {
+          "$ref": "#/$defs/RationalTime"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end"
+      ]
+    },
+    "Timescale": {
+      "type": "integer",
+      "maximum": 1000000000,
+      "minimum": 1
+    }
+  }
+}

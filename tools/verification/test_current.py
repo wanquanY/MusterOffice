@@ -46,9 +46,17 @@ class CurrentVerificationTests(unittest.TestCase):
             self.assertLess(names.index(dependency), names.index("video-export-native-wasm-parity"))
             self.assertLess(names.index(dependency), names.index("video-stretch-native-wasm-parity"))
         reports = [s.argv[-1] for s in steps if s.name.startswith("video-") and s.name.endswith("native-wasm-parity")]
-        self.assertEqual(len(reports), 7)
+        self.assertEqual(len(reports), 8)
         self.assertEqual(len(set(reports)), len(reports), "Each evidence file must remain independently readable")
         self.assertIn("--ignored", next(s for s in steps if s.name == "native-render-tests").argv)
+
+    def test_independent_video_authoring_builds_before_using_its_package(self):
+        steps = current.plan({"video-authoring"}, Path("/output"), "/tool/wasm-bindgen", sys.executable)
+        names = [s.name for s in steps]
+        for dependency in ("video-conformance-native", "video-authoring-client", "video-authoring-sdk", "video-authoring-bindgen"):
+            self.assertLess(names.index(dependency), names.index("video-operations-native-wasm-parity"))
+        self.assertLess(names.index("video-authoring-sdk"), names.index("video-authoring-package-runtime"))
+        self.assertNotIn("native-build", names, "Independent video authoring must not require PPT workers")
 
     def test_protocol_selection_declares_its_build_dependencies(self):
         self.assertEqual(current.selected_groups("mcp-protocol"), {"native", "mcp", "mcp-protocol"})

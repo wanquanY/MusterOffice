@@ -1,0 +1,828 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:video-project-page",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProjectPage",
+  "type": "object",
+  "properties": {
+    "documentDigest": {
+      "$ref": "#/$defs/Digest"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ProjectItem"
+      }
+    },
+    "next": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PageCursor"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "documentDigest",
+    "items"
+  ],
+  "$defs": {
+    "AudioRatePolicy": {
+      "type": "string",
+      "enum": [
+        "resample",
+        "preservePitch"
+      ]
+    },
+    "AudioRenderContext": {
+      "type": "object",
+      "properties": {
+        "offset": {
+          "description": "Clip-local zero in context-local time. The source binding remains the\nclip's binding; this cannot reference a different resource or sequence.",
+          "$ref": "#/$defs/RationalTime"
+        },
+        "timeMap": {
+          "$ref": "#/$defs/TimeMap"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "timeMap",
+        "offset"
+      ]
+    },
+    "AudioTimePolicy": {
+      "type": "object",
+      "properties": {
+        "hold": {
+          "$ref": "#/$defs/HoldAudioPolicy"
+        },
+        "rate": {
+          "$ref": "#/$defs/AudioRatePolicy"
+        },
+        "reverse": {
+          "$ref": "#/$defs/ReverseAudioPolicy"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "rate",
+        "reverse",
+        "hold"
+      ]
+    },
+    "ByteLength": {
+      "description": "Canonical uint64 byte length. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9]"
+      },
+      "pattern": "^(0|[1-9][0-9]{0,19})$",
+      "x-integer-maximum": "18446744073709551615",
+      "x-integer-minimum": "0"
+    },
+    "Canvas": {
+      "type": "object",
+      "properties": {
+        "height": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "width": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height"
+      ]
+    },
+    "Clip": {
+      "type": "object",
+      "properties": {
+        "audio": {
+          "description": "Explicitly persisted even for silent visual clips; only an audio-track compiler consumes it.",
+          "$ref": "#/$defs/AudioTimePolicy",
+          "default": {
+            "hold": "silence",
+            "rate": "preservePitch",
+            "reverse": "mute"
+          }
+        },
+        "audioContext": {
+          "description": "The complete pre-trim processing map. Visible cuts are views of this\ncontinuous DSP context, so cutting a clip does not restart its vocoder.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AudioRenderContext"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Effect"
+          }
+        },
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "name": {
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/ClipSource"
+        },
+        "timeline": {
+          "$ref": "#/$defs/TimeRange"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "timeline",
+        "source",
+        "effects"
+      ]
+    },
+    "ClipSource": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "media"
+            },
+            "resource": {
+              "$ref": "#/$defs/ResourceId"
+            },
+            "stream": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "timeMap": {
+              "$ref": "#/$defs/TimeMap"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "resource",
+            "stream",
+            "timeMap"
+          ]
+        },
+        {
+          "description": "A video-track instance projects child visuals; an audio-track instance projects child audio.\nA host creates linked instances when inserting both buses of a compound composition.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "sequence"
+            },
+            "sequence": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "timeMap": {
+              "$ref": "#/$defs/TimeMap"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sequence",
+            "timeMap"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "solid"
+            },
+            "rgba": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 4,
+              "minItems": 4
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "rgba"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "font": {
+              "$ref": "#/$defs/ResourceId"
+            },
+            "fontSizeMilliPixels": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "text"
+            },
+            "rgba": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint8",
+                "maximum": 255,
+                "minimum": 0
+              },
+              "maxItems": 4,
+              "minItems": 4
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "text",
+            "font",
+            "fontSizeMilliPixels",
+            "rgba"
+          ]
+        }
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "Effect": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "transform"
+            },
+            "opacityPpm": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "rotationMilliDegrees": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "scaleXPpm": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "scaleYPpm": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "xMilliPixels": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "yMilliPixels": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "xMilliPixels",
+            "yMilliPixels",
+            "scaleXPpm",
+            "scaleYPpm",
+            "rotationMilliDegrees",
+            "opacityPpm"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "gain"
+            },
+            "milliDecibels": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "milliDecibels"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "envelope": {
+              "description": "Fade phase in clip-local time; splitting shifts this range without restarting it.",
+              "$ref": "#/$defs/TimeRange"
+            },
+            "fadeIn": {
+              "$ref": "#/$defs/RationalTime"
+            },
+            "fadeOut": {
+              "$ref": "#/$defs/RationalTime"
+            },
+            "kind": {
+              "type": "string",
+              "const": "fade"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "fadeIn",
+            "fadeOut",
+            "envelope"
+          ]
+        }
+      ]
+    },
+    "FrameRate": {
+      "type": "object",
+      "properties": {
+        "denominator": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "numerator": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "numerator",
+        "denominator"
+      ]
+    },
+    "HoldAudioPolicy": {
+      "type": "string",
+      "enum": [
+        "silence"
+      ]
+    },
+    "LinkGroup": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ObjectId"
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectId"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "members"
+      ]
+    },
+    "MediaStream": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "available": {
+              "$ref": "#/$defs/TimeRange"
+            },
+            "dimensions": {
+              "$ref": "#/$defs/Canvas"
+            },
+            "frameRate": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/FrameRate"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "type": "string",
+              "const": "video"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "available",
+            "dimensions"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "available": {
+              "$ref": "#/$defs/TimeRange"
+            },
+            "channels": {
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "audio"
+            },
+            "sampleRate": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "available",
+            "sampleRate",
+            "channels"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "dimensions": {
+              "$ref": "#/$defs/Canvas"
+            },
+            "kind": {
+              "type": "string",
+              "const": "image"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "dimensions"
+          ]
+        }
+      ]
+    },
+    "ObjectId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "PageCursor": {
+      "type": "object",
+      "properties": {
+        "documentDigest": {
+          "$ref": "#/$defs/Digest"
+        },
+        "offset": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "queryDigest": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "documentDigest",
+        "queryDigest",
+        "offset"
+      ]
+    },
+    "ProjectItem": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "sequence"
+            },
+            "trackCount": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id",
+            "trackCount"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "clipCount": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "id": {
+              "$ref": "#/$defs/ObjectId"
+            },
+            "kind": {
+              "type": "string",
+              "const": "track"
+            },
+            "locked": {
+              "type": "boolean"
+            },
+            "muted": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            },
+            "solo": {
+              "type": "boolean"
+            },
+            "trackKind": {
+              "$ref": "#/$defs/TrackKind"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id",
+            "name",
+            "trackKind",
+            "locked",
+            "muted",
+            "solo",
+            "clipCount"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "clip": {
+              "$ref": "#/$defs/Clip"
+            },
+            "kind": {
+              "type": "string",
+              "const": "clip"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "clip"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "resource"
+            },
+            "resource": {
+              "$ref": "#/$defs/Resource"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "resource"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "group": {
+              "$ref": "#/$defs/LinkGroup"
+            },
+            "kind": {
+              "type": "string",
+              "const": "linkGroup"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "group"
+          ]
+        }
+      ]
+    },
+    "RationalTime": {
+      "description": "Exact wire representation. Equality compares author values; compare_time compares instants.",
+      "type": "object",
+      "properties": {
+        "ticks": {
+          "$ref": "#/$defs/Ticks"
+        },
+        "timescale": {
+          "$ref": "#/$defs/Timescale"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "ticks",
+        "timescale"
+      ]
+    },
+    "Resource": {
+      "type": "object",
+      "properties": {
+        "byteLength": {
+          "$ref": "#/$defs/ByteLength"
+        },
+        "descriptor": {
+          "$ref": "#/$defs/ResourceDescriptor"
+        },
+        "digest": {
+          "$ref": "#/$defs/Digest"
+        },
+        "id": {
+          "$ref": "#/$defs/ResourceId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "digest",
+        "byteLength",
+        "descriptor"
+      ]
+    },
+    "ResourceDescriptor": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "media"
+            },
+            "streams": {
+              "type": "object",
+              "additionalProperties": false,
+              "patternProperties": {
+                "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$": {
+                  "$ref": "#/$defs/MediaStream"
+                }
+              }
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "streams"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "faceIndex": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "kind": {
+              "type": "string",
+              "const": "font"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "faceIndex"
+          ]
+        }
+      ]
+    },
+    "ResourceId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ReverseAudioPolicy": {
+      "type": "string",
+      "enum": [
+        "reverse",
+        "mute"
+      ]
+    },
+    "Ticks": {
+      "description": "Signed int64 ticks. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,18})$",
+      "x-integer-maximum": "9223372036854775807",
+      "x-integer-minimum": "-9223372036854775808"
+    },
+    "TimeAnchor": {
+      "type": "object",
+      "properties": {
+        "local": {
+          "$ref": "#/$defs/RationalTime"
+        },
+        "source": {
+          "$ref": "#/$defs/RationalTime"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "local",
+        "source"
+      ]
+    },
+    "TimeMap": {
+      "description": "Source-time anchors are the authority; a separate mutable speed curve is forbidden.",
+      "type": "object",
+      "properties": {
+        "anchors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimeAnchor"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "anchors"
+      ]
+    },
+    "TimeRange": {
+      "description": "Half-open [start,end). Source ranges may begin before zero; timeline placement may not.",
+      "type": "object",
+      "properties": {
+        "end": {
+          "$ref": "#/$defs/RationalTime"
+        },
+        "start": {
+          "$ref": "#/$defs/RationalTime"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end"
+      ]
+    },
+    "Timescale": {
+      "type": "integer",
+      "maximum": 1000000000,
+      "minimum": 1
+    },
+    "TrackKind": {
+      "type": "string",
+      "enum": [
+        "video",
+        "audio",
+        "graphics",
+        "captions"
+      ]
+    }
+  }
+}

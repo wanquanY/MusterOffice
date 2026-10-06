@@ -1,0 +1,189 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:video-project-summary",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProjectSummary",
+  "type": "object",
+  "properties": {
+    "audioSampleCount": {
+      "$ref": "#/$defs/Ticks"
+    },
+    "audioSampleRate": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0
+    },
+    "canvas": {
+      "$ref": "#/$defs/Canvas"
+    },
+    "clipCount": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0
+    },
+    "documentDigest": {
+      "$ref": "#/$defs/Digest"
+    },
+    "documentId": {
+      "$ref": "#/$defs/DocumentId"
+    },
+    "duration": {
+      "$ref": "#/$defs/ExactRatio"
+    },
+    "frameCount": {
+      "$ref": "#/$defs/Ticks"
+    },
+    "frameRate": {
+      "$ref": "#/$defs/FrameRate"
+    },
+    "linkGroupCount": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0
+    },
+    "resourceCount": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0
+    },
+    "rootSequence": {
+      "$ref": "#/$defs/ObjectId"
+    },
+    "sequenceCount": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0
+    },
+    "title": {
+      "type": "string"
+    },
+    "trackCount": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "documentId",
+    "documentDigest",
+    "title",
+    "canvas",
+    "frameRate",
+    "audioSampleRate",
+    "rootSequence",
+    "duration",
+    "frameCount",
+    "audioSampleCount",
+    "sequenceCount",
+    "trackCount",
+    "clipCount",
+    "resourceCount",
+    "linkGroupCount"
+  ],
+  "$defs": {
+    "Canvas": {
+      "type": "object",
+      "properties": {
+        "height": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "width": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height"
+      ]
+    },
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "DocumentId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "ExactRatio": {
+      "description": "Exact computed fraction. Decimal strings are bounded to 4096 bits and canonicalized by the kernel; each computation can impose a smaller budget.",
+      "type": "object",
+      "properties": {
+        "denominator": {
+          "type": "string",
+          "maxLength": 1234,
+          "minLength": 1,
+          "not": {
+            "pattern": "[^0-9]"
+          },
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "numerator": {
+          "type": "string",
+          "maxLength": 1235,
+          "minLength": 1,
+          "not": {
+            "pattern": "[^0-9-]"
+          },
+          "pattern": "^(0|-?[1-9][0-9]*)$"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "numerator",
+        "denominator"
+      ]
+    },
+    "FrameRate": {
+      "type": "object",
+      "properties": {
+        "denominator": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "numerator": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "numerator",
+        "denominator"
+      ]
+    },
+    "ObjectId": {
+      "type": "string",
+      "maxLength": 128,
+      "not": {
+        "pattern": "[^A-Za-z0-9_.:-]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "Ticks": {
+      "description": "Signed int64 ticks. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,18})$",
+      "x-integer-maximum": "9223372036854775807",
+      "x-integer-minimum": "-9223372036854775808"
+    }
+  }
+}

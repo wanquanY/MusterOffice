@@ -1,0 +1,40 @@
+{
+  "$id": "urn:musteroffice:runtime:0.1-draft:video-frame-request",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FrameRequest",
+  "type": "object",
+  "properties": {
+    "expectedDigest": {
+      "$ref": "#/$defs/Digest"
+    },
+    "frame": {
+      "$ref": "#/$defs/Ticks"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "expectedDigest",
+    "frame"
+  ],
+  "$defs": {
+    "Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 64,
+      "not": {
+        "pattern": "[^0-9a-f]"
+      },
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "Ticks": {
+      "description": "Signed int64 ticks. Range requires semantic validation.",
+      "type": "string",
+      "not": {
+        "pattern": "[^0-9-]"
+      },
+      "pattern": "^(0|-?[1-9][0-9]{0,18})$",
+      "x-integer-maximum": "9223372036854775807",
+      "x-integer-minimum": "-9223372036854775808"
+    }
+  }
+}

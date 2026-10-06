@@ -67,6 +67,46 @@ fn main() -> Result<(), Box<dyn Error>> {
         return Err("usage: mo-contract-codegen <write|check> <directory>".into());
     }
     let schemas = [
+        (
+            "video-project-create",
+            schema::<mo_video_operations::CreateProject>(),
+        ),
+        (
+            "video-snapshot",
+            schema::<mo_video_operations::VideoSnapshot>(),
+        ),
+        (
+            "video-project-summary",
+            schema::<mo_video_operations::ProjectSummary>(),
+        ),
+        (
+            "video-mutation-candidate",
+            schema::<mo_video_operations::MutationCandidate>(),
+        ),
+        (
+            "video-page-request",
+            schema::<mo_video_operations::PageRequest>(),
+        ),
+        (
+            "video-project-page",
+            schema::<mo_video_operations::ProjectPage>(),
+        ),
+        (
+            "video-frame-request",
+            schema::<mo_video_operations::FrameRequest>(),
+        ),
+        (
+            "video-inverse-request",
+            schema::<mo_video_operations::InverseRequest>(),
+        ),
+        (
+            "video-resource-closure",
+            schema::<mo_video_operations::ResourceClosure>(),
+        ),
+        (
+            "video-operation-failure",
+            schema::<mo_video_operations::Failure>(),
+        ),
         ("video-pcm-tile-ref", schema::<mo_video_pcm::PcmTileRef>()),
         ("video-document", schema::<mo_video_model::VideoDocument>()),
         ("video-transaction", schema::<mo_video_edit::Transaction>()),
