@@ -18,7 +18,7 @@
 | W1 视频领域与合同 | 基础已实现，未全部完成 | 独立模型、精确时间、受限解析与校验、Native/WASM 公共合同向量；补全效果、字幕、分析和工程包模型 |
 | W2 媒体与合成 | 原生解码/采样、CPU/Metal 合成及音频块处理基础已实现；保调工程图及派生 PCM 已实现；Browser、导出及产品显示待实施 | 原生/浏览器媒体与合成、字体/色彩/音频及真实输出 |
 | W3 编辑与历史 | 原子事务基础已实现，未全部完成 | 全部编辑操作、候选、冲突与有条件逆操作及增量索引 |
-| W4 产品执行 | 独立计算 SDK 和 Browser Host 的工程持久化、素材、Worker 基础已接通；Device/UI/媒体任务待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
+| W4 产品执行 | 独立 Native/WASM SDK、Browser Host 基础、Native 计算与私有候选预留已接通；Device 工程提交/UI/媒体任务待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
 | W5 创作与交互 | 保留原 worktree，未完成替换 | 整理现有生成/Admin/计费、技能、人机共享编辑与消息卡片 |
 | W6 完整验收 | 仅有下列内核基础证据 | 完整验收矩阵与可供用户实际操作的本地环境 |
 
@@ -35,6 +35,14 @@ Musterwork worktree 提交 `82aaa621b` 已接入固定的独立视频 SDK（上�
 8 项真实 Rust WASM 驱动的宿主单测通过（该组 IDB 为 fake-indexeddb）；另在 macOS arm64 / Chrome 154.0.8037.98 实际执行 Worker、IDB、OPFS：并发只提交一个版本，2,097,169 bytes 素材在页面重载后完整恢复，epoch 1→2 拒绝旧执行器，Worker 终止拒绝待执行请求。产品本地报告 `.codex-work/video-host-browser-current/report.json` 绑定源摘要 `f153cb4b09cc2e925d28e32bdf6372193219b4ddba0f90a7ab6e62b942ac446b`。
 
 这仍是产品宿主基础，未连接现有时间线/Agent 工具或浏览器媒体设备；桌面必须由 Device Runtime 实现权威，不能直接复用 Browser IDB 作为桌面工程。当前完整快照历史、孤儿素材回收、容量管理、备份、断电恢复及跨浏览器尚待完善。CE.SDK 页面还未退役，不以这些测试宣称工作台可完整验收。
+
+### 原生 SDK 与产品计算接入
+
+上游 `c4c0d8d0390e743c261244396c15849c654c0d13` 已构建独立六 crate Cargo 开发包，版本 `0.1.0-video.20261006.1`、manifest `8281dac6009e7bb5b4836211d4e8b759b7603b6ee47e832266031ed334f8507f`。构建来自干净源码，包含 LICENSE / NOTICE 和组件许可；无 PPT、codec 或宿主依赖。实际独立消费者仅使用 registry archives 构建，运行创建、编辑、条件撤销、查询和拒绝检查；干净包报告 `.codex-work/video-rust-consumer-clean-c4c0d8d/report.json` 通过。生产发行资格仍为 false。
+
+产品提交 `b7c5a102c` 的 Native adapter 已通过真实固定 SDK、SQLite、原 Attempt/Invocation 的六项集成测试：轨道/片段与帧计划、精确输入读集合、先预留全部输出再写入、验证落盘字节、确定性重试、权限/额度拒绝、条件撤销/重做、部分预写失败恢复和异步丢弃后的并发额度保持。PPT 与视频按不同来源各自核验闭包，旧 PPT pin 未改变。产品 Runtime 持有权限和私有输出，内核没有增加业务存储。相关 Office/SQLite 回归共 43 项通过（其中包含视频用例）；另 50 项依赖专门渲染/素材的 ignored 用例未在该轮运行，不计作通过。
+
+这还不是 Device 工程 Host 完成：当前只返回计算候选，没有创建视频 head/history/epoch 或提交 Tool / Artifact。视频 Agent 工具、桌面 IPC、UI、流式大媒体和播放/导出接入仍待完成。产品对原始 read_refs 和完整资源绑定的最终授权不得以计算摘要替代。
 
 ### 精确时间
 
