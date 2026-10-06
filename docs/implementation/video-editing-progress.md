@@ -19,7 +19,7 @@
 | W2 媒体与合成 | 原生解码/采样、CPU/Metal 合成及音频块处理基础已实现；保调工程图及派生 PCM 已实现；Browser、导出及产品显示待实施 | 原生/浏览器媒体与合成、字体/色彩/音频及真实输出 |
 | W3 编辑与历史 | 原子事务基础已实现，未全部完成 | 全部编辑操作、候选、冲突与有条件逆操作及增量索引 |
 | W4 产品执行 | 独立 Native/WASM SDK、Browser Host 基础、Native 计算、SQLite 工程存储、产品预写及正式 Agent authoring 工具已实现；手动公共命令/UI/媒体任务待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
-| W5 创作与交互 | 保留原 worktree，未完成替换 | 整理现有生成/Admin/计费、技能、人机共享编辑与消息卡片 |
+| W5 创作与交互 | 视频技能与显式工具装载、无生成模型的剪辑准入已接通；工作台及旧引擎替换未完成 | 整理现有生成/Admin/计费、技能、人机共享编辑与消息卡片 |
 | W6 完整验收 | 仅有下列内核基础证据 | 完整验收矩阵与可供用户实际操作的本地环境 |
 
 ## 已实现的计算基础
@@ -87,6 +87,10 @@ Musterwork worktree 提交 `82aaa621b` 已接入固定的独立视频 SDK（上�
 新增 5 项实际 SDK/SQLite/正式工具合同集成测试，加 63 项 catalog、3 项 Device manifest、3 项 Office 生命周期、2 项诊断回归及 5 项 Python profile，共 81 项通过；adapter、Tool executor、Device runtime strict Clippy 通过。Office 恢复使用实际固定发行 worker，显式运行集成测试而非跳过；产品提交 `726a470d6` 同时修正了该旧测试前置条件和大尺寸诊断错误的内存表示。
 
 证据为产品 `.codex-work/video-agent-authoring-report.json`，绑定日志摘要和提交；原工作树未提交的生成/视频选择改动继续保留。集成 fixture 沿用原合成 Run compute placement，素材权限变化使用受控 FileQuery authority 注入；这不是登录桌面或真实模型验收。工具 `frame` 返回合成计划，不是视频图片/文件；媒体导入/probe、大文件、播放和导出仍待接入。技能自动装载、用户手动入口、桌面 IPC 与右侧工作台未完成。详细合同见产品 `docs/architecture/native-video-authoring.md`。
+
+后续产品提交 `af81cfc6f` 已补齐源码中的技能装载：Skill v52 新增 `musterwork-video-creation@1`，以可选依赖连接本地 authoring、视频/图片生成和文件读取。原 ProductSnapshot 的显式技能选择现在依据精确 capability identity 装载本次已授权的工具；缺少可选能力不封锁剩余流程，也不补造权限。旧 Skill 材料不改写。
+
+输入框 Auto 在无生成模型或目录暂时不可用时仍能发送已有素材的剪辑请求，参数仍只在技能选中时出现；手动指定模型的版本和组合继续严格校验，未静默改成 Auto。Backend Auto 消息准入不依赖生成数据库；真正付费生成继续走原签名能力/用户约束/计费边界。37 项 ProductSnapshot、13 项 Skill、7 项 Python、10 项发行校验器及 5 项 Vue 控件测试共 72 项通过；strict Clippy 和共享 UI 类型检查通过。全部 93 份历史包材料校验通过，当前 HEAD 锚定检查包含新增包；本地报告为产品 `.codex-work/video-skill-report.json`。这些是实际源码与端口/组件验证，不是已完成账号启动、模型对话、右侧工作台及整个本地验收。
 
 ### 精确时间
 
