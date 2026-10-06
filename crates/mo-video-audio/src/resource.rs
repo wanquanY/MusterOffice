@@ -4,7 +4,7 @@ use mo_video_compile::MediaBinding;
 use mo_video_model::MediaStream;
 /// Describes a continuous, already trimmed PCM lattice. The host resolves
 /// codec priming/edit lists before binding it; no inferred timestamps or holes.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AudioAsset {
     pub sample_rate: u32,
     pub layout: ChannelLayout,
@@ -13,7 +13,7 @@ pub struct AudioAsset {
     pub available: PcmRange,
 }
 impl AudioAsset {
-    pub(crate) fn validate(&self, binding: &MediaBinding, bits: u64) -> Result<()> {
+    pub fn validate_binding(&self, binding: &MediaBinding, bits: u64) -> Result<()> {
         let MediaStream::Audio {
             sample_rate,
             channels,
@@ -22,6 +22,9 @@ impl AudioAsset {
         else {
             return Err(AudioError::Invalid("audio resource descriptor"));
         };
+        if !available.valid() || !(8000..=384000).contains(sample_rate) {
+            return Err(AudioError::Invalid("audio resource rate/span"));
+        }
         if *sample_rate != self.sample_rate || usize::from(*channels) != self.layout.len() {
             return Err(AudioError::Invalid("audio resource metadata binding"));
         }

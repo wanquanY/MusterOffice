@@ -41,8 +41,9 @@ class CurrentVerificationTests(unittest.TestCase):
             self.assertLess(names.index(dependency), names.index("video-projection-native-wasm-parity"))
             self.assertLess(names.index(dependency), names.index("video-render-native-wasm-parity"))
             self.assertLess(names.index(dependency), names.index("video-audio-native-wasm-parity"))
+            self.assertLess(names.index(dependency), names.index("video-pcm-native-wasm-parity"))
         reports = [s.argv[-1] for s in steps if s.name.startswith("video-") and s.name.endswith("native-wasm-parity")]
-        self.assertEqual(len(reports), 4)
+        self.assertEqual(len(reports), 5)
         self.assertEqual(len(set(reports)), len(reports), "Each evidence file must remain independently readable")
         self.assertIn("--ignored", next(s for s in steps if s.name == "native-render-tests").argv)
 
@@ -53,7 +54,7 @@ class CurrentVerificationTests(unittest.TestCase):
 
     def test_media_plan_consumes_explicit_component_and_missing_record_fails(self):
         steps = current.plan({"media"}, Path("/output"), "unused", sys.executable, "/media-component")
-        self.assertEqual(len(steps), 7)
+        self.assertEqual(len(steps), 8)
         self.assertIn("/media-component", steps[0].argv)
         self.assertIn("/media-component", steps[1].argv)
         self.assertIn("/output/media-native", steps[1].argv)
@@ -62,6 +63,8 @@ class CurrentVerificationTests(unittest.TestCase):
         self.assertIn("/output/media-worker", steps[5].argv)
         self.assertIn("/output/media-worker", steps[6].argv)
         self.assertEqual(steps[6].name, "video-audio-dsp")
+        self.assertEqual(steps[7].name, "video-canonical-pcm")
+        self.assertIn("/output/media-worker", steps[7].argv)
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "run"
             result = subprocess.run([sys.executable, str(Path(current.__file__)), "--groups", "media", "--output", str(output),

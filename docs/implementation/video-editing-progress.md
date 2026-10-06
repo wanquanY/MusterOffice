@@ -78,9 +78,13 @@ VFR 呈现窗口按真实样本覆盖区间选择源帧，区分已知 gap 与�
 
 `mo-video-audio` 已接通 PCM 归一化、命名声道/显式矩阵、有理采样时钟、带限重采样、倒放、增益/淡入淡出和嵌套混音。分块编译按片段和时间映射锚点调度，保持各层音高政策；窗口缺失不会伪装静音。真实 worker AAC 输出经五类实际 DSP，并与独立 CLI 和数学包络核对；Native/WASM 的完整 PCM bits 一致。尚缺非原速保调、生产 PCM 窗口适配器和声音设备；详见[音频块处理记录](video-audio-dsp.md)。
 
+### 标准 PCM 与本地随机读取
+
+`mo-video-pcm` 已实现连续解码 PCM 的内容身份、不可变分块候选、校验和、受限 LRU 窗口读取和 `CanonicalAudioResource`。真实 AAC 定位实验发现，通用 seek/flush 无法代表位精确的完整解码状态；本地派生块让定位/倒放和导出复用相同 PCM。两个真实素材的 264 次随机/反向读取以及完整倒放混音逐 bit 一致；Native/WASM 完整/部分物化 14 查询一致。生产本地/OPFS 存储与后台准备仍由产品 Host 接入，首次物化及冷定位性能尚未达成验收。详见[连续解码与分块读取](video-canonical-pcm.md)。
+
 ### 合同与验证入口
 
-`contracts/generated/video-*.schema.json` 从相同 Rust 类型生成，并生成对应的草案 TypeScript 类型，包含工程、编辑请求、逆操作、校验结果、视频帧/音频点计划/音频块计划和呈现窗口。它们是开发中的合同，还未独立发行或接入真实产品。
+`contracts/generated/video-*.schema.json` 从相同 Rust 类型生成，并生成对应的草案 TypeScript 类型，包含工程、编辑请求、逆操作、校验结果、视频帧/音频点计划/音频块计划、标准 PCM 块引用和呈现窗口。它们是开发中的合同，还未独立发行或接入真实产品。
 
 `tools/mo-video-conformance` 是专用测试驱动。相同 Rust 代码编为 Native 和 WASM，比较完整候选文档、摘要、错误、读写集合、失效范围和逆操作；不是另写一套 TypeScript 语义。默认 CI 已加入长序列测试和视频跨端一致性步骤。
 
@@ -112,6 +116,7 @@ VFR 呈现窗口按真实样本覆盖区间选择源帧，区分已知 gap 与�
 | 像素跨端一致 | Native/WASM 9 查询、7 渲染/2 拒绝，f32 bits、RGBA8 和诊断一致；编辑 25 步/编译 15 查询回归摘要不变 | 未执行浏览器 WebCodecs、WebGPU 或实际播放器 |
 | 实际 GPU 合成 | Apple M4 Max/Metal，29 用例最大线性误差 `7.153e-7`，RGBA8 最大差 1；26 取消点、三类预算、callback panic 恢复通过 | 未验收 Windows/Linux/浏览器、设备丢失恢复、实时 FPS、零拷贝或产品显示 |
 | 音频块处理 | 17 项音频基础测试、18 项编译测试；真实 AAC 五个完整输出；Native/WASM 8 查询的 PCM bits/计划/统计一致，任意分块与大块切片一致 | 非原速保调、生产 PCM adapter、设备播放与浏览器未完成；单一素材不等于完整音质/性能验收 |
+| 标准 PCM 随机读取 | 10 项默认测试；两段真实 AAC 各 144,000 样本/36 块；共 264 查询与两个完整倒放输出逐 bit 一致；Native/WASM 14 查询一致 | 测试文件 store 不是生产 Host；冷定位/长文件准备、OPFS、设备播放和完整产品未验收 |
 | 媒体内存检查 | wrapper 与 FFmpeg C 实现分别构建 ASan/UBSan 档案，同一真实检查通过 | 汇编与平台框架不因此被插桩；不是 hostile-media 隔离保证 |
 | 原生媒体库体积 | 本机 release 配置 5 个 FFmpeg 库及 C wrapper 共 7,392,248 bytes | 不包含 Rust worker、字体、GPU、额外 codec 或系统框架，不是最终应用体积 |
 | 代码与合同 | 整个 Rust 工作区 strict Clippy、WASM 编译、全部 schema/TypeScript 合同检查通过；新增视频 schema 使用相同生成/检查入口 | 未发布新版 SDK、组件频道或 UI |

@@ -67,6 +67,7 @@ def plan(groups, output, bindgen, python, ffmpeg_dir=None):
         add("video-source-projection", python, "tools/verification/video-source-check.py", "--native-evidence", output / "media-native", "--media-evidence", output / "media-worker", "--worker-bundle", output / "media-worker-bundle", "--output", output / "video-source")
         add("video-color-composition", python, "tools/verification/video-render-check.py", "--native-evidence", output / "media-native", "--media-evidence", output / "media-worker", "--worker-bundle", output / "media-worker-bundle", "--output", output / "video-render")
         add("video-audio-dsp", python, "tools/verification/video-audio-check.py", "--native-evidence", output / "media-native", "--media-evidence", output / "media-worker", "--worker-bundle", output / "media-worker-bundle", "--output", output / "video-audio")
+        add("video-canonical-pcm", python, "tools/verification/video-pcm-check.py", "--native-evidence", output / "media-native", "--media-evidence", output / "media-worker", "--worker-bundle", output / "media-worker-bundle", "--output", output / "video-pcm")
     if "typescript" in groups:
         add("types", "pnpm", "check:types")
         add("client-tests", "pnpm", "test:operation-client")
@@ -105,6 +106,7 @@ def plan(groups, output, bindgen, python, ffmpeg_dir=None):
         add("video-projection-native-wasm-parity", "node", "tools/verification/video-projection-parity.mjs", "target/debug/mo-video-conformance", output / "video-wasm/mo_video_conformance.js", output / "video-projection-parity.json")
         add("video-render-native-wasm-parity", "node", "tools/verification/video-render-parity.mjs", "target/debug/mo-video-conformance", output / "video-wasm/mo_video_conformance.js", output / "video-render-parity.json")
         add("video-audio-native-wasm-parity", "node", "tools/verification/video-audio-parity.mjs", "target/debug/mo-video-conformance", output / "video-wasm/mo_video_conformance.js", output / "video-audio-parity.json")
+        add("video-pcm-native-wasm-parity", "node", "tools/verification/video-pcm-parity.mjs", "target/debug/mo-video-conformance", output / "video-wasm/mo_video_conformance.js", output / "video-pcm-parity.json")
     if "mcp-protocol" in groups:
         thin = ROOT / "tools/mo-mcp/target/debug/mo-mcp"
         add("mcp-agent-package", python, "tools/agent-package/check.py", output / "mcp-agent-package", thin, ROOT / "target/debug/mo-export-worker")

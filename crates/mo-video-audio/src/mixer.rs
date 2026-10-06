@@ -309,7 +309,7 @@ impl Session<'_, '_> {
         let asset = match &voice.source {
             AudioSpanSource::Media { binding } => {
                 let asset = self.resources.describe(binding)?;
-                asset.validate(binding, bits)?;
+                asset.validate_binding(binding, bits)?;
                 Some(asset)
             }
             AudioSpanSource::Sequence { .. } => None,

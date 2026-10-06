@@ -86,4 +86,4 @@ node tools/verification/video-audio-parity.mjs \
 
 非原速 `PreservePitch` 当前明确返回 Unsupported；没有以变调重采样冒充保调。后续须接入专门伸缩 DSP，处理输入/输出 latency、预热/尾部、锚点速率切换、seek 随机访问和 Native/WASM 一致性，保留每层政策。
 
-生产 decoder→PCM 窗口提供器、通用 edit list/priming/padding 解析、音频设备/AudioWorklet、A/V 主时钟、播放定位、响度/真峰值及限制器、降噪/淡化质量、音频编码/封装、设备变化和用户可操作的工作台仍未完成。CPU/GPU/浏览器实时性能须在这些链路接通后单独测量。本记录不改变完整目标和验收条件。
+后续已实现[标准 PCM 分块与资源适配](video-canonical-pcm.md)，真实 decoder→本地文件块→Mixer 已有独立测试；生产 Host 窗口准备/存储、通用 edit list/priming/padding 解析、音频设备/AudioWorklet、A/V 主时钟、播放定位、响度/真峰值及限制器、降噪/淡化质量、音频编码/封装、设备变化和用户可操作的工作台仍未完成。CPU/GPU/浏览器实时性能须在这些链路接通后单独测量。本记录不改变完整目标和验收条件。

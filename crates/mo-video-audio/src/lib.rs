@@ -16,6 +16,12 @@ pub use resample::*;
 pub const PROFILE: &str = "musteroffice.audio.f32-sinc64-bh4-phase1024-v1-draft";
 #[derive(Debug, thiserror::Error)]
 pub enum AudioError {
+    #[error("audio source {resource} is not ready for [{first_sample}, {end_sample})")]
+    PendingSource {
+        resource: mo_common::ResourceId,
+        first_sample: i64,
+        end_sample: i64,
+    },
     #[error("invalid audio input: {0}")]
     Invalid(&'static str),
     #[error("unsupported audio capability: {0}")]

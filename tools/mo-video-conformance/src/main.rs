@@ -11,7 +11,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         [mode] if mode == "--render" => mo_video_conformance::video_render_conformance(&input),
         [mode] if mode == "--audio" => mo_video_conformance::video_audio_conformance(&input),
-        _ => return Err("usage: mo-video-conformance [--projection|--render|--audio]".into()),
+        [mode] if mode == "--pcm" => mo_video_conformance::video_pcm_conformance(&input),
+        _ => {
+            return Err("usage: mo-video-conformance [--projection|--render|--audio|--pcm]".into());
+        }
     };
     std::io::stdout().write_all(output.as_bytes())?;
     Ok(())

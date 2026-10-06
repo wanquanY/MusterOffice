@@ -67,6 +67,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         return Err("usage: mo-contract-codegen <write|check> <directory>".into());
     }
     let schemas = [
+        ("video-pcm-tile-ref", schema::<mo_video_pcm::PcmTileRef>()),
         ("video-document", schema::<mo_video_model::VideoDocument>()),
         ("video-transaction", schema::<mo_video_edit::Transaction>()),
         ("video-inverse", schema::<mo_video_edit::Inverse>()),
