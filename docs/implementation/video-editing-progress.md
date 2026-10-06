@@ -160,6 +160,12 @@ probe 通过原 FileQueryService 和 VerifiedContentReader 读取原授权文件
 
 当前仅有内部授权探测入口，不是正式 probe RPC/技能或用户导入完成。容器 duration 不证明连续呈现区间；通用 demux/edit-list 索引、内容存储大素材支持（当前沿用 264 MiB + 12 bytes 上限）、真实像素/PCM 播放、输出校验发布、完整属性 UI、Browser 和 CE.SDK 替换仍须完成。报告为产品 `.codex-work/video-media-runtime-report.json`；保留原 worktree 未提交的生成/Admin/多模态代码，不宣称干净 HEAD 全应用验收。
 
+### 容器原始样本与编辑时钟索引
+
+`mo-media-isobmff` 新增基于有界 `ReadAt` 的非分片 ISO BMFF 解析；跳过 mdat，保留 DTS/PTS、压缩字节范围、初始化描述、原始 edit list、显示矩阵及各自独立的声明/解码时长。未支持的加密、外部引用、分片、composition shift 等语义明确拒绝，不推算连续呈现范围。7 项 Rust 检查覆盖预算、取消、畸形/截断数据、超过 8 GiB 的稀疏虚拟来源及 256 组独立布局对照；strict Clippy、WASM 编译与 6 项验证驱动测试通过。
+
+3 份真实 MP4/M4A 共 390 个压缩样本与独立 FFmpeg demux 的时间、位置、大小、同步标记和字节摘要一致。发现参考工具会填充 nominal packet duration，验证通过实际 DTS 差和独立解码区间比较原始 stts，同时保存差异。容器声明、解码总时长和编辑终点不能混用。证据、限制与复现见[容器索引记录](video-container-index.md)。本次尚未接入受限 worker、产品导入或 Browser Host；现有 SDK 和产品固定发行保持原状。
+
 ### 精确时间
 
 `mo-time` 从原 PPT 时间线抽取有界精确有理数运算。PPT 保留原合同与正除数约束的薄适配，视频可用反向映射所需的有符号除法。时间转换区分精确可表达与显式量化；不能表达时返回错误，量化返回舍入残差。支持四种明确舍入策略、负时间和分数帧率的绝对帧边界计算。

@@ -35,6 +35,7 @@ class CurrentVerificationTests(unittest.TestCase):
         self.assertLess(names.index("media-native-callbacks"), names.index("media-worker-execution"))
         self.assertLess(names.index("media-worker-bundle"), names.index("media-worker-execution"))
         self.assertLess(names.index("media-worker-execution"), names.index("video-source-projection"))
+        self.assertLess(names.index("media-native-callbacks"), names.index("video-container-index"))
         self.assertLess(names.index("video-source-projection"), names.index("video-color-composition"))
         self.assertIn("--ignored", next(s for s in steps if s.name == "video-generated-transactions").argv)
         for dependency in ("video-conformance-native", "video-conformance-wasm", "video-conformance-bindgen"):
@@ -65,7 +66,7 @@ class CurrentVerificationTests(unittest.TestCase):
 
     def test_media_plan_consumes_explicit_component_and_missing_record_fails(self):
         steps = current.plan({"media"}, Path("/output"), "unused", sys.executable, "/media-component")
-        self.assertEqual(len(steps), 8)
+        self.assertEqual(len(steps), 9)
         self.assertIn("/media-component", steps[0].argv)
         self.assertIn("/media-component", steps[1].argv)
         self.assertIn("/output/media-native", steps[1].argv)
@@ -76,6 +77,8 @@ class CurrentVerificationTests(unittest.TestCase):
         self.assertEqual(steps[6].name, "video-audio-dsp")
         self.assertEqual(steps[7].name, "video-canonical-pcm")
         self.assertIn("/output/media-worker", steps[7].argv)
+        self.assertEqual(steps[8].name, "video-container-index")
+        self.assertIn("/output/media-native/bframes-vfr.mp4", steps[8].argv)
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "run"
             result = subprocess.run([sys.executable, str(Path(current.__file__)), "--groups", "media", "--output", str(output),
