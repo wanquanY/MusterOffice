@@ -1,4 +1,7 @@
 //! Host owner for a separately packaged native media worker.
+mod admission;
+mod encoding;
+pub use encoding::{EncoderOptions, NativeEncoder};
 mod bundle;
 mod response;
 mod session;

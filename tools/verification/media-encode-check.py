@@ -25,7 +25,10 @@ def main():
     parser.add_argument("--hardware", action="store_true", help="require actual VideoToolbox H.264; failure is not skipped")
     parser.add_argument("--ffmpeg", default="ffmpeg")
     parser.add_argument("--project", action="store_true", help="export compiled project composition and audio mix")
+    parser.add_argument("--worker-bundle", type=Path, help="encode/decode project files through a verified disposable worker")
     args = parser.parse_args()
+    if args.worker_bundle and not args.project:
+        parser.error("--worker-bundle requires --project")
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
     component = args.component.resolve()
@@ -38,6 +41,13 @@ def main():
     env.pop(hardware_key, None)
     if args.hardware:
         env[hardware_key] = "1"
+    if args.worker_bundle:
+        bundle = args.worker_bundle.resolve()
+        manifest = json.loads((bundle / "manifest.json").read_text())
+        assert manifest["profile"] == "musteroffice.native-media-worker/2"
+        assert manifest["componentRecordSha256"] == sha(component / "native-build.json")
+        env["MO_MEDIA_TEST_BUNDLE"] = str(bundle)
+        env["MO_MEDIA_TEST_BUNDLE_SHA256"] = sha(bundle / "manifest.json")
     commands = []
 
     def run(command, name):
@@ -57,8 +67,12 @@ def main():
     # before linking. Both default error paths and actual finite exports run here.
     suite = "project_export" if args.project else "encoding"
     evidence = "actual_project_export_files" if args.project else "real_export_profiles"
-    run(["cargo", "test", "--offline", "--locked", "-p", "mo-media-ffmpeg", "--test", suite], "behavior")
-    run(["cargo", "test", "--offline", "--locked", "-p", "mo-media-ffmpeg", "--test", suite, evidence, "--", "--ignored", "--nocapture"], "exports")
+    package = "mo-native-media" if args.worker_bundle else "mo-media-ffmpeg"
+    behavior = ["project_composition", "--", "--ignored"] if args.worker_bundle else []
+    run(["cargo", "test", "--offline", "--locked", "-p", package, "--test", suite, *behavior], "behavior")
+    if args.worker_bundle:
+        run(["cargo", "test", "--offline", "--locked", "-p", package, "--test", "encoding", "--", "--ignored"], "worker-failures")
+    run(["cargo", "test", "--offline", "--locked", "-p", package, "--test", suite, evidence, "--", "--ignored", "--nocapture"], "exports")
     exports = output / "exports"
     cases = json.loads((exports / "exports.json").read_text())
     assert len(cases) == (3 if args.project else 6) * (2 if args.hardware else 1)
@@ -142,8 +156,8 @@ def main():
         row["outputSha256"] = sha(path)
     report = {"format": "musteroffice.project-export-check/1" if args.project else "musteroffice.native-encoding-check/1", "status": "passed",
               "platform": platform.platform(), "machine": platform.machine(), "hardwareRequired": args.hardware,
-              "component": record, "referenceTool": version, "commands": commands, "cases": cases,
-              "scope": ("Compiled project with graphic clips, alpha, gap matte, resampled gain-adjusted mono-to-stereo audio, fractional clocks and real native MP4. Not decoded visual media, effects/text, worker, browser or product acceptance." if args.project else "Typed native encode/mux/candidate sink, precise presentation/audio extent, B-frame drain, actual independent decode, lossless audit and failure paths. Not project-render export, worker isolation, browser/device playback, delivery bitrate quality, performance or product acceptance.")}
+              "component": record, "workerManifestSha256": env["MO_MEDIA_TEST_BUNDLE_SHA256"] if args.worker_bundle else None, "referenceTool": version, "commands": commands, "cases": cases,
+              "scope": ("Compiled project with graphic clips, alpha, gap matte, resampled gain-adjusted mono-to-stereo audio, fractional clocks and real native MP4. Worker isolation is exercised only when workerManifestSha256 is present. Not decoded visual media, effects/text, browser or product acceptance." if args.project else "Typed native encode/mux/candidate sink, precise presentation/audio extent, B-frame drain, actual independent decode, lossless audit and failure paths. Not project-render export, worker isolation, browser/device playback, delivery bitrate quality, performance or product acceptance.")}
     (output / "report.json").write_text(json.dumps(report, indent=2) + "\n")
     print(json.dumps({"status": "passed", "cases": len(cases), "hardware": args.hardware}))
 

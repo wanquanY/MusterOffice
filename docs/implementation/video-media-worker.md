@@ -13,7 +13,7 @@
 
 ## 协议和生命周期
 
-协议 `musteroffice.native-media-worker/1` 使用 4 字节 little-endian 长度和最多 64 KiB 的严格 JSON 头，随后按布局传输原始帧平面或资源读回复。没有 base64，也不要求整份素材进内存。聚合平面长度、乘法溢出、帧 generation、调用编号和音视频类别在读取帧 payload 前检查。
+最初的解码协议为 `musteroffice.native-media-worker/1`；当前已随[编码能力](video-encoding-worker.md)升级为 `/2`，旧包不会被新版宿主接受。两版均使用 4 字节 little-endian 长度和最多 64 KiB 的严格 JSON 头，随后按布局传输原始帧平面或资源读回复。没有 base64，也不要求整份素材进内存。聚合平面长度、乘法溢出、帧 generation、调用编号和音视频类别在读取帧 payload 前检查。
 
 单会话 `Open → Select → Next/Seek → Close`，一个会话只有一个流和一个拥有线程。Open 返回流和实际安装的进程额度；Select 消耗容器。Seek 成功后递增 generation；返回帧必须匹配当前 generation。错误使会话永久停止，不能以正常 EOF 或上次成功帧代替失败。
 
@@ -39,11 +39,11 @@ Close 先销毁原生状态并回复 Closed，再等待宿主关闭 stdin 后正
 
 ```sh
 python3 tools/verification/current.py --groups media \
-  --ffmpeg-dir .codex-work/ffmpeg-native-final \
+  --ffmpeg-dir .codex-work/ffmpeg-encode-final \
   --output .codex-work/new-media-worker-check
 ```
 
-四步顺序执行：C callbacks、Rust 安全 adapter、构建新包、真实 worker。最后一步明确执行默认 ignored 的 6 项生命周期、3 项包校验及 1 项真实媒体测试；缺环境报错，不把跳过算通过。
+早期 gate 的四步顺序为：C callbacks、Rust 安全 adapter、构建新包、真实 worker。最后一步明确执行默认 ignored 的 6 项生命周期、3 项包校验及 1 项真实媒体测试；缺环境报错，不把跳过算通过。
 
 本机 `.codex-work/media-worker-gate-final/report.json` 与 `media-worker/report.json`：
 
@@ -57,4 +57,4 @@ python3 tools/verification/current.py --groups media \
 
 本次包 manifest SHA-256：`47ff13846cb679db51a8226f417843042dc492ccbe0eb9f8e862e2b0311b9edd`。它绑定这次本地开发包，不是已发布版本或平台性能结论。
 
-后续[连续区间源采样](video-source-presentation.md)已将实际帧接到工程编译计划。尚待完成：通用容器索引、色彩/GPU/音频 DSP、编码导出、浏览器及其它原生平台、正式 SDK/组件发行与产品接入。不得从这里的进程测试推断完整媒体/产品验收通过。
+后续[连续区间源采样](video-source-presentation.md)已将实际帧接到工程编译计划。后续 CPU/Metal 合成、音频 DSP、标准 PCM、工程保调和[编码导出 worker](video-encoding-worker.md)已有独立实施记录。通用容器索引、浏览器及其它原生平台、正式 SDK/组件发行与产品接入仍待完成。不得从这里的进程测试推断完整媒体/产品验收通过。

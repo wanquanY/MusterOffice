@@ -92,11 +92,15 @@ VFR 呈现窗口按真实样本覆盖区间选择源帧，区分已知 gap 与�
 
 ### 原生编码、封装与候选输出
 
-`mo-media-ffmpeg::Encoder` 已实际导出 H.264 VideoToolbox/AAC MP4，另提供 FFV1/float PCM MP4 无损审计档案。精确帧/样本时钟、短尾、有限 packet 交错、短写和失败关闭已实现；硬件帧重排问题在固定上游组件中按 SPS 上界修正。12 组真实文件经独立工具核验，ASan/UBSan 和既有媒体 9 步回归通过。详见[编码实施记录](video-native-encoding.md)。工程合成到 I420 和有限导出会话见下一节；worker 编码协议、宿主校验发布和产品导出仍待连接。
+`mo-media-ffmpeg::Encoder` 已实际导出 H.264 VideoToolbox/AAC MP4，另提供 FFV1/float PCM MP4 无损审计档案。精确帧/样本时钟、短尾、有限 packet 交错、短写和失败关闭已实现；硬件帧重排问题在固定上游组件中按 SPS 上界修正。12 组真实文件经独立工具核验，ASan/UBSan 和既有媒体 9 步回归通过。详见[编码实施记录](video-native-encoding.md)。工程合成到 I420 和有限导出会话见下一节；编码 worker 见下文，宿主校验发布和产品导出仍待连接。
 
 ### 工程合成到编码输出
 
-`mo-video-export` 已将不可变工程、精确 CFR/音频样本时钟、CPU 合成、I420 输出和音频 mixer 接到编码接口。缺音频派生资源可以等待并从当前进度继续；错误和取消关闭候选。6 个真实 MP4、96 帧和 185,408 个 PCM 值的 Native/WASM 位级对照通过。详见[工程导出记录](video-project-export.md)。当前测试图形/程序 PCM 不代表真实素材全流程或产品验收；编码 worker 与宿主提交仍待接通。
+`mo-video-export` 已将不可变工程、精确 CFR/音频样本时钟、CPU 合成、I420 输出和音频 mixer 接到编码接口。缺音频派生资源可以等待并从当前进度继续；错误和取消关闭候选。6 个真实 MP4、96 帧和 185,408 个 PCM 值的 Native/WASM 位级对照通过。详见[工程导出记录](video-project-export.md)。当前测试图形/程序 PCM 不代表真实素材全流程或产品验收；编码 worker 见下一节，宿主提交仍待接通。
+
+### 编码进程与候选写回
+
+`mo-native-media::NativeEncoder` 已实现 `VideoEncoder`，复用固定组件包、进程额度和既有 Session。私有协议升级 `/2`，有界 I420/PCM 输入及候选 WriteAt 写回、总 deadline、关闭阶段禁止写入、完成计数校验及 kill/reap 已实现。真实工程经受控进程导出并回读，故障路径与既有解码回归已验证；详见[编码 worker 记录](video-encoding-worker.md)。宿主持久化/校验发布和用户 UI 仍待接入。
 
 ### 合同与验证入口
 
@@ -151,7 +155,7 @@ cargo test --release --offline --locked -p mo-video-edit --test generated_sequen
 ## 明确尚未完成
 
 - 当前已支持锚点线性变速；完整曲线变速/反查、转场、关键帧、字幕词锚点、分析与互操作等最终语义仍待补全。音频策略已保存，实际重采样/混音基础已实现，非原速保调及工程派生图已实现，生产 Host 接入和完整音频处理仍待完成。
-- 原生 worker 已通过连续区间的真实工程采样测试，CPU/Metal GPU 已执行同源合成，但尚未成为产品播放链；音频混音已有内核实现，设备播放、GPU 显示/纹理互操作、产品工程导出与浏览器 I/O 尚未接入；编码/容器的 leaf adapter 已实现，worker 和宿主交付仍待连接。
+- 原生 worker 已通过连续区间的真实工程采样测试，CPU/Metal GPU 已执行同源合成，但尚未成为产品播放链；音频混音已有内核实现，设备播放、GPU 显示/纹理互操作、产品工程导出与浏览器 I/O 尚未接入；编码/容器的 leaf adapter 已实现，编码 worker 已连接，宿主交付仍待连接。
 - 生产 SDK/MCP/CLI、Device/Browser Host、Agent 技能、新时间线 UI、保存恢复和项目包尚未接入新内核。
 - CE.SDK 仍存在于产品旧 worktree，未宣称依赖退役；旧 scene 数据须审计、迁移或保留可导出的原件，不能仅换 engineId。
 - 完整功能、媒体质量、性能、体积、多平台与真实 provider 计费没有完成验收；当前不能交付为“用户已可验收全部视频功能”。

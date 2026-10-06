@@ -71,6 +71,10 @@ def plan(groups, output, bindgen, python, ffmpeg_dir=None, stretch_wasm_dir=None
     if "encode" in groups:
         add("media-encoding-candidates", python, "tools/verification/media-encode-check.py", "--component", ffmpeg_dir or "UNCONFIGURED_FFMPEG_COMPONENT", "--output", output / "media-encode")
         add("video-project-export", python, "tools/verification/media-encode-check.py", "--project", "--component", ffmpeg_dir or "UNCONFIGURED_FFMPEG_COMPONENT", "--output", output / "video-export")
+        worker_bundle = output / ("media-worker-bundle" if "media" in groups else "encoding-worker-bundle")
+        if "media" not in groups:
+            add("encoding-worker-bundle", python, "tools/media-worker/build.py", "--component", ffmpeg_dir or "UNCONFIGURED_FFMPEG_COMPONENT", "--output", worker_bundle)
+        add("video-project-worker-export", python, "tools/verification/media-encode-check.py", "--project", "--worker-bundle", worker_bundle, "--component", ffmpeg_dir or "UNCONFIGURED_FFMPEG_COMPONENT", "--output", output / "video-worker-export")
     if "typescript" in groups:
         add("types", "pnpm", "check:types")
         add("client-tests", "pnpm", "test:operation-client")

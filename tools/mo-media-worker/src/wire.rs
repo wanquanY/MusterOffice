@@ -1,10 +1,13 @@
-use mo_media_wire::{Command, Event, MAX_READ_BYTES, Request, Response, read_header, write_header};
+use mo_media_wire::{
+    Command, Event, MAX_READ_BYTES, MAX_WRITE_BYTES, Request, Response, read_header, write_header,
+};
 use std::io::{self, BufReader, BufWriter, Read, Write};
 pub struct Wire {
     pub input: BufReader<io::Stdin>,
     output: BufWriter<io::Stdout>,
     pub call_id: u64,
     read_id: u64,
+    write_id: u64,
 }
 impl Wire {
     pub fn new() -> Self {
@@ -13,6 +16,7 @@ impl Wire {
             output: BufWriter::new(io::stdout()),
             call_id: 0,
             read_id: 0,
+            write_id: 0,
         }
     }
     pub fn respond<'a>(
@@ -78,6 +82,39 @@ impl Wire {
                 Ok(byte_length as usize)
             }
             _ => Err(io::Error::other("invalid resource reply")),
+        }
+    }
+    pub fn write_candidate(&mut self, offset: u64, bytes: &[u8]) -> io::Result<usize> {
+        let n = bytes.len().min(MAX_WRITE_BYTES as usize);
+        if n == 0 {
+            return Err(io::Error::other("empty candidate write"));
+        }
+        self.write_id = self
+            .write_id
+            .checked_add(1)
+            .ok_or_else(|| io::Error::other("write id exhausted"))?;
+        self.respond(
+            &Event::Write {
+                write_id: self.write_id,
+                offset,
+                byte_length: n as u32,
+            },
+            std::iter::once(&bytes[..n]),
+        )?;
+        let reply: Request =
+            read_header(&mut self.input)?.ok_or_else(|| io::Error::other("write reply missing"))?;
+        match reply.command {
+            Command::WriteReply {
+                write_id,
+                byte_length,
+            } if reply.call_id == self.call_id
+                && write_id == self.write_id
+                && byte_length > 0
+                && byte_length <= n as u32 =>
+            {
+                Ok(byte_length as usize)
+            }
+            _ => Err(io::Error::other("invalid candidate write reply")),
         }
     }
 }

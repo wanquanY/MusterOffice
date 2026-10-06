@@ -1,4 +1,5 @@
-//! Disposable single-source/single-stream decoder. Never opens media paths.
+//! Disposable decoder or finite encoder. Never opens media or output paths.
+mod encoding;
 mod wire;
 use mo_media::{ErrorKind, MediaError};
 use mo_media_ffmpeg::{Container, Decoder};
@@ -11,7 +12,9 @@ enum State {
     Empty,
     Open(Container<'static>),
     Selected(Decoder<'static>),
+    Encoding(encoding::Encoding),
     Failed,
+    Finished,
     Closed,
 }
 fn state_error() -> MediaError {
@@ -41,6 +44,50 @@ fn run() -> io::Result<()> {
         last_call = request.call_id;
         io.borrow_mut().call_id = last_call;
         let result = match request.command {
+            Command::OpenEncoder {
+                profile,
+                configuration,
+                limits,
+                process_limits,
+            } if matches!(state, State::Empty) => {
+                if profile != PROFILE {
+                    return Err(io::Error::other("media worker protocol mismatch"));
+                }
+                mo_media_wire::encode_video_lengths(configuration, limits)?;
+                let applied = apply_to_current_worker(process_limits).map_err(io::Error::other)?;
+                match encoding::Encoding::open(Rc::clone(&io), configuration, limits) {
+                    Ok(encoder) => {
+                        state = State::Encoding(encoder);
+                        Ok(Event::EncoderOpened {
+                            profile: PROFILE.into(),
+                            configuration,
+                            applied,
+                        })
+                    }
+                    Err(error) => Err(error),
+                }
+            }
+            Command::EncodeVideo { pts, duration } => match &mut state {
+                State::Encoding(encoder) => encoder.video(&io, pts, duration),
+                _ => Err(state_error()),
+            },
+            Command::EncodeAudio {
+                first_sample,
+                frames,
+            } => match &mut state {
+                State::Encoding(encoder) => encoder.audio(&io, first_sample, frames),
+                _ => Err(state_error()),
+            },
+            Command::FinishEncoder => match std::mem::replace(&mut state, State::Failed) {
+                State::Encoding(mut encoder) => {
+                    let result = encoder.finish();
+                    if result.is_ok() {
+                        state = State::Finished;
+                    }
+                    result
+                }
+                _ => Err(state_error()),
+            },
             Command::Open {
                 profile,
                 byte_length,

@@ -79,7 +79,9 @@ class CurrentVerificationTests(unittest.TestCase):
 
     def test_encode_gate_requires_real_component_and_generates_new_candidates(self):
         steps = current.plan({"encode"}, Path("/output"), "unused", sys.executable, "/media-component")
-        self.assertEqual(len(steps), 2)
+        self.assertEqual(len(steps), 4)
+        self.assertEqual(steps[2].name, "encoding-worker-bundle")
+        self.assertIn("--worker-bundle", steps[3].argv)
         self.assertEqual(steps[0].name, "media-encoding-candidates")
         self.assertIn("/media-component", steps[0].argv)
         self.assertIn("/output/media-encode", steps[0].argv)
