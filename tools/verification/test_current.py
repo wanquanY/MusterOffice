@@ -42,8 +42,9 @@ class CurrentVerificationTests(unittest.TestCase):
             self.assertLess(names.index(dependency), names.index("video-render-native-wasm-parity"))
             self.assertLess(names.index(dependency), names.index("video-audio-native-wasm-parity"))
             self.assertLess(names.index(dependency), names.index("video-pcm-native-wasm-parity"))
+            self.assertLess(names.index(dependency), names.index("video-stretch-native-wasm-parity"))
         reports = [s.argv[-1] for s in steps if s.name.startswith("video-") and s.name.endswith("native-wasm-parity")]
-        self.assertEqual(len(reports), 5)
+        self.assertEqual(len(reports), 6)
         self.assertEqual(len(set(reports)), len(reports), "Each evidence file must remain independently readable")
         self.assertIn("--ignored", next(s for s in steps if s.name == "native-render-tests").argv)
 

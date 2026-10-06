@@ -195,7 +195,7 @@ flowchart TD
 | 浏览器容器与样本 I/O | Mediabunny 经审计的固定版本 + WebCodecs | 保留复杂媒体边界处理；MPL-2.0 按具体发行闭包处理 |
 | 合成 | Rust 生成 RenderPlan + 版本化效果；原生 wgpu/浏览器 WebGPU | 图形设备差异止于适配层，文字与效果数学共用 |
 | 文本 | 复用 MusterOffice 字体塑形和布局基础 | 中文、多语、字幕预览与导出保持一致 |
-| 音频保调变速 | Signalsmith Stretch 为优先候选，窄 C ABI 与 Native/WASM 验证 | 原作者公开延迟模型及 MIT 许可；质量与各平台构建仍需验证 |
+| 音频保调变速 | Signalsmith Stretch 1.4.0 + Linear 0.6.4 已进入开发集成，窄 C ABI；工程链路仍待完成 | 原作者公开延迟模型及 MIT 许可；[顺序 DSP 与跨端证据](../implementation/video-pitch-stretch.md)，完整音质/平台仍需验证 |
 | 外部交换 | 自有导入导出映射，OTIO/FCPXML 对照校验 | 不把交换格式的未定义行为带进内部权威模型 |
 | 智能分析 | 可插拔、显式权限的本地/远端分析器 | ASR/镜头建议不进入确定性编辑核心 |
 

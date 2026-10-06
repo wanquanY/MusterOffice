@@ -95,6 +95,21 @@ def main():
     run('python3', 'tools/components/build-ffmpeg.py', '--stage', 'libraries',
         '--directory', DIRECTORY / 'ffmpeg', '--archive', media_archive, '--jobs', '4')
     run('python3', 'tools/components/build-ffmpeg.py', '--stage', 'bridge', '--directory', DIRECTORY / 'ffmpeg')
+    stretch = json.loads((ROOT / 'components/signalsmith-stretch/lock.json').read_text())
+    sources = {}
+    for entry in stretch['sources']:
+        sources[entry['name']] = DIRECTORY / ('signalsmith-' + entry['name'])
+        checkout(entry['repository'] + '.git', entry['commit'], sources[entry['name']])
+    # Share the previously pinned Emscripten development toolchain profile.
+    # Its official binary installer is not a fully hashed release toolchain.
+    emsdk = DIRECTORY / 'emsdk'
+    checkout('https://github.com/emscripten-core/emsdk.git', hb['emsdkCommit'], emsdk)
+    run('python3', 'emsdk.py', 'install', hb['emsdkVersion'], cwd=emsdk)
+    run('python3', 'emsdk.py', 'activate', hb['emsdkVersion'], cwd=emsdk)
+    for target, destination in [('native', 'stretch'), ('wasm', 'stretch-wasm')]:
+        run('python3', 'tools/components/build-stretch.py', '--target', target,
+            '--stretch-source', sources['stretch'], '--linear-source', sources['linear'],
+            '--output', DIRECTORY / destination, '--emsdk', emsdk, '--archiver', '/usr/bin/llvm-ar')
 
 
 if __name__ == '__main__':

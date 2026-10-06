@@ -7,7 +7,8 @@
   "engines": { "node": ">=22" },
   "scripts": {
     "generate:types": "node tools/contracts/generate-types.mjs write",
-    "check:types": "node tools/contracts/generate-types.mjs check && tsc --project packages/contracts/tsconfig.json && tsc --project packages/text-component/tsconfig.json --noEmit && tsc --project packages/raster-component/tsconfig.json --noEmit && tsc --project packages/operation-client/tsconfig.json --noEmit && tsc --project packages/playback-client/tsconfig.json --noEmit && tsc --project packages/editor-client/tsconfig.json --noEmit",
+    "check:types": "node tools/contracts/generate-types.mjs check && tsc --project packages/contracts/tsconfig.json && tsc --project packages/text-component/tsconfig.json --noEmit && tsc --project packages/stretch-component/tsconfig.json --noEmit && tsc --project packages/raster-component/tsconfig.json --noEmit && tsc --project packages/operation-client/tsconfig.json --noEmit && tsc --project packages/playback-client/tsconfig.json --noEmit && tsc --project packages/editor-client/tsconfig.json --noEmit",
+    "build:stretch-component": "tsc --project packages/stretch-component/tsconfig.json",
     "build:text-component": "tsc --project packages/text-component/tsconfig.json",
     "build:raster-component": "tsc --project packages/raster-component/tsconfig.json",
     "build:operation-client": "tsc --project packages/operation-client/tsconfig.json",

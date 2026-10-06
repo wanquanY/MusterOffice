@@ -16,7 +16,7 @@
 | 工作包 | 当前状态 | 退出条件 |
 | --- | --- | --- |
 | W1 视频领域与合同 | 基础已实现，未全部完成 | 独立模型、精确时间、受限解析与校验、Native/WASM 公共合同向量；补全效果、字幕、分析和工程包模型 |
-| W2 媒体与合成 | 原生解码/采样、CPU/Metal 合成及音频块处理基础已实现；Browser、保调/导出及产品显示待实施 | 原生/浏览器媒体与合成、字体/色彩/音频及真实输出 |
+| W2 媒体与合成 | 原生解码/采样、CPU/Metal 合成及音频块处理基础已实现；保调顺序 DSP 已实现；变速图、Browser、导出及产品显示待实施 | 原生/浏览器媒体与合成、字体/色彩/音频及真实输出 |
 | W3 编辑与历史 | 原子事务基础已实现，未全部完成 | 全部编辑操作、候选、冲突与有条件逆操作及增量索引 |
 | W4 产品执行 | 待实施新内核接入 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
 | W5 创作与交互 | 保留原 worktree，未完成替换 | 整理现有生成/Admin/计费、技能、人机共享编辑与消息卡片 |
@@ -48,7 +48,7 @@
 
 `mo-video-compile` 已实现验证后编译、平衡区间索引、绝对帧/音频样本时钟、分组视觉计划和分层音频点查询。精确采样携带 before/after 侧；倒放与多级嵌套翻转该侧，不使用 epsilon，也不将中间有理数强制量化到作者时基。嵌套实例按视觉/音频轨道明确投影，透明度保留在分组，逐级音频保调/反向/定格策略不被扁平化。
 
-VFR 呈现窗口按真实样本覆盖区间选择源帧，区分已知 gap 与尚未索引的 outsideWindow，验证内容摘要和流绑定。该纯计算索引只做元数据运算；demux/seek 由下述媒体组件承担；音频块处理的后续实现见下文，非原速保调仍未实现。接口、预算、边界及下一层责任见[编译实施记录](video-editing-projection.md)。
+VFR 呈现窗口按真实样本覆盖区间选择源帧，区分已知 gap 与尚未索引的 outsideWindow，验证内容摘要和流绑定。该纯计算索引只做元数据运算；demux/seek 由下述媒体组件承担；音频块处理的后续实现见下文，非原速保调尚未接通工程图。接口、预算、边界及下一层责任见[编译实施记录](video-editing-projection.md)。
 
 ### 原生媒体叶子组件
 
@@ -76,11 +76,15 @@ VFR 呈现窗口按真实样本覆盖区间选择源帧，区分已知 gap 与�
 
 ### 音频块处理
 
-`mo-video-audio` 已接通 PCM 归一化、命名声道/显式矩阵、有理采样时钟、带限重采样、倒放、增益/淡入淡出和嵌套混音。分块编译按片段和时间映射锚点调度，保持各层音高政策；窗口缺失不会伪装静音。真实 worker AAC 输出经五类实际 DSP，并与独立 CLI 和数学包络核对；Native/WASM 的完整 PCM bits 一致。尚缺非原速保调、生产 PCM 窗口适配器和声音设备；详见[音频块处理记录](video-audio-dsp.md)。
+`mo-video-audio` 已接通 PCM 归一化、命名声道/显式矩阵、有理采样时钟、带限重采样、倒放、增益/淡入淡出和嵌套混音。分块编译按片段和时间映射锚点调度，保持各层音高政策；窗口缺失不会伪装静音。真实 worker AAC 输出经五类实际 DSP，并与独立 CLI 和数学包络核对；Native/WASM 的完整 PCM bits 一致。尚缺工程保调图、生产 Host 存储和声音设备；详见[音频块处理记录](video-audio-dsp.md)。
 
 ### 标准 PCM 与本地随机读取
 
 `mo-video-pcm` 已实现连续解码 PCM 的内容身份、不可变分块候选、校验和、受限 LRU 窗口读取和 `CanonicalAudioResource`。真实 AAC 定位实验发现，通用 seek/flush 无法代表位精确的完整解码状态；本地派生块让定位/倒放和导出复用相同 PCM。两个真实素材的 264 次随机/反向读取以及完整倒放混音逐 bit 一致；Native/WASM 完整/部分物化 14 查询一致。生产本地/OPFS 存储与后台准备仍由产品 Host 接入，首次物化及冷定位性能尚未达成验收。详见[连续解码与分块读取](video-canonical-pcm.md)。
+
+### 保调顺序计算
+
+`StretchStream` 已实现固定 128 帧量子、整数输入时钟、两侧延迟补偿、有限源尾部和可重试缺源。已用固定 Signalsmith Stretch/Linear 接入 Native 与 WASM，12 组实际跨端 PCM 输出一致，并验证短片段、音高、重试、取消和分配失败。工程混音器尚未调用该连续派生能力，不把每次窗口查询重建 DSP 当作保调实现。详见[保调实施记录](video-pitch-stretch.md)。
 
 ### 合同与验证入口
 
@@ -117,6 +121,7 @@ VFR 呈现窗口按真实样本覆盖区间选择源帧，区分已知 gap 与�
 | 实际 GPU 合成 | Apple M4 Max/Metal，29 用例最大线性误差 `7.153e-7`，RGBA8 最大差 1；26 取消点、三类预算、callback panic 恢复通过 | 未验收 Windows/Linux/浏览器、设备丢失恢复、实时 FPS、零拷贝或产品显示 |
 | 音频块处理 | 17 项音频基础测试、18 项编译测试；真实 AAC 五个完整输出；Native/WASM 8 查询的 PCM bits/计划/统计一致，任意分块与大块切片一致 | 非原速保调、生产 PCM adapter、设备播放与浏览器未完成；单一素材不等于完整音质/性能验收 |
 | 标准 PCM 随机读取 | 10 项默认测试；两段真实 AAC 各 144,000 样本/36 块；共 264 查询与两个完整倒放输出逐 bit 一致；Native/WASM 14 查询一致 | 测试文件 store 不是生产 Host；冷定位/长文件准备、OPFS、设备播放和完整产品未验收 |
+| 保调计算 | 7 项原生行为；12 组实际 Native/WASM 全 PCM 输出一致；35 个分配故障点与 ASan/UBSan 通过 | 尚未接入工程变速图、派生缓存、浏览器设备和产品播放器 |
 | 媒体内存检查 | wrapper 与 FFmpeg C 实现分别构建 ASan/UBSan 档案，同一真实检查通过 | 汇编与平台框架不因此被插桩；不是 hostile-media 隔离保证 |
 | 原生媒体库体积 | 本机 release 配置 5 个 FFmpeg 库及 C wrapper 共 7,392,248 bytes | 不包含 Rust worker、字体、GPU、额外 codec 或系统框架，不是最终应用体积 |
 | 代码与合同 | 整个 Rust 工作区 strict Clippy、WASM 编译、全部 schema/TypeScript 合同检查通过；新增视频 schema 使用相同生成/检查入口 | 未发布新版 SDK、组件频道或 UI |
@@ -131,7 +136,7 @@ cargo test --release --offline --locked -p mo-video-edit --test generated_sequen
 
 ## 明确尚未完成
 
-- 当前已支持锚点线性变速；完整曲线变速/反查、转场、关键帧、字幕词锚点、分析与互操作等最终语义仍待补全。音频策略已保存，实际重采样/混音基础已实现，非原速保调和完整音频处理仍待实现。
+- 当前已支持锚点线性变速；完整曲线变速/反查、转场、关键帧、字幕词锚点、分析与互操作等最终语义仍待补全。音频策略已保存，实际重采样/混音基础已实现，非原速保调顺序 DSP 已有独立实现，工程接入和完整音频处理仍待完成。
 - 原生 worker 已通过连续区间的真实工程采样测试，CPU/Metal GPU 已执行同源合成，但尚未成为产品播放链；音频混音已有内核实现，设备播放、GPU 显示/纹理互操作、编码/容器输出与浏览器 I/O 尚未接入。
 - 生产 SDK/MCP/CLI、Device/Browser Host、Agent 技能、新时间线 UI、保存恢复和项目包尚未接入新内核。
 - CE.SDK 仍存在于产品旧 worktree，未宣称依赖退役；旧 scene 数据须审计、迁移或保留可导出的原件，不能仅换 engineId。
@@ -158,3 +163,5 @@ Rust 接入增量记录：`.codex-work/media-rust-gate-final/report.json`、其 
 色彩与参考合成增量记录：`.codex-work/video-render-gate-final/report.json`、其 `video-render/report.json`、`video-render-parity.json`、`video-render-domain-regression.json`、`video-render-projection-regression.json`、`video-render-workspace-clippy.log`。media 分组已增加第六步真实色彩/合成，WASM 分组增加独立像素向量；边界与具体证据见[实施记录](video-color-composition.md)。
 
 GPU 增量记录：`.codex-work/video-gpu-gate-final/report.json`、其 `hardware.json`、`video-gpu-color-regression/report.json`、`video-gpu-{render,domain,projection}-parity.json`、`video-gpu-workspace-clippy-final.log`。独立硬件门禁为 `tools/verification/video-gpu-check.py`；通用 CI 的 ignored 不视为硬件通过。
+
+保调增量记录：`.codex-work/stretch-gate-final/report.json`、其 `video-stretch-parity.json`、`.codex-work/stretch-asan/build.json`、`stretch-workspace-clippy.log`。新增 `stretch` 验证分组，使用实际原生程序、Rust WASM 和单独 DSP WASM，不接受录制输出。

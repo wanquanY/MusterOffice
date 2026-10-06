@@ -19,7 +19,7 @@ import sys
 import time
 
 ROOT = Path(__file__).resolve().parents[2]
-GROUPS = ("lint", "rust", "contracts", "typescript", "native", "media", "mcp", "wasm", "mcp-protocol")
+GROUPS = ("lint", "rust", "contracts", "typescript", "native", "media", "mcp", "wasm", "stretch", "mcp-protocol")
 
 
 @dataclass(frozen=True)
@@ -38,7 +38,7 @@ def selected_groups(value):
     return groups
 
 
-def plan(groups, output, bindgen, python, ffmpeg_dir=None):
+def plan(groups, output, bindgen, python, ffmpeg_dir=None, stretch_wasm_dir=None):
     steps = []
 
     def add(name, *argv, worker=False):
@@ -107,6 +107,18 @@ def plan(groups, output, bindgen, python, ffmpeg_dir=None):
         add("video-render-native-wasm-parity", "node", "tools/verification/video-render-parity.mjs", "target/debug/mo-video-conformance", output / "video-wasm/mo_video_conformance.js", output / "video-render-parity.json")
         add("video-audio-native-wasm-parity", "node", "tools/verification/video-audio-parity.mjs", "target/debug/mo-video-conformance", output / "video-wasm/mo_video_conformance.js", output / "video-audio-parity.json")
         add("video-pcm-native-wasm-parity", "node", "tools/verification/video-pcm-parity.mjs", "target/debug/mo-video-conformance", output / "video-wasm/mo_video_conformance.js", output / "video-pcm-parity.json")
+    if "stretch" in groups:
+        if "wasm" not in groups:
+            add("video-conformance-native", "cargo", "build", *cargo, "-p", "mo-video-conformance")
+            add("video-conformance-wasm", "cargo", "build", *cargo, "--release", "-p", "mo-video-conformance", "--lib", "--target", "wasm32-unknown-unknown")
+            add("video-conformance-bindgen", bindgen, "target/wasm32-unknown-unknown/release/mo_video_conformance.wasm", "--target", "nodejs", "--out-dir", output / "video-wasm")
+        add("stretch-native-behavior", "cargo", "test", *cargo, "-p", "mo-stretch-sys")
+        add("stretch-component-adapter", "pnpm", "build:stretch-component")
+        directory = Path(stretch_wasm_dir or "UNCONFIGURED_STRETCH_WASM_COMPONENT")
+        add("video-stretch-native-wasm-parity", "node", "tools/verification/video-stretch-parity.mjs",
+            "target/debug/mo-video-conformance", output / "video-wasm/mo_video_conformance.js",
+            directory / "mo-stretch.mjs", directory / "mo-stretch.wasm",
+            ".codex-work/stretch-component/index.js", output / "video-stretch-parity.json")
     if "mcp-protocol" in groups:
         thin = ROOT / "tools/mo-mcp/target/debug/mo-mcp"
         add("mcp-agent-package", python, "tools/agent-package/check.py", output / "mcp-agent-package", thin, ROOT / "target/debug/mo-export-worker")
@@ -147,7 +159,7 @@ def source_identity():
 def prerequisites(groups, args):
     errors = []
     required_tools = ["cargo", "git"]
-    if groups.intersection(("typescript", "wasm")):
+    if groups.intersection(("typescript", "wasm", "stretch")):
         required_tools.extend(("pnpm", "node"))
     if "media" in groups:
         required_tools.extend(("clang", "ffmpeg", "ffprobe"))
@@ -167,7 +179,13 @@ def prerequisites(groups, args):
         for name, value in (("--skia-dir", args.skia_dir), ("--harfbuzz-dir", args.harfbuzz_dir)):
             if not value or not Path(value).is_dir():
                 errors.append(f"{name} must identify a prepared component directory; see component build documentation")
-    if "wasm" in groups and (not args.bindgen or not shutil.which(args.bindgen)):
+    if groups.intersection(("lint", "rust", "wasm", "stretch")):
+        if not args.stretch_dir or not (Path(args.stretch_dir) / "build.json").is_file():
+            errors.append("--stretch-dir must identify a prepared native DSP component with build.json")
+    if "stretch" in groups:
+        if not args.stretch_wasm_dir or not (Path(args.stretch_wasm_dir) / "build.json").is_file():
+            errors.append("--stretch-wasm-dir must identify a prepared WASM DSP component with build.json")
+    if groups.intersection(("wasm", "stretch")) and (not args.bindgen or not shutil.which(args.bindgen)):
         errors.append("--bindgen must identify a compatible wasm-bindgen executable")
     if "mcp-protocol" in groups and importlib.util.find_spec("jsonschema") is None:
         errors.append("the runner Python environment requires jsonschema for MCP protocol checks")
@@ -181,6 +199,8 @@ def main():
     parser.add_argument("--skia-dir", default=os.getenv("MO_SKIA_LIB_DIR"))
     parser.add_argument("--harfbuzz-dir", default=os.getenv("MO_HARFBUZZ_LIB_DIR"))
     parser.add_argument("--ffmpeg-dir", default=os.getenv("MO_FFMPEG_LIB_DIR"))
+    parser.add_argument("--stretch-dir", default=os.getenv("MO_STRETCH_LIB_DIR"))
+    parser.add_argument("--stretch-wasm-dir", default=os.getenv("MO_STRETCH_WASM_DIR"))
     parser.add_argument("--bindgen", default=os.getenv("MO_WASM_BINDGEN_BIN"))
     parser.add_argument("--list", action="store_true", help="print the selected gate plan without running it")
     args = parser.parse_args()
@@ -191,7 +211,7 @@ def main():
     except ValueError as error:
         parser.error(str(error))
     output = args.output.resolve()
-    steps = plan(groups, output, args.bindgen or "wasm-bindgen", sys.executable, args.ffmpeg_dir)
+    steps = plan(groups, output, args.bindgen or "wasm-bindgen", sys.executable, args.ffmpeg_dir, args.stretch_wasm_dir)
     if args.list:
         for step in steps:
             print(json.dumps({"name": step.name, "argv": step.argv}))
@@ -221,7 +241,7 @@ def main():
     # Editor parity must use this run's builds, never historical local artifacts.
     env["MUSTEROFFICE_EDITOR_NATIVE"] = str(ROOT / "target/debug/mo-cli")
     env["MUSTEROFFICE_EDITOR_WASM"] = str(output / "wasm/mo_wasm.js")
-    for key, value in (("MO_SKIA_LIB_DIR", args.skia_dir), ("MO_HARFBUZZ_LIB_DIR", args.harfbuzz_dir), ("MO_FFMPEG_LIB_DIR", args.ffmpeg_dir)):
+    for key, value in (("MO_SKIA_LIB_DIR", args.skia_dir), ("MO_HARFBUZZ_LIB_DIR", args.harfbuzz_dir), ("MO_FFMPEG_LIB_DIR", args.ffmpeg_dir), ("MO_STRETCH_LIB_DIR", args.stretch_dir)):
         if value:
             env[key] = str(Path(value).resolve())
     report["status"] = "running"

@@ -1,8 +1,10 @@
 //! Test-only cross-target driver, not a product SDK or durable host.
 mod audio;
 mod pcm;
+mod stretch;
 pub use audio::video_audio_conformance;
 pub use pcm::video_pcm_conformance;
+pub use stretch::video_stretch_conformance;
 mod projection;
 mod render;
 use mo_common::from_json_str_with_path;
