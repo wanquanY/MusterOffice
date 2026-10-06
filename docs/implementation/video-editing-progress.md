@@ -1,6 +1,6 @@
 # 视频创作与剪辑实施记录
 
-2026-10-06 · 目标执行中，尚未达到整体验收。
+2026-10-07 · 目标执行中，尚未达到整体验收。
 
 ## 固定基线与开发边界
 
@@ -18,7 +18,7 @@
 | W1 视频领域与合同 | 基础已实现，未全部完成 | 独立模型、精确时间、受限解析与校验、Native/WASM 公共合同向量；补全效果、字幕、分析和工程包模型 |
 | W2 媒体与合成 | 原生解码/采样、CPU/Metal 合成及音频块处理基础已实现；保调工程图及派生 PCM 已实现；Browser、导出及产品显示待实施 | 原生/浏览器媒体与合成、字体/色彩/音频及真实输出 |
 | W3 编辑与历史 | 原子事务基础已实现，未全部完成 | 全部编辑操作、候选、冲突与有条件逆操作及增量索引 |
-| W4 产品执行 | 独立 Native/WASM SDK、Browser Host 基础、Native 计算及 SQLite 工程存储端口已实现；受授权提交执行器/UI/媒体任务待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
+| W4 产品执行 | 独立 Native/WASM SDK、Browser Host 基础、Native 计算、SQLite 工程存储和产品命令预写已实现；受授权提交执行器/UI/媒体任务待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
 | W5 创作与交互 | 保留原 worktree，未完成替换 | 整理现有生成/Admin/计费、技能、人机共享编辑与消息卡片 |
 | W6 完整验收 | 仅有下列内核基础证据 | 完整验收矩阵与可供用户实际操作的本地环境 |
 
@@ -54,7 +54,17 @@ Musterwork worktree 提交 `82aaa621b` 已接入固定的独立视频 SDK（上�
 
 另有真实固定 Rust SDK 与存储组合验证：保存创建和修改后的工程，重启后逐一打开原/新快照、恢复逆操作报告，并核对没有创建虚假 Run / Invocation。10 项存储/迁移、该组合测试、6 项提交回调、6 项原计算、39 项原生编辑/重试及 1 项桌面组件控制回归共 63 项通过，无 ignored；SQLite lib 及依赖 strict Clippy 通过。产品证据 `.codex-work/video-native-project-persistence-report.json` 固定提交、组件摘要及日志 SHA-256，并明确测试包含原 worktree 尚未提交的视频选择改动，不声称是干净 HEAD 或完整产品验收。
 
-完整 Host 仍未交付：必须完成受授权资源准备、手动编辑的真实输出预留、Agent 原调用与工程同事务提交，然后连接 IPC 和时间线。历史目前引用完整快照，历史压缩、工程删除/保留政策、GC、大媒体和断电/磁盘满验证仍待完成。产品详细边界见 worktree `docs/architecture/native-video-project-persistence.md`。
+完整 Host 仍未交付：手动编辑输出预留现已补齐（见下节）；必须继续完成受授权资源准备、Agent 原调用与工程同事务提交，然后连接 IPC 和时间线。历史目前引用完整快照，历史压缩、工程删除/保留政策、GC、大媒体和断电/磁盘满验证仍待完成。产品详细边界见 worktree `docs/architecture/native-video-project-persistence.md`。
+
+### 手动产品命令的原生预写
+
+产品提交 `cc6ac3c7f` 将手动编辑绑定到原 CommandId，新增不可变命令内容账户及输入/快照/报告角色预留；不为 UI 编辑伪造 Run 或 Invocation。Native 计算仍共用原 OfficeHost 的并发预算，Agent 保持原 Invocation 路径和输出身份。SQLite schema 197 保留全部既有 schema 和稳定 authority。
+
+输入与输出实际写入前后核对私有作用域、精确当前快照、expected head、原 Runtime writer epoch 及持久额度。重试只能复用原身份；读取限于该命令已 ready 的对象与当前工程快照。真实慢输入期间发生另一项工程提交时，旧命令不能登记 ready 或成功回执；I/O 不占用 SQLite 写事务。重启后新进程可在同 head 上恢复原账户，旧进程失效。
+
+新增 6 项真实固定 SDK 与 SQLite 集成验证，包含创建、编辑、保存、私有读取、错误所有者、候选输入/输出绑定、原子额度、错误字节和并发版本变化；连同迁移、Agent 计算、工程存储、原流式 I/O、Invocation 与 PPT 预写共 43 项通过，无 ignored。SQLite/MusterOffice lib 及依赖 strict Clippy 通过。产品 `.codex-work/video-product-command-report.json` 固定提交和各日志摘要；保留原 worktree 未提交的视频选择/生成修改，不冒充干净 HEAD 全量测试。
+
+这是内部预写端口及 typed 候选绑定，还不是公共手动编辑命令、素材授权执行器或页面。完整 SDK 资源闭包仍要由可信执行器核对并重新授权，Agent 原调用的工程/Tool/Ledger 同事务提交尚待实施。产品详细边界见 `docs/architecture/native-video-product-commands.md`。
 
 ### 精确时间
 
