@@ -18,7 +18,7 @@
 | W1 视频领域与合同 | 基础已实现，未全部完成 | 独立模型、精确时间、受限解析与校验、Native/WASM 公共合同向量；补全效果、字幕、分析和工程包模型 |
 | W2 媒体与合成 | 原生解码/采样、CPU/Metal 合成及音频块处理基础已实现；保调工程图及派生 PCM 已实现；Browser、导出及产品显示待实施 | 原生/浏览器媒体与合成、字体/色彩/音频及真实输出 |
 | W3 编辑与历史 | 原子事务基础已实现，未全部完成 | 全部编辑操作、候选、冲突与有条件逆操作及增量索引 |
-| W4 产品执行 | 独立 Native/WASM SDK、Browser Host 基础、Native 计算、SQLite 工程、Agent authoring、共享手动执行及认证桌面 RPC/IPC 已实现；时间线 UI/媒体任务待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
+| W4 产品执行 | 独立 Native/WASM SDK、Browser Host 基础、Native 计算、SQLite 工程、Agent authoring、共享手动执行、认证桌面 RPC/IPC 及工程变化订阅已实现；时间线 UI/媒体任务待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
 | W5 创作与交互 | 视频技能与显式工具装载、无生成模型的剪辑准入已接通；工作台及旧引擎替换未完成 | 整理现有生成/Admin/计费、技能、人机共享编辑与消息卡片 |
 | W6 完整验收 | 仅有下列内核基础证据 | 完整验收矩阵与可供用户实际操作的本地环境 |
 
@@ -100,7 +100,17 @@ Musterwork worktree 提交 `82aaa621b` 已接入固定的独立视频 SDK（上�
 
 四项真实 SDK/SQLite 手动执行测试、五项 Agent 回归和一项实际人机交错测试通过：用户先保存后，已准备的旧 Agent 候选被拒绝；Agent 读取最新 head 继续修改，双方能相互撤销原历史。五个工程 revision 仅有三个真实 Agent commit，Run 仍为原来的一个。连同30项 Device transport、80项 Electron 通信/命令/IPC scope、两项 Renderer、15项协议/跨语言检查，共137项通过，无 ignored；相关 Rust production lib strict Clippy、Renderer API 类型检查通过。扩大到 all-targets 的检查在既有 artifact 测试 `unwrap_used` 上失败，没有宣称通过或增加 lint 抑制。
 
-产品 `.codex-work/video-product-execution-report.json` 固定源提交、原 SDK manifest 和日志摘要。协议检查包含原 worktree 未提交视频选择字段及对应生成锁；本次只提交独立 local_video 合同，暂存中的88个 proto 另经实际 vendored protoc 构建并与暂存 descriptor 逐字节一致。受控 gRPC fixture 验证通信，不能冒充真实登录产品。时间线页面、工程变化订阅、待确认命令恢复 UI、媒体 probe/大文件/播放/导出和浏览器跨端仍待完成；未发布新 SDK 或宣称完整验收。详细合同在产品 `docs/architecture/native-video-product-execution.md`。
+产品 `.codex-work/video-product-execution-report.json` 固定源提交、原 SDK manifest 和日志摘要。协议检查包含原 worktree 未提交视频选择字段及对应生成锁；本次只提交独立 local_video 合同，暂存中的88个 proto 另经实际 vendored protoc 构建并与暂存 descriptor 逐字节一致。受控 gRPC fixture 验证通信，不能冒充真实登录产品。该提交时，时间线页面、工程变化订阅、待确认命令恢复 UI、媒体 probe/大文件/播放/导出和浏览器跨端仍待完成；观察订阅的后续增量见下节。未发布新 SDK 或宣称完整验收。详细合同在产品 `docs/architecture/native-video-product-execution.md`。
+
+### 原生工程变化与桌面观察
+
+产品提交 `ffc306321` 将同一 SQLite 工程的 head 更新接到 `LocalVideoProjectService.Observe`、Electron 和 Renderer API。Actor 仍由可信 resident 绑定；小型 head 查询保持原用户/租户/workspace 隔离和 writer fence，不读取完整快照或新建另一份工程存储。
+
+首次订阅先注册再读取，避免提交竞态；后续通知可合并，以原库当前 revision/digest 为准。原生/桌面订阅有容量和取消边界，桌面采用 listener 安装后激活、单条待确认消息加最新值合并，避免复杂连续编辑挤满 Renderer 队列。断线只恢复读取当前状态，不回放编辑；uint64 全程精确保留。慢视图处理不会覆盖后到的断线状态。
+
+真实 SQLite、实际 SDK 人机交错、Native transport、Electron UDS/IPC、Renderer 和协议共122项检查通过；相关 production lib strict Clippy、Device 编译及 API 类型检查通过。暂存的88个 proto 独立重建，与提交 descriptor 字节一致。证据为产品 `.codex-work/video-observation-report.json`，详细合同为产品 `docs/architecture/native-video-project-observation.md`。
+
+这完成的是工程观察通路；尚未连接真实时间线、播放、声音、导出或浏览器界面。不会以这些通信与存储测试替代完整本地产品验收。原本的 CE.SDK 工作台仍待有迁移保护地替换。
 
 ### 精确时间
 
