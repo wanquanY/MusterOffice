@@ -18,7 +18,7 @@
 | W1 视频领域与合同 | 基础已实现，未全部完成 | 独立模型、精确时间、受限解析与校验、Native/WASM 公共合同向量；补全效果、字幕、分析和工程包模型 |
 | W2 媒体与合成 | 原生解码/采样、CPU/Metal 合成及音频块处理基础已实现；保调工程图及派生 PCM 已实现；Browser、导出及产品显示待实施 | 原生/浏览器媒体与合成、字体/色彩/音频及真实输出 |
 | W3 编辑与历史 | 原子事务基础已实现，未全部完成 | 全部编辑操作、候选、冲突与有条件逆操作及增量索引 |
-| W4 产品执行 | 独立 Native/WASM SDK、Browser Host 基础、Native 计算、SQLite 工程、Agent authoring、共享手动执行、认证 RPC/IPC、工程订阅及基础时间线组件已实现；正常产品入口/媒体任务待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
+| W4 产品执行 | 独立 Native/WASM SDK、Browser Host 基础、Native 计算、SQLite 工程、Agent authoring、共享手动执行、认证 RPC/IPC、工程订阅、基础时间线及消息工程卡片/右侧面板路由已实现；媒体任务/完整恢复待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
 | W5 创作与交互 | 视频技能与显式工具装载、无生成模型的剪辑准入已接通；工作台及旧引擎替换未完成 | 整理现有生成/Admin/计费、技能、人机共享编辑与消息卡片 |
 | W6 完整验收 | 仅有下列内核基础证据 | 完整验收矩阵与可供用户实际操作的本地环境 |
 
@@ -122,7 +122,19 @@ Musterwork worktree 提交 `82aaa621b` 已接入固定的独立视频 SDK（上�
 
 证据为产品 `.codex-work/video-editor-report.json`，截图与浏览器报告在 `video-editor-browser-final-02/`，合同及复现说明在产品 `docs/architecture/native-video-editor-surface.md`。Native 源与 Browser SDK 源的本次使用 schema 已比对一致；没有新发 SDK。
 
-这是组件和适配增量，尚未进入消息工程卡片/正常路由，也未连接真实素材 probe、像素/声音、导出、完整属性与 Browser Host。待确认命令仅保留于活跃 session，跨页面/应用重启恢复仍待实现。预览缺失和未装配的动作不会被显示为可用；CE.SDK 旧路径及场景数据仍待迁移，不能据此宣称全部产品功能可验收。
+该组件提交时尚未进入消息工程卡片/正常路由；后续接线见下节。真实素材 probe、像素/声音、导出、完整属性与 Browser Host 仍未接通。待确认命令仅保留于活跃 session，跨页面/应用重启恢复仍待实现。预览缺失和未装配的动作不会被显示为可用；CE.SDK 旧路径及场景数据仍待迁移，不能据此宣称全部产品功能可验收。
+
+### 消息工程卡片与正常右侧面板
+
+产品提交 `fac4ea520` 将原生剪辑工程接入正常会话：成功创建/修改/撤销的工具事实生成回复下方的简洁工程卡片，点击经原 Surface 调度和会话路由打开现有原生时间线。真实视频文件仍走文件播放入口；工程不是 `.mp4` 或 Artifact，不伪造播放/下载地址。失败、结果未知及只有输入参数的调用不能显示成功工程卡片。
+
+同一回复按精确 uint64 revision 去重，旧回执不能覆盖新版本；长回复最后一个虚拟分段仍能展示较早工具产生的工程。历史卡片只携带工程身份，打开后由原受认证端口 inspect 当前 head。面板持久化 project/conversation 和原会话 scope，不保存另一份文档、历史或旧 pin。
+
+工程 scope 直接来自原 `AgentConversationView.workspace_id`，明确区分工作区 UUID、个人范围 null 和尚未解析的状态，不能把 UI 默认目录当成旧个人会话的工程归属。不同 scope 不复用面板 view state/payload。Web 看到桌面本地工程入口时明确提示在创建它的桌面端打开；生产 Browser Host 仍待接通。
+
+99项共享展示/PPT/旧工具检查与84项 Desktop 路由、组件、原会话归属检查通过，共183项。贯通检查运行真实消息组件、面板调度、路由、原生编辑器与命令准备，验证最终发出原 scope 下的 current-head inspect；仅 IPC 端点使用测试 fixture，未宣称连接真实登录 resident。共享与相关 Desktop 类型检查、前端边界检查通过。schema 展示审核覆盖已登记的历史及开发 release，未修改全局激活配置或发行 SDK。
+
+证据：产品 `.codex-work/video-project-surface-report.json` 绑定提交、33个源码路径及6份日志摘要；细节在产品 `docs/architecture/native-video-project-surface.md`。旧工作树修改保留，检查基于含这些既有修改的工作树，本次仅提交自身文件/片段。整体验收仍未完成：真实媒体预览/声音、素材导入、导出、完整属性、Browser Host、待确认命令跨页面/应用重启恢复、CE.SDK 迁移和真实 provider/计费仍须完成。
 
 ### 精确时间
 
