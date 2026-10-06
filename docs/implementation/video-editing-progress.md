@@ -18,7 +18,7 @@
 | W1 视频领域与合同 | 基础已实现，未全部完成 | 独立模型、精确时间、受限解析与校验、Native/WASM 公共合同向量；补全效果、字幕、分析和工程包模型 |
 | W2 媒体与合成 | 原生解码/采样、CPU/Metal 合成及音频块处理基础已实现；保调工程图及派生 PCM 已实现；Browser、导出及产品显示待实施 | 原生/浏览器媒体与合成、字体/色彩/音频及真实输出 |
 | W3 编辑与历史 | 原子事务基础已实现，未全部完成 | 全部编辑操作、候选、冲突与有条件逆操作及增量索引 |
-| W4 产品执行 | 独立 Native/WASM SDK、Browser Host 基础、Native 计算与私有候选预留已接通；Device 工程提交/UI/媒体任务待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
+| W4 产品执行 | 独立 Native/WASM SDK、Browser Host 基础、Native 计算及 SQLite 工程存储端口已实现；受授权提交执行器/UI/媒体任务待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
 | W5 创作与交互 | 保留原 worktree，未完成替换 | 整理现有生成/Admin/计费、技能、人机共享编辑与消息卡片 |
 | W6 完整验收 | 仅有下列内核基础证据 | 完整验收矩阵与可供用户实际操作的本地环境 |
 
@@ -42,7 +42,19 @@ Musterwork worktree 提交 `82aaa621b` 已接入固定的独立视频 SDK（上�
 
 产品提交 `b7c5a102c` 的 Native adapter 已通过真实固定 SDK、SQLite、原 Attempt/Invocation 的六项集成测试：轨道/片段与帧计划、精确输入读集合、先预留全部输出再写入、验证落盘字节、确定性重试、权限/额度拒绝、条件撤销/重做、部分预写失败恢复和异步丢弃后的并发额度保持。PPT 与视频按不同来源各自核验闭包，旧 PPT pin 未改变。产品 Runtime 持有权限和私有输出，内核没有增加业务存储。相关 Office/SQLite 回归共 43 项通过（其中包含视频用例）；另 50 项依赖专门渲染/素材的 ignored 用例未在该轮运行，不计作通过。
 
-这还不是 Device 工程 Host 完成：当前只返回计算候选，没有创建视频 head/history/epoch 或提交 Tool / Artifact。视频 Agent 工具、桌面 IPC、UI、流式大媒体和播放/导出接入仍待完成。产品对原始 read_refs 和完整资源绑定的最终授权不得以计算摘要替代。
+该计算适配器仍只返回候选，不直接创建 head/history 或提交 Tool / Artifact。另有下述 SQLite 持久端口，二者之间的受授权准备与提交尚未串联。视频 Agent 工具、桌面 IPC、UI、流式大媒体和播放/导出接入仍待完成。产品对原始 read_refs 和完整资源绑定的最终授权不得以计算摘要替代。
+
+### Device 工程持久化端口
+
+产品提交 `790b7ddf0` 新增独立 VideoProjectId / VideoOperationId 和私有用户工程作用域，SQLite schema 196 原子保存 head、不可变历史、幂等回执、完整资源引用库存与 outbox。持久 authority UUID 保持跨重启稳定；epoch 直接复用现有 Device Runtime writer generation，未创建第二套租约系统。旧进程的读写均被现有 fence 拒绝。同一操作在新进程重试可找回原回执，改动素材、组件、来源或基准版本会导致幂等冲突。
+
+产品与 Agent 来源进入统一历史合同，但产品提交端口明确拒绝 Tool 来源，避免绕过原 Invocation / Ledger 事务。按操作 ID 可直接恢复丢失的回执；事件可按连续序号补读。更新通知由原 Device Runtime 的物理 writer 释放回调持有，各适配器共享通道，事务回滚不发通知，watch 值不冒充持久事件序号。引用登记使用按 ContentId 索引的集合 SQL，避免在写事务内逐项执行大量查询。隐私删除继续生效，历史证据不被当成已删除媒体的访问授权。
+
+存储和迁移验证覆盖并发唯一胜者、事务末尾失败完整回滚、作用域隔离、规范字节/索引/摘要核对、内容身份/删除、旧进程失效、重启后的原回执、事件缺失拒绝和真实历史 schema 195 升级。这里的内容字节是存储 fixture；实际 SDK 语义由前述独立计算集成验证，不将 fixture 声称为媒体播放证据。
+
+另有真实固定 Rust SDK 与存储组合验证：保存创建和修改后的工程，重启后逐一打开原/新快照、恢复逆操作报告，并核对没有创建虚假 Run / Invocation。10 项存储/迁移、该组合测试、6 项提交回调、6 项原计算、39 项原生编辑/重试及 1 项桌面组件控制回归共 63 项通过，无 ignored；SQLite lib 及依赖 strict Clippy 通过。产品证据 `.codex-work/video-native-project-persistence-report.json` 固定提交、组件摘要及日志 SHA-256，并明确测试包含原 worktree 尚未提交的视频选择改动，不声称是干净 HEAD 或完整产品验收。
+
+完整 Host 仍未交付：必须完成受授权资源准备、手动编辑的真实输出预留、Agent 原调用与工程同事务提交，然后连接 IPC 和时间线。历史目前引用完整快照，历史压缩、工程删除/保留政策、GC、大媒体和断电/磁盘满验证仍待完成。产品详细边界见 worktree `docs/architecture/native-video-project-persistence.md`。
 
 ### 精确时间
 
