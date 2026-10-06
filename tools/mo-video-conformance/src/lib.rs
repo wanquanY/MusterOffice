@@ -1,5 +1,7 @@
 //! Test-only cross-target driver, not a product SDK or durable host.
 mod audio;
+mod export;
+pub use export::video_export_conformance;
 mod pcm;
 mod retime;
 mod stretch;

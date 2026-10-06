@@ -17,6 +17,7 @@ pub fn encoding_profiles() -> Result<Vec<EncodeProfile>, MediaError> {
 /// ```
 pub struct Encoder<'a> {
     context: encode::EncodeContext<'a>,
+    config: EncodeConfig,
 }
 impl<'a> Encoder<'a> {
     pub fn open(
@@ -27,6 +28,7 @@ impl<'a> Encoder<'a> {
     ) -> Result<Self, MediaError> {
         Ok(Self {
             context: encode::EncodeContext::open(sink, config, limits, cancel)?,
+            config,
         })
     }
     pub fn video(&mut self, frame: EncodeVideoFrame<'_>) -> Result<(), MediaError> {
@@ -40,5 +42,21 @@ impl<'a> Encoder<'a> {
     }
     pub fn is_closed(&self) -> bool {
         self.context.is_closed()
+    }
+}
+
+impl crate::VideoEncoder for Encoder<'_> {
+    type Error = MediaError;
+    fn configuration(&self) -> EncodeConfig {
+        self.config
+    }
+    fn video(&mut self, frame: EncodeVideoFrame<'_>) -> Result<(), Self::Error> {
+        Encoder::video(self, frame)
+    }
+    fn audio(&mut self, first_sample: i64, samples: &[f32]) -> Result<(), Self::Error> {
+        Encoder::audio(self, first_sample, samples)
+    }
+    fn finish(&mut self) -> Result<EncodeStats, Self::Error> {
+        Encoder::finish(self)
     }
 }

@@ -91,3 +91,15 @@ pub struct EncodeStats {
     pub audio_packets: u64,
     pub peak_pending_bytes: u64,
 }
+
+/// Finite configured candidate encoder. Implementations own their codec state
+/// and cancel capability. Drop must abort without publishing or finalizing.
+/// Core drivers check cancellation between steps; a worker implementation must
+/// additionally interrupt each blocked operation using its host cancel signal.
+pub trait VideoEncoder {
+    type Error: std::error::Error;
+    fn configuration(&self) -> EncodeConfig;
+    fn video(&mut self, frame: EncodeVideoFrame<'_>) -> Result<(), Self::Error>;
+    fn audio(&mut self, first_sample: i64, samples: &[f32]) -> Result<(), Self::Error>;
+    fn finish(&mut self) -> Result<EncodeStats, Self::Error>;
+}

@@ -43,9 +43,10 @@ class CurrentVerificationTests(unittest.TestCase):
             self.assertLess(names.index(dependency), names.index("video-render-native-wasm-parity"))
             self.assertLess(names.index(dependency), names.index("video-audio-native-wasm-parity"))
             self.assertLess(names.index(dependency), names.index("video-pcm-native-wasm-parity"))
+            self.assertLess(names.index(dependency), names.index("video-export-native-wasm-parity"))
             self.assertLess(names.index(dependency), names.index("video-stretch-native-wasm-parity"))
         reports = [s.argv[-1] for s in steps if s.name.startswith("video-") and s.name.endswith("native-wasm-parity")]
-        self.assertEqual(len(reports), 6)
+        self.assertEqual(len(reports), 7)
         self.assertEqual(len(set(reports)), len(reports), "Each evidence file must remain independently readable")
         self.assertIn("--ignored", next(s for s in steps if s.name == "native-render-tests").argv)
 
@@ -78,7 +79,7 @@ class CurrentVerificationTests(unittest.TestCase):
 
     def test_encode_gate_requires_real_component_and_generates_new_candidates(self):
         steps = current.plan({"encode"}, Path("/output"), "unused", sys.executable, "/media-component")
-        self.assertEqual(len(steps), 1)
+        self.assertEqual(len(steps), 2)
         self.assertEqual(steps[0].name, "media-encoding-candidates")
         self.assertIn("/media-component", steps[0].argv)
         self.assertIn("/output/media-encode", steps[0].argv)

@@ -8,6 +8,8 @@ mod frame;
 mod geometry;
 mod layout;
 mod output;
+mod sdr;
+mod yuv_output;
 pub use backend::*;
 pub use color::*;
 pub use composite::*;
@@ -15,6 +17,8 @@ pub use coordinates::RasterCoordinates;
 pub use frame::{NormalizedFrame, normalize_frame};
 pub use geometry::*;
 pub use output::*;
+pub use sdr::OutputColorStats;
+pub use yuv_output::*;
 
 pub const PROFILE: &str = "musteroffice.video.linear2020-d65-203nits-premul-cpu-v2-draft";
 #[derive(Debug, thiserror::Error)]

@@ -70,6 +70,7 @@ def plan(groups, output, bindgen, python, ffmpeg_dir=None, stretch_wasm_dir=None
         add("video-canonical-pcm", python, "tools/verification/video-pcm-check.py", "--native-evidence", output / "media-native", "--media-evidence", output / "media-worker", "--worker-bundle", output / "media-worker-bundle", "--output", output / "video-pcm")
     if "encode" in groups:
         add("media-encoding-candidates", python, "tools/verification/media-encode-check.py", "--component", ffmpeg_dir or "UNCONFIGURED_FFMPEG_COMPONENT", "--output", output / "media-encode")
+        add("video-project-export", python, "tools/verification/media-encode-check.py", "--project", "--component", ffmpeg_dir or "UNCONFIGURED_FFMPEG_COMPONENT", "--output", output / "video-export")
     if "typescript" in groups:
         add("types", "pnpm", "check:types")
         add("client-tests", "pnpm", "test:operation-client")
@@ -109,6 +110,7 @@ def plan(groups, output, bindgen, python, ffmpeg_dir=None, stretch_wasm_dir=None
         add("video-render-native-wasm-parity", "node", "tools/verification/video-render-parity.mjs", "target/debug/mo-video-conformance", output / "video-wasm/mo_video_conformance.js", output / "video-render-parity.json")
         add("video-audio-native-wasm-parity", "node", "tools/verification/video-audio-parity.mjs", "target/debug/mo-video-conformance", output / "video-wasm/mo_video_conformance.js", output / "video-audio-parity.json")
         add("video-pcm-native-wasm-parity", "node", "tools/verification/video-pcm-parity.mjs", "target/debug/mo-video-conformance", output / "video-wasm/mo_video_conformance.js", output / "video-pcm-parity.json")
+        add("video-export-native-wasm-parity", "node", "tools/verification/video-export-parity.mjs", "target/debug/mo-video-conformance", output / "video-wasm/mo_video_conformance.js", output / "video-export-parity.json")
     if "stretch" in groups:
         if "wasm" not in groups:
             add("video-conformance-native", "cargo", "build", *cargo, "-p", "mo-video-conformance")

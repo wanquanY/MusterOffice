@@ -9,6 +9,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         [mode] if mode == "--projection" => {
             mo_video_conformance::video_projection_conformance(&input)
         }
+        [mode] if mode == "--export" => mo_video_conformance::video_export_conformance(&input),
         [mode] if mode == "--render" => mo_video_conformance::video_render_conformance(&input),
         [mode] if mode == "--audio" => mo_video_conformance::video_audio_conformance(&input),
         [mode] if mode == "--pcm" => mo_video_conformance::video_pcm_conformance(&input),
@@ -16,7 +17,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         [mode] if mode == "--retime" => mo_video_conformance::video_retime_conformance(&input),
         _ => {
             return Err(
-                "usage: mo-video-conformance [--projection|--render|--audio|--pcm|--stretch|--retime]"
+                "usage: mo-video-conformance [--projection|--render|--audio|--pcm|--stretch|--retime|--export]"
                     .into(),
             );
         }
