@@ -13,7 +13,7 @@ pub(crate) struct Reply {
 }
 pub(crate) fn read_reply(
     input: &mut impl std::io::Read,
-    limits: DecodeLimits,
+    limits: Option<DecodeLimits>,
     expected: Expected,
 ) -> Result<Reply, String> {
     let response: Response = read_header(input)
@@ -26,6 +26,7 @@ pub(crate) fn read_reply(
         if expected.frame != Some((info.kind, info.generation)) {
             return Err("unsolicited or stale media frame".into());
         }
+        let limits = limits.ok_or("frames not admitted by this session")?;
         validate_frame(info, planes, limits).map_err(|e| e.to_string())?;
         read_planes(input, planes, limits.max_frame_bytes).map_err(|e| e.to_string())?
     } else {
@@ -130,7 +131,7 @@ mod tests {
                     rows: 2,
                 }],
             )));
-            assert!(read_reply(&mut input, limits(), expected).is_err());
+            assert!(read_reply(&mut input, Some(limits()), expected).is_err());
         }
     }
     #[test]
@@ -156,7 +157,7 @@ mod tests {
             assert!(
                 read_reply(
                     &mut HeaderOnly(Cursor::new(envelope(info(), vec![plane]))),
-                    limits(),
+                    Some(limits()),
                     expected
                 )
                 .is_err()
@@ -173,7 +174,7 @@ mod tests {
                         rows: 2
                     }]
                 ))),
-                limits(),
+                Some(limits()),
                 expected
             )
             .is_err()
@@ -195,11 +196,11 @@ mod tests {
         for n in 0..16 {
             let mut bytes = header.clone();
             bytes.extend(vec![7; n]);
-            assert!(read_reply(&mut Cursor::new(bytes), limits(), expected).is_err());
+            assert!(read_reply(&mut Cursor::new(bytes), Some(limits()), expected).is_err());
         }
         let mut bytes = header;
         bytes.extend([7; 16]);
-        let frame = read_reply(&mut Cursor::new(bytes), limits(), expected).unwrap();
+        let frame = read_reply(&mut Cursor::new(bytes), Some(limits()), expected).unwrap();
         assert_eq!(frame.planes[0].bytes, [7; 16]);
     }
 }

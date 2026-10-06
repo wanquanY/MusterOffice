@@ -5,10 +5,12 @@ mod boxes;
 mod tables;
 mod track;
 use mo_media::ReadAt;
+use serde::{Deserialize, Serialize};
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
 pub const PROFILE: &str = "musteroffice.isobmff-index/1-draft";
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct IndexLimits {
     pub max_input_bytes: u64,
     pub max_metadata_bytes: usize,
@@ -34,6 +36,27 @@ impl Default for IndexLimits {
         }
     }
 }
+impl IndexLimits {
+    pub fn validate(&self) -> Result<()> {
+        if self.max_input_bytes == 0
+            || self.max_input_bytes > i64::MAX as u64
+            || self.max_metadata_bytes == 0
+            || self.max_metadata_bytes > 128 << 20
+            || self.max_boxes == 0
+            || self.max_boxes > 100_000
+            || self.max_tracks == 0
+            || self.max_tracks > 1024
+            || self.max_samples == 0
+            || self.max_samples > 10_000_000
+            || self.max_edits > 100_000
+            || self.max_sample_descriptions > 4096
+            || self.max_description_bytes > 16 << 20
+        {
+            return Err(IndexError::Invalid("index limits"));
+        }
+        Ok(())
+    }
+}
 #[derive(Debug, thiserror::Error)]
 pub enum IndexError {
     #[error("ISO BMFF I/O: {0}")]
@@ -51,7 +74,8 @@ pub enum IndexError {
 }
 pub type Result<T> = std::result::Result<T, IndexError>;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ByteRange {
     pub offset: u64,
     pub length: u64,
@@ -63,7 +87,8 @@ pub struct SampleDescription {
     /// data-reference index and codec initialization. Never executable code.
     pub payload: Vec<u8>,
 }
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct Sample {
     pub bytes: ByteRange,
     /// Raw track-media ticks before edit lists, in decode order.
@@ -76,7 +101,8 @@ pub struct Sample {
     /// promise. Codec leading pictures and dependency groups remain relevant.
     pub sync_sample: bool,
 }
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct Edit {
     /// Consecutive movie-clock ticks. No rescaling to the track timebase.
     pub movie_start: u64,
@@ -180,22 +206,7 @@ fn read(
     limits: IndexLimits,
     check: &dyn Fn() -> bool,
 ) -> Result<IsoBmffIndex> {
-    if limits.max_input_bytes == 0
-        || limits.max_input_bytes > i64::MAX as u64
-        || limits.max_metadata_bytes == 0
-        || limits.max_metadata_bytes > 128 << 20
-        || limits.max_boxes == 0
-        || limits.max_boxes > 100_000
-        || limits.max_tracks == 0
-        || limits.max_tracks > 1024
-        || limits.max_samples == 0
-        || limits.max_samples > 10_000_000
-        || limits.max_edits > 100_000
-        || limits.max_sample_descriptions > 4096
-        || limits.max_description_bytes > 16 << 20
-    {
-        return Err(IndexError::Invalid("index limits"));
-    }
+    limits.validate()?;
     if length < 8 {
         return Err(IndexError::Invalid("file header"));
     }

@@ -1,5 +1,6 @@
 //! Controlled transport faults, distinct from actual codec integration tests.
 use super::*;
+use crate::WorkerOptions;
 use mo_media_wire::{Response, header_bytes};
 use std::{
     process::Command as ProcessCommand,
@@ -41,7 +42,8 @@ fn owner(output: Vec<u8>, completed: Arc<AtomicBool>, cancel_on_response: bool) 
     let reader_expected = Arc::clone(&expected);
     let limits = options().decode;
     let session = Session::start(command, move |input| {
-        let reply = crate::response::read_reply(input, limits, *reader_expected.lock().unwrap())?;
+        let reply =
+            crate::response::read_reply(input, Some(limits), *reader_expected.lock().unwrap())?;
         if cancel_on_response {
             completed.store(true, Ordering::SeqCst);
         }
@@ -55,7 +57,7 @@ fn owner(output: Vec<u8>, completed: Arc<AtomicBool>, cancel_on_response: bool) 
             Ok(out.len())
         }),
         length: 100000,
-        options: options(),
+        options: options().into(),
         call_id: 0,
         read_id: 0,
         read_bytes: 0,

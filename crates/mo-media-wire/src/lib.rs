@@ -1,5 +1,7 @@
 //! Private native media protocol. Headers are bounded JSON, planes/read payloads
 //! are raw bytes. No paths, URLs, credentials or whole-source buffers are sent.
+mod indexing;
+pub use indexing::*;
 mod encoding;
 mod framing;
 pub use encoding::*;
@@ -12,7 +14,7 @@ use mo_native_limits::{AppliedLimits, ProcessLimits};
 use serde::{Deserialize, Serialize};
 pub use validation::*;
 
-pub const PROFILE: &str = "musteroffice.native-media-worker/2";
+pub const PROFILE: &str = "musteroffice.native-media-worker/3";
 pub const MAX_HEADER_BYTES: usize = 64 * 1024;
 pub const MAX_READ_BYTES: u32 = 32 * 1024;
 pub const MAX_WRITE_BYTES: u32 = 32 * 1024;
@@ -31,6 +33,15 @@ pub struct Request {
     deny_unknown_fields
 )]
 pub enum Command {
+    OpenIndex {
+        profile: String,
+        byte_length: u64,
+        limits: mo_media_isobmff::IndexLimits,
+        process_limits: ProcessLimits,
+    },
+    QueryIndex {
+        query: IndexQuery,
+    },
     OpenEncoder {
         profile: String,
         configuration: EncodeConfig,
@@ -83,6 +94,14 @@ pub struct Response {
     deny_unknown_fields
 )]
 pub enum Event {
+    Indexed {
+        profile: String,
+        summary: IndexSummary,
+        applied: AppliedLimits,
+    },
+    IndexPage {
+        page: IndexPage,
+    },
     EncoderOpened {
         profile: String,
         configuration: EncodeConfig,

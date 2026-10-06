@@ -16,6 +16,7 @@ def main():
     parser.add_argument("--input", type=Path, action="append", required=True)
     parser.add_argument("--ffprobe", type=Path, help="explicit independent binary; otherwise resolve ffprobe from PATH")
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--worker-bundle", type=Path, help="also require actual isolated paged-index execution")
     args = parser.parse_args()
     ffprobe = args.ffprobe or shutil.which("ffprobe")
     if not ffprobe:
@@ -24,6 +25,12 @@ def main():
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
     reports = []
+    worker_pin = None
+    if args.worker_bundle:
+        bundle = args.worker_bundle.resolve()
+        manifest_bytes = (bundle / "manifest.json").read_bytes()
+        assert json.loads(manifest_bytes)["profile"] == "musteroffice.native-media-worker/3"
+        worker_pin = hashlib.sha256(manifest_bytes).hexdigest()
     for i, source in enumerate(args.input):
         source = source.resolve()
         env = dict(os.environ, MO_BMFF_INPUT=str(source), MO_BMFF_OUTPUT=str(output / f"{i}-index.json"))
@@ -38,6 +45,22 @@ def main():
         (output / f"{i}-reference.json").write_bytes(reference)
         reference = json.loads(reference)
         actual = json.loads((output / f"{i}-index.json").read_text())
+        if worker_pin:
+            worker_env = dict(env, MO_MEDIA_TEST_BUNDLE=str(bundle), MO_MEDIA_TEST_BUNDLE_SHA256=worker_pin,
+                              MO_BMFF_OUTPUT=str(output / f"{i}-worker-index.json"))
+            command = ["cargo", "test", "--offline", "--locked", "-p", "mo-native-media", "--test", "indexing",
+                       "actual_index_pages", "--", "--ignored", "--nocapture"]
+            result = subprocess.run(command, cwd=ROOT, env=worker_env, capture_output=True, timeout=300)
+            (output / f"{i}-worker-test.stdout").write_bytes(result.stdout)
+            (output / f"{i}-worker-test.stderr").write_bytes(result.stderr)
+            result.check_returncode()
+            assert json.loads((output / f"{i}-worker-index.json").read_text()) == actual
+            if i == 0:
+                command[command.index("actual_index_pages")] = "indexing_budget_faults"
+                result = subprocess.run(command, cwd=ROOT, env=worker_env, capture_output=True, timeout=300)
+                (output / "worker-faults.stdout").write_bytes(result.stdout)
+                (output / "worker-faults.stderr").write_bytes(result.stderr)
+                result.check_returncode()
         assert len(actual["tracks"]) == len(reference["streams"])
         count = 0
         packet_duration_differences = 0
@@ -64,8 +87,9 @@ def main():
                         "fileLength": actual["fileLength"], "packetDurationDifferences": packet_duration_differences,
                         "indexSha256": hashlib.sha256((output / f"{i}-index.json").read_bytes()).hexdigest()})
     report = {"status": "passed", "inputs": reports,
+              "workerManifestSha256": worker_pin,
               "ffprobe": subprocess.check_output([str(ffprobe), "-version"], text=True).splitlines()[0],
-              "scope": "Actual nonfragmented container sample bytes and raw DTS/CTS compared with independent demux. Edit lists are preserved, not applied by this checker; no decoder, continuous coverage, browser or product acceptance claimed."}
+              "scope": "Actual nonfragmented container sample bytes and raw DTS/CTS compared with independent demux. When workerManifestSha256 is present, actual retained worker pages and failure paths were also checked. Edit lists are preserved, not applied; no decoder, continuous coverage, browser or product acceptance claimed."}
     (output / "report.json").write_text(json.dumps(report, indent=2) + "\n")
     print(json.dumps(report))
 

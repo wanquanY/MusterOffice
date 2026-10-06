@@ -1,5 +1,6 @@
 //! Disposable decoder or finite encoder. Never opens media or output paths.
 mod encoding;
+mod indexing;
 mod wire;
 use mo_media::{ErrorKind, MediaError};
 use mo_media_ffmpeg::{Container, Decoder};
@@ -10,6 +11,7 @@ use wire::Wire;
 
 enum State {
     Empty,
+    Indexed(mo_media_isobmff::IsoBmffIndex),
     Open(Container<'static>),
     Selected(Decoder<'static>),
     Encoding(encoding::Encoding),
@@ -44,6 +46,37 @@ fn run() -> io::Result<()> {
         last_call = request.call_id;
         io.borrow_mut().call_id = last_call;
         let result = match request.command {
+            Command::OpenIndex {
+                profile,
+                byte_length,
+                limits,
+                process_limits,
+            } if matches!(state, State::Empty) => {
+                if profile != PROFILE {
+                    return Err(io::Error::other("media worker protocol mismatch"));
+                }
+                limits.validate().map_err(io::Error::other)?;
+                let applied = apply_to_current_worker(process_limits).map_err(io::Error::other)?;
+                match indexing::open(Rc::clone(&io), byte_length, limits) {
+                    Ok(index) => {
+                        let summary = mo_media_wire::IndexSummary::from_index(&index);
+                        state = State::Indexed(index);
+                        Ok(Event::Indexed {
+                            profile: PROFILE.into(),
+                            summary,
+                            applied,
+                        })
+                    }
+                    Err(error) => Err(error),
+                }
+            }
+            Command::QueryIndex { query } => match &state {
+                State::Indexed(index) => query
+                    .execute(index)
+                    .map(|page| Event::IndexPage { page })
+                    .map_err(|error| MediaError::new(ErrorKind::Invalid, error.to_string())),
+                _ => Err(state_error()),
+            },
             Command::OpenEncoder {
                 profile,
                 configuration,

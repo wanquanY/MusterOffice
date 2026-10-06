@@ -24,7 +24,7 @@ PROFILES = {
         "root": "mo-video-runtime",
         "profile": "musteroffice.video.runtime/1-draft",
         "crates": {"mo-common", "mo-time", "mo-video-model", "mo-video-edit", "mo-video-compile", ROOT_CRATE,
-                   "mo-media", "mo-media-wire", "mo-native-media", "mo-native-worker", "mo-native-limits",
+                   "mo-media", "mo-media-isobmff", "mo-media-wire", "mo-native-media", "mo-native-worker", "mo-native-limits",
                    "mo-video-source", "mo-color", "mo-video-render", "mo-video-audio", "mo-video-pcm",
                    "mo-video-export", "mo-video-gpu", "mo-video-runtime"},
     },

@@ -1,17 +1,12 @@
 use crate::WorkerBundle;
-use crate::admission::{boundary, guarded_boundary, validate_applied};
-use crate::response::{Expected, Reply};
-use mo_media::{DecodeLimits, DecodedFrame, MediaError, MediaKind, ReadAt, StreamInfo};
-use mo_media_wire::{
-    Command, Event, MAX_READ_BYTES, PROFILE, Request, header_bytes, validate_limits,
-    validate_streams,
-};
+use crate::admission::validate_applied;
+use crate::owner::Owner;
+use mo_media::{DecodeLimits, DecodedFrame, MediaError, ReadAt, StreamInfo};
+use mo_media_wire::{Command, Event, PROFILE, validate_limits, validate_streams};
 use mo_native_limits::{AppliedLimits, ProcessLimits};
-use mo_native_worker::{CHUNK_BYTES, Session, SessionError};
+use mo_native_worker::SessionError;
 use std::{
     fmt, io,
-    panic::{AssertUnwindSafe, catch_unwind},
-    sync::{Arc, Mutex},
     time::{Duration, Instant},
 };
 
@@ -49,17 +44,6 @@ pub struct WorkerOptions {
     /// Each later operation has one deadline across all resource round trips.
     pub call_timeout: Duration,
 }
-struct Owner<'a> {
-    session: Option<Session<Reply>>,
-    source: Box<dyn ReadAt + 'a>,
-    length: u64,
-    options: WorkerOptions,
-    call_id: u64,
-    read_id: u64,
-    read_bytes: u64,
-    expected: Arc<Mutex<Expected>>,
-    selected: Option<(MediaKind, u64)>,
-}
 pub struct NativeContainer<'a> {
     owner: Owner<'a>,
     streams: Vec<StreamInfo>,
@@ -80,42 +64,16 @@ impl<'a> NativeContainer<'a> {
     ) -> Result<Self, WorkerError> {
         let start = Instant::now();
         validate_limits(options.decode, byte_length)?;
-        options
-            .process
-            .validate()
-            .map_err(|_| WorkerError::Invalid("worker process limits"))?;
-        if [options.open_timeout, options.call_timeout]
-            .iter()
-            .any(|t| t.is_zero() || *t > Duration::from_secs(3600))
-        {
-            return Err(WorkerError::Invalid("worker call timeout"));
-        }
         let limits = options.decode;
-        guarded_boundary(start, options.open_timeout, cancelled)?;
-        let command = bundle.command()?;
-        guarded_boundary(start, options.open_timeout, cancelled)?;
-        let expected = Arc::new(Mutex::new(Expected {
-            call_id: 0,
-            frame: None,
-        }));
-        let read_expected = Arc::clone(&expected);
-        let session = Session::start(command, move |input| {
-            let expected = *read_expected
-                .lock()
-                .map_err(|_| "poisoned expected response")?;
-            crate::response::read_reply(input, limits, expected)
-        })?;
-        let mut owner = Owner {
-            session: Some(session),
-            source: Box::new(source),
-            length: byte_length,
-            options,
-            call_id: 0,
-            read_id: 0,
-            read_bytes: 0,
-            expected,
-            selected: None,
-        };
+        let mut owner = Owner::start(
+            bundle,
+            source,
+            byte_length,
+            options.into(),
+            Some(limits),
+            start,
+            cancelled,
+        )?;
         let reply = owner.call_since(
             Command::Open {
                 profile: PROFILE.into(),
@@ -232,152 +190,3 @@ impl NativeDecoder<'_> {
         self.owner.close(cancelled)
     }
 }
-impl Owner<'_> {
-    fn call(&mut self, command: Command, check: &dyn Fn() -> bool) -> Result<Reply, WorkerError> {
-        self.call_since(command, Instant::now(), self.options.call_timeout, check)
-    }
-    fn call_since(
-        &mut self,
-        command: Command,
-        start: Instant,
-        timeout: Duration,
-        check: &dyn Fn() -> bool,
-    ) -> Result<Reply, WorkerError> {
-        if self.is_stopped() {
-            return Err(SessionError::Stopped.into());
-        }
-        let result = catch_unwind(AssertUnwindSafe(|| {
-            self.pump(command, start, timeout, check)
-        }));
-        let result = match result {
-            Ok(result) => result,
-            Err(payload) => {
-                std::mem::forget(payload);
-                Err(WorkerError::CallbackPanic)
-            }
-        };
-        if result.is_err() {
-            self.stop();
-        }
-        result
-    }
-    fn pump(
-        &mut self,
-        command: Command,
-        start: Instant,
-        timeout: Duration,
-        check: &dyn Fn() -> bool,
-    ) -> Result<Reply, WorkerError> {
-        self.call_id = self
-            .call_id
-            .checked_add(1)
-            .ok_or(WorkerError::Invalid("call id exhausted"))?;
-        *self
-            .expected
-            .lock()
-            .map_err(|_| WorkerError::Invalid("expected response lock"))? = Expected {
-            call_id: self.call_id,
-            frame: if matches!(command, Command::Next) {
-                self.selected
-            } else {
-                None
-            },
-        };
-        let mut bytes = header_bytes(&Request {
-            call_id: self.call_id,
-            command,
-        })?;
-        loop {
-            boundary(start, timeout, check)?;
-            let mut parts = bytes.chunks(CHUNK_BYTES);
-            let reply = self.session.as_mut().ok_or(SessionError::Stopped)?.call(
-                timeout.saturating_sub(start.elapsed()),
-                check,
-                || Ok(parts.next().map(|p| p.to_vec())),
-            )?;
-            if reply.call_id != self.call_id {
-                return Err(WorkerError::Invalid("worker response call id"));
-            }
-            match reply.event {
-                Event::Read {
-                    read_id,
-                    offset,
-                    byte_length,
-                } => {
-                    if Some(read_id) != self.read_id.checked_add(1)
-                        || byte_length == 0
-                        || byte_length > MAX_READ_BYTES
-                        || offset > self.length
-                        || u64::from(byte_length) > self.length - offset
-                        || u64::from(byte_length)
-                            > self
-                                .options
-                                .decode
-                                .max_read_bytes
-                                .saturating_sub(self.read_bytes)
-                    {
-                        return Err(WorkerError::Invalid(
-                            "worker resource range, sequence or byte budget",
-                        ));
-                    }
-                    self.read_id = read_id;
-                    let mut buffer = vec![0u8; byte_length as usize];
-                    let n = self.source.read_at(offset, &mut buffer)?;
-                    boundary(start, timeout, check)?;
-                    if n == 0 || n > buffer.len() {
-                        return Err(WorkerError::Invalid("resource callback byte count"));
-                    }
-                    self.read_bytes += n as u64;
-                    bytes = header_bytes(&Request {
-                        call_id: self.call_id,
-                        command: Command::ReadReply {
-                            read_id,
-                            byte_length: n as u32,
-                        },
-                    })?;
-                    bytes.extend_from_slice(&buffer[..n]);
-                }
-                Event::Error { error } => return Err(WorkerError::Media(error)),
-                _ => {
-                    boundary(start, timeout, check)?;
-                    return Ok(reply);
-                }
-            }
-        }
-    }
-    fn close(mut self, check: &dyn Fn() -> bool) -> Result<(), WorkerError> {
-        let start = Instant::now();
-        if !matches!(
-            self.call_since(Command::Close, start, self.options.call_timeout, check)?
-                .event,
-            Event::Closed
-        ) {
-            return Err(WorkerError::Invalid("unexpected close response"));
-        }
-        let session = self.session.take().ok_or(SessionError::Stopped)?;
-        match catch_unwind(AssertUnwindSafe(|| {
-            session.finish(
-                self.options.call_timeout.saturating_sub(start.elapsed()),
-                check,
-            )
-        })) {
-            Ok(result) => result?,
-            Err(payload) => {
-                std::mem::forget(payload);
-                return Err(WorkerError::CallbackPanic);
-            }
-        }
-        Ok(())
-    }
-    fn is_stopped(&self) -> bool {
-        self.session.as_ref().is_none_or(Session::is_stopped)
-    }
-    fn stop(&mut self) {
-        self.session.take();
-    }
-    fn process_id(&self) -> Option<u32> {
-        self.session.as_ref().and_then(Session::process_id)
-    }
-}
-#[cfg(all(test, unix))]
-mod tests;

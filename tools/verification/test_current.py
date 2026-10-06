@@ -79,6 +79,8 @@ class CurrentVerificationTests(unittest.TestCase):
         self.assertIn("/output/media-worker", steps[7].argv)
         self.assertEqual(steps[8].name, "video-container-index")
         self.assertIn("/output/media-native/bframes-vfr.mp4", steps[8].argv)
+        self.assertIn("/output/media-worker-bundle", steps[8].argv)
+        self.assertLess([s.name for s in steps].index("media-worker-bundle"), 8)
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "run"
             result = subprocess.run([sys.executable, str(Path(current.__file__)), "--groups", "media", "--output", str(output),

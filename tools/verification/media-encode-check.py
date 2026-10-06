@@ -44,7 +44,7 @@ def main():
     if args.worker_bundle:
         bundle = args.worker_bundle.resolve()
         manifest = json.loads((bundle / "manifest.json").read_text())
-        assert manifest["profile"] == "musteroffice.native-media-worker/2"
+        assert manifest["profile"] == "musteroffice.native-media-worker/3"
         assert manifest["componentRecordSha256"] == sha(component / "native-build.json")
         env["MO_MEDIA_TEST_BUNDLE"] = str(bundle)
         env["MO_MEDIA_TEST_BUNDLE_SHA256"] = sha(bundle / "manifest.json")

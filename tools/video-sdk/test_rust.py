@@ -17,7 +17,7 @@ class RustProfiles(unittest.TestCase):
         self.assertEqual(len(authoring), 6)
         self.assertNotIn("mo-native-media", authoring)
         self.assertNotIn("mo-video-render", authoring)
-        self.assertEqual(len(runtime), 19)
+        self.assertEqual(len(runtime), 20)
         self.assertEqual(runtime["mo-video-runtime"][1]["features"]["default"], [])
         self.assertNotIn("mo-media-ffmpeg", runtime)
         self.assertNotIn("mo-stretch-sys", runtime)
