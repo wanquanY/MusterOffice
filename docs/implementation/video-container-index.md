@@ -1,6 +1,6 @@
 # ISO BMFF 原始样本索引
 
-状态：2026-10-07 开发实现。`mo-media-isobmff` 负责受预算约束的非分片容器索引；尚未接入产品导入、受限 worker 查询或 Browser 媒体 Host。本记录不代表连续呈现区间已证明。
+状态：2026-10-07 开发实现。`mo-media-isobmff` 负责受预算约束的非分片容器索引，已有受限 worker 的有界分页查询；尚未接入产品导入或 Browser 媒体 Host。本记录不代表连续呈现区间已证明。
 
 ## 时间与数据合同
 
@@ -45,6 +45,30 @@ python3 tools/verification/video-container-check.py \
   --output .codex-work/new-container-evidence
 ```
 
+## 受限 worker 分页查询
+
+源码提交 `3c95c603ea3d80754d0a514afe57669eb7433059` 新增 `NativeIndex`。计算发生在核实 bundle 的独立子进程内；应用资源上限后才读取和解析容器。进程保留一份不可变索引，使用同一 `ReadAt` capability 往返取原文件范围，不获得输入路径。索引会话不允许解码帧、执行编码或切换为其他状态。
+
+读取端口和 decoder 共用 `Owner`，统一调用序号、递增读取序号、全会话累计读取预算、整次调用 deadline、取消边界、回调 panic 处理、停止及进程回收。没有复制第二套进程生命周期。调用方 callback 仍须及时返回：父进程无法抢占它自己的阻塞 callback；返回后会检查 deadline/cancel 并停止子进程，不能称为硬实时中断。
+
+公开查询值包含：movie 概要、单轨概要、样本页、edit 页、mdat 范围页，以及 sample-description/辅助表的分段原始字节。每页最多 128 条记录，初始化/辅助字节每段最多 4096 bytes；无需提升既有 64 KiB 控制 header 上限。双方验证查询范围及页面数量，宿主复核字节范围和各类预算。静态非法查询在发送前拒绝；worker/传输/响应校验失败会永久停止 owner，不能继续返回旧索引。查询本身不重新解析或重复读取来源。
+
+私有 worker 协议升级为 `musteroffice.native-media-worker/3`。新宿主明确拒绝旧协议 bundle，不自动兼容或降级。runtime 源码打包闭包相应从 19 增至 20 个自有 crate，新增 `mo-media-isobmff`；6 包 authoring 闭包不变。产品当前固定的 19 包 SDK、profile 2 worker 继续作为匹配的一组使用，本次没有替换产品 pin，也未公开发行新的 SDK。
+
+从上述干净提交构建的 macOS arm64 release bundle 为 `.codex-work/video-index-worker-final/`，manifest SHA-256 `e4ca639950ec5bb51c1cbc04e5ba55ab092030efa873e5185a6b7d34c22376dd`。7 个二进制总计 8,270,552 bytes，包含 worker、窄 FFI 和 5 个固定 FFmpeg 库，不包含应用、GPU、字体、模型或安装包；此数值不是全产品体积验收。
+
+实际三份素材通过该 bundle 的短读取和逐页查询，所有概要、样本、edit、初始化数据、辅助表和 mdat 范围与原始解析一致，查询期间来源读取计数保持不变。390 个压缩样本仍与独立 demux 对照一致。实际故障测试验证样本/读取预算、越界回调、panic、取消、超时、非法范围及 drop；正常关闭、取消后调用和 drop 均检查物理子进程已回收。证据为 `.codex-work/video-index-worker-verified/`，其中所有实际输入用例显式执行，0 ignored。
+
+原有 bundle 校验、decoder 与 encoder 的 10 项实际集成检查通过；新 bundle 的 3 种工程导出通过独立 FFmpeg 检查，报告在 `.codex-work/video-index-worker-encode-verified/`。普通 Rust 检查共 22 项通过；包含新页面边界/最大数字序列化和原传输故障测试。外部输入测试在普通命令中仍显式 ignored，实际证据由上面的专门脚本取得。相关库和 worker strict Clippy、runtime `native,gpu` 编译、parser WASM 编译、2 项打包闭包与 6 项验证驱动测试通过。没有扩大为全媒体 group、远程 CI、其他操作系统或浏览器验收。
+
+```sh
+python3 tools/verification/video-container-check.py \
+  --input /absolute/path/to/nonfragmented.mp4 \
+  --worker-bundle /absolute/path/to/verified-profile-3-bundle \
+  --ffprobe /absolute/path/to/independent/ffprobe \
+  --output .codex-work/new-worker-index-evidence
+```
+
 ## 后续集成
 
-将解析放入现有受限 worker，以有界分页返回原始索引；实现精确 edit mapping、明确的 decoder 时钟和有证据的呈现区间/gap，再接 Native/Browser 的真实素材采样。分片文件、其他容器、更多 timing 特征仍需独立实现和媒体语料验证。当前 runtime SDK 的 19 包发行、产品固定 manifest、worker 和 Browser SDK 没有被此新 crate 隐式替换。
+实现精确 edit mapping、明确的 decoder 时钟和有证据的呈现区间/gap，再接 Native/Browser 的真实素材采样。分片文件、其他容器、更多 timing 特征仍需独立实现和媒体语料验证。下一次产品升级须同时审查新的 20 包 SDK 和 profile 3 worker，经过独立发行消费及原权限/持久化集成验证，不能直接链接相邻源码。现有 Browser SDK 不包含该索引 Host。

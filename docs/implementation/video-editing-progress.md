@@ -166,6 +166,8 @@ probe 通过原 FileQueryService 和 VerifiedContentReader 读取原授权文件
 
 3 份真实 MP4/M4A 共 390 个压缩样本与独立 FFmpeg demux 的时间、位置、大小、同步标记和字节摘要一致。发现参考工具会填充 nominal packet duration，验证通过实际 DTS 差和独立解码区间比较原始 stts，同时保存差异。容器声明、解码总时长和编辑终点不能混用。证据、限制与复现见[容器索引记录](video-container-index.md)。本次尚未接入受限 worker、产品导入或 Browser Host；现有 SDK 和产品固定发行保持原状。
 
+后续提交 `3c95c60` 已接入受限 worker：`NativeIndex` 与 decoder 共用原读取/取消/回收 owner，在子进程保留不可变索引，以 128 条记录或 4096 字节分页查询，继续使用 64 KiB 控制消息上限。协议升为 profile 3，源码 runtime 包闭包增为 20；产品原 19 包 SDK/profile 2 worker 配对未改变。干净提交构建的 macOS arm64 release bundle 实测 8,270,552 二进制 bytes。3 份真实素材的所有分页结果与原解析/独立 demux 一致，查询不重读来源；预算、取消、失败与物理回收测试通过。22 项普通 Rust 检查、10 项原媒体实际回归、3 种工程输出独立校验及相关编译/strict Clippy 通过。详见同一容器索引记录；edit mapping、连续区间证明和正式产品导入/预览仍待实现，不将新索引当成已完成全产品验收。
+
 ### 精确时间
 
 `mo-time` 从原 PPT 时间线抽取有界精确有理数运算。PPT 保留原合同与正除数约束的薄适配，视频可用反向映射所需的有符号除法。时间转换区分精确可表达与显式量化；不能表达时返回错误，量化返回舍入残差。支持四种明确舍入策略、负时间和分数帧率的绝对帧边界计算。
