@@ -29,8 +29,12 @@ def verify(component):
     assert record["upstream"] == upstream and record["lock"] == upstream["lock"] == lock
     assert record["sanitizers"] is False and upstream["sanitizers"] is False
     assert record["nativePlatform"] == upstream["nativePlatform"] == target
+    patches = [{"path": str(p.relative_to(ROOT / "components/ffmpeg")),
+                "byteLength": p.stat().st_size, "sha256": sha(p)}
+               for p in sorted((ROOT / "components/ffmpeg/patches").glob("*.patch"))]
+    assert upstream.get("patches") == patches, "stale upstream patch profile"
     sources = record["sources"]
-    assert {r["path"] for r in sources} == {"mo_media.c", "mo_media_decode.c", "mo_media.h", "mo_media_internal.h"}
+    assert {r["path"] for r in sources} == {"mo_media.c", "mo_media_decode.c", "mo_media.h", "mo_media_internal.h", "mo_encode.c", "mo_encode_mux.c", "mo_encode.h", "mo_encode_internal.h"}
     for base, rows in [(ROOT / "components/ffmpeg", sources), (component, record["artifacts"] + upstream["artifacts"] + upstream["headers"])]:
         for row in rows:
             path = base / row["path"]

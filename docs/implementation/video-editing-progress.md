@@ -90,6 +90,10 @@ VFR 呈现窗口按真实样本覆盖区间选择源帧，区分已知 gap 与�
 
 `AudioMixer` 已通过 `RetimeRequest`、`RetimeMaterializer` 与 `CanonicalRetimedAudio` 使用连续派生 PCM。分割和裁切保存 `audioContext`，拉长恢复隐藏速率锚点；同向速度段共享 DSP，反向/停帧分开。音频依赖摘要区分名称/视觉变化与上游声音变化，保留每层音高政策。真实 Native 集成和 Native/WASM 完整图比较见[工程保调记录](video-audio-retime.md)。生产存储/后台调度/设备播放仍待接入。
 
+### 原生编码、封装与候选输出
+
+`mo-media-ffmpeg::Encoder` 已实际导出 H.264 VideoToolbox/AAC MP4，另提供 FFV1/float PCM MP4 无损审计档案。精确帧/样本时钟、短尾、有限 packet 交错、短写和失败关闭已实现；硬件帧重排问题在固定上游组件中按 SPS 上界修正。12 组真实文件经独立工具核验，ASan/UBSan 和既有媒体 9 步回归通过。详见[编码实施记录](video-native-encoding.md)。工程合成到 I420、worker 编码协议、宿主校验发布和产品导出仍待连接。
+
 ### 合同与验证入口
 
 `contracts/generated/video-*.schema.json` 从相同 Rust 类型生成，并生成对应的草案 TypeScript 类型，包含工程、编辑请求、逆操作、校验结果、视频帧/音频点计划/音频块计划、标准 PCM 块引用和呈现窗口。它们是开发中的合同，还未独立发行或接入真实产品。
@@ -127,6 +131,7 @@ VFR 呈现窗口按真实样本覆盖区间选择源帧，区分已知 gap 与�
 | 标准 PCM 随机读取 | 10 项默认测试；两段真实 AAC 各 144,000 样本/36 块；共 264 查询与两个完整倒放输出逐 bit 一致；Native/WASM 14 查询一致 | 测试文件 store 不是生产 Host；冷定位/长文件准备、OPFS、设备播放和完整产品未验收 |
 | 保调计算 | 7 项原生行为；12 组实际 Native/WASM 全 PCM 输出一致；35 个分配故障点与 ASan/UBSan 通过 | 工程变速图与派生 PCM 另有集成测试；浏览器设备和产品播放器未完成 |
 | 工程保调与派生 PCM | 13 项真实 Native 集成；5 个派生任务、124,555 个跨端比较样本逐 bit 一致；分割/拉长/嵌套政策/失效/候选重试与有界缓存通过 | 测试内存 Host；生产持久化、浏览器设备、声音试听与工作台未验收 |
+| 原生编码候选 | 12 组实际文件/258 视频帧；短尾/分数帧率/时钟/独立解码通过，无损像素与 PCM 相等；两档案 ASan/UBSan、失败/预算/取消通过 | 编码 leaf adapter；未接工程渲染、worker 导出、浏览器或产品交付，AAC 质量与复杂内容单独验收 |
 | 媒体内存检查 | wrapper 与 FFmpeg C 实现分别构建 ASan/UBSan 档案，同一真实检查通过 | 汇编与平台框架不因此被插桩；不是 hostile-media 隔离保证 |
 | 原生媒体库体积 | 本机 release 配置 5 个 FFmpeg 库及 C wrapper 共 7,392,248 bytes | 不包含 Rust worker、字体、GPU、额外 codec 或系统框架，不是最终应用体积 |
 | 代码与合同 | 整个 Rust 工作区 strict Clippy、WASM 编译、全部 schema/TypeScript 合同检查通过；新增视频 schema 使用相同生成/检查入口 | 未发布新版 SDK、组件频道或 UI |
@@ -142,7 +147,7 @@ cargo test --release --offline --locked -p mo-video-edit --test generated_sequen
 ## 明确尚未完成
 
 - 当前已支持锚点线性变速；完整曲线变速/反查、转场、关键帧、字幕词锚点、分析与互操作等最终语义仍待补全。音频策略已保存，实际重采样/混音基础已实现，非原速保调及工程派生图已实现，生产 Host 接入和完整音频处理仍待完成。
-- 原生 worker 已通过连续区间的真实工程采样测试，CPU/Metal GPU 已执行同源合成，但尚未成为产品播放链；音频混音已有内核实现，设备播放、GPU 显示/纹理互操作、编码/容器输出与浏览器 I/O 尚未接入。
+- 原生 worker 已通过连续区间的真实工程采样测试，CPU/Metal GPU 已执行同源合成，但尚未成为产品播放链；音频混音已有内核实现，设备播放、GPU 显示/纹理互操作、工程导出与浏览器 I/O 尚未接入；编码/容器的 leaf adapter 已实现，worker 和宿主交付仍待连接。
 - 生产 SDK/MCP/CLI、Device/Browser Host、Agent 技能、新时间线 UI、保存恢复和项目包尚未接入新内核。
 - CE.SDK 仍存在于产品旧 worktree，未宣称依赖退役；旧 scene 数据须审计、迁移或保留可导出的原件，不能仅换 engineId。
 - 完整功能、媒体质量、性能、体积、多平台与真实 provider 计费没有完成验收；当前不能交付为“用户已可验收全部视频功能”。

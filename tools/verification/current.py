@@ -19,7 +19,7 @@ import sys
 import time
 
 ROOT = Path(__file__).resolve().parents[2]
-GROUPS = ("lint", "rust", "contracts", "typescript", "native", "media", "mcp", "wasm", "stretch", "mcp-protocol")
+GROUPS = ("lint", "rust", "contracts", "typescript", "native", "media", "encode", "mcp", "wasm", "stretch", "mcp-protocol")
 
 
 @dataclass(frozen=True)
@@ -68,6 +68,8 @@ def plan(groups, output, bindgen, python, ffmpeg_dir=None, stretch_wasm_dir=None
         add("video-color-composition", python, "tools/verification/video-render-check.py", "--native-evidence", output / "media-native", "--media-evidence", output / "media-worker", "--worker-bundle", output / "media-worker-bundle", "--output", output / "video-render")
         add("video-audio-dsp", python, "tools/verification/video-audio-check.py", "--native-evidence", output / "media-native", "--media-evidence", output / "media-worker", "--worker-bundle", output / "media-worker-bundle", "--output", output / "video-audio")
         add("video-canonical-pcm", python, "tools/verification/video-pcm-check.py", "--native-evidence", output / "media-native", "--media-evidence", output / "media-worker", "--worker-bundle", output / "media-worker-bundle", "--output", output / "video-pcm")
+    if "encode" in groups:
+        add("media-encoding-candidates", python, "tools/verification/media-encode-check.py", "--component", ffmpeg_dir or "UNCONFIGURED_FFMPEG_COMPONENT", "--output", output / "media-encode")
     if "typescript" in groups:
         add("types", "pnpm", "check:types")
         add("client-tests", "pnpm", "test:operation-client")
@@ -162,6 +164,8 @@ def prerequisites(groups, args):
     required_tools = ["cargo", "git"]
     if groups.intersection(("typescript", "wasm", "stretch")):
         required_tools.extend(("pnpm", "node"))
+    if "encode" in groups:
+        required_tools.extend(("ffmpeg", "ffprobe"))
     if "media" in groups:
         required_tools.extend(("clang", "ffmpeg", "ffprobe"))
         if sys.platform == "darwin":
@@ -170,7 +174,7 @@ def prerequisites(groups, args):
             required_tools.append("readelf")
         else:
             errors.append("media worker bundle currently requires macOS or Linux")
-    if groups.intersection(("media", "lint", "rust")):
+    if groups.intersection(("media", "encode", "lint", "rust")):
         if not args.ffmpeg_dir or not (Path(args.ffmpeg_dir) / "native-build.json").is_file():
             errors.append("--ffmpeg-dir must identify a prepared media component with native-build.json")
     for name in required_tools:

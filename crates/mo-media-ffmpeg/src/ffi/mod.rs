@@ -1,6 +1,8 @@
 //! All native ownership, pointer access and callbacks live behind this module.
 mod bindings;
 mod callbacks;
+pub(crate) mod encode;
+mod encode_callbacks;
 mod metadata;
 use crate::{DecodeLimits, DecodedFrame, ErrorKind, FramePlane, MediaError, ReadAt, StreamInfo};
 use bindings::*;
@@ -242,6 +244,7 @@ fn failure(status: i32, error: RawError) -> MediaError {
         -5 => ErrorKind::Unsupported,
         -6 => ErrorKind::Decode,
         -7 => ErrorKind::State,
+        -8 => ErrorKind::Encode,
         _ => ErrorKind::Abi,
     };
     MediaError {

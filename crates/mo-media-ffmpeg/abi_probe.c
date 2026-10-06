@@ -1,4 +1,5 @@
 #include "mo_media.h"
+#include "mo_encode.h"
 #include <stdio.h>
 #define TYPE(T, R) printf("const _: () = { assert!(size_of::<" #R ">() == %zu); assert!(align_of::<" #R ">() == %zu); };\n", sizeof(T), _Alignof(T))
 #define FIELD(T, R, F) printf("const _: () = assert!(offset_of!(" #R ", " #F ") == %zu);\n", offsetof(T, F))
@@ -26,5 +27,49 @@ int main(void) {
     FRAME(sar_num); FRAME(sar_den); FRAME(alpha_mode); FRAME(key_frame); FRAME(interlaced); FRAME(top_field_first);
     FRAME(format); FRAME(channel_layout);
     TYPE(mo_media_plane_info, Plane); FIELD(mo_media_plane_info, Plane, row_bytes); FIELD(mo_media_plane_info, Plane, rows);
+    TYPE(mo_encode_io, EncodeIo);
+    FIELD(mo_encode_io, EncodeIo, opaque);
+    FIELD(mo_encode_io, EncodeIo, write_at);
+    FIELD(mo_encode_io, EncodeIo, cancelled);
+    TYPE(mo_encode_config, EncoderConfig);
+    FIELD(mo_encode_config, EncoderConfig, profile);
+    FIELD(mo_encode_config, EncoderConfig, width);
+    FIELD(mo_encode_config, EncoderConfig, height);
+    FIELD(mo_encode_config, EncoderConfig, video_time_scale);
+    FIELD(mo_encode_config, EncoderConfig, frame_rate_num);
+    FIELD(mo_encode_config, EncoderConfig, frame_rate_den);
+    FIELD(mo_encode_config, EncoderConfig, video_duration);
+    FIELD(mo_encode_config, EncoderConfig, video_frames);
+    FIELD(mo_encode_config, EncoderConfig, video_bit_rate);
+    FIELD(mo_encode_config, EncoderConfig, audio_sample_rate);
+    FIELD(mo_encode_config, EncoderConfig, audio_channels);
+    FIELD(mo_encode_config, EncoderConfig, audio_bit_rate);
+    FIELD(mo_encode_config, EncoderConfig, gop_frames);
+    FIELD(mo_encode_config, EncoderConfig, audio_samples);
+    TYPE(mo_encode_limits, EncoderLimits);
+    FIELD(mo_encode_limits, EncoderLimits, max_file_bytes);
+    FIELD(mo_encode_limits, EncoderLimits, max_write_bytes);
+    FIELD(mo_encode_limits, EncoderLimits, max_pending_bytes);
+    FIELD(mo_encode_limits, EncoderLimits, max_frame_bytes);
+    FIELD(mo_encode_limits, EncoderLimits, max_pixels);
+    FIELD(mo_encode_limits, EncoderLimits, max_packets);
+    FIELD(mo_encode_limits, EncoderLimits, max_packet_bytes);
+    FIELD(mo_encode_limits, EncoderLimits, max_pending_packets);
+    FIELD(mo_encode_limits, EncoderLimits, max_steps);
+    FIELD(mo_encode_limits, EncoderLimits, max_write_calls);
+    TYPE(mo_encode_video_frame, EncoderVideo);
+    FIELD(mo_encode_video_frame, EncoderVideo, pts);
+    FIELD(mo_encode_video_frame, EncoderVideo, duration);
+    FIELD(mo_encode_video_frame, EncoderVideo, planes);
+    FIELD(mo_encode_video_frame, EncoderVideo, plane_bytes);
+    FIELD(mo_encode_video_frame, EncoderVideo, strides);
+    TYPE(mo_encode_stats, EncoderStats);
+    FIELD(mo_encode_stats, EncoderStats, byte_length);
+    FIELD(mo_encode_stats, EncoderStats, write_bytes);
+    FIELD(mo_encode_stats, EncoderStats, video_frames);
+    FIELD(mo_encode_stats, EncoderStats, audio_samples);
+    FIELD(mo_encode_stats, EncoderStats, video_packets);
+    FIELD(mo_encode_stats, EncoderStats, audio_packets);
+    FIELD(mo_encode_stats, EncoderStats, peak_pending_bytes);
     return 0;
 }

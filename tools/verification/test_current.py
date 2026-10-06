@@ -30,6 +30,7 @@ class CurrentVerificationTests(unittest.TestCase):
         self.assertIn("video-generated-transactions", names)
         self.assertIn("video-gpu-component-identity", names)
         self.assertIn("media-native-callbacks", names)
+        self.assertIn("media-encoding-candidates", names)
         self.assertLess(names.index("media-native-callbacks"), names.index("media-rust-ownership"))
         self.assertLess(names.index("media-native-callbacks"), names.index("media-worker-execution"))
         self.assertLess(names.index("media-worker-bundle"), names.index("media-worker-execution"))
@@ -69,6 +70,21 @@ class CurrentVerificationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "run"
             result = subprocess.run([sys.executable, str(Path(current.__file__)), "--groups", "media", "--output", str(output),
+                                     "--ffmpeg-dir", str(Path(directory) / "missing")], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 2)
+            report = json.loads((output / "report.json").read_text())
+            self.assertTrue(any("native-build.json" in e for e in report["prerequisiteErrors"]))
+            self.assertEqual(report["steps"][0]["status"], "not-run")
+
+    def test_encode_gate_requires_real_component_and_generates_new_candidates(self):
+        steps = current.plan({"encode"}, Path("/output"), "unused", sys.executable, "/media-component")
+        self.assertEqual(len(steps), 1)
+        self.assertEqual(steps[0].name, "media-encoding-candidates")
+        self.assertIn("/media-component", steps[0].argv)
+        self.assertIn("/output/media-encode", steps[0].argv)
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "run"
+            result = subprocess.run([sys.executable, str(Path(current.__file__)), "--groups", "encode", "--output", str(output),
                                      "--ffmpeg-dir", str(Path(directory) / "missing")], capture_output=True, text=True)
             self.assertEqual(result.returncode, 2)
             report = json.loads((output / "report.json").read_text())

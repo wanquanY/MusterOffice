@@ -44,11 +44,15 @@ python3 tools/verification/current.py --groups media \
   --ffmpeg-dir .codex-work/ffmpeg-native --output .codex-work/new-media-check
 ```
 
-默认 Rust 测试显示 1 项 ignored；上面的 media 分组必须显式执行它，缺少真实素材/组件时失败，不以 skipped 计作通过。本机证据 `.codex-work/media-rust-gate-final/report.json` 及其 `media-rust/report.json`，macOS arm64；没有新增 Linux/Windows、浏览器或性能验收结论。
+解码真实素材测试默认 ignored；上面的 media 分组必须显式执行它，缺少真实素材/组件时失败，不以 skipped 计作通过。本机证据 `.codex-work/media-rust-gate-final/report.json` 及其 `media-rust/report.json`，macOS arm64；没有新增 Linux/Windows、浏览器或性能验收结论。
 
 ## 进程限制基础
 
 后续已实现独立 `mo-native-limits`，用于 disposable worker 启动时安装并核验进程 CPU、地址增长、文件描述符和文件增长上限；实际子进程故障测试已通过，详见[限制语义与证据](native-worker-limits.md)。现已接入[视频 worker](video-media-worker.md)，在接收素材前安装并由宿主核验；它不是文件/网络沙箱或 RSS 硬限额，不能据此把完整产品执行链标为完成。
+
+## 编码能力
+
+后续新增了类型化 `Encoder` 与候选 `WriteAt`，构建身份也校验固定上游修改。编码、封装与错误路径已有实机证据；详见[原生编码记录](video-native-encoding.md)。编码的真实文件测试另由 `encode` 分组及显式硬件检查执行，仍不代表已接入 worker 或完整工程导出。
 
 ## 下一层必须完成
 

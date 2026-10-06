@@ -58,6 +58,9 @@ def main():
         with tarfile.open(archive) as tar:
             tar.extractall(source, filter="data")
         upstream = source / ("ffmpeg-" + LOCK["version"])
+        patches = sorted(str(p.relative_to(COMPONENT)) for p in (COMPONENT / "patches").glob("*.patch"))
+        for name in patches:
+            run(["patch", "-p1", "--batch", "--forward", "--fuzz=0", "-i", str(COMPONENT / name)], upstream)
         prefix = directory / "install"
         flags = ["--prefix=" + str(prefix), "--cc=clang", "--disable-autodetect", "--disable-everything",
                  "--disable-network", "--disable-protocols", "--disable-programs", "--disable-doc", "--disable-debug",
@@ -90,12 +93,15 @@ def main():
         (directory / "configure.txt").write_text(json.dumps(flags, indent=2) + "\n")
         headers = sorted(str(p.relative_to(directory)) for p in (prefix / "include").rglob("*.h"))
         record = {"format": "musteroffice.ffmpeg-libraries/1", "lock": LOCK, "nativePlatform": target, "sanitizers": args.sanitize,
-                  "compiler": compiler, "commands": commands, "artifacts": artifacts(directory, names), "headers": artifacts(directory, headers)}
+                  "compiler": compiler, "commands": commands, "patches": artifacts(COMPONENT, patches), "artifacts": artifacts(directory, names), "headers": artifacts(directory, headers)}
         (directory / "ffmpeg-build.json").write_text(json.dumps(record, indent=2) + "\n")
     else:
         record = json.loads((directory / "ffmpeg-build.json").read_text())
         if record["lock"] != LOCK or record["nativePlatform"] != target or record["sanitizers"] != args.sanitize:
             raise ValueError("component source/profile/target mismatch")
+        patches = sorted(str(p.relative_to(COMPONENT)) for p in (COMPONENT / "patches").glob("*.patch"))
+        if record.get("patches") != artifacts(COMPONENT, patches):
+            raise ValueError("upstream patch profile changed; rebuild libraries in a fresh directory")
         for artifact in record["artifacts"] + record["headers"]:
             if sha(directory / artifact["path"]) != artifact["sha256"]:
                 raise ValueError("shared library digest mismatch")
@@ -103,14 +109,14 @@ def main():
         lib = directory / "install/lib"
         suffix = ".dylib" if target["os"] == "macos" else ".so"
         bridge = lib / ("libmo_media" + suffix)
-        inputs = [COMPONENT / name for name in ["mo_media.c", "mo_media_decode.c"]]
+        inputs = [COMPONENT / name for name in ["mo_media.c", "mo_media_decode.c", "mo_encode.c", "mo_encode_mux.c"]]
         flags = ["-std=c11", "-O2", "-ffp-contract=off", "-fPIC", "-fvisibility=hidden", "-Wall", "-Wextra", "-Werror", "-I" + str(include), "-I" + str(COMPONENT)]
         if args.sanitize:
             flags += ["-fsanitize=address,undefined", "-fno-omit-frame-pointer", "-g"]
         # Linux DT_RPATH also resolves FFmpeg's transitive sibling libraries after relocation.
         linker = ["-dynamiclib", "-Wl,-install_name,@rpath/" + bridge.name, "-Wl,-rpath,@loader_path"] if target["os"] == "macos" else ["-shared", "-Wl,--disable-new-dtags,-rpath,$ORIGIN", "-Wl,-z,origin"]
         run(["clang", *flags, *map(str, inputs), "-L" + str(lib), *linker, "-lavformat", "-lavcodec", "-lavutil", "-lswscale", "-lswresample", "-o", str(bridge)])
-        source_names = ["mo_media.c", "mo_media_decode.c", "mo_media.h", "mo_media_internal.h"]
+        source_names = ["mo_media.c", "mo_media_decode.c", "mo_media.h", "mo_media_internal.h", "mo_encode.c", "mo_encode_mux.c", "mo_encode.h", "mo_encode_internal.h"]
         record = {"format": "musteroffice.ffmpeg-bridge/1", "lock": LOCK, "nativePlatform": target, "sanitizers": args.sanitize,
                   "compiler": compiler, "commands": commands, "upstream": record,
                   "sources": artifacts(COMPONENT, source_names), "artifacts": artifacts(directory, [str(bridge.relative_to(directory))])}

@@ -278,6 +278,8 @@ CPU 参考后端用于正确性和有限能力运行，不以 CPU 低性能静�
 
 ## 8. 导出、校验与续作
 
+当前已实现[原生编码/封装/候选写入叶子层](../../implementation/video-native-encoding.md)，并验证短尾和分数时钟；以下工程导出流程、编码 worker、宿主发布及浏览器档案仍待接通，不能因叶子层通过而视作整链完成。
+
 ```text
 创建导出意图（固定 revision/resources/profile）
  → 探测目标能力与磁盘预算

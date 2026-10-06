@@ -1,13 +1,13 @@
 # Fixed native media component
 
-Development component, not yet a released SDK or completed editing engine. Original `mo_media*` wrappers are Apache-2.0; FFmpeg remains under its applicable upstream licenses.
+Development component, not yet a released SDK or completed editing engine. Original `mo_media*` / `mo_encode*` wrappers are Apache-2.0; FFmpeg remains under its applicable upstream licenses.
 
 ## Source and distribution boundary
 
 - FFmpeg **9.0.2**, released 2026-09-18, selected from the [official download page](https://ffmpeg.org/download.html). Archive SHA-256: `8c3850283eb25fa026482078a04051e0be17347b09ef81a0849bec15a96e002e`; 12,040,788 bytes. Full coordinates are in [lock.json](lock.json).
 - Archive signature was verified against the official release key fingerprint `FCF986EA15E6E293A5644F10B4322F04D67658D8`. The armored [signature](source-signature.asc) and [public key](release-key.asc) are retained. GnuPG's local web-of-trust warning is distinct from the verified signature/fingerprint; the key was obtained from the official HTTPS source.
 - This profile explicitly disables GPL, version3, nonfree, networking, protocols, programs, autodetected dependencies, filters and device capture. Shared avformat/avcodec/avutil/swscale/swresample are built from the pinned archive. There is no lookup of Homebrew/system codec libraries.
-- [LGPL-2.1 text](COPYING.LGPLv2.1) and [upstream license inventory](LICENSE.md) are retained. Future binary packages must provide the exact corresponding source archive, per-file notices, configure/build records, modifications (currently no upstream patch), and required replacement/relinking provisions. Dynamic linkage alone does not discharge distribution obligations. See the [official legal guidance](https://ffmpeg.org/legal.html).
+- [LGPL-2.1 text](COPYING.LGPLv2.1) and [upstream license inventory](LICENSE.md) are retained. Future binary packages must provide the exact corresponding source archive, per-file notices, configure/build records, the [fixed upstream modification](patches/0001-videotoolbox-bounded-reorder-depth.patch) and corresponding modified sources, and required replacement/relinking provisions. Dynamic linkage alone does not discharge distribution obligations. See the [official legal guidance](https://ffmpeg.org/legal.html).
 - Mac builds optionally compile the system VideoToolbox/AudioToolbox interfaces; the current decoder ABI selects software decoding and makes no hardware acceleration claim. System frameworks are platform dependencies, not vendored under Apache-2.0.
 
 ## Reproduction
@@ -22,7 +22,7 @@ python3 tools/verification/media-native-check.py \
   --component .codex-work/ffmpeg-native --output .codex-work/media-native-check
 ```
 
-The libraries stage verifies the archive before extraction, records configure commands, compiler/platform, library and installed header digests. The bridge stage verifies that record and all those digests before compiling our wrapper, then records its C/header sources and binary digest. A sanitized build uses `--sanitize` in **both stages**, a separate fresh directory, and the same flag on the check script. This instruments C code with ASan/UBSan, including the upstream C implementation; assembly/platform frameworks are not thereby instrumented. Sanitizers are verification profiles, never release binaries.
+The libraries stage verifies the archive before extraction, applies the fixed zero-fuzz modification and records its digest, then records configure commands, compiler/platform, library and installed header digests. The bridge stage verifies that record and all those digests before compiling our wrapper, then records its C/header sources and binary digest. A sanitized build uses `--sanitize` in **both stages**, a separate fresh directory, and the same flag on the check script. This instruments C code with ASan/UBSan, including the upstream C implementation; assembly/platform frameworks are not thereby instrumented. Sanitizers are verification profiles, never release binaries.
 
 The check script uses an external FFmpeg/ffprobe CLI **only to generate and independently inspect synthetic fixtures**. Its exact version and commands are recorded; its codec libraries are not linked into the component. The optional software encoders installed with that test utility are not distribution dependencies of this component.
 
@@ -43,6 +43,10 @@ The check script uses an external FFmpeg/ffprobe CLI **only to generate and inde
 
 Limits cover input/read bytes, stream count, pixel/sample/channel limits, active frame bytes and decode-loop work. They are not a hard bound on every private vendor allocation or the duration of a single codec call. The subsequent [Rust adapter](../../docs/implementation/video-media-native.md) now provides RAII, panic boundaries, owned planes and ABI layout checks. A [killable worker](../../docs/implementation/video-media-worker.md) now supplies bounded resource IPC, deadlines and startup process limits; full platform syscall sandboxing and product integration remain pending. The API must not be used to imply that arbitrary hostile media is safe in the UI process.
 
+## Encoding ABI
+
+`mo_encode.h` and `mo-media-ffmpeg::Encoder` now provide typed H.264 VideoToolbox/AAC MP4 and FFV1/float PCM MP4 audit profiles, exact finite clocks, bounded interleaving and host-only candidate writes. Hardware capability is checked by opening the actual profile; no software or format substitution occurs. The pinned VideoToolbox modification fixes hierarchical H.264 frame timestamps using the actual SPS reorder bound. See [native encoding implementation and evidence](../../docs/implementation/video-native-encoding.md) for profiles, short clips, color interpretation, error handling, sanitizers and remaining product integration. The derivative modification remains under FFmpeg's LGPL conditions; it is not relicensed as an original Apache wrapper.
+
 ## Evidence and remaining work
 
 macOS arm64 local checks: 77 actual H.264 frames with VFR gaps and decode/presentation reordering, exact frame PTS/active-plane MD5 matches against the independent decoder, forward/backward seek with generation changes, 13-byte short reads, EOF/drain, cancellation, invalid reuse, too-small output capacity and input/read/frame/pixel/work budgets. Explicit BT.709 tags are checked in the fixture before verifying decoder metadata. AAC: 144,000 samples with continuous timestamps; maximum PCM error against the independent decoder below `1e-5`, RMS below `1e-6`. Normal and ASan/UBSan profiles both pass.
@@ -53,4 +57,4 @@ The media verification group also runs `media-rust-check.py` against that run's 
 
 The media group now builds a pinned development worker bundle and executes real host/worker decode, crash/deadline/reaping and bundle integrity tests. The host binary is checked to have no codec linkage. This is not a signed release or an OS syscall sandbox.
 
-Remaining: platform sandboxing, source indexing and compile-plan integration, browser I/O, hardware frames, full color interpretation/conversion, additional codecs, audio processing, encoding/mux/sink, semantic editing completion and product UI. C/Rust decode checks do not close those acceptance items.
+Remaining: platform sandboxing, source indexing and compile-plan integration, browser I/O, hardware frames, full color interpretation/conversion, additional codecs, audio processing, project export and encoding worker integration, semantic editing completion and product UI. C/Rust decode checks do not close those acceptance items.

@@ -1,5 +1,7 @@
 //! Media byte capabilities and decoded values without any native codec linkage.
 //! Codec metadata is preserved; this is not a document or color-transform contract.
+mod encode;
+pub use encode::*;
 use serde::{Deserialize, Serialize};
 use std::{fmt, io};
 
@@ -38,6 +40,7 @@ pub enum ErrorKind {
     Limit,
     Unsupported,
     Decode,
+    Encode,
     State,
     CallbackPanic,
     CallbackContract,

@@ -13,7 +13,7 @@ extern "C" {
 
 enum { MO_MEDIA_OK=0, MO_MEDIA_FRAME=1, MO_MEDIA_EOF=2,
        MO_MEDIA_INVALID=-1, MO_MEDIA_IO=-2, MO_MEDIA_CANCELLED=-3,
-       MO_MEDIA_LIMIT=-4, MO_MEDIA_UNSUPPORTED=-5, MO_MEDIA_DECODE=-6, MO_MEDIA_STATE=-7 };
+       MO_MEDIA_LIMIT=-4, MO_MEDIA_UNSUPPORTED=-5, MO_MEDIA_DECODE=-6, MO_MEDIA_STATE=-7, MO_MEDIA_ENCODE=-8 };
 enum { MO_MEDIA_VIDEO=1, MO_MEDIA_AUDIO=2, MO_MEDIA_OTHER=3 };
 typedef struct mo_media mo_media;
 typedef struct { int32_t status, upstream_code; char message[192]; } mo_media_error;

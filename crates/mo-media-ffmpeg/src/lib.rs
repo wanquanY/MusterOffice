@@ -26,6 +26,8 @@
 //! }
 //! ```
 pub use mo_media::*;
+mod encoder;
+pub use encoder::*;
 #[allow(unsafe_code)]
 mod ffi;
 

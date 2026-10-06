@@ -18,6 +18,31 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def verify_component(component, sanitize):
+    record = json.loads((component / "native-build.json").read_text())
+    lock = json.loads((ROOT / "components/ffmpeg/lock.json").read_text())
+    if record["lock"] != lock or record["upstream"]["lock"] != lock:
+        raise ValueError("component source lock mismatch")
+    if record["sanitizers"] != sanitize:
+        raise ValueError("bridge sanitizer profile mismatch")
+    expected_sources = {"mo_media.c", "mo_media_decode.c", "mo_media.h", "mo_media_internal.h", "mo_encode.c", "mo_encode_mux.c", "mo_encode.h", "mo_encode_internal.h"}
+    if {row["path"] for row in record["sources"]} != expected_sources:
+        raise ValueError("component source inventory mismatch")
+    for row in record["sources"]:
+        if sha(ROOT / "components/ffmpeg" / row["path"]) != row["sha256"]:
+            raise ValueError("component is stale: rebuild the bridge from current sources")
+    expected_patches = [{"path": str(p.relative_to(ROOT / "components/ffmpeg")),
+                         "byteLength": p.stat().st_size, "sha256": sha(p)}
+                        for p in sorted((ROOT / "components/ffmpeg/patches").glob("*.patch"))]
+    if record["upstream"].get("patches") != expected_patches:
+        raise ValueError("component patch inventory/digest mismatch: rebuild libraries")
+    for row in record["artifacts"] + record["upstream"]["artifacts"] + record["upstream"]["headers"]:
+        path = component / row["path"]
+        if sha(path) != row["sha256"] or path.stat().st_size != row["byteLength"]:
+            raise ValueError("component digest mismatch")
+    return record
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--component", type=Path, required=True)
@@ -28,22 +53,7 @@ def main():
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
     component = args.component.resolve()
-    record = json.loads((component / "native-build.json").read_text())
-    lock = json.loads((ROOT / "components/ffmpeg/lock.json").read_text())
-    if record["lock"] != lock or record["upstream"]["lock"] != lock:
-        raise ValueError("component source lock mismatch")
-    if record["sanitizers"] != args.sanitize:
-        raise ValueError("bridge sanitizer profile mismatch")
-    expected_sources = {"mo_media.c", "mo_media_decode.c", "mo_media.h", "mo_media_internal.h"}
-    if {row["path"] for row in record["sources"]} != expected_sources:
-        raise ValueError("component source inventory mismatch")
-    for row in record["sources"]:
-        if sha(ROOT / "components/ffmpeg" / row["path"]) != row["sha256"]:
-            raise ValueError("component is stale: rebuild the bridge from current sources")
-    for row in record["artifacts"] + record["upstream"]["artifacts"] + record["upstream"]["headers"]:
-        path = component / row["path"]
-        if sha(path) != row["sha256"] or path.stat().st_size != row["byteLength"]:
-            raise ValueError("component digest mismatch")
+    record = verify_component(component, args.sanitize)
     commands = []
 
     def run(command, name):

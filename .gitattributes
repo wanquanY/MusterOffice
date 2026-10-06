@@ -18,3 +18,7 @@
 
 # Preserve exact bytes for hash-pinned component sources and license records.
 components/** -text
+
+# Unified diffs require a space prefix on empty context lines. Keep that syntax
+# while retaining other whitespace checks and all checks on applied C sources.
+components/ffmpeg/patches/*.patch whitespace=-blank-at-eol

@@ -91,11 +91,26 @@ fn main() {
             "mo_media.c",
             "mo_media_decode.c",
             "mo_media.h",
-            "mo_media_internal.h"
+            "mo_media_internal.h",
+            "mo_encode.c",
+            "mo_encode_mux.c",
+            "mo_encode.h",
+            "mo_encode_internal.h"
         ])
     );
     assert_eq!(names.len(), sources.len(), "duplicate wrapper source");
     for row in sources {
+        verify(&root.join("components/ffmpeg"), row);
+    }
+    let patches = upstream["patches"]
+        .as_array()
+        .expect("upstream patch inventory");
+    assert_eq!(patches.len(), 1, "fixed upstream patch profile");
+    assert_eq!(
+        patches[0]["path"],
+        "patches/0001-videotoolbox-bounded-reorder-depth.patch"
+    );
+    for row in patches {
         verify(&root.join("components/ffmpeg"), row);
     }
     let libraries: BTreeSet<_> = record["artifacts"]
