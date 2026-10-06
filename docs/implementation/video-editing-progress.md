@@ -18,7 +18,7 @@
 | W1 视频领域与合同 | 基础已实现，未全部完成 | 独立模型、精确时间、受限解析与校验、Native/WASM 公共合同向量；补全效果、字幕、分析和工程包模型 |
 | W2 媒体与合成 | 原生解码/采样、CPU/Metal 合成及音频块处理基础已实现；保调工程图及派生 PCM 已实现；Browser、导出及产品显示待实施 | 原生/浏览器媒体与合成、字体/色彩/音频及真实输出 |
 | W3 编辑与历史 | 原子事务基础已实现，未全部完成 | 全部编辑操作、候选、冲突与有条件逆操作及增量索引 |
-| W4 产品执行 | 待实施新内核接入 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
+| W4 产品执行 | 独立计算 SDK 和 Browser Host 的工程持久化、素材、Worker 基础已接通；Device/UI/媒体任务待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
 | W5 创作与交互 | 保留原 worktree，未完成替换 | 整理现有生成/Admin/计费、技能、人机共享编辑与消息卡片 |
 | W6 完整验收 | 仅有下列内核基础证据 | 完整验收矩阵与可供用户实际操作的本地环境 |
 
@@ -27,6 +27,14 @@
 ### 视频高层接口与独立 WASM
 
 `mo-video-operations` 已实现不可变工程创建/打开、摘要、分页、候选编辑、条件撤销、帧计划与资源闭包；`mo-video-wasm` 和薄 TS 客户端共享同一合同，独立于 PPT 和媒体 codec。宿主 revision、epoch、幂等持久提交仍由产品负责，候选不等于保存成功。已有不可变开发包构建和实际 Native/WASM/打包 ESM 检查；尚未发行生产 SDK 或接入工作台。详见[接口及实际边界](video-authoring-api.md)。
+
+### 产品 Browser Host 基础
+
+Musterwork worktree 提交 `82aaa621b` 已接入固定的独立视频 SDK（上游源码 `45ef17cdda471fef732412cf118829fbb325f035`；manifest `634c9790b861b8ddfc232a879952264f93eed949c708075729ba95edf7eecf98`）。产品新增宿主包，持有登录 session/作用域、严格 IDB 事务、租约/epoch、CAS、幂等回执、条件撤销历史和 outbox；OPFS 素材分块写入并验证后登记，提交时核对资源闭包。内核没有增加业务存储职责。
+
+8 项真实 Rust WASM 驱动的宿主单测通过（该组 IDB 为 fake-indexeddb）；另在 macOS arm64 / Chrome 154.0.8037.98 实际执行 Worker、IDB、OPFS：并发只提交一个版本，2,097,169 bytes 素材在页面重载后完整恢复，epoch 1→2 拒绝旧执行器，Worker 终止拒绝待执行请求。产品本地报告 `.codex-work/video-host-browser-current/report.json` 绑定源摘要 `f153cb4b09cc2e925d28e32bdf6372193219b4ddba0f90a7ab6e62b942ac446b`。
+
+这仍是产品宿主基础，未连接现有时间线/Agent 工具或浏览器媒体设备；桌面必须由 Device Runtime 实现权威，不能直接复用 Browser IDB 作为桌面工程。当前完整快照历史、孤儿素材回收、容量管理、备份、断电恢复及跨浏览器尚待完善。CE.SDK 页面还未退役，不以这些测试宣称工作台可完整验收。
 
 ### 精确时间
 
@@ -160,7 +168,7 @@ cargo test --release --offline --locked -p mo-video-edit --test generated_sequen
 
 - 当前已支持锚点线性变速；完整曲线变速/反查、转场、关键帧、字幕词锚点、分析与互操作等最终语义仍待补全。音频策略已保存，实际重采样/混音基础已实现，非原速保调及工程派生图已实现，生产 Host 接入和完整音频处理仍待完成。
 - 原生 worker 已通过连续区间的真实工程采样测试，CPU/Metal GPU 已执行同源合成，但尚未成为产品播放链；音频混音已有内核实现，设备播放、GPU 显示/纹理互操作、产品工程导出与浏览器 I/O 尚未接入；编码/容器的 leaf adapter 已实现，编码 worker 已连接，宿主交付仍待连接。
-- 生产 SDK/MCP/CLI、Device/Browser Host、Agent 技能、新时间线 UI、保存恢复和项目包尚未接入新内核。
+- 已有独立开发 SDK 和 Browser Host 基础；生产 SDK/MCP/CLI、Device Host、Agent 技能、新时间线 UI、完整恢复和项目包尚未接入新内核。
 - CE.SDK 仍存在于产品旧 worktree，未宣称依赖退役；旧 scene 数据须审计、迁移或保留可导出的原件，不能仅换 engineId。
 - 完整功能、媒体质量、性能、体积、多平台与真实 provider 计费没有完成验收；当前不能交付为“用户已可验收全部视频功能”。
 
