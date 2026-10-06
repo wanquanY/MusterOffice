@@ -18,7 +18,7 @@
 | W1 视频领域与合同 | 基础已实现，未全部完成 | 独立模型、精确时间、受限解析与校验、Native/WASM 公共合同向量；补全效果、字幕、分析和工程包模型 |
 | W2 媒体与合成 | 原生解码/采样、CPU/Metal 合成及音频块处理基础已实现；保调工程图及派生 PCM 已实现；Browser、导出及产品显示待实施 | 原生/浏览器媒体与合成、字体/色彩/音频及真实输出 |
 | W3 编辑与历史 | 原子事务基础已实现，未全部完成 | 全部编辑操作、候选、冲突与有条件逆操作及增量索引 |
-| W4 产品执行 | 独立 Native/WASM SDK、Browser Host 基础、Native 计算、SQLite 工程、Agent authoring、共享手动执行、认证 RPC/IPC、工程订阅、基础时间线及消息工程卡片/右侧面板路由已实现；媒体任务/完整恢复待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
+| W4 产品执行 | 独立 Native/WASM SDK、Browser Host 基础、Native 计算、SQLite 工程、Agent authoring、共享手动执行、认证 RPC/IPC、工程订阅、基础时间线、消息工程卡片/右侧面板、待确认命令持久恢复与物理执行退出等待已实现；媒体任务/完整产品恢复验收待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
 | W5 创作与交互 | 视频技能与显式工具装载、无生成模型的剪辑准入已接通；工作台及旧引擎替换未完成 | 整理现有生成/Admin/计费、技能、人机共享编辑与消息卡片 |
 | W6 完整验收 | 仅有下列内核基础证据 | 完整验收矩阵与可供用户实际操作的本地环境 |
 
@@ -122,7 +122,7 @@ Musterwork worktree 提交 `82aaa621b` 已接入固定的独立视频 SDK（上�
 
 证据为产品 `.codex-work/video-editor-report.json`，截图与浏览器报告在 `video-editor-browser-final-02/`，合同及复现说明在产品 `docs/architecture/native-video-editor-surface.md`。Native 源与 Browser SDK 源的本次使用 schema 已比对一致；没有新发 SDK。
 
-该组件提交时尚未进入消息工程卡片/正常路由；后续接线见下节。真实素材 probe、像素/声音、导出、完整属性与 Browser Host 仍未接通。待确认命令仅保留于活跃 session，跨页面/应用重启恢复仍待实现。预览缺失和未装配的动作不会被显示为可用；CE.SDK 旧路径及场景数据仍待迁移，不能据此宣称全部产品功能可验收。
+该组件提交时尚未进入消息工程卡片/正常路由；后续接线见下节。真实素材 probe、像素/声音、导出、完整属性与 Browser Host 仍未接通。该阶段待确认命令仅保留于活跃 session，后续持久恢复进展见下文。预览缺失和未装配的动作不会被显示为可用；CE.SDK 旧路径及场景数据仍待迁移，不能据此宣称全部产品功能可验收。
 
 ### 消息工程卡片与正常右侧面板
 
@@ -134,7 +134,19 @@ Musterwork worktree 提交 `82aaa621b` 已接入固定的独立视频 SDK（上�
 
 99项共享展示/PPT/旧工具检查与84项 Desktop 路由、组件、原会话归属检查通过，共183项。贯通检查运行真实消息组件、面板调度、路由、原生编辑器与命令准备，验证最终发出原 scope 下的 current-head inspect；仅 IPC 端点使用测试 fixture，未宣称连接真实登录 resident。共享与相关 Desktop 类型检查、前端边界检查通过。schema 展示审核覆盖已登记的历史及开发 release，未修改全局激活配置或发行 SDK。
 
-证据：产品 `.codex-work/video-project-surface-report.json` 绑定提交、33个源码路径及6份日志摘要；细节在产品 `docs/architecture/native-video-project-surface.md`。旧工作树修改保留，检查基于含这些既有修改的工作树，本次仅提交自身文件/片段。整体验收仍未完成：真实媒体预览/声音、素材导入、导出、完整属性、Browser Host、待确认命令跨页面/应用重启恢复、CE.SDK 迁移和真实 provider/计费仍须完成。
+证据：产品 `.codex-work/video-project-surface-report.json` 绑定提交、33个源码路径及6份日志摘要；细节在产品 `docs/architecture/native-video-project-surface.md`。旧工作树修改保留，检查基于含这些既有修改的工作树，本次仅提交自身文件/片段。整体验收仍未完成：真实媒体预览/声音、素材导入、导出、完整属性、Browser Host、CE.SDK 迁移和真实 provider/计费仍须完成；命令恢复增量见下一节。
+
+### 待确认命令持久恢复与原生执行生命周期
+
+产品提交 `b614f52cb` 在正式 Desktop 编辑端口接入写前命令意图：IndexedDB 严格事务先保存原 CommandId、原 JSON 字节和原作用域，再发送原生调用。工程/历史/回执的权威仍是原 SQLite；客户端不保存第二份文档或判定提交成功。Web Locks 串行同账号同工程的不同窗口，其他命令不能覆盖未确认意图；已由另一窗口确认的旧命令对象不能被重新放回槽位。关闭面板后可重开恢复，允许用户离开等待界面。
+
+记录按稳定账号隔离，适配器额外受当前登录 session 约束。同一账号重新登录可恢复原意图，旧 session 和其他账号不能接管。存储失败或超额时不发送新编辑；响应未知、取消或成功后的槽位清理失败都保留原命令。恢复旧回执后重新读取当前 head，保留 Agent 后续修改；撤销类型也持久化，恢复后仍可进行受版本约束的重做。
+
+原生 RPC 不再用等待超时直接丢弃正在提交的 future。有限在途表合并精确相同请求，最多8项物理执行、每项8个等待者；最后一个等待者消失仅请求协作取消，物理工作直到实际结束仍占额度。TaskTracker 在调度前登记任务，服务退出封闭准入并等待物理工作结束；超过退出等待期限明确报错，不能把连接结束称作全部编辑结束。原持久回执、SQLite CAS、epoch fence 与 Agent 提交归属未改变。
+
+40项 Device transport、4项真实固定 SDK/SQLite 手动执行、15项共享 session/实际 Rust WASM，以及8项 Desktop 端口/工程作用域/正常消息入口检查通过，共67项。真实 Chrome 154 的11项 IDB/Web Locks 检查覆盖刷新、Renderer 崩溃、浏览器进程重启、多窗口、账号变化、作用域拒绝、quota 故障注入和容量边界；另13项生产 Vue 时间线交互回归通过。Rust production lib strict Clippy、共享及相关 Desktop 类型检查、前端/Docker/桌面依赖边界全部通过。
+
+报告 `.codex-work/video-pending-edit-report.json` 绑定提交、30个路径（含改名旧路径）与10份日志摘要；详细合同在产品 `docs/architecture/native-video-edit-recovery.md`。浏览器重启使用同一 profile/origin；没有冒充操作系统断电、真实磁盘耗尽或登录桌面全应用重启/升级验收。原生物理生命周期由受控阻塞端口验证，SDK/SQLite 单独集成验证；真实媒体和完整本地产品验收仍待完成。下一工作重点为固定媒体 SDK/worker 消费、原素材导入/probe、像素与声音预览及本地导出。
 
 ### 精确时间
 
@@ -268,7 +280,7 @@ cargo test --release --offline --locked -p mo-video-edit --test generated_sequen
 
 - 当前已支持锚点线性变速；完整曲线变速/反查、转场、关键帧、字幕词锚点、分析与互操作等最终语义仍待补全。音频策略已保存，实际重采样/混音基础已实现，非原速保调及工程派生图已实现，生产 Host 接入和完整音频处理仍待完成。
 - 原生 worker 已通过连续区间的真实工程采样测试，CPU/Metal GPU 已执行同源合成，但尚未成为产品播放链；音频混音已有内核实现，设备播放、GPU 显示/纹理互操作、产品工程导出与浏览器 I/O 尚未接入；编码/容器的 leaf adapter 已实现，编码 worker 已连接，宿主交付仍待连接。
-- 已有独立开发 SDK、Browser Host 基础、Device metadata 工程执行和源码中的 Agent 技能/桌面 RPC/IPC；生产 SDK/MCP/CLI、媒体 Host、新时间线 UI、完整恢复和项目包仍待接入。
+- 已有独立开发 SDK、Browser Host 基础、Device metadata 工程执行、Agent 技能/桌面 RPC/IPC、基础时间线和待确认命令恢复；生产 SDK/MCP/CLI、媒体 Host、完整属性 UI、完整应用恢复验收和项目包仍待接入。
 - CE.SDK 仍存在于产品旧 worktree，未宣称依赖退役；旧 scene 数据须审计、迁移或保留可导出的原件，不能仅换 engineId。
 - 完整功能、媒体质量、性能、体积、多平台与真实 provider 计费没有完成验收；当前不能交付为“用户已可验收全部视频功能”。
 
