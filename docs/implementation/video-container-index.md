@@ -64,11 +64,11 @@ python3 tools/verification/video-container-check.py \
 ```sh
 python3 tools/verification/video-container-check.py \
   --input /absolute/path/to/nonfragmented.mp4 \
-  --worker-bundle /absolute/path/to/verified-profile-3-bundle \
+  --worker-bundle /absolute/path/to/verified-current-profile-bundle \
   --ffprobe /absolute/path/to/independent/ffprobe \
   --output .codex-work/new-worker-index-evidence
 ```
 
 ## 后续集成
 
-实现精确 edit mapping、明确的 decoder 时钟和有证据的呈现区间/gap，再接 Native/Browser 的真实素材采样。分片文件、其他容器、更多 timing 特征仍需独立实现和媒体语料验证。下一次产品升级须同时审查新的 20 包 SDK 和 profile 3 worker，经过独立发行消费及原权限/持久化集成验证，不能直接链接相邻源码。现有 Browser SDK 不包含该索引 Host。
+后续提交 `3c0cf1a` 已实现精确 edit mapping、明确的 raw decoder 模式及容器呈现范围/gap，并将私有 worker 协议升级为 profile 4，见[呈现时间记录](video-presentation-time.md)。上述 profile 3 数值是历史核验事实；当前检查脚本要求当前 profile。通用 codec 样本/画面准入与 Native/Browser 素材采样仍须接入。分片文件、其他容器、更多 timing 特征仍需独立实现和媒体语料验证。下一次产品升级须同时审查新的 20 包 SDK 和 profile 4 worker，经过独立发行消费及原权限/持久化集成验证，不能直接链接相邻源码。现有 Browser SDK 不包含该索引 Host。

@@ -166,7 +166,13 @@ probe 通过原 FileQueryService 和 VerifiedContentReader 读取原授权文件
 
 3 份真实 MP4/M4A 共 390 个压缩样本与独立 FFmpeg demux 的时间、位置、大小、同步标记和字节摘要一致。发现参考工具会填充 nominal packet duration，验证通过实际 DTS 差和独立解码区间比较原始 stts，同时保存差异。容器声明、解码总时长和编辑终点不能混用。证据、限制与复现见[容器索引记录](video-container-index.md)。本次尚未接入受限 worker、产品导入或 Browser Host；现有 SDK 和产品固定发行保持原状。
 
-后续提交 `3c95c60` 已接入受限 worker：`NativeIndex` 与 decoder 共用原读取/取消/回收 owner，在子进程保留不可变索引，以 128 条记录或 4096 字节分页查询，继续使用 64 KiB 控制消息上限。协议升为 profile 3，源码 runtime 包闭包增为 20；产品原 19 包 SDK/profile 2 worker 配对未改变。干净提交构建的 macOS arm64 release bundle 实测 8,270,552 二进制 bytes。3 份真实素材的所有分页结果与原解析/独立 demux 一致，查询不重读来源；预算、取消、失败与物理回收测试通过。22 项普通 Rust 检查、10 项原媒体实际回归、3 种工程输出独立校验及相关编译/strict Clippy 通过。详见同一容器索引记录；edit mapping、连续区间证明和正式产品导入/预览仍待实现，不将新索引当成已完成全产品验收。
+后续提交 `3c95c60` 已接入受限 worker：`NativeIndex` 与 decoder 共用原读取/取消/回收 owner，在子进程保留不可变索引，以 128 条记录或 4096 字节分页查询，继续使用 64 KiB 控制消息上限。协议升为 profile 3，源码 runtime 包闭包增为 20；产品原 19 包 SDK/profile 2 worker 配对未改变。干净提交构建的 macOS arm64 release bundle 实测 8,270,552 二进制 bytes。3 份真实素材的所有分页结果与原解析/独立 demux 一致，查询不重读来源；预算、取消、失败与物理回收测试通过。22 项普通 Rust 检查、10 项原媒体实际回归、3 种工程输出独立校验及相关编译/strict Clippy 通过。详见同一容器索引记录；该提交时 edit mapping、连续区间证明和正式产品导入/预览仍待实现。
+
+### 容器呈现映射与显式解码时钟
+
+提交 `3c0cf1a` 已补齐原始 PTS 排序、最终显示样本终点及精确 elst 映射，支持空白、重复素材、正分数速率、定格及边界两侧查询。固定 decoder 新增 raw ISO BMFF 模式和真实 track ID；共享索引 worker 惰性计算映射，宿主校验有界结果。解码 C ABI 升为 2，worker profile 升为 4；当前产品 SDK/worker pin 尚未替换。
+
+四份实际视频共 306 帧的像素与 PTS、1,290 次精确时间查询和 42 次随机定位同独立工具/oracle 一致；两份为保持压缩 mdat 不变的受控元数据变体。新 release bundle 来自干净提交，7 个二进制共 8,424,776 bytes。原视频/AAC 解码、三种工程导出、相关 strict Clippy/编译与打包闭包回归通过，详见[呈现时间记录](video-presentation-time.md)。仍须把容器时钟接入通用素材采样、授权导入与实际播放；未将这些内核检查作为浏览器或完整产品验收。
 
 ### 精确时间
 
