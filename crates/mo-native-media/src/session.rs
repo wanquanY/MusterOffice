@@ -1,7 +1,7 @@
 use crate::WorkerBundle;
 use crate::admission::validate_applied;
 use crate::owner::Owner;
-use mo_media::{DecodeLimits, DecodedFrame, MediaError, ReadAt, StreamInfo};
+use mo_media::{DecodeLimits, DecodeTimeline, DecodedFrame, MediaError, ReadAt, StreamInfo};
 use mo_media_wire::{Command, Event, PROFILE, validate_limits, validate_streams};
 use mo_native_limits::{AppliedLimits, ProcessLimits};
 use mo_native_worker::SessionError;
@@ -45,11 +45,13 @@ pub struct WorkerOptions {
     pub call_timeout: Duration,
 }
 pub struct NativeContainer<'a> {
+    timeline: DecodeTimeline,
     owner: Owner<'a>,
     streams: Vec<StreamInfo>,
     applied: AppliedLimits,
 }
 pub struct NativeDecoder<'a> {
+    timeline: DecodeTimeline,
     owner: Owner<'a>,
     stream: StreamInfo,
     applied: AppliedLimits,
@@ -60,6 +62,23 @@ impl<'a> NativeContainer<'a> {
         source: impl ReadAt + 'a,
         byte_length: u64,
         options: WorkerOptions,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, WorkerError> {
+        Self::open_with_timeline(
+            bundle,
+            source,
+            byte_length,
+            options,
+            DecodeTimeline::Demuxer,
+            cancelled,
+        )
+    }
+    pub fn open_with_timeline(
+        bundle: &WorkerBundle,
+        source: impl ReadAt + 'a,
+        byte_length: u64,
+        options: WorkerOptions,
+        timeline: DecodeTimeline,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, WorkerError> {
         let start = Instant::now();
@@ -77,6 +96,7 @@ impl<'a> NativeContainer<'a> {
         let reply = owner.call_since(
             Command::Open {
                 profile: PROFILE.into(),
+                timeline,
                 byte_length,
                 limits,
                 process_limits: options.process,
@@ -88,12 +108,14 @@ impl<'a> NativeContainer<'a> {
         match reply.event {
             Event::Opened {
                 profile,
+                timeline: actual_timeline,
                 streams,
                 applied,
-            } if profile == PROFILE => {
+            } if profile == PROFILE && timeline == actual_timeline => {
                 validate_streams(&streams, limits)?;
                 validate_applied(applied, options.process)?;
                 Ok(Self {
+                    timeline,
                     owner,
                     streams,
                     applied,
@@ -101,6 +123,9 @@ impl<'a> NativeContainer<'a> {
             }
             _ => Err(WorkerError::Invalid("unexpected open response")),
         }
+    }
+    pub fn timeline(&self) -> DecodeTimeline {
+        self.timeline
     }
     pub fn streams(&self) -> &[StreamInfo] {
         &self.streams
@@ -128,6 +153,7 @@ impl<'a> NativeContainer<'a> {
         }
         self.owner.selected = Some((stream.kind, 1));
         Ok(NativeDecoder {
+            timeline: self.timeline,
             owner: self.owner,
             stream,
             applied: self.applied,
@@ -138,6 +164,9 @@ impl<'a> NativeContainer<'a> {
     }
 }
 impl NativeDecoder<'_> {
+    pub fn timeline(&self) -> DecodeTimeline {
+        self.timeline
+    }
     pub fn stream(&self) -> &StreamInfo {
         &self.stream
     }

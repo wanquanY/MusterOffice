@@ -4,7 +4,10 @@ mod callbacks;
 pub(crate) mod encode;
 mod encode_callbacks;
 mod metadata;
-use crate::{DecodeLimits, DecodedFrame, ErrorKind, FramePlane, MediaError, ReadAt, StreamInfo};
+use crate::{
+    DecodeLimits, DecodeTimeline, DecodedFrame, ErrorKind, FramePlane, MediaError, ReadAt,
+    StreamInfo,
+};
 use bindings::*;
 use callbacks::Callbacks;
 use std::{ffi::CStr, marker::PhantomData, mem::MaybeUninit, ptr::NonNull, rc::Rc};
@@ -21,12 +24,13 @@ impl<'a> Context<'a> {
         source: impl ReadAt + 'a,
         length: u64,
         limits: DecodeLimits,
+        timeline: DecodeTimeline,
         cancel: impl FnMut() -> bool + 'a,
     ) -> Result<Self, MediaError> {
         // SAFETY: fixed ABI functions return a process-lifetime static version.
         let version_ok = unsafe {
             let version = mo_media_upstream_version();
-            mo_media_abi_version() == 1
+            mo_media_abi_version() == 2
                 && !version.is_null()
                 && CStr::from_ptr(version).to_bytes()
                     == env!("MO_MEDIA_EXPECTED_VERSION").as_bytes()
@@ -60,7 +64,11 @@ impl<'a> Context<'a> {
         // SAFETY: synchronous open borrows valid records; Box-stable callback
         // owner lives through close. `raw` starts null, and successful ownership
         // is immediately installed in the drop guard before any fallible work.
-        let status = unsafe { mo_media_open(&io, &limits, &mut raw, &mut error) };
+        let mode = match timeline {
+            DecodeTimeline::Demuxer => 0,
+            DecodeTimeline::RawIsoBmff => 1,
+        };
+        let status = unsafe { mo_media_open_timeline(&io, &limits, mode, &mut raw, &mut error) };
         context.raw = NonNull::new(raw);
         context.end(ok(status, error))?;
         if context.raw.is_none() {

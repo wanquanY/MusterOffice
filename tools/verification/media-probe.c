@@ -92,7 +92,7 @@ int main(int argc,char **argv) {
     int kind=strcmp(argv[2],"video")==0?MO_MEDIA_VIDEO:MO_MEDIA_AUDIO;
     source s={0};s.file=fopen(argv[1],"rb");require(s.file!=NULL,"fixture open");
     require(fseeko(s.file,0,SEEK_END)==0,"fixture size");off_t size=ftello(s.file);require(size>0,"empty fixture");s.size=(uint64_t)size;
-    require(mo_media_abi_version()==1,"ABI version");require(strcmp(mo_media_upstream_version(),"9.0.2")==0,"upstream version");
+    require(mo_media_abi_version()==2,"ABI version");require(strcmp(mo_media_upstream_version(),"9.0.2")==0,"upstream version");
     require(strstr(mo_media_upstream_license(),"LGPL")!=NULL,"component license");
     mo_media_error e;mo_media *m=open_media(&s,limits(),&e);mo_media_stream_info stream;select_kind(m,kind,&stream);
     FILE *pcm=argc==4?fopen(argv[3],"wb"):NULL;require(argc==3 || pcm!=NULL,"PCM destination");

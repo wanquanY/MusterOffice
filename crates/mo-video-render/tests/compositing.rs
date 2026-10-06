@@ -243,6 +243,7 @@ fn source_metadata_does_not_silently_drop_rotation_or_pixel_aspect() {
     let f = rgba(&[[0; 4]]);
     let stream = mo_media::StreamInfo {
         index: 0,
+        container_track_id: None,
         kind: mo_media::MediaKind::Video,
         codec: "rawvideo".into(),
         time_base: None,

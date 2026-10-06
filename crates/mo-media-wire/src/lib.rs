@@ -14,7 +14,7 @@ use mo_native_limits::{AppliedLimits, ProcessLimits};
 use serde::{Deserialize, Serialize};
 pub use validation::*;
 
-pub const PROFILE: &str = "musteroffice.native-media-worker/3";
+pub const PROFILE: &str = "musteroffice.native-media-worker/4";
 pub const MAX_HEADER_BYTES: usize = 64 * 1024;
 pub const MAX_READ_BYTES: u32 = 32 * 1024;
 pub const MAX_WRITE_BYTES: u32 = 32 * 1024;
@@ -33,6 +33,14 @@ pub struct Request {
     deny_unknown_fields
 )]
 pub enum Command {
+    DescribeVideoTime {
+        track: u32,
+    },
+    SelectVideoTime {
+        track: u32,
+        time: mo_media_isobmff::presentation::ExactRatio,
+        side: mo_media_isobmff::presentation::Side,
+    },
     OpenIndex {
         profile: String,
         byte_length: u64,
@@ -63,6 +71,7 @@ pub enum Command {
     },
     Open {
         profile: String,
+        timeline: mo_media::DecodeTimeline,
         byte_length: u64,
         limits: DecodeLimits,
         process_limits: ProcessLimits,
@@ -94,6 +103,12 @@ pub struct Response {
     deny_unknown_fields
 )]
 pub enum Event {
+    VideoTiming {
+        summary: mo_media_isobmff::presentation::VideoTimingSummary,
+    },
+    VideoTimeSelected {
+        selection: mo_media_isobmff::presentation::VideoTimeSelection,
+    },
     Indexed {
         profile: String,
         summary: IndexSummary,
@@ -119,6 +134,7 @@ pub enum Event {
     },
     Opened {
         profile: String,
+        timeline: mo_media::DecodeTimeline,
         streams: Vec<StreamInfo>,
         applied: AppliedLimits,
     },

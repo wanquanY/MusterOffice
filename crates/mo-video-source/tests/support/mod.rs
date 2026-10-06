@@ -50,6 +50,7 @@ pub fn colors() -> CodecColorTags {
 pub fn stream() -> StreamInfo {
     StreamInfo {
         index: 0,
+        container_track_id: None,
         kind: MediaKind::Video,
         codec: "rawvideo".into(),
         time_base: Some(TimeBase {

@@ -66,7 +66,7 @@ class CurrentVerificationTests(unittest.TestCase):
 
     def test_media_plan_consumes_explicit_component_and_missing_record_fails(self):
         steps = current.plan({"media"}, Path("/output"), "unused", sys.executable, "/media-component")
-        self.assertEqual(len(steps), 9)
+        self.assertEqual(len(steps), 10)
         self.assertIn("/media-component", steps[0].argv)
         self.assertIn("/media-component", steps[1].argv)
         self.assertIn("/output/media-native", steps[1].argv)
@@ -81,6 +81,9 @@ class CurrentVerificationTests(unittest.TestCase):
         self.assertIn("/output/media-native/bframes-vfr.mp4", steps[8].argv)
         self.assertIn("/output/media-worker-bundle", steps[8].argv)
         self.assertLess([s.name for s in steps].index("media-worker-bundle"), 8)
+        self.assertEqual(steps[9].name, "video-container-timing")
+        self.assertIn("--variants", steps[9].argv)
+        self.assertIn("/output/media-worker-bundle", steps[9].argv)
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "run"
             result = subprocess.run([sys.executable, str(Path(current.__file__)), "--groups", "media", "--output", str(output),

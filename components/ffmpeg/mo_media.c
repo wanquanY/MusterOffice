@@ -1,6 +1,6 @@
 #include "mo_media_internal.h"
 
-uint32_t mo_media_abi_version(void) { return 1; }
+uint32_t mo_media_abi_version(void) { return 2; }
 const char *mo_media_upstream_version(void) { return av_version_info(); }
 const char *mo_media_upstream_license(void) { return avcodec_license(); }
 int32_t mo_media_fail(mo_media_error *error, int32_t status, int upstream, const char *message) {
@@ -49,7 +49,12 @@ static int64_t seek_bytes(void *opaque, int64_t offset, int whence) {
     m->position=(uint64_t)position;return position;
 }
 int32_t mo_media_open(const mo_media_io *io,const mo_media_limits *limits,mo_media **out,mo_media_error *error) {
+    return mo_media_open_timeline(io,limits,MO_MEDIA_TIMELINE_DEMUXER,out,error);
+}
+int32_t mo_media_open_timeline(const mo_media_io *io,const mo_media_limits *limits,int32_t timeline,mo_media **out,mo_media_error *error) {
     if (out) *out=NULL;
+    if(timeline!=MO_MEDIA_TIMELINE_DEMUXER && timeline!=MO_MEDIA_TIMELINE_RAW_ISOBMFF)
+        return mo_media_fail(error,MO_MEDIA_INVALID,0,"unknown container timeline policy");
     if (!io || !limits || !out || !io->read_at || io->byte_length==0 || io->byte_length>INT64_MAX
         || !limits->max_read_bytes || !limits->max_frame_bytes || !limits->max_streams || limits->max_streams>1024
         || !limits->max_pixels || !limits->max_audio_samples || !limits->max_channels || limits->max_channels>64
@@ -69,8 +74,20 @@ int32_t mo_media_open(const mo_media_io *io,const mo_media_limits *limits,mo_med
     m->format->interrupt_callback=(AVIOInterruptCB){interrupted,m};m->format->io_open=deny_open;
     m->format->max_streams=(int)limits->max_streams;
     m->format->probesize=1048576;m->format->max_analyze_duration=5*AV_TIME_BASE;
-    int result=avformat_open_input(&m->format,NULL,NULL,NULL);
+    const AVInputFormat *input_format=NULL;
+    AVDictionary *options=NULL;
+    if(timeline==MO_MEDIA_TIMELINE_RAW_ISOBMFF) {
+        input_format=av_find_input_format("mov");
+        if(!input_format) {mo_media_close(m);return mo_media_fail(error,MO_MEDIA_UNSUPPORTED,0,"ISO BMFF demuxer unavailable");}
+        if(av_dict_set(&options,"ignore_editlist","1",0)<0) {
+            av_dict_free(&options);mo_media_close(m);return mo_media_fail(error,MO_MEDIA_LIMIT,0,"timeline option allocation");
+        }
+    }
+    int result=avformat_open_input(&m->format,NULL,input_format,&options);
+    int unused_options=av_dict_count(options);
+    av_dict_free(&options);
     if (result<0) {int status=mo_media_av_error(m,error,result,"cannot open media container");mo_media_close(m);return status;}
+    if(unused_options) {mo_media_close(m);return mo_media_fail(error,MO_MEDIA_UNSUPPORTED,0,"timeline policy not applied by demuxer");}
     /* Probe container parameters only. Stream analysis may open arbitrary decoders before our
        per-decoder limits are installed. Decode fills unknown metadata after explicit select. */
     if (m->format->nb_streams>limits->max_streams) {mo_media_close(m);return mo_media_fail(error,MO_MEDIA_LIMIT,0,"stream count budget");}
@@ -89,6 +106,9 @@ int32_t mo_media_stream(const mo_media *m,uint32_t index,mo_media_stream_info *o
     if (!m || !out || index>=mo_media_stream_count(m)) return mo_media_fail(error,MO_MEDIA_INVALID,0,"invalid stream index");
     const AVStream *s=m->format->streams[index];const AVCodecParameters *p=s->codecpar;
     memset(out,0,sizeof(*out));out->index=(int32_t)index;
+    if(m->format->iformat==av_find_input_format("mov") && s->id!=0) {
+        out->has_container_track_id=1;out->container_track_id=(uint32_t)s->id;
+    }
     out->kind=p->codec_type==AVMEDIA_TYPE_VIDEO?MO_MEDIA_VIDEO:p->codec_type==AVMEDIA_TYPE_AUDIO?MO_MEDIA_AUDIO:MO_MEDIA_OTHER;
     out->time_base_num=s->time_base.num;out->time_base_den=s->time_base.den;
     out->has_start=s->start_time!=AV_NOPTS_VALUE;out->start=s->start_time;

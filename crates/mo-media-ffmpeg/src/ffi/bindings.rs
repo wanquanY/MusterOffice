@@ -56,6 +56,8 @@ pub struct Stream {
     pub chroma_location: i32,
     pub has_display_matrix: i32,
     pub display_matrix: [i32; 9],
+    pub has_container_track_id: u32,
+    pub container_track_id: u32,
     pub codec: [c_char; 64],
     pub channel_layout: [c_char; 128],
 }
@@ -156,9 +158,10 @@ include!(concat!(env!("OUT_DIR"), "/abi_layout.rs"));
 unsafe extern "C" {
     pub fn mo_media_abi_version() -> u32;
     pub fn mo_media_upstream_version() -> *const c_char;
-    pub fn mo_media_open(
+    pub fn mo_media_open_timeline(
         io: *const Io,
         limits: *const Limits,
+        timeline: i32,
         out: *mut *mut Media,
         error: *mut RawError,
     ) -> i32;

@@ -54,8 +54,11 @@ pub fn validate_streams(streams: &[StreamInfo], limits: DecodeLimits) -> io::Res
     if streams.len() > limits.max_streams as usize {
         return Err(invalid("stream count budget"));
     }
+    let mut container_ids = std::collections::BTreeSet::new();
     for (index, s) in streams.iter().enumerate() {
         if s.index != index as u32
+            || s.container_track_id
+                .is_some_and(|id| id == 0 || !container_ids.insert(id))
             || s.codec.len() > 63
             || s.channel_layout.len() > 127
             || !s.time_base.is_none_or(ratio)

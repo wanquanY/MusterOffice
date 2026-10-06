@@ -69,6 +69,7 @@ def plan(groups, output, bindgen, python, ffmpeg_dir=None, stretch_wasm_dir=None
         add("video-audio-dsp", python, "tools/verification/video-audio-check.py", "--native-evidence", output / "media-native", "--media-evidence", output / "media-worker", "--worker-bundle", output / "media-worker-bundle", "--output", output / "video-audio")
         add("video-canonical-pcm", python, "tools/verification/video-pcm-check.py", "--native-evidence", output / "media-native", "--media-evidence", output / "media-worker", "--worker-bundle", output / "media-worker-bundle", "--output", output / "video-pcm")
         add("video-container-index", python, "tools/verification/video-container-check.py", "--input", output / "media-native/bframes-vfr.mp4", "--worker-bundle", output / "media-worker-bundle", "--output", output / "video-container")
+        add("video-container-timing", python, "tools/verification/video-time-check.py", "--input", output / "media-native/bframes-vfr.mp4", "--variants", "--worker-bundle", output / "media-worker-bundle", "--output", output / "video-time")
     if "encode" in groups:
         add("media-encoding-candidates", python, "tools/verification/media-encode-check.py", "--component", ffmpeg_dir or "UNCONFIGURED_FFMPEG_COMPONENT", "--output", output / "media-encode")
         add("video-project-export", python, "tools/verification/media-encode-check.py", "--project", "--component", ffmpeg_dir or "UNCONFIGURED_FFMPEG_COMPONENT", "--output", output / "video-export")

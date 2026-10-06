@@ -1,17 +1,24 @@
 //! A retained raw index inside the verified, resource-limited worker.
+mod timing;
 use crate::{
     WorkerBundle, WorkerError,
     admission::validate_applied,
     owner::{Owner, OwnerOptions},
 };
 use mo_media::ReadAt;
+pub use mo_media_isobmff::presentation::{
+    ExactRatio, Side as MediaTimeSide, VideoTimeSelection, VideoTimingSummary,
+};
 pub use mo_media_isobmff::{ByteRange, Edit, IndexLimits, Sample};
 use mo_media_wire::{Command, Event, PROFILE};
 pub use mo_media_wire::{
     IndexPage, IndexQuery, IndexSummary, IndexTrack, MAX_INDEX_BLOB_BYTES, MAX_INDEX_ITEMS,
 };
 use mo_native_limits::{AppliedLimits, ProcessLimits};
-use std::time::{Duration, Instant};
+use std::{
+    collections::BTreeMap,
+    time::{Duration, Instant},
+};
 
 #[derive(Clone, Copy, Debug)]
 pub struct NativeIndexOptions {
@@ -27,6 +34,7 @@ pub struct NativeIndex<'a> {
     limits: IndexLimits,
     length: u64,
     applied: AppliedLimits,
+    timing: BTreeMap<u32, VideoTimingSummary>,
 }
 impl<'a> NativeIndex<'a> {
     pub fn open(
@@ -84,6 +92,7 @@ impl<'a> NativeIndex<'a> {
                     limits: options.index,
                     length: byte_length,
                     applied,
+                    timing: BTreeMap::new(),
                 })
             }
             _ => Err(WorkerError::Invalid("unexpected container index response")),
@@ -123,5 +132,56 @@ impl<'a> NativeIndex<'a> {
     }
     pub fn close(self, cancelled: &dyn Fn() -> bool) -> Result<(), WorkerError> {
         self.owner.close(cancelled)
+    }
+    pub fn describe_video_time(
+        &mut self,
+        track: u32,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<VideoTimingSummary, WorkerError> {
+        IndexQuery::Track { track }.validate(self.summary)?;
+        let reply = self
+            .owner
+            .call(Command::DescribeVideoTime { track }, cancelled)?;
+        if let Event::VideoTiming { summary } = reply.event
+            && timing::valid_summary(&summary, self.summary, self.limits)
+            && self
+                .timing
+                .get(&track)
+                .is_none_or(|prior| prior == &summary)
+        {
+            self.timing.insert(track, summary.clone());
+            return Ok(summary);
+        }
+        self.owner.stop();
+        Err(WorkerError::Invalid("invalid video timing response"))
+    }
+    pub fn select_video_time(
+        &mut self,
+        track: u32,
+        time: &ExactRatio,
+        side: MediaTimeSide,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<VideoTimeSelection, WorkerError> {
+        IndexQuery::Track { track }.validate(self.summary)?;
+        time.check_budget(256)
+            .map_err(|_| WorkerError::Invalid("video time arithmetic budget"))?;
+        if !self.timing.contains_key(&track) {
+            self.describe_video_time(track, cancelled)?;
+        }
+        let reply = self.owner.call(
+            Command::SelectVideoTime {
+                track,
+                time: time.clone(),
+                side,
+            },
+            cancelled,
+        )?;
+        if let Event::VideoTimeSelected { selection } = reply.event
+            && timing::valid_selection(&selection, &self.timing[&track], time, side)
+        {
+            return Ok(selection);
+        }
+        self.owner.stop();
+        Err(WorkerError::Invalid("invalid mapped video selection"))
     }
 }

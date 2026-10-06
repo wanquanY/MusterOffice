@@ -35,6 +35,7 @@ pub(super) fn stream(value: Stream) -> Result<StreamInfo, MediaError> {
         .map_err(|_| MediaError::new(ErrorKind::Abi, "negative stream index"))?;
     Ok(StreamInfo {
         index,
+        container_track_id: (value.has_container_track_id != 0).then_some(value.container_track_id),
         kind: kind(value.kind)?,
         codec: string(&value.codec),
         time_base: ratio(value.time_base_num, value.time_base_den),

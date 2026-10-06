@@ -95,7 +95,7 @@ def main():
         assert len(rpaths) == 1 and "[$ORIGIN/../lib]" in rpaths[0], rpaths
         assert "[libmo_media.so]" in load
     (output / "loader.txt").write_text(load)
-    manifest = {"format": "musteroffice.media-worker-bundle/1", "profile": "musteroffice.native-media-worker/3", **target,
+    manifest = {"format": "musteroffice.media-worker-bundle/1", "profile": "musteroffice.native-media-worker/4", **target,
                 "componentRecordSha256": sha(component / "native-build.json"),
                 "files": [{"path": str(p.relative_to(output)), "byteLength": p.stat().st_size, "sha256": sha(p)} for p in files], "links": links}
     (output / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")

@@ -20,6 +20,7 @@ int main(void) {
     STREAM(frame_rate_num); STREAM(frame_rate_den); STREAM(sar_num); STREAM(sar_den);
     STREAM(color_primaries); STREAM(color_transfer); STREAM(color_matrix); STREAM(color_range); STREAM(chroma_location);
     STREAM(has_display_matrix); STREAM(display_matrix); STREAM(codec); STREAM(channel_layout);
+    STREAM(has_container_track_id); STREAM(container_track_id);
     TYPE(mo_media_frame_info, Frame);
     FRAME(generation); FRAME(kind); FRAME(time_base_num); FRAME(time_base_den); FRAME(has_pts); FRAME(has_duration);
     FRAME(pts); FRAME(duration); FRAME(width); FRAME(height); FRAME(sample_rate); FRAME(channels); FRAME(samples); FRAME(planes);

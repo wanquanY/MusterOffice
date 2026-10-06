@@ -42,7 +42,22 @@ impl<'a> Container<'a> {
         limits: DecodeLimits,
         cancelled: impl FnMut() -> bool + 'a,
     ) -> Result<Self, MediaError> {
-        let mut context = ffi::Context::open(source, byte_length, limits, cancelled)?;
+        Self::open_with_timeline(
+            source,
+            byte_length,
+            limits,
+            DecodeTimeline::Demuxer,
+            cancelled,
+        )
+    }
+    pub fn open_with_timeline(
+        source: impl ReadAt + 'a,
+        byte_length: u64,
+        limits: DecodeLimits,
+        timeline: DecodeTimeline,
+        cancelled: impl FnMut() -> bool + 'a,
+    ) -> Result<Self, MediaError> {
+        let mut context = ffi::Context::open(source, byte_length, limits, timeline, cancelled)?;
         let streams = context.streams()?;
         Ok(Self { context, streams })
     }

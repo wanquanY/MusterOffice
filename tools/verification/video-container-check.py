@@ -29,7 +29,7 @@ def main():
     if args.worker_bundle:
         bundle = args.worker_bundle.resolve()
         manifest_bytes = (bundle / "manifest.json").read_bytes()
-        assert json.loads(manifest_bytes)["profile"] == "musteroffice.native-media-worker/3"
+        assert json.loads(manifest_bytes)["profile"] == "musteroffice.native-media-worker/4"
         worker_pin = hashlib.sha256(manifest_bytes).hexdigest()
     for i, source in enumerate(args.input):
         source = source.resolve()
@@ -64,19 +64,26 @@ def main():
         assert len(actual["tracks"]) == len(reference["streams"])
         count = 0
         packet_duration_differences = 0
+        reference_dts_shifts = {}
         for track in actual["tracks"]:
-            stream, = [s for s in reference["streams"] if int(s["id"], 0) == track["id"]]
+            stream, = [s for s in reference["streams"] if (int(s["id"], 0) & 0xffffffff) == track["id"]]
             assert stream["time_base"] == f"1/{track['timescale']}"
             packets = [p for p in reference["packets"] if p["stream_index"] == stream["index"]]
             assert len(packets) == len(track["samples"])
             assert track["decodeDuration"] == int(stream["duration_ts"])
+            # FFmpeg's MOV demuxer shifts decode timestamps for negative CTTS,
+            # but preserves composition timestamps. The raw index starts DTS
+            # at zero; compare the explicit shift, not two different clocks.
+            dts_shift = min(0x7fffffff, max(0, -min((s["pts"] - s["dts"] for s in track["samples"]), default=0)))
+            reference_dts_shifts[str(track["id"])] = dts_shift
             for j, (sample, packet) in enumerate(zip(track["samples"], packets)):
-                for a, b in [("dts", "dts"), ("pts", "pts"), ("offset", "pos"), ("byteLength", "size")]:
+                assert sample["dts"] - dts_shift == int(packet["dts"])
+                for a, b in [("pts", "pts"), ("offset", "pos"), ("byteLength", "size")]:
                     assert sample[a] == int(packet[b]), (source.name, track["id"], a, sample, packet)
                 # FFmpeg 7.1 may fill packet.duration from the codec's nominal
                 # timing. stts stores decode deltas, so compare independently
                 # observed consecutive DTS and the demuxer's total decode span.
-                end = int(packets[j+1]["dts"]) if j+1 < len(packets) else int(stream["duration_ts"])
+                end = int(packets[j+1]["dts"]) if j+1 < len(packets) else int(stream["duration_ts"]) - dts_shift
                 assert sample["duration"] == end - int(packet["dts"])
                 packet_duration_differences += sample["duration"] != int(packet.get("duration", 0))
                 assert sample["sync"] == ("K" in packet["flags"])
@@ -85,6 +92,7 @@ def main():
         reports.append({"input": source.name, "sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
                         "tracks": len(actual["tracks"]), "packets": count, "bytesRead": actual["bytesRead"],
                         "fileLength": actual["fileLength"], "packetDurationDifferences": packet_duration_differences,
+                        "referenceDtsShifts": reference_dts_shifts,
                         "indexSha256": hashlib.sha256((output / f"{i}-index.json").read_bytes()).hexdigest()})
     report = {"status": "passed", "inputs": reports,
               "workerManifestSha256": worker_pin,

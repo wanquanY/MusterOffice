@@ -15,6 +15,7 @@ enum { MO_MEDIA_OK=0, MO_MEDIA_FRAME=1, MO_MEDIA_EOF=2,
        MO_MEDIA_INVALID=-1, MO_MEDIA_IO=-2, MO_MEDIA_CANCELLED=-3,
        MO_MEDIA_LIMIT=-4, MO_MEDIA_UNSUPPORTED=-5, MO_MEDIA_DECODE=-6, MO_MEDIA_STATE=-7, MO_MEDIA_ENCODE=-8 };
 enum { MO_MEDIA_VIDEO=1, MO_MEDIA_AUDIO=2, MO_MEDIA_OTHER=3 };
+enum { MO_MEDIA_TIMELINE_DEMUXER=0, MO_MEDIA_TIMELINE_RAW_ISOBMFF=1 };
 typedef struct mo_media mo_media;
 typedef struct { int32_t status, upstream_code; char message[192]; } mo_media_error;
 typedef struct {
@@ -35,6 +36,7 @@ typedef struct {
     int32_t frame_rate_num, frame_rate_den, sar_num, sar_den;
     int32_t color_primaries, color_transfer, color_matrix, color_range, chroma_location;
     int32_t has_display_matrix, display_matrix[9];
+    uint32_t has_container_track_id, container_track_id;
     char codec[64], channel_layout[128];
 } mo_media_stream_info;
 typedef struct {
@@ -53,6 +55,9 @@ MO_MEDIA_API const char *mo_media_upstream_version(void);
 MO_MEDIA_API const char *mo_media_upstream_license(void);
 /* Host keeps callbacks/context alive until close. A session is single-thread-affine. */
 MO_MEDIA_API int32_t mo_media_open(const mo_media_io*, const mo_media_limits*, mo_media**, mo_media_error*);
+/* Raw mode requires ISO BMFF and disables demuxer edit-list rewriting. Codec
+   delay/padding is still codec metadata, not an inferred presentation span. */
+MO_MEDIA_API int32_t mo_media_open_timeline(const mo_media_io*, const mo_media_limits*, int32_t timeline, mo_media**, mo_media_error*);
 MO_MEDIA_API void mo_media_close(mo_media*);
 MO_MEDIA_API uint32_t mo_media_stream_count(const mo_media*);
 MO_MEDIA_API int32_t mo_media_stream(const mo_media*, uint32_t, mo_media_stream_info*, mo_media_error*);

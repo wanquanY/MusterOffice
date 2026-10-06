@@ -11,7 +11,7 @@ use wire::Wire;
 
 enum State {
     Empty,
-    Indexed(mo_media_isobmff::IsoBmffIndex),
+    Indexed(indexing::Indexed),
     Open(Container<'static>),
     Selected(Decoder<'static>),
     Encoding(encoding::Encoding),
@@ -46,6 +46,23 @@ fn run() -> io::Result<()> {
         last_call = request.call_id;
         io.borrow_mut().call_id = last_call;
         let result = match request.command {
+            Command::DescribeVideoTime { track } => match &mut state {
+                State::Indexed(index) => index.timing(track).map(|timing| Event::VideoTiming {
+                    summary: timing.summary().clone(),
+                }),
+                _ => Err(state_error()),
+            },
+            Command::SelectVideoTime { track, time, side } => match &mut state {
+                State::Indexed(index) => index
+                    .timing(track)
+                    .and_then(|timing| {
+                        timing
+                            .select(&time, side, &|| false)
+                            .map_err(indexing::timing_error)
+                    })
+                    .map(|selection| Event::VideoTimeSelected { selection }),
+                _ => Err(state_error()),
+            },
             Command::OpenIndex {
                 profile,
                 byte_length,
@@ -59,7 +76,7 @@ fn run() -> io::Result<()> {
                 let applied = apply_to_current_worker(process_limits).map_err(io::Error::other)?;
                 match indexing::open(Rc::clone(&io), byte_length, limits) {
                     Ok(index) => {
-                        let summary = mo_media_wire::IndexSummary::from_index(&index);
+                        let summary = mo_media_wire::IndexSummary::from_index(&index.raw);
                         state = State::Indexed(index);
                         Ok(Event::Indexed {
                             profile: PROFILE.into(),
@@ -72,7 +89,7 @@ fn run() -> io::Result<()> {
             }
             Command::QueryIndex { query } => match &state {
                 State::Indexed(index) => query
-                    .execute(index)
+                    .execute(&index.raw)
                     .map(|page| Event::IndexPage { page })
                     .map_err(|error| MediaError::new(ErrorKind::Invalid, error.to_string())),
                 _ => Err(state_error()),
@@ -123,6 +140,7 @@ fn run() -> io::Result<()> {
             },
             Command::Open {
                 profile,
+                timeline,
                 byte_length,
                 limits,
                 process_limits,
@@ -138,12 +156,14 @@ fn run() -> io::Result<()> {
                 let input = move |offset, destination: &mut [u8]| {
                     resource_io.borrow_mut().read_source(offset, destination)
                 };
-                match Container::open(input, byte_length, limits, || false) {
+                match Container::open_with_timeline(input, byte_length, limits, timeline, || false)
+                {
                     Ok(container) => {
                         let streams = container.streams().to_vec();
                         state = State::Open(container);
                         Ok(Event::Opened {
                             profile: PROFILE.into(),
+                            timeline,
                             streams,
                             applied,
                         })

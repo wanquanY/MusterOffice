@@ -76,6 +76,15 @@ pub enum MediaKind {
     Audio,
     Other,
 }
+/// Container timestamp policy. Raw ISO BMFF keeps edits for the shared exact
+/// mapper instead of letting the demuxer rewrite them. Neither policy proves
+/// continuity or converts compressed sample durations into frame durations.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum DecodeTimeline {
+    Demuxer,
+    RawIsoBmff,
+}
 /// Source ticks, deliberately not rescaled into average FPS or floating seconds.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -98,6 +107,9 @@ pub struct CodecColorTags {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct StreamInfo {
     pub index: u32,
+    /// ISO BMFF tkhd ID, independent from decoder array index. Other container
+    /// identity schemes require their own explicit adapter.
+    pub container_track_id: Option<u32>,
     pub kind: MediaKind,
     pub codec: String,
     pub time_base: Option<TimeBase>,

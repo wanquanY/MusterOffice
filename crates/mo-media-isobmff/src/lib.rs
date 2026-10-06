@@ -2,6 +2,7 @@
 //! Keeps decode/composition/movie clocks separate. Does not decode, repair
 //! timestamps, fetch external data references, or infer continuous coverage.
 mod boxes;
+pub mod presentation;
 mod tables;
 mod track;
 use mo_media::ReadAt;
