@@ -18,7 +18,7 @@
 | W1 视频领域与合同 | 基础已实现，未全部完成 | 独立模型、精确时间、受限解析与校验、Native/WASM 公共合同向量；补全效果、字幕、分析和工程包模型 |
 | W2 媒体与合成 | 原生解码/采样、CPU/Metal 合成及音频块处理基础已实现；保调工程图及派生 PCM 已实现；Browser、导出及产品显示待实施 | 原生/浏览器媒体与合成、字体/色彩/音频及真实输出 |
 | W3 编辑与历史 | 原子事务基础已实现，未全部完成 | 全部编辑操作、候选、冲突与有条件逆操作及增量索引 |
-| W4 产品执行 | 独立 Native/WASM SDK、Browser Host 基础、Native 计算、SQLite 工程、Agent authoring、共享手动执行、认证桌面 RPC/IPC 及工程变化订阅已实现；时间线 UI/媒体任务待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
+| W4 产品执行 | 独立 Native/WASM SDK、Browser Host 基础、Native 计算、SQLite 工程、Agent authoring、共享手动执行、认证 RPC/IPC、工程订阅及基础时间线组件已实现；正常产品入口/媒体任务待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
 | W5 创作与交互 | 视频技能与显式工具装载、无生成模型的剪辑准入已接通；工作台及旧引擎替换未完成 | 整理现有生成/Admin/计费、技能、人机共享编辑与消息卡片 |
 | W6 完整验收 | 仅有下列内核基础证据 | 完整验收矩阵与可供用户实际操作的本地环境 |
 
@@ -111,6 +111,18 @@ Musterwork worktree 提交 `82aaa621b` 已接入固定的独立视频 SDK（上�
 真实 SQLite、实际 SDK 人机交错、Native transport、Electron UDS/IPC、Renderer 和协议共122项检查通过；相关 production lib strict Clippy、Device 编译及 API 类型检查通过。暂存的88个 proto 独立重建，与提交 descriptor 字节一致。证据为产品 `.codex-work/video-observation-report.json`，详细合同为产品 `docs/architecture/native-video-project-observation.md`。
 
 这完成的是工程观察通路；尚未连接真实时间线、播放、声音、导出或浏览器界面。不会以这些通信与存储测试替代完整本地产品验收。原本的 CE.SDK 工作台仍待有迁移保护地替换。
+
+### 共享时间线组件与原生桌面端口
+
+产品提交 `7de84c29d` 新增 `product-video-editor`：基于固定 SDK 操作与分页类型的 Vue 时间线、短生命周期视图状态，以及绑定原认证命令/观察 API 的桌面容器与端口。只有宿主持久化工程；前端不建立另一套文档 reducer 或历史。图层和片段按可见范围读取，同一视图必须绑定同一 pin，查询中发生更新时不拼接不同版本。
+
+当前组件支持改名、轨道/时间范围分页与缩放、选择、移动/修剪、逐帧键盘调整、分割、删除、共享撤销/重做、添加轨道与图形色块。拖动中冻结原 pin；Agent 新提交先提示，松手仍以原 pin 尝试一次原子操作，冲突后重读。结果不确定时保留原 CommandId/字节恢复，不能用旧回执回退当前视图；失效订阅可重新连接。
+
+8项共享 session/实际 Rust WASM 集成与8项桌面适配/原命令观察测试通过。真实 Chrome 154 使用生产 Vue 组件及显式内存 Host fixture 验证鼠标移动/修剪、键盘微调/Esc、撤销重做、分割、改名、缩放、密集视图恢复和窄布局；浏览器脚本没有连接真实 Native resident/SQLite，关联选择另由实际 WASM 集成测试验证。类型检查、前端依赖边界和从暂存清单独立执行的冻结/离线依赖锁检查通过。
+
+证据为产品 `.codex-work/video-editor-report.json`，截图与浏览器报告在 `video-editor-browser-final-02/`，合同及复现说明在产品 `docs/architecture/native-video-editor-surface.md`。Native 源与 Browser SDK 源的本次使用 schema 已比对一致；没有新发 SDK。
+
+这是组件和适配增量，尚未进入消息工程卡片/正常路由，也未连接真实素材 probe、像素/声音、导出、完整属性与 Browser Host。待确认命令仅保留于活跃 session，跨页面/应用重启恢复仍待实现。预览缺失和未装配的动作不会被显示为可用；CE.SDK 旧路径及场景数据仍待迁移，不能据此宣称全部产品功能可验收。
 
 ### 精确时间
 
