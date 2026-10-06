@@ -18,7 +18,7 @@
 | W1 视频领域与合同 | 基础已实现，未全部完成 | 独立模型、精确时间、受限解析与校验、Native/WASM 公共合同向量；补全效果、字幕、分析和工程包模型 |
 | W2 媒体与合成 | 原生解码/采样、CPU/Metal 合成及音频块处理基础已实现；保调工程图及派生 PCM 已实现；Browser、导出及产品显示待实施 | 原生/浏览器媒体与合成、字体/色彩/音频及真实输出 |
 | W3 编辑与历史 | 原子事务基础已实现，未全部完成 | 全部编辑操作、候选、冲突与有条件逆操作及增量索引 |
-| W4 产品执行 | 独立 Native/WASM SDK、Browser Host 基础、Native 计算、SQLite 工程存储和产品命令预写已实现；受授权提交执行器/UI/媒体任务待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
+| W4 产品执行 | 独立 Native/WASM SDK、Browser Host 基础、Native 计算、SQLite 工程存储、产品预写及原 Tool 原子提交端口已实现；公共授权执行器/UI/媒体任务待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
 | W5 创作与交互 | 保留原 worktree，未完成替换 | 整理现有生成/Admin/计费、技能、人机共享编辑与消息卡片 |
 | W6 完整验收 | 仅有下列内核基础证据 | 完整验收矩阵与可供用户实际操作的本地环境 |
 
@@ -42,7 +42,7 @@ Musterwork worktree 提交 `82aaa621b` 已接入固定的独立视频 SDK（上�
 
 产品提交 `b7c5a102c` 的 Native adapter 已通过真实固定 SDK、SQLite、原 Attempt/Invocation 的六项集成测试：轨道/片段与帧计划、精确输入读集合、先预留全部输出再写入、验证落盘字节、确定性重试、权限/额度拒绝、条件撤销/重做、部分预写失败恢复和异步丢弃后的并发额度保持。PPT 与视频按不同来源各自核验闭包，旧 PPT pin 未改变。产品 Runtime 持有权限和私有输出，内核没有增加业务存储。相关 Office/SQLite 回归共 43 项通过（其中包含视频用例）；另 50 项依赖专门渲染/素材的 ignored 用例未在该轮运行，不计作通过。
 
-该计算适配器仍只返回候选，不直接创建 head/history 或提交 Tool / Artifact。另有下述 SQLite 持久端口，二者之间的受授权准备与提交尚未串联。视频 Agent 工具、桌面 IPC、UI、流式大媒体和播放/导出接入仍待完成。产品对原始 read_refs 和完整资源绑定的最终授权不得以计算摘要替代。
+该计算适配器仍只返回候选，不直接创建 head/history 或提交 Tool / Artifact。另有下述 SQLite 持久端口，产品预写和 Agent 原调用提交已有底层接入；完整资源授权与公共执行器仍未完成。视频 Agent 工具、桌面 IPC、UI、流式大媒体和播放/导出接入仍待完成。产品对原始 read_refs 和完整资源绑定的最终授权不得以计算摘要替代。
 
 ### Device 工程持久化端口
 
@@ -54,7 +54,7 @@ Musterwork worktree 提交 `82aaa621b` 已接入固定的独立视频 SDK（上�
 
 另有真实固定 Rust SDK 与存储组合验证：保存创建和修改后的工程，重启后逐一打开原/新快照、恢复逆操作报告，并核对没有创建虚假 Run / Invocation。10 项存储/迁移、该组合测试、6 项提交回调、6 项原计算、39 项原生编辑/重试及 1 项桌面组件控制回归共 63 项通过，无 ignored；SQLite lib 及依赖 strict Clippy 通过。产品证据 `.codex-work/video-native-project-persistence-report.json` 固定提交、组件摘要及日志 SHA-256，并明确测试包含原 worktree 尚未提交的视频选择改动，不声称是干净 HEAD 或完整产品验收。
 
-完整 Host 仍未交付：手动编辑输出预留现已补齐（见下节）；必须继续完成受授权资源准备、Agent 原调用与工程同事务提交，然后连接 IPC 和时间线。历史目前引用完整快照，历史压缩、工程删除/保留政策、GC、大媒体和断电/磁盘满验证仍待完成。产品详细边界见 worktree `docs/architecture/native-video-project-persistence.md`。
+完整 Host 仍未交付：手动编辑输出预留现已补齐（见下节）；Agent 原调用与工程同事务提交也已补齐（见下节）；必须继续完成受授权资源准备、公共执行器、IPC 和时间线。历史目前引用完整快照，历史压缩、工程删除/保留政策、GC、大媒体和断电/磁盘满验证仍待完成。产品详细边界见 worktree `docs/architecture/native-video-project-persistence.md`。
 
 ### 手动产品命令的原生预写
 
@@ -64,7 +64,19 @@ Musterwork worktree 提交 `82aaa621b` 已接入固定的独立视频 SDK（上�
 
 新增 6 项真实固定 SDK 与 SQLite 集成验证，包含创建、编辑、保存、私有读取、错误所有者、候选输入/输出绑定、原子额度、错误字节和并发版本变化；连同迁移、Agent 计算、工程存储、原流式 I/O、Invocation 与 PPT 预写共 43 项通过，无 ignored。SQLite/MusterOffice lib 及依赖 strict Clippy 通过。产品 `.codex-work/video-product-command-report.json` 固定提交和各日志摘要；保留原 worktree 未提交的视频选择/生成修改，不冒充干净 HEAD 全量测试。
 
-这是内部预写端口及 typed 候选绑定，还不是公共手动编辑命令、素材授权执行器或页面。完整 SDK 资源闭包仍要由可信执行器核对并重新授权，Agent 原调用的工程/Tool/Ledger 同事务提交尚待实施。产品详细边界见 `docs/architecture/native-video-product-commands.md`。
+这是内部预写端口及 typed 候选绑定，还不是公共手动编辑命令、素材授权执行器或页面。完整 SDK 资源清单匹配与 Agent 原调用的同事务提交现已补齐（见下节），素材当前访问权限与公共执行器仍须接入。产品详细边界见 `docs/architecture/native-video-product-commands.md`。
+
+### 完整资源身份与原 Agent Tool 提交
+
+产品提交 `f0cb26fdb` 将真实 SDK 的完整资源清单带入计算结果，要求工程绑定逐项匹配资源 ID、字节长度与 SHA-256。未使用素材与字体也必须保留，漏项/重复/替换/乱序均拒绝；超过 4,096 项的清单在任何输出预留前失败。7 项产品命令、7 项原计算与 1 项持久组合测试通过，无 ignored；其中真实 SDK 的 4,097 字体声明验证超限路径。身份匹配不是访问授权，素材导入与授权执行器仍需实现。
+
+产品提交 `de975a0c8` 由原 `SqliteFencedToolInvocationJournal` 实现视频提交。工程 CAS/revision/引用/outbox、原 Tool 成功、Ledger、原执行活动、对话内容根和幂等提交身份在同一物理事务内保存。继续使用原 Attempt、Invocation 和 liveness owner；没有另一份视频任务或工具完成状态。私有工程 actor/workspace 与原 Run 的真实请求用户核对，schema 198 用联合外键绑定 tenant/run/invocation。
+
+实际验证包括：提交末尾故障时整笔回滚且不发工程通知；原工具结果精确恢复；head 前进后仍返回原操作的回执；真实产品预写和 SDK 手动编辑先保存后，旧 Agent 候选冲突且不产生工具成功；旧 Attempt/epoch、其他用户、未预留结果、取消、已经普通完成的 Tool 均不能收养工程写入。素材继续由工程历史保留，不因工具成功向对话发放全部素材权限。
+
+本轮去重后 32 项测试通过，无 ignored；联合外键收紧后的 5 项提交和 1 项迁移复跑不重复计数。SQLite/MusterOffice lib 及依赖 strict Clippy 通过。证据分别为产品 `.codex-work/video-resource-closure-report.json` 和 `video-tool-commit-report.json`，固定提交和日志摘要，并声明原 worktree 未提交修改的边界。提交测试复用已有已准入 Tool fixture，不能当成正式视频技能/工具已经发布。
+
+这些仍是内部宿主端口。接下来需连接真正的用户/Agent 命令执行器与实时素材授权、注册工具和技能、IPC、原生媒体 Host、消息/右侧面板及时间线；完整本地产品验收尚未达成。详细约束见产品 `docs/architecture/native-video-tool-commits.md`。
 
 ### 精确时间
 
