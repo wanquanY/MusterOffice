@@ -4,10 +4,12 @@
   "version": "0.1.0",
   "type": "module",
   "packageManager": "pnpm@10.2.1",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "generate:types": "node tools/contracts/generate-types.mjs write",
-    "check:types": "node tools/contracts/generate-types.mjs check && tsc --project packages/contracts/tsconfig.json && tsc --project packages/text-component/tsconfig.json --noEmit && tsc --project packages/stretch-component/tsconfig.json --noEmit && tsc --project packages/raster-component/tsconfig.json --noEmit && tsc --project packages/operation-client/tsconfig.json --noEmit && tsc --project packages/playback-client/tsconfig.json --noEmit && tsc --project packages/editor-client/tsconfig.json --noEmit && tsc --project packages/video-client/tsconfig.json --noEmit",
+    "check:types": "node tools/contracts/generate-types.mjs check && tsc --project packages/contracts/tsconfig.json && tsc --project packages/text-component/tsconfig.json --noEmit && tsc --project packages/stretch-component/tsconfig.json --noEmit && tsc --project packages/raster-component/tsconfig.json --noEmit && tsc --project packages/operation-client/tsconfig.json --noEmit && tsc --project packages/playback-client/tsconfig.json --noEmit && tsc --project packages/editor-client/tsconfig.json --noEmit && tsc --project packages/video-client/tsconfig.json --noEmit && tsc --project packages/video-browser-media/tsconfig.json --noEmit",
     "build:video-client": "tsc --project packages/video-client/tsconfig.json",
     "build:stretch-component": "tsc --project packages/stretch-component/tsconfig.json",
     "build:text-component": "tsc --project packages/text-component/tsconfig.json",
@@ -17,10 +19,15 @@
     "build:playback-client": "tsc --project packages/playback-client/tsconfig.json",
     "test:playback-client": "pnpm run build:playback-client && node --test tools/verification/playback-client-tests.mjs",
     "build:editor-client": "tsc --project packages/editor-client/tsconfig.json",
-    "test:editor-client": "pnpm run build:editor-client && node --test tools/verification/editor-client-tests.mjs tools/verification/editor-page-client-tests.mjs"
+    "test:editor-client": "pnpm run build:editor-client && node --test tools/verification/editor-client-tests.mjs tools/verification/editor-page-client-tests.mjs",
+    "build:video-browser-media": "tsc --project packages/video-browser-media/tsconfig.json",
+    "test:video-browser-media": "pnpm run build:video-browser-media && node --test tools/verification/video-browser-time-tests.mjs tools/verification/video-browser-sdk-tests.mjs"
   },
   "devDependencies": {
+    "esbuild": "0.27.3",
     "json-schema-to-typescript": "16.0.0",
+    "mediabunny": "1.61.3",
+    "playwright-core": "1.62.1",
     "typescript": "7.0.2"
   },
   "license": "Apache-2.0"
