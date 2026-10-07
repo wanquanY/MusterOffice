@@ -24,6 +24,8 @@
 
 ## Browser 媒体输入增量
 
+ISO BMFF 分页索引及 `IndexedMovie` 已从原生 wire/worker 提升到公共媒体层，新的独立 WASM 直接共用原生 MovieTimeline/VideoTiming。真实 Worker 对 3 个素材共 117 个查询、657 个压缩包记录与原生及独立参照一致；原生 231 帧/1,050 个影片查询回归通过。仅元数据与时间映射已接通，浏览器原始包解码/画面接线仍待实施；见[共享影片索引](video-browser-index.md)。
+
 独立 `video-browser-media` 组件消费固定 Mediabunny 原始源码与 WebCodecs，直接接受 Rust 的精确时间/边界方向。真实 Worker 的 77 帧 B-frame/VFR 视频、16 个边界定位、144,384 个音频采样值与独立 FFmpeg 对比通过；修正 AAC 从中间 key 包直接开始导致的波形差异，并验证回调不结束时的超时和物理资源释放。新增 progressive AVC 解码容量/共享字节准入、压缩包预准入与有界输出队列，真实暂存 VideoFrame 峰值由 42 降到 3；100 次顺序音频窗口复用 1 个 decoder。SDK 包含完整对应源码与许可，按外部 manifest pin 验证。其他视频 codec 的容量模型、随机音频 seek/总音频预算、影片时间映射、Web 合成/导出及正式页面接线仍未完成；见[记录与复现](video-browser-media.md)。
 
 ## 成片预览与旧引擎退役增量

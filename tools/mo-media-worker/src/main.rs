@@ -47,14 +47,18 @@ fn run() -> io::Result<()> {
         io.borrow_mut().call_id = last_call;
         let result = match request.command {
             Command::DescribeVideoTime { track } => match &mut state {
-                State::Indexed(index) => index.timing(track).map(|timing| Event::VideoTiming {
-                    summary: timing.summary().clone(),
-                }),
+                State::Indexed(index) => {
+                    index
+                        .timing(track, &|| false)
+                        .map(|timing| Event::VideoTiming {
+                            summary: timing.summary().clone(),
+                        })
+                }
                 _ => Err(state_error()),
             },
             Command::SelectVideoTime { track, time, side } => match &mut state {
                 State::Indexed(index) => index
-                    .timing(track)
+                    .timing(track, &|| false)
                     .and_then(|timing| {
                         timing
                             .select(&time, side, &|| false)
@@ -76,7 +80,7 @@ fn run() -> io::Result<()> {
                 let applied = apply_to_current_worker(process_limits).map_err(io::Error::other)?;
                 match indexing::open(Rc::clone(&io), byte_length, limits) {
                     Ok(index) => {
-                        let summary = mo_media_wire::IndexSummary::from_index(&index.raw);
+                        let summary = mo_media_wire::IndexSummary::from_index(index.raw());
                         state = State::Indexed(index);
                         Ok(Event::Indexed {
                             profile: PROFILE.into(),
@@ -89,7 +93,7 @@ fn run() -> io::Result<()> {
             }
             Command::QueryIndex { query } => match &state {
                 State::Indexed(index) => query
-                    .execute(&index.raw)
+                    .execute(index.raw())
                     .map(|page| Event::IndexPage { page })
                     .map_err(|error| MediaError::new(ErrorKind::Invalid, error.to_string())),
                 _ => Err(state_error()),

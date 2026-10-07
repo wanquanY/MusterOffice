@@ -20,7 +20,7 @@ def contains(start, end, time, side):
     return start <= time < end if side == "after" else start < time <= end
 
 
-def verify_mapping(data):
+def verify_mapping(data, *, decoded_frames=True):
     scale = data["summary"]["mediaTimescale"]
     movie_scale = data["summary"]["movieTimescale"]
     frames = sorted(enumerate(data["samples"]), key=lambda row: row[1]["pts"])
@@ -63,7 +63,8 @@ def verify_mapping(data):
                 assert result["access"] == expected_access, row
                 assert result["sample"] == sample and result["rawStart"] == first*scale and result["rawEnd"] == last*scale, row
                 assert ratio(result["mediaTime"]) == at and result["mediaSide"] == media_side, row
-                assert row["frameSha256"] == next(f["sha256"] for f in data["frames"] if f["pts"] == first*scale)
+                if decoded_frames:
+                    assert row["frameSha256"] == next(f["sha256"] for f in data["frames"] if f["pts"] == first*scale)
         assert (result["type"], ratio(result["movie"]["start"]), ratio(result["movie"]["end"])) == expected, row
 
 

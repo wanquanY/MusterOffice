@@ -3,7 +3,11 @@
 //! timestamps, fetch external data references, or infer continuous coverage.
 mod boxes;
 pub mod movie;
+pub mod portable;
 pub mod presentation;
+pub mod query;
+mod session;
+pub use session::{IndexedMovie, index_error, timing_error};
 mod tables;
 pub mod timing;
 mod track;
