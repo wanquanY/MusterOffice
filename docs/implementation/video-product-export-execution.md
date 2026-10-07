@@ -29,3 +29,5 @@ Device resident 的实际进程装配已编译检查，真实媒体执行测试�
 产品当前总任务/编码名额各一，输出上限为原内容限制与 256 MiB 的较小值，不等于长视频或大素材治理已经完善。大对象流式存储、Browser 媒体与导出、所有编辑、生成/Admin/计费和真实厂商验收继续在完整目标中。
 
 产品实现说明：`docs/architecture/native-video-export-execution.md`。整个目标仍为执行中。
+
+后续[Agent 原运行归属与原子提交](video-product-export-tool.md)已实现可信端口及 SQLite 权限/事务；实际 Agent 执行与公开产品入口仍待接线。
