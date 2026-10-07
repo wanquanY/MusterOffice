@@ -17,6 +17,7 @@ export interface BrowserMediaLimits {
   readonly maxAudioChannels: number;
   readonly maxAudioSampleRate: number;
   readonly maxAudioBlockBytes: number;
+  readonly maxEncodedPacketBytes: number;
   readonly maxDurationSeconds: number;
   readonly operationDeadlineMs: number;
 }
@@ -24,6 +25,7 @@ export const DEFAULT_MEDIA_LIMITS: Readonly<BrowserMediaLimits> = Object.freeze(
   maxFileBytes: 32 * 1024 ** 3, sourceCacheBytes: 8 * 1024 ** 2, maxTracks: 32,
   maxPixels: 3840 * 2160, maxAudioChannels: 8, maxAudioSampleRate: 192000,
   maxAudioBlockBytes: 8 * 1024 ** 2, maxDurationSeconds: 7 * 86400,
+  maxEncodedPacketBytes: 8 * 1024 ** 2,
   operationDeadlineMs: 30000,
 });
 export interface TrackTime {
@@ -62,8 +64,13 @@ export interface BrowserVideoSample {
   readonly pixelAspectRatio: { readonly num: number; readonly den: number };
   /** Explicit SDR sRGB conversion. It is never labelled raw YUV. */
   copyRgba(destination: Uint8Array<ArrayBuffer>): Promise<void>;
-  /** Return an owned platform frame for GPU import. Caller MUST close it. */
-  cloneFrame(): VideoFrame;
+  /** Return an owned platform frame for GPU import. Caller MUST close the lease. */
+  cloneFrame(): BrowserVideoFrameLease;
+}
+export interface BrowserVideoFrameLease {
+  readonly frame: VideoFrame;
+  /** Releases both the platform frame and its shared host-budget admission. */
+  close(): void;
 }
 export interface BrowserAudioSample {
   readonly sampleRate: number; readonly numberOfFrames: number; readonly numberOfChannels: number;

@@ -1,6 +1,6 @@
 import {
   Input, BlobSource, MP4, WEBM, WAVE, MP3, OGG, FLAC,
-  InputVideoTrack, InputAudioTrack, VideoSampleSink, AudioSampleSink,
+  InputVideoTrack, InputAudioTrack,
   type InputTrack, type VideoSample, type AudioSample,
 } from 'mediabunny';
 import {
@@ -11,6 +11,9 @@ import {
 import { compare, contains, interval, lookupSeconds } from './time.js';
 import { probeTrack } from './probe.js';
 import { audioView, videoView } from './samples.js';
+import { BudgetedVideoStream } from './video-stream.js';
+import { BrowserVideoBudget } from './video-budget.js';
+import { BrowserAudioCursor } from './audio-cursor.js';
 
 /** Media I/O only, intended for a host-owned terminable Worker. The host admits
  * immutable bytes and owns deadlines across Worker stalls. No URL, paths, storage,
@@ -24,7 +27,8 @@ export class BrowserMediaInput {
   private active = false;
   private infoValue: BrowserMediaInfo | undefined;
   private detach: (() => void) | undefined;
-  private constructor(blob: Blob, private readonly limits: BrowserMediaLimits) {
+  private audioCursor: { id: number; cursor: BrowserAudioCursor } | undefined;
+  private constructor(blob: Blob, private readonly limits: BrowserMediaLimits, private readonly budget: BrowserVideoBudget) {
     this.input = new Input({
       formats: [MP4, WEBM, WAVE, MP3, OGG, FLAC],
       source: new BlobSource(blob, {
@@ -33,12 +37,13 @@ export class BrowserMediaInput {
       }),
     });
   }
-  static async open(blob: Blob, options: { limits?: Partial<BrowserMediaLimits>; signal?: AbortSignal } = {}): Promise<BrowserMediaInput> {
+  static async open(blob: Blob, options: { limits?: Partial<BrowserMediaLimits>; signal?: AbortSignal; videoBudget?: BrowserVideoBudget } = {}): Promise<BrowserMediaInput> {
     const limits = { ...DEFAULT_MEDIA_LIMITS, ...options.limits };
     for (const value of Object.values(limits)) requireMedia(Number.isSafeInteger(value) && value > 0, 'invalid_request');
     requireMedia(blob instanceof Blob && blob.size > 0 && blob.size <= limits.maxFileBytes, 'resource_limit');
     requireMedia(limits.operationDeadlineMs <= 120000, 'invalid_request');
-    const owner = new BrowserMediaInput(blob, Object.freeze(limits));
+    requireMedia(options.videoBudget === undefined || options.videoBudget instanceof BrowserVideoBudget, 'invalid_request');
+    const owner = new BrowserMediaInput(blob, Object.freeze(limits), options.videoBudget ?? new BrowserVideoBudget());
     const abort = () => owner.close(new BrowserMediaError('cancelled'));
     options.signal?.addEventListener('abort', abort, { once: true });
     owner.detach = () => options.signal?.removeEventListener('abort', abort);
@@ -116,14 +121,17 @@ export class BrowserMediaInput {
     request = structuredClone(request);
     return this.run(async () => {
       const { track, info } = this.video(id);
-      const sample = await new VideoSampleSink(track).getSample(lookupSeconds(request, info.timescale));
-      if (!sample) return false;
-      return this.borrow(sample, async () => {
-        const span = interval(sample.timestamp, sample.duration, info.timescale);
-        if (!contains(span, request)) return false;
-        requireMedia(sample.visibleRect.width * sample.visibleRect.height <= this.limits.maxPixels, 'resource_limit');
-        await consume(videoView(sample, () => this.checkBorrowed(sample)), span); return true;
-      });
+      const stream = await BudgetedVideoStream.open(track, lookupSeconds(request, info.timescale), this.budget, this.limits.maxEncodedPacketBytes, this.limits.maxPixels, this.lifetime.signal);
+      for await (const sample of stream) {
+        const result = await this.borrow(sample, async () => {
+          const span = interval(sample.timestamp, sample.duration, info.timescale);
+          if (!contains(span, request)) return compare(span.start, request.time) >= 0 ? 'absent' : 'continue';
+          requireMedia(sample.visibleRect.width * sample.visibleRect.height <= this.limits.maxPixels, 'resource_limit');
+          await consume(videoView(sample, () => this.checkBorrowed(sample), this.budget, stream.surfaceBytes), span); return 'found';
+        });
+        if (result !== 'continue') return result === 'found';
+      }
+      return false;
     }, signal);
   }
   videoRange(id: number, start: ExactRatio, end: ExactRatio, consume: ConsumeVideo, signal?: AbortSignal): Promise<number> {
@@ -131,14 +139,14 @@ export class BrowserMediaInput {
     return this.run(async () => {
       const { track, info } = this.video(id);
       requireMedia(compare(start, end) < 0, 'invalid_request');
-      const sink = new VideoSampleSink(track);
+      const stream = await BudgetedVideoStream.open(track, lookupSeconds({ time: start, side: 'after' }, info.timescale), this.budget, this.limits.maxEncodedPacketBytes, this.limits.maxPixels, this.lifetime.signal);
       let count = 0;
-      await this.consume(sink.samples(lookupSeconds({ time: start, side: 'after' }, info.timescale)), async sample => {
+      await this.consume(stream[Symbol.asyncIterator](), async sample => {
           const span = interval(sample.timestamp, sample.duration, info.timescale);
           if (compare(span.start, end) >= 0) return false;
           if (compare(span.end, start) <= 0) return true;
           requireMedia(sample.visibleRect.width * sample.visibleRect.height <= this.limits.maxPixels, 'resource_limit');
-          count++; return (await consume(videoView(sample, () => this.checkBorrowed(sample)), span)) !== false;
+          count++; return (await consume(videoView(sample, () => this.checkBorrowed(sample), this.budget, stream.surfaceBytes), span)) !== false;
       });
       return count;
     }, signal);
@@ -148,7 +156,6 @@ export class BrowserMediaInput {
     return this.run(async () => {
       const { track, info } = this.audio(id);
       requireMedia(compare(start, end) < 0, 'invalid_request');
-      let count = 0;
       // Decoded audio lives on its own sample grid, which may differ from the
       // container's timescale. Blocks overlap the requested interval; Rust DSP
       // owns trimming, resampling, channel mapping and timeline placement.
@@ -156,19 +163,19 @@ export class BrowserMediaInput {
       // AAC overlap, MP3 reservoirs and Opus preroll can depend on earlier data.
       // Reconstruct from the admitted stream start until the container adapter
       // supplies a proven roll-recovery point. Do not invent codec delay constants.
-      await this.consume(new AudioSampleSink(track).samples(Number(info.first.ticks) / info.timescale), async sample => {
+      if (this.audioCursor?.id !== id) {
+        await this.audioCursor?.cursor.close();
+        this.check();
+        this.audioCursor = { id, cursor: new BrowserAudioCursor(track, Number(info.first.ticks) / info.timescale) };
+      }
+      return this.audioCursor.cursor.read(start, end, (sample, span) => this.borrow(sample, async () => {
           requireMedia(sample.sampleRate <= this.limits.maxAudioSampleRate
             && sample.numberOfChannels <= this.limits.maxAudioChannels
             && sample.numberOfFrames * sample.numberOfChannels * 4 <= this.limits.maxAudioBlockBytes, 'resource_limit');
           // The audited sink restores a sample-rate-aligned timestamp after
           // WebCodecs. Keep that grid; reducing it back to us would lose samples.
-          const span = interval(sample.timestamp, sample.numberOfFrames / sample.sampleRate, sample.sampleRate);
-          if (compare(span.start, end) >= 0) return false;
-          if (compare(span.end, start) <= 0) return true;
-          count++;
           return (await consume(audioView(sample, () => this.checkBorrowed(sample)), span)) !== false;
-      });
-      return count;
+      }));
     }, signal);
   }
   /** Cancelling an operation disposes this source and every borrowed sample.
@@ -183,6 +190,7 @@ export class BrowserMediaInput {
     // directly rather than waiting for that callback to advance a for-await loop.
     for (const samples of this.iterators) void samples.return().catch(() => {});
     this.iterators.clear();
+    void this.audioCursor?.cursor.close().catch(() => {}); this.audioCursor = undefined;
     this.input.dispose();
   }
 }

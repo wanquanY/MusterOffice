@@ -16,4 +16,6 @@ Build is offline, requires a new destination, checks source hashes before and af
 
 TypeScript checks application sources strictly. `skipLibCheck` applies only to declarations because this Mediabunny version's legacy `@types/dom-webcodecs` overlaps TypeScript 7's standard DOM declarations. The public component interfaces expose standard platform frames and MusterOffice types, without importing Mediabunny types or requiring it as a runtime peer.
 
+The adapter owns video credits and shared weighted byte admission instead of upstream's fixed prefetch loop. `mediabunny-platform.ts` is an explicitly checked compatibility seam to this pinned source's internal decoder factory; upgrades must rerun real codec checks. Currently the admission model supports progressive AVC with avcC; other video codecs are not silently passed through an unbudgeted fallback. `cloneFrame()` returns a frame **lease**, whose `close()` releases both the frame and its budget. Sequential audio reads reuse a decoder cursor; backward reads still reconstruct from the actual stream start.
+
 Actual behavior, evidence and unresolved media limits: [implementation record](../../docs/implementation/video-browser-media.md).

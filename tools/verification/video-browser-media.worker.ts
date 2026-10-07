@@ -1,6 +1,6 @@
 /** Real-codec test entry. Instrumentation is confined to this verification Worker. */
-import { BrowserMediaInput, type BrowserVideoSample } from '../../packages/video-browser-media/src/index.js';
-const stats = { videoDecoders: 0, audioDecoders: 0, videoFrames: 0, audioData: 0, maxVideoFrames: 0, maxAudioData: 0 };
+import { BrowserMediaInput, BrowserVideoBudget, type BrowserVideoSample, type BrowserVideoFrameLease } from '../../packages/video-browser-media/src/index.js';
+const stats = { videoDecoders: 0, audioDecoders: 0, videoFrames: 0, audioData: 0, maxVideoFrames: 0, maxAudioData: 0, videoConfigured: 0, audioConfigured: 0, videoChunks: 0, audioChunks: 0 };
 const held = new WeakSet<object>();
 function hold(value: VideoFrame | AudioData, kind: 'videoFrames' | 'audioData') {
   if (held.has(value)) return;
@@ -22,6 +22,9 @@ for (const [name, counter, samples] of [
       const config = args[0], output = config.output;
       const decoder = Reflect.construct(Target, [{ ...config, output(value: VideoFrame | AudioData) { hold(value, samples); output(value); } }]);
       stats[counter]++;
+      stats[name === 'VideoDecoder' ? 'videoConfigured' : 'audioConfigured']++;
+      const decode = decoder.decode.bind(decoder);
+      decoder.decode = (chunk: EncodedVideoChunk | EncodedAudioChunk) => { stats[name === 'VideoDecoder' ? 'videoChunks' : 'audioChunks']++; decode(chunk); };
       let closed = false; const close = decoder.close.bind(decoder);
       decoder.close = () => { if (!closed) { closed = true; stats[counter]--; } close(); };
       return decoder;
@@ -61,6 +64,17 @@ async function run(blob: Blob) {
     sample.copyInterleaved(data);
     audioSeek.push({ first: Number(BigInt(span.start.numerator) * BigInt(sample.sampleRate) / BigInt(span.start.denominator)), values: Array.from(data) });
   });
+  const continuous = await BrowserMediaInput.open(blob);
+  const initialAudioDecoders = stats.audioConfigured, initialAudioChunks = stats.audioChunks;
+  const sequentialAudio: { first: number; values: number[] }[] = [];
+  for (let offset = 0; offset < 3000; offset += 30) {
+    await continuous.audioRange(audio.id, fraction(offset, 1000), fraction(offset + 30, 1000), (sample, span) => {
+      const data = new Float32Array(sample.numberOfFrames * sample.numberOfChannels); sample.copyInterleaved(data);
+      sequentialAudio.push({ first: Number(BigInt(span.start.numerator) * BigInt(sample.sampleRate) / BigInt(span.start.denominator)), values: Array.from(data) });
+    });
+  }
+  const sequential = { decoderCreations: stats.audioConfigured - initialAudioDecoders, decodedChunks: stats.audioChunks - initialAudioChunks, windows: 100 };
+  continuous.close();
   let callbackClosed = false;
   let borrowed: BrowserVideoSample | undefined;
   try { await media.videoRange(video.id, fraction(0), fraction(4), sample => { borrowed = sample; throw new Error('consumer failure'); }); }
@@ -91,10 +105,43 @@ async function run(blob: Blob) {
   let deadline = '';
   try { await expiring.videoRange(video.id, fraction(0), fraction(4), () => new Promise(() => {})); }
   catch (error) { deadline = (error as { code: string }).code; }
+  const tiny = new BrowserVideoBudget(1024), tinyInput = await BrowserMediaInput.open(blob, { videoBudget: tiny });
+  const configuredBefore = stats.videoConfigured;
+  let denied = '';
+  try { await tinyInput.videoAt(video.id, { time: fraction(0), side: 'after' }, () => {}); }
+  catch (error) { denied = (error as { code: string }).code; }
+  const deniedBeforeConfigure = configuredBefore === stats.videoConfigured;
+  tinyInput.close();
+  const packetLimited = await BrowserMediaInput.open(blob, { limits: { maxEncodedPacketBytes: 1 } });
+  const configuredBeforePacket = stats.videoConfigured;
+  let packetDenied = '';
+  try { await packetLimited.videoAt(video.id, { time: fraction(0), side: 'after' }, () => {}); }
+  catch (error) { packetDenied = (error as { code: string }).code; }
+  const packetDeniedBeforeConfigure = configuredBeforePacket === stats.videoConfigured;
+  packetLimited.close();
+  const expiringAudio = await BrowserMediaInput.open(blob, { limits: { operationDeadlineMs: 1000 } });
+  let audioDeadline = '';
+  try { await expiringAudio.audioRange(audio.id, fraction(0), fraction(4), () => new Promise(() => {})); }
+  catch (error) { audioDeadline = (error as { code: string }).code; }
+  const shared = new BrowserVideoBudget(16 * 1024 ** 2);
+  const one = await BrowserMediaInput.open(blob, { videoBudget: shared }), two = await BrowserMediaInput.open(blob, { videoBudget: shared });
+  let concurrentDenied = '', clone: BrowserVideoFrameLease | undefined;
+  await one.videoAt(video.id, { time: fraction(0), side: 'after' }, async sample => {
+    clone = sample.cloneFrame();
+    try { await two.videoAt(video.id, { time: fraction(0), side: 'after' }, () => {}); }
+    catch (error) { concurrentDenied = (error as { code: string }).code; }
+  });
+  one.close();
+  for (let i = 0; i < 100 && shared.usedBytes > 128 * 128 * 8; i++) await new Promise(resolve => setTimeout(resolve, 10));
+  const retainedCloneBytes = shared.usedBytes, cloneWidth = clone!.frame.codedWidth;
+  clone!.close(); clone!.close();
+  await two.videoAt(video.id, { time: fraction(1), side: 'after' }, () => {});
+  two.close();
   // Give actual decoder callbacks/iterator cleanup time to drain after cancellation.
   for (let i = 0; i < 100 && (stats.videoDecoders || stats.audioDecoders || stats.videoFrames || stats.audioData); i++)
     await new Promise(resolve => setTimeout(resolve, 10));
-  return { info, frames, seeks, beyond, audioBlocks, audioSeek, callbackClosed, early, busy, closed, cancelled, limit, abortedOpen, deadline, stats };
+  return { info, frames, seeks, beyond, audioBlocks, audioSeek, sequentialAudio, sequential, callbackClosed, early, busy, closed, cancelled, limit, abortedOpen, deadline, audioDeadline,
+    budget: { denied, deniedBeforeConfigure, packetDenied, packetDeniedBeforeConfigure, concurrentDenied, retainedCloneBytes, cloneWidth, finalBytes: shared.usedBytes, peakBytes: shared.peakBytes, capacityBytes: shared.capacityBytes }, stats };
 }
 self.onmessage = async event => {
   try { self.postMessage({ ok: true, result: await run(event.data) }); }

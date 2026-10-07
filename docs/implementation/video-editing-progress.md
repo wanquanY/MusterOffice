@@ -24,7 +24,7 @@
 
 ## Browser 媒体输入增量
 
-独立 `video-browser-media` 组件消费固定 Mediabunny 原始源码与 WebCodecs，直接接受 Rust 的精确时间/边界方向。真实 Worker 的 77 帧 B-frame/VFR 视频、16 个边界定位、144,384 个音频采样值与独立 FFmpeg 对比通过；修正 AAC 从中间 key 包直接开始导致的波形差异，并验证回调不结束时的超时和物理资源释放。SDK 包含完整对应源码与许可，按外部 manifest pin 验证。随机音频 seek、字节背压、影片时间映射、Web 合成/导出及正式页面接线仍未完成；见[记录与复现](video-browser-media.md)。
+独立 `video-browser-media` 组件消费固定 Mediabunny 原始源码与 WebCodecs，直接接受 Rust 的精确时间/边界方向。真实 Worker 的 77 帧 B-frame/VFR 视频、16 个边界定位、144,384 个音频采样值与独立 FFmpeg 对比通过；修正 AAC 从中间 key 包直接开始导致的波形差异，并验证回调不结束时的超时和物理资源释放。新增 progressive AVC 解码容量/共享字节准入、压缩包预准入与有界输出队列，真实暂存 VideoFrame 峰值由 42 降到 3；100 次顺序音频窗口复用 1 个 decoder。SDK 包含完整对应源码与许可，按外部 manifest pin 验证。其他视频 codec 的容量模型、随机音频 seek/总音频预算、影片时间映射、Web 合成/导出及正式页面接线仍未完成；见[记录与复现](video-browser-media.md)。
 
 ## 成片预览与旧引擎退役增量
 

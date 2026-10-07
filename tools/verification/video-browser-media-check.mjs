@@ -10,17 +10,16 @@ import { build } from 'esbuild';
 import { chromium } from 'playwright-core';
 import { verify } from '../video-browser-sdk/build.mjs';
 const [browserPath, fixturePath, destination, sdkDirectory, sdkPin] = process.argv.slice(2);
-assert(browserPath && fixturePath && destination, 'usage: check.mjs BROWSER BFRAME_VFR_FIXTURE NEW_OUTPUT_DIRECTORY');
+assert(browserPath && fixturePath && destination && sdkDirectory && sdkPin, 'usage: check.mjs BROWSER BFRAME_VFR_FIXTURE NEW_OUTPUT_DIRECTORY SDK_DIRECTORY MANIFEST_SHA256');
 const root = fileURLToPath(new URL('../../', import.meta.url));
 await mkdir(destination, { recursive: false });
 const fixture = await readFile(fixturePath);
-assert(Boolean(sdkDirectory) === Boolean(sdkPin), 'SDK directory and external pin must be supplied together');
-if (sdkDirectory) await verify(sdkDirectory, sdkPin);
+await verify(sdkDirectory, sdkPin);
 const bundle = (await build({ absWorkingDir: root, entryPoints: ['tools/verification/video-browser-media.worker.ts'],
   bundle: true, format: 'esm', platform: 'browser', write: false, minify: true,
-  plugins: sdkDirectory ? [{ name: 'verified-sdk', setup(build) {
+  plugins: [{ name: 'verified-sdk', setup(build) {
     build.onResolve({ filter: /packages\/video-browser-media\/src\/index\.js$/ }, () => ({ path: path.resolve(sdkDirectory, 'index.mjs') }));
-  } }] : [],
+  } }],
 })).outputFiles[0].contents;
 const baseline = JSON.parse(execFileSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0', '-show_frames', '-show_streams', '-of', 'json', fixturePath], { maxBuffer: 8 << 20 }));
 const oracleFrames = baseline.frames.filter(x => x.media_type === 'video');
@@ -52,7 +51,7 @@ try {
       worker.postMessage(blob);
     }); } finally { clearTimeout(timer); worker.terminate(); }
   });
-  await writeFile(path.join(destination, 'diagnostic.json'), JSON.stringify({ ...value, result: value.result && { ...value.result, frames: value.result.frames.map(x => ({ pts: x.pts, timescale: x.timescale })), audioBlocks: value.result.audioBlocks.map(({ values, ...x }) => x), audioSeek: value.result.audioSeek.map(({ values, ...x }) => ({ ...x, samples: values.length })) } }, null, 2));
+  await writeFile(path.join(destination, 'diagnostic.json'), JSON.stringify({ ...value, result: value.result && { ...value.result, frames: value.result.frames.map(x => ({ pts: x.pts, timescale: x.timescale })), audioBlocks: value.result.audioBlocks.map(({ values, ...x }) => x), audioSeek: value.result.audioSeek.map(({ values, ...x }) => ({ ...x, samples: values.length })), sequentialAudio: value.result.sequentialAudio.length } }, null, 2));
   assert.equal(value.ok, true, JSON.stringify(value));
   const result = value.result;
   assert.equal(result.frames.length, oracleFrames.length);
@@ -85,10 +84,20 @@ try {
   assert(result.audioSeek.length > 0);
   for (const block of result.audioSeek) for (let i = 0; i < block.values.length; i++)
     assert(Math.abs(block.values[i] - oraclePcm.readFloatLE((block.first + i) * 4)) < 0.001, 'audio seek lacks decoder preroll');
+  for (const block of result.sequentialAudio) for (let i = 0; i < block.values.length; i++)
+    assert(Math.abs(block.values[i] - oraclePcm.readFloatLE((block.first + i) * 4)) < 0.001, 'sequential audio differs');
+  assert.equal(result.sequential.decoderCreations, 1);
+  assert(result.sequential.decodedChunks <= result.audioBlocks.length + 1, 'sequential cursor repeated decoding');
+  assert.equal(result.budget.denied, 'resource_limit'); assert.equal(result.budget.deniedBeforeConfigure, true);
+  assert.equal(result.budget.packetDenied, 'resource_limit'); assert.equal(result.budget.packetDeniedBeforeConfigure, true);
+  assert.equal(result.budget.concurrentDenied, 'resource_limit'); assert(result.budget.retainedCloneBytes > 0);
+  assert(result.budget.cloneWidth > 0); assert.equal(result.budget.finalBytes, 0); assert(result.budget.peakBytes <= result.budget.capacityBytes);
   assert.equal(result.beyond, false); assert.equal(result.callbackClosed, true); assert.equal(result.early, 1);
   assert.equal(result.busy, 'busy'); assert.equal(result.closed, 'closed'); assert.equal(result.cancelled, 'cancelled'); assert.equal(result.limit, 'resource_limit');
   assert.equal(result.abortedOpen, 'cancelled'); assert.equal(result.deadline, 'deadline');
+  assert.equal(result.audioDeadline, 'deadline');
   assert.equal(result.stats.videoDecoders + result.stats.audioDecoders + result.stats.videoFrames + result.stats.audioData, 0);
+  assert(result.stats.maxVideoFrames <= 8, 'blocked consumer exceeded the fixture frame allowance');
   assert.deepEqual(errors, []);
   const sha = data => createHash('sha256').update(data).digest('hex');
   const report = {
@@ -97,7 +106,7 @@ try {
     mediabunny: '1.61.3', worker: true, decodedVideoFrames: result.frames.length, exactSeeks: result.seeks.length,
     sdkManifestSha256: sdkPin ?? null,
     rgbaMeanError: sum / result.frames.length, rgbaMaxFrameError: maximum,
-    pcmSamples: samples.length, pcmRmsError: rms, pcmPeakError: peak, ...result.stats,
+    pcmSamples: samples.length, pcmRmsError: rms, pcmPeakError: peak, ...result.stats, budget: result.budget, sequential: result.sequential,
     scope: 'Real Chromium Worker / H264 B-frame VFR and AAC decode. Independent FFmpeg PTS/pixels/PCM; before/after boundaries, EOF, early break, consumer failure, busy, cancellation, resource limits and release. Not full editor/render/export, platform matrix, total codec memory budget or product acceptance.',
   };
   await writeFile(path.join(destination, 'report.json'), JSON.stringify(report, null, 2) + '\n');
