@@ -90,8 +90,10 @@ cargo test -p mo-video-runtime --features native --test native_audio_movie \
 
 ## 接入状态与下一步
 
-本次源码能力尚未打包进产品当前固定的 `.20261007.3` SDK。Musterwork 仍保持画面导入和无声预览的准确提示，不能提前宣称原声可用。
+干净源码 `636ad72376d16ddb1594e6f87d564379eb844ba8` 已构建 20 crate 的本地不可变开发包 `0.1.0-video.20261007.4`，manifest `5c6e086daa6b6684597993345abc8f300ec439afe53804f4412c707206472628`，`sourceDirty=false`、`releaseCleared=false`。这是本地开发产物，未对外发布或提升产品频道。
 
-下一步需要固定新的不可变开发 SDK，在产品授权媒体任务中接通快速 movie 描述、后台 raw PCM 物化/验证/发布与恢复，再将原声导入和 `MovieAudioResource` 接入统一源集合。音频设备时钟、持续视频调度、图片、最终候选导出及 Browser 媒体执行继续按[完整验收矩阵](../design/video-editing/acceptance.md)推进。
+独立消费者仅复制 registry archives 和索引，使用固定版本、checksum 及完全一致的外部 Cargo 依赖图执行新公开 API；没有导入本仓库源码。再次经过真实 raw 解码、分页索引和 movie 映射，144,000 个结果采样帧与对照逐位一致，32 个随机窗口一致。`native` / `gpu` features 用于完整固定包闭包；本检查没有执行 GPU 或设备播放。复现工具为 `tools/video-sdk/check-audio-movie.py`，参数为 `--bundle`、`--sha256`、`--worker`、`--worker-sha256`、`--fixture`、`--output`；消费者程序也已保存为独立 Rust 文件。
+
+Musterwork 当前仍固定 `.20261007.3`，保留画面导入和无声预览的准确提示。下一步需要消费新的固定 SDK，在产品授权媒体任务中接通快速 movie 描述、后台 raw PCM 物化/验证/发布与恢复，再将原声导入和 `MovieAudioResource` 接入统一源集合。音频设备时钟、持续视频调度、图片、最终候选导出及 Browser 媒体执行继续按[完整验收矩阵](../design/video-editing/acceptance.md)推进。
 
 本地日志/摘要报告位于忽略的 `.codex-work/video-audio-movie-*`；完整本地用户验收仍未完成。
