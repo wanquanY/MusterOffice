@@ -23,6 +23,6 @@ Musterwork 的原 Runtime 持有用户/工作区、不可变 revision、当前 w
 
 ## 当前边界
 
-计算状态 Candidate 不等于产品任务 Completed。持久导出意图、原 ProductCommand/Invocation 内容预留、原子 Artifact 发布、工具结果文件卡片、播放器/下载尚待接通。匿名候选不能跨重启恢复；重启须由原 Runtime 在同一导出意图下重试或恢复已持久化的已验证输出。实际编码字节不可假定每次重算相同，输出幂等依赖原任务/尝试/回执，不能依赖重新编码得到同一 hash。
+计算状态 Candidate 不等于产品任务 Completed。[持久生命周期存储与启动恢复](video-product-export-tasks.md)已实现；resident 调度、原 ProductCommand/Invocation 内容预留、原子 Artifact 发布、工具结果文件卡片、播放器/下载尚待接通。匿名候选不能跨重启恢复；重启须由原 Runtime 在同一导出意图下重试或恢复已持久化的已验证输出。实际编码字节不可假定每次重算相同，输出幂等依赖原任务/尝试/回执，不能依赖重新编码得到同一 hash。
 
 Browser 输出、完整页面、多容器/图片、保调准备、长时/4K/平台与全量功能验收仍在目标内。此增量没有完成用户全部本地验收目标，也未公开发行组件或部署产品。
