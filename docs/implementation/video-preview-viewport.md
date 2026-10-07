@@ -46,4 +46,12 @@ GPU 新用例暴露了原 `mix` 的边界问题：接近 1 的分数经 f32 舍�
 
 ## Host 接入边界
 
+### 固定开发组件
+
+核心提交 `dd64f86b2866eb1e8179e58044a7355ec1d7909b` 已构建独立 20 包 SDK `0.1.0-video.20261007.3`，manifest `dab130f7cba1df231acb39603465479bb3476e1a54759ad9af90bad265f99c14`，`sourceDirty: false`、`releaseCleared: false`。同提交重新构建的 profile 5 codec worker 字节保持相同，manifest 仍为 `4a4b194f09fdf2893b749dd5d3c4ba8ad54a1891a3648945341192522ab66fb3`，8,424,952 bytes；这不包含应用/GPU 框架、素材、字体和模型。
+
+只消费 registry archives 的独立程序实际使用新 API 生成 64×48 / 12,288 bytes 预览，并完成前后定位、修改工程和 75 帧 FFV1 MP4 导出。独立解码的 1,382,400 bytes YUV 与输入一致；另解码 144,000 个 AAC 样本但输出仍无音轨。消费者报告在 `video-viewport-consumer-dd64f86/report.json`，没有用仓库私有源码填补缺失 API。
+
+Musterwork worktree 提交 `bedef797d` 已安装并固定该版本。27 项组件安装检查、6 项实际素材权限/导入、7 项工程命令、1 项重开、2 项后台配置共 43 项通过，0 ignored；最终 `--locked` 图上的生产库 strict Clippy 通过。原 PPT 与完整非视频依赖图不变，原 192 项工作区状态（210 项展开记录）保留。产品证据由其 `video-viewport-product-*.log` 与汇总报告登记，不将这些检查当成真实播放器 UI 验收。
+
 该增量不引入宿主权限、项目存储、业务队列或路径。产品预览仍需绑定当前作用域、工程版本、素材授权、有限会话/缓存、取消和二进制帧传输；UI 必须丢弃过期 generation，并使用同源音频设备时钟。真实右侧播放器、音频、导出 UI 和 Browser 媒体路径仍待连接，不能据此宣布用户可以验收完整方案。
