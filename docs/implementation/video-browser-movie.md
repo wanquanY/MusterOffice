@@ -49,6 +49,8 @@
 
 开发报告：`.codex-work/video-browser-movie-check-05/report.json`、`.codex-work/video-browser-movie-regression-01/report.json`。最终干净提交的构建与复验记录另行登记。
 
+最终干净源码 `fd2bcc60830e6868a6b813ca6b663de0fbb6aef3` 已构建并复验：媒体 SDK `.codex-work/video-browser-movie-final/`，manifest `eb604759e2e6d33560f7ea475c6a565ac999788761669c122a7f9593fd042ab4`；仍配合索引 SDK `c857b483e0e285fc08c9cbca4977dde7e2f0b7f1f89ef51357466e3df59595f9`。报告 `.codex-work/video-browser-movie-final-check/report.json`、`.codex-work/video-browser-movie-final-regression/report.json`。媒体 ESM 324,720 bytes，gzip 86,267 bytes；含对应源码的完整媒体 SDK 2,272,751 bytes、90 个文件。索引 WASM 另算，不将这一 ESM 体积当成整个剪辑器体积。
+
 ```sh
 pnpm run test:video-browser-media
 node tools/video-browser-sdk/build.mjs build NEW_MEDIA_SDK
