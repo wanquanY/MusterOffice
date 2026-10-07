@@ -186,3 +186,50 @@ fn huge_pts_stay_exact_and_sample_partition_does_not_change_asset() {
     assert_eq!(a.asset(), b.asset());
     assert_eq!(a.decoded_range(256).unwrap().start, t(origin, 16000));
 }
+
+#[test]
+fn inspected_blocks_transfer_owned_pcm_on_the_same_exact_lattice() {
+    let mut scan = scan();
+    let mut input = frame(-3, 17);
+    let first = scan
+        .observe_pcm(&input, ByteOrder::Little, &|| false)
+        .unwrap();
+    input.planes[0].bytes.fill(0);
+    assert_eq!(first.first_frame(), 0);
+    assert_eq!(first.end_frame(), 17);
+    assert_eq!(first.samples()[16].to_bits(), (16.0f32 / 32768.).to_bits());
+    let mut input = frame(31, 13);
+    // Changing packed/planar labels and host byte order must not change the
+    // canonical values or create a second timestamp conversion in the host.
+    input.info.format = "fltp".into();
+    for bytes in input.planes[0].bytes.chunks_exact_mut(4) {
+        bytes.reverse();
+    }
+    let next = scan.observe_pcm(&input, ByteOrder::Big, &|| false).unwrap();
+    assert_eq!(next.first_frame(), 17);
+    assert_eq!(next.end_frame(), 30);
+    assert_eq!(next.samples()[12].to_bits(), (12.0f32 / 32768.).to_bits());
+    let result = scan.finish_at_eof(&|| false).unwrap();
+    assert_eq!(result.asset().available.end, next.end_frame());
+    assert_eq!(result.decoded_range(256).unwrap().end, t(57, 16000));
+}
+
+#[test]
+fn provisional_pcm_is_not_a_complete_asset_after_later_failure() {
+    let mut scan = scan();
+    let block = scan
+        .observe_pcm(&frame(0, 16), ByteOrder::Little, &|| false)
+        .unwrap();
+    assert_eq!(block.frames(), 16);
+    let mut broken = frame(32, 16);
+    broken.planes[0].bytes[0..4].copy_from_slice(&f32::INFINITY.to_le_bytes());
+    assert!(
+        scan.observe_pcm(&broken, ByteOrder::Little, &|| false)
+            .is_err()
+    );
+    assert!(
+        scan.observe_pcm(&frame(32, 16), ByteOrder::Little, &|| false)
+            .is_err()
+    );
+    assert!(scan.finish_at_eof(&|| false).is_err());
+}

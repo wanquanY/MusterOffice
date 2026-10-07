@@ -61,18 +61,11 @@ fn decode(
     let mut scan = PcmInspection::new(1, PcmInspectLimits::default()).unwrap();
     let mut samples = vec![];
     while let Some(frame) = decoder.next_frame(&|| false).unwrap() {
-        scan.observe(&frame, ByteOrder::Little, &|| false).unwrap();
-        let layout = ChannelLayout::from_codec_name(&frame.info.channel_layout).unwrap();
-        assert_eq!(layout, ChannelLayout::mono());
-        let pcm = normalize_pcm(
-            &frame,
-            ByteOrder::Little,
-            layout.clone(),
-            samples.len() as i64,
-            PcmLimits::default(),
-            &|| false,
-        )
-        .unwrap();
+        let pcm = scan
+            .observe_pcm(&frame, ByteOrder::Little, &|| false)
+            .unwrap();
+        assert_eq!(pcm.layout(), &ChannelLayout::mono());
+        assert_eq!(pcm.first_frame(), samples.len() as i64);
         samples.extend_from_slice(pcm.samples());
     }
     decoder.close(&|| false).unwrap();

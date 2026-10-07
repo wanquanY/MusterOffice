@@ -94,6 +94,16 @@ cargo test -p mo-video-runtime --features native --test native_audio_movie \
 
 独立消费者仅复制 registry archives 和索引，使用固定版本、checksum 及完全一致的外部 Cargo 依赖图执行新公开 API；没有导入本仓库源码。再次经过真实 raw 解码、分页索引和 movie 映射，144,000 个结果采样帧与对照逐位一致，32 个随机窗口一致。`native` / `gpu` features 用于完整固定包闭包；本检查没有执行 GPU 或设备播放。复现工具为 `tools/video-sdk/check-audio-movie.py`，参数为 `--bundle`、`--sha256`、`--worker`、`--worker-sha256`、`--fixture`、`--output`；消费者程序也已保存为独立 Rust 文件。
 
-Musterwork 当前仍固定 `.20261007.3`，保留画面导入和无声预览的准确提示。下一步需要消费新的固定 SDK，在产品授权媒体任务中接通快速 movie 描述、后台 raw PCM 物化/验证/发布与恢复，再将原声导入和 `MovieAudioResource` 接入统一源集合。音频设备时钟、持续视频调度、图片、最终候选导出及 Browser 媒体执行继续按[完整验收矩阵](../design/video-editing/acceptance.md)推进。
+Musterwork 已在产品提交 `f391b4bb4` 中消费 `.20261007.4`，原生 quick inspection 使用精确 movie 区间及首帧实际 PCM 格式声明音轨；共享界面支持原声选择、音视频关联导入及关联成员的明确编辑事务。真实浏览器生成的导入意图已由原生 worker / SQLite 验证，不能据此声称有声播放完成。产品新固定 worker manifest 为 `98c173a7934275de3fea8aa13c604c734fddc694029aab87c8470fc45b586a27`，使用相同计算源码及 profile 5 重建，8,441,944 bytes；旧组件目录保留。
+
+后台 raw PCM 物化/验证/发布与恢复尚未接入。音频设备时钟、持续视频调度、图片、最终候选导出及 Browser 媒体执行继续按[完整验收矩阵](../design/video-editing/acceptance.md)推进。
+
+### 单次标准化的数据块移交
+
+当前源码新增 `PcmInspection::observe_pcm`，在原有校验成功后把同一个标准化 `PcmBlock` 移交宿主；原 `observe` 通过它校验后丢弃数据，保持兼容。不要求宿主再调用一次 `normalize_pcm`，检查器也不保留该块的副本。调用方拥有块内存，仍须单独计入 Host 的内存额度。
+
+返回的数据块只是已验证前缀，不能直接表示整段资源 ready。原始 PTS、连续性、格式、generation、有限样本与预算保持同一路径；之后出现错误仍使检查器永久失效。宿主必须在成功 EOF 后获得最终范围，并在自身存储事务完成后发布。写入失败、取消及解码失败的临时块应由宿主清理。当前已知范围的 `PcmTileBuilder` 不因此自动变为未知尾端的流式 builder，后续仍需设计 EOF 封口与持久缓存，不能为方便而预猜最终 PCM 长度。
+
+41 项 PCM/runtime 常规测试通过，3 项专用测试在该命令中 ignored，其中真实 AAC movie 用例另行显式执行通过。新增检查验证转移后输入帧字节变化不影响块、不同字节序/平面标签保持精确格点，以及稍后失败不能将前缀完成。真实用例改为一次校验并获取 PCM，仍得到 144,000 个映射样本、相同的 `40b3b2bf…e46def` 摘要和 5 个随机窗口对照。两 crate all-targets strict Clippy 与默认 runtime 的 WASM 编译检查通过；不是浏览器媒体对照。此新 API 尚未构建新的固定发行包，产品 `.20261007.4` 不包含它；没有重复运行或宣称 archive consumer 已使用该 API。
 
 本地日志/摘要报告位于忽略的 `.codex-work/video-audio-movie-*`；完整本地用户验收仍未完成。

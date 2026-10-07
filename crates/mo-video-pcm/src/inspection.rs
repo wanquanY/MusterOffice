@@ -2,7 +2,7 @@ use crate::{PcmError, Result, check, clock::DecodedClock};
 use mo_common::RationalTime;
 use mo_media::DecodedFrame;
 use mo_time::ExactRatio as R;
-use mo_video_audio::{AudioAsset, ByteOrder, PcmLimits, PcmRange};
+use mo_video_audio::{AudioAsset, ByteOrder, PcmBlock, PcmLimits, PcmRange};
 use mo_video_model::TimeRange;
 
 #[derive(Debug, Clone, Copy)]
@@ -72,6 +72,19 @@ impl PcmInspection {
         order: ByteOrder,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<()> {
+        self.observe_pcm(frame, order, cancelled).map(drop)
+    }
+    /// Validate the next decoded frame and transfer its canonical PCM to the
+    /// host in the same pass. No second normalization or retained sample copy.
+    /// The block belongs to a provisional prefix, not a complete asset. Hosts
+    /// must discard unpublished storage on decode/storage failure and publish
+    /// completeness only after successful EOF and their own atomic commit.
+    pub fn observe_pcm(
+        &mut self,
+        frame: &DecodedFrame,
+        order: ByteOrder,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<PcmBlock> {
         if self.failed {
             return Err(PcmError::Invalid("PCM inspection failed"));
         }
@@ -98,7 +111,7 @@ impl PcmInspection {
         self.frames += 1;
         self.clock = Some(clock);
         self.failed = false;
-        Ok(())
+        Ok(pcm)
     }
     /// Call only after the same decoder reports successful EOF. A transport
     /// error, task cancellation or host early stop is not EOF. Consuming `self`
