@@ -96,7 +96,7 @@ cargo test -p mo-video-runtime --features native --test native_audio_movie \
 
 Musterwork 已在产品提交 `f391b4bb4` 中消费 `.20261007.4`，原生 quick inspection 使用精确 movie 区间及首帧实际 PCM 格式声明音轨；共享界面支持原声选择、音视频关联导入及关联成员的明确编辑事务。真实浏览器生成的导入意图已由原生 worker / SQLite 验证，不能据此声称有声播放完成。产品新固定 worker manifest 为 `98c173a7934275de3fea8aa13c604c734fddc694029aab87c8470fc45b586a27`，使用相同计算源码及 profile 5 重建，8,441,944 bytes；旧组件目录保留。
 
-后台 raw PCM 物化/验证/发布与恢复尚未接入。音频设备时钟、持续视频调度、图片、最终候选导出及 Browser 媒体执行继续按[完整验收矩阵](../design/video-editing/acceptance.md)推进。
+后续产品 `c0d2b52e3` 已消费 `.20261007.5`，接通 raw PCM 的流式物化、SQLite/CAS 完整提交、整库重开复用和取消回收，见[PCM 分块](video-pcm-streaming.md)。后台任务调度、音频设备时钟、持续视频调度、图片、最终候选导出及 Browser 媒体执行继续按[完整验收矩阵](../design/video-editing/acceptance.md)推进。
 
 ### 单次标准化的数据块移交
 
@@ -104,6 +104,6 @@ Musterwork 已在产品提交 `f391b4bb4` 中消费 `.20261007.4`，原生 quick
 
 返回的数据块只是已验证前缀，不能直接表示整段资源 ready。原始 PTS、连续性、格式、generation、有限样本与预算保持同一路径；之后出现错误仍使检查器永久失效。宿主必须在成功 EOF 后获得最终范围，并在自身存储事务完成后发布。写入失败、取消及解码失败的临时块应由宿主清理。后续独立的 `PcmStreamBuilder` 已实现未知尾端的流式分块、EOF 封口和 `PcmStreamRecord` 恢复，见[增量说明](video-pcm-streaming.md)；产品持久缓存继续实施。
 
-41 项 PCM/runtime 常规测试通过，3 项专用测试在该命令中 ignored，其中真实 AAC movie 用例另行显式执行通过。新增检查验证转移后输入帧字节变化不影响块、不同字节序/平面标签保持精确格点，以及稍后失败不能将前缀完成。真实用例改为一次校验并获取 PCM，仍得到 144,000 个映射样本、相同的 `40b3b2bf…e46def` 摘要和 5 个随机窗口对照。两 crate all-targets strict Clippy 与默认 runtime 的 WASM 编译检查通过；不是浏览器媒体对照。此新 API 尚未构建新的固定发行包，产品 `.20261007.4` 不包含它；没有重复运行或宣称 archive consumer 已使用该 API。
+该增量初次验证时，41 项 PCM/runtime 常规测试通过，3 项专用测试在该命令中 ignored，其中真实 AAC movie 用例另行显式执行通过。新增检查验证转移后输入帧字节变化不影响块、不同字节序/平面标签保持精确格点，以及稍后失败不能将前缀完成。真实用例改为一次校验并获取 PCM，仍得到 144,000 个映射样本、相同的 `40b3b2bf…e46def` 摘要和 5 个随机窗口对照。两 crate all-targets strict Clippy 与默认 runtime 的 WASM 编译检查通过；不是浏览器媒体对照。最初产品 `.20261007.4` 不包含此 API；后续 `.20261007.5` 的独立 archive consumer 和真实产品物化已经另行执行，证据见上方 PCM 分块文档，不混用旧检查作为新包证据。
 
 本地日志/摘要报告位于忽略的 `.codex-work/video-audio-movie-*`；完整本地用户验收仍未完成。

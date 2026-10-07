@@ -58,4 +58,8 @@ cargo check -p mo-video-runtime --target wasm32-unknown-unknown --offline --lock
 
 干净源码 `f98c99b2a17eb0831ada73da353e14d6700f5614` 已构建本地 `0.1.0-video.20261007.5`，20 crate，manifest `58c31c3d95c67c1943c3a4c53fc2b43c7ea6c0035bede3f7c76bd179542eeff8`，`sourceDirty=false`、`releaseCleared=false`。独立消费者只复制 registry archives、index 和固定外部锁图，真实完成 36 块封口、record 恢复、144,000 个映射样本的逐位检查，以及 32 个倒序随机窗口；没有源码路径依赖或额外消费者依赖。报告 `.codex-work/video-pcm-stream-consumer-01/report.json`。没有公开发布、升级公共频道或重建 codec worker。
 
-Musterwork 目前固定 `.20261007.4` 尚不包含此能力。产品接入继续增加原有内容存储下的派生任务和原子完成记录：任务复用原数据库 writer epoch、源内容删除/撤权栅栏；崩溃留下的临时块可回收，未完成缓存不可读取，重新打开只能使用完整匹配的处理身份。完成后才连接设备音频时钟、画面调度和冻结工程导出。
+Musterwork 已在 `7e50a2f7f` 增加原有 SQLite/CAS owner 下的源授权、分块预写/原子完成、旧 writer 未完成尝试恢复和源删除关联；`c0d2b52e3` 固定消费 `.20261007.5` 并接通 `NativeVideoPcmHost`。原项目权限和任务存储仍由产品拥有，没有把这些职责迁入本内核。
+
+产品真实检查新增 3 项、全部显式执行通过：AAC 物化的 145,024 个原始采样帧采用 Host 选择的 16,384 帧块宽，写成 9 块、580,096 bytes；与独立 raw decoder 的全部 f32 字节一致。关闭整个真实产品数据库后重开，复用原 completion/attempt 和全部字节；删除原源后拒绝访问。另验证调用方中断时保持物理额度到 worker 回收/清理完成，以及首块已落盘后取消不会发布前缀。产品 58 项不同存储检查、27 项安装检查、26 项 adapter 常规检查和生产库 strict Clippy 通过，专用 ignored 检查单独标明，没有混计。
+
+这里返回的仍是 raw PCM，产品声音读取必须继续使用 `MovieAudioPlan`；后台调度、音频设备时钟、画面同步和冻结工程导出尚未接通。产品尚未执行本轮真实浏览器或登录 Electron 的声音验收。
