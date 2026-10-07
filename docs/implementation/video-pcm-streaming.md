@@ -56,4 +56,6 @@ cargo check -p mo-video-runtime --target wasm32-unknown-unknown --offline --lock
 
 `tools/video-sdk/check-audio-movie.py --streamed` 新增独立 registry 消费方式，以公开 SDK 完成单次解码、封口、记录序列化/恢复、movie 映射与 32 个随机窗口检查。它的分块宿主是内存 fixture，仅验证发行消费，不作为内存性能证据。固定发行身份和执行结果在真正打包验证后记录，不以工具存在作为通过证据。
 
-Musterwork 目前固定 `.20261007.4` 尚不包含此能力。产品接入必须增加原有内容存储下的派生任务和原子完成记录：任务复用原数据库 writer epoch、源内容删除/撤权栅栏；崩溃留下的临时块可回收，未完成缓存不可读取，重新打开只能使用完整匹配的处理身份。完成后才连接设备音频时钟、画面调度和冻结工程导出。
+干净源码 `f98c99b2a17eb0831ada73da353e14d6700f5614` 已构建本地 `0.1.0-video.20261007.5`，20 crate，manifest `58c31c3d95c67c1943c3a4c53fc2b43c7ea6c0035bede3f7c76bd179542eeff8`，`sourceDirty=false`、`releaseCleared=false`。独立消费者只复制 registry archives、index 和固定外部锁图，真实完成 36 块封口、record 恢复、144,000 个映射样本的逐位检查，以及 32 个倒序随机窗口；没有源码路径依赖或额外消费者依赖。报告 `.codex-work/video-pcm-stream-consumer-01/report.json`。没有公开发布、升级公共频道或重建 codec worker。
+
+Musterwork 目前固定 `.20261007.4` 尚不包含此能力。产品接入继续增加原有内容存储下的派生任务和原子完成记录：任务复用原数据库 writer epoch、源内容删除/撤权栅栏；崩溃留下的临时块可回收，未完成缓存不可读取，重新打开只能使用完整匹配的处理身份。完成后才连接设备音频时钟、画面调度和冻结工程导出。
