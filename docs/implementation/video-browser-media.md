@@ -40,7 +40,7 @@ Mediabunny 1.61.3 / MPL-2.0，固定到研究时同一 upstream commit。容器�
 | 生命周期 | early break、消费异常、忙碌拒绝、关闭后调用、预取消、执行中取消、回调永不完成后的 deadline、像素额度拒绝；最终 decoder/frame/audio-data 活跃计数为 0 |
 | 单元/交付 | 5 项检查；含 107,892 帧时间网格、负时间/非法时间与字节/额外文件/符号链接篡改拒绝 |
 
-当前本地证据：`.codex-work/video-browser-media-check-sdk-02/report.json`；该次消费固定 SDK manifest `f7278ab7ada7d6f38e49b5b7c59cc709539db6b828261006c36d8ea58f61cee3`。后续干净源码构建可能产生新的 manifest，执行时须使用该构建实际 pin，不沿用旧值。
+最终本地证据：`.codex-work/video-browser-media-final/report.json`；实际消费干净源码 `a7d306400a9e4e3d69ba96d49761653555590974` 构建的 SDK，manifest `5c41d9a3ac7bb8e6bee686f48227a488b7143e5214e3da04def2f061e3ef5cb1`，目录 `.codex-work/video-browser-sdk-final/`。运行时 ESM 308,619 bytes，gzip 82,003 bytes；包含完整对应源码/许可/类型的交付目录为 2,252,091 bytes、88 个 inventory 文件。这是文件体积，不是运行内存、启动耗时或全工作台下载量。
 
 复现：
 
