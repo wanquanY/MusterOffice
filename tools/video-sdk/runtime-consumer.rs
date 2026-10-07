@@ -12,7 +12,6 @@ use std::{
     fs::{self, File},
     io::{self, Read, Seek, SeekFrom, Write},
     path::{Path, PathBuf},
-    sync::Arc,
     time::Duration,
 };
 
@@ -76,41 +75,9 @@ impl VideoEncoder for RecordedEncoder<'_> {
         self.inner.finish()
     }
 }
-struct Visual {
-    sampler: VideoSampler<source::native::NativeVideoDecoder<'static>>,
-    stream: StreamInfo,
-}
-use mo_video_runtime::source;
-impl VisualResources for Visual {
-    fn media(
-        &mut self,
-        binding: &MediaBinding,
-        sample: &TimeSample,
-        check: &dyn Fn() -> bool,
-    ) -> mo_video_runtime::render::Result<ResolvedMedia> {
-        let selected = self
-            .sampler
-            .sample(binding, sample, SampleMode::Seek, check)
-            .map_err(|e| RenderError::Resource(e.to_string()))?;
-        let SourceSelection::Frame(value) = selected.selection else {
-            return Err(RenderError::Resource("fixture frame unavailable".into()));
-        };
-        let color = InputColor::from_codec(&value.frame.info, false, None)?;
-        let normalized = normalize_frame(&value.frame, color, PixelLimits::default(), check)?;
-        Ok(ResolvedMedia {
-            binding: binding.clone(),
-            visual: ResolvedVisual::VideoFrame {
-                interval: mo_video_runtime::time::ExactInterval {
-                    start: mo_video_runtime::time::ExactRatio::from_time(value.interval.start),
-                    end: mo_video_runtime::time::ExactRatio::from_time(value.interval.end),
-                },
-                frame: VisualFrame {
-            image: Arc::new(normalized.image),
-            geometry: SourceGeometry::from_media(&value.frame.info, &self.stream)?,
-            } },
-        })
-    }
-}
+use mo_video_runtime::{source, visual_source::*};
+use source::{indexed::*, native::*};
+type Visual = IndexedVisualSource<NativeVideoDecoder<'static>, NativeVideoTimeline<'static>>;
 struct NoAudio;
 impl AudioResources for NoAudio {
     fn describe(&mut self, _: &MediaBinding) -> mo_video_runtime::audio::Result<AudioAsset> {
@@ -210,8 +177,39 @@ fn main() {
     }
     decoded.close(&|| false).unwrap();
     assert_eq!(samples, 144000);
-    // This particular generated fixture has a verified continuous [0,3) span.
-    // Production import must establish spans/edit lists, not infer them from duration.
+    // Import the retained container map and bind the actual track identity. The
+    // document trims the first three seconds; availability is the complete movie span.
+    let mut index = NativeIndex::open(
+        &bundle,
+        input(&fixture),
+        length,
+        NativeIndexOptions {
+            index: IndexLimits::default(),
+            max_read_bytes: 64 << 20,
+            process: options().process,
+            open_timeout: options().open_timeout,
+            call_timeout: options().call_timeout,
+        },
+        &|| false,
+    )
+    .unwrap();
+    let ordinal = (0..index.summary().tracks)
+        .find(|&ordinal| {
+            let IndexPage::Track { track } = index
+                .query(IndexQuery::Track { track: ordinal }, &|| false)
+                .unwrap()
+            else {
+                panic!("track");
+            };
+            Some(track.id) == stream.container_track_id
+        })
+        .unwrap();
+    let timeline = NativeVideoTimeline::new(index, ordinal, &|| false).unwrap();
+    assert_eq!(Some(timeline.summary().track_id), stream.container_track_id);
+    let available = TimeRange {
+        start: RationalTime::new(0, 1).unwrap(),
+        end: timeline.summary().movie_end.to_time_exact().unwrap(),
+    };
     let span = TimeRange {
         start: RationalTime::new(0, 1).unwrap(),
         end: RationalTime::new(3, 1).unwrap(),
@@ -221,7 +219,7 @@ fn main() {
         stream: StreamId::new("video").unwrap(),
         digest: Digest::try_from(std::env::var("MO_CONSUMER_FIXTURE_SHA256").unwrap()).unwrap(),
         descriptor: MediaStream::Video {
-            available: span,
+            available,
             dimensions: Canvas {
                 width: 128,
                 height: 96,
@@ -302,20 +300,22 @@ fn main() {
         )
         .unwrap();
     let original = VideoProject::open(prepared.snapshot, Limits::default(), &|| false).unwrap();
-    let decoder = source::native::NativeVideoDecoder::open(
+    let decoder = NativeVideoDecoder::open_raw_track(
         &bundle,
         input(&fixture),
         length,
         options(),
-        stream.index,
+        timeline.summary().track_id,
         &|| false,
     )
     .unwrap();
-    let mut visual = Visual {
-        sampler: VideoSampler::new(decoder, binding.clone(), span, SourceLimits::default())
+    let mut visual = Visual::new(
+        IndexedVideoSampler::new(decoder, timeline, binding.clone(), SourceLimits::default())
             .unwrap(),
-        stream,
-    };
+        ColorInterpretation::Declared { hlg: None },
+        VisualSourceLimits::default(),
+    )
+    .unwrap();
     let before = rgba(&original, &mut visual, 0);
     let edited = original
         .prepare(
@@ -404,15 +404,18 @@ fn main() {
         fs::metadata(output.join("project.mp4")).unwrap().len()
     );
     drop(export);
-    assert!(visual.sampler.retained_bytes() <= SourceLimits::default().max_retained_bytes);
+    assert!(
+        visual.last_stats().source.retained_bytes <= SourceLimits::default().max_retained_bytes
+    );
     // Immutable project and pixels are independent of the export lifecycle.
     assert_eq!(project.summary(&|| false).unwrap().frame_count.get(), 75);
     println!(
-        "{{\"profile\":\"{}\",\"documentDigest\":\"{}\",\"frames\":75,\"sourceAudioSamples\":{},\"encodedBytes\":{},\"previewBytes\":49152,\"width\":128,\"height\":96,\"retainedSourceBytes\":{},\"outputAudio\":false}}",
+        "{{\"profile\":\"{}\",\"documentDigest\":\"{}\",\"frames\":75,\"sourceAudioSamples\":{},\"encodedBytes\":{},\"previewBytes\":49152,\"width\":128,\"height\":96,\"retainedSourceBytes\":{},\"retainedNormalizedBytes\":{},\"outputAudio\":false}}",
         mo_video_runtime::PROFILE,
         project.digest().as_str(),
         samples,
         candidate.encoded.byte_length,
-        visual.sampler.retained_bytes()
+        visual.last_stats().source.retained_bytes,
+        visual.retained_bytes()
     );
 }
