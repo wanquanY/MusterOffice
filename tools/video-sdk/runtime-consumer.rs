@@ -99,9 +99,15 @@ impl VisualResources for Visual {
         let normalized = normalize_frame(&value.frame, color, PixelLimits::default(), check)?;
         Ok(ResolvedMedia {
             binding: binding.clone(),
-            interval: Some(value.interval),
+            visual: ResolvedVisual::VideoFrame {
+                interval: mo_video_runtime::time::ExactInterval {
+                    start: mo_video_runtime::time::ExactRatio::from_time(value.interval.start),
+                    end: mo_video_runtime::time::ExactRatio::from_time(value.interval.end),
+                },
+                frame: VisualFrame {
             image: Arc::new(normalized.image),
             geometry: SourceGeometry::from_media(&value.frame.info, &self.stream)?,
+            } },
         })
     }
 }

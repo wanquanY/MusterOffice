@@ -159,9 +159,13 @@ impl VisualResources for Resources {
             Arc::new(normalize_frame(&frame.frame, c, PixelLimits::default(), check)?.image);
         Ok(ResolvedMedia {
             binding: binding.clone(),
-            interval: Some(frame.interval),
-            image,
-            geometry,
+            visual: ResolvedVisual::VideoFrame {
+                interval: mo_time::ExactInterval {
+                    start: mo_time::ExactRatio::from_time(frame.interval.start),
+                    end: mo_time::ExactRatio::from_time(frame.interval.end),
+                },
+                frame: VisualFrame { image, geometry },
+            },
         })
     }
 }

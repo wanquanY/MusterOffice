@@ -17,9 +17,12 @@ impl VisualResources for Resources {
     ) -> mo_video_render::Result<ResolvedMedia> {
         Ok(ResolvedMedia {
             binding: self.binding.clone(),
-            interval: None,
-            image: self.image.clone(),
-            geometry: SourceGeometry::square_pixels(),
+            visual: ResolvedVisual::Image {
+                frame: VisualFrame {
+                    image: self.image.clone(),
+                    geometry: SourceGeometry::square_pixels(),
+                },
+            },
         })
     }
 }

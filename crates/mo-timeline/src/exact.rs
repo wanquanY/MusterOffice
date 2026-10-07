@@ -11,6 +11,7 @@ fn error(value: TimeError) -> TimelineError {
     TimelineError::Limit(match value {
         TimeError::Denominator | TimeError::DivisionByZero => "invalid rational denominator",
         TimeError::Budget | TimeError::Representation => "exact time arithmetic",
+        TimeError::Interval => "invalid exact interval",
     })
 }
 impl Ratio {

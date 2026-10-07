@@ -2,13 +2,13 @@
 //! The host binds timeline and decoder to the same immutable resource bytes.
 mod cache;
 use crate::{SampleMode, SourceError, SourceLimits, SourceStats, VideoDecoder, frame};
-use mo_media::{DecodeTimeline, DecodedFrame, MediaKind, TimeBase};
+use mo_media::{DecodeTimeline, DecodedFrame, MediaKind, StreamInfo, TimeBase};
 pub use mo_media_isobmff::presentation::{
     ExactRatio, Interval, Side, TimingError, VideoAccess, VideoTimeSelection, VideoTiming,
     VideoTimingSummary,
 };
 use mo_video_compile::MediaBinding;
-use mo_video_model::{MediaStream, SampleSide, TimeSample};
+use mo_video_model::{MediaStream, TimeSample};
 use std::{
     panic::{AssertUnwindSafe, catch_unwind},
     sync::Arc,
@@ -97,6 +97,7 @@ pub struct IndexedVideoSampler<D: IndexedVideoDecoder, T: VideoTimeline> {
     timeline: Option<T>,
     summary: VideoTimingSummary,
     binding: MediaBinding,
+    stream: StreamInfo,
     limits: SourceLimits,
     generation: u64,
     last_pts: Option<i64>,
@@ -142,6 +143,8 @@ impl<D: IndexedVideoDecoder, T: VideoTimeline> IndexedVideoSampler<D, T> {
         if decoder.timeline() != DecodeTimeline::RawIsoBmff
             || decoder.generation() != 1
             || stream.kind != MediaKind::Video
+            || stream.width != Some(dimensions.width)
+            || stream.height != Some(dimensions.height)
             || stream.container_track_id != Some(summary.track_id)
             || stream.time_base
                 != Some(TimeBase {
@@ -151,11 +154,13 @@ impl<D: IndexedVideoDecoder, T: VideoTimeline> IndexedVideoSampler<D, T> {
         {
             return Err(SourceError::Invalid("raw video decoder identity or clock").into());
         }
+        let stream = stream.clone();
         Ok(Self {
             decoder: Some(decoder),
             timeline: Some(timeline),
             summary,
             binding,
+            stream,
             limits,
             generation: 1,
             last_pts: None,
@@ -165,6 +170,13 @@ impl<D: IndexedVideoDecoder, T: VideoTimeline> IndexedVideoSampler<D, T> {
     }
     pub fn is_stopped(&self) -> bool {
         self.decoder.is_none()
+    }
+    /// Immutable metadata admitted with this decoder and binding.
+    pub fn stream(&self) -> &StreamInfo {
+        &self.stream
+    }
+    pub fn binding(&self) -> &MediaBinding {
+        &self.binding
     }
     pub fn retained_bytes(&self) -> usize {
         self.cache.bytes
@@ -217,10 +229,7 @@ impl<D: IndexedVideoDecoder, T: VideoTimeline> IndexedVideoSampler<D, T> {
             .time
             .check_budget(self.limits.exact_bits)
             .map_err(SourceError::Time)?;
-        let side = match sample.side {
-            SampleSide::Before => Side::Before,
-            SampleSide::After => Side::After,
-        };
+        let side = sample.side;
         let timeline = self.timeline.as_mut().ok_or(SourceError::Stopped)?;
         let selection = timeline
             .select(&sample.time, side, cancelled)

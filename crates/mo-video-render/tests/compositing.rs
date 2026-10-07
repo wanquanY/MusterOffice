@@ -76,9 +76,12 @@ impl VisualResources for ImageSource {
     ) -> Result<ResolvedMedia> {
         Ok(ResolvedMedia {
             binding: self.binding.clone(),
-            interval: None,
-            image: self.image.clone(),
-            geometry: self.geometry,
+            visual: ResolvedVisual::Image {
+                frame: VisualFrame {
+                    image: self.image.clone(),
+                    geometry: self.geometry,
+                },
+            },
         })
     }
 }

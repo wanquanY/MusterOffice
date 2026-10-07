@@ -1,5 +1,5 @@
 use crate::{RenderError, Result};
-use mo_color::rgb::{Encoding, Primaries, Transfer};
+pub use mo_color::rgb::{Encoding, Primaries, Transfer};
 use mo_media::FrameInfo;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SignalRange {
@@ -66,6 +66,14 @@ pub struct HlgDisplay {
     pub system_gamma: f64,
 }
 impl InputColor {
+    /// Resolve declared color and alpha from the actual decoded pixel layout.
+    pub fn from_frame(info: &FrameInfo, hlg: Option<HlgDisplay>) -> Result<Self> {
+        Self::from_codec(
+            info,
+            crate::layout::Layout::parse(&info.format)?.has_alpha(),
+            hlg,
+        )
+    }
     /// Reference-display interpretation: SDR 709/2020 uses ideal-black BT.1886,
     /// not inverse camera OETF. Resolve only known codec declarations. Missing metadata must be supplied
     /// by an explicit host interpretation; never guess from dimensions/extension.

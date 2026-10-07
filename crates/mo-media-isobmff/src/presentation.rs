@@ -4,8 +4,8 @@ mod access;
 mod build;
 mod validation;
 use crate::TrackIndex;
-pub use mo_time::ExactRatio;
 use mo_time::TimeError;
+pub use mo_time::{ExactInterval as Interval, ExactRatio, SampleSide as Side};
 use serde::{Deserialize, Serialize};
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
@@ -40,34 +40,6 @@ pub enum TimingError {
     Time(#[from] TimeError),
 }
 pub type Result<T> = std::result::Result<T, TimingError>;
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub enum Side {
-    Before,
-    After,
-}
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct Interval {
-    pub start: ExactRatio,
-    pub end: ExactRatio,
-}
-impl Interval {
-    pub fn contains(&self, time: &ExactRatio, side: Side) -> bool {
-        match side {
-            Side::After => self.start.compare(time).is_le() && time.compare(&self.end).is_lt(),
-            Side::Before => self.start.compare(time).is_lt() && time.compare(&self.end).is_le(),
-        }
-    }
-    pub fn validate(&self, bits: u64) -> Result<()> {
-        self.start.check_budget(bits)?;
-        self.end.check_budget(bits)?;
-        if self.start.compare(&self.end).is_ge() {
-            return Err(TimingError::Invalid("empty interval"));
-        }
-        Ok(())
-    }
-}
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct VideoTimingSummary {

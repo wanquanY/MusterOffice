@@ -1,5 +1,5 @@
 use crate::{
-    Affine, LinearImage, PixelLimits, RenderError, Result, SourceGeometry,
+    Affine, LinearImage, PixelLimits, RenderError, Result, VisualResources,
     backend::{CompositionBackend, CompositionResult, Paint, PaintSource},
     cancel,
     cpu::CpuBackend,
@@ -7,9 +7,7 @@ use crate::{
 };
 use mo_color::rgb::{Encoding, Primaries, RgbTransform, Transfer};
 use mo_time::{ExactRatio, Rounding};
-use mo_video_compile::{MediaBinding, VideoFramePlan, VisualEffect, VisualNode, VisualSource};
-use mo_video_model::{MediaStream, TimeRange, TimeSample};
-use std::sync::Arc;
+use mo_video_compile::{VideoFramePlan, VisualEffect, VisualNode, VisualSource};
 #[derive(Debug, Clone, Copy)]
 pub enum Sampling {
     Nearest,
@@ -35,21 +33,6 @@ impl Default for RenderLimits {
             max_temporary_bytes: 512 << 20,
         }
     }
-}
-pub struct ResolvedMedia {
-    pub binding: MediaBinding,
-    /// Required for a video frame, absent for a static image. Must cover the exact sample.
-    pub interval: Option<TimeRange>,
-    pub image: Arc<LinearImage>,
-    pub geometry: SourceGeometry,
-}
-pub trait VisualResources {
-    fn media(
-        &mut self,
-        binding: &MediaBinding,
-        sample: &TimeSample,
-        check: &dyn Fn() -> bool,
-    ) -> Result<ResolvedMedia>;
 }
 #[derive(Debug, Default, Clone, Copy)]
 pub struct RenderStats {
@@ -246,42 +229,9 @@ impl<B: CompositionBackend> Work<'_, B> {
                 VisualSource::Media { binding, mapping } => {
                     let source = resources.media(binding, &mapping.sample, self.check)?;
                     cancel(self.check)?;
-                    if &source.binding != binding {
-                        return Err(RenderError::Invalid("resolved resource binding"));
-                    }
-                    match binding.descriptor {
-                        MediaStream::Video {
-                            dimensions,
-                            available,
-                            ..
-                        } => {
-                            if !available.valid() || !mapping.sample.covers(available) {
-                                return Err(RenderError::Invalid("source sample availability"));
-                            }
-                            if !source
-                                .interval
-                                .is_some_and(|i| i.valid() && mapping.sample.covers(i))
-                            {
-                                return Err(RenderError::Invalid("resolved video frame interval"));
-                            }
-                            if (source.image.width, source.image.height)
-                                != (dimensions.width, dimensions.height)
-                            {
-                                return Err(RenderError::Invalid("resolved video dimensions"));
-                            }
-                        }
-                        MediaStream::Image { dimensions } => {
-                            if source.interval.is_some()
-                                || (source.image.width, source.image.height)
-                                    != (dimensions.width, dimensions.height)
-                            {
-                                return Err(RenderError::Invalid(
-                                    "resolved image dimensions or interval",
-                                ));
-                            }
-                        }
-                        _ => return Err(RenderError::Invalid("audio in visual plan")),
-                    }
+                    let Some(source) = source.validate(binding, &mapping.sample)? else {
+                        continue;
+                    };
                     let placement = source
                         .geometry
                         .contain((source.image.width, source.image.height), canvas)?;

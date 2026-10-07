@@ -1,5 +1,6 @@
 use mo_common::RationalTime;
-use mo_time::{ExactRatio, TimeError};
+pub use mo_time::SampleSide;
+use mo_time::{ExactInterval, ExactRatio, TimeError};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -61,21 +62,6 @@ pub struct TimeMap {
     pub anchors: Vec<TimeAnchor>,
 }
 
-/// A one-sided sample at an exact instant. Reversal flips the side rather than inventing an epsilon.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
-#[serde(rename_all = "camelCase")]
-pub enum SampleSide {
-    After,
-    Before,
-}
-impl SampleSide {
-    pub fn reversed(self) -> Self {
-        match self {
-            Self::After => Self::Before,
-            Self::Before => Self::After,
-        }
-    }
-}
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct TimeSample {
@@ -90,12 +76,11 @@ impl TimeSample {
         }
     }
     pub fn covers(&self, range: TimeRange) -> bool {
-        let start = ExactRatio::from_time(range.start).compare(&self.time);
-        let end = self.time.compare(&ExactRatio::from_time(range.end));
-        match self.side {
-            SampleSide::After => start.is_le() && end.is_lt(),
-            SampleSide::Before => start.is_lt() && end.is_le(),
+        ExactInterval {
+            start: ExactRatio::from_time(range.start),
+            end: ExactRatio::from_time(range.end),
         }
+        .contains(&self.time, self.side)
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]

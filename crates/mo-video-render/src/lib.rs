@@ -8,6 +8,7 @@ mod frame;
 mod geometry;
 mod layout;
 mod output;
+mod resources;
 mod sdr;
 mod yuv_output;
 pub use backend::*;
@@ -17,6 +18,7 @@ pub use coordinates::RasterCoordinates;
 pub use frame::{NormalizedFrame, normalize_frame};
 pub use geometry::*;
 pub use output::*;
+pub use resources::*;
 pub use sdr::OutputColorStats;
 pub use yuv_output::*;
 
@@ -31,6 +33,10 @@ pub enum RenderError {
     Budget,
     #[error("video render cancelled")]
     Cancelled,
+    #[error("video resource callback panicked")]
+    CallbackPanic,
+    #[error("video resource is stopped")]
+    Stopped,
     #[error(transparent)]
     Color(#[from] mo_color::rgb::RgbError),
     #[error(transparent)]

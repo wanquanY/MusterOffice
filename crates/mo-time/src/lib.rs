@@ -1,5 +1,7 @@
 //! Bounded exact arithmetic shared by office time domains. No clocks, I/O or media state.
+mod interval;
 mod wire;
+pub use interval::{ExactInterval, SampleSide};
 use mo_common::RationalTime;
 use num_bigint::BigInt;
 use std::cmp::Ordering;
@@ -14,6 +16,8 @@ pub enum TimeError {
     DivisionByZero,
     #[error("exact time cannot be represented by the requested wire unit")]
     Representation,
+    #[error("exact interval must have strictly increasing endpoints")]
+    Interval,
 }
 
 /// Equality preserves the input representation; compare() compares instants.
