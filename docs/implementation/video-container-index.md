@@ -71,4 +71,6 @@ python3 tools/verification/video-container-check.py \
 
 ## 后续集成
 
+当前 `e639172` 已进一步接入真实索引采样和访问候选，worker 协议为 profile 5，见[索引采样记录](video-indexed-source.md)。下面 profile 4 是前一阶段记录，下一次产品升级须使用审核配对的当前 SDK/worker。
+
 后续提交 `3c0cf1a` 已实现精确 edit mapping、明确的 raw decoder 模式及容器呈现范围/gap，并将私有 worker 协议升级为 profile 4，见[呈现时间记录](video-presentation-time.md)。上述 profile 3 数值是历史核验事实；当前检查脚本要求当前 profile。通用 codec 样本/画面准入与 Native/Browser 素材采样仍须接入。分片文件、其他容器、更多 timing 特征仍需独立实现和媒体语料验证。下一次产品升级须同时审查新的 20 包 SDK 和 profile 4 worker，经过独立发行消费及原权限/持久化集成验证，不能直接链接相邻源码。现有 Browser SDK 不包含该索引 Host。

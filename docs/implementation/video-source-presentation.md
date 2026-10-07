@@ -2,6 +2,8 @@
 
 2026-10-06 · `mo-video-source` 已实现有界源帧采样，已用真实 worker 接通工程编译计划；仍未完成画面合成或用户播放器。
 
+本页记录原连续区间档案。后续容器索引驱动的真实采样、开放 GOP 定位及当前协议见[索引采样记录](video-indexed-source.md)；下文数字和阶段性未完成项保留为历史记录。
+
 ## 范围与责任
 
 默认 crate 不加载原生库，只有精确时间、视频模型/编译合同和解码值。`VideoDecoder` 由平台提供，要求新实例从素材起点开始，帧按呈现顺序输出，seek 成功递增 generation。`native` feature 提供薄 `NativeVideoDecoder`，创建全新的 `mo-native-media` 会话；浏览器尚未提供该适配器。
@@ -44,7 +46,7 @@
 cargo test --offline --locked -p mo-video-source
 cargo check --offline --locked -p mo-video-source --target wasm32-unknown-unknown
 python3 tools/verification/current.py --groups media \
-  --ffmpeg-dir .codex-work/ffmpeg-native-final \
+  --ffmpeg-dir /absolute/path/to/current-verified-component \
   --output .codex-work/new-video-source-check
 ```
 

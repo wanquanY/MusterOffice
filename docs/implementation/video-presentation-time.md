@@ -71,6 +71,8 @@ python3 tools/verification/video-time-check.py \
 
 ## 下一层的责任
 
+后续 `e639172` 已实现索引驱动采样和两种顺序下的访问候选，新增目标 DTS/候选元数据，并升级到 worker profile 5，见[索引采样记录](video-indexed-source.md)。本页 profile 4 和数字保持为历史证据，当前脚本须使用当前协议的 bundle。
+
 映射结果描述容器应显示的样本，不等于所有 codec 都已证明“一压缩样本对应一画面”。目前实际证据只覆盖上述媒体。下一层采样须把 raw 模式、track 身份和每次实际解码的 PTS 绑定起来；缺帧或不支持的 codec 必须失败，不能把持续显示上一帧当成成功。既有 `VideoSampler` 仍面向宿主证明的连续区间，不能简单拿文件总时长填入它。
 
 继续将这一合同接入有界素材采样、产品授权导入、预览/导出；Browser Host 实现同一时钟及解码输出验证。独立 SDK 发行、产品 pin 配对升级和实际页面操作均需各自验证。完整剩余范围见[实施记录](video-editing-progress.md)与[验收矩阵](../design/video-editing/acceptance.md)。

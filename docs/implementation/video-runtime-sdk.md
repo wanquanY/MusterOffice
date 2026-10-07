@@ -8,7 +8,7 @@
 
 默认 features 为空；`native` 显式启用 worker adapter 和原生源采样；`gpu` 显式启用 GPU adapter。codec 不链接进 SDK，由独立固定 worker 接收 ReadAt/WriteAt 字节能力。宿主负责验证 release、资源权限、持久化、设备和候选发布。默认 facade 已通过 WASM 编译，这不是 WebCodecs/WebGPU 的实际运行证据。
 
-该次 `tools/video-sdk/rust.py --profile runtime` 对 19 个自有 crate 构建独立 registry 包，保留所有可选和平台生产依赖；不纳入 tests/bin/build script/codec binary。既有 `operations` 档案保留原 6 包闭包。验证器要求精确 profile/root、完整且无重复的包清单、源码 clean、实际文件/index 和每个 SHA-256。后续源码 `3c95c60` 因受限容器索引把 runtime 审核闭包增至 20 包并要求 worker profile 3；`3c0cf1a` 增加精确呈现映射及 raw decoder 时钟后进一步升为 profile 4。下文记录的已发行/已安装 19 包事实不被改写，新发行及产品 pin 升级另行验证，见[容器索引记录](video-container-index.md)和[呈现时间记录](video-presentation-time.md)。
+该次 `tools/video-sdk/rust.py --profile runtime` 对 19 个自有 crate 构建独立 registry 包，保留所有可选和平台生产依赖；不纳入 tests/bin/build script/codec binary。既有 `operations` 档案保留原 6 包闭包。验证器要求精确 profile/root、完整且无重复的包清单、源码 clean、实际文件/index 和每个 SHA-256。后续源码 `3c95c60` 因受限容器索引把 runtime 审核闭包增至 20 包并要求 worker profile 3；`3c0cf1a` 增加精确呈现映射及 raw decoder 时钟后进一步升为 profile 4；`e639172` 将索引映射接入实际采样与两种顺序的访问候选，升级到 profile 5，并公开 runtime 的纯计算 isobmff 模块。下文记录的已发行/已安装 19 包事实不被改写，新发行及产品 pin 升级另行验证，见[容器索引记录](video-container-index.md)、[呈现时间记录](video-presentation-time.md)和[索引采样记录](video-indexed-source.md)。
 
 独立消费者只复制 registry，不引用工作区路径。其 Cargo.lock 中自有包的版本/source/checksum 全部匹配 manifest；完整外部依赖图必须与源码锁图一致。产品消费仍需核对其自身更大的 Cargo 图，不能直接覆盖产品锁文件。
 
