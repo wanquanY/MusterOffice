@@ -1,6 +1,6 @@
 #![cfg(feature = "native")]
-#[path = "audio_movie/support.rs"]
-mod support;
+#[path = "audio_movie/stream_store.rs"]
+mod stream_store;
 use mo_video_runtime::{
     audio::*, audio_movie::*, isobmff::*, media::*, native::*, pcm::*, time::ExactRatio as R,
 };
@@ -10,7 +10,6 @@ use std::{
     io::{Read, Seek, SeekFrom},
     path::Path,
 };
-use support::{Memory, binding};
 
 fn reader(path: &Path) -> impl ReadAt + 'static {
     let mut file = File::open(path).unwrap();
@@ -90,7 +89,10 @@ fn actual_raw_aac_movie_mapping_equals_fresh_demuxer_pcm() {
         std::env::var("MO_MEDIA_TEST_BUNDLE_SHA256").expect("pin"),
     )
     .unwrap();
-    let (raw, raw_samples, id) = decode(&bundle, &fixture, DecodeTimeline::RawIsoBmff);
+    let (raw, canonical, id) =
+        stream_store::decode(&bundle, &fixture, &output.with_extension("tiles"));
+    let raw_binding = canonical.source().binding().unwrap().clone();
+    let tile_count = canonical.source().tile_count();
     let (demuxed, expected, other_id) = decode(&bundle, &fixture, DecodeTimeline::Demuxer);
     assert_eq!(id, other_id);
     let options = options();
@@ -148,10 +150,6 @@ fn actual_raw_aac_movie_mapping_equals_fresh_demuxer_pcm() {
         .map(|s| serde_json::json!({"movie":s.movie(),"media":s.media_origin(),"rate":s.rate()}))
         .collect::<Vec<_>>();
     index.close(&|| false).unwrap();
-    let mut raw_binding = binding(&raw);
-    raw_binding.digest = mo_video_runtime::common::Digest::from_sha256(
-        Sha256::digest(fs::read(&fixture).unwrap()).into(),
-    );
     let plan = MovieAudioPlan::new(
         &timeline,
         raw_binding.clone(),
@@ -163,14 +161,7 @@ fn actual_raw_aac_movie_mapping_equals_fresh_demuxer_pcm() {
     let mut movie_binding = raw_binding.clone();
     movie_binding.descriptor = plan.descriptor().clone();
     let asset = plan.asset().clone();
-    let memory = Memory {
-        binding: raw_binding,
-        asset: raw.asset().clone(),
-        samples: raw_samples,
-        requests: vec![],
-        broken: false,
-    };
-    let mut source = MovieAudioResource::new(plan, movie_binding.clone(), memory).unwrap();
+    let mut source = MovieAudioResource::new(plan, movie_binding.clone(), canonical).unwrap();
     let mut actual = vec![];
     let mut first = 0;
     while first < asset.available.end {
@@ -189,10 +180,14 @@ fn actual_raw_aac_movie_mapping_equals_fresh_demuxer_pcm() {
     }
     assert_eq!(asset.available.end, 144000);
     assert_eq!(demuxed.asset().available.end, 144000);
-    assert_eq!(
-        actual, expected,
-        "raw mapped PCM differs from fresh edit-aware decode"
-    );
+    assert_eq!(actual.len(), expected.len());
+    for (index, (actual, expected)) in actual.iter().zip(&expected).enumerate() {
+        assert_eq!(
+            actual.to_bits(),
+            expected.to_bits(),
+            "mapped PCM bits differ at {index}"
+        );
+    }
     for first in [143999, 1000, 60000, 0, 80000] {
         let end = (first + 719).min(asset.available.end);
         let block = source
@@ -204,7 +199,14 @@ fn actual_raw_aac_movie_mapping_equals_fresh_demuxer_pcm() {
                 &|| false,
             )
             .unwrap();
-        assert_eq!(block.samples(), &expected[first as usize..end as usize]);
+        assert_eq!(block.frames(), (end - first) as usize);
+        assert!(
+            block
+                .samples()
+                .iter()
+                .zip(&expected[first as usize..end as usize])
+                .all(|(a, b)| a.to_bits() == b.to_bits())
+        );
     }
     let bytes: Vec<u8> = actual.iter().flat_map(|v| v.to_le_bytes()).collect();
     let report = serde_json::json!({
@@ -215,7 +217,9 @@ fn actual_raw_aac_movie_mapping_equals_fresh_demuxer_pcm() {
         "movieEnd":timeline.end(),"edits":edits,"pcmSha256":format!("{:x}",Sha256::digest(bytes)),
         "reference":"fresh pinned worker demuxer decode, equal f32 bits",
         "filterBytes":source.retained_filter_bytes(),"randomWindows":5,
-        "scope":"actual decoder and exact edit mapping; fixture PCM memory host, not production playback"
+        "canonicalTiles":tile_count,"tileReads":source.raw_mut().store_mut().reads,
+        "rawDecodePasses":1,"completionRecordRestored":true,
+        "scope":"actual decoder, EOF-sealed file-backed PCM, saved-record restore and exact movie mapping; fixture host, not product persistence/playback"
     });
     fs::write(output, serde_json::to_vec_pretty(&report).unwrap()).unwrap();
 }

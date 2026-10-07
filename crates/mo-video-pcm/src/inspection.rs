@@ -24,6 +24,19 @@ impl Default for PcmInspectLimits {
         }
     }
 }
+impl PcmInspectLimits {
+    pub(crate) fn validate(&self) -> Result<()> {
+        if self.max_decode_frames == 0
+            || self.max_decode_frames > 100_000_000
+            || self.max_sample_frames == 0
+            || self.max_sample_frames > i64::MAX as u64
+            || !(128..=4096).contains(&self.exact_bits)
+        {
+            return Err(PcmError::Invalid("PCM inspection limits"));
+        }
+        Ok(())
+    }
+}
 /// Bounded validation of an actual continuous decode from its fresh start to
 /// EOF. Retains no PCM. A seek, hole, overlap, changed format, invalid payload,
 /// cancellation or exceeded budget poisons the scan, so a prefix cannot later
@@ -49,14 +62,7 @@ impl PcmInspection {
         if generation == 0 {
             return Err(PcmError::Invalid("decoder generation"));
         }
-        if limits.max_decode_frames == 0
-            || limits.max_decode_frames > 100_000_000
-            || limits.max_sample_frames == 0
-            || limits.max_sample_frames > i64::MAX as u64
-            || !(128..=4096).contains(&limits.exact_bits)
-        {
-            return Err(PcmError::Invalid("PCM inspection limits"));
-        }
+        limits.validate()?;
         Ok(Self {
             generation,
             limits,
@@ -85,6 +91,17 @@ impl PcmInspection {
         order: ByteOrder,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PcmBlock> {
+        self.observe_bounded(frame, order, self.limits.frame.max_bytes, cancelled)
+    }
+    /// The streaming assembler also charges its existing carry before allowing
+    /// a normalized frame allocation. This can only tighten configured limits.
+    pub(crate) fn observe_bounded(
+        &mut self,
+        frame: &DecodedFrame,
+        order: ByteOrder,
+        max_bytes: usize,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<PcmBlock> {
         if self.failed {
             return Err(PcmError::Invalid("PCM inspection failed"));
         }
@@ -99,7 +116,16 @@ impl PcmInspection {
             Some(clock) => clock.clone(),
             None => DecodedClock::from_first(&frame.info, self.limits.exact_bits)?,
         };
-        let pcm = clock.normalize(frame, order, self.generation, self.limits.frame, cancelled)?;
+        let pcm = clock.normalize(
+            frame,
+            order,
+            self.generation,
+            PcmLimits {
+                max_bytes: self.limits.frame.max_bytes.min(max_bytes),
+                ..self.limits.frame
+            },
+            cancelled,
+        )?;
         if pcm.first_frame() != self.samples {
             return Err(PcmError::Invalid("discontinuous PCM decode"));
         }
@@ -134,6 +160,32 @@ impl PcmInspection {
     }
 }
 impl InspectedPcm {
+    /// Private reconstruction path for an authenticated host completion record;
+    /// this validates structural coverage, not provenance of the host's bytes.
+    pub(crate) fn restore(
+        asset: AudioAsset,
+        decode_frames: u64,
+        limits: PcmInspectLimits,
+    ) -> Result<Self> {
+        limits.validate()?;
+        if !(8000..=384000).contains(&asset.sample_rate)
+            || asset.available.first != 0
+            || asset.available.end <= 0
+            || asset.available.end as u64 > limits.max_sample_frames
+            || decode_frames == 0
+            || decode_frames > limits.max_decode_frames
+            || decode_frames > asset.available.end as u64
+        {
+            return Err(PcmError::Invalid("PCM completion record extent"));
+        }
+        asset.sample_zero.check_budget(limits.exact_bits)?;
+        let value = Self {
+            asset,
+            decode_frames,
+        };
+        value.decoded_range(limits.exact_bits)?;
+        Ok(value)
+    }
     pub fn asset(&self) -> &AudioAsset {
         &self.asset
     }

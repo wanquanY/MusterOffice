@@ -2,6 +2,7 @@
 //! ownership, permission checks and atomic publication belong to the host.
 mod builder;
 mod clock;
+mod encoding;
 mod inspection;
 mod reader;
 mod resource;
@@ -9,12 +10,14 @@ mod retime;
 pub use resource::*;
 pub use retime::*;
 mod source;
+mod stream;
 pub use builder::*;
 pub use inspection::*;
 use mo_common::{ByteLength, Digest, Ticks};
 pub use reader::*;
 use serde::{Deserialize, Serialize};
 pub use source::*;
+pub use stream::*;
 
 pub const PROFILE: &str = "musteroffice.pcm.f32le-tiles/1-draft";
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]

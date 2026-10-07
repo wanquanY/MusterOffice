@@ -1,7 +1,6 @@
-use crate::{PcmError, PcmSource, PcmTile, PcmTileRef, Result, bytes, check};
-use mo_common::{ByteLength, Digest, Ticks};
+use crate::{PcmError, PcmSource, PcmTile, PcmTileRef, Result, check};
+use mo_common::{ByteLength, Ticks};
 use mo_video_audio::PcmBlock;
-use sha2::{Digest as _, Sha256};
 use std::sync::Arc;
 
 #[derive(Debug, Clone, Copy)]
@@ -162,17 +161,7 @@ impl PcmTileBuilder {
         if self.carry.len() != frames as usize * self.source.asset().layout.len() {
             return Err(PcmError::Invalid("PCM tile assembly length"));
         }
-        let mut data = bytes(self.carry.len() * 4)?;
-        let mut hash = Sha256::new();
-        for chunk in self.carry.chunks(4096) {
-            check(cancelled)?;
-            let begin = data.len();
-            for value in chunk {
-                data.extend_from_slice(&value.to_le_bytes());
-            }
-            hash.update(&data[begin..]);
-        }
-        let sha256 = Digest::from_sha256(hash.finalize().into());
+        let (data, sha256) = crate::encoding::encode(&self.carry, cancelled)?;
         let reference = PcmTileRef {
             source: self.source.identity().clone(),
             index: self.next_tile,
