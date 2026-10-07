@@ -70,8 +70,8 @@ python3 tools/verification/video-indexed-check.py \
   --output .codex-work/new-indexed-source-evidence
 ```
 
-`current.py` media 分组仍为 10 步，最后一步改为 `video-indexed-source`：先执行完整实际时间/像素 oracle，再执行索引采样，不重复列为两个顶层步骤。本次未宣称跑过整个 media group 或远程 CI。
+该次 `current.py` media 分组为 10 步，最后一步改为 `video-indexed-source`：先执行完整实际时间/像素 oracle，再执行索引采样，不重复列为两个顶层步骤。本次未宣称跑过整个 media group 或远程 CI。
 
-## 仍需接通
+## 后续连接
 
-合成器当前 `ResolvedMedia` 还使用 `TimeRange` 且要求实际图片，需要接入精确覆盖区间和明确的空白结果，不能给空白伪造素材帧。随后把 sampler 接入渲染/导出资源提供方，经独立 SDK 消费升级产品授权素材 Host、预览/导出 RPC 与播放器。Browser I/O/decoder、完整 codec/损坏媒体策略、图片/字体、音频播放、UI 和全部验收仍按[实施记录](video-editing-progress.md)与[验收矩阵](../design/video-editing/acceptance.md)推进。
+上述采样提交之后，合成器已接入共用精确区间和明确空白结果，sampler 已通过统一资源提供方连通 CPU 预览和真实导出，见[索引画面合成记录](video-indexed-composition.md)。后续仍需升级产品授权素材 Host、预览/导出 RPC 与播放器。Browser I/O/decoder、完整 codec/损坏媒体策略、图片/字体、音频播放、UI 和全部验收仍按[实施记录](video-editing-progress.md)与[验收矩阵](../design/video-editing/acceptance.md)推进。
