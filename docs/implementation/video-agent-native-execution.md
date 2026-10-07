@@ -1,6 +1,6 @@
 # 原 Agent 调用与原生编码的实际连接
 
-2026-10-08。产品提交 `951d543beebeeffe8578062fc7e692c190c77d19`。接续[原运行归属与原子提交](video-product-export-tool.md)。Musterwork 的可信 Agent 执行端口已实际串联固定 SDK 工程、真实 VFR/H.264/AAC 素材、原生编码、候选持久化及原 Artifact/Tool 原子提交。公开工具/技能、原物理执行器装配和正常对话 UI 尚未完成，整个目标仍为执行中。
+2026-10-08。产品提交 `951d543beebeeffe8578062fc7e692c190c77d19`。接续[原运行归属与原子提交](video-product-export-tool.md)。Musterwork 的可信 Agent 执行端口已实际串联固定 SDK 工程、真实 VFR/H.264/AAC 素材、原生编码、候选持久化及原 Artifact/Tool 原子提交。下文前半记录该可信端口增量；后继产品提交 `a68693cfa` 已完成正式工具/技能和原物理执行器装配，见本页最后一节。正常对话 UI 尚未验收，整个目标仍为执行中。
 
 ## 责任和结果
 
@@ -19,3 +19,14 @@ Agent 导出准入与启动在一个 SQLite writer 事务内完成，原调用�
 独立 FFmpeg 整片解码检查真实正式文件的 75 帧、128×96、3 秒、48 kHz 双声道和 144000 authored samples，AAC 解码 padding 独立计数。本轮 75 项不同测试通过（36 项 Agent/工程/导出组合、30 项原 SQLite、9 项手动实际导出），Device 编译与生产库 strict Clippy 通过；真实 Agent 正式文件、手动正式文件及候选各自通过独立整片解码。精确命令、结果、源码及日志摘要在产品 `.codex-work/video-agent-execution-report.json`；设计说明在产品 `docs/architecture/native-video-agent-execution.md`。
 
 本增量没有修改 Office 计算代码、固定 SDK/worker/PPT pin、稳定 `v0.1.0` 或任何外部发行。下一步是原 CooperativeExecution、不可变公开工具/技能以及正常消息卡片/右侧播放器的产品连接。长素材、大对象、Browser 媒体/导出、全部编辑和生成/Admin/计费的完整验收仍须完成。
+
+
+## 正式工具和原执行器（后继增量）
+
+产品提交 `a68693cfa` 增加 `artifact.video.export@1` / `video_export`，device.v72 追加目录、技能 v4 由 skill release v55 激活。模型只提交精确工程版本、标题及常用输出选项；Actor、原 Invocation、导出身份、writer、SDK/worker、预算和文件路径都由宿主持有。仅更新 musteroffice 开发验收 profile；稳定 active heads 与全部历史工具/技能保持原值。
+
+Device 按每次原调用建立结果元数据内容权限；Agent 与手动驻留导出共享真实原生执行器和容量，原后台不接管 Tool。原 `CooperativeExecution` 报告实际进度，保留首次停止原因：用户取消持久取消，进程退出等保留 Interrupted。发布被阻塞时仍持有物理资源，停止后等待原操作退出；成功仍由原 Artifact/Tool 原子事务提交。
+
+实际公开合同测试走原 `MusterworkToolExecutor`、真实 Dispatcher、SQLite liveness reactor、固定原生编码器：完成成片与 FileReference；占满计算额度后重放相同结果、不重新编码；编码后发布前的原用户取消阻止 Artifact 发布并在退出后释放资源。素材授权使用受控文件夹具，没有真实模型推理。23 项不同测试通过（14 项原生工程/导出、4 项目录、2 项停止原因、3 项 Device 装配），生产库 strict Clippy 通过。独立整片解码验证75帧、3秒、双声道48 kHz与原音频对照，非正常对话界面或物理播放验收。
+
+证据保存在产品 `.codex-work/video-public-export-report.json`，详细合同在 `docs/architecture/native-video-public-export.md`。本次没有修改 Office 计算源码和SDK/worker/PPT固定版本，也没有修改稳定标签或外部发布。继续实施手动导出服务、简洁文件卡片/右侧播放器、Browser 本地媒体/导出、全部编辑与生成/Admin/计费完整验收。
