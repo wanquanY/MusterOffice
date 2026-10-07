@@ -8,12 +8,15 @@ import {
   type BrowserMediaLimits, type BrowserMediaInfo, type BrowserTrack,
   type ConsumeVideo, type ConsumeAudio, type ExactRatio, type TimeSample,
 } from './contract.js';
-import { compare, contains, interval, lookupSeconds } from './time.js';
+import { compare, contains, fromSeconds, interval, lookupSeconds } from './time.js';
 import { probeTrack } from './probe.js';
 import { audioView, videoView } from './samples.js';
 import { BudgetedVideoStream } from './video-stream.js';
 import { BrowserVideoBudget } from './video-budget.js';
 import { BrowserAudioCursor } from './audio-cursor.js';
+import { BrowserMovieIndex } from './movie-index.js';
+import { IndexedVideoPackets } from './movie-packets.js';
+import type { BrowserMediaIndexRuntime, MovieVideoInfo, MovieVideoSelection } from './movie-contract.js';
 
 /** Media I/O only, intended for a host-owned terminable Worker. The host admits
  * immutable bytes and owns deadlines across Worker stalls. No URL, paths, storage,
@@ -28,7 +31,8 @@ export class BrowserMediaInput {
   private infoValue: BrowserMediaInfo | undefined;
   private detach: (() => void) | undefined;
   private audioCursor: { id: number; cursor: BrowserAudioCursor } | undefined;
-  private constructor(blob: Blob, private readonly limits: BrowserMediaLimits, private readonly budget: BrowserVideoBudget) {
+  private movieIndex: BrowserMovieIndex | undefined;
+  private constructor(private readonly blob: Blob, private readonly limits: BrowserMediaLimits, private readonly budget: BrowserVideoBudget) {
     this.input = new Input({
       formats: [MP4, WEBM, WAVE, MP3, OGG, FLAC],
       source: new BlobSource(blob, {
@@ -37,7 +41,7 @@ export class BrowserMediaInput {
       }),
     });
   }
-  static async open(blob: Blob, options: { limits?: Partial<BrowserMediaLimits>; signal?: AbortSignal; videoBudget?: BrowserVideoBudget } = {}): Promise<BrowserMediaInput> {
+  static async open(blob: Blob, options: { limits?: Partial<BrowserMediaLimits>; signal?: AbortSignal; videoBudget?: BrowserVideoBudget; mediaIndexRuntime?: BrowserMediaIndexRuntime } = {}): Promise<BrowserMediaInput> {
     const limits = { ...DEFAULT_MEDIA_LIMITS, ...options.limits };
     for (const value of Object.values(limits)) requireMedia(Number.isSafeInteger(value) && value > 0, 'invalid_request');
     requireMedia(blob instanceof Blob && blob.size > 0 && blob.size <= limits.maxFileBytes, 'resource_limit');
@@ -50,6 +54,7 @@ export class BrowserMediaInput {
     if (options.signal?.aborted) abort();
     try {
       await owner.run(async () => {
+        if (options.mediaIndexRuntime) owner.movieIndex = BrowserMovieIndex.open(blob, options.mediaIndexRuntime, limits);
         const tracks = await owner.input.getTracks();
         requireMedia(tracks.length > 0 && tracks.length <= limits.maxTracks, 'resource_limit');
         for (const track of tracks) {
@@ -64,6 +69,11 @@ export class BrowserMediaInput {
     } catch (error) { owner.close(); throw error; }
   }
   get info(): BrowserMediaInfo { this.check(); return structuredClone(this.infoValue!); }
+  /** Movie clock metadata is deliberately separate from the legacy packet clock. */
+  movieVideoInfo(id: number): MovieVideoInfo {
+    this.check(); this.video(id); requireMedia(this.movieIndex, 'invalid_request');
+    return this.movieIndex.timing(id);
+  }
   private check(): void { if (this.lifetime.signal.aborted) throw this.lifetime.signal.reason; }
   private async run<T>(body: () => Promise<T>, signal?: AbortSignal): Promise<T> {
     this.check();
@@ -114,6 +124,30 @@ export class BrowserMediaInput {
         if (!(await this.borrow(sample, () => run(sample)))) break;
       }
     } finally { this.iterators.delete(samples); await samples.return(); }
+  }
+  /** Shared Rust movie selection followed by raw sample-table decoding. A gap
+   * never starts a decoder. Missing decoded coverage is an error, not a gap and
+   * never a held prior frame. The borrowed callback receives the movie span. */
+  movieVideoAt(id: number, request: TimeSample, consume: ConsumeVideo, signal?: AbortSignal): Promise<MovieVideoSelection> {
+    request = structuredClone(request);
+    return this.run(async () => {
+      const { track, info } = this.video(id); requireMedia(this.movieIndex, 'invalid_request');
+      const selection = this.movieIndex.select(id, request);
+      if (selection.type !== 'sample') return selection;
+      const packets = await IndexedVideoPackets.open(this.blob, this.movieIndex, track, selection, this.limits.maxEncodedPacketBytes, this.lifetime.signal);
+      const stream = await BudgetedVideoStream.open(track, 0, this.budget, this.limits.maxEncodedPacketBytes, this.limits.maxPixels, this.lifetime.signal, packets);
+      for await (const sample of stream) {
+        const ticks = BigInt(fromSeconds(sample.timestamp, info.timescale).ticks), target = BigInt(selection.rawStart);
+        requireMedia(ticks <= target, 'invalid_timing');
+        if (ticks < target) continue;
+        await this.borrow(sample, async () => {
+          requireMedia(sample.visibleRect.width * sample.visibleRect.height <= this.limits.maxPixels, 'resource_limit');
+          await consume(videoView(sample, () => this.checkBorrowed(sample), this.budget, stream.surfaceBytes), structuredClone(selection.movie));
+        });
+        return selection;
+      }
+      throw new BrowserMediaError('invalid_timing');
+    }, signal);
   }
   /** The prior sample is not stretched into a gap or past EOF. Exact one-sided
    * selection is taken directly from the Rust frame plan's TimeSample. */
@@ -191,6 +225,7 @@ export class BrowserMediaInput {
     for (const samples of this.iterators) void samples.return().catch(() => {});
     this.iterators.clear();
     void this.audioCursor?.cursor.close().catch(() => {}); this.audioCursor = undefined;
+    this.movieIndex?.close(); this.movieIndex = undefined;
     this.input.dispose();
   }
 }

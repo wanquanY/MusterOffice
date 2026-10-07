@@ -2,7 +2,7 @@ import { type InputVideoTrack, type VideoSample, type EncodedPacket } from 'medi
 import { requireMedia } from './contract.js';
 import { openPlatformVideo, videoCapacity, type VideoCapacity } from './mediabunny-platform.js';
 import { BrowserVideoBudget } from './video-budget.js';
-import { AdmittedVideoPackets } from './video-packets.js';
+import { AdmittedVideoPackets, type VideoPackets } from './video-packets.js';
 
 /** A lease is reserved BEFORE configuring a decoder. Every submitted access unit
  * retains an output credit through decode, reorder, queued output and consumption.
@@ -20,10 +20,12 @@ export class BudgetedVideoStream implements AsyncIterable<VideoSample> {
   private active: VideoSample | undefined;
   private detach: (() => void) | undefined;
   private tasks = 1;
+  private settle: () => void = () => {};
+  private readonly settled = new Promise<void>(resolve => { this.settle = resolve; });
   private readonly packetLeases = new Map<string, (() => void)[]>();
   private constructor(private readonly capacity: number, readonly surfaceBytes: number, private readonly codec: VideoCapacity,
     private readonly maxPacketBytes: number, private readonly timescale: number, private readonly budget: BrowserVideoBudget) {}
-  static async open(track: InputVideoTrack, timestamp: number, budget: BrowserVideoBudget, maxPacketBytes: number, maxPixels: number, signal: AbortSignal): Promise<BudgetedVideoStream> {
+  static async open(track: InputVideoTrack, timestamp: number, budget: BrowserVideoBudget, maxPacketBytes: number, maxPixels: number, signal: AbortSignal, source?: VideoPackets): Promise<BudgetedVideoStream> {
     signal.throwIfAborted();
     const info = await videoCapacity(track);
     requireMedia(info.pixels <= maxPixels, 'resource_limit');
@@ -39,7 +41,7 @@ export class BudgetedVideoStream implements AsyncIterable<VideoSample> {
     stream.detach = () => signal.removeEventListener('abort', abort);
     if (signal.aborted) abort();
     try {
-      const packets = new AdmittedVideoPackets(track, maxPacketBytes, stream.timescale);
+      const packets = source ?? new AdmittedVideoPackets(track, maxPacketBytes, stream.timescale);
       const first = await packets.first(timestamp);
       signal.throwIfAborted();
       requireMedia(first, 'unsupported_media');
@@ -64,7 +66,7 @@ export class BudgetedVideoStream implements AsyncIterable<VideoSample> {
       this.pending--; this.ready.push(sample); this.wake();
     } catch (error) { sample.close(); this.close(error); }
   }
-  private async pump(packets: AdmittedVideoPackets, initial: EncodedPacket): Promise<void> {
+  private async pump(packets: VideoPackets, initial: EncodedPacket): Promise<void> {
     let packet: EncodedPacket | null = initial;
     while (packet && !this.closed) {
       while (this.reserved >= this.capacity && !this.closed) await this.changed();
@@ -107,7 +109,13 @@ export class BudgetedVideoStream implements AsyncIterable<VideoSample> {
         } else if (this.done) return;
         else await this.changed();
       }
-    } finally { this.close(); }
+    } finally {
+      this.close();
+      // A completed seek must retire its bounded pending read before a serial
+      // successor reserves the same shared capacity. Cancellation still closes
+      // the codec immediately; the host can terminate a stalled source Worker.
+      await this.settled;
+    }
   }
   close(error?: unknown): void {
     if (this.closed) return;
@@ -132,6 +140,6 @@ export class BudgetedVideoStream implements AsyncIterable<VideoSample> {
     this.packetLeases.clear();
   }
   private releaseIfClosed(): void {
-    if (this.closed && this.tasks === 0) { this.release?.(); this.release = undefined; }
+    if (this.closed && this.tasks === 0) { this.release?.(); this.release = undefined; this.settle(); }
   }
 }

@@ -1,0 +1,91 @@
+import { createMediaIndexRuntime } from '/index-sdk/index.mjs';
+import { BrowserMediaInput, BrowserVideoBudget } from '/media-sdk/index.mjs';
+
+// Test-only platform instrumentation; it does not participate in production IO.
+const stats = { configured: 0, liveDecoders: 0, liveFrames: 0, peakFrames: 0, chunks: 0 };
+const Platform = VideoDecoder;
+globalThis.VideoDecoder = new Proxy(Platform, { construct(Target, args) {
+  const config = args[0];
+  const decoder = new Target({ ...config, output(frame) {
+    stats.liveFrames++; stats.peakFrames = Math.max(stats.peakFrames, stats.liveFrames);
+    let closed = false; const close = frame.close.bind(frame);
+    frame.close = () => { if (!closed) { closed = true; stats.liveFrames--; } close(); };
+    config.output(frame);
+  } });
+  stats.configured++; stats.liveDecoders++;
+  let closed = false; const close = decoder.close.bind(decoder), decode = decoder.decode.bind(decoder);
+  decoder.close = () => { if (!closed) { closed = true; stats.liveDecoders--; } close(); };
+  decoder.decode = chunk => { stats.chunks++; decode(chunk); };
+  return decoder;
+} });
+
+async function run(data) {
+  const runtime = await createMediaIndexRuntime(data.module), budget = new BrowserVideoBudget(16 << 20);
+  const results = [];
+  for (const fixture of data.fixtures) {
+    const media = await BrowserMediaInput.open(fixture.blob, { mediaIndexRuntime: runtime, videoBudget: budget });
+    const id = fixture.id, info = media.movieVideoInfo(id), rows = [];
+    try {
+      const reference = new Map(fixture.frames.map((frame, i) => [String(frame.pts), i])), fingerprints = new Map();
+      for (const request of fixture.requests) {
+        let actual, span, called = 0; const before = stats.configured;
+        const selection = await media.movieVideoAt(id, request.body, async (sample, interval) => {
+          called++; span = interval;
+          actual = new Uint8Array(sample.width * sample.height * 4); await sample.copyRgba(actual);
+        });
+        let mae = null;
+        if (actual) {
+          const frame = reference.get(selection.rawStart);
+          if (frame === undefined) throw Error('selected frame missing from independent raw oracle');
+          const pixels = new Uint8Array(fixture.pixels, frame * actual.length, actual.length);
+          let sum = 0; for (let i = 0; i < actual.length; i++) sum += Math.abs(actual[i] - pixels[i]);
+          mae = sum / actual.length;
+          const digest = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', actual)), byte => byte.toString(16).padStart(2, '0')).join('');
+          if (fingerprints.has(selection.rawStart)) {
+            if (fingerprints.get(selection.rawStart) !== digest) throw Error('same raw frame changed across movie edits/seeks');
+          } else {
+            // A small absolute error alone can accept a neighbouring frame.
+            // Require the selected independent frame to be the closest image.
+            for (let other = 0; other < fixture.frames.length; other++) {
+              if (other === frame) continue;
+              const candidate = new Uint8Array(fixture.pixels, other * actual.length, actual.length);
+              let delta = 0;
+              for (let p = 0; p < actual.length && delta <= sum; p++) delta += Math.abs(actual[p] - candidate[p]);
+              if (delta < sum) throw Error('a different raw frame is a closer pixel match');
+            }
+            fingerprints.set(selection.rawStart, digest);
+          }
+        }
+        rows.push({ selection, called, span, mae, configured: stats.configured - before });
+      }
+    } finally { media.close(); }
+    results.push({ info, rows });
+  }
+  // Existing shared admission also protects indexed reads before codec setup.
+  const fixture = data.fixtures[0], request = fixture.requests.find((_, i) => results[0].rows[i].selection.type === 'sample');
+  const limited = await BrowserMediaInput.open(fixture.blob, { mediaIndexRuntime: runtime, limits: { maxEncodedPacketBytes: 1 } });
+  let rejected; const before = stats.configured;
+  try { await limited.movieVideoAt(fixture.id, request.body, () => { throw Error('oversized packet consumed'); }); }
+  catch (error) { rejected = error.code; } finally { limited.close(); }
+  const packetLimit = { rejected, configured: stats.configured - before };
+  const broken = await BrowserMediaInput.open(data.missingIdr, { mediaIndexRuntime: runtime, videoBudget: budget });
+  const brokenBefore = stats.configured; let missing;
+  try { await broken.movieVideoAt(fixture.id, request.body, () => { throw Error('missing IDR consumed'); }); }
+  catch (error) { missing = error.code; } finally { broken.close(); }
+  const missingIdr = { rejected: missing, configured: stats.configured - brokenBefore };
+  const expiring = await BrowserMediaInput.open(fixture.blob, { mediaIndexRuntime: runtime, videoBudget: budget, limits: { operationDeadlineMs: 1000 } });
+  let deadline;
+  try { await expiring.movieVideoAt(fixture.id, request.body, () => new Promise(() => {})); }
+  catch (error) { deadline = error.code; } finally { expiring.close(); }
+  const cancelling = await BrowserMediaInput.open(fixture.blob, { mediaIndexRuntime: runtime, videoBudget: budget });
+  const controller = new AbortController(); let cancelled;
+  try { await cancelling.movieVideoAt(fixture.id, request.body, () => controller.abort(), controller.signal); }
+  catch (error) { cancelled = error.code; } finally { cancelling.close(); }
+  for (let i = 0; i < 100 && (budget.usedBytes || stats.liveFrames || stats.liveDecoders); i++) await new Promise(resolve => setTimeout(resolve, 10));
+  return { results, stats, budget: { used: budget.usedBytes, peak: budget.peakBytes, capacity: budget.capacityBytes },
+    packetLimit, missingIdr, deadline, cancelled };
+}
+self.onmessage = async ({ data }) => {
+  try { self.postMessage({ ok: true, ...await run(data) }); }
+  catch (error) { self.postMessage({ ok: false, error: String(error), stack: error.stack, stats }); }
+};

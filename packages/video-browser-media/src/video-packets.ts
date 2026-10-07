@@ -1,9 +1,16 @@
 import { EncodedPacketSink, type EncodedPacket, type InputVideoTrack } from 'mediabunny';
 import { requireMedia } from './contract.js';
 
+/** Packet source owns container addressing. The bounded decoder owns allocation
+ * and lifecycle; it must not infer a demuxer's timestamp convention. */
+export interface VideoPackets {
+  first(timestamp: number): Promise<EncodedPacket | null>;
+  next(previous: EncodedPacket): Promise<EncodedPacket | null>;
+}
+
 /** Admit the declared packet size before requesting compressed bytes. Key flags
  * from a container are candidates, not proof; verify only after bounded loading. */
-export class AdmittedVideoPackets {
+export class AdmittedVideoPackets implements VideoPackets {
   private readonly sink: EncodedPacketSink;
   constructor(private readonly track: InputVideoTrack, private readonly maxBytes: number, private readonly timescale: number) {
     this.sink = new EncodedPacketSink(track);

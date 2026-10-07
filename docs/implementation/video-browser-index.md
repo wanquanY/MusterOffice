@@ -61,4 +61,4 @@ node tools/verification/media-index-browser-check.mjs BROWSER NEW_SDK PIN target
 
 此组件完成 **movie→原始时间/包位置** 的计算，不等于浏览器 codec 已按该映射呈现画面。当前第三方 MP4 demuxer 只采用首个有效 edit，原 `BrowserMediaInput` 的 packet clock 已带该 offset；接线时必须使用原始包身份/时间桥接并验证实际输出，不能把新 movie 映射再叠加到已偏移的时间上。
 
-下一步是让浏览器媒体层消费这些原始包与精确选帧结果，随后接入共享 Rust 合成/音频、正式工作台与 OPFS 导出。多 codec/容器、完整音频 priming/padding、HDR、长时性能、四类浏览器及产品整体验收仍独立推进。此开发组件未公开发行，不更改 v0.1.0。
+后续浏览器媒体层已消费原始包与精确选帧结果，并通过实际解码，见[影片解码接线](video-browser-movie.md)。共享 Rust 合成/音频、正式工作台与 OPFS 导出继续实施。多 codec/容器、完整音频 priming/padding、HDR、长时性能、四类浏览器及产品整体验收仍独立推进。此开发组件未公开发行，不更改 v0.1.0。
