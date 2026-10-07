@@ -38,7 +38,7 @@
 
 当前产品增量：`f7e585669` 已通过真实已认证本地服务、原生 worker、Electron、共享 Vue 和 AudioWorklet 的隔离联合播放检查；`60dccdee3` 已接通 Native/Browser 持久连续撤销重做及 Agent/人工共享历史。见[最新播放证据](video-product-preview.md#真实原生联合检查)和[共享历史证据](video-product-history.md)。下列各阶段中的“待接入”描述保留其当时边界，以本段和工作包表判断最新状态。
 
-`276e2ab26` 已通过真实 SQLite 工程到本地硬件 H.264/AAC 的冻结版本导出候选，包含原权限、共享媒体源、实际输出校验、取消/物理回收和独立整片解码；详见[产品导出候选证据](video-product-export.md)。后续持久任务存储与启动恢复已接通，详见[导出生命周期](video-product-export-tasks.md)；[真实候选持久保存与恢复](video-product-export-content.md)也已接通，resident 调度、正式文件发布与消息卡片仍待接通。
+`276e2ab26` 已通过真实 SQLite 工程到本地硬件 H.264/AAC 的冻结版本导出候选，包含原权限、共享媒体源、实际输出校验、取消/物理回收和独立整片解码；详见[产品导出候选证据](video-product-export.md)。后续持久任务存储与启动恢复已接通，详见[导出生命周期](video-product-export-tasks.md)；[真实候选持久保存与恢复](video-product-export-content.md)也已接通，[手动正式文件原子发布](video-product-export-publication.md)内部端口随后接通；resident 调度、Agent 导出、消息卡片和公开 UI 仍待接线。
 
 ### 容器音频时间映射
 

@@ -24,4 +24,4 @@ SQLite schema 201 将状态、尝试结束与 outbox 放在同一短事务中。
 
 持久生命周期存储已接入 Runtime 启动恢复，可信配方与候选持久保存的后续实现见下文；resident 调度、原计算进度与任务的自动衔接、Agent/RPC/UI 尚待接入。存储不开放任意 Completed 状态，候选也不能变成虚假成功回执。
 
-后续增量已接通[按尝试预留输出、流式持久化及候选恢复](video-product-export-content.md)。原子 Artifact/文件引用/任务回执、文件卡片、普通右侧播放器与下载仍待接通。实际后台任务、全应用重启、会话状态与完整导出端到端另行验证。Browser、图片/多容器、完整编辑、生成/Admin/计费及全部最终验收目标保持不变。
+后续增量已接通[按尝试预留输出、流式持久化及候选恢复](video-product-export-content.md)。后续[手动原子 Artifact/文件引用/任务回执内部端口](video-product-export-publication.md)已接通，文件卡片、普通右侧播放器与下载仍待接线。实际后台任务、全应用重启、会话状态与完整导出端到端另行验证。Browser、图片/多容器、完整编辑、生成/Admin/计费及全部最终验收目标保持不变。

@@ -24,4 +24,4 @@ SQLite schema 202 在原内容 owner 下按导出尝试预留唯一输出，长�
 
 ## 仍需接通
 
-resident 调度与原计算 watch 进度、原 Agent Invocation 归属、原子 Artifact/文件引用/Completed、一次性文件卡片、RPC/新工具版本及 UI 尚未交付。当前沿用原内容系统 `264 MiB + 12 bytes` 单对象上限；长片需在原系统分离流式与内存读取额度，不能直接增大所有 Vec 上限。生成/Admin/计费、Browser、完整编辑和全部本地验收目标保持不变。
+后续[手动原子 Artifact/文件引用/Completed 内部端口](video-product-export-publication.md)已实现；resident 调度与原计算 watch 进度、原 Agent Invocation 归属、一次性文件卡片、RPC/新工具版本及 UI 尚待接线。当前沿用原内容系统 `264 MiB + 12 bytes` 单对象上限；长片需在原系统分离流式与内存读取额度，不能直接增大所有 Vec 上限。生成/Admin/计费、Browser、完整编辑和全部本地验收目标保持不变。
