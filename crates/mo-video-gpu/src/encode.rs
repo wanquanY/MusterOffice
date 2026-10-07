@@ -1,13 +1,13 @@
 use crate::execution::Execution;
 use mo_video_compile::VideoFramePlan;
 use mo_video_render::{
-    CompositionResult, RenderError, RenderLimits, Result, Sampling, VisualResources,
-    render_with_backend,
+    CompositionResult, FrameRenderOptions, RenderError, RenderLimits, Result, Sampling,
+    VisualResources, render_with_options,
 };
 use wgpu::{Device, ErrorFilter, ErrorScopeGuard, util::DeviceExt};
 
 pub const SHADER: &str = include_str!("compose.wgsl");
-pub const PROFILE: &str = "musteroffice.video.linear2020-premul-gpu-f32-v1-draft";
+pub const PROFILE: &str = "musteroffice.video.linear2020-premul-gpu-f32-v2-draft";
 /// Explicit numeric capability of this GPU profile; no silent saturation.
 pub const MAX_ABS_COMPONENT: f32 = 1e12;
 
@@ -93,6 +93,25 @@ impl GpuCompositor {
         gpu_limits: GpuLimits,
         check: &dyn Fn() -> bool,
     ) -> Result<EncodedFrame> {
+        self.encode_with_options(
+            plan,
+            resources,
+            FrameRenderOptions::at_canvas(plan, sampling, render_limits),
+            gpu_limits,
+            check,
+        )
+        .await
+    }
+    /// Preview and full-size output share the same project-space compositor.
+    /// Only the physical raster grid differs; no rewritten plan is created.
+    pub async fn encode_with_options(
+        &self,
+        plan: &VideoFramePlan,
+        resources: &mut dyn VisualResources,
+        options: FrameRenderOptions,
+        gpu_limits: GpuLimits,
+        check: &dyn Fn() -> bool,
+    ) -> Result<EncodedFrame> {
         cancelled(check)?;
         if gpu_limits.max_allocated_bytes == 0
             || gpu_limits.max_allocated_bytes > 1 << 30
@@ -114,14 +133,7 @@ impl GpuCompositor {
             limits: gpu_limits,
             stats: GpuStats::default(),
         };
-        let result = render_with_backend(
-            plan,
-            resources,
-            sampling,
-            render_limits,
-            check,
-            &mut execution,
-        );
+        let result = render_with_options(plan, resources, options, check, &mut execution);
         // Even on a pure-input failure pop/observe scopes; encoded work is dropped.
         let commands = if result.is_ok() {
             Some(execution.encoder.finish())

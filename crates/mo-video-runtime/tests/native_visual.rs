@@ -137,6 +137,41 @@ fn actual_indexed_composition_matches_oracle_and_preview_matches_encoded_input()
                 assert_eq!(rendered.image.pixels(), clean.image.pixels());
                 assert_eq!(visual.last_stats().source.decoded_frames, 0);
             }
+            // Independently calculate nearest source pixel coordinates at two
+            // smaller grids. These fixtures' exact source/gap selection was
+            // checked above against the Python oracle; resizing cannot change
+            // that selection, including reverse boundaries, dwell and edits.
+            // Geometry uses the published Q32.32 nearest-ties-even inverse
+            // coefficients (not infinitely precise rational raster positions).
+            for (width, height) in [(64, 48), (43, 31)] {
+                let preview = render_frame_with_options(
+                    &plan,
+                    &mut visual,
+                    FrameRenderOptions {
+                        raster: RasterExtent { width, height },
+                        sampling: Sampling::Nearest,
+                        limits: Default::default(),
+                    },
+                    &|| false,
+                )
+                .unwrap();
+                assert_eq!(
+                    (preview.image.width(), preview.image.height()),
+                    (width, height)
+                );
+                for y in 0..height {
+                    for x in 0..width {
+                        let source_x = nearest_pixel(x, rendered.image.width(), width);
+                        let source_y = nearest_pixel(y, rendered.image.height(), height);
+                        assert_eq!(
+                            preview.image.pixels()[(y * width + x) as usize],
+                            rendered.image.pixels()
+                                [(source_y * rendered.image.width() + source_x) as usize],
+                            "{name} {number}, {width}x{height} pixel {x},{y}",
+                        );
+                    }
+                }
+            }
             let image = rendered
                 .image
                 .to_i420(
@@ -211,7 +246,7 @@ fn actual_indexed_composition_matches_oracle_and_preview_matches_encoded_input()
             }
         };
         assert_eq!(candidate.encoded.video_frames, rows.len() as u64);
-        reports.push(json!({"direction":name,"frames":rows.len(),"config":config,"stats":stats}));
+        reports.push(json!({"direction":name,"frames":rows.len(),"previewRasters":[[64,48],[43,31]],"previewFrames":rows.len()*2,"config":config,"stats":stats}));
     }
     drop(visual);
     for pid in pids {
@@ -247,4 +282,16 @@ fn actual_indexed_composition_matches_oracle_and_preview_matches_encoded_input()
         .unwrap(),
     )
     .unwrap();
+}
+
+// Integer reference for the scale-only inverse; independent of Affine,
+// RasterCoordinates, floating inversion and the CPU/GPU paint implementation.
+fn nearest_pixel(pixel: u32, source: u32, raster: u32) -> u32 {
+    let numerator = u128::from(source) << 32;
+    let divisor = u128::from(raster);
+    let quotient = numerator / divisor;
+    let remainder = numerator % divisor;
+    let round_up = remainder * 2 > divisor || (remainder * 2 == divisor && quotient % 2 == 1);
+    let coefficient = quotient + u128::from(round_up);
+    ((coefficient * u128::from(2 * pixel + 1)) >> 33) as u32
 }

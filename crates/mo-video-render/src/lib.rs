@@ -10,6 +10,7 @@ mod layout;
 mod output;
 mod resources;
 mod sdr;
+mod viewport;
 mod yuv_output;
 pub use backend::*;
 pub use color::*;
@@ -20,6 +21,7 @@ pub use geometry::*;
 pub use output::*;
 pub use resources::*;
 pub use sdr::OutputColorStats;
+pub use viewport::{FrameRenderOptions, RasterExtent};
 pub use yuv_output::*;
 
 pub const PROFILE: &str = "musteroffice.video.linear2020-d65-203nits-premul-cpu-v2-draft";

@@ -33,11 +33,15 @@ def main():
                     "-map", "0:v:0", "-pix_fmt", "yuv420p", "-f", "rawvideo", str(output / "media/independent.yuv")], check=True)
     expected = (output / "media/expected.yuv").read_bytes()
     actual = (output / "media/independent.yuv").read_bytes()
+    preview = (output / "media/preview-small.rgba").read_bytes()
+    if len(preview) != 64 * 48 * 4 or result["summary"]["previewRaster"] != [64,48]:
+        raise ValueError("independent SDK did not expose the requested preview grid")
     if expected != actual or len(actual) != 75 * 128 * 96 * 3 // 2:
         raise ValueError("independent decoded output differs from submitted project pixels")
     result.update(workerManifestSha256=args.worker_sha256,
                   fixtureSha256=hashlib.sha256(args.fixture.read_bytes()).hexdigest(),
                   independentlyDecodedBytes=len(actual), outputYuvSha256=hashlib.sha256(actual).hexdigest(),
+                  previewRaster=[64,48], smallPreviewBytes=len(preview), smallPreviewSha256=hashlib.sha256(preview).hexdigest(),
                   independentDecoder=subprocess.check_output([str(args.ffmpeg.resolve()), "-version"], text=True).splitlines()[0])
     (output / "report.json").write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps(result))

@@ -28,6 +28,15 @@ struct Frame {
 struct Fixture {
     frames: Vec<Frame>,
     plans: Vec<VideoFramePlan>,
+    #[serde(default)]
+    viewports: Vec<ViewportFixture>,
+}
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ViewportFixture {
+    plan: VideoFramePlan,
+    width: u32,
+    height: u32,
 }
 struct NoResources;
 impl VisualResources for NoResources {
@@ -75,7 +84,7 @@ fn run(input: &str) -> std::result::Result<Value, String> {
         return Err("render fixture byte limit".into());
     }
     let fixture: Fixture = from_json_str_with_path(input).map_err(|e| e.to_string())?;
-    if fixture.frames.len() > 64 || fixture.plans.len() > 64 {
+    if fixture.frames.len() + fixture.plans.len() + fixture.viewports.len() > 128 {
         return Err("render fixture count limit".into());
     }
     let mut results = vec![];
@@ -135,6 +144,32 @@ fn run(input: &str) -> std::result::Result<Value, String> {
                 max_pixel_visits: 1 << 20,
                 max_temporary_bytes: 1 << 20,
                 ..Default::default()
+            },
+            &|| false,
+        );
+        results.push(outcome(result.and_then(|r| record(r.image, false))));
+    }
+    for viewport in fixture.viewports {
+        let result = render_frame_with_options(
+            &viewport.plan,
+            &mut NoResources,
+            FrameRenderOptions {
+                raster: RasterExtent {
+                    width: viewport.width,
+                    height: viewport.height,
+                },
+                sampling: Sampling::Bilinear,
+                limits: RenderLimits {
+                    pixels: PixelLimits {
+                        max_pixels: 4096,
+                        max_bytes: 4096 * 16,
+                    },
+                    max_nodes: 128,
+                    max_effects: 128,
+                    max_pixel_visits: 1 << 20,
+                    max_temporary_bytes: 1 << 20,
+                    ..Default::default()
+                },
             },
             &|| false,
         );

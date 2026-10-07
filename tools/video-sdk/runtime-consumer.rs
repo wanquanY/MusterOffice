@@ -117,6 +117,14 @@ fn clip(id: &str, source: ClipSource, timeline: TimeRange) -> Clip {
     }
 }
 fn rgba(project: &VideoProject, visual: &mut Visual, frame: i64) -> Vec<u8> {
+    rgba_at(project, visual, frame, None)
+}
+fn rgba_at(
+    project: &VideoProject,
+    visual: &mut Visual,
+    frame: i64,
+    raster: Option<RasterExtent>,
+) -> Vec<u8> {
     let plan = project
         .frame(
             FrameRequest {
@@ -126,25 +134,24 @@ fn rgba(project: &VideoProject, visual: &mut Visual, frame: i64) -> Vec<u8> {
             &|| false,
         )
         .unwrap();
-    render_frame(
-        &plan,
-        visual,
-        Sampling::Bilinear,
-        RenderLimits::default(),
-        &|| false,
-    )
-    .unwrap()
-    .image
-    .to_srgb8(
-        OutputOptions {
-            tone_map: None,
-            alpha: OutputAlpha::Straight,
-            max_bytes: 1 << 20,
-        },
-        &|| false,
-    )
-    .unwrap()
-    .rgba
+    let mut options =
+        FrameRenderOptions::at_canvas(&plan, Sampling::Bilinear, RenderLimits::default());
+    if let Some(raster) = raster {
+        options.raster = raster;
+    }
+    render_frame_with_options(&plan, visual, options, &|| false)
+        .unwrap()
+        .image
+        .to_srgb8(
+            OutputOptions {
+                tone_map: None,
+                alpha: OutputAlpha::Straight,
+                max_bytes: 1 << 20,
+            },
+            &|| false,
+        )
+        .unwrap()
+        .rgba
 }
 fn main() {
     let output = PathBuf::from(std::env::var_os("MO_CONSUMER_OUTPUT").unwrap());
@@ -353,6 +360,15 @@ fn main() {
     assert_eq!(rgba(&project, &mut visual, 0), after);
     fs::write(output.join("preview-before.rgba"), before).unwrap();
     fs::write(output.join("preview-after.rgba"), after).unwrap();
+    let raster = Some(RasterExtent {
+        width: 64,
+        height: 48,
+    });
+    let small = rgba_at(&project, &mut visual, 0, raster);
+    assert_eq!(small.len(), 64 * 48 * 4);
+    assert_ne!(rgba_at(&project, &mut visual, 52, raster), small);
+    assert_eq!(rgba_at(&project, &mut visual, 0, raster), small);
+    fs::write(output.join("preview-small.rgba"), small).unwrap();
     let plan = ExportPlan::new(
         project.compiled(),
         ExportOptions {
@@ -410,7 +426,7 @@ fn main() {
     // Immutable project and pixels are independent of the export lifecycle.
     assert_eq!(project.summary(&|| false).unwrap().frame_count.get(), 75);
     println!(
-        "{{\"profile\":\"{}\",\"documentDigest\":\"{}\",\"frames\":75,\"sourceAudioSamples\":{},\"encodedBytes\":{},\"previewBytes\":49152,\"width\":128,\"height\":96,\"retainedSourceBytes\":{},\"retainedNormalizedBytes\":{},\"outputAudio\":false}}",
+        "{{\"profile\":\"{}\",\"documentDigest\":\"{}\",\"frames\":75,\"sourceAudioSamples\":{},\"encodedBytes\":{},\"previewBytes\":49152,\"previewRaster\":[64,48],\"smallPreviewBytes\":12288,\"width\":128,\"height\":96,\"retainedSourceBytes\":{},\"retainedNormalizedBytes\":{},\"outputAudio\":false}}",
         mo_video_runtime::PROFILE,
         project.digest().as_str(),
         samples,

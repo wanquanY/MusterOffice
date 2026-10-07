@@ -1,4 +1,6 @@
 mod support;
+#[path = "hardware/viewport.rs"]
+mod viewport;
 use mo_video_gpu::*;
 use mo_video_render::*;
 use serde_json::json;

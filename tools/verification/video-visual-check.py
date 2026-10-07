@@ -73,6 +73,8 @@ def main():
         assert len(actual["raw"])==entry["frames"]
         directions=[]
         for direction in actual["directions"]:
+            assert direction["previewRasters"] == [[64,48],[43,31]]
+            assert direction["previewFrames"] == direction["frames"]*2
             name=direction["direction"];config=direction["config"];p=output/str(i)/f"{name}.mp4"
             decoded=output/str(i)/f"{name}-decoded.yuv"
             run([ffmpeg,"-v","error","-i",p,"-map","0:v:0","-pix_fmt","yuv420p","-fps_mode","passthrough","-f","rawvideo",decoded],f"{i}-{name}-decode")
@@ -84,7 +86,7 @@ def main():
             for n,packet in enumerate(packets): assert int(packet["pts"])*base==Fraction(n,24)
             peak=max(s["colorBytes"] for s in direction["stats"])
             assert peak<=config["width"]*config["height"]*16*3
-            directions.append({"direction":name,"frames":direction["frames"],"gaps":sum(r["pts"] is None for r in oracle[name]),
+            directions.append({"direction":name,"frames":direction["frames"],"previewRasters":direction["previewRasters"],"previewFrames":direction["previewFrames"],"gaps":sum(r["pts"] is None for r in oracle[name]),
                 "peakNormalizedBytes":peak,"normalizedCacheHits":sum(s["colorCacheHit"] for s in direction["stats"]),
                 "mp4Sha256":hashlib.sha256(p.read_bytes()).hexdigest(),"expectedAndDecodedSha256":hashlib.sha256(expected).hexdigest()})
         inputs.append({"input":path.name,"sha256":entry["sha256"],"rawFrames":entry["frames"],"directions":directions})

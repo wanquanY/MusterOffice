@@ -1,9 +1,10 @@
 use crate::{
-    Affine, LinearImage, PixelLimits, RenderError, Result, VisualResources,
+    Affine, FrameRenderOptions, LinearImage, PixelLimits, RenderError, Result, VisualResources,
     backend::{CompositionBackend, CompositionResult, Paint, PaintSource},
     cancel,
     cpu::CpuBackend,
     geometry::author_transform,
+    viewport::Viewport,
 };
 use mo_color::rgb::{Encoding, Primaries, RgbTransform, Transfer};
 use mo_time::{ExactRatio, Rounding};
@@ -51,6 +52,7 @@ struct Work<'a, B: CompositionBackend> {
     temporary: usize,
     check: &'a dyn Fn() -> bool,
     sampling: Sampling,
+    viewport: Viewport,
 }
 /// Pure reference execution. A failed/cancelled call never returns partial pixels.
 /// Resolver-owned normalized source frames have their own budget; this accounts
@@ -62,8 +64,23 @@ pub fn render_frame(
     limits: RenderLimits,
     check: &dyn Fn() -> bool,
 ) -> Result<RenderedVideo> {
+    render_frame_with_options(
+        plan,
+        resources,
+        FrameRenderOptions::at_canvas(plan, sampling, limits),
+        check,
+    )
+}
+/// Rasterize directly to the requested pixel grid without modifying the plan,
+/// rendering a full-size intermediate, or changing any project-space effects.
+pub fn render_frame_with_options(
+    plan: &VideoFramePlan,
+    resources: &mut dyn VisualResources,
+    options: FrameRenderOptions,
+    check: &dyn Fn() -> bool,
+) -> Result<RenderedVideo> {
     let mut backend = CpuBackend;
-    let result = render_with_backend(plan, resources, sampling, limits, check, &mut backend)?;
+    let result = render_with_options(plan, resources, options, check, &mut backend)?;
     let mut image = result.surface;
     image.hdr = result.has_hdr;
     Ok(RenderedVideo {
@@ -81,7 +98,29 @@ pub fn render_with_backend<B: CompositionBackend>(
     check: &dyn Fn() -> bool,
     backend: &mut B,
 ) -> Result<CompositionResult<B::Surface>> {
+    render_with_options(
+        plan,
+        resources,
+        FrameRenderOptions::at_canvas(plan, sampling, limits),
+        check,
+        backend,
+    )
+}
+/// Shared viewport and admission semantics for CPU and GPU execution.
+pub fn render_with_options<B: CompositionBackend>(
+    plan: &VideoFramePlan,
+    resources: &mut dyn VisualResources,
+    options: FrameRenderOptions,
+    check: &dyn Fn() -> bool,
+    backend: &mut B,
+) -> Result<CompositionResult<B::Surface>> {
     cancel(check)?;
+    let FrameRenderOptions {
+        raster,
+        sampling,
+        limits,
+    } = options;
+    let viewport = Viewport::new(plan, raster)?;
     if limits.max_depth == 0
         || limits.max_depth > 64
         || limits.max_nodes == 0
@@ -91,7 +130,7 @@ pub fn render_with_backend<B: CompositionBackend>(
     {
         return Err(RenderError::Invalid("render limits"));
     }
-    let count = crate::pixel_count(plan.canvas.width, plan.canvas.height, limits.pixels)?;
+    let count = crate::pixel_count(raster.width, raster.height, limits.pixels)?;
     let mut nodes = 0;
     let mut effects = 0;
     admit(&plan.layers, 1, limits, &mut nodes, &mut effects, check)?;
@@ -108,18 +147,15 @@ pub fn render_with_backend<B: CompositionBackend>(
         temporary: 0,
         check,
         sampling,
+        viewport,
     };
-    let (surface, has_hdr) = work.group(
-        &plan.layers,
-        (plan.canvas.width, plan.canvas.height),
-        resources,
-    )?;
+    let (surface, has_hdr) = work.group(&plan.layers, resources)?;
     cancel(check)?;
     Ok(CompositionResult {
         surface,
         has_hdr,
-        width: plan.canvas.width,
-        height: plan.canvas.height,
+        width: raster.width,
+        height: raster.height,
         stats: work.stats,
     })
 }
@@ -181,10 +217,11 @@ impl<B: CompositionBackend> Work<'_, B> {
     fn group(
         &mut self,
         nodes: &[VisualNode],
-        canvas: (u32, u32),
         resources: &mut dyn VisualResources,
     ) -> Result<(B::Surface, bool)> {
-        let bytes = crate::pixel_count(canvas.0, canvas.1, self.limits.pixels)? * 16;
+        let canvas = self.viewport.canvas;
+        let raster = self.viewport.raster;
+        let bytes = crate::pixel_count(raster.0, raster.1, self.limits.pixels)? * 16;
         self.temporary = self
             .temporary
             .checked_add(bytes)
@@ -193,7 +230,7 @@ impl<B: CompositionBackend> Work<'_, B> {
         self.stats.peak_temporary_bytes = self.stats.peak_temporary_bytes.max(self.temporary);
         let mut out = self
             .backend
-            .create_surface(canvas, self.limits.pixels, self.check)?;
+            .create_surface(raster, self.limits.pixels, self.check)?;
         let mut hdr = false;
         for node in nodes {
             cancel(self.check)?;
@@ -220,9 +257,9 @@ impl<B: CompositionBackend> Work<'_, B> {
                     self.paint(
                         &mut out,
                         PaintSource::Solid(p),
+                        raster,
                         canvas,
-                        canvas,
-                        effect,
+                        self.viewport.source(effect)?,
                         opacity,
                     )?;
                 }
@@ -238,21 +275,21 @@ impl<B: CompositionBackend> Work<'_, B> {
                     self.paint(
                         &mut out,
                         PaintSource::Image(&source.image),
-                        canvas,
+                        raster,
                         (source.image.width, source.image.height),
-                        effect.compose(placement)?,
+                        self.viewport.source(effect.compose(placement)?)?,
                         opacity,
                     )?;
                     hdr |= source.image.hdr;
                 }
                 VisualSource::Group { layers, .. } => {
-                    let (group, group_hdr) = self.group(layers, canvas, resources)?;
+                    let (group, group_hdr) = self.group(layers, resources)?;
                     self.paint(
                         &mut out,
                         PaintSource::Surface(&group),
-                        canvas,
-                        canvas,
-                        effect,
+                        raster,
+                        raster,
+                        self.viewport.group(effect)?,
                         opacity,
                     )?;
                     hdr |= group_hdr;

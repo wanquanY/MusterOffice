@@ -37,8 +37,17 @@ fn bilinear_axis(q: vec2<u32>, extent: u32) -> vec2<u32> {
     if shifted.y >= (extent - 1u)*2u { return vec2<u32>(0u, (extent - 1u)*2u); }
     return shifted;
 }
-fn fraction(q: vec2<u32>) -> f32 {
-    return f32(q.y & 1u)*0.5 + f32(q.x)/8589934592.0;
+// Evaluate each weight from its own exact Q33 numerator. Computing (1-f)
+// after f32 rounding can turn a nonzero near-endpoint weight into zero; mix()
+// can likewise cancel tiny premultiplied color/alpha against a transparent tap.
+fn weights(q: vec2<u32>) -> vec2<f32> {
+    let high = q.y & 1u;
+    let complement_low = 0u - q.x;
+    let complement_high = 2u - high - select(0u, 1u, q.x != 0u);
+    return vec2<f32>(
+        f32(complement_high)*0.5 + f32(complement_low)/8589934592.0,
+        f32(high)*0.5 + f32(q.x)/8589934592.0,
+    );
 }
 fn read_source(position: vec2<u32>) -> vec4<f32> {
     return source[position.y * params.sizes.z + position.x];
@@ -49,9 +58,11 @@ fn sample_source(qx: vec2<u32>, qy: vec2<u32>) -> vec4<f32> {
     let y = bilinear_axis(qy, params.sizes.w);
     let start = vec2<u32>(x.y >> 1u, y.y >> 1u);
     let end = min(start + vec2<u32>(1u), params.sizes.zw - vec2<u32>(1u));
-    let upper = mix(read_source(start), read_source(vec2<u32>(end.x, start.y)), fraction(x));
-    let lower = mix(read_source(vec2<u32>(start.x, end.y)), read_source(end), fraction(x));
-    return mix(upper, lower, fraction(y));
+    let wx = weights(x);
+    let wy = weights(y);
+    let upper = read_source(start)*wx.x + read_source(vec2<u32>(end.x, start.y))*wx.y;
+    let lower = read_source(vec2<u32>(start.x, end.y))*wx.x + read_source(end)*wx.y;
+    return upper*wy.x + lower*wy.y;
 }
 @compute @workgroup_size(8, 8)
 fn compose(@builtin(global_invocation_id) id: vec3<u32>) {
