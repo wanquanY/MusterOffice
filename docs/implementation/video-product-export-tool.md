@@ -1,6 +1,6 @@
 # Agent 导出的运行归属与最终提交
 
-2026-10-08。产品提交 `4d03fbcb98fc1380c1e94d3e25b6b5574f3b082f`。接续[本地导出执行与恢复](video-product-export-execution.md)。产品已实现原 Run/Tool 的导出准入、执行尝试绑定和原子正式发布端口。尚未完成 Agent 物理执行器、公开工具/技能版本及正常对话 UI 的接线；整个视频方案仍在实施中。
+2026-10-08。产品提交 `4d03fbcb98fc1380c1e94d3e25b6b5574f3b082f`。接续[本地导出执行与恢复](video-product-export-execution.md)。产品已实现原 Run/Tool 的导出准入、执行尝试绑定和原子正式发布端口。后续[原 Agent 调用与原生编码](video-agent-native-execution.md)已实际接通可信执行端口；原 CooperativeExecution、公开工具/技能版本及正常对话 UI 的接线仍未完成。整个视频方案仍在实施中。
 
 ## 宿主负责的能力
 
