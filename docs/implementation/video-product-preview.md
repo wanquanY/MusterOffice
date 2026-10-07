@@ -1,4 +1,6 @@
-# 产品原生画面预览接入
+# 产品原生预览接入
+
+本文按阶段记录；最新声音输出状态见末尾“设备播放增量”。早期“尚未播放声音”仅代表当时阶段，不能作为当前状态。
 
 2026-10-07 · 产品提交 `4b93c4fac50c268bd168b9fd90487f13a63f4565`。该增量接通真实原生计算与现有桌面右侧工程面板；分层验证通过，完整产品登录端到端与音频播放尚未验收。
 
@@ -44,3 +46,16 @@ Office 的工程编译、精确索引、源采样及共享 CPU 合成生成画�
 48 项 transport、12 项 Electron 预览/命令、42 项本地客户端/真实 UDS fixture、4 项 renderer 接收、14 项协议与 1 项 Rust/Python gRPC 检查通过，类型/协议锁/生产 strict Clippy 通过。产品 `.codex-work/video-preview-wire-report.json` 记录源和日志摘要；210 项旧 WIP 保留，协议全局描述仅提交 local_video 的增量，其余 89 个描述完全保留。分层测试不代表真实登录产品播放已验收。
 
 **当前只接通声音接收，AudioWorklet、声卡播放和音画同步仍待实现**。UI 继续明确为画面预览。平台输出方案进一步核实：Web Audio 允许工程同采样率的单一 AudioContext，并规定整体输出连续转换到设备采样率；该系统声音输出不另建产品 DSP，不削弱 Office 的工程时间/源重采样/混音职责。不得逐块独立转换或假定 currentTime 就是已听到的位置；仍需实际设备时钟、缓冲/缺料与切换验收。[Web Audio 构造规则](https://www.w3.org/TR/webaudio/#AudioContext-constructors)
+
+
+## 设备播放增量
+
+2026-10-07，产品提交 `c0508c9ae` 接入共享 Vue 的实际 AudioWorklet 声音输出。Office SDK、worker、PPT 和 v0.1.0 稳定基线未修改。产品只负责混音后的平台输出和画面调度，素材重采样、容器映射与混音仍由固定 SDK 持有。
+
+单 revision 输出为一个工程采样率 AudioContext、一个同源静态 worklet 和监听静音节点。双声道 ring 为 16,384 帧/128 KiB，单次请求至多 4,096 帧/32 KiB，只有 worklet 接收/丢弃后才确认原传输块。缺料不推进工程时间；定位、暂停和版本替换清除旧播放 epoch。画面按设备 getOutputTimestamp 与有界渲染区间调度，不使用 render-ahead currentTime 充当已听位置，不因画面等待阻挡音频。
+
+播放画面采用半开时间区间的 floor，用户选定画面开始采样采用 ceil，保持分数帧率下的精确对应。Chrome 初始时间戳可能 performanceTime 为零，需等待有效设备估计；普通时间戳向后修正不能被当作设备断开。
+
+40 项共享编辑器、4 项 desktop renderer adapter 测试、两侧类型和前端边界检查通过。真实 Chrome 154 的 dev 48 kHz 与 built 24 kHz 版本均验证播放/暂停/静音/seek/缺料/EOF/版本切换/失败重试/卸载；worklet 正式静态资源在 CSP 下实际加载。另通过导入面板浏览器回归并去除过时的“当前预览仅播放画面”提示。
+
+产品证据为 `.codex-work/video-playback-report.json`；原 210 文件 WIP 的字节、完整 tracked diff 与展开状态逐项保持。浏览器声音图真实，但 PCM transport 是明确的测试源：尚不能声称已登录 native Runtime→Electron→UI 整链路、物理扬声器回采或长时音画同步达标。下一步继续真实素材联合验收及总方案全部剩余项，目标仍执行中。
