@@ -30,3 +30,16 @@ Device 按每次原调用建立结果元数据内容权限；Agent 与手动驻�
 实际公开合同测试走原 `MusterworkToolExecutor`、真实 Dispatcher、SQLite liveness reactor、固定原生编码器：完成成片与 FileReference；占满计算额度后重放相同结果、不重新编码；编码后发布前的原用户取消阻止 Artifact 发布并在退出后释放资源。素材授权使用受控文件夹具，没有真实模型推理。23 项不同测试通过（14 项原生工程/导出、4 项目录、2 项停止原因、3 项 Device 装配），生产库 strict Clippy 通过。独立整片解码验证75帧、3秒、双声道48 kHz与原音频对照，非正常对话界面或物理播放验收。
 
 证据保存在产品 `.codex-work/video-public-export-report.json`，详细合同在 `docs/architecture/native-video-public-export.md`。本次没有修改 Office 计算源码和SDK/worker/PPT固定版本，也没有修改稳定标签或外部发布。继续实施手动导出服务、简洁文件卡片/右侧播放器、Browser 本地媒体/导出、全部编辑与生成/Admin/计费完整验收。
+
+
+## 后继增量：手动导出与任务恢复（2026-10-08）
+
+产品提交 `028675eb5` 将手动导出接入原受认证本地 Execute 服务，以独立版本协议提供 start/read/list/cancel/retry，不制造工程编辑历史。Agent 与用户共用输出选择、可信 intention 冻结、同一原生执行器及原 Artifact 发布结果。界面提交保存版本后仍可继续剪辑，状态仅显示名称、实际进度与取消/重试/查看视频；查看视频进入原会话文件面板。
+
+客户端共用有界 delivery journal，编辑记录格式保持兼容；导出按账号、workspace、工程与会话隔离，严格事务先保存原命令，回执未知时使用完全相同的 ID/JSON 恢复。关闭面板只停止观察；显式取消才修改持久任务。旧登录 session 不得继续操作，同账号重新登录可恢复发送意图。
+
+SQLite v206 增加受版本 CAS 约束的 Product Failed→Queued 和 Interrupted→Cancelled 转换。新尝试前清空当前 attempt 指针/进度，历史尝试、候选、outbox、原 Tool owner 和正式文件记录保留；已完成发布及旧执行权限不会复活。迁移保持历史 SQL 不变，通过事务回滚测试。
+
+58 项不同的测试通过（33 SQLite、2 真实手动导出、2 原公开 Agent 导出、16 Desktop、5 Electron），另有 16 项真实浏览器 IDB/Web Locks 和 14 项 Vue/Rust WASM 编辑器检查。实际手动成片独立解码为 75 帧、3 秒、48 kHz 双声道，AAC padding 单独核对；生产 Rust 库 strict Clippy 及前端类型检查通过。浏览器组件使用测试宿主，真实编码使用原 SQLite/固定媒体 worker；没有将二者称作正常登录桌面全链路验收。
+
+产品设计记录为 `docs/architecture/native-video-manual-export.md`，本地证据为 `.codex-work/video-manual-export-report.json`。本次仍没有改变 Office 计算源码、SDK/worker/PPT 固定版本或 v0.1.0 稳定标签。下一步继续正常消息文件卡片/播放器、旧引擎退役、Browser 媒体和全部剪辑/生成/Admin/计费验收；完整目标未完成。
