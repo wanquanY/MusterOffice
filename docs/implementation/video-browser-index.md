@@ -47,6 +47,8 @@ SDK 入口 `createMediaIndexRuntime(module)` 只接受宿主校验并编译的 `
 
 原生回归 `.codex-work/media-index-native-regression/report.json`，worker manifest `2638596baa07691a1a36ae11d5bea63e3a02f6f2e8a9746fb4c811fc7d351db1`。浏览器开发证据 `.codex-work/media-index-browser-03/report.json`；最终干净提交与交付 pin 会单独登记。
 
+最终干净源码 `e0416656ba07c1dea9ddd45d56fc0f15a909f5fc` 已构建并实际复验：SDK `.codex-work/media-index-sdk-final/`，manifest `c857b483e0e285fc08c9cbca4977dde7e2f0b7f1f89ef51357466e3df59595f9`；报告 `.codex-work/media-index-browser-final/report.json`。WASM 504,013 bytes、gzip 170,568 bytes；完整 SDK 541,797 bytes、11 个 inventory 文件。此体积只包括索引/时间组件，不包括媒体解码、渲染、整个 Web 工作台或运行内存。
+
 ```sh
 python3 tools/media-index-sdk/test_build.py
 cargo test --offline --locked -p mo-media-isobmff -p mo-media-wire
