@@ -1,6 +1,6 @@
 # 视频创作与剪辑实施记录
 
-2026-10-07 · 目标执行中，尚未达到整体验收。
+2026-10-08 · 目标执行中，尚未达到整体验收。
 
 ## 固定基线与开发边界
 
@@ -18,7 +18,7 @@
 | W1 视频领域与合同 | 基础已实现，未全部完成 | 独立模型、精确时间、受限解析与校验、Native/WASM 公共合同向量；补全效果、字幕、分析和工程包模型 |
 | W2 媒体与合成 | 原生解码/采样、CPU/Metal 合成、音频/保调图、候选导出及独立真实素材 SDK 闭环已实现；产品本地声音/画面联合链路和冻结版本 MP4 候选通过，Browser 媒体、导出正式交付和完整音画验收待实施 | 原生/浏览器媒体与合成、字体/色彩/音频及真实输出 |
 | W3 编辑与历史 | 原子事务、条件逆操作及 Native/Browser 持久连续撤销重做已实现；Agent 与人工共享历史，全部编辑范围尚未完成 | 全部编辑操作、候选、冲突与有条件逆操作及增量索引 |
-| W4 产品执行 | 独立 Native/WASM SDK、Browser Host 基础、Native 计算、SQLite 工程、Agent authoring、共享手动执行、认证 RPC/IPC、工程订阅、基础时间线、消息工程卡片/右侧面板、待确认命令恢复与物理退出等待已实现；固定媒体 runtime/worker、原授权导入、真实原生画面/声音与持久共享历史已接通；产品导出、完整页面及恢复验收待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
+| W4 产品执行 | 独立 Native/WASM SDK、Browser Host 基础、Native 计算、SQLite 工程、Agent authoring、共享手动执行、认证 RPC/IPC、工程订阅、基础时间线、消息工程卡片/右侧面板、待确认命令恢复与物理退出等待已实现；固定媒体 runtime/worker、原授权导入、真实原生画面/声音与持久共享历史已接通；原生导出执行/恢复与正式文件内部链已接通；Agent/公开导出、完整页面及整体验收待实施 | Device/Browser Host、恢复、权限、任务和不可变组件消费 |
 | W5 创作与交互 | 视频技能与显式工具装载、无生成模型的剪辑准入已接通；工作台及旧引擎替换未完成 | 整理现有生成/Admin/计费、技能、人机共享编辑与消息卡片 |
 | W6 完整验收 | 已有下列内核与部分产品路径证据，整体验收未完成 | 完整验收矩阵与可供用户实际操作的本地环境 |
 
@@ -38,7 +38,7 @@
 
 当前产品增量：`f7e585669` 已通过真实已认证本地服务、原生 worker、Electron、共享 Vue 和 AudioWorklet 的隔离联合播放检查；`60dccdee3` 已接通 Native/Browser 持久连续撤销重做及 Agent/人工共享历史。见[最新播放证据](video-product-preview.md#真实原生联合检查)和[共享历史证据](video-product-history.md)。下列各阶段中的“待接入”描述保留其当时边界，以本段和工作包表判断最新状态。
 
-`276e2ab26` 已通过真实 SQLite 工程到本地硬件 H.264/AAC 的冻结版本导出候选，包含原权限、共享媒体源、实际输出校验、取消/物理回收和独立整片解码；详见[产品导出候选证据](video-product-export.md)。后续持久任务存储与启动恢复已接通，详见[导出生命周期](video-product-export-tasks.md)；[真实候选持久保存与恢复](video-product-export-content.md)也已接通，[手动正式文件原子发布](video-product-export-publication.md)内部端口随后接通；resident 调度、Agent 导出、消息卡片和公开 UI 仍待接线。
+`276e2ab26` 已通过真实 SQLite 工程到本地硬件 H.264/AAC 的冻结版本导出候选，包含原权限、共享媒体源、实际输出校验、取消/物理回收和独立整片解码；详见[产品导出候选证据](video-product-export.md)。后续持久任务存储与启动恢复已接通，详见[导出生命周期](video-product-export-tasks.md)；[真实候选持久保存与恢复](video-product-export-content.md)也已接通，[手动正式文件原子发布](video-product-export-publication.md)内部端口随后接通；后续[原生执行与恢复](video-product-export-execution.md)已串联真实媒体到正式文件的执行链和 resident 装配；Agent 导出、消息卡片和公开 UI 仍待接线。
 
 ### 容器音频时间映射
 

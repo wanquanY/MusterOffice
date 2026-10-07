@@ -22,4 +22,4 @@ Schema 203 保留原历史并增加发布回执与 Completed 的双向延迟外�
 
 产品文档 `docs/architecture/native-video-export-publication.md`；版本、源码和验证摘要见 `.codex-work/video-export-publication-report.json`。
 
-resident 调度、物理取消/资源配额的全流程衔接、原 Agent Invocation 归属、公共 RPC/工具版本、消息下文件卡片和右侧播放/下载仍需继续接线。长片/大对象治理、Browser 及完整生成/Admin/计费/编辑验收目标保持不变。
+后续[原生执行与恢复](video-product-export-execution.md)已连接真实编码/保存/提交及 resident 装配。原 Agent Invocation 归属、公共 RPC/工具版本、消息下文件卡片和右侧播放/下载仍需继续接线。长片/大对象治理、Browser 及完整生成/Admin/计费/编辑验收目标保持不变。
