@@ -57,6 +57,8 @@ Mediabunny 1.61.3 / MPL-2.0，固定到研究时同一 upstream commit。容器�
 
 历史输入基线证据：`.codex-work/video-browser-media-final/report.json`，源码 `a7d3064`；当前预算/音频 cursor 增量证据为 `.codex-work/video-budget-check-04/report.json`，SDK manifest `5814d99ad7a18711997651173e10dc22b404d9ce7124c881ca7dbfddca2b54ea`。此增量校验使用当时尚未提交的开发源码；后续干净提交产物需单独构建/固定，不能把旧 pin 当作新实现。最终记录会另行追加。
 
+干净提交交付已复验：源码 `8cd369f515714036935f3b129450e2409ac6fdc1`，SDK `.codex-work/video-browser-budget-final/`、manifest `3dbe473029c73acb817205b66827a18b8526f0b68813887db28a1d60b7253e6b`。实际消费该 SDK 的报告为 `.codex-work/video-browser-budget-final-check/report.json`，上述质量、预算、100 个音频窗口及释放检查均通过。ESM 317,733 bytes / gzip 84,262 bytes，完整对应源码/许可/类型交付共 2,263,026 bytes、89 个 inventory 文件。文件体积不等于运行内存或完整工作台下载量。稳定标签 v0.1.0 未变。
+
 复现：
 
 ```sh
