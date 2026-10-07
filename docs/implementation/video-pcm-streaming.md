@@ -73,3 +73,13 @@ Musterwork 已在 `7e50a2f7f` 增加原有 SQLite/CAS owner 下的源授权、�
 5 项实际 worker/SQLite 用例显式通过：完整 144,000 个 movie 样本与独立 demuxer 的 f32le 字节一致，32 个随机窗口一致；预算拒绝先于字节读取；取消清空缓存；删除其他块使 warm cache 失效；读取前验证通过、读取后验证时源被删也不返回候选样本。原持久化整库重开和两种取消用例同时通过。51 项不同产品存储检查、26 项 adapter lib 检查和生产库 strict Clippy 通过，专用 ignored 未计入。证据为产品 `.codex-work/video-pcm-read-report.json`。
 
 仍没有声卡输出、工程混音会话或音画同步验收；此接口也不代替工程 pinned revision 的校验。首次读取当前需完成原 PCM 物化，长素材可听延迟、后台准备/恢复/空间策略、冻结工程导出和浏览器声音继续实施。内核当前 unit-rate movie 路径仍可能保留未必必要的 sinc filter；性能不得以此结果宣称最优或全部达标。
+
+## 产品工程混音会话
+
+产品提交 `801f1726d` 将上述源接入生产 resident 的预览组合。画面与声音两个有界 blocking actor 共享同一不可变 `VideoProject` 和同一物理会话额度，使用原 scope/pin/authority；没有复制另一份可变时间线。音频通过内核 `AudioMixer` 处理，产品负责有界源缓存、明确的单声道到双声道矩阵、准备与回收。首次全源 PCM 准备改用进程级独立 1 个额度，因此不占据唯一编辑命令额度；关闭时等待两条队列和实际准备任务结束。
+
+4 项实际 AAC 混音检查通过：单轨、双轨叠加、定位及取消恢复；48 kHz 素材到 24 kHz 工程的 4096 帧输出与分块结果一致；慢准备时画面和编辑仍可前进，旧 pin 结果被后校验拒绝；丢弃调用者后关闭仍持有额度至实际回收。另有 5 项保存工程预览、1 项实际 VFR 画面、2 项实际 Runtime 组件加载和 29 项安装检查通过，生产库 strict Clippy 通过。未将上述内部计算与真实组件加载扩大为已登录声音播放证据。
+
+启动验证还发现并修正了产品 SDK/worker 配对漂移。新的产品 worker lock `/2` 分别记录原 worker 构建提交 `636ad723…` 与当前 SDK 提交 `f98c99b2…`，精确绑定 `.20261007.5` manifest；实际 worker 字节和 manifest `98c173…6a27` 不变，未伪造重新构建或公开发行。实际仓库 pin 检查已加入，避免仅测合成安装 fixture。
+
+声音 protobuf/Electron 传输、设备采样率转换/播放时钟、音画同步、完整保持音高派生调度和多声道播放策略仍未完成。产品内部输出是工程采样率，不能靠前端每块独立转换声称已经保证连续播放质量。证据：产品 `.codex-work/video-preview-audio-report.json`，详细边界见其 `docs/architecture/video-preview-runtime.md`。
