@@ -34,3 +34,13 @@ Office 的工程编译、精确索引、源采样及共享 CPU 合成生成画�
 本轮不解除完整验收的以下欠项：真实登录桌面面板整链路、手动素材导入 UI、图片/音频精确资源、音频设备时钟/音画同步、Agent 原调用的图像结果、冻结版本导出和成片卡片/下载、浏览器媒体、完整多轨/GPU/4K 与长时段性能。单驻留源能保证资源有界，但多轨交错需进一步缓存调度，不能据此宣称最终性能已达标。
 
 总体状态继续为目标执行中，见[实施总表](video-editing-progress.md)与[完整验收](../design/video-editing/acceptance.md)。
+
+## 工程声音传输增量
+
+2026-10-07，产品提交 `576398432` 在同一个 pinned preview 上接入声音二进制流，消费既有 `.20261007.5` SDK；没有发布新内核、改动 worker 字节或稳定版标签。本地协商 minor 13 返回工程采样格点和双声道布局，音频块为有限 f32le，1～4096 帧、最多 32 KiB。
+
+音频与画面各有一个最新请求、一个执行中计算、一个未确认结果及各自超时。renderer 绘制等待不能阻挡声音，音频 ACK 不能清除画面期限。暂停/定位可独立 flush 音频 generation，取消旧计算并拒绝旧结果；正常画面刷新不自动切断声音。关闭流时先取消并等待两条计算实际返回，再调用原生会话 close；音频权限与版本仍由原产品 Store 前后检查。
+
+48 项 transport、12 项 Electron 预览/命令、42 项本地客户端/真实 UDS fixture、4 项 renderer 接收、14 项协议与 1 项 Rust/Python gRPC 检查通过，类型/协议锁/生产 strict Clippy 通过。产品 `.codex-work/video-preview-wire-report.json` 记录源和日志摘要；210 项旧 WIP 保留，协议全局描述仅提交 local_video 的增量，其余 89 个描述完全保留。分层测试不代表真实登录产品播放已验收。
+
+**当前只接通声音接收，AudioWorklet、声卡播放和音画同步仍待实现**。UI 继续明确为画面预览。平台输出方案进一步核实：Web Audio 允许工程同采样率的单一 AudioContext，并规定整体输出连续转换到设备采样率；该系统声音输出不另建产品 DSP，不削弱 Office 的工程时间/源重采样/混音职责。不得逐块独立转换或假定 currentTime 就是已听到的位置；仍需实际设备时钟、缓冲/缺料与切换验收。[Web Audio 构造规则](https://www.w3.org/TR/webaudio/#AudioContext-constructors)
