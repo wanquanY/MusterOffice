@@ -57,6 +57,10 @@ def verify_mapping(data):
                 sample, first, last = frame
                 expected = ("sample", max(start, start+(first-media)/rate) if rate else start,
                             min(end, start+(last-media)/rate) if rate else end)
+                assert result["decodeStart"] == data["samples"][sample]["dts"], row
+                candidates = [i for i,s in enumerate(data["samples"][:sample+1]) if s["syncSample"] and s["pts"] <= first*scale]
+                expected_access = {"sample":candidates[-1], "decodeStart":data["samples"][candidates[-1]]["dts"]} if candidates else None
+                assert result["access"] == expected_access, row
                 assert result["sample"] == sample and result["rawStart"] == first*scale and result["rawEnd"] == last*scale, row
                 assert ratio(result["mediaTime"]) == at and result["mediaSide"] == media_side, row
                 assert row["frameSha256"] == next(f["sha256"] for f in data["frames"] if f["pts"] == first*scale)
@@ -74,7 +78,7 @@ def main():
     output = args.output.resolve(); output.mkdir(parents=True, exist_ok=False)
     bundle = args.worker_bundle.resolve()
     pin = hashlib.sha256((bundle/"manifest.json").read_bytes()).hexdigest()
-    assert json.loads((bundle/"manifest.json").read_text())["profile"] == "musteroffice.native-media-worker/4"
+    assert json.loads((bundle/"manifest.json").read_text())["profile"] == "musteroffice.native-media-worker/5"
     ffmpeg = args.ffmpeg or shutil.which("ffmpeg")
     if not ffmpeg: raise RuntimeError("independent ffmpeg required")
     ffmpeg = Path(ffmpeg).resolve(); ffprobe = ffmpeg.with_name("ffprobe")

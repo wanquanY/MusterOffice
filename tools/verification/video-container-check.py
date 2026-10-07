@@ -29,7 +29,7 @@ def main():
     if args.worker_bundle:
         bundle = args.worker_bundle.resolve()
         manifest_bytes = (bundle / "manifest.json").read_bytes()
-        assert json.loads(manifest_bytes)["profile"] == "musteroffice.native-media-worker/4"
+        assert json.loads(manifest_bytes)["profile"] == "musteroffice.native-media-worker/5"
         worker_pin = hashlib.sha256(manifest_bytes).hexdigest()
     for i, source in enumerate(args.input):
         source = source.resolve()

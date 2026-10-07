@@ -115,6 +115,7 @@ pub struct Fake {
     pub stream: StreamInfo,
     pub observed: Rc<Observed>,
     pub overshoot: bool,
+    pub timeline: DecodeTimeline,
     pub corrupt: Option<&'static str>,
 }
 impl Fake {
@@ -126,6 +127,7 @@ impl Fake {
             stream: stream(),
             observed: Rc::default(),
             overshoot: false,
+            timeline: DecodeTimeline::Demuxer,
             corrupt: None,
         }
     }
@@ -137,6 +139,9 @@ impl Drop for Fake {
 }
 impl VideoDecoder for Fake {
     type Error = std::io::Error;
+    fn timeline(&self) -> DecodeTimeline {
+        self.timeline
+    }
     fn stream(&self) -> &StreamInfo {
         &self.stream
     }
@@ -174,6 +179,15 @@ impl VideoDecoder for Fake {
             self.pts.partition_point(|p| *p <= ticks).saturating_sub(1) / 2 * 2
         };
         Ok(())
+    }
+}
+impl mo_video_source::indexed::IndexedVideoDecoder for Fake {
+    fn seek_sample(
+        &mut self,
+        target: mo_video_source::indexed::DecodeTarget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), Self::Error> {
+        self.seek(target.presentation_start, cancelled)
     }
 }
 pub fn limits() -> SourceLimits {

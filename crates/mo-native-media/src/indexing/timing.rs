@@ -2,6 +2,7 @@
 use super::{
     ExactRatio, IndexLimits, IndexSummary, MediaTimeSide, VideoTimeSelection, VideoTimingSummary,
 };
+#[cfg(test)]
 use mo_media_isobmff::presentation::Interval;
 
 pub(super) fn valid_summary(
@@ -9,17 +10,10 @@ pub(super) fn valid_summary(
     index: IndexSummary,
     limits: IndexLimits,
 ) -> bool {
-    value.track_id > 0
+    value.validate(256).is_ok()
         && value.movie_timescale == index.movie_timescale
-        && value.media_timescale > 0
         && value.samples as usize <= limits.max_samples
         && value.edits as usize <= limits.max_edits
-        && value.movie_end.check_budget(256).is_ok()
-        && value.movie_end.compare(&ExactRatio::integer(0)).is_ge()
-        && match value.raw_span {
-            Some((start, end)) => start < end && value.samples > 0,
-            None => value.samples == 0,
-        }
 }
 
 pub(super) fn valid_selection(
@@ -28,54 +22,7 @@ pub(super) fn valid_selection(
     time: &ExactRatio,
     side: MediaTimeSide,
 ) -> bool {
-    let full = Interval {
-        start: ExactRatio::integer(0),
-        end: summary.movie_end.clone(),
-    };
-    let valid_range = |range: &Interval, edit: Option<u32>| {
-        range.validate(256).is_ok()
-            && range.start.compare(&full.start).is_ge()
-            && range.end.compare(&full.end).is_le()
-            && range.contains(time, side)
-            && match edit {
-                None => summary.edits == 0,
-                Some(index) => index < summary.edits,
-            }
-    };
-    match value {
-        VideoTimeSelection::Outside => !full.contains(time, side),
-        VideoTimeSelection::Gap { movie, edit } => valid_range(movie, *edit),
-        VideoTimeSelection::Sample {
-            sample,
-            edit,
-            movie,
-            raw_start,
-            raw_end,
-            media_time,
-            media_side,
-        } => {
-            if *sample >= summary.samples
-                || !valid_range(movie, *edit)
-                || raw_start >= raw_end
-                || !summary
-                    .raw_span
-                    .is_some_and(|(first, last)| first <= *raw_start && *raw_end <= last)
-                || media_time.check_budget(256).is_err()
-            {
-                return false;
-            }
-            let raw = Interval {
-                start: ExactRatio::integer(*raw_start),
-                end: ExactRatio::integer(*raw_end),
-            };
-            media_time
-                .mul(
-                    &ExactRatio::integer(i64::from(summary.media_timescale)),
-                    256,
-                )
-                .is_ok_and(|ticks| raw.contains(&ticks, *media_side))
-        }
-    }
+    value.validate(summary, time, side, 256).is_ok()
 }
 
 #[cfg(test)]
@@ -94,6 +41,11 @@ mod tests {
             },
             VideoTimeSelection::Sample {
                 sample: 1,
+                decode_start: 10,
+                access: Some(mo_media_isobmff::presentation::VideoAccess {
+                    sample: 0,
+                    decode_start: 0,
+                }),
                 edit: Some(1),
                 movie: Interval {
                     start: ExactRatio::integer(1),
@@ -125,6 +77,7 @@ mod tests {
                 raw_end,
                 media_time,
                 media_side,
+                ..
             } = &mut bad
             else {
                 unreachable!()

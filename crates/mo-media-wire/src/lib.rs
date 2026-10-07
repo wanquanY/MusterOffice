@@ -14,7 +14,7 @@ use mo_native_limits::{AppliedLimits, ProcessLimits};
 use serde::{Deserialize, Serialize};
 pub use validation::*;
 
-pub const PROFILE: &str = "musteroffice.native-media-worker/4";
+pub const PROFILE: &str = "musteroffice.native-media-worker/5";
 pub const MAX_HEADER_BYTES: usize = 64 * 1024;
 pub const MAX_READ_BYTES: u32 = 32 * 1024;
 pub const MAX_WRITE_BYTES: u32 = 32 * 1024;

@@ -202,6 +202,10 @@ impl NativeDecoder<'_> {
             }
         }
     }
+    /// Low-level demux seek in stream ticks. For the fixed raw ISO BMFF backend,
+    /// use an indexed access candidate's original DTS to find its access point;
+    /// a reordered picture's PTS is not an interchangeable decode position.
+    /// IndexedVideoSampler provides this policy and verifies the resulting PTS.
     pub fn seek(&mut self, ticks: i64, cancelled: &dyn Fn() -> bool) -> Result<(), WorkerError> {
         let Some(generation) = self.owner.selected.and_then(|(_, n)| n.checked_add(1)) else {
             self.owner.stop();

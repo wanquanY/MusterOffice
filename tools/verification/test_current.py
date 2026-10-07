@@ -81,7 +81,8 @@ class CurrentVerificationTests(unittest.TestCase):
         self.assertIn("/output/media-native/bframes-vfr.mp4", steps[8].argv)
         self.assertIn("/output/media-worker-bundle", steps[8].argv)
         self.assertLess([s.name for s in steps].index("media-worker-bundle"), 8)
-        self.assertEqual(steps[9].name, "video-container-timing")
+        self.assertEqual(steps[9].name, "video-indexed-source")
+        self.assertIn("tools/verification/video-indexed-check.py", steps[9].argv)
         self.assertIn("--variants", steps[9].argv)
         self.assertIn("/output/media-worker-bundle", steps[9].argv)
         with tempfile.TemporaryDirectory() as directory:

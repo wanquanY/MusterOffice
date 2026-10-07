@@ -1,6 +1,8 @@
 //! Exact nonfragmented video composition and edit-list mapping. This establishes
 //! container timing, not successful decoding or one-picture-per-sample admission.
+mod access;
 mod build;
+mod validation;
 use crate::TrackIndex;
 pub use mo_time::ExactRatio;
 use mo_time::TimeError;
@@ -95,6 +97,11 @@ pub enum VideoTimeSelection {
     Sample {
         /// Original decode-order sample table index; never a nominal frame number.
         sample: u32,
+        /// Original decode-clock start of this access unit, before DTS shifts.
+        decode_start: i64,
+        /// Latest preceding sync candidate in both decode and presentation
+        /// order. Codec-specific roll/recovery may require an earlier point.
+        access: Option<VideoAccess>,
         edit: Option<u32>,
         movie: Interval,
         raw_start: i64,
@@ -106,8 +113,16 @@ pub enum VideoTimeSelection {
 #[derive(Clone, Copy)]
 struct Raw {
     pts: i64,
+    dts: i64,
     duration: u32,
     index: u32,
+    access: u32,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct VideoAccess {
+    pub sample: u32,
+    pub decode_start: i64,
 }
 struct Segment {
     movie: Interval,
@@ -118,6 +133,7 @@ struct Segment {
 pub struct VideoTiming {
     summary: VideoTimingSummary,
     samples: Vec<Raw>,
+    access: Vec<VideoAccess>,
     segments: Vec<Segment>,
     bits: u64,
 }
@@ -253,6 +269,11 @@ impl VideoTiming {
             return Ok(gap(range));
         }
         let sample = self.samples[sample_at - 1];
+        let access = sample
+            .access
+            .checked_sub(1)
+            .and_then(|i| self.access.get(i as usize))
+            .copied();
         let end = self.samples.get(sample_at).map_or(last, |s| s.pts);
         let movie = if dwell {
             segment.movie.clone()
@@ -273,6 +294,8 @@ impl VideoTiming {
         active(check)?;
         Ok(VideoTimeSelection::Sample {
             sample: sample.index,
+            decode_start: sample.dts,
+            access,
             edit: segment.index,
             movie,
             raw_start: sample.pts,

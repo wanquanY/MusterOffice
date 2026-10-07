@@ -38,8 +38,10 @@ pub(super) fn build(
             .ok_or(TimingError::Invalid("decode clock overflow"))?;
         samples.push(Raw {
             pts: sample.pts,
+            dts: sample.dts,
             duration: sample.decode_duration,
             index: index as u32,
+            access: 0,
         });
     }
     if dts as u64 != track.decode_duration {
@@ -64,6 +66,7 @@ pub(super) fn build(
     } else {
         None
     };
+    let access = super::access::build(track, &mut samples, check)?;
     let clock = |ticks: u64| -> Result<ExactRatio> {
         Ok(ExactRatio::new(ticks.into(), movie_scale.into(), bits)?)
     };
@@ -129,6 +132,7 @@ pub(super) fn build(
             movie_end: end,
         },
         samples,
+        access,
         segments,
         bits,
     })

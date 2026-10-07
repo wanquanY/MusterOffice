@@ -176,13 +176,22 @@ fn actual_raw_decode_mapped_queries_and_seeks() {
                 .unwrap();
             let mut frame_hash = None;
             if let VideoTimeSelection::Sample {
-                sample, raw_start, ..
+                sample,
+                decode_start,
+                access,
+                raw_start,
+                ..
             } = &selection
             {
                 assert_eq!(samples[*sample as usize].pts, *raw_start);
+                assert_eq!(samples[*sample as usize].dts, *decode_start);
                 frame_hash = Some(by_pts[raw_start].clone());
                 if i % 11 == 0 && side == MediaTimeSide::After {
-                    decoder.seek(*raw_start, &|| false).unwrap();
+                    decoder
+                        .seek(access.expect("fixture access point").decode_start, &|| {
+                            false
+                        })
+                        .unwrap();
                     generation += 1;
                     let mut found = false;
                     for _ in 0..1000 {

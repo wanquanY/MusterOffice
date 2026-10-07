@@ -11,6 +11,7 @@
 //! compiled adapters, not a promise that a user's device supports every codec.
 pub use mo_common as common;
 pub use mo_media as media;
+pub use mo_media_isobmff as isobmff;
 pub use mo_time as time;
 pub use mo_video_audio as audio;
 pub use mo_video_compile as compile;

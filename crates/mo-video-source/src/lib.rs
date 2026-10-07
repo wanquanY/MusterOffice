@@ -1,11 +1,14 @@
-//! Bounded exact presentation of a host-attested continuous source span.
+//! Bounded exact video presentation using an indexed container timeline or an
+//! explicitly host-attested continuous source span.
 //! No average-FPS indexing, color conversion, storage, or implicit timestamp repair.
+mod frame;
+pub mod indexed;
 #[cfg(feature = "native")]
 pub mod native;
 mod sampler;
 mod timing;
 use mo_common::RationalTime;
-use mo_media::{DecodedFrame, StreamInfo};
+use mo_media::{DecodeTimeline, DecodedFrame, StreamInfo};
 use mo_video_model::TimeRange;
 pub use sampler::VideoSampler;
 use std::sync::Arc;
@@ -18,6 +21,7 @@ pub trait VideoDecoder {
     type Error: std::error::Error + 'static;
     fn stream(&self) -> &StreamInfo;
     fn generation(&self) -> u64;
+    fn timeline(&self) -> DecodeTimeline;
     fn next(&mut self, cancelled: &dyn Fn() -> bool) -> Result<Option<DecodedFrame>, Self::Error>;
     fn seek(&mut self, ticks: i64, cancelled: &dyn Fn() -> bool) -> Result<(), Self::Error>;
 }
@@ -28,7 +32,7 @@ pub struct SourceLimits {
     pub max_frame_bytes: usize,
     /// Active plane bytes retained here, including lookahead; excludes caller-owned clones.
     pub max_retained_bytes: usize,
-    /// Includes lookahead, so at least two are required.
+    /// Continuous sampling needs two for lookahead; indexed sampling needs one.
     pub max_retained_frames: usize,
     pub max_decode_calls_per_query: usize,
 }
@@ -91,6 +95,8 @@ pub enum SourceError<E: std::error::Error + 'static> {
     Compile(#[from] mo_video_compile::CompileError),
     #[error("invalid presentation source: {0}")]
     Invalid(&'static str),
+    #[error("unsupported presentation source: {0}")]
+    Unsupported(&'static str),
     #[error("video source budget exceeded")]
     Budget,
     #[error("video source cancelled")]

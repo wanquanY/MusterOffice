@@ -160,7 +160,7 @@ fn generated_permutations_rates_and_partial_edits_match_integer_oracle() {
                 pts: i64::from(((i * step + seed) % n) * 7) - 14,
                 decode_duration: 3,
                 description: 0,
-                sync_sample: true,
+                sync_sample: i % 7 == 0,
             });
         }
         raw.decode_duration = u64::from(n * 3);
@@ -200,11 +200,30 @@ fn generated_permutations_rates_and_partial_edits_match_integer_oracle() {
                         contains.then_some(*index as u32)
                     })
                 };
-                assert_eq!(
-                    selected(&t, tick, 50, side),
-                    want,
-                    "seed {seed} tick {tick} {side:?}"
-                );
+                let result = t.select(&time(tick, 50), side, &|| false).unwrap();
+                let actual = if let VideoTimeSelection::Sample {
+                    sample,
+                    decode_start,
+                    access,
+                    ..
+                } = result
+                {
+                    assert_eq!(decode_start, raw.samples[sample as usize].dts);
+                    let expected = raw.samples[..=sample as usize]
+                        .iter()
+                        .enumerate()
+                        .rev()
+                        .find(|(_, s)| s.sync_sample && s.pts <= raw.samples[sample as usize].pts)
+                        .map(|(i, s)| VideoAccess {
+                            sample: i as u32,
+                            decode_start: s.dts,
+                        });
+                    assert_eq!(access, expected, "access seed {seed} sample {sample}");
+                    Some(sample)
+                } else {
+                    None
+                };
+                assert_eq!(actual, want, "seed {seed} tick {tick} {side:?}");
             }
         }
     }

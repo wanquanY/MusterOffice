@@ -7,7 +7,7 @@ use crate::{
 };
 use mo_media::ReadAt;
 pub use mo_media_isobmff::presentation::{
-    ExactRatio, Side as MediaTimeSide, VideoTimeSelection, VideoTimingSummary,
+    ExactRatio, Side as MediaTimeSide, VideoAccess, VideoTimeSelection, VideoTimingSummary,
 };
 pub use mo_media_isobmff::{ByteRange, Edit, IndexLimits, Sample};
 use mo_media_wire::{Command, Event, PROFILE};

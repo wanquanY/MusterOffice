@@ -1,3 +1,4 @@
+use crate::frame::payload_bytes;
 use crate::{
     EndEvidence, Pending, PresentedFrame, SampleMode, SampledVideo, SourceError, SourceLimits,
     SourceSelection, SourceStats, VideoDecoder, timing,
@@ -67,19 +68,7 @@ impl<D: VideoDecoder> VideoSampler<D> {
         {
             return Err(SourceError::Invalid("continuous span or dimensions"));
         }
-        if !(128..=4096).contains(&limits.exact_bits)
-            || limits.max_frame_bytes == 0
-            || limits.max_frame_bytes > 512 << 20
-            || limits.max_retained_bytes > 1 << 30
-            || limits.max_retained_frames < 2
-            || limits.max_retained_frames > 100_000
-            || limits.max_decode_calls_per_query == 0
-            || limits.max_decode_calls_per_query > 1_000_000
-            || limits
-                .max_frame_bytes
-                .checked_mul(2)
-                .is_none_or(|n| n > limits.max_retained_bytes)
-        {
+        if !crate::frame::valid_limits(limits, 2) {
             return Err(SourceError::Invalid("source limits"));
         }
         let stream = decoder.stream();
@@ -402,16 +391,4 @@ fn ensure_active<D: VideoDecoder>(callback: &dyn Fn() -> bool) -> Result<(), D> 
     } else {
         Ok(())
     }
-}
-fn payload_bytes(frame: &mo_media::DecodedFrame) -> Option<usize> {
-    if frame.planes.is_empty() || frame.planes.len() > 4 {
-        return None;
-    }
-    frame.planes.iter().try_fold(0usize, |sum, p| {
-        let n = p.row_bytes.checked_mul(p.rows)?;
-        if n == 0 || n != p.bytes.len() {
-            return None;
-        }
-        sum.checked_add(n)
-    })
 }
