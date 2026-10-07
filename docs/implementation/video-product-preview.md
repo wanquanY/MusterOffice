@@ -1,6 +1,6 @@
 # 产品原生预览接入
 
-本文按阶段记录；最新声音输出状态见末尾“设备播放增量”。早期“尚未播放声音”仅代表当时阶段，不能作为当前状态。
+本文按阶段记录；最新声音输出状态见末尾“真实原生联合检查”。早期“尚未播放声音”仅代表当时阶段，不能作为当前状态。
 
 2026-10-07 · 产品提交 `4b93c4fac50c268bd168b9fd90487f13a63f4565`。该增量接通真实原生计算与现有桌面右侧工程面板；分层验证通过，完整产品登录端到端与音频播放尚未验收。
 
@@ -59,3 +59,12 @@ Office 的工程编译、精确索引、源采样及共享 CPU 合成生成画�
 40 项共享编辑器、4 项 desktop renderer adapter 测试、两侧类型和前端边界检查通过。真实 Chrome 154 的 dev 48 kHz 与 built 24 kHz 版本均验证播放/暂停/静音/seek/缺料/EOF/版本切换/失败重试/卸载；worklet 正式静态资源在 CSP 下实际加载。另通过导入面板浏览器回归并去除过时的“当前预览仅播放画面”提示。
 
 产品证据为 `.codex-work/video-playback-report.json`；原 210 文件 WIP 的字节、完整 tracked diff 与展开状态逐项保持。浏览器声音图真实，但 PCM transport 是明确的测试源：尚不能声称已登录 native Runtime→Electron→UI 整链路、物理扬声器回采或长时音画同步达标。下一步继续真实素材联合验收及总方案全部剩余项，目标仍执行中。
+
+
+## 真实原生联合检查
+
+2026-10-07，产品提交 `f7e585669` 通过本地已登录 Backend、独立已签名 Runtime、原文件权限、SQLite、固定 AAC/VFR worker、双向 gRPC、生产 Electron preload/renderer adapter、共享 Vue 和 AudioWorklet 的一次联合实跑。工程实际导入原画面/原声/关联组，解码画面非空，48 kHz 声音图峰值约 0.124，暂停/定位/第 75 帧结束/重播/切换 revision 3/卸载成立；测试窗口、身份和会话清理检查通过。
+
+联合检查发现产品导入器同时携带会话和工作区上下文，违反原 FileQuery 的单来源合同。修复由产品宿主持有：每个 FileReference 只选择命令已经拥有的原上下文，计算后按同一上下文复查；Agent sealed Run 权限不变。1 项选择回归、7 项产品事务、4 项执行器及生产 strict Clippy 通过。Office 计算/SDK/worker/PPT 与稳定标签无需修改。
+
+证据入口为产品 `apps/desktop/quality/video-native/check.mjs`，说明 `docs/architecture/video-native-playback-acceptance.md`，本地报告 `.codex-work/video-native-joint-report.json`。这是生产组件和真实本地服务的隔离联合窗口，尚未替代完整会话页面、Agent/人工历史、物理扬声器回采、长时同步与 4K 性能验收。产品原 210 文件 WIP 保持，总目标继续执行。
