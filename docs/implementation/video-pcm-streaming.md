@@ -63,3 +63,13 @@ Musterwork 已在 `7e50a2f7f` 增加原有 SQLite/CAS owner 下的源授权、�
 产品真实检查新增 3 项、全部显式执行通过：AAC 物化的 145,024 个原始采样帧采用 Host 选择的 16,384 帧块宽，写成 9 块、580,096 bytes；与独立 raw decoder 的全部 f32 字节一致。关闭整个真实产品数据库后重开，复用原 completion/attempt 和全部字节；删除原源后拒绝访问。另验证调用方中断时保持物理额度到 worker 回收/清理完成，以及首块已落盘后取消不会发布前缀。产品 58 项不同存储检查、27 项安装检查、26 项 adapter 常规检查和生产库 strict Clippy 通过，专用 ignored 检查单独标明，没有混计。
 
 这里返回的仍是 raw PCM，产品声音读取必须继续使用 `MovieAudioPlan`；后台调度、音频设备时钟、画面同步和冻结工程导出尚未接通。产品尚未执行本轮真实浏览器或登录 Electron 的声音验收。
+
+## 产品按 movie 时间读取的集成
+
+产品提交 `e4488c29b` 在相同固定 `.20261007.5` SDK 上接入原 CAS 到 `PcmTileStore` / `CanonicalAudioResource`，再对同一 verified source 建立实际 `NativeIndex` 和 `MovieAudioPlan`。`NativeVideoAudioResource` 在阻塞渲染 actor 使用，不把存储 I/O 放进实时音频回调；读取完成后索引 worker 已退出。
+
+产品在每次逻辑读取前后重新检查当前源权限及精确完成记录，包含 SDK 内存缓存命中和 empty edit。SQLite v200 在任何派生块删除时原子停用整次缓存并回收其余块；迁移也处理 v199 遗留的已删块记录，失败时状态和 tombstone 一起回滚。该逻辑归产品所有，内核仍不依赖权限、数据库或业务 epoch。
+
+5 项实际 worker/SQLite 用例显式通过：完整 144,000 个 movie 样本与独立 demuxer 的 f32le 字节一致，32 个随机窗口一致；预算拒绝先于字节读取；取消清空缓存；删除其他块使 warm cache 失效；读取前验证通过、读取后验证时源被删也不返回候选样本。原持久化整库重开和两种取消用例同时通过。51 项不同产品存储检查、26 项 adapter lib 检查和生产库 strict Clippy 通过，专用 ignored 未计入。证据为产品 `.codex-work/video-pcm-read-report.json`。
+
+仍没有声卡输出、工程混音会话或音画同步验收；此接口也不代替工程 pinned revision 的校验。首次读取当前需完成原 PCM 物化，长素材可听延迟、后台准备/恢复/空间策略、冻结工程导出和浏览器声音继续实施。内核当前 unit-rate movie 路径仍可能保留未必必要的 sinc filter；性能不得以此结果宣称最优或全部达标。
