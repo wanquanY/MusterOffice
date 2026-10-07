@@ -1,6 +1,8 @@
 //! Canonical decoded PCM tiles and bounded random reads. Storage, decoder
 //! ownership, permission checks and atomic publication belong to the host.
 mod builder;
+mod clock;
+mod inspection;
 mod reader;
 mod resource;
 mod retime;
@@ -8,6 +10,7 @@ pub use resource::*;
 pub use retime::*;
 mod source;
 pub use builder::*;
+pub use inspection::*;
 use mo_common::{ByteLength, Digest, Ticks};
 pub use reader::*;
 use serde::{Deserialize, Serialize};

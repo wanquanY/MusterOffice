@@ -4,42 +4,11 @@ mod access;
 mod build;
 mod validation;
 use crate::TrackIndex;
-use mo_time::TimeError;
 pub use mo_time::{ExactInterval as Interval, ExactRatio, SampleSide as Side};
 use serde::{Deserialize, Serialize};
-use std::panic::{AssertUnwindSafe, catch_unwind};
 
-#[derive(Clone, Copy, Debug)]
-pub struct TimingLimits {
-    pub max_samples: usize,
-    pub max_edits: usize,
-    pub exact_bits: u64,
-}
-impl Default for TimingLimits {
-    fn default() -> Self {
-        Self {
-            max_samples: 2_000_000,
-            max_edits: 4096,
-            exact_bits: 256,
-        }
-    }
-}
-#[derive(Debug, thiserror::Error)]
-pub enum TimingError {
-    #[error("invalid video composition timing: {0}")]
-    Invalid(&'static str),
-    #[error("unsupported video composition timing: {0}")]
-    Unsupported(&'static str),
-    #[error("video composition timing budget exceeded")]
-    Budget,
-    #[error("video composition timing cancelled")]
-    Cancelled,
-    #[error("video composition callback panicked")]
-    CallbackPanic,
-    #[error(transparent)]
-    Time(#[from] TimeError),
-}
-pub type Result<T> = std::result::Result<T, TimingError>;
+pub use crate::timing::{Result, TimingError, TimingLimits};
+use crate::timing::{active, guarded};
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct VideoTimingSummary {
@@ -96,34 +65,12 @@ pub struct VideoAccess {
     pub sample: u32,
     pub decode_start: i64,
 }
-struct Segment {
-    movie: Interval,
-    media: Option<ExactRatio>,
-    rate: ExactRatio,
-    index: Option<u32>,
-}
 pub struct VideoTiming {
     summary: VideoTimingSummary,
     samples: Vec<Raw>,
     access: Vec<VideoAccess>,
-    segments: Vec<Segment>,
+    timeline: crate::movie::MovieTimeline,
     bits: u64,
-}
-fn active(check: &dyn Fn() -> bool) -> Result<()> {
-    if check() {
-        Err(TimingError::Cancelled)
-    } else {
-        Ok(())
-    }
-}
-fn guarded<T>(work: impl FnOnce() -> Result<T>) -> Result<T> {
-    match catch_unwind(AssertUnwindSafe(work)) {
-        Ok(result) => result,
-        Err(payload) => {
-            std::mem::forget(payload);
-            Err(TimingError::CallbackPanic)
-        }
-    }
 }
 fn seconds(ticks: i64, scale: u32, bits: u64) -> Result<ExactRatio> {
     Ok(ExactRatio::new(ticks.into(), scale.into(), bits)?)
@@ -160,15 +107,7 @@ impl VideoTiming {
     ) -> Result<VideoTimeSelection> {
         active(check)?;
         time.check_budget(self.bits)?;
-        let i = self.segments.partition_point(|s| match side {
-            Side::After => s.movie.end.compare(time).is_le(),
-            Side::Before => s.movie.end.compare(time).is_lt(),
-        });
-        let Some(segment) = self
-            .segments
-            .get(i)
-            .filter(|s| s.movie.contains(time, side))
-        else {
+        let Some(segment) = self.timeline.segment_at(time, side, check)? else {
             return Ok(VideoTimeSelection::Outside);
         };
         let gap = |movie| VideoTimeSelection::Gap {

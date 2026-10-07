@@ -9,6 +9,7 @@
 //! bounded ReadAt/WriteAt capabilities; codecs are never linked into this SDK.
 //! `gpu` exposes the existing explicit-device compositor. A feature describes
 //! compiled adapters, not a promise that a user's device supports every codec.
+pub mod audio_movie;
 pub mod visual_source;
 pub use mo_common as common;
 pub use mo_media as media;

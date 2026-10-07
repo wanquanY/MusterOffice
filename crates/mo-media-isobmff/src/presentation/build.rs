@@ -67,59 +67,13 @@ pub(super) fn build(
         None
     };
     let access = super::access::build(track, &mut samples, check)?;
-    let clock = |ticks: u64| -> Result<ExactRatio> {
-        Ok(ExactRatio::new(ticks.into(), movie_scale.into(), bits)?)
-    };
-    let mut segments = Vec::new();
-    reserve(&mut segments, track.edits.len().max(1))?;
-    let end = if track.edits.is_empty() {
-        let end = match track.declared_track_duration {
-            Some(t) => clock(t)?,
-            None => seconds(span.map_or(0, |(_, end)| end.max(0)), track.timescale, bits)?,
-        };
-        if end.positive() {
-            segments.push(Segment {
-                movie: Interval {
-                    start: ExactRatio::integer(0),
-                    end: end.clone(),
-                },
-                media: Some(ExactRatio::integer(0)),
-                rate: ExactRatio::integer(1),
-                index: None,
-            });
-        }
-        end
-    } else {
-        let mut end = 0u64;
-        for (i, edit) in track.edits.iter().enumerate() {
-            active(check)?;
-            if edit.movie_start != end || edit.media_time.is_some_and(|t| t < 0) {
-                return Err(TimingError::Invalid("edit clock sequence"));
-            }
-            if edit.rate_16_16 < 0 {
-                return Err(TimingError::Unsupported("negative container edit rate"));
-            }
-            end = end
-                .checked_add(edit.movie_duration)
-                .ok_or(TimingError::Invalid("edit end overflow"))?;
-            if edit.movie_duration == 0 {
-                continue;
-            }
-            segments.push(Segment {
-                movie: Interval {
-                    start: clock(edit.movie_start)?,
-                    end: clock(end)?,
-                },
-                media: edit
-                    .media_time
-                    .map(|t| seconds(t, track.timescale, bits))
-                    .transpose()?,
-                rate: seconds(i64::from(edit.rate_16_16), 65536, bits)?,
-                index: Some(i as u32),
-            });
-        }
-        clock(end)?
-    };
+    let timeline = crate::movie::MovieTimeline::build(
+        track,
+        movie_scale,
+        &seconds(span.map_or(0, |(_, end)| end.max(0)), track.timescale, bits)?,
+        limits,
+        check,
+    )?;
     active(check)?;
     Ok(VideoTiming {
         summary: VideoTimingSummary {
@@ -129,11 +83,11 @@ pub(super) fn build(
             samples: samples.len() as u32,
             edits: track.edits.len() as u32,
             raw_span: span,
-            movie_end: end,
+            movie_end: timeline.end().clone(),
         },
         samples,
         access,
-        segments,
+        timeline,
         bits,
     })
 }

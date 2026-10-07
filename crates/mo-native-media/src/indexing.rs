@@ -1,4 +1,5 @@
 //! A retained raw index inside the verified, resource-limited worker.
+mod movie;
 mod timing;
 use crate::{
     WorkerBundle, WorkerError,

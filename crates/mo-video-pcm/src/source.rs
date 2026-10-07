@@ -1,7 +1,7 @@
 use crate::{PROFILE, PcmError, PcmTileRef, Result};
 use mo_common::{Digest, Ticks, digest};
-use mo_time::{ExactRatio as R, Rounding};
-use mo_video_audio::{AudioAsset, ByteOrder, Channel, PcmBlock, PcmLimits, normalize_pcm};
+use mo_time::ExactRatio as R;
+use mo_video_audio::{AudioAsset, ByteOrder, Channel, PcmBlock, PcmLimits};
 use mo_video_compile::MediaBinding;
 use serde::Serialize;
 
@@ -184,41 +184,7 @@ impl PcmSource {
                 "derived source cannot bind a decoder frame",
             ));
         }
-        if generation == 0 || frame.info.generation != generation {
-            return Err(PcmError::Invalid("decoder generation"));
-        }
-        if frame.info.sample_rate != Some(self.asset.sample_rate)
-            || mo_video_audio::ChannelLayout::from_codec_name(&frame.info.channel_layout)?
-                != self.asset.layout
-        {
-            return Err(PcmError::Invalid("decoded PCM binding"));
-        }
-        let base = frame.info.time_base;
-        if base.numerator == 0 || base.denominator == 0 {
-            return Err(PcmError::Invalid("decoded PCM timebase"));
-        }
-        let time = R::integer(
-            frame
-                .info
-                .pts_ticks
-                .ok_or(PcmError::Invalid("missing PCM PTS"))?,
-        )
-        .mul(&R::integer(i64::from(base.numerator)), self.bits)?
-        .div(&R::integer(i64::from(base.denominator)), self.bits)?;
-        let position = time
-            .sub(&self.asset.sample_zero, self.bits)?
-            .mul(&R::integer(i64::from(self.asset.sample_rate)), self.bits)?;
-        let first = position.round_integer(Rounding::Floor)?;
-        if position.compare(&R::integer(first)).is_ne() {
-            return Err(PcmError::Invalid("PCM timestamp off sample lattice"));
-        }
-        Ok(normalize_pcm(
-            frame,
-            order,
-            self.asset.layout.clone(),
-            first,
-            limits,
-            cancelled,
-        )?)
+        crate::clock::DecodedClock::from_asset(&self.asset, self.bits)
+            .normalize(frame, order, generation, limits, cancelled)
     }
 }
