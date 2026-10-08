@@ -52,3 +52,11 @@ PCM 和索引固定组件见[共享 PCM](video-browser-pcm.md)。尚须完成产
 最终实际报告位于 `.codex-work/video-audio-materializer-final-mono/report.json` 与 `.codex-work/video-audio-materializer-final-stereo/report.json`，分别绑定单/双声道 fixture 和上述最终 pin。正常单次解码准入峰值分别为 18,074,462 / 18,289,742 bytes；完成对象保留 4,227,426 bytes，close 后释放。报告中总账本峰值另包含竞争者测试主动占用的额度，不能当成正常解码峰值。两个最终包检查都完成 10 类故障/生命周期验证及公开声明 ABI 编译。
 
 旧媒体回归 `.codex-work/video-audio-legacy-dev/report.json` 和五素材游标回归 `.codex-work/video-audio-video-regression-dev/report.json` 在同次源开发交付上运行；它们不是该最终 manifest 的再次执行报告。此轮没有更改 Rust、Native worker 或稳定标签，也没有公开发布组件。
+
+## 产品 Host 后续接线
+
+产品提交 `48d8ce464` 已消费上述媒体、PCM 和索引固定组件。宿主核对原素材 SHA-256，Worker 调用本组件后将 PCM 连续写入 OPFS，关闭/重新读取校验后再由 strict IDB 事务发布。权限、scope、任务执行锁、持久 attempt、文件回收全部留在产品；本仓库没有增加数据库或产品 UI。
+
+3 秒单声道/双声道实际保存 payload 分别为 581,632 / 1,073,152 bytes，最终索引为 8,670 / 7,945 bytes。紧凑索引相对早期定长填充减少约 94.1%，保持同一完整 PCM；数据留磁盘，读取器保留已验证不可变索引。跨页面恢复、并发复用、随机读取、写入真实首 tile 后强制终止/回收、持久损坏拒绝均通过；影片 PCM 仍与独立 FFmpeg 数值对照一致。
+
+证据位于产品 `.codex-work/video-product-pcm-compact-mono/report.json` / `video-product-pcm-compact-stereo/report.json`，共同源摘要 `dcfb8ce02d3647698433381ee2b6a07e4271ae7607be49d1a98890fb1d252417`。另通过 16 项宿主/PCM 测试、类型检查、组件完整性检查与原实际工程存储/历史回归。它们证明产品本地存储/计算链路，尚不是声音设备、正式混音、编辑 UI、Browser 合成/导出、长素材、其他浏览器或整个视频方案的验收。
