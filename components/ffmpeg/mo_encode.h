@@ -6,6 +6,9 @@ extern "C" {
 #endif
 /* Explicit profiles, never inferred from a filename or silently substituted. */
 enum { MO_ENCODE_H264_VT_AAC_MP4=1, MO_ENCODE_FFV1_PCM_MP4=2 };
+/* Separate leaf profile: externally encoded, ordered AVC + local AAC/mux.
+   Not advertised as a native video encoder by mo_encode_profiles(). */
+enum { MO_ENCODE_EXTERNAL_AVC_AAC_MP4=4 };
 typedef struct mo_encode mo_encode;
 typedef struct {
     void *opaque;
@@ -37,6 +40,15 @@ MO_MEDIA_API uint32_t mo_encode_abi_version(void);
 /* A compiled capability is not proof that the device can open a HW session. */
 MO_MEDIA_API uint32_t mo_encode_profiles(void);
 MO_MEDIA_API int32_t mo_encode_open(const mo_encode_io*, const mo_encode_config*, const mo_encode_limits*, mo_encode**, mo_media_error*);
+/* AVC decoder configuration record with four-byte NAL lengths. Caller must
+   establish BT.709 limited-range left-cosited 8-bit I420 codec configuration;
+   the parser verifies dimensions/picture structure, not SPS color metadata.
+   Input access
+   units must be contiguous CFR in presentation/decode order, no B pictures.
+   This explicit profile refuses reordering instead of guessing decode clocks.
+   Final output remains a candidate requiring host verification/publication. */
+MO_MEDIA_API int32_t mo_encode_open_avc(const mo_encode_io*, const mo_encode_config*, const mo_encode_limits*, const uint8_t*, uint32_t, mo_encode**, mo_media_error*);
+MO_MEDIA_API int32_t mo_encode_avc(mo_encode*, int64_t pts, int64_t duration, const uint8_t*, uint32_t, int32_t key, mo_media_error*);
 MO_MEDIA_API int32_t mo_encode_video(mo_encode*, const mo_encode_video_frame*, mo_media_error*);
 MO_MEDIA_API int32_t mo_encode_audio(mo_encode*, int64_t first_sample, const float*, uint32_t frames, mo_media_error*);
 /* Drains both encoders, interleaves remaining packets and writes the trailer.

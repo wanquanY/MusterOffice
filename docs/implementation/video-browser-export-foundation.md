@@ -75,8 +75,10 @@ python3 tools/verification/media-encode-check.py --component VERIFIED_NATIVE_COM
 
 ## 继续实现的编码与发布边界
 
+后续实施已通过 VideoEncoder + 共用本地 AAC/MP4 的实际短片门禁，详情见[浏览器编码记录](video-browser-encoding.md)。下列条目保留本批规划背景，持久发布边界仍然适用。
+
 1. 编码适配器消费共享调度、相同不可变视觉/音频快照；限制在途原始帧、PCM、packet 和候选写入，取消时真正关闭编码器及 Worker。末尾才 flush，不能用反复 flush 规避 codec 反压。
-2. 审核固定 Mediabunny 封装能力。当前固定源码 `9d36fc5779b254904bc609e66f2cd80ed8390b4b` 的 ISO BMFF muxer 根据帧率倒数近似选择 video timescale，默认 movie clock 为 57600；尚无已验证的显式精确时钟入口。必须在组件责任层解决精确轨道/电影时钟、最后短帧和 AAC 延迟/padding，禁止伪造帧率元数据、修改已安装产物或以浮点秒替代作者时间。该项尚未选定和实现具体扩展，不把它写作已解决。
+2. 固定 Mediabunny 源码 `9d36fc5779b254904bc609e66f2cd80ed8390b4b` 的 ISO BMFF muxer 根据帧率倒数近似选择 video timescale，默认 movie clock 为 57600；尚无已验证的显式精确时钟入口。必须在组件责任层解决精确轨道/电影时钟、最后短帧和 AAC 延迟/padding，禁止伪造帧率元数据、修改已安装产物或以浮点秒替代作者时间。后续选择复用共用 AAC/MP4 核心，未修改该组件的已安装输入/解码能力。
 3. 独立回读实际输出，核对帧/样本范围、时间、颜色、track metadata、codec 延迟以及完整解码；通过前保留未发布候选。
 4. 产品 Host 接入固定组件、持久导出意图和任务、OPFS 候选/配额/恢复及正式文件提交。右侧只展示对用户有用的进度、播放和下载；不能用临时 Blob URL 代替正式文件交付。
 

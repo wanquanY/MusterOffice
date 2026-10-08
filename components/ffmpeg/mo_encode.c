@@ -23,7 +23,7 @@ static int64_t movie_scale(const mo_encode_config *c) {
 }
 static int validate(const mo_encode_io *io,const mo_encode_config *c,const mo_encode_limits *l) {
     if (!io || !c || !l || !io->write_at || !io->cancelled ||
-        (c->profile!=MO_ENCODE_H264_VT_AAC_MP4 && c->profile!=MO_ENCODE_FFV1_PCM_MP4) ||
+        (c->profile!=MO_ENCODE_H264_VT_AAC_MP4 && c->profile!=MO_ENCODE_FFV1_PCM_MP4 && c->profile!=MO_ENCODE_EXTERNAL_AVC_AAC_MP4) ||
         c->width<2 || c->height<2 || c->width>8192 || c->height>8192 || (c->width%2) || (c->height%2) ||
         (uint64_t)c->width*c->height>l->max_pixels || (uint64_t)c->width*c->height*2>l->max_frame_bytes ||
         c->video_time_scale<1 || c->video_time_scale>1000000000 || c->video_frames<1 || c->video_frames>l->max_packets ||
@@ -43,7 +43,7 @@ static int validate(const mo_encode_io *io,const mo_encode_config *c,const mo_en
     int64_t period=(int64_t)c->video_time_scale*c->frame_rate_den;
     if (period%c->frame_rate_num) return 0;
     period/=c->frame_rate_num;
-    if (c->video_duration<=(c->video_frames-1)*period || c->video_duration>c->video_frames*period) return 0;
+    if ((c->video_duration-1)/period+1!=c->video_frames) return 0;
     return 1;
 }
 static int open_track(mo_encode *s,mo_encode_track *t,const char *name,int audio) {
@@ -57,7 +57,7 @@ static int open_track(mo_encode *s,mo_encode_track *t,const char *name,int audio
     if (audio) {
         c->sample_rate=s->config.audio_sample_rate;c->time_base=(AVRational){1,c->sample_rate};
         av_channel_layout_default(&c->ch_layout,s->config.audio_channels);
-        c->sample_fmt=s->config.profile==MO_ENCODE_H264_VT_AAC_MP4?AV_SAMPLE_FMT_FLTP:AV_SAMPLE_FMT_FLT;
+        c->sample_fmt=s->config.profile==MO_ENCODE_FFV1_PCM_MP4?AV_SAMPLE_FMT_FLT:AV_SAMPLE_FMT_FLTP;
         c->bit_rate=s->config.audio_bit_rate;
     } else {
         c->width=s->config.width;c->height=s->config.height;c->pix_fmt=AV_PIX_FMT_YUV420P;
@@ -93,17 +93,42 @@ static int open_track(mo_encode *s,mo_encode_track *t,const char *name,int audio
     }
     return av_frame_get_buffer(f,32);
 }
-int32_t mo_encode_open(const mo_encode_io *io,const mo_encode_config *config,const mo_encode_limits *limits,mo_encode **out,mo_media_error *e) {
+static int external_video(mo_encode *s,const uint8_t *description,uint32_t bytes) {
+    mo_encode_track *t=&s->video;
+    t->codec=avcodec_alloc_context3(NULL);if (!t->codec) return AVERROR(ENOMEM);
+    AVCodecContext *c=t->codec;
+    c->codec_type=AVMEDIA_TYPE_VIDEO;c->codec_id=AV_CODEC_ID_H264;c->pix_fmt=AV_PIX_FMT_YUV420P;
+    c->width=s->config.width;c->height=s->config.height;c->sample_aspect_ratio=(AVRational){1,1};
+    c->time_base=(AVRational){1,s->config.video_time_scale};
+    c->framerate=(AVRational){s->config.frame_rate_num,s->config.frame_rate_den};
+    c->color_primaries=AVCOL_PRI_BT709;c->color_trc=AVCOL_TRC_BT709;c->colorspace=AVCOL_SPC_BT709;
+    c->color_range=AVCOL_RANGE_MPEG;c->chroma_sample_location=AVCHROMA_LOC_LEFT;
+    c->extradata=av_mallocz((size_t)bytes+AV_INPUT_BUFFER_PADDING_SIZE);if (!c->extradata) return AVERROR(ENOMEM);
+    memcpy(c->extradata,description,bytes);c->extradata_size=(int)bytes;
+    t->stream=avformat_new_stream(s->format,NULL);if (!t->stream) return AVERROR(ENOMEM);
+    t->stream->time_base=c->time_base;t->stream->avg_frame_rate=c->framerate;t->stream->sample_aspect_ratio=c->sample_aspect_ratio;
+    int ret=avcodec_parameters_from_context(t->stream->codecpar,c);if (ret<0) return ret;
+    t->parser=av_parser_init(AV_CODEC_ID_H264);if (!t->parser) return AVERROR(ENOSYS);
+    t->parser->flags|=PARSER_FLAG_COMPLETE_FRAMES;
+    return 0;
+}
+static int32_t open_profile(const mo_encode_io *io,const mo_encode_config *config,const mo_encode_limits *limits,const uint8_t *description,uint32_t bytes,mo_encode **out,mo_media_error *e) {
     if (out) *out=NULL;
     if (!out || !validate(io,config,limits)) return mo_media_fail(e,MO_MEDIA_INVALID,0,"invalid encode configuration");
-    if (!(mo_encode_profiles() & (uint32_t)config->profile)) return mo_media_fail(e,MO_MEDIA_UNSUPPORTED,0,"encoding profile unavailable");
+    const int external=config->profile==MO_ENCODE_EXTERNAL_AVC_AAC_MP4;
+    if (external) {
+        if (!description || bytes<7 || bytes>1048576 || description[0]!=1 || (description[4]&3)!=3 || !(description[5]&31))
+            return mo_media_fail(e,MO_MEDIA_INVALID,0,"invalid external AVC description");
+        if (!av_guess_format("mp4",NULL,NULL) || (config->audio_samples && !avcodec_find_encoder_by_name("aac")))
+            return mo_media_fail(e,MO_MEDIA_UNSUPPORTED,0,"AAC/MP4 capability unavailable");
+    } else if (description || bytes || !(mo_encode_profiles() & (uint32_t)config->profile)) return mo_media_fail(e,MO_MEDIA_UNSUPPORTED,0,"encoding profile unavailable");
     mo_encode *s=av_mallocz(sizeof(*s));if (!s) return mo_media_fail(e,MO_MEDIA_LIMIT,AVERROR(ENOMEM),"encoder allocation");
     s->io=*io;s->config=*config;s->limits=*limits;
-    const int h264=config->profile==MO_ENCODE_H264_VT_AAC_MP4;
+    const int h264=config->profile!=MO_ENCODE_FFV1_PCM_MP4;
     int ret=avformat_alloc_output_context2(&s->format,NULL,"mp4",NULL);
     if (ret>=0) ret=mo_encode_io_open(s);
     if (ret>=0 && mo_encode_poll(s)) ret=AVERROR_EXIT;
-    if (ret>=0) ret=open_track(s,&s->video,h264?"h264_videotoolbox":"ffv1",0);
+    if (ret>=0) ret=external?external_video(s,description,bytes):open_track(s,&s->video,h264?"h264_videotoolbox":"ffv1",0);
     if (ret>=0 && config->audio_samples) ret=open_track(s,&s->audio,h264?"aac":"pcm_f32le",1);
     if (!config->audio_samples) s->audio.done=1;
     AVDictionary *options=NULL;
@@ -117,6 +142,18 @@ int32_t mo_encode_open(const mo_encode_io *io,const mo_encode_config *config,con
     if (ret>=0 && mo_encode_poll(s)) ret=AVERROR_EXIT;
     if (ret<0) {int status=mo_encode_error(s,e,ret,"open encoding profile");mo_encode_close(s);return status;}
     *out=s;return MO_MEDIA_OK;
+}
+int32_t mo_encode_open(const mo_encode_io *io,const mo_encode_config *config,const mo_encode_limits *limits,mo_encode **out,mo_media_error *e) {
+    if (out) *out=NULL;
+    if (config && config->profile==MO_ENCODE_EXTERNAL_AVC_AAC_MP4)
+        return mo_media_fail(e,MO_MEDIA_UNSUPPORTED,0,"external AVC requires explicit packet entry point");
+    return open_profile(io,config,limits,NULL,0,out,e);
+}
+int32_t mo_encode_open_avc(const mo_encode_io *io,const mo_encode_config *config,const mo_encode_limits *limits,const uint8_t *description,uint32_t bytes,mo_encode **out,mo_media_error *e) {
+    if (out) *out=NULL;
+    if (!config || config->profile!=MO_ENCODE_EXTERNAL_AVC_AAC_MP4)
+        return mo_media_fail(e,MO_MEDIA_INVALID,0,"external AVC profile required");
+    return open_profile(io,config,limits,description,bytes,out,e);
 }
 static int receive(mo_encode *s,mo_encode_track *t,int draining) {
     AVPacket *packet=av_packet_alloc();if (!packet) return AVERROR(ENOMEM);
@@ -145,8 +182,25 @@ static int start_call(mo_encode *s,mo_media_error *e) {
     return 0;
 }
 static int invalid(mo_encode *s,mo_media_error *e,const char *message) {s->io_error=MO_MEDIA_INVALID;return mo_encode_error(s,e,AVERROR(EINVAL),message);}
+/* A complete AVC access unit with immutable out-of-band SPS/PPS. This framing
+   check is deliberately not a second H.264 decoder. Parser metadata is reset
+   per packet so an unparseable packet cannot reuse the previous dimensions. */
+static int external_framing(const uint8_t *data,uint32_t bytes,int key) {
+    uint32_t at=0;int slices=0;
+    while (at<bytes) {
+        if (bytes-at<5) return 0;
+        uint32_t n=(uint32_t)data[at]<<24|(uint32_t)data[at+1]<<16|(uint32_t)data[at+2]<<8|data[at+3];at+=4;
+        if (!n || n>bytes-at || (data[at]&128)) return 0;
+        int type=data[at]&31;
+        if (type==1 || type==5) {if ((type==5)!=key) return 0;slices++;}
+        else if (type!=6 && type!=9 && type!=12) return 0;
+        at+=n;
+    }
+    return slices>0;
+}
 int32_t mo_encode_video(mo_encode *s,const mo_encode_video_frame *v,mo_media_error *e) {
     int ret=start_call(s,e);if (ret<0) return ret;
+    if (s->config.profile==MO_ENCODE_EXTERNAL_AVC_AAC_MP4) return invalid(s,e,"external AVC profile requires packets");
     if (!v || v->pts!=s->video_end || v->duration<=0 || v->duration>s->config.video_duration-v->pts ||
         s->stats.video_frames>=(uint64_t)s->config.video_frames) return invalid(s,e,"non-contiguous video frame");
     int64_t expected=(int64_t)s->config.video_time_scale*s->config.frame_rate_den/s->config.frame_rate_num;
@@ -172,6 +226,39 @@ int32_t mo_encode_video(mo_encode *s,const mo_encode_video_frame *v,mo_media_err
     s->video_pending[slot].used=1;s->video_pending[slot].pts=v->pts;s->video_pending[slot].duration=v->duration;
     ret=send_frame(s,&s->video,f);if (ret<0) return mo_encode_error(s,e,ret,"encode video frame");
     s->stats.video_frames++;s->video_end+=v->duration;return MO_MEDIA_OK;
+}
+int32_t mo_encode_avc(mo_encode *s,int64_t pts,int64_t duration,const uint8_t *data,uint32_t bytes,int32_t key,mo_media_error *e) {
+    int ret=start_call(s,e);if (ret<0) return ret;
+    if (s->config.profile!=MO_ENCODE_EXTERNAL_AVC_AAC_MP4 || !data || !bytes || bytes>s->limits.max_packet_bytes ||
+        pts!=s->video_end || duration<=0 || duration>s->config.video_duration-pts ||
+        s->stats.video_frames>=(uint64_t)s->config.video_frames || (key!=0 && key!=1) || (!pts && !key))
+        return invalid(s,e,"invalid external AVC packet or clock");
+    int64_t expected=(int64_t)s->config.video_time_scale*s->config.frame_rate_den/s->config.frame_rate_num;
+    if (expected>s->config.video_duration-pts) expected=s->config.video_duration-pts;
+    if (duration!=expected) return invalid(s,e,"external AVC packet duration mismatch");
+    if (!external_framing(data,bytes,key)) return invalid(s,e,"external AVC access unit framing");
+    AVPacket *p=av_packet_alloc();if (!p) return mo_encode_error(s,e,AVERROR(ENOMEM),"packet allocation");
+    ret=av_new_packet(p,(int)bytes);
+    if (ret>=0) {
+        memcpy(p->data,data,bytes);
+        uint8_t *parsed=NULL;int length=0;
+        s->video.parser->width=0;s->video.parser->height=0;s->video.parser->format=AV_PIX_FMT_NONE;
+        ret=av_parser_parse2(s->video.parser,s->video.codec,&parsed,&length,p->data,(int)bytes,pts,pts,0);
+        AVCodecParserContext *parser=s->video.parser;
+        if (ret!=(int)bytes || length!=(int)bytes ||
+            (parser->pict_type!=AV_PICTURE_TYPE_I && parser->pict_type!=AV_PICTURE_TYPE_P) || parser->key_frame!=key ||
+            parser->width!=s->config.width || parser->height!=s->config.height || parser->format!=AV_PIX_FMT_YUV420P ||
+            parser->picture_structure!=AV_PICTURE_STRUCTURE_FRAME)
+            ret=AVERROR_INVALIDDATA;
+        else {
+            p->pts=pts;p->dts=pts;p->duration=duration;p->flags=key?AV_PKT_FLAG_KEY:0;
+            s->video_pending[0].used=1;s->video_pending[0].pts=pts;s->video_pending[0].duration=duration;
+            ret=mo_encode_queue(s,&s->video,p);
+        }
+    }
+    av_packet_free(&p);
+    if (ret<0) return mo_encode_error(s,e,ret,"external AVC packet interpretation");
+    s->stats.video_frames++;s->video_end+=duration;return MO_MEDIA_OK;
 }
 static int send_audio(mo_encode *s) {
     AVFrame *f=s->audio.frame;
@@ -207,7 +294,8 @@ int32_t mo_encode_finish(mo_encode *s,mo_encode_stats *stats,mo_media_error *e) 
     int ret=start_call(s,e);if (ret<0) return ret;
     if (!stats || s->stats.video_frames!=(uint64_t)s->config.video_frames || s->video_end!=s->config.video_duration ||
         s->stats.audio_samples!=(uint64_t)s->config.audio_samples || s->audio_fill) return invalid(s,e,"incomplete export input");
-    ret=send_frame(s,&s->video,NULL);
+    if (s->config.profile==MO_ENCODE_EXTERNAL_AVC_AAC_MP4) {s->video.done=1;ret=mo_encode_flush_ready(s);}
+    else ret=send_frame(s,&s->video,NULL);
     if (ret>=0 && s->audio.codec) ret=send_frame(s,&s->audio,NULL);
     if (ret>=0) ret=mo_encode_flush_ready(s);
     if (ret>=0 && (s->pending_packets || s->stats.video_packets!=s->stats.video_frames)) ret=AVERROR_INVALIDDATA;

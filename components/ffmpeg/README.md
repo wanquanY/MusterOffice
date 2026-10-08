@@ -49,6 +49,16 @@ Limits cover input/read bytes, stream count, pixel/sample/channel limits, active
 
 ## Evidence and remaining work
 
+The browser encoding profile now builds the same original AAC/MP4 core as a
+callback-only Wasm leaf, accepting explicitly ordered WebCodecs AVC packets.
+It has no software video encoder, filesystem, network or server execution.
+Its separate library/bridge builders verify the fixed closure and preserve
+relinkable objects, source/build records and upstream license notices. This is
+a development component, not binary distribution clearance. See
+[browser encoding evidence and limitations](../../docs/implementation/video-browser-encoding.md),
+including the current I/P-only profile, exact clocks, actual AAC delay research,
+and the still-required host verification/publication boundary.
+
 macOS arm64 local checks: 77 actual H.264 frames with VFR gaps and decode/presentation reordering, exact frame PTS/active-plane MD5 matches against the independent decoder, forward/backward seek with generation changes, 13-byte short reads, EOF/drain, cancellation, invalid reuse, too-small output capacity and input/read/frame/pixel/work budgets. Explicit BT.709 tags are checked in the fixture before verifying decoder metadata. AAC: 144,000 samples with continuous timestamps; maximum PCM error against the independent decoder below `1e-5`, RMS below `1e-6`. Normal and ASan/UBSan profiles both pass.
 
 Local reports live in ignored `.codex-work/media-native-checked/report.json` and `media-native-sanitized-current/report.json`; they contain source, compiler, artifacts, commands and reference versions. Release-profile shared libraries plus wrapper total 7,392,248 bytes on this build. This excludes the Rust worker, fonts, GPU runtime, other optional codecs and platform frameworks; it is not the final product download/memory size or performance result.

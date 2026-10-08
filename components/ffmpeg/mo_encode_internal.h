@@ -14,6 +14,7 @@ typedef struct {
     AVCodecContext *codec;
     AVStream *stream;
     AVFrame *frame;
+    AVCodecParserContext *parser; /* external AVC profile only */
     mo_encode_packet *head, *tail;
     int done, has_dts;
     int64_t last_dts;

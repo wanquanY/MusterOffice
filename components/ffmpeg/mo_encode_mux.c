@@ -111,6 +111,7 @@ int mo_encode_queue(mo_encode *s,mo_encode_track *t,AVPacket *p) {
     return mo_encode_flush_ready(s);
 }
 void mo_encode_track_close(mo_encode_track *t) {
+    if (t->parser) av_parser_close(t->parser);
     avcodec_free_context(&t->codec);av_frame_free(&t->frame);
     while (t->head) {mo_encode_packet *n=t->head;t->head=n->next;av_packet_free(&n->packet);av_free(n);}
 }
