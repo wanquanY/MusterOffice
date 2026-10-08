@@ -2,6 +2,16 @@
 
 2026-10-09 · 目标执行中，尚未达到整体验收。
 
+## 本批增量：原调用的版本化 Gateway 检查
+
+产品提交 `ba48c28da` 增加显式内部 `browser.video.inspect@2`，将 current/明确 revision 选择与原 invocation/job/conversation 接入本地持久准入；旧 `@1` 固定版本含义不变。独立 engine/program、原 home/组件路由、领取/执行双重校验和 additive migration 223 已实现。通用代码 Runner 拒绝两类视频请求；只回传最多 64 KiB 元数据，媒体和快照保留本地。
+
+真实 Chrome 正常产品登录后关闭面板，新调用选择 revision 3；人工修改到 4 后原 Job 重放仍返回 3、无新执行/上传，新调用返回 4，明确版本返回 2；另一个独立浏览器不会接手原 home。旧协议回归仍返回原 revision 2。三个新意图分别回传 1,484 / 1,474 / 1,484 bytes，退出登录关闭连接，没有页面错误。源码摘要 `5981098307f13acfd1dcddb74996fd3c09317704cc0d4b486d8b576cbcb5ba81`，产品 `.codex-work/video-agent-inspection-v2/` 保存两个正常页面报告。
+
+独立 workspace/all-targets 编译、82 项 Rust/真实数据库/Web/Browser 测试、Web/Browser 类型、变更 lint、迁移/协议锁和正式 Web 构建预算通过。相关 Rust 库 strict Clippy 通过；扩展范围仍存在原 capability physical_execution 测试及 Postgres 模块告警，未作为全部通过报告。183 个原 WIP 完整保留。详细验证和复现见产品 `docs/architecture/browser-video-agent.md`。
+
+这是实际内部执行链，不是公开 Agent Tool 发布；原公开 Tool 的请求/结果校验、编辑/导出和本地消息附件仍待接通。Office 核心、固定组件和稳定 `v0.1.0` 未变，最终目标继续执行。
+
 ## 本批增量：双端输入框选择剪辑工程
 
 产品提交 `cea54a874` 已把工程选择接入真实 Web/桌面布局：选中视频创作技能后，可在编辑器点击“用于本条消息”，输入框显示可移除的工程名称。目标来自实际打开的工程及宿主身份，名称只是显示信息；关闭面板不改变选择。草稿按账号与会话保存，刷新恢复；移除技能清除目标。发送、召回、重跑与消息投影携带同一目标，异步回执和会话切换不能覆盖新草稿。
