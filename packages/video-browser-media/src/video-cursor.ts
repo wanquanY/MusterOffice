@@ -32,7 +32,7 @@ export class BrowserVideoCursor {
     finally { await session.stream.retire(); }
   }
   private async open(selection: Selection): Promise<DecodeSession> {
-    const packets = await IndexedVideoPackets.open(this.blob, this.index, this.track, selection, this.limits.maxEncodedPacketBytes, this.signal);
+    const packets = await IndexedVideoPackets.open(this.blob, this.index, this.track, selection, this.limits.maxEncodedPacketBytes, this.signal, this.budget);
     this.check();
     const stream = await BudgetedVideoStream.open(this.track, 0, this.budget, this.limits.maxEncodedPacketBytes, this.limits.maxPixels, this.signal, packets);
     if (this.closed || this.signal.aborted) { await stream.retire(); this.check(); }

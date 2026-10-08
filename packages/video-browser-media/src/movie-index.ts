@@ -1,6 +1,6 @@
 import { BrowserMediaError, requireMedia, type BrowserMediaLimits, type TimeSample } from './contract.js';
 import type { MovieAudioClock } from './pcm-contract.js';
-import type { BrowserMediaIndex, BrowserMediaIndexRuntime, MovieVideoInfo, MovieVideoSelection } from './movie-contract.js';
+import type { AvcSampleMetadata, BrowserMediaIndex, BrowserMediaIndexRuntime, MovieVideoInfo, MovieVideoSelection } from './movie-contract.js';
 import { compare, contains, fraction, validateScale } from './time.js';
 
 export interface RawMovieTrack { ordinal: number; id: number; kind: 'video' | 'audio'; timescale: number;
@@ -21,21 +21,21 @@ export function integer(value: unknown): bigint {
   requireMedia(typeof value === 'string' && value.length <= 20 && /^(0|-?[1-9][0-9]*)$/.test(value), 'invalid_timing');
   return BigInt(value);
 }
-function callIndex<T>(run: () => T): T {
+function callIndex<T>(run: () => T, invalidCode: 'invalid_request' | 'unsupported_media' = 'invalid_request'): T {
   try {
     return run();
   } catch (error) {
     if (error instanceof BrowserMediaError) throw error;
     let kind: unknown;
     try { kind = object(JSON.parse(String(error))).kind; } catch { /* Unknown ABI failures are not valid media. */ }
-    throw new BrowserMediaError(kind === 'limit' ? 'resource_limit' : kind === 'unsupported' ? 'unsupported_media' : 'invalid_request');
+    throw new BrowserMediaError(kind === 'limit' ? 'resource_limit' : kind === 'unsupported' ? 'unsupported_media' : invalidCode);
   }
 }
-function decode(run: () => string): Record<string, unknown> {
+function decode(run: () => string, invalidCode: 'invalid_request' | 'unsupported_media' = 'invalid_request'): Record<string, unknown> {
   return callIndex(() => {
     const text = run(); requireMedia(typeof text === 'string' && text.length <= 2 << 20, 'resource_limit');
     return object(JSON.parse(text));
-  });
+  }, invalidCode);
 }
 
 /** A single immutable Blob supplies both the Rust index and decoder bytes.
@@ -45,18 +45,20 @@ export class BrowserMovieIndex {
   private index: BrowserMediaIndex | undefined;
   readonly tracks: readonly RawMovieTrack[];
   private readonly info = new Map<number, MovieVideoInfo>();
-  private constructor(index: BrowserMediaIndex, tracks: RawMovieTrack[], private readonly movieTimescale: number) { this.index = index; this.tracks = tracks; }
+  private constructor(index: BrowserMediaIndex, tracks: RawMovieTrack[], private readonly movieTimescale: number,
+    private readonly readAt: (offset: bigint, count: number) => Uint8Array<ArrayBuffer>) { this.index = index; this.tracks = tracks; }
   static open(blob: Blob, runtime: BrowserMediaIndexRuntime, limits: BrowserMediaLimits): BrowserMovieIndex {
     const worker = globalThis as unknown as { FileReaderSync?: unknown };
     requireMedia(typeof worker.FileReaderSync === 'function', 'unsupported_media');
     // FileReaderSync is Worker-only and absent from the DOM declaration library.
     const Reader = worker.FileReaderSync as new () => { readAsArrayBuffer(blob: Blob): ArrayBuffer };
     const reader = new Reader();
-    const index = callIndex(() => runtime.MediaIndex.open(BigInt(blob.size), (offset, count) => {
+    const readAt = (offset: bigint, count: number): Uint8Array<ArrayBuffer> => {
       requireMedia(typeof offset === 'bigint' && offset >= 0n && Number.isInteger(count) && count > 0 && count <= 65536
         && offset + BigInt(count) <= BigInt(blob.size), 'resource_limit');
       return new Uint8Array(reader.readAsArrayBuffer(blob.slice(Number(offset), Number(offset) + count)));
-    }, JSON.stringify({ maxInputBytes: limits.maxFileBytes, maxMetadataBytes: 32 << 20, maxBoxes: 8192,
+    };
+    const index = callIndex(() => runtime.MediaIndex.open(BigInt(blob.size), readAt, JSON.stringify({ maxInputBytes: limits.maxFileBytes, maxMetadataBytes: 32 << 20, maxBoxes: 8192,
       maxTracks: limits.maxTracks, maxSamples: 2_000_000, maxEdits: 4096, maxSampleDescriptions: 128, maxDescriptionBytes: 1 << 20 })));
     try {
       const summary = decode(() => index.summary());
@@ -77,10 +79,48 @@ export class BrowserMovieIndex {
           declaredTrackDuration: track.declaredTrackDuration as string | null });
       }
       const movieTimescale = u32(summary.movieTimescale); validateScale(movieTimescale);
-      return new BrowserMovieIndex(index, tracks, movieTimescale);
+      return new BrowserMovieIndex(index, tracks, movieTimescale, readAt);
     } catch (error) { index.free(); throw error; }
   }
   private handle(): BrowserMediaIndex { requireMedia(this.index, 'closed'); return this.index; }
+  async scanAvc(id: number, through: number, signal: AbortSignal): Promise<void> {
+    const track = this.track(id);
+    requireMedia(Number.isInteger(through) && through >= 0 && through < track.samples, 'invalid_request');
+    let previous = -1;
+    for (;;) {
+      signal.throwIfAborted();
+      const value = decode(() => this.handle().scanAvc(JSON.stringify({track:track.ordinal,through,count:128}), this.readAt), 'unsupported_media');
+      const scanned = u32(value.scanned);
+      requireMedia(scanned > previous && scanned <= track.samples && typeof value.ready === 'boolean'
+        && value.ready === (scanned > through), 'unsupported_media');
+      if (value.ready) return;
+      previous = scanned;
+      // Yield to host cancel/deadline messages between bounded synchronous batches.
+      await new Promise<void>(resolve => setTimeout(resolve, 0));
+    }
+  }
+  avcSample(id: number, sample: number): AvcSampleMetadata {
+    const track = this.track(id);
+    const value = decode(() => this.handle().avcSample(JSON.stringify({track:track.ordinal,sample})));
+    requireMedia(value.sample === sample && u32(value.description) < track.descriptions
+      && (value.chromaLocation === null || ['left','center','topLeft','top','bottomLeft','bottom'].includes(String(value.chromaLocation))), 'unsupported_media');
+    if (value.picture !== null) {
+      const picture = object(value.picture), sequence = object(picture.sequence), color = object(sequence.color);
+      requireMedia(typeof picture.idr === 'boolean' && typeof picture.fieldPicture === 'boolean'
+        && typeof sequence.frameMbsOnly === 'boolean' && typeof sequence.separateColourPlane === 'boolean'
+        && Array.isArray(sequence.visible) && sequence.visible.length === 4, 'unsupported_media');
+      u32(picture.ppsId); u32(picture.ppsRevision); u32(picture.spsRevision); u32(sequence.id);
+      u32(sequence.codedWidth); u32(sequence.codedHeight); u32(sequence.chromaFormat);
+      Object.freeze(color); Object.freeze(sequence.visible); Object.freeze(sequence); Object.freeze(picture);
+    }
+    return Object.freeze(value) as unknown as AvcSampleMetadata;
+  }
+  avcBootstrap(id: number, sample: number): Uint8Array<ArrayBuffer> {
+    const track = this.track(id);
+    const bytes = callIndex(() => this.handle().avcBootstrap(JSON.stringify({track:track.ordinal,sample})));
+    requireMedia(bytes instanceof Uint8Array && bytes.byteLength <= (1 << 20) + 1152, 'resource_limit');
+    return bytes;
+  }
   track(id: number, kind: 'video' | 'audio' = 'video'): RawMovieTrack {
     this.handle(); const track = this.tracks.find(track => track.id === id);
     requireMedia(track?.kind === kind, 'invalid_request'); return track;

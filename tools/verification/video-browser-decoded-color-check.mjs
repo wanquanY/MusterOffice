@@ -43,7 +43,9 @@ self.onmessage = async ({data}) => {
     const request = data.requests[frameIndex];
     const selection = await input.movieVideoAt(track.id, request, async (sample) => {
       const lease = sample.cloneFrame(); format = lease.frame.format; colorSpace = lease.frame.colorSpace.toJSON();
-      const image = await gpu.importVideo(lease, JSON.parse(runtime.video_input_plan(JSON.stringify({width:sample.width,height:sample.height,format,colorSpace,chromaLocation:"left"}))));
+      const chromaLocation = sample.codecMetadata?.chromaLocation;
+      if (!chromaLocation) { lease.close(); throw Error('shared codec metadata missing'); }
+      const image = await gpu.importVideo(lease, JSON.parse(runtime.video_input_plan(JSON.stringify({width:sample.width,height:sample.height,format,colorSpace,chromaLocation}))));
       try {
         actual = await gpu.readback(image);
         bitmap = await gpu.toBitmap(image,JSON.parse(runtime.srgb_output_parameters(sample.width,sample.height,false,undefined,true)));
@@ -86,7 +88,7 @@ try {
     for(const row of result.rows) assert(row.maximum<2e-5 && row.rms<2e-6, `Decoded color mismatch at ${row.ordinal}: ${row.maximum}/${row.rms}`);
   } catch(error){checkError=error;}
   report.status=checkError?'failed':'passed';
-  report.scope='Real WebCodecs H.264 movie selection and shared raw-plane GPU normalization plus bitmap production; reference native linear samples independently validated against FFmpeg. Explicit fixture left chroma. Not generic bitstream color discovery, UI playback, zero-copy or performance acceptance.';
+  report.scope='Real WebCodecs H.264 movie selection, shared per-picture chroma metadata and raw-plane GPU normalization plus bitmap production; reference native linear samples independently validated against FFmpeg. Not complete colour-override policy, UI playback, zero-copy or performance acceptance.';
   await writeFile(output+'/report.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
   if(checkError) throw checkError;
 

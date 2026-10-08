@@ -14,6 +14,7 @@ fn failure(error: MediaError) -> JsValue {
 #[wasm_bindgen]
 pub struct MediaIndex {
     inner: PortableIndex,
+    byte_length: u64,
 }
 #[wasm_bindgen]
 impl MediaIndex {
@@ -29,33 +30,11 @@ impl MediaIndex {
         } else {
             portable::decode(options).map_err(failure)?
         };
-        let mut reader = |offset: u64, destination: &mut [u8]| -> io::Result<usize> {
-            if destination.len() > 65536
-                || offset > byte_length
-                || destination.len() as u64 > byte_length - offset
-            {
-                return Err(io::Error::other("source read range"));
-            }
-            let value = read_at
-                .call2(
-                    &JsValue::UNDEFINED,
-                    &JsValue::from(offset),
-                    &JsValue::from(destination.len() as u32),
-                )
-                .map_err(|_| io::Error::other("host read failed"))?;
-            let bytes = value
-                .dyn_into::<Uint8Array>()
-                .map_err(|_| io::Error::other("host read must return Uint8Array"))?;
-            let length = bytes.length() as usize;
-            if length == 0 || length > destination.len() {
-                return Err(io::Error::other("host read size"));
-            }
-            bytes.copy_to(&mut destination[..length]);
-            Ok(length)
-        };
+        let mut reader = reader(byte_length, read_at);
         Ok(Self {
             inner: PortableIndex::open(&mut reader, byte_length, limits, &|| false)
                 .map_err(failure)?,
+            byte_length,
         })
     }
     pub fn summary(&self) -> Result<String, JsValue> {
@@ -74,6 +53,51 @@ impl MediaIndex {
     }
     pub fn movie(&self, request: &str) -> Result<String, JsValue> {
         self.inner.movie(request, &|| false).map_err(failure)
+    }
+    /// Same immutable byte capability as open; no callback is retained. A host
+    /// yields between bounded batches and owns cancellation/deadline termination.
+    #[wasm_bindgen(js_name=scanAvc)]
+    pub fn scan_avc(&mut self, request: &str, read_at: &Function) -> Result<String, JsValue> {
+        self.inner
+            .scan_avc(request, &mut reader(self.byte_length, read_at), &|| false)
+            .map_err(failure)
+    }
+    #[wasm_bindgen(js_name=avcSample)]
+    pub fn avc_sample(&self, request: &str) -> Result<String, JsValue> {
+        self.inner.avc_sample(request).map_err(failure)
+    }
+    #[wasm_bindgen(js_name=avcBootstrap)]
+    pub fn avc_bootstrap(&self, request: &str) -> Result<Vec<u8>, JsValue> {
+        self.inner.avc_bootstrap(request).map_err(failure)
+    }
+}
+fn reader(
+    byte_length: u64,
+    read_at: &Function,
+) -> impl FnMut(u64, &mut [u8]) -> io::Result<usize> + '_ {
+    move |offset, destination| {
+        if destination.len() > 65536
+            || offset > byte_length
+            || destination.len() as u64 > byte_length - offset
+        {
+            return Err(io::Error::other("source read range"));
+        }
+        let value = read_at
+            .call2(
+                &JsValue::UNDEFINED,
+                &JsValue::from(offset),
+                &JsValue::from(destination.len() as u32),
+            )
+            .map_err(|_| io::Error::other("host read failed"))?;
+        let bytes = value
+            .dyn_into::<Uint8Array>()
+            .map_err(|_| io::Error::other("host read must return Uint8Array"))?;
+        let length = bytes.length() as usize;
+        if length == 0 || length > destination.len() {
+            return Err(io::Error::other("host read size"));
+        }
+        bytes.copy_to(&mut destination[..length]);
+        Ok(length)
     }
 }
 #[wasm_bindgen]

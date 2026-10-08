@@ -79,7 +79,7 @@ export async function cursorCases(runtime, fixture, rows, stats) {
     try {
       await damaged.movieVideoAt(id, first, () => {});
       const rejected = await code(() => damaged.movieVideoAt(id, last, () => {}));
-      check(rejected === 'unsupported_media' && pool.usedBytes === 0, 'mid-stream packet error did not retire cached decoder');
+      check(rejected === 'unsupported_media' && pool.usedBytes === 0, `mid-stream packet error did not retire cached decoder: ${rejected}, ${pool.usedBytes}`);
       const beforeRecovery = stats.configured;
       await damaged.movieVideoAt(id, first, () => {}); await damaged.releaseMovieVideo();
       check(stats.configured === beforeRecovery + 1 && pool.usedBytes === 0, 'failed cursor prevented independent earlier seek');

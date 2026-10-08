@@ -23,9 +23,23 @@ struct MovieRequest {
     start: u32,
     count: u16,
 }
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct AvcScanRequest {
+    track: u32,
+    through: u32,
+    count: u16,
+}
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct AvcSampleRequest {
+    track: u32,
+    sample: u32,
+}
 pub struct PortableIndex {
     inner: IndexedMovie,
     limits: IndexLimits,
+    avc: crate::avc::AvcIndex,
 }
 pub fn decode<T: DeserializeOwned>(input: &str) -> Result<T> {
     if input.len() > 16384 {
@@ -58,10 +72,52 @@ impl PortableIndex {
         Ok(Self {
             inner: IndexedMovie::open(source, length, limits, check)?,
             limits,
+            avc: crate::avc::AvcIndex::new(limits.max_metadata_bytes),
         })
     }
     pub fn summary(&self) -> Result<String> {
         encode(values::summary(IndexSummary::from_index(self.inner.raw())))
+    }
+    /// A separate bounded lazy cache. ReadAt must address the same immutable
+    /// bytes supplied to open. Scan in batches, then query without further I/O.
+    pub fn scan_avc(
+        &mut self,
+        request: &str,
+        source: &mut dyn ReadAt,
+        check: &dyn Fn() -> bool,
+    ) -> Result<String> {
+        let request: AvcScanRequest = decode(request)?;
+        let track = self
+            .inner
+            .raw()
+            .tracks
+            .get(request.track as usize)
+            .ok_or_else(|| MediaError::new(ErrorKind::Invalid, "AVC track index"))?;
+        let scanned = self.avc.scan(
+            request.track,
+            track,
+            request.through,
+            request.count,
+            source,
+            check,
+        )?;
+        encode(json!({"scanned":scanned,"ready":scanned > request.through}))
+    }
+    pub fn avc_sample(&self, request: &str) -> Result<String> {
+        let request: AvcSampleRequest = decode(request)?;
+        let (description, picture) = self.avc.sample(request.track, request.sample)?;
+        // Preserve field metadata even when the current progressive renderer
+        // cannot interpret it. No unsupported field location becomes a guess.
+        let location = picture
+            .and_then(|p| p.sequence.progressive_chroma_location().ok())
+            .flatten();
+        encode(
+            json!({"sample":request.sample,"description":description,"picture":picture,"chromaLocation":location}),
+        )
+    }
+    pub fn avc_bootstrap(&self, request: &str) -> Result<Vec<u8>> {
+        let request: AvcSampleRequest = decode(request)?;
+        self.avc.bootstrap(request.track, request.sample)
     }
     pub fn query(&self, request: &str) -> Result<String> {
         let query: IndexQuery = decode(request)?;

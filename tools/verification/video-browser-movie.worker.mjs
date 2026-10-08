@@ -33,18 +33,22 @@ async function run(data) {
   for (const fixture of data.fixtures) {
     const media = await BrowserMediaInput.open(fixture.blob, { mediaIndexRuntime: runtime, videoBudget: budget });
     const id = fixture.id, info = media.movieVideoInfo(id), rows = [], configured = stats.configured, chunks = stats.chunks;
+    let forward; const randomAccess = [];
     try {
       const reference = new Map(fixture.frames.map((frame, i) => [String(frame.pts), i])), fingerprints = new Map();
       for (const request of fixture.requests) {
-        let actual, span, called = 0; const before = stats.configured;
+        let actual, span, metadata, called = 0; const before = stats.configured;
         const selection = await media.movieVideoAt(id, request.body, async (sample, interval) => {
           called++; span = interval;
+          metadata = sample.codecMetadata;
           actual = new Uint8Array(sample.width * sample.height * 4); await sample.copyRgba(actual);
         });
         let mae = null;
         if (actual) {
           const frame = reference.get(selection.rawStart);
           if (frame === undefined) throw Error('selected frame missing from independent raw oracle');
+          if (!metadata?.picture || metadata.sample !== selection.sample
+            || metadata.chromaLocation?.toLowerCase() !== fixture.frames[frame].chroma) throw Error('per-picture AVC interpretation mismatch');
           const pixels = new Uint8Array(fixture.pixels, frame * actual.length, actual.length);
           let sum = 0; for (let i = 0; i < actual.length; i++) sum += Math.abs(actual[i] - pixels[i]);
           mae = sum / actual.length;
@@ -66,8 +70,22 @@ async function run(data) {
         }
         rows.push({ selection, called, span, mae, configured: stats.configured - before });
       }
+      forward = {configured: stats.configured - configured, chunks: stats.chunks - chunks};
+      const valid = rows.map((row,i)=>({row,request:fixture.requests[i]})).filter(x=>x.row.selection.type==='sample');
+      for (const target of [valid.at(-1), valid[0], valid[Math.floor(valid.length/2)]]) {
+        await media.releaseMovieVideo();
+        let digest, metadata;
+        const selection = await media.movieVideoAt(id, target.request.body, async sample => {
+          const bytes = new Uint8Array(sample.width * sample.height * 4); await sample.copyRgba(bytes);
+          digest = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)), b=>b.toString(16).padStart(2,'0')).join('');
+          metadata = sample.codecMetadata;
+        });
+        if (selection.rawStart !== target.row.selection.rawStart || digest !== fingerprints.get(selection.rawStart)
+          || metadata?.sample !== selection.sample) throw Error('fresh decoder seek differs from sequential decode');
+        randomAccess.push({sample:selection.sample,rawPts:selection.rawStart,chromaLocation:metadata.chromaLocation,digest});
+      }
     } finally { media.close(); }
-    results.push({ info, rows, configured: stats.configured - configured, chunks: stats.chunks - chunks });
+    results.push({ info, rows, ...forward, randomAccess });
   }
   // Existing shared admission also protects indexed reads before codec setup.
   const fixture = data.fixtures[0], request = fixture.requests.find((_, i) => results[0].rows[i].selection.type === 'sample');

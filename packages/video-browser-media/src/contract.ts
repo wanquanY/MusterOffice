@@ -65,6 +65,9 @@ export type BrowserTrack = BrowserVideoTrack | BrowserAudioTrack;
 export interface BrowserMediaInfo { readonly byteLength: number; readonly tracks: readonly BrowserTrack[] }
 export interface SampleInterval { readonly start: ExactRatio; readonly end: ExactRatio }
 export interface BrowserVideoSample {
+  /** Available on exact indexed movie reads. No metadata is invented for legacy
+   * packet-clock reads. Subsampled GPU input requires a known interpretation. */
+  readonly codecMetadata?: import('./movie-contract.js').AvcSampleMetadata;
   readonly width: number; readonly height: number;
   readonly displayWidth: number; readonly displayHeight: number;
   readonly rotation: number; readonly flip: boolean;

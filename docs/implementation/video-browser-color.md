@@ -50,7 +50,7 @@ HDR 输入保留 PQ 的绝对亮度或明确 HLG 显示光解释，直到最终�
 
 产品必须先锁定保存的 documentDigest/revision，并按完整资源绑定授权读取，再把实际图像和同一采样的元数据提交给核心候选。生产 source interpretation 需要从原始 bitstream 获取色度位置，或持久保存用户明确的解释；WebCodecs VideoColorSpace 自身没有色度位置字段。不能为任意视频写死 left。本批测试明确提供已核实的 fixture 元数据。
 
-仍需接通图像解码/ICC、生产色度探测、统一图像 Worker 与已完成的工程音频时钟、最新 seek 的取消与图片 ACK、完整 Web 页面及导出。原生演示文稿能力和已发布 v0.1.0 标签未改动。
+后续 [AVC 帧解释](video-browser-avc-metadata.md) 已接通 indexed movie 的逐 sample 色度 metadata 和随机访问参数恢复；旧颜色证据原先使用显式 fixture 解释，不追溯更改其范围。新的颜色 gate 使用共享 metadata。仍需完成颜色来源冲突策略、图像解码/ICC、统一图像 Worker 与已完成的工程音频时钟、最新 seek 的取消与图片 ACK、完整 Web 页面及导出。已发布 v0.1.0 标签未改动。
 
 ## 固定开发交付
 

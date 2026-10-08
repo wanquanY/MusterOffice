@@ -33,7 +33,17 @@ for (const [id,file] of fixtures.entries()) {
       for(const [n,d] of [[-1,10],[0,1],[1,30000],[1,10],[1001,30000],[1,2],[3,5],[1,1],[13,10],[3,2],[8,5],[3,1],[4,1]])
         for(const side of ['before','after']) queries.push(add('selectVideo',{track:index,time:fraction(n,d),side}));
     }
-    tracks.push({index,stream,packets,track,pages,edits,movie,timing,queries});
+    const avc = [];
+    if(stream.codec_name==='h264' && packets.length) {
+      add('avcSample',{track:index,sample:0}); // not scanned is an explicit state error
+      for(let through=0;through<packets.length;through+=128)
+        add('scanAvc',{track:index,through:Math.min(through+127,packets.length-1),count:128});
+      for(let sample=0;sample<packets.length;sample++) avc.push(add('avcSample',{track:index,sample}));
+      for(const sample of [packets.length-1,0,Math.floor(packets.length/2)]) {
+        add('avcSample',{track:index,sample}); add('avcBootstrap',{track:index,sample});
+      }
+    }
+    tracks.push({index,stream,packets,track,pages,edits,movie,timing,queries,avc});
   }
   add('query',{type:'samples',track:0,start:0,count:129});
   add('query',{type:'track',track:0.5});
@@ -86,6 +96,7 @@ try {
     const actual=result.results[id];assert.deepEqual(actual.values,input.expected);
     assert(actual.maxRead<=65536);assert(actual.totalRead<input.bytes.length/2);
     let samplesCount=0;
+    const decoded=JSON.parse(execFileSync('ffprobe',['-v','error','-ignore_editlist','1','-show_frames','-of','json',input.file],{maxBuffer:8<<20}));
     for(const t of input.tracks) {
       const samples=t.pages.flatMap(i=>actual.values[i].value.items);samplesCount+=samples.length;
       assert.equal(samples.length,t.packets.length);
@@ -93,6 +104,22 @@ try {
       for(const [i,s]of samples.entries()){
         assert.equal(s.pts,String(t.packets[i].pts));assert.equal(BigInt(s.dts)-BigInt(shift),BigInt(t.packets[i].dts));
         assert.equal(s.bytes.offset,t.packets[i].pos);assert.equal(s.bytes.length,t.packets[i].size);
+      }
+      if(t.avc.length) {
+        const frames=new Map(decoded.frames.filter(f=>f.stream_index===t.stream.index).map(f=>[f.pkt_pos,f]));
+        for(const [sample,request]of t.avc.entries()) {
+          const meta=actual.values[request].value, frame=frames.get(t.packets[sample].pos);
+          if(!frame) continue;
+          assert(meta.picture,'decoded frame has no shared picture metadata');
+          const seq=meta.picture.sequence;
+          assert.equal(seq.visible[2],frame.width);assert.equal(seq.visible[3],frame.height);
+          if(frame.chroma_location && frame.chroma_location!=='unspecified' && seq.frameMbsOnly)
+            assert.equal(meta.chromaLocation?.toLowerCase(),frame.chroma_location);
+          if(seq.color.signalPresent && frame.color_range && frame.color_range!=='unknown')
+            assert.equal(seq.color.fullRange,frame.color_range==='pc');
+          for(const [field,tag]of [['primaries','color_primaries'],['transfer','color_transfer'],['matrix','color_space']])
+            if(seq.color.descriptionPresent && seq.color[field]===1) assert.equal(frame[tag],'bt709');
+        }
       }
       if(t.timing!==undefined){
         const data={summary:actual.values[t.timing].value,track:actual.values[t.track].value.track,samples,edits:actual.values[t.edits].value.items,
@@ -105,6 +132,6 @@ try {
       samples:samplesCount,readBytes:actual.totalRead,maxReadRequest:actual.maxRead,readCalls:actual.calls});
   }
   const report={status:'passed',browser:browser.version(),platform:process.platform,architecture:process.arch,sdkManifestSha256:pin,stalledReadTerminated:true,inputs:reports,
-    scope:'Real Worker/FileReaderSync and exact Rust WASM index/time queries, native parity and independent FFprobe packets/fraction edit oracle. No browser codec/movie renderer or product UI acceptance.'};
+    scope:'Real Worker/FileReaderSync and exact Rust WASM index/time/AVC metadata queries, native parity including seek bootstraps and independent FFprobe packets/decoded chroma/fraction edit oracle. No browser codec/movie renderer or product UI acceptance.'};
   await writeFile(path.join(destination,'report.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
 }finally {await browser?.close();await new Promise(resolve=>server.close(resolve));}

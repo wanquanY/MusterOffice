@@ -34,6 +34,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ),
             Some("selectVideo") => index.select_video(&body, &|| false),
             Some("movie") => index.movie(&body, &|| false),
+            Some("scanAvc") => index.scan_avc(
+                &body,
+                &mut |offset, out: &mut [u8]| {
+                    source.seek(SeekFrom::Start(offset))?;
+                    source.read(out)
+                },
+                &|| false,
+            ),
+            Some("avcSample") => index.avc_sample(&body),
+            Some("avcBootstrap") => index
+                .avc_bootstrap(&body)
+                .and_then(|bytes| mo_media_isobmff::portable::encode(json!(bytes))),
             _ => return Err("unknown verification method".into()),
         };
         results.push(match result {

@@ -1,6 +1,7 @@
 //! Bounded ISO BMFF sample tables over explicit immutable byte capabilities.
 //! Keeps decode/composition/movie clocks separate. Does not decode, repair
 //! timestamps, fetch external data references, or infer continuous coverage.
+mod avc;
 mod boxes;
 pub mod movie;
 pub mod portable;

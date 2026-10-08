@@ -1,9 +1,11 @@
 import type { VideoSample, AudioSample } from 'mediabunny';
 import { requireMedia, type BrowserVideoSample, type BrowserAudioSample } from './contract.js';
 import { BrowserVideoBudget, videoSurfaceBytes } from './video-budget.js';
+import type { AvcSampleMetadata } from './movie-contract.js';
 
-export function videoView(sample: VideoSample, check: () => void, budget: BrowserVideoBudget, admittedSurfaceBytes: number): BrowserVideoSample {
+export function videoView(sample: VideoSample, check: () => void, budget: BrowserVideoBudget, admittedSurfaceBytes: number, codecMetadata?: AvcSampleMetadata): BrowserVideoSample {
   return Object.freeze({
+    ...(codecMetadata ? {codecMetadata} : {}),
     width: sample.visibleRect.width, height: sample.visibleRect.height,
     displayWidth: sample.displayWidth, displayHeight: sample.displayHeight,
     rotation: sample.rotation, flip: sample.flip, pixelAspectRatio: Object.freeze({ ...sample.pixelAspectRatio }),

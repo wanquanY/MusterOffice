@@ -86,7 +86,7 @@ try {
       worker.onmessage = e => resolve(e.data); worker.onerror = e => reject(Error(e.message));
       fetch('/missing-idr').then(r => r.blob()).then(missingIdr => worker.postMessage({ module, fixtures, missingIdr }, fixtures.map(f => f.pixels))).catch(reject);
     }); } finally { clearTimeout(timer); worker.terminate(); }
-  }, inputs.map(({ id, frames, requests, packets }) => ({ id, frames: frames.map(f => ({ pts: f.pts })), requests, packets })));
+  }, inputs.map(({ id, frames, requests, packets }) => ({ id, frames: frames.map(f => ({ pts: f.pts, chroma:f.chroma_location })), requests, packets })));
   await writeFile(path.join(output, 'actual.json'), JSON.stringify(actual)); assert(actual.ok, JSON.stringify(actual));
   const reports = inputs.map((input, i) => {
     const rows = actual.results[i].rows; assert.equal(rows.length, input.expected.length);
@@ -103,9 +103,10 @@ try {
     // exactly one restart. Dwell/before/after do not recreate decoder state.
     assert.equal(actual.results[i].configured, input.edits.length > 1 ? 2 : 1);
     assert(actual.results[i].chunks <= input.frames.length * (input.edits.length > 1 ? 2 : 1));
+    assert.equal(actual.results[i].randomAccess.length, 3);
     return { file: path.basename(input.file), sha256: sha(input.bytes), movieQueries: rows.length, decodedPictures: pictures,
       rgbaMeanError: sum / pictures, rgbaMaxFrameError: maximum, movieInfo: actual.results[i].info,
-      decoderCreations: actual.results[i].configured, decodedChunks: actual.results[i].chunks };
+      decoderCreations: actual.results[i].configured, decodedChunks: actual.results[i].chunks, randomAccess: actual.results[i].randomAccess };
   });
   assert.deepEqual(errors, []); assert.equal(actual.stats.liveFrames + actual.stats.liveDecoders, 0);
   assert.equal(actual.budget.used, 0); assert(actual.budget.peak <= actual.budget.capacity);

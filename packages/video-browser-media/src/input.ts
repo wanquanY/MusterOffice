@@ -152,7 +152,12 @@ export class BrowserMediaInput {
       await cursor.read(selection, (sample, surfaceBytes) => this.borrow(sample, async borrowed => {
         requireMedia(sample.visibleRect.width * sample.visibleRect.height <= this.limits.maxPixels, 'resource_limit');
         const check = () => { borrowed(); cursor.check(); };
-        await consume(videoView(sample, check, this.budget, surfaceBytes), structuredClone(selection.movie));
+        const metadata = this.movieIndex!.avcSample(id, selection.sample);
+        requireMedia(metadata.picture && !metadata.picture.fieldPicture && metadata.picture.sequence.frameMbsOnly
+          && !metadata.picture.sequence.separateColourPlane, 'unsupported_codec');
+        requireMedia(metadata.picture.sequence.visible[2] === sample.visibleRect.width
+          && metadata.picture.sequence.visible[3] === sample.visibleRect.height, 'unsupported_media');
+        await consume(videoView(sample, check, this.budget, surfaceBytes, metadata), structuredClone(selection.movie));
       }, false));
       return selection;
     }, signal);

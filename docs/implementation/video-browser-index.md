@@ -6,7 +6,7 @@
 
 原生私有 wire 中的分页索引查询移入 `mo-media-isobmff::query`；原 wire 原样重导出，序列化协议不变。新 `IndexedMovie` 持有只读索引及按轨道缓存的 `VideoTiming`。原生 worker 和新的 `mo-media-index-wasm` 都调用同一实现，不在 TypeScript 重写 edit list、CTS/DTS、before/after 或定格映射。
 
-独立 WASM 只依赖媒体值类型、ISO BMFF、精确时间与公共序列化，不链接 codec、GPU、PPT、文件系统或网络。它只接收宿主明确提供的同步 `ReadAt` 字节能力；解析完成后不保留该回调。宿主负责素材身份、授权、任务、Worker 生命周期与硬截止。
+独立 WASM 依赖媒体值类型、ISO BMFF、精确时间、公共序列化和共享 AVC 头部解释，不链接媒体解码器、GPU、PPT、文件系统或网络。它只接收宿主明确提供的同步 `ReadAt` 字节能力；解析完成后不保留该回调。宿主负责素材身份、授权、任务、Worker 生命周期与硬截止。后续帧头批量扫描、颜色段及随机访问恢复见 [AVC metadata](video-browser-avc-metadata.md)；下列时间索引证据保留当时范围。
 
 浏览器在专用 Worker 内使用 `FileReaderSync.readAsArrayBuffer(blob.slice(...))`，Rust 单次读取不超过 64 KiB，跳过 `mdat` 媒体负载，只读取有界元数据。没有把完整素材读入 WASM。同步文件读取用于 Worker 的边界依据 [File API](https://w3c.github.io/FileAPI/#readAsArrayBufferSyncSection)。
 

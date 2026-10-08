@@ -2,6 +2,10 @@
 
 2026-10-08 · 目标执行中，尚未达到整体验收。
 
+## 本批增量：AVC 帧解释与随机访问参数
+
+共享 Rust 已按 slice 的 PPS→SPS 引用解析色度/颜色声明和帧信息，容器索引分批扫描、缓存参数变化，并给浏览器新 decoder 恢复目标位置之前的 SPS/PPS。实际生成的中途参数/CABAC 切换素材、六种色度位置和 B/VFR 素材已进入原生/WASM/FFprobe 一致性及新 decoder 随机访问检查；GPU 颜色 gate 不再写死 fixture 的 left。详见 [AVC 记录](video-browser-avc-metadata.md)。完整颜色冲突策略、工程图像 Worker 与音频联合预览、正式页面和导出继续实施，不将该增量算作整体验收。
+
 ## 本批增量：浏览器真实媒体颜色与 GPU 图片
 
 已接通原始 VideoFrame 平面→共享 Rust 参数/WGSL→线性合成输入，以及明确的 SDR/HDR 输出与 GPU ImageBitmap 交付。真实 H.264/VFR 的全部 77 帧加回跳与原生逐帧一致；44 组多格式/HDR/alpha、裁切方向和资源回收通过。发现浏览器隐式颜色转换差异后，将完整颜色解释保留在核心，未通过放宽 SDR 误差阈值绕过。详见[实现与验证范围](video-browser-color.md)。生产色度探测、统一宿主、正常页面及完整导出仍未完成。
