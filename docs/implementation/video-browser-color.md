@@ -51,3 +51,9 @@ HDR 输入保留 PQ 的绝对亮度或明确 HLG 显示光解释，直到最终�
 产品必须先锁定保存的 documentDigest/revision，并按完整资源绑定授权读取，再把实际图像和同一采样的元数据提交给核心候选。生产 source interpretation 需要从原始 bitstream 获取色度位置，或持久保存用户明确的解释；WebCodecs VideoColorSpace 自身没有色度位置字段。不能为任意视频写死 left。本批测试明确提供已核实的 fixture 元数据。
 
 仍需接通图像解码/ICC、生产色度探测、统一图像 Worker 与已完成的工程音频时钟、最新 seek 的取消与图片 ACK、完整 Web 页面及导出。原生演示文稿能力和已发布 v0.1.0 标签未改动。
+
+## 固定开发交付
+
+来自干净源码提交 `c9563efc0b60398ece855f37b45165a2b8307206` 的 `.codex-work/video-visual-color-final`：清单 `ec0806e786807c7a3e64814272f6251eb7b19d129a05770e670a4f2209f1f3f2`，23 个文件、1,345,503 bytes；WASM 1,138,020 bytes，SHA-256 `828bfe1729330267aa10472d07f77aa8c5b3584f515d64622a7efa98d19121bb`。
+
+该最终交付重新通过 `video-browser-color-final-check`、`video-browser-decoded-color-final-check`（80 次真实采样）、`video-browser-gpu-color-final-check` 和公共 WASM/native 6 帧/30 类回复错误检查。44 组 raw case 的输入 oracle 摘要已写入报告；关闭 lease 自身抛错时也不会保留无法交付的 GPU 图像。相关 Rust 检查、严格 Clippy、浏览器执行器严格 TS 检查通过。`releaseCleared: false`；没有发布新公共版本。
