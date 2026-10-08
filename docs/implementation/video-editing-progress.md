@@ -2,6 +2,14 @@
 
 2026-10-09 · 目标执行中，尚未达到整体验收。
 
+## 本批增量：受控修改与原子效果判定
+
+产品提交 `9faf62366` 将受控修改接入原 Office prepare/inverse 和 Product 的 head/history/receipt 事务。schema 9 只增加请求准入和效果状态；明确取消与提交在同一个本地事务中竞争，保存成功后丢失回执仍可查询原成功结果，取消先落盘则阻止迟到候选。查询不会执行修改，网络中断不冒充原操作取消。失败发布也检查原有写入 epoch/owner，旧执行者不能干扰新执行者恢复；没有第二份工程、历史或租约权威。
+
+66 项 Host、22 项 Browser 测试通过。独立构建的真实 Chrome 154 使用产品应用层、Worker、IDB 和实际 Vue 编辑器，验证两个页面看到同次修改、人工后继修改不被重放覆盖、共同撤销/重做、刷新后取消操作不复活。另在独立 schema 8 数据库中核对合成工程的原记录摘要，升级到 9 不变。源码集合摘要 `4fbb19b8d8afb63260e4cdda94cbf0c644e2825a2bbce596b1ede3f64d0775bb`；产品证据目录 `.codex-work/video-routed-edit/`。
+
+Web 类型/正式构建与体积门禁、新 Host 测试类型和 20 文件 lint 通过；公共入口 gzip 507,361 / 524,288 bytes。183 个原生成/Admin/计费 WIP 保留，Office 计算核心、组件 pin 和稳定 `v0.1.0` 未改。这是修改执行和恢复基础的模块验证，公开 Gateway 修改/控制协议、Tool/Skill、导出与消息交付仍待接通；不能宣称整个方案或真实 Agent 修改已可验收。
+
 ## 本批增量：公开 Agent 读取与真实人机往返
 
 产品提交 `ac1ee9415` 发布 Web `artifact.video.inspect@1`，通过 cloud f53 / Skill v56 / 视频创作 v5 和真实 Cloud composition 接入原 Tool 生命周期。目录、能力与快照共同支持“读取原 provider 任务记录”的重放合同，不按视频名称开例外；旧工具及 Skill 不改义。Office 原固定内核负责有界摘要/分页计算，Product 负责消息目标、授权、任务、结果完整性及恢复。
