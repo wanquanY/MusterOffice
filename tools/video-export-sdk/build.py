@@ -13,12 +13,12 @@ COMPONENT = {
     "format": "musteroffice.video-export-sdk/1-draft",
     "profile": "musteroffice.project-export-worker/1-draft",
     "allowed": ["mo-video-export-wasm", "mo-video-export", "mo-video-render", "mo-video-audio",
-                "mo-video-compile", "mo-video-model", "mo-media", "mo-color", "mo-time", "mo-common"],
+                "mo-video-compile", "mo-video-model", "mo-media", "mo-media-isobmff", "mo-media-avc", "mo-color", "mo-time", "mo-common"],
     "exports": ["ProjectExport"],
     "factory": "createExportRuntime",
     "profileFunction": "export_profile",
     "package": "@musteroffice/video-export",
-    "scope": "Shared immutable Rust export plan and finite interleaved frame/sample schedule. Exact media clocks and residual-bearing WebCodecs transport intervals; bounded exact acknowledgements. Host owns codecs, mux, authorization, sources, candidate storage, verification, durable jobs and Worker lifetime. No browser encoding or product acceptance; no cleared public release.",
+    "scope": "Shared immutable Rust export plan and finite interleaved frame/sample schedule. Exact media clocks and residual-bearing WebCodecs transport intervals; bounded exact acknowledgements and shared container/sample-clock inspection. Host owns codecs, mux, authorization, sources, candidate storage, decoded spot checks, durable jobs and Worker lifetime. No browser encoding or product acceptance; no cleared public release.",
 }
 
 if __name__ == "__main__":

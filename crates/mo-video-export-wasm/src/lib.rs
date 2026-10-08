@@ -1,5 +1,6 @@
 //! Exact export planning in a host-owned Worker. No codec, mux, file, task or
 //! permission authority. Native and browser drivers use the same ExportPlan.
+mod inspection;
 mod options;
 use mo_common::{Digest, Ticks};
 use mo_video_compile::{CompileError, CompileLimits, CompiledDocument};
@@ -58,6 +59,7 @@ pub fn export_profile() -> String {
 pub struct ProjectExport {
     schedule: ExportSchedule,
     info: String,
+    config: mo_media::EncodeConfig,
 }
 #[wasm_bindgen]
 impl ProjectExport {
@@ -120,7 +122,11 @@ impl ProjectExport {
             "audioBitRate": c.audio_bit_rate, "audioSamples": Ticks::new(c.audio_samples),
             "audioTail": plan.audio_tail(), "options": options,
         }))?;
-        Ok(Self { schedule, info })
+        Ok(Self {
+            schedule,
+            info,
+            config: c,
+        })
     }
     pub fn info(&self) -> String {
         self.info.clone()

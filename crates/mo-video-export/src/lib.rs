@@ -7,3 +7,6 @@ pub use plan::*;
 pub use schedule::*;
 pub use session::*;
 pub const PROFILE: &str = "musteroffice.video.finite-cfr-export/1-draft";
+
+mod inspection;
+pub use inspection::{ExportInspection, InspectionError, inspect_browser_candidate};
