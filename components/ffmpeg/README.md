@@ -30,7 +30,7 @@ The check script uses an external FFmpeg/ffprobe CLI **only to generate and inde
 
 ## Current ABI behavior
 
-`mo_media.h` defines ABI 1, opaque single-thread-affine session ownership, explicit limits and stable wrapper status codes. No FFmpeg struct layout escapes it.
+`mo_media.h` defines decode ABI 2 (including the explicit raw-container timeline mode), opaque single-thread-affine session ownership, explicit limits and stable wrapper status codes. Encoding has its separate ABI 1. No FFmpeg struct layout escapes it.
 
 - Input is a host-owned `read_at` callback over a fixed byte length plus cancellation callback. Reads/seeks are bounded to that resource. Embedded references cannot open another URL or path: custom I/O, disabled protocols/network and a rejecting `io_open` callback enforce that boundary.
 - Header probing does not invoke `avformat_find_stream_info`, which can open decoders before our per-decoder limits are installed. Unknown header values remain unknown. A future Rust probe layer can explicitly decode selected streams under the same limits to obtain missing parameters.

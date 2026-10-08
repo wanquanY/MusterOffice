@@ -49,7 +49,7 @@
 | 实际 WebCodecs AAC 调查 | 三组首包 timestamp=0，输入/解码相关定位延迟 2112 样本 | 调查原始 PCM 留存，不将平台观察写死到实现 |
 | packet leaf | 4 个真实 AVC 输入、短写 OPFS 成片；14 类坏输入/预算/取消/IO 拒绝 | 候选，不是产品发布 |
 | 实时浏览器执行 | 4 个共享 Rust 计划 → 实际 VideoEncoder → 本地 AAC/MP4 → OPFS | 16/72/91/1 帧，239 个共享调度步骤；测试画面/PCM 为确定性合成输入 |
-| 队列 | 实测峰值 9 个在途帧；PCM 峰值 122880 bytes | 这批短输入，非长视频资源承诺 |
+| 队列 | 多次运行峰值 9–10 个在途帧；最终交付有效 I420 峰值 184320 bytes，PCM 峰值 122880 bytes | 这批短输入，非长视频资源承诺 |
 | 失败回收 | 中途取消、渲染在途取消、真实写入异常、错 timestamp/颜色、视频/PCM 字节预算，共 7 类通过 | 未取得成功统计，所有创建帧关闭，OPFS 候选清理 |
 | 独立 FFprobe/FFmpeg | 完整视频解码、精确 track/movie 展示终点、BT.709/limited/left、I/P、无丢帧 | 分数帧率、48/44.1 kHz、单/双声道、无音轨与极短片 |
 | 音频 | 三组相关检查最佳 lag=0；AAC RMS 不差于同输入/码率的独立参考编码门槛 | AAC 为有损，不等同任意内容的主观音质证明 |
@@ -75,3 +75,11 @@ python3 tools/verification/media-encode-check.py --component VERIFIED_NATIVE_COM
 必须把共享视觉/PCM 执行器连接到这里的 createFrame/createPcm，使用同一固定版本和资源授权闭包；真实复杂工程渲染与本次 codec 门禁分开验收。Musterwork 接入不可变组件 pin、持久 export intent/job、唯一执行 owner、OPFS 配额/候选恢复、独立核心回读与正式文件提交，再展示简洁的进度、播放和下载。
 
 浏览器 Agent、生成素材闭环、图片/字幕/效果/完整属性、长片性能、跨端与真实 provider 计费等仍按总方案继续。不能因本专项可生成/播放 MP4，就标记全部功能或产品浏览器导出完成。稳定 v0.1.0 不变。
+
+## 干净源码交付
+
+代码提交 `59e61b7725d4951d3f0efa79dd6469cabb0ed63d` 的不可变开发组件为 `.codex-work/video-encode-sdk-59e61b7`，manifest SHA-256 为 `cab89db8f578b09343039d6881687c8e1a50ff429a26a750fa7b43e9f827aa42`。20 个记录文件，`sourceDirty: false`、`releaseCleared: false`。WASM/gzip 大小与上文一致。
+
+该清单实际重跑结果：`video-encode-sdk-59e61b7-check/report.json`（4 个实时成片、7 类失败、4 个播放器检查）、`video-encode-sdk-59e61b7-leaf-check/report.json`（14 类 leaf 拒绝）以及 `video-encode-sdk-59e61b7-independent/report.json`（独立完整解码、音频质量/零偏移和原始 mvhd 整数 time scale/duration 检查），均在 `.codex-work/` 下。公开 `.d.mts` 声明经 strict TypeScript 检查。
+
+规划组件继续固定 `6141990` 对应清单，见前批记录。Musterwork 组件 pin 本批未提升，182 个原有受保护改动摘要仍一致；正常页面导出验收不因新增组件而自动成立。

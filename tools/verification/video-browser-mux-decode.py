@@ -3,10 +3,40 @@ import argparse
 from fractions import Fraction
 import hashlib
 import json
+import math
 from pathlib import Path
 import shutil
+import struct
 import subprocess
 import numpy as np
+
+
+def boxes(data):
+    at = 0
+    while at < len(data):
+        assert len(data) - at >= 8
+        size, kind = struct.unpack_from('>I4s', data, at)
+        header = 8
+        if size == 1:
+            assert len(data) - at >= 16
+            size, header = struct.unpack_from('>Q', data, at+8)[0], 16
+        elif size == 0:
+            size = len(data) - at
+        assert header <= size <= len(data) - at
+        yield kind, data[at+header:at+size]
+        at += size
+
+
+def movie_clock(path):
+    movies = [value for kind, value in boxes(Path(path).read_bytes()) if kind == b'moov']
+    assert len(movies) == 1
+    headers = [value for kind, value in boxes(movies[0]) if kind == b'mvhd']
+    assert len(headers) == 1
+    payload = headers[0]
+    assert payload[0] in (0, 1)
+    if payload[0] == 0:
+        return struct.unpack_from('>II', payload, 12)
+    return struct.unpack_from('>IQ', payload, 20)
 
 
 def main():
@@ -64,6 +94,11 @@ def main():
         delta = decoded_video.astype('float64') - original_video
         check.update(videoInputRmsError=float(np.sqrt(np.mean(delta*delta))), videoInputMaxError=float(np.max(np.abs(delta))))
         samples, channels = int(info["audioSamples"]), info["audioChannels"]
+        scale, duration = movie_clock(path)
+        expected_scale = math.lcm(info["videoTimeScale"], info["audioSampleRate"]) if samples else info["videoTimeScale"]
+        expected_duration = max(Fraction(info["videoDuration"]) / info["videoTimeScale"], Fraction(samples, info["audioSampleRate"])) * expected_scale
+        assert scale == expected_scale and duration == expected_duration
+        check.update(movieTimeScale=scale, movieDuration=duration)
         if samples:
             audio = streams[1]
             assert len(streams) == 2 and audio["codec_name"] == "aac" and audio["channels"] == channels
