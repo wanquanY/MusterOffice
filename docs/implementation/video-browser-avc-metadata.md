@@ -53,3 +53,18 @@ node tools/verification/video-browser-movie-check.mjs BROWSER MEDIA MEDIA_PIN IN
 ```
 
 最终干净组件 pin、复验及产品安装单独登记。Stable v0.1.0 不变，无新公共发行。
+
+## 固定开发交付
+
+干净源码 `a28ca4c55511f66d6c71a456f1cfa80237e317ea`：
+
+| 组件 | 清单 SHA-256 | 体积 |
+| --- | --- | --- |
+| media | `c1a953b6f1c833fa147cdf008897edc20790ef8c42124c089fc9770d3a305984` | 92 files，2,293,669 bytes，包含未修改 Mediabunny 对应源码/许可证 |
+| index | `6c88864cc1cdf4a2b45243e0246a6bd00d7a3e55c41c1e475da42cc56872e313` | 11 files，615,081 bytes；WASM 572,552 bytes |
+
+index WASM SHA-256 `53b4e36861698bbf90f6ab2b52e710e614a4cfee59ae8d50a911235fe95cf7fe`。独立 build/verify 均通过，`releaseCleared: false`。
+
+最终实际报告：`.codex-work/avc-index-final-check/report.json`（8 素材、586 查询、原生/WASM/独立 metadata 一致）；`.codex-work/avc-movie-final-check/report.json`（4 素材、1,044 影片查询、1,020 普通画面核验，另 12 次全新 decoder 定位，16 MiB 受控预算内峰值 10,096,821 bytes，结束归零）；`.codex-work/video-decoded-avc-final-check/report.json`（80 次实际 GPU 颜色对比，最大线性差 `3.5762786865234375e-7`，受控媒体/GPU 账本结束归零）。
+
+Musterwork 已通过固定五组件安装器更新 media/index，PCM/mix/visual 保持原 pin；Product Host 类型检查、16 项持久化/PCM 测试与五组件重新安装/篡改/符号链接检查通过。未据此宣称正式页面的联合音画体验已经完成。
