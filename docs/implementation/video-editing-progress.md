@@ -2,6 +2,10 @@
 
 2026-10-08 · 目标执行中，尚未达到整体验收。
 
+## 本批增量：浏览器 GPU 帧编译
+
+已将 CPU 像素载体与共享几何/合成语义解耦，实现 `mo-video-gpu-plan`、独立工程视觉 WASM 和浏览器 WebGPU 执行器。原生与浏览器共用同一 WGSL、112 字节定点参数 ABI；异步资源回复仍校验完整绑定与精确时间区间。实际 WASM/native 指令完全一致，Chrome 的 Apple Metal GPU 合成与 CPU 参考最大线性差 `5.961e-8`，原生 29 项硬件门禁也通过。详见[实现、所有权与证据](video-browser-gpu-program.md)。下一步连接真实媒体颜色规范化、GPU 输出与产品统一预览；没有将合成专项视为浏览器播放器验收。
+
 ## 固定基线与开发边界
 
 - 已发布 [MusterOffice v0.1.0](https://github.com/wanquanY/MusterOffice/releases/tag/v0.1.0)，固定源码 `a4901290c6ccf6660aabe38d42d2dd650428219f`；对应 CI 44 项步骤通过，发布前源码摘要一致，三个公开附件的远端 SHA-256 与本地一致。这是稳定源码基线，未提升产品组件频道或声明全平台预编译包。

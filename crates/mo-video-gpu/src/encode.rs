@@ -6,10 +6,8 @@ use mo_video_render::{
 };
 use wgpu::{Device, ErrorFilter, ErrorScopeGuard, util::DeviceExt};
 
-pub const SHADER: &str = include_str!("compose.wgsl");
+pub use mo_video_gpu_plan::{MAX_ABS_COMPONENT, SHADER};
 pub const PROFILE: &str = "musteroffice.video.linear2020-premul-gpu-f32-v2-draft";
-/// Explicit numeric capability of this GPU profile; no silent saturation.
-pub const MAX_ABS_COMPONENT: f32 = 1e12;
 
 #[derive(Debug, Clone, Copy)]
 pub struct GpuLimits {

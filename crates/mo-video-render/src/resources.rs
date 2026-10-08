@@ -4,16 +4,46 @@ use mo_video_compile::MediaBinding;
 use mo_video_model::{MediaStream, TimeSample};
 use std::sync::Arc;
 
+/// Metadata of a linear-light premultiplied source. A carrier may own CPU
+/// pixels or an opaque host GPU capability; the compositor never forces readback.
+/// Hosts must normalize colors into this profile before executing pixel work.
+pub trait LinearSource {
+    fn width(&self) -> u32;
+    fn height(&self) -> u32;
+    fn has_hdr(&self) -> bool;
+}
+impl LinearSource for LinearImage {
+    fn width(&self) -> u32 {
+        self.width()
+    }
+    fn height(&self) -> u32 {
+        self.height()
+    }
+    fn has_hdr(&self) -> bool {
+        self.has_hdr()
+    }
+}
+impl<T: LinearSource> LinearSource for Arc<T> {
+    fn width(&self) -> u32 {
+        self.as_ref().width()
+    }
+    fn height(&self) -> u32 {
+        self.as_ref().height()
+    }
+    fn has_hdr(&self) -> bool {
+        self.as_ref().has_hdr()
+    }
+}
 #[derive(Clone)]
-pub struct VisualFrame {
-    pub image: Arc<LinearImage>,
+pub struct VisualFrame<I = Arc<LinearImage>> {
+    pub image: I,
     pub geometry: SourceGeometry,
 }
 #[derive(Clone)]
-pub enum ResolvedVisual {
+pub enum ResolvedVisual<I = Arc<LinearImage>> {
     VideoFrame {
         interval: ExactInterval,
-        frame: VisualFrame,
+        frame: VisualFrame<I>,
     },
     /// A real source-timeline gap, with no pixels. Lower layers remain visible.
     /// Missing resources and decoder failures must be returned as errors instead.
@@ -21,29 +51,29 @@ pub enum ResolvedVisual {
         interval: ExactInterval,
     },
     Image {
-        frame: VisualFrame,
+        frame: VisualFrame<I>,
     },
 }
 #[derive(Clone)]
-pub struct ResolvedMedia {
+pub struct ResolvedMedia<I = Arc<LinearImage>> {
     pub binding: MediaBinding,
-    pub visual: ResolvedVisual,
+    pub visual: ResolvedVisual<I>,
 }
-pub trait VisualResources {
+pub trait VisualResources<I = Arc<LinearImage>> {
     fn media(
         &mut self,
         binding: &MediaBinding,
         sample: &TimeSample,
         check: &dyn Fn() -> bool,
-    ) -> Result<ResolvedMedia>;
+    ) -> Result<ResolvedMedia<I>>;
 }
-impl ResolvedMedia {
+impl<I: LinearSource> ResolvedMedia<I> {
     /// Shared by every composition backend, including the no-pixel gap path.
     pub(crate) fn validate(
         self,
         binding: &MediaBinding,
         sample: &TimeSample,
-    ) -> Result<Option<VisualFrame>> {
+    ) -> Result<Option<VisualFrame<I>>> {
         if &self.binding != binding {
             return Err(RenderError::Invalid("resolved resource binding"));
         }

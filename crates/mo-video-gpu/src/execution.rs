@@ -1,20 +1,9 @@
 use crate::{GpuCompositor, GpuLimits, GpuStats, MAX_ABS_COMPONENT, encode::cancelled};
-use mo_video_render::{
-    CompositionBackend, Paint, PaintSource, PixelLimits, RenderError, Result, Sampling,
-};
+use mo_video_render::{CompositionBackend, Paint, PaintSource, PixelLimits, RenderError, Result};
 use wgpu::util::DeviceExt;
 
-#[repr(C)]
-#[derive(Clone, Copy, bytemuck::Pod, bytemuck::Zeroable)]
-struct Parameters {
-    sizes: [u32; 4],
-    row_x: [u32; 4],
-    row_y: [u32; 4],
-    offset: [u32; 4],
-    values: [f32; 4],
-    solid: [f32; 4],
-    options: [u32; 4],
-}
+use mo_video_gpu_plan::PaintParameters;
+
 pub(crate) struct Execution<'a> {
     pub renderer: &'a GpuCompositor,
     pub encoder: wgpu::CommandEncoder,
@@ -49,6 +38,7 @@ impl Execution<'_> {
 }
 impl CompositionBackend for Execution<'_> {
     type Surface = wgpu::Buffer;
+    type Image = std::sync::Arc<mo_video_render::LinearImage>;
     fn create_surface(
         &mut self,
         size: (u32, u32),
@@ -91,10 +81,6 @@ impl CompositionBackend for Execution<'_> {
         if dispatch.0 > max_dispatch || dispatch.1 > max_dispatch {
             return Err(RenderError::Unsupported("GPU dispatch extent"));
         }
-        let m = paint
-            .coordinates
-            .coefficients()
-            .map(|v| [v as u32, (v as u64 >> 32) as u32]);
         let mut solid = [0.; 4];
         let mut is_solid = 0;
         let uploaded;
@@ -125,21 +111,15 @@ impl CompositionBackend for Execution<'_> {
                 &uploaded
             }
         };
-        let parameters = Parameters {
-            sizes: [width, height, source_width, source_height],
-            row_x: [m[0][0], m[0][1], m[2][0], m[2][1]],
-            row_y: [m[1][0], m[1][1], m[3][0], m[3][1]],
-            offset: [m[4][0], m[4][1], m[5][0], m[5][1]],
-            values: [paint.opacity as f32, 0., 0., 0.],
-            solid,
-            options: [
-                is_solid,
-                u32::from(matches!(paint.sampling, Sampling::Bilinear)),
-                0,
-                0,
-            ],
-        };
-        self.admit(std::mem::size_of::<Parameters>() as u64, true, false)?;
+        let parameters = PaintParameters::new(
+            (width, height),
+            (source_width, source_height),
+            paint.coordinates,
+            paint.opacity,
+            paint.sampling,
+            if is_solid == 1 { Some(solid) } else { None },
+        )?;
+        self.admit(std::mem::size_of::<PaintParameters>() as u64, true, false)?;
         let uniform = self
             .renderer
             .device

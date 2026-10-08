@@ -46,7 +46,7 @@ def main():
               'linearEvidenceSha256':sha(source/'report.json'),'linearRgbSha256':sha(pixels),
               'hardwareEvidenceSha256':sha(output/'hardware.json'),
               'componentRecordSha256':sha(current.ROOT/'components/video-gpu/component.json'),
-              'shaderSha256':sha(current.ROOT/'crates/mo-video-gpu/src/compose.wgsl'),
+              'shaderSha256':sha(current.ROOT/'crates/mo-video-gpu-plan/src/compose.wgsl'),
               'adapter':hardware['adapter'],'backend':hardware['backend'],'cases':len(hardware['cases']),
               'maxLinearError':max(c['maxLinearError'] for c in hardware['cases']),
               'maxRgba8Error':max(c['maxRgba8Error'] for c in hardware['cases']),

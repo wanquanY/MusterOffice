@@ -1,5 +1,6 @@
 use crate::{
-    Affine, FrameRenderOptions, LinearImage, PixelLimits, RenderError, Result, VisualResources,
+    Affine, FrameRenderOptions, LinearImage, LinearSource, PixelLimits, RenderError, Result,
+    VisualResources,
     backend::{CompositionBackend, CompositionResult, Paint, PaintSource},
     cancel,
     cpu::CpuBackend,
@@ -92,7 +93,7 @@ pub fn render_frame_with_options(
 /// must discard any encoded work on error; they may not publish partial output.
 pub fn render_with_backend<B: CompositionBackend>(
     plan: &VideoFramePlan,
-    resources: &mut dyn VisualResources,
+    resources: &mut dyn VisualResources<B::Image>,
     sampling: Sampling,
     limits: RenderLimits,
     check: &dyn Fn() -> bool,
@@ -109,15 +110,53 @@ pub fn render_with_backend<B: CompositionBackend>(
 /// Shared viewport and admission semantics for CPU and GPU execution.
 pub fn render_with_options<B: CompositionBackend>(
     plan: &VideoFramePlan,
-    resources: &mut dyn VisualResources,
+    resources: &mut dyn VisualResources<B::Image>,
     options: FrameRenderOptions,
     check: &dyn Fn() -> bool,
     backend: &mut B,
 ) -> Result<CompositionResult<B::Surface>> {
+    let viewport = preflight(plan, options, check)?;
+    let FrameRenderOptions {
+        sampling, limits, ..
+    } = options;
+    let mut work = Work {
+        backend,
+        limits,
+        stats: RenderStats::default(),
+        temporary: 0,
+        check,
+        sampling,
+        viewport,
+    };
+    let (surface, has_hdr) = work.group(&plan.layers, resources)?;
+    cancel(check)?;
+    Ok(CompositionResult {
+        surface,
+        has_hdr,
+        width: options.raster.width,
+        height: options.raster.height,
+        stats: work.stats,
+    })
+}
+/// Validate an immutable frame before a host begins asynchronous media work.
+/// This performs the same admission used by every compositor, without allocating
+/// pixels, calling a resource capability or constructing GPU commands.
+pub fn validate_frame_plan(
+    plan: &VideoFramePlan,
+    options: FrameRenderOptions,
+    check: &dyn Fn() -> bool,
+) -> Result<()> {
+    preflight(plan, options, check).map(|_| ())
+}
+fn preflight(
+    plan: &VideoFramePlan,
+    options: FrameRenderOptions,
+    check: &dyn Fn() -> bool,
+) -> Result<Viewport> {
     cancel(check)?;
     let FrameRenderOptions {
         raster,
-        sampling,
+        sampling: _,
         limits,
     } = options;
     let viewport = Viewport::new(plan, raster)?;
@@ -140,25 +179,9 @@ pub fn render_with_options<B: CompositionBackend>(
     {
         return Err(RenderError::Budget);
     }
-    let mut work = Work {
-        backend,
-        limits,
-        stats: RenderStats::default(),
-        temporary: 0,
-        check,
-        sampling,
-        viewport,
-    };
-    let (surface, has_hdr) = work.group(&plan.layers, resources)?;
-    cancel(check)?;
-    Ok(CompositionResult {
-        surface,
-        has_hdr,
-        width: raster.width,
-        height: raster.height,
-        stats: work.stats,
-    })
+    Ok(viewport)
 }
+
 fn admit(
     nodes: &[VisualNode],
     depth: usize,
@@ -217,7 +240,7 @@ impl<B: CompositionBackend> Work<'_, B> {
     fn group(
         &mut self,
         nodes: &[VisualNode],
-        resources: &mut dyn VisualResources,
+        resources: &mut dyn VisualResources<B::Image>,
     ) -> Result<(B::Surface, bool)> {
         let canvas = self.viewport.canvas;
         let raster = self.viewport.raster;
@@ -271,16 +294,16 @@ impl<B: CompositionBackend> Work<'_, B> {
                     };
                     let placement = source
                         .geometry
-                        .contain((source.image.width, source.image.height), canvas)?;
+                        .contain((source.image.width(), source.image.height()), canvas)?;
                     self.paint(
                         &mut out,
                         PaintSource::Image(&source.image),
                         raster,
-                        (source.image.width, source.image.height),
+                        (source.image.width(), source.image.height()),
                         self.viewport.source(effect.compose(placement)?)?,
                         opacity,
                     )?;
-                    hdr |= source.image.hdr;
+                    hdr |= source.image.has_hdr();
                 }
                 VisualSource::Group { layers, .. } => {
                     let (group, group_hdr) = self.group(layers, resources)?;
@@ -306,7 +329,7 @@ impl<B: CompositionBackend> Work<'_, B> {
     fn paint(
         &mut self,
         out: &mut B::Surface,
-        source: PaintSource<'_, B::Surface>,
+        source: PaintSource<'_, B::Surface, B::Image>,
         target_size: (u32, u32),
         source_size: (u32, u32),
         matrix: Affine,

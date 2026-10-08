@@ -71,30 +71,28 @@ impl SourceGeometry {
             .ok_or(RenderError::Unsupported(
                 "explicit pixel aspect ratio required",
             ))?;
-        if sar.numerator == 0 || sar.denominator == 0 {
+        let matrix = stream.display_matrix.map(|m| {
+            std::array::from_fn(|i| f64::from(m[i]) / if i % 3 == 2 { 1073741824. } else { 65536. })
+        });
+        Self::from_display_metadata((sar.numerator, sar.denominator), matrix)
+    }
+    /// Container row-vector matrix [a,b,u,c,d,v,x,y,w], already decoded from
+    /// its fixed-point storage. Pixels are cropped to the visible rectangle but
+    /// have NOT been rotated, flipped or rescaled by a platform image API.
+    pub fn from_display_metadata(sar: (u32, u32), matrix: Option<[f64; 9]>) -> Result<Self> {
+        if sar.0 == 0 || sar.1 == 0 {
             return Err(RenderError::Invalid("pixel aspect ratio"));
         }
-        let aspect = Affine::new([
-            f64::from(sar.numerator) / f64::from(sar.denominator),
-            0.,
-            0.,
-            1.,
-            0.,
-            0.,
-        ])?;
-        let display = if let Some(m) = stream.display_matrix {
-            if m[2] != 0 || m[5] != 0 || m[8] == 0 {
+        let aspect = Affine::new([f64::from(sar.0) / f64::from(sar.1), 0., 0., 1., 0., 0.])?;
+        let display = if let Some(m) = matrix {
+            if m.iter().any(|v| !v.is_finite()) {
+                return Err(RenderError::Invalid("display matrix"));
+            }
+            if m[2] != 0. || m[5] != 0. || m[8] == 0. {
                 return Err(RenderError::Unsupported("projective display matrix"));
             }
-            let w = f64::from(m[8]) / 1073741824.;
-            Affine::new([
-                f64::from(m[0]) / 65536. / w,
-                f64::from(m[1]) / 65536. / w,
-                f64::from(m[3]) / 65536. / w,
-                f64::from(m[4]) / 65536. / w,
-                f64::from(m[6]) / 65536. / w,
-                f64::from(m[7]) / 65536. / w,
-            ])?
+            let w = m[8];
+            Affine::new([m[0] / w, m[1] / w, m[3] / w, m[4] / w, m[6] / w, m[7] / w])?
         } else {
             Affine::identity()
         };

@@ -1,13 +1,15 @@
 //! Backend boundary. All authoring semantics and resource admission stay in the
 //! common plan executor; implementations only allocate and paint linear pixels.
-use crate::{LinearImage, PixelLimits, RasterCoordinates, RenderStats, Result, Sampling};
-pub enum PaintSource<'a, S> {
+use crate::{
+    LinearImage, LinearSource, PixelLimits, RasterCoordinates, RenderStats, Result, Sampling,
+};
+pub enum PaintSource<'a, S, I = std::sync::Arc<LinearImage>> {
     Solid([f32; 4]),
-    Image(&'a LinearImage),
+    Image(&'a I),
     Surface(&'a S),
 }
-pub struct Paint<'a, S> {
-    pub source: PaintSource<'a, S>,
+pub struct Paint<'a, S, I = std::sync::Arc<LinearImage>> {
+    pub source: PaintSource<'a, S, I>,
     pub target_size: (u32, u32),
     pub source_size: (u32, u32),
     pub coordinates: RasterCoordinates,
@@ -16,6 +18,7 @@ pub struct Paint<'a, S> {
 }
 pub trait CompositionBackend {
     type Surface;
+    type Image: LinearSource;
     fn create_surface(
         &mut self,
         size: (u32, u32),
@@ -25,7 +28,7 @@ pub trait CompositionBackend {
     fn paint(
         &mut self,
         target: &mut Self::Surface,
-        paint: Paint<'_, Self::Surface>,
+        paint: Paint<'_, Self::Surface, Self::Image>,
         check: &dyn Fn() -> bool,
     ) -> Result<()>;
 }

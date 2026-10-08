@@ -4,6 +4,7 @@ use crate::{LinearImage, PixelLimits, RenderError, Result, Sampling, cancel};
 pub(crate) struct CpuBackend;
 impl CompositionBackend for CpuBackend {
     type Surface = LinearImage;
+    type Image = std::sync::Arc<LinearImage>;
     fn create_surface(
         &mut self,
         size: (u32, u32),
@@ -20,7 +21,8 @@ impl CompositionBackend for CpuBackend {
     ) -> Result<()> {
         let (source, solid) = match paint.source {
             PaintSource::Solid(color) => (None, color),
-            PaintSource::Image(image) | PaintSource::Surface(image) => (Some(image), [0.; 4]),
+            PaintSource::Image(image) => (Some(image.as_ref()), [0.; 4]),
+            PaintSource::Surface(image) => (Some(image), [0.; 4]),
         };
         let (w, h) = paint.source_size;
         for y in 0..out.height as usize {

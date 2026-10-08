@@ -50,7 +50,8 @@ def build(output, bindgen, component, wrapper):
     paths = [ROOT / "Cargo.toml", ROOT / "Cargo.lock", Path(__file__).resolve(), wrapper]
     for name in sorted(names):
         paths.append(ROOT / "crates" / name / "Cargo.toml")
-        paths.extend(sorted((ROOT / "crates" / name / "src").rglob("*.rs")))
+        paths.extend(sorted(p for p in (ROOT / "crates" / name / "src").rglob("*")
+                            if p.is_file() or p.is_symlink()))
     def sources():
         if any(p.is_symlink() or not p.is_file() for p in paths):
             raise ValueError("regular sources required")
