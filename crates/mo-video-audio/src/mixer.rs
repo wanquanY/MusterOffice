@@ -38,7 +38,8 @@ impl Default for MixLimits {
         }
     }
 }
-#[derive(Debug, Default, Clone, Copy)]
+#[derive(Debug, Default, Clone, Copy, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct MixStats {
     pub voices: usize,
     pub visited: usize,
@@ -60,15 +61,48 @@ pub struct MixedAudio {
 /// An error/cancelled render never returns a partial block. Harmless compiled
 /// kernels may remain cached. Reconstruct to discard the cache explicitly.
 pub struct AudioMixer<'a> {
-    document: &'a CompiledDocument,
+    document: MixerDocument<'a>,
     output: ChannelLayout,
     limits: MixLimits,
     kernels: Vec<(R, Arc<SincResampler>)>,
     retime_plans: crate::retime_cache::RetimeCache,
 }
+// Either host-borrowed (native) or explicitly shared (long-lived WASM handle).
+// Both variants execute the same mixer and retain the same bounded caches.
+enum MixerDocument<'a> {
+    Borrowed(&'a CompiledDocument),
+    Shared(Arc<CompiledDocument>),
+}
+impl std::ops::Deref for MixerDocument<'_> {
+    type Target = CompiledDocument;
+    fn deref(&self) -> &Self::Target {
+        match self {
+            Self::Borrowed(document) => document,
+            Self::Shared(document) => document,
+        }
+    }
+}
+impl AudioMixer<'static> {
+    /// Own a share of one immutable compiled revision. No leaked allocation or
+    /// per-window recompilation; dropping the last owner releases its indexes.
+    pub fn from_shared(
+        document: Arc<CompiledDocument>,
+        output: ChannelLayout,
+        limits: MixLimits,
+    ) -> Result<Self> {
+        Self::construct(MixerDocument::Shared(document), output, limits)
+    }
+}
 impl<'a> AudioMixer<'a> {
     pub fn new(
         document: &'a CompiledDocument,
+        output: ChannelLayout,
+        limits: MixLimits,
+    ) -> Result<Self> {
+        Self::construct(MixerDocument::Borrowed(document), output, limits)
+    }
+    fn construct(
+        document: MixerDocument<'a>,
         output: ChannelLayout,
         limits: MixLimits,
     ) -> Result<Self> {
@@ -88,6 +122,11 @@ impl<'a> AudioMixer<'a> {
             kernels: Vec::new(),
             retime_plans: crate::retime_cache::RetimeCache::default(),
         })
+    }
+    /// Release reusable DSP caches without recompiling the immutable document.
+    pub fn clear(&mut self) {
+        self.kernels.clear();
+        self.retime_plans = crate::retime_cache::RetimeCache::default();
     }
     pub fn render(
         &mut self,
@@ -136,7 +175,7 @@ impl<'a> AudioMixer<'a> {
         frames: u32,
         check: &dyn Fn() -> bool,
     ) -> Result<MixedAudio> {
-        request.validate_document(self.document)?;
+        request.validate_document(&self.document)?;
         if request.layout() != &self.output
             || &resources.retime_profile()? != request.profile()
             || frames == 0
@@ -421,7 +460,7 @@ impl Session<'_, '_> {
             found
         } else {
             let admission = crate::retime_plan::admit_clip(
-                self.mixer.document,
+                &self.mixer.document,
                 &voice.clip,
                 self.mixer.limits.arithmetic_bits,
                 self.mixer
@@ -435,7 +474,7 @@ impl Session<'_, '_> {
                 .retime_plans
                 .admit(admission.charge, self.mixer.limits.max_retime_plan_bytes)?;
             let plans = crate::retime_plan::compile_clip(
-                self.mixer.document,
+                &self.mixer.document,
                 &voice.source,
                 admission,
                 self.mixer.limits.arithmetic_bits,

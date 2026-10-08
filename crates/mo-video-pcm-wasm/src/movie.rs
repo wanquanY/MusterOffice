@@ -201,6 +201,14 @@ impl MoviePcm {
             "sampleRate":self.asset.sample_rate,"channels":self.asset.layout.len(),"frames":Ticks::new(self.asset.available.end)}),
         )
     }
+    /// Exact sample lattice emitted by the shared movie planner. Hosts forward
+    /// this to consumers instead of deriving offsets or speaker layout in JS.
+    pub fn description(&self) -> Result<String> {
+        json(
+            &mo_video_audio::AudioResourceDescription::new(self.binding.clone(), &self.asset, 256)
+                .map_err(|e| failure(PcmError::Audio(e)))?,
+        )
+    }
     /// Output is owned f32le. No previous JS result remains owned by this object.
     pub fn read(&mut self, first: i64, frames: u32) -> Result<Uint8Array> {
         if frames > 8192 {

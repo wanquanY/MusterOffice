@@ -112,6 +112,43 @@ fn run(input: &str) -> std::result::Result<Value, String> {
     let mut host = Host {
         values: fixture.pcm,
     };
+    let mut descriptions = vec![];
+    for value in &host.values {
+        let resource = c
+            .document()
+            .resources
+            .get(&value.resource)
+            .ok_or("fixture resource")?;
+        let mo_video_model::ResourceDescriptor::Media { streams } = &resource.descriptor else {
+            return Err("fixture resource type".into());
+        };
+        let binding = MediaBinding {
+            resource: resource.id.clone(),
+            digest: resource.digest.clone(),
+            stream: value.stream.clone(),
+            descriptor: streams.get(&value.stream).ok_or("fixture stream")?.clone(),
+        };
+        let MediaStream::Audio {
+            sample_rate,
+            channels: 1,
+            ..
+        } = binding.descriptor
+        else {
+            return Err("fixture layout".into());
+        };
+        let asset = AudioAsset {
+            sample_rate,
+            layout: ChannelLayout::mono(),
+            sample_zero: value.sample_zero.clone(),
+            available: PcmRange::new(
+                value.first_sample.get(),
+                value.first_sample.get() + value.samples.len() as i64,
+            )
+            .map_err(|e| e.to_string())?,
+        };
+        descriptions
+            .push(AudioResourceDescription::new(binding, &asset, 256).map_err(|e| e.to_string())?);
+    }
     let mut results = vec![];
     for query in fixture.queries {
         if query.frames > 4096 {
@@ -134,7 +171,9 @@ fn run(input: &str) -> std::result::Result<Value, String> {
             Err(error) => results.push(json!({"status":"rejected","error":error.to_string()})),
         }
     }
-    Ok(json!({"status":"complete","profile":PROFILE,"results":results}))
+    Ok(
+        json!({"status":"complete","profile":PROFILE,"documentDigest":c.digest(),"descriptions":descriptions,"results":results}),
+    )
 }
 #[wasm_bindgen]
 pub fn video_audio_conformance(input: &str) -> String {

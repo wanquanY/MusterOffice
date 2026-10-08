@@ -269,3 +269,39 @@ fn fractional_rate_anchor_hold_and_reverse_cuts_keep_one_global_audio_phase() {
         );
     }
 }
+
+#[test]
+fn owned_revision_keeps_cache_and_matches_borrowed_then_releases_document() {
+    use std::sync::Arc;
+    let (mut d, mut host) = document((0..8192).map(|n| (n as f32 * 0.1).sin()).collect(), 16000);
+    track(&mut d, "main", "audio");
+    clip(
+        &mut d,
+        "audio",
+        "voice",
+        range(0, 2048),
+        media(&host, mapping(100, 3100, 2048)),
+    );
+    let c = Arc::new(compiled(d));
+    let weak = Arc::downgrade(&c);
+    let mut borrowed = AudioMixer::new(&c, ChannelLayout::stereo(), MixLimits::default()).unwrap();
+    let mut owned =
+        AudioMixer::from_shared(c.clone(), ChannelLayout::stereo(), MixLimits::default()).unwrap();
+    assert_eq!(Arc::strong_count(&c), 2);
+    for (first, frames) in [(0, 512), (1200, 217), (4, 91), (0, 512)] {
+        let a = borrowed
+            .render(&mut host, first, frames, &|| false)
+            .unwrap();
+        let b = owned.render(&mut host, first, frames, &|| false).unwrap();
+        assert_eq!(a.pcm.samples(), b.pcm.samples());
+        assert_eq!(a.stats.retained_kernel_bytes, b.stats.retained_kernel_bytes);
+        assert!(b.stats.retained_kernel_bytes > 0);
+        owned.clear();
+    }
+    drop(borrowed);
+    drop(c);
+    assert!(weak.upgrade().is_some());
+    owned.render(&mut host, 99, 50, &|| false).unwrap();
+    drop(owned);
+    assert!(weak.upgrade().is_none());
+}
