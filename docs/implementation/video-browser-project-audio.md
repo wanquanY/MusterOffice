@@ -62,3 +62,17 @@ and checks pending capabilities, malformed payloads, stale descriptions, NaN,
 Promise rejection and successful retries. The capability fixture is explicitly
 test-only; actual media, persisted packs and device playback require Product
 integration evidence.
+
+The clean development deliveries from `3c104b0a567a686f531574da7ca55cbf55349771` are
+`video-mix-sdk-final` (manifest SHA
+`1c1b483c531a1415245b927dd41383df7524f190971df5cdfac62a239a5bc7f8`, WASM 1,144,596 bytes)
+and `video-pcm-description-final` (manifest SHA
+`131af73836d9ab331c140ffdbc19f42bc15eb65b6de4c196d93532c3703782f9`, WASM 629,571 bytes).
+The actual public ABI report is `.codex-work/video-mix-sdk-final-report.json`.
+Product real-media/device integration is recorded in its
+`docs/architecture/browser-video-project-audio.md`; it does not complete the
+video editing plan or establish cross-browser/physical A/V acceptance.
+
+Strict Clippy passes for mix/audio. Including the existing PCM WASM reports the
+pre-existing `decode.rs::State` large-enum-variant warning; this work does not
+claim an all-package strict Clippy pass.

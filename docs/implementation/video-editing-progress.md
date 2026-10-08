@@ -24,7 +24,9 @@
 
 ## Browser 媒体输入增量
 
-正式 `BrowserMediaInput` 已接通原始 AAC 连续物化、独立 PCM runtime、共享音视频准入账本与可独立关闭的完成对象。真实 mono/stereo 解码、随机读取、写入失败、取消竞态、未完成 I/O 计账和旧视频游标回归通过；仅 EOF flush。产品 `48d8ce464` 已固定消费三个组件，并完成受授权素材读取、Worker OPFS 紧凑 PCM pack、IDB 原子登记、页面重载恢复及半成品回收；实际单/双声道检查通过。详见[影片音频物化接入](video-browser-audio-materializer.md)。设备播放/混音、合成/导出和完整浏览器体验仍待完成。
+2026-10-08 新增独立 `mo-video-mix-wasm`，通过持有不可变 CompiledDocument 的共享 AudioMixer 接通浏览器工程声音计算；MoviePcm 公开精确资源描述。公共 WASM 与原生叠轨/淡入淡出/变速/倒放/嵌套输出逐 bit 一致，19 项基础测试通过。产品已消费固定组件，接通本地持久 pack、按需素材准备、持续 Worker 混音与现有 AudioWorklet/设备时钟，实际 mono/stereo 工程波形、重载、播放/暂停/跳转通过。完整音画预览、保调派生源、导出、页面和跨浏览器稳定性仍待完成；见[工程音频组件](video-browser-project-audio.md)。
+
+正式 `BrowserMediaInput` 已接通原始 AAC 连续物化、独立 PCM runtime、共享音视频准入账本与可独立关闭的完成对象。真实 mono/stereo 解码、随机读取、写入失败、取消竞态、未完成 I/O 计账和旧视频游标回归通过；仅 EOF flush。产品 `48d8ce464` 已固定消费三个组件，并完成受授权素材读取、Worker OPFS 紧凑 PCM pack、IDB 原子登记、页面重载恢复及半成品回收；实际单/双声道检查通过。详见[影片音频物化接入](video-browser-audio-materializer.md)。该记录之后已接通设备输出/工程混音；合成/导出和完整浏览器体验仍待完成。
 
 影片音频的原生映射/DSP 已提升到共享 PCM 层，新增独立 PCM WASM；真实浏览器对 48 kHz 单声道与 44.1 kHz 双声道 AAC 完成 raw 解码、EOF tiles、影片裁切和随机读取，与 FFmpeg 逐样本比较通过，原生原调用回归通过。发现并拒绝以中间 flush 控制 AAC 队列，保留 decoder 实际 priming/padding 覆盖；详见[共享浏览器 PCM](video-browser-pcm.md)。生产媒体调度、总预算、OPFS 和正式播放/导出接线仍待完成。
 
