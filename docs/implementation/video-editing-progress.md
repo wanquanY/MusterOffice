@@ -2,11 +2,23 @@
 
 2026-10-09 · 目标执行中，尚未达到整体验收。
 
-## 本批增量：产品 Gateway 精确定位
+## 本批增量：浏览器固定版本检查实际执行
+
+产品已将内部 `browser.video.inspect@1` 接至认证应用的本地 Host。正常 Web 打开剪辑后，实际 Worker/WASM 创建并重开临时文档、计算摘要、复核 IDB 所有权与浏览器传输能力，再注册本地 home/authoring pin。根应用保有连接，关闭面板不撤销执行能力；任务临时租用同一工作区，用后回收；退出/更换登录代次立即销毁旧执行器和重试。
+
+工程检查固定原 revision/authority/digest/组件，并重新由 Office 核心验证快照与计算 summary，不使用缓存摘要替代，不读取更新后的 UI head。仅有界 JSON 经既有 Content 端口回传，视频/音频和工程快照留在浏览器。暂存前后校验字节与不可变引用，30 秒截止覆盖元数据上传。Office 计算组件和稳定 `v0.1.0` 均未改变。
+
+真实 Chrome 154 的静态构建检查通过，多页、重载、编辑到 revision 6 后原版检查仍一致。正常产品 `/workspace` 密码登录后，人工保存 revision 3 并关闭面板，实际 PostgreSQL/WebSocket Gateway 两次投递固定 revision 2，实际 Worker 重算、认证 HTTP 暂存与持久 terminal receipt 确认通过；后注册的同账号独立浏览器不接手旧 home，退出登录连接关闭。两次均仅 1,016 bytes 元数据，摘要 `62946a0059d8e000198ea3180d90223ad9391dab7249fdce4a057cb11d54ef11`。产品报告 `video-inspection-normal-route-final/report.json`，源码集合摘要 `13c7164fbd2c2ec70cdb98e67c820eec18070e8549d1dffdfeba89766a81a877`。
+
+Host 32、适配器/生命周期 17、Web 39、真实 PostgreSQL 3 项通过；Web/Host 类型、变更 lint、正式 Web 构建/预算、migration lock 与专用验收发行器 strict Clippy 通过。公共入口 gzip 507,336 / 524,288 bytes。联调修复了开发库已经应用 221 初稿、后续源码改变导致的新代启动拒绝：恢复与已应用 checksum 完全一致的原 221，以新 222 加强约束并锁定两份迁移，未重建数据库或修改迁移记录；正常开发 supervisor 已升级并恢复就绪。
+
+**这仍不是公开 Agent Tool 验收。** 原请求由明确标注的本机测试发行器调用实际 Gateway 产生，没有新增生产后门 API。公开 Tool 原工程选择/准入/结果验证、人机共同编辑/导出、消息附件及全部功能矩阵继续实现。产品 `docs/architecture/browser-video-agent.md` 为执行合同与复现记录；本仓库没有新增业务持久化、身份系统或产品界面。
+
+## 前批增量：产品 Gateway 精确定位
 
 产品新增内部固定版本工程检查协议与 Gateway 路由：用户、浏览器本地 home、authoring 组件、运行版本和 capability 全部匹配才投递。PostgreSQL 221 迁移保存固定目标并验证索引与原请求一致；原页面换 home 不接手旧队列，旧 fence 明确失效。浏览器在领取前再次校验。检查合同仅允许 64 KiB 工程元数据，不能运送素材或成片。
 
-真实隔离 PostgreSQL 3 项、Rust 16 项、浏览器客户端 32 项、Web 22 项通过，Web 类型检查通过。产品尚未注册这一能力，实际本地 Host 检查适配器、公开 Agent 工具与修改/导出/消息结果仍待接通，不作为完整 Agent 剪辑验收。产品 `docs/architecture/browser-video-agent.md` 记录合同、边界、检查和已有非本轮 Clippy 告警；Office 计算组件不变。
+真实隔离 PostgreSQL 3 项、Rust 16 项、浏览器客户端 32 项、Web 22 项通过，Web 类型检查通过。该批完成时产品尚未注册这一能力；本地 Host 检查适配器随后按上节接通，公开 Agent 工具与修改/导出/消息结果仍待接通，不作为完整 Agent 剪辑验收。产品 `docs/architecture/browser-video-agent.md` 记录合同、边界、检查和已有非本轮 Clippy 告警；Office 计算组件不变。
 
 ## 本批增量：浏览器本地工程定位
 
