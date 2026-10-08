@@ -100,14 +100,14 @@ def main():
     for path in declarations:
         shutil.copyfile(path, output / path.name.replace('.d.ts', '.d.mts'))
     wasm = output / "runtime/encode.wasm"
-    manifest = {"format": "musteroffice.browser-encode-component/1-draft", "releaseCleared": False,
+    manifest = {"format": "musteroffice.browser-encode-component/1-draft", "profile": "musteroffice.browser-encode/1-draft", "releaseCleared": False,
                 "sourceCommit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
                 "sourceDirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True).strip()),
                 "libraryRecordSha256": sha(libraries / "libraries.json"), "libraries": record, "enabledComponents": enabled,
                 "sources": inventory(ROOT, sources + headers + declarations + [wrapper, project, Path(__file__).resolve(),
                     ROOT / "tools/components/build-browser-encode.py"]),
                 "commands": commands, "wasmGzipBytes": len(gzip.compress(wasm.read_bytes(), mtime=0)),
-                "files": inventory(output, [p for p in output.rglob("*") if p.is_file() and p.name != "build.log"])}
+                "files": inventory(output, [p for p in output.rglob("*") if p.is_file()])}
     (output / "bundle-manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
     print(json.dumps({"status": "built", "wasmBytes": wasm.stat().st_size, "wasmGzipBytes": manifest["wasmGzipBytes"]}))
 

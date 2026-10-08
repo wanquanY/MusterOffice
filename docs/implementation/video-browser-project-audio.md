@@ -1,5 +1,14 @@
 # Browser project audio computation
 
+2026-10-08 export integration: `ProjectAudio.open_with_channels(document,
+digest, channels, describe, read)` now selects the shared mono (1) or stereo (2)
+output layout. The original `open` remains stereo-compatible. Other layouts fail
+explicitly; no host-side downmix is needed. The public Wasm check now compares
+five mono windows bit-for-bit with the independent native execution in addition
+to the existing five stereo windows and eight resource-fault checks. Evidence:
+`.codex-work/video-mix-channels-check.json`; strict Clippy also passed. This is
+output-layout coverage, not full browser export acceptance.
+
 `mo-video-mix-wasm` is the independent synchronous project mixer component. It
 uses the existing `mo-video-audio::AudioMixer`, compiler and exact time model.
 It does not include authoring operations, codecs, file/network access, device

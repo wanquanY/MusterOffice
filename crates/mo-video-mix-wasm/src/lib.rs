@@ -44,6 +44,7 @@ fn json(value: &impl serde::Serialize) -> Result<String> {
 pub struct ProjectAudio {
     document: Arc<CompiledDocument>,
     mixer: AudioMixer<'static>,
+    audio_channels: u32,
     resources: Resources,
     stats: Option<MixStats>,
 }
@@ -58,6 +59,22 @@ impl ProjectAudio {
         describe: Function,
         read: Function,
     ) -> Result<Self> {
+        Self::open_with_channels(document, expected_digest, 2, describe, read)
+    }
+    /// Explicit output layout for preview/export. Channel routing remains in
+    /// the shared mixer; the host must never downmix the returned PCM in JS.
+    pub fn open_with_channels(
+        document: &str,
+        expected_digest: &str,
+        channels: u32,
+        describe: Function,
+        read: Function,
+    ) -> Result<Self> {
+        let layout = match channels {
+            1 => ChannelLayout::mono(),
+            2 => ChannelLayout::stereo(),
+            _ => return Err(invalid("output channel layout")),
+        };
         if document.len() > 32 << 20 {
             return Err(failure(AudioError::Budget, None));
         }
@@ -74,7 +91,7 @@ impl ProjectAudio {
         }
         let mixer = AudioMixer::from_shared(
             document.clone(),
-            ChannelLayout::stereo(),
+            layout,
             MixLimits {
                 pcm: PcmLimits {
                     max_frames: 65536,
@@ -90,6 +107,7 @@ impl ProjectAudio {
         Ok(Self {
             document,
             mixer,
+            audio_channels: channels,
             resources: Resources::new(describe, read),
             stats: None,
         })
@@ -102,7 +120,7 @@ impl ProjectAudio {
             "frameRateNumerator": d.frame_rate.numerator,
             "frameRateDenominator": d.frame_rate.denominator,
             "frameCount": Ticks::new(self.document.frame_count().map_err(|e| failure(e.into(), None))?),
-            "audioSampleRate": d.audio_sample_rate, "audioChannels": 2,
+            "audioSampleRate": d.audio_sample_rate, "audioChannels": self.audio_channels,
             "audioSampleCount": Ticks::new(self.document.audio_sample_count().map_err(|e| failure(e.into(), None))?),
         }))
     }

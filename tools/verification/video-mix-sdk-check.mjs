@@ -85,11 +85,24 @@ assert.equal(project.stats(), 'null');
 assert.deepEqual(project.read(123n, 137), reference);
 for (const n of [0, 4097]) rejects(() => project.read(0n, n), 'invalid_request');
 project.free();
+for (const channels of [0, 3, 64]) rejects(() => runtime.ProjectAudio.open_with_channels(document, expected.documentDigest, channels, describe, read), 'invalid_request');
+let monoMixed = 0;
+const mono = runtime.ProjectAudio.open_with_channels(document, expected.documentDigest, 1, describe, read);
+try {
+  assert.equal(JSON.parse(mono.info()).audioChannels, 1);
+  for (let i = 0; i < fixture.queries.length; i++) {
+    if (expected.results[i].status !== 'mixed') continue;
+    const q = fixture.queries[i], pcm = mono.read(BigInt(q.first), q.frames);
+    const v = new DataView(pcm.buffer, pcm.byteOffset, pcm.byteLength);
+    assert.deepEqual(Array.from({ length: pcm.length / 4 }, (_, n) => v.getUint32(n * 4, true)), expected.results[i].bits);
+    monoMixed++;
+  }
+} finally { mono.free(); }
 const sha = v => createHash('sha256').update(v).digest('hex');
-const report = { format: 'musteroffice.video-mix-sdk-check/1', status: 'passed', mixed,
+const report = { format: 'musteroffice.video-mix-sdk-check/1', status: 'passed', mixed, monoMixed,
   queryRejections: 3, resourceFaults: 8, describes, reads, profile: runtime.profile,
   wasmSha256: sha(bytes), manifestSha256: sha(await readFile(root + '/bundle-manifest.json')),
   nativeSha256: sha(await readFile(resolve(nativePath))), fixtureSha256: sha(raw),
-  scope: 'Actual public stereo WASM vs native mono DSP duplicated equally: overlap, gain, fades, rate, reverse, nested sequence, random access and explicit unsupported preserve-pitch. Faults retry cleanly. No browser clock, codec, storage or product acceptance.' };
+  scope: 'Actual public mono WASM bit-exact vs native mono DSP; compatible stereo WASM duplicated equally. Overlap, gain, fades, rate, reverse, nested sequence, random access and explicit unsupported preserve-pitch. Faults retry cleanly. No browser clock, codec, storage or product acceptance.' };
 await writeFile(reportPath, JSON.stringify(report, null, 2) + '\n');
 console.log(JSON.stringify(report));
