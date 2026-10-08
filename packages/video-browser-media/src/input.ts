@@ -12,7 +12,9 @@ import { compare, contains, interval, lookupSeconds } from './time.js';
 import { probeTrack } from './probe.js';
 import { audioView, videoView } from './samples.js';
 import { BudgetedVideoStream } from './video-stream.js';
-import { BrowserVideoBudget } from './video-budget.js';
+import { BrowserMediaBudget } from './media-budget.js';
+import { BrowserAudioMaterializer } from './audio-materializer.js';
+import type { BrowserPcmRuntime, BrowserPcmOrigin, BrowserPcmCompletion, WritePcmTile } from './pcm-contract.js';
 import { BrowserAudioCursor } from './audio-cursor.js';
 import { BrowserMovieIndex } from './movie-index.js';
 import { BrowserVideoCursor } from './video-cursor.js';
@@ -33,7 +35,7 @@ export class BrowserMediaInput {
   private audioCursor: { id: number; cursor: BrowserAudioCursor } | undefined;
   private movieIndex: BrowserMovieIndex | undefined;
   private movieCursor: { id: number; cursor: BrowserVideoCursor } | undefined;
-  private constructor(private readonly blob: Blob, private readonly limits: BrowserMediaLimits, private readonly budget: BrowserVideoBudget) {
+  private constructor(private readonly blob: Blob, private readonly limits: BrowserMediaLimits, private readonly budget: BrowserMediaBudget) {
     this.input = new Input({
       formats: [MP4, WEBM, WAVE, MP3, OGG, FLAC],
       source: new BlobSource(blob, {
@@ -42,13 +44,15 @@ export class BrowserMediaInput {
       }),
     });
   }
-  static async open(blob: Blob, options: { limits?: Partial<BrowserMediaLimits>; signal?: AbortSignal; videoBudget?: BrowserVideoBudget; mediaIndexRuntime?: BrowserMediaIndexRuntime } = {}): Promise<BrowserMediaInput> {
+  static async open(blob: Blob, options: { limits?: Partial<BrowserMediaLimits>; signal?: AbortSignal; mediaBudget?: BrowserMediaBudget; videoBudget?: BrowserMediaBudget; mediaIndexRuntime?: BrowserMediaIndexRuntime } = {}): Promise<BrowserMediaInput> {
     const limits = { ...DEFAULT_MEDIA_LIMITS, ...options.limits };
     for (const value of Object.values(limits)) requireMedia(Number.isSafeInteger(value) && value > 0, 'invalid_request');
     requireMedia(blob instanceof Blob && blob.size > 0 && blob.size <= limits.maxFileBytes, 'resource_limit');
     requireMedia(limits.operationDeadlineMs <= 120000, 'invalid_request');
-    requireMedia(options.videoBudget === undefined || options.videoBudget instanceof BrowserVideoBudget, 'invalid_request');
-    const owner = new BrowserMediaInput(blob, Object.freeze(limits), options.videoBudget ?? new BrowserVideoBudget());
+    requireMedia((options.mediaBudget === undefined || options.mediaBudget instanceof BrowserMediaBudget)
+      && (options.videoBudget === undefined || options.videoBudget instanceof BrowserMediaBudget)
+      && !(options.mediaBudget && options.videoBudget && options.mediaBudget !== options.videoBudget), 'invalid_request');
+    const owner = new BrowserMediaInput(blob, Object.freeze(limits), options.mediaBudget ?? options.videoBudget ?? new BrowserMediaBudget());
     const abort = () => owner.close(new BrowserMediaError('cancelled'));
     options.signal?.addEventListener('abort', abort, { once: true });
     owner.detach = () => options.signal?.removeEventListener('abort', abort);
@@ -190,6 +194,26 @@ export class BrowserMediaInput {
       });
       return count;
     }, signal);
+  }
+  /** Fresh raw packet decode to verified PCM EOF. Writes remain provisional;
+   * the returned owned handle seals references but never commits host storage.
+   * Only this operation uses the shared movie clock, not legacy audioRange. */
+  async materializeMovieAudio(id: number, runtime: BrowserPcmRuntime, origin: BrowserPcmOrigin,
+    write: WritePcmTile, signal?: AbortSignal): Promise<BrowserPcmCompletion> {
+    origin = structuredClone(origin);
+    let produced: BrowserPcmCompletion | undefined;
+    try {
+      return await this.run(async () => {
+        const { track } = this.audio(id); requireMedia(this.movieIndex, 'invalid_request');
+        await this.retireMovieCursor(); await this.audioCursor?.cursor.close(); this.audioCursor = undefined; this.check();
+        produced = await BrowserAudioMaterializer.run(this.blob, this.movieIndex, track, runtime, origin,
+          write, this.budget, this.limits, this.lifetime.signal);
+        // Cancellation may win run()'s race before this continuation receives
+        // the owned receipt. Dispose here as well as in the outer catch so a
+        // late successful handoff can never strand its compute reservation.
+        try { this.check(); return produced; } catch (error) { produced.close(); produced = undefined; throw error; }
+      }, signal);
+    } catch (error) { produced?.close(); throw error; }
   }
   audioRange(id: number, start: ExactRatio, end: ExactRatio, consume: ConsumeAudio, signal?: AbortSignal): Promise<number> {
     start = structuredClone(start); end = structuredClone(end);

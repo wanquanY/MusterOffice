@@ -1,9 +1,11 @@
 import { BrowserMediaError, requireMedia, type BrowserMediaLimits, type TimeSample } from './contract.js';
+import type { MovieAudioClock } from './pcm-contract.js';
 import type { BrowserMediaIndex, BrowserMediaIndexRuntime, MovieVideoInfo, MovieVideoSelection } from './movie-contract.js';
 import { compare, contains, fraction, validateScale } from './time.js';
 
-export interface RawVideoTrack { ordinal: number; id: number; timescale: number; samples: number; descriptions: number; }
-export interface RawVideoPacket {
+export interface RawMovieTrack { ordinal: number; id: number; kind: 'video' | 'audio'; timescale: number;
+  samples: number; descriptions: number; edits: number; declaredTrackDuration: string | null; }
+export interface RawMoviePacket {
   bytes: { offset: string; length: string }; dts: string; pts: string;
   decodeDuration: number; description: number; syncSample: boolean;
 }
@@ -41,9 +43,9 @@ function decode(run: () => string): Record<string, unknown> {
  * reads bounded sample pages; it does not reconstruct a movie timeline. */
 export class BrowserMovieIndex {
   private index: BrowserMediaIndex | undefined;
-  readonly tracks: readonly RawVideoTrack[];
+  readonly tracks: readonly RawMovieTrack[];
   private readonly info = new Map<number, MovieVideoInfo>();
-  private constructor(index: BrowserMediaIndex, tracks: RawVideoTrack[]) { this.index = index; this.tracks = tracks; }
+  private constructor(index: BrowserMediaIndex, tracks: RawMovieTrack[], private readonly movieTimescale: number) { this.index = index; this.tracks = tracks; }
   static open(blob: Blob, runtime: BrowserMediaIndexRuntime, limits: BrowserMediaLimits): BrowserMovieIndex {
     const worker = globalThis as unknown as { FileReaderSync?: unknown };
     requireMedia(typeof worker.FileReaderSync === 'function', 'unsupported_media');
@@ -60,23 +62,28 @@ export class BrowserMovieIndex {
       const summary = decode(() => index.summary());
       requireMedia(summary.profile === 'musteroffice.media-index/1-draft', 'unsupported_media');
       const count = u32(summary.tracks); requireMedia(count > 0 && count <= limits.maxTracks, 'resource_limit');
-      const tracks: RawVideoTrack[] = [], ids = new Set<number>();
+      const tracks: RawMovieTrack[] = [], ids = new Set<number>();
       for (let ordinal = 0; ordinal < count; ordinal++) {
         const page = decode(() => index.query(JSON.stringify({ type: 'track', track: ordinal })));
         requireMedia(page.type === 'track', 'unsupported_media');
         const track = object(page.track), id = u32(track.id);
         requireMedia(id > 0 && !ids.has(id), 'unsupported_media'); ids.add(id);
-        if (JSON.stringify(track.handler) !== '[118,105,100,101]') continue;
+        const handler = JSON.stringify(track.handler);
+        if (handler !== '[118,105,100,101]' && handler !== '[115,111,117,110]') continue;
+        if (track.declaredTrackDuration !== null) requireMedia(integer(track.declaredTrackDuration) >= 0n, 'invalid_timing');
         const timescale = u32(track.timescale); validateScale(timescale);
-        tracks.push({ ordinal, id, timescale, samples: u32(track.samples), descriptions: u32(track.descriptions) });
+        tracks.push({ ordinal, id, kind: handler === '[118,105,100,101]' ? 'video' : 'audio', timescale,
+          samples: u32(track.samples), descriptions: u32(track.descriptions), edits: u32(track.edits),
+          declaredTrackDuration: track.declaredTrackDuration as string | null });
       }
-      return new BrowserMovieIndex(index, tracks);
+      const movieTimescale = u32(summary.movieTimescale); validateScale(movieTimescale);
+      return new BrowserMovieIndex(index, tracks, movieTimescale);
     } catch (error) { index.free(); throw error; }
   }
   private handle(): BrowserMediaIndex { requireMedia(this.index, 'closed'); return this.index; }
-  track(id: number): RawVideoTrack {
+  track(id: number, kind: 'video' | 'audio' = 'video'): RawMovieTrack {
     this.handle(); const track = this.tracks.find(track => track.id === id);
-    requireMedia(track, 'invalid_request'); return track;
+    requireMedia(track?.kind === kind, 'invalid_request'); return track;
   }
   timing(id: number): MovieVideoInfo {
     const track = this.track(id), previous = this.info.get(id); if (previous) return structuredClone(previous);
@@ -106,7 +113,27 @@ export class BrowserMovieIndex {
     }
     return structuredClone(selection);
   }
-  packets(track: RawVideoTrack, start: number): RawVideoPacket[] {
+  audioClock(id: number): MovieAudioClock {
+    const track = this.track(id, 'audio'); requireMedia(track.edits <= 4096, 'resource_limit');
+    const edits: MovieAudioClock['edits'][number][] = [];
+    for (let start = 0; start < track.edits; start += 128) {
+      const value = decode(() => this.handle().query(JSON.stringify({ type: 'edits', track: track.ordinal, start, count: 128 })));
+      requireMedia(value.type === 'edits' && value.total === track.edits && Array.isArray(value.items)
+        && value.items.length === Math.min(128, track.edits - start), 'unsupported_media');
+      for (const item of value.items) {
+        const edit = object(item);
+        requireMedia(integer(edit.movieStart) >= 0n && integer(edit.movieDuration) >= 0n, 'invalid_timing');
+        if (edit.mediaTime !== null) integer(edit.mediaTime);
+        requireMedia(typeof edit.rate1616 === 'number' && Number.isInteger(edit.rate1616)
+          && edit.rate1616 >= -2147483648 && edit.rate1616 <= 2147483647, 'invalid_timing');
+        edits.push({ movieStart: edit.movieStart as string, movieDuration: edit.movieDuration as string,
+          mediaTime: edit.mediaTime as string | null, rate1616: edit.rate1616 });
+      }
+    }
+    return { trackId: track.id, movieTimescale: this.movieTimescale, mediaTimescale: track.timescale,
+      declaredTrackDuration: track.declaredTrackDuration, edits };
+  }
+  packets(track: RawMovieTrack, start: number): RawMoviePacket[] {
     const value = decode(() => this.handle().query(JSON.stringify({ type: 'samples', track: track.ordinal, start, count: 128 })));
     requireMedia(value.type === 'samples' && value.total === track.samples && Array.isArray(value.items)
       && value.items.length === Math.min(128, track.samples - start), 'unsupported_media');
@@ -115,7 +142,7 @@ export class BrowserMovieIndex {
       requireMedia(integer(bytes.offset) >= 0n && integer(bytes.length) > 0n, 'unsupported_media');
       integer(packet.dts); integer(packet.pts); u32(packet.description);
       requireMedia(u32(packet.decodeDuration) > 0 && typeof packet.syncSample === 'boolean', 'unsupported_media');
-      return packet as unknown as RawVideoPacket;
+      return packet as unknown as RawMoviePacket;
     });
   }
   close(): void { const index = this.index; this.index = undefined; this.info.clear(); index?.free(); }

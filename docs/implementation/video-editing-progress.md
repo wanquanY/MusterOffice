@@ -24,6 +24,8 @@
 
 ## Browser 媒体输入增量
 
+正式 `BrowserMediaInput` 已接通原始 AAC 连续物化、独立 PCM runtime、共享音视频准入账本与可独立关闭的完成对象。真实 mono/stereo 解码、随机读取、写入失败、取消竞态、未完成 I/O 计账和旧视频游标回归通过；仅 EOF flush。详见[影片音频物化接入](video-browser-audio-materializer.md)。产品 OPFS 发布、播放/混音和完整浏览器体验仍待完成。
+
 影片音频的原生映射/DSP 已提升到共享 PCM 层，新增独立 PCM WASM；真实浏览器对 48 kHz 单声道与 44.1 kHz 双声道 AAC 完成 raw 解码、EOF tiles、影片裁切和随机读取，与 FFmpeg 逐样本比较通过，原生原调用回归通过。发现并拒绝以中间 flush 控制 AAC 队列，保留 decoder 实际 priming/padding 覆盖；详见[共享浏览器 PCM](video-browser-pcm.md)。生产媒体调度、总预算、OPFS 和正式播放/导出接线仍待完成。
 
 ISO BMFF 分页索引及 `IndexedMovie` 已从原生 wire/worker 提升到公共媒体层，新的独立 WASM 直接共用原生 MovieTimeline/VideoTiming。真实 Worker 对 3 个素材共 117 个查询、657 个压缩包记录与原生及独立参照一致；原生 231 帧/1,050 个影片查询回归通过；见[共享影片索引](video-browser-index.md)。后续原始包接线已通过 5 个实际素材共 1,402 次影片查询、1,360 次画面核验，包含多 edit、负 CTS、错误 sync 候选和真实 open-GOP；影片时钟不再重复叠加第三方偏移。串行定位等待前次有界读取退出，取消立即关闭 decoder，见[浏览器影片解码](video-browser-movie.md)。顺序游标/定格复用已将同一正向语料的 decoder 创建从 1,360 降为 6，并验证每次借用独立失效、显式逐出、反压与未完成读取的额度，见[连续解码记录](video-browser-cursor.md)。影片音频、合成/导出及正式页面仍待完成。

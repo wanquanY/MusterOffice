@@ -2,7 +2,7 @@ import type { ExactRatio, TimeSample, RationalTime } from '../../contracts/src/g
 export type { ExactRatio, TimeSample, RationalTime };
 
 export type BrowserMediaErrorCode = 'invalid_request' | 'resource_limit' | 'unsupported_media'
-  | 'unsupported_codec' | 'invalid_timing' | 'busy' | 'closed' | 'cancelled' | 'deadline';
+  | 'unsupported_codec' | 'pending_source' | 'invalid_timing' | 'busy' | 'closed' | 'cancelled' | 'deadline';
 export class BrowserMediaError extends Error {
   constructor(readonly code: BrowserMediaErrorCode) { super(code); this.name = 'BrowserMediaError'; }
 }
@@ -21,6 +21,9 @@ export interface BrowserMediaLimits {
   /** Max forward sample-ordinal distance reused across movie requests. Larger
    * jumps reopen from a verified access point; this never changes selection. */
   readonly maxSequentialVideoSamples: number;
+  /** Bounded submitted raw audio packets, including codec-internal output.
+   * A decoder that withholds this entire window is stopped by the deadline. */
+  readonly maxPendingAudioPackets: number;
   readonly maxDurationSeconds: number;
   readonly operationDeadlineMs: number;
 }
@@ -29,7 +32,7 @@ export const DEFAULT_MEDIA_LIMITS: Readonly<BrowserMediaLimits> = Object.freeze(
   maxPixels: 3840 * 2160, maxAudioChannels: 8, maxAudioSampleRate: 192000,
   maxAudioBlockBytes: 8 * 1024 ** 2, maxDurationSeconds: 7 * 86400,
   maxEncodedPacketBytes: 8 * 1024 ** 2,
-  maxSequentialVideoSamples: 256,
+  maxSequentialVideoSamples: 256, maxPendingAudioPackets: 16,
   operationDeadlineMs: 30000,
 });
 export interface TrackTime {

@@ -81,4 +81,4 @@ WASM clock 向量还覆盖 empty/repeated edits；这是明确的合成输入向
 
 ## 下一步接线
 
-此轮没有替换原 `BrowserMediaInput.audioRange`：它仍采用旧 packet clock 和第三方音频游标。下一步为正式浏览器媒体层建立 raw AAC 配置/码流容量验证、共享字节准入、输入/输出/取消/等待退出边界，使用本组件物化 OPFS tiles，再接产品素材资源和播放/混音。多声道、其他 codec、audio dwell 策略、长时性能、浏览器矩阵、Web 合成/导出与正常登录整体验收仍独立待完成。不能以两份短素材证明整个功能已可验收。
+后续已完成正式 `BrowserMediaInput.materializeMovieAudio`、AAC 配置准入、共享字节账本和输入/输出/取消/等待退出边界，见[生产接入记录](video-browser-audio-materializer.md)。原 `audioRange` 仍采用旧 packet clock 和第三方音频游标。下一步由产品宿主持久保存 OPFS tiles，再接素材资源和播放/混音。多声道、其他 codec、audio dwell 策略、长时性能、浏览器矩阵、Web 合成/导出与正常登录整体验收仍独立待完成。不能以两份短素材证明整个功能已可验收。

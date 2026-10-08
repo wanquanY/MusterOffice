@@ -1,7 +1,7 @@
 import { EncodedPacket, type InputVideoTrack } from 'mediabunny';
 import { iterateAvcNalUnits, extractNalUnitTypeForAvc } from '@musteroffice/mediabunny-codec-data';
 import { requireMedia } from './contract.js';
-import { BrowserMovieIndex, integer, type RawVideoPacket, type RawVideoTrack } from './movie-index.js';
+import { BrowserMovieIndex, integer, type RawMoviePacket, type RawMovieTrack } from './movie-index.js';
 import type { MovieVideoSelection } from './movie-contract.js';
 import type { VideoPackets } from './video-packets.js';
 import { avcCapacity, type VideoCapacity } from './mediabunny-platform.js';
@@ -11,9 +11,9 @@ type Selection = Extract<MovieVideoSelection, {type: 'sample'}>;
  * closed-GOP proof. Start at a verified IDR, including when this requires going
  * earlier than Rust's candidate. No movie offset ever enters these timestamps. */
 export class IndexedVideoPackets implements VideoPackets {
-  private page: RawVideoPacket[] = [];
+  private page: RawMoviePacket[] = [];
   private start = -1;
-  private constructor(private readonly blob: Blob, private readonly index: BrowserMovieIndex, private readonly track: RawVideoTrack,
+  private constructor(private readonly blob: Blob, private readonly index: BrowserMovieIndex, private readonly track: RawMovieTrack,
     private readonly selection: Selection, private readonly config: VideoDecoderConfig, private readonly codec: VideoCapacity,
     private readonly maxBytes: number, private readonly signal: AbortSignal) {}
   static async open(blob: Blob, index: BrowserMovieIndex, input: InputVideoTrack, selection: Selection, maxBytes: number, signal: AbortSignal): Promise<IndexedVideoPackets> {
@@ -22,7 +22,7 @@ export class IndexedVideoPackets implements VideoPackets {
     requireMedia(await input.getCodec() === 'avc' && config, 'unsupported_codec');
     return new IndexedVideoPackets(blob, index, track, selection, config, avcCapacity(config), maxBytes, signal);
   }
-  private metadata(ordinal: number): RawVideoPacket {
+  private metadata(ordinal: number): RawMoviePacket {
     this.signal.throwIfAborted();
     requireMedia(Number.isInteger(ordinal) && ordinal >= 0 && ordinal < this.track.samples, 'invalid_request');
     if (ordinal < this.start || ordinal >= this.start + this.page.length) {
