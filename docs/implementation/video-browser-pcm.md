@@ -67,6 +67,18 @@ node tools/verification/video-pcm-browser-check.mjs BROWSER PCM_SDK PCM_PIN INDE
 
 WASM clock 向量还覆盖 empty/repeated edits；这是明确的合成输入向量，不声称修改了源文件或完成产品编辑权限校验。44.1 kHz 双声道素材由两个不同频率的正弦生成，用于发现声道交换和时钟误差。
 
+## 固定交付证据
+
+实现提交 `29dd46b192b112d85fab79b2c3df3a9f8cefb184`，两份最终组件均记录 `sourceDirty=false`。
+
+- PCM SDK：`.codex-work/video-pcm-sdk-final/`，manifest `2e7335d89ef934aab666e064de6582d6f6608477771f32e9fd2d537f54832b67`；11 个文件、673,930 bytes；WASM 621,197 bytes、gzip 217,834 bytes。
+- 索引构建回归：`.codex-work/video-pcm-index-final/`，manifest `d09fc13bcf295b8071800f9336914be84f922cac82821d38743dce076f375522`；真实 PCM 检查同时使用此新交付。索引 WASM 仍为 504,013 bytes/gzip 170,568 bytes。
+- 最终实际报告：`.codex-work/video-pcm-browser-final-mono/report.json`、`.codex-work/video-pcm-browser-final-stereo/report.json`；各 25 次错误拒绝检查，合成空白/重复片段分别读取 84,000 / 77,175 帧，5 个真实随机窗口，输出音频对象结束均为 0。
+- 原生显式素材回归：`.codex-work/video-pcm-native-regression.json`，原 worker pin `2638596baa07691a1a36ae11d5bea63e3a02f6f2e8a9746fb4c811fc7d351db1`；主素材 SHA-256 `ca7211a9b5e1bbdb66c7bd98e515484d7b6bc5ee8bbeeadb6cabb06d90bd73a6`。
+- 44.1 kHz 双声道素材 SHA-256 `d7fdc971c47c9631ad5f7e2b086739063d55b600a2a9c0a6bc33f8b16ea37cb2`；生成命令为 `ffmpeg -f lavfi -i 'aevalsrc=0.17*sin(2*PI*440*t)|0.11*sin(2*PI*733*t):s=44100:d=3' -c:a aac -b:a 128k -movflags +faststart NEW_FILE.m4a`。
+
+这些体积仅是独立计算组件，不是完整 Web 工作台的下载或运行占用。最终 gate 消费固定组件，无跨仓库源码导入，也没有清除未完成的产品生成/Admin/计费代码。
+
 ## 下一步接线
 
 此轮没有替换原 `BrowserMediaInput.audioRange`：它仍采用旧 packet clock 和第三方音频游标。下一步为正式浏览器媒体层建立 raw AAC 配置/码流容量验证、共享字节准入、输入/输出/取消/等待退出边界，使用本组件物化 OPFS tiles，再接产品素材资源和播放/混音。多声道、其他 codec、audio dwell 策略、长时性能、浏览器矩阵、Web 合成/导出与正常登录整体验收仍独立待完成。不能以两份短素材证明整个功能已可验收。
