@@ -44,6 +44,7 @@
 | 真实 Chrome GPU | Chrome 154.0.8037.98，Apple / metal-3 非软件设备；25 组 SDR/HDR/alpha/背景/高频边界/不同尺寸，共 109080 个有效样本与 CPU 逐字节一致，360 个 padding 字节为零 | 合成测试输入，不代表所有素材与色彩档案 |
 | VideoFrame | 实际 I420 VideoFrame 构造与原格式 copyTo 后有效样本不变 | 尚未进入 VideoEncoder |
 | 既有浏览器颜色 | 同一视觉交付的 8 组裁切/方向/alpha/sRGB 显示和 44 组原始平面/位深/HDR 回归通过 | 原始颜色门禁，未扩大为整播放器验收 |
+| 既有合成 | 公共视觉 WASM 指令及 6 个实际 GPU 工程帧回归通过，最高线性误差 `5.961e-8`；新增静态模块也在独立浏览器门禁中实际加载 | 原合成正确性范围 |
 | 资源/协议错误 | 伪造尺寸/stride/offset/NaN 参数、HDR 缺策略、奇数尺寸拒绝；部分分配失败、输入提前关闭及取消后资源账本正确回收 | 不是浏览器进程硬内存上限或完整设备恢复 |
 | Native 编码 | 6 项默认测试通过；另实际导出 6 个 MP4，包含 VideoToolbox H.264/AAC、FFV1/PCM、48/44.1 kHz 与无音轨，经独立 ffprobe/FFmpeg 校验通过 | 图形与程序 PCM 工程，沿用该门禁原有范围 |
 | 静态检查 | 相关 5 个 Rust 包 all-targets strict Clippy、WASM、TS strict 构建通过 | 不代表全工作区与产品验收 |
@@ -60,6 +61,17 @@ python3 tools/video-visual-sdk/build.py --output NEW_VISUAL_COMPONENT --bindgen 
 node tools/verification/video-browser-i420-check.mjs NEW_VISUAL_COMPONENT NATIVE_I420.json NEW_GPU_REPORT_DIR
 python3 tools/verification/media-encode-check.py --component VERIFIED_NATIVE_COMPONENT --project --hardware --output NEW_NATIVE_REPORT_DIR
 ```
+
+## 不可变开发交付
+
+从干净源码提交 `6141990` 构建，两个 manifest 均记录 `sourceDirty: false`、`releaseCleared: false`：
+
+| 本地交付 | Manifest SHA-256 | 重跑证据 |
+| --- | --- | --- |
+| `.codex-work/video-export-sdk-6141990` | `f5533cc6f75c8735a26130957b38f5ad1857d2aeb3afaf76c7a3cc50fe6f1d3c` | `video-export-sdk-6141990-check/report.json`，实际公共 WASM 239 步通过 |
+| `.codex-work/video-visual-sdk-6141990` | `08cad12bf588b991076772dcbc977c65a3f93d3afad9434033e554241376ff97` | `video-i420-sdk-6141990-check/report.json`，实际 Chrome GPU 25 组通过 |
+
+独立导出规划 WASM 为 939037 bytes（gzip 288831 bytes），不含 codec/GPU/产品应用；这不是完整编辑器体积。原生回归的源计算与该提交相同，6 个实际输出证据保留在 `video-export-shared-schedule-native/report.json`。旧色彩和合成的回归使用相同源码对应的前一开发交付，分别见 `video-i420-browser-color-regression/report.json`、`video-i420-visual-regression.json`、`video-i420-composition-regression/report.json`，没有将不同清单冒充同一 pin。
 
 ## 继续实现的编码与发布边界
 
