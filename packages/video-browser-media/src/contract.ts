@@ -18,6 +18,9 @@ export interface BrowserMediaLimits {
   readonly maxAudioSampleRate: number;
   readonly maxAudioBlockBytes: number;
   readonly maxEncodedPacketBytes: number;
+  /** Max forward sample-ordinal distance reused across movie requests. Larger
+   * jumps reopen from a verified access point; this never changes selection. */
+  readonly maxSequentialVideoSamples: number;
   readonly maxDurationSeconds: number;
   readonly operationDeadlineMs: number;
 }
@@ -26,6 +29,7 @@ export const DEFAULT_MEDIA_LIMITS: Readonly<BrowserMediaLimits> = Object.freeze(
   maxPixels: 3840 * 2160, maxAudioChannels: 8, maxAudioSampleRate: 192000,
   maxAudioBlockBytes: 8 * 1024 ** 2, maxDurationSeconds: 7 * 86400,
   maxEncodedPacketBytes: 8 * 1024 ** 2,
+  maxSequentialVideoSamples: 256,
   operationDeadlineMs: 30000,
 });
 export interface TrackTime {

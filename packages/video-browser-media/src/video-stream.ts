@@ -130,6 +130,9 @@ export class BudgetedVideoStream implements AsyncIterable<VideoSample> {
     this.releaseIfClosed();
     this.wake();
   }
+  check(): void { if (this.failure) throw this.failure; requireMedia(!this.closed, 'closed'); }
+  /** Codec/frame teardown is immediate; pending admitted reads retire later. */
+  retire(): Promise<void> { this.close(); return this.settled; }
   private taskEnded(): void { this.tasks--; this.releaseIfClosed(); }
   private packetKey(timestamp: number): string {
     const ticks = Math.round(timestamp * this.timescale);

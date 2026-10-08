@@ -24,7 +24,7 @@
 
 ## Browser 媒体输入增量
 
-ISO BMFF 分页索引及 `IndexedMovie` 已从原生 wire/worker 提升到公共媒体层，新的独立 WASM 直接共用原生 MovieTimeline/VideoTiming。真实 Worker 对 3 个素材共 117 个查询、657 个压缩包记录与原生及独立参照一致；原生 231 帧/1,050 个影片查询回归通过；见[共享影片索引](video-browser-index.md)。后续原始包接线已通过 5 个实际素材共 1,402 次影片查询、1,360 次画面核验，包含多 edit、负 CTS、错误 sync 候选和真实 open-GOP；影片时钟不再重复叠加第三方偏移。串行定位等待前次有界读取退出，取消立即关闭 decoder。顺序解码复用、影片音频、合成/导出及正式页面仍待完成，见[浏览器影片解码](video-browser-movie.md)。
+ISO BMFF 分页索引及 `IndexedMovie` 已从原生 wire/worker 提升到公共媒体层，新的独立 WASM 直接共用原生 MovieTimeline/VideoTiming。真实 Worker 对 3 个素材共 117 个查询、657 个压缩包记录与原生及独立参照一致；原生 231 帧/1,050 个影片查询回归通过；见[共享影片索引](video-browser-index.md)。后续原始包接线已通过 5 个实际素材共 1,402 次影片查询、1,360 次画面核验，包含多 edit、负 CTS、错误 sync 候选和真实 open-GOP；影片时钟不再重复叠加第三方偏移。串行定位等待前次有界读取退出，取消立即关闭 decoder，见[浏览器影片解码](video-browser-movie.md)。顺序游标/定格复用已将同一正向语料的 decoder 创建从 1,360 降为 6，并验证每次借用独立失效、显式逐出、反压与未完成读取的额度，见[连续解码记录](video-browser-cursor.md)。影片音频、合成/导出及正式页面仍待完成。
 
 独立 `video-browser-media` 组件消费固定 Mediabunny 原始源码与 WebCodecs，直接接受 Rust 的精确时间/边界方向。真实 Worker 的 77 帧 B-frame/VFR 视频、16 个边界定位、144,384 个音频采样值与独立 FFmpeg 对比通过；修正 AAC 从中间 key 包直接开始导致的波形差异，并验证回调不结束时的超时和物理资源释放。新增 progressive AVC 解码容量/共享字节准入、压缩包预准入与有界输出队列，真实暂存 VideoFrame 峰值由 42 降到 3；100 次顺序音频窗口复用 1 个 decoder。SDK 包含完整对应源码与许可，按外部 manifest pin 验证。其他视频 codec 的容量模型、随机音频 seek/总音频预算、影片音频映射、Web 合成/导出及正式页面接线仍未完成；见[记录与复现](video-browser-media.md)。
 

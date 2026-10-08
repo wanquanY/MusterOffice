@@ -8,14 +8,14 @@ import {
   type BrowserMediaLimits, type BrowserMediaInfo, type BrowserTrack,
   type ConsumeVideo, type ConsumeAudio, type ExactRatio, type TimeSample,
 } from './contract.js';
-import { compare, contains, fromSeconds, interval, lookupSeconds } from './time.js';
+import { compare, contains, interval, lookupSeconds } from './time.js';
 import { probeTrack } from './probe.js';
 import { audioView, videoView } from './samples.js';
 import { BudgetedVideoStream } from './video-stream.js';
 import { BrowserVideoBudget } from './video-budget.js';
 import { BrowserAudioCursor } from './audio-cursor.js';
 import { BrowserMovieIndex } from './movie-index.js';
-import { IndexedVideoPackets } from './movie-packets.js';
+import { BrowserVideoCursor } from './video-cursor.js';
 import type { BrowserMediaIndexRuntime, MovieVideoInfo, MovieVideoSelection } from './movie-contract.js';
 
 /** Media I/O only, intended for a host-owned terminable Worker. The host admits
@@ -32,6 +32,7 @@ export class BrowserMediaInput {
   private detach: (() => void) | undefined;
   private audioCursor: { id: number; cursor: BrowserAudioCursor } | undefined;
   private movieIndex: BrowserMovieIndex | undefined;
+  private movieCursor: { id: number; cursor: BrowserVideoCursor } | undefined;
   private constructor(private readonly blob: Blob, private readonly limits: BrowserMediaLimits, private readonly budget: BrowserVideoBudget) {
     this.input = new Input({
       formats: [MP4, WEBM, WAVE, MP3, OGG, FLAC],
@@ -109,22 +110,27 @@ export class BrowserMediaInput {
     requireMedia(value.info.decodeConfigurationSupported, 'unsupported_codec');
     return { track: value.track, info: value.info };
   }
-  private async borrow<S extends VideoSample | AudioSample, T>(sample: S, run: () => Promise<T>): Promise<T> {
+  private async borrow<S extends VideoSample | AudioSample, T>(sample: S, run: (check: () => void) => Promise<T>, dispose = true): Promise<T> {
+    let active = true;
+    const check = () => { this.check(); requireMedia(active && this.borrowed.has(sample), 'closed'); };
     this.borrowed.add(sample);
-    try { this.check(); return await run(); }
-    finally { this.borrowed.delete(sample); sample.close(); }
+    try { check(); return await run(check); }
+    finally { active = false; this.borrowed.delete(sample); if (dispose) sample.close(); }
   }
-  private checkBorrowed(sample: VideoSample | AudioSample): void {
-    this.check(); requireMedia(this.borrowed.has(sample), 'closed');
-  }
-  private async consume<S extends VideoSample | AudioSample>(samples: AsyncGenerator<S, void, unknown>, run: (sample: S) => Promise<boolean>): Promise<void> {
+  private async consume<S extends VideoSample | AudioSample>(samples: AsyncGenerator<S, void, unknown>, run: (sample: S, check: () => void) => Promise<boolean>): Promise<void> {
     this.iterators.add(samples);
     try {
       for await (const sample of samples) {
-        if (!(await this.borrow(sample, () => run(sample)))) break;
+        if (!(await this.borrow(sample, check => run(sample, check)))) break;
       }
     } finally { this.iterators.delete(samples); await samples.return(); }
   }
+  private async retireMovieCursor(): Promise<void> {
+    const value = this.movieCursor; this.movieCursor = undefined; await value?.cursor.close();
+  }
+  /** Evict retained video decode state while keeping the immutable source/index.
+   * Hosts use this when an asset is no longer visible or under memory pressure. */
+  releaseMovieVideo(signal?: AbortSignal): Promise<void> { return this.run(() => this.retireMovieCursor(), signal); }
   /** Shared Rust movie selection followed by raw sample-table decoding. A gap
    * never starts a decoder. Missing decoded coverage is an error, not a gap and
    * never a held prior frame. The borrowed callback receives the movie span. */
@@ -133,20 +139,18 @@ export class BrowserMediaInput {
     return this.run(async () => {
       const { track, info } = this.video(id); requireMedia(this.movieIndex, 'invalid_request');
       const selection = this.movieIndex.select(id, request);
-      if (selection.type !== 'sample') return selection;
-      const packets = await IndexedVideoPackets.open(this.blob, this.movieIndex, track, selection, this.limits.maxEncodedPacketBytes, this.lifetime.signal);
-      const stream = await BudgetedVideoStream.open(track, 0, this.budget, this.limits.maxEncodedPacketBytes, this.limits.maxPixels, this.lifetime.signal, packets);
-      for await (const sample of stream) {
-        const ticks = BigInt(fromSeconds(sample.timestamp, info.timescale).ticks), target = BigInt(selection.rawStart);
-        requireMedia(ticks <= target, 'invalid_timing');
-        if (ticks < target) continue;
-        await this.borrow(sample, async () => {
-          requireMedia(sample.visibleRect.width * sample.visibleRect.height <= this.limits.maxPixels, 'resource_limit');
-          await consume(videoView(sample, () => this.checkBorrowed(sample), this.budget, stream.surfaceBytes), structuredClone(selection.movie));
-        });
-        return selection;
+      if (selection.type !== 'sample') { await this.retireMovieCursor(); return selection; }
+      if (this.movieCursor?.id !== id) {
+        await this.retireMovieCursor(); this.check();
+        this.movieCursor = { id, cursor: new BrowserVideoCursor(this.blob, this.movieIndex, track, info.timescale, this.budget, this.limits, this.lifetime.signal) };
       }
-      throw new BrowserMediaError('invalid_timing');
+      const cursor = this.movieCursor.cursor;
+      await cursor.read(selection, (sample, surfaceBytes) => this.borrow(sample, async borrowed => {
+        requireMedia(sample.visibleRect.width * sample.visibleRect.height <= this.limits.maxPixels, 'resource_limit');
+        const check = () => { borrowed(); cursor.check(); };
+        await consume(videoView(sample, check, this.budget, surfaceBytes), structuredClone(selection.movie));
+      }, false));
+      return selection;
     }, signal);
   }
   /** The prior sample is not stretched into a gap or past EOF. Exact one-sided
@@ -154,14 +158,15 @@ export class BrowserMediaInput {
   videoAt(id: number, request: TimeSample, consume: ConsumeVideo, signal?: AbortSignal): Promise<boolean> {
     request = structuredClone(request);
     return this.run(async () => {
+      await this.retireMovieCursor();
       const { track, info } = this.video(id);
       const stream = await BudgetedVideoStream.open(track, lookupSeconds(request, info.timescale), this.budget, this.limits.maxEncodedPacketBytes, this.limits.maxPixels, this.lifetime.signal);
       for await (const sample of stream) {
-        const result = await this.borrow(sample, async () => {
+        const result = await this.borrow(sample, async check => {
           const span = interval(sample.timestamp, sample.duration, info.timescale);
           if (!contains(span, request)) return compare(span.start, request.time) >= 0 ? 'absent' : 'continue';
           requireMedia(sample.visibleRect.width * sample.visibleRect.height <= this.limits.maxPixels, 'resource_limit');
-          await consume(videoView(sample, () => this.checkBorrowed(sample), this.budget, stream.surfaceBytes), span); return 'found';
+          await consume(videoView(sample, check, this.budget, stream.surfaceBytes), span); return 'found';
         });
         if (result !== 'continue') return result === 'found';
       }
@@ -171,16 +176,17 @@ export class BrowserMediaInput {
   videoRange(id: number, start: ExactRatio, end: ExactRatio, consume: ConsumeVideo, signal?: AbortSignal): Promise<number> {
     start = structuredClone(start); end = structuredClone(end);
     return this.run(async () => {
+      await this.retireMovieCursor();
       const { track, info } = this.video(id);
       requireMedia(compare(start, end) < 0, 'invalid_request');
       const stream = await BudgetedVideoStream.open(track, lookupSeconds({ time: start, side: 'after' }, info.timescale), this.budget, this.limits.maxEncodedPacketBytes, this.limits.maxPixels, this.lifetime.signal);
       let count = 0;
-      await this.consume(stream[Symbol.asyncIterator](), async sample => {
+      await this.consume(stream[Symbol.asyncIterator](), async (sample, check) => {
           const span = interval(sample.timestamp, sample.duration, info.timescale);
           if (compare(span.start, end) >= 0) return false;
           if (compare(span.end, start) <= 0) return true;
           requireMedia(sample.visibleRect.width * sample.visibleRect.height <= this.limits.maxPixels, 'resource_limit');
-          count++; return (await consume(videoView(sample, () => this.checkBorrowed(sample), this.budget, stream.surfaceBytes), span)) !== false;
+          count++; return (await consume(videoView(sample, check, this.budget, stream.surfaceBytes), span)) !== false;
       });
       return count;
     }, signal);
@@ -202,13 +208,13 @@ export class BrowserMediaInput {
         this.check();
         this.audioCursor = { id, cursor: new BrowserAudioCursor(track, Number(info.first.ticks) / info.timescale) };
       }
-      return this.audioCursor.cursor.read(start, end, (sample, span) => this.borrow(sample, async () => {
+      return this.audioCursor.cursor.read(start, end, (sample, span) => this.borrow(sample, async check => {
           requireMedia(sample.sampleRate <= this.limits.maxAudioSampleRate
             && sample.numberOfChannels <= this.limits.maxAudioChannels
             && sample.numberOfFrames * sample.numberOfChannels * 4 <= this.limits.maxAudioBlockBytes, 'resource_limit');
           // The audited sink restores a sample-rate-aligned timestamp after
           // WebCodecs. Keep that grid; reducing it back to us would lose samples.
-          return (await consume(audioView(sample, () => this.checkBorrowed(sample)), span)) !== false;
+          return (await consume(audioView(sample, check), span)) !== false;
       }));
     }, signal);
   }
@@ -225,6 +231,7 @@ export class BrowserMediaInput {
     for (const samples of this.iterators) void samples.return().catch(() => {});
     this.iterators.clear();
     void this.audioCursor?.cursor.close().catch(() => {}); this.audioCursor = undefined;
+    void this.retireMovieCursor().catch(() => {});
     this.movieIndex?.close(); this.movieIndex = undefined;
     this.input.dispose();
   }

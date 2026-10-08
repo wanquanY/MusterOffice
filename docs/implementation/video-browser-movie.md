@@ -62,4 +62,4 @@ node tools/verification/video-browser-media-check.mjs BROWSER ORIGINAL NEW_REGRE
 
 ## 后续工作
 
-这次完成了共享影片时间到实际画面的单点定位。当前每次定位创建解码 session，尚不能当作高性能连续播放实现；下一步复用顺序解码/帧缓存，并与共享 Rust 合成、音频和正式 Product Worker 连接。音频的原始 clock、priming/padding、完整 codec/容器、色彩、浏览器平台矩阵、导出、长时性能及用户正式页面验收仍分别推进。组件没有公开发行，稳定 v0.1.0 未改变。
+这次完成了共享影片时间到实际画面的单点定位。后续已实现[有界连续解码与帧借用](video-browser-cursor.md)，同一实际语料的画面解码 session 创建数从 1,360 降至 6；完整播放性能仍需正式 Host、合成与音频共同验证。音频的原始 clock、priming/padding、完整 codec/容器、色彩、浏览器平台矩阵、导出、长时性能及用户正式页面验收仍分别推进。组件没有公开发行，稳定 v0.1.0 未改变。

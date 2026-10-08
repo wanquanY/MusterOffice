@@ -1,16 +1,24 @@
 import { createMediaIndexRuntime } from '/index-sdk/index.mjs';
 import { BrowserMediaInput, BrowserVideoBudget } from '/media-sdk/index.mjs';
+import { cursorCases } from '/video-browser-cursor-cases.mjs';
 
 // Test-only platform instrumentation; it does not participate in production IO.
 const stats = { configured: 0, liveDecoders: 0, liveFrames: 0, peakFrames: 0, chunks: 0 };
+const held = new WeakSet();
+function hold(frame) {
+  if (held.has(frame)) return frame;
+  held.add(frame); stats.liveFrames++; stats.peakFrames = Math.max(stats.peakFrames, stats.liveFrames);
+  const close = frame.close.bind(frame), clone = frame.clone.bind(frame);
+  frame.close = () => { if (held.delete(frame)) stats.liveFrames--; close(); };
+  frame.clone = () => hold(clone()); return frame;
+}
+const Frame = VideoFrame;
+globalThis.VideoFrame = new Proxy(Frame, { construct(Target, args) { return hold(Reflect.construct(Target, args)); } });
 const Platform = VideoDecoder;
 globalThis.VideoDecoder = new Proxy(Platform, { construct(Target, args) {
   const config = args[0];
   const decoder = new Target({ ...config, output(frame) {
-    stats.liveFrames++; stats.peakFrames = Math.max(stats.peakFrames, stats.liveFrames);
-    let closed = false; const close = frame.close.bind(frame);
-    frame.close = () => { if (!closed) { closed = true; stats.liveFrames--; } close(); };
-    config.output(frame);
+    config.output(hold(frame));
   } });
   stats.configured++; stats.liveDecoders++;
   let closed = false; const close = decoder.close.bind(decoder), decode = decoder.decode.bind(decoder);
@@ -24,7 +32,7 @@ async function run(data) {
   const results = [];
   for (const fixture of data.fixtures) {
     const media = await BrowserMediaInput.open(fixture.blob, { mediaIndexRuntime: runtime, videoBudget: budget });
-    const id = fixture.id, info = media.movieVideoInfo(id), rows = [];
+    const id = fixture.id, info = media.movieVideoInfo(id), rows = [], configured = stats.configured, chunks = stats.chunks;
     try {
       const reference = new Map(fixture.frames.map((frame, i) => [String(frame.pts), i])), fingerprints = new Map();
       for (const request of fixture.requests) {
@@ -59,7 +67,7 @@ async function run(data) {
         rows.push({ selection, called, span, mae, configured: stats.configured - before });
       }
     } finally { media.close(); }
-    results.push({ info, rows });
+    results.push({ info, rows, configured: stats.configured - configured, chunks: stats.chunks - chunks });
   }
   // Existing shared admission also protects indexed reads before codec setup.
   const fixture = data.fixtures[0], request = fixture.requests.find((_, i) => results[0].rows[i].selection.type === 'sample');
@@ -82,8 +90,10 @@ async function run(data) {
   try { await cancelling.movieVideoAt(fixture.id, request.body, () => controller.abort(), controller.signal); }
   catch (error) { cancelled = error.code; } finally { cancelling.close(); }
   for (let i = 0; i < 100 && (budget.usedBytes || stats.liveFrames || stats.liveDecoders); i++) await new Promise(resolve => setTimeout(resolve, 10));
+  const corpusStats = { ...stats };
+  const cursor = await cursorCases(runtime, fixture, results[0].rows, stats);
   return { results, stats, budget: { used: budget.usedBytes, peak: budget.peakBytes, capacity: budget.capacityBytes },
-    packetLimit, missingIdr, deadline, cancelled };
+    packetLimit, missingIdr, deadline, cancelled, corpusStats, cursor };
 }
 self.onmessage = async ({ data }) => {
   try { self.postMessage({ ok: true, ...await run(data) }); }

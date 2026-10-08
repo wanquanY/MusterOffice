@@ -47,9 +47,10 @@ for (const [i, file] of fixtures.entries()) {
   const pixels = execFileSync('ffmpeg', ['-v', 'error', '-ignore_editlist', '1', '-copyts', '-i', file,
     '-map', `0:${stream.index}`, '-fps_mode', 'passthrough', '-avoid_negative_ts', 'disabled', '-pix_fmt', 'rgba', '-f', 'rawvideo', 'pipe:1'], { maxBuffer: 64 << 20 });
   assert.equal(pixels.length, frames.length * stream.width * stream.height * 4);
-  inputs.push({ file, bytes, pixels, frames, requests, expected, id: data.track.id });
+  inputs.push({ file, bytes, pixels, frames, requests, expected, id: data.track.id, packets: data.samples, edits: data.edits });
 }
 const worker = await readFile(new URL('video-browser-movie.worker.mjs', import.meta.url));
+const cursorCases = await readFile(new URL('video-browser-cursor-cases.mjs', import.meta.url));
 const sdkFiles = new Map();
 for (const [route, directory] of [['/media-sdk/', mediaSdk], ['/index-sdk/', indexSdk]]) {
   const manifest = JSON.parse(await readFile(path.join(directory, 'bundle-manifest.json')));
@@ -58,6 +59,7 @@ for (const [route, directory] of [['/media-sdk/', mediaSdk], ['/index-sdk/', ind
 const server = createServer(async (req, res) => {
   try {
     if (req.url === '/worker.mjs') { res.setHeader('Content-Type', 'text/javascript'); res.end(worker); }
+    else if (req.url === '/video-browser-cursor-cases.mjs') { res.setHeader('Content-Type', 'text/javascript'); res.end(cursorCases); }
     else if (sdkFiles.has(req.url)) {
       res.setHeader('Content-Type', req.url.endsWith('.wasm') ? 'application/wasm' : 'text/javascript'); res.end(await readFile(sdkFiles.get(req.url)));
     } else if (req.url === '/missing-idr') { res.end(missingIdr);
@@ -84,7 +86,7 @@ try {
       worker.onmessage = e => resolve(e.data); worker.onerror = e => reject(Error(e.message));
       fetch('/missing-idr').then(r => r.blob()).then(missingIdr => worker.postMessage({ module, fixtures, missingIdr }, fixtures.map(f => f.pixels))).catch(reject);
     }); } finally { clearTimeout(timer); worker.terminate(); }
-  }, inputs.map(({ id, frames, requests }) => ({ id, frames: frames.map(f => ({ pts: f.pts })), requests })));
+  }, inputs.map(({ id, frames, requests, packets }) => ({ id, frames: frames.map(f => ({ pts: f.pts })), requests, packets })));
   await writeFile(path.join(output, 'actual.json'), JSON.stringify(actual)); assert(actual.ok, JSON.stringify(actual));
   const reports = inputs.map((input, i) => {
     const rows = actual.results[i].rows; assert.equal(rows.length, input.expected.length);
@@ -97,8 +99,13 @@ try {
         maximum = Math.max(maximum, row.mae); sum += row.mae;
       } else { assert.equal(row.called, 0); assert.equal(row.configured, 0); }
     });
+    // A normal forward corpus has one stream; the repeated edit corpus needs
+    // exactly one restart. Dwell/before/after do not recreate decoder state.
+    assert.equal(actual.results[i].configured, input.edits.length > 1 ? 2 : 1);
+    assert(actual.results[i].chunks <= input.frames.length * (input.edits.length > 1 ? 2 : 1));
     return { file: path.basename(input.file), sha256: sha(input.bytes), movieQueries: rows.length, decodedPictures: pictures,
-      rgbaMeanError: sum / pictures, rgbaMaxFrameError: maximum, movieInfo: actual.results[i].info };
+      rgbaMeanError: sum / pictures, rgbaMaxFrameError: maximum, movieInfo: actual.results[i].info,
+      decoderCreations: actual.results[i].configured, decodedChunks: actual.results[i].chunks };
   });
   assert.deepEqual(errors, []); assert.equal(actual.stats.liveFrames + actual.stats.liveDecoders, 0);
   assert.equal(actual.budget.used, 0); assert(actual.budget.peak <= actual.budget.capacity);
@@ -106,7 +113,7 @@ try {
   assert.deepEqual(actual.missingIdr, { rejected: 'unsupported_media', configured: 0 });
   assert.equal(actual.deadline, 'deadline'); assert.equal(actual.cancelled, 'cancelled');
   const report = { status: 'passed', browser: browser.version(), platform: process.platform, architecture: process.arch,
-    mediaManifestSha256: mediaPin, indexManifestSha256: indexPin, reports, stats: actual.stats, budget: actual.budget,
+    mediaManifestSha256: mediaPin, indexManifestSha256: indexPin, reports, stats: actual.stats, corpusStats: actual.corpusStats, cursor: actual.cursor, budget: actual.budget,
     openGopNonIdrCandidates: adversarial.nonIdrCandidates,
     failures: { packetLimit: actual.packetLimit, missingIdr: { ...actual.missingIdr, sha256: sha(missingIdr) }, deadline: actual.deadline, cancelled: actual.cancelled },
     scope: 'Actual Worker/Rust index/raw AVC/WebCodecs movie selection and independent FFmpeg pixels plus Fraction oracle. No audio movie decode, compositor, export or product acceptance.' };

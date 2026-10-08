@@ -62,7 +62,7 @@ export async function build(output) {
   await mkdir(output, { recursive: false });
   const compiled = path.join(output, 'types');
   execFileSync(path.join(ROOT, 'node_modules/.bin/tsc'), ['--project', 'packages/video-browser-media/tsconfig.json', '--emitDeclarationOnly', '--outDir', compiled], { cwd: ROOT, stdio: 'inherit' });
-  for (const name of ['probe.d.ts', 'samples.d.ts', 'time.d.ts', 'mediabunny-platform.d.ts', 'video-stream.d.ts', 'video-packets.d.ts', 'audio-cursor.d.ts', 'movie-index.d.ts', 'movie-packets.d.ts']) await unlink(path.join(compiled, 'video-browser-media/src', name));
+  for (const name of ['probe.d.ts', 'samples.d.ts', 'time.d.ts', 'mediabunny-platform.d.ts', 'video-stream.d.ts', 'video-packets.d.ts', 'audio-cursor.d.ts', 'movie-index.d.ts', 'movie-packets.d.ts', 'video-cursor.d.ts']) await unlink(path.join(compiled, 'video-browser-media/src', name));
   await bundle({ absWorkingDir: ROOT, entryPoints: ['packages/video-browser-media/src/index.ts'],
     bundle: true, format: 'esm', platform: 'browser', minify: true, legalComments: 'external', outfile: path.join(output, 'index.mjs'),
     plugins: [{ name: 'reviewed-mediabunny-source', setup(build) {
