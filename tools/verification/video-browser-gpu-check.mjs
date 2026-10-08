@@ -12,6 +12,8 @@ const client = deliveryPath ? resolve(deliveryPath, 'client') : '.codex-work/vid
 const files = new Map([
   ['/executor.js', await readFile(client + '/executor.js')],
   ['/program.js', await readFile(client + '/program.js')],
+  ['/color.js', await readFile(client + '/color.js')],
+  ['/raw-input.js', await readFile(client + '/raw-input.js')],
   ['/vectors.json', await readFile(vectorsPath)],
   ['/compose.wgsl', await readFile('crates/mo-video-gpu-plan/src/compose.wgsl')],
 ]);

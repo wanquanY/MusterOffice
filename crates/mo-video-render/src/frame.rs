@@ -107,9 +107,13 @@ fn read_pixel(
         }
     };
     match l.packing {
-        Packing::Packed { channels, order } => {
+        Packing::Packed {
+            channels,
+            order,
+            alpha,
+        } => {
             let rgb = [0, 1, 2].map(|i| rgb_range(l.value(f, 0, x, y, channels, order[i])));
-            let a = if channels == 4 {
+            let a = if alpha {
                 l.value(f, 0, x, y, channels, order[3]) / max
             } else {
                 1.

@@ -18,9 +18,10 @@ pub use composite::*;
 pub use coordinates::RasterCoordinates;
 pub use frame::{NormalizedFrame, normalize_frame};
 pub use geometry::*;
+pub use layout::{Layout as PixelLayout, Packing as PixelPacking};
 pub use output::*;
 pub use resources::*;
-pub use sdr::OutputColorStats;
+pub use sdr::{OutputColorStats, SdrParameters, SdrTransform};
 pub use viewport::{FrameRenderOptions, RasterExtent};
 pub use yuv_output::*;
 

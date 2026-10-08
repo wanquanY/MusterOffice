@@ -1,9 +1,10 @@
 use crate::{RenderError, Result};
 use mo_media::DecodedFrame;
 #[derive(Debug, Clone, Copy)]
-pub(crate) enum Packing {
+pub enum Packing {
     Packed {
         channels: usize,
+        alpha: bool,
         order: [usize; 4],
     },
     PlanarRgb {
@@ -16,7 +17,7 @@ pub(crate) enum Packing {
         alpha: bool,
     },
 }
-pub(crate) struct Layout {
+pub struct Layout {
     pub packing: Packing,
     pub bits: u32,
     pub shift: u32,
@@ -35,7 +36,11 @@ impl Layout {
         ] {
             if format == name {
                 return Ok(Self {
-                    packing: Packing::Packed { channels, order },
+                    packing: Packing::Packed {
+                        channels,
+                        alpha: channels == 4,
+                        order,
+                    },
                     bits: 8,
                     shift: 0,
                     big_endian: false,
@@ -133,7 +138,7 @@ impl Layout {
     }
     pub fn has_alpha(&self) -> bool {
         match self.packing {
-            Packing::Packed { channels, .. } => channels == 4,
+            Packing::Packed { alpha, .. } => alpha,
             Packing::PlanarRgb { alpha } | Packing::Yuv { alpha, .. } => alpha,
         }
     }

@@ -1,6 +1,6 @@
 use crate::{RenderError, Result};
 pub use mo_color::rgb::{Encoding, Primaries, Transfer};
-use mo_media::FrameInfo;
+use mo_media::{CodecColorTags, FrameInfo};
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SignalRange {
     Full,
@@ -14,7 +14,7 @@ pub enum Matrix {
     Bt2020Ncl,
 }
 impl Matrix {
-    pub(crate) fn coefficients(self) -> Result<(f64, f64)> {
+    pub fn coefficients(self) -> Result<(f64, f64)> {
         match self {
             Self::Bt601 => Ok((0.299, 0.114)),
             Self::Bt709 => Ok((0.2126, 0.0722)),
@@ -39,7 +39,7 @@ pub enum ChromaLocation {
     Bottom,
 }
 impl ChromaLocation {
-    pub(crate) fn offset(self, sx: u32, sy: u32) -> (f64, f64) {
+    pub fn offset(self, sx: u32, sy: u32) -> (f64, f64) {
         let x = match self {
             Self::Left | Self::TopLeft | Self::BottomLeft => 0.,
             _ => f64::from(sx - 1) / 2.,
@@ -78,7 +78,15 @@ impl InputColor {
     /// not inverse camera OETF. Resolve only known codec declarations. Missing metadata must be supplied
     /// by an explicit host interpretation; never guess from dimensions/extension.
     pub fn from_codec(info: &FrameInfo, has_alpha: bool, hlg: Option<HlgDisplay>) -> Result<Self> {
-        let c = info.colors;
+        Self::from_codec_tags(info.colors, info.alpha_mode, has_alpha, hlg)
+    }
+    /// Color interpretation shared by native and raw-plane GPU input adapters.
+    pub fn from_codec_tags(
+        c: CodecColorTags,
+        alpha_mode: i32,
+        has_alpha: bool,
+        hlg: Option<HlgDisplay>,
+    ) -> Result<Self> {
         let primaries = match c.primaries {
             1 => Primaries::Bt709,
             5 => Primaries::Bt470Bg,
@@ -129,7 +137,7 @@ impl InputColor {
         let alpha = if !has_alpha {
             Alpha::Opaque
         } else {
-            match info.alpha_mode {
+            match alpha_mode {
                 1 => Alpha::PremultipliedEncoded,
                 2 => Alpha::Straight,
                 _ => return Err(RenderError::Unsupported("alpha interpretation required")),

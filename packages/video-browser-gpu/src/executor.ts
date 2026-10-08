@@ -1,7 +1,13 @@
+import { colorWords, colorKernels, drawColor, type ColorKernels, type VideoFrameLease } from './color.js';
+import { rawInputPlan } from './raw-input.js';
 import { extent, invalid, parseProgram } from './program.js';
 
 type Allocation = { buffer: GPUBuffer; bytes: number; refs: number };
 type Capability = { allocation: Allocation; width: number; height: number; hasHdr: boolean; closed: boolean };
+export interface GpuBitmapLease {
+  readonly bitmap: ImageBitmap; readonly width: number; readonly height: number;
+  close(): void;
+}
 export interface LinearGpuImage {
   readonly width: number; readonly height: number; readonly hasHdr: boolean;
   /** Idempotent. In-flight references remain alive until queue completion. */
@@ -20,6 +26,11 @@ export class BrowserGpuExecutor {
   readonly #allocations = new Set<Allocation>();
   readonly #maxBytes: number;
   #bytes = 0;
+  #surfaceBytes = 0;
+  readonly #surfaceCharges = new Set<() => void>();
+  readonly #bitmaps = new Set<GpuBitmapLease>();
+  #canvas: { canvas: OffscreenCanvas; context: GPUCanvasContext; release: () => void } | undefined;
+  #color: ColorKernels | undefined;
   #busy = false;
   #closed = false;
   #lost: string | undefined;
@@ -43,6 +54,7 @@ export class BrowserGpuExecutor {
     } catch (e) { device.destroy(); throw e; }
   }
   get allocatedBytes(): number { return this.#bytes; }
+  get retainedSurfaceBytes(): number { return this.#surfaceBytes; }
   #ready(): void {
     if (this.#closed || this.#lost) throw new Error(this.#lost ?? 'GPU executor closed');
   }
@@ -52,10 +64,10 @@ export class BrowserGpuExecutor {
     this.#busy = true;
     try { return await run(); } finally { this.#busy = false; }
   }
-  #allocate(bytes: number, usage: GPUBufferUsageFlags, fill?: (view: DataView) => void): Allocation {
+  #allocate(bytes: number, usage: GPUBufferUsageFlags, fill?: (view: DataView) => void, mapped = false): Allocation {
     this.#ready();
-    if (bytes > this.#device.limits.maxBufferSize || this.#bytes + bytes > this.#maxBytes) throw new RangeError('GPU allocation budget');
-    const buffer = this.#device.createBuffer({ size: bytes, usage, mappedAtCreation: !!fill });
+    if (bytes > this.#device.limits.maxBufferSize || ((usage & GPUBufferUsage.STORAGE) !== 0 && bytes > this.#device.limits.maxStorageBufferBindingSize) || this.#bytes + this.#surfaceBytes + bytes > this.#maxBytes) throw new RangeError('GPU allocation budget');
+    const buffer = this.#device.createBuffer({ size: bytes, usage, mappedAtCreation: !!fill || mapped });
     const a = { buffer, bytes, refs: 1 }; this.#bytes += bytes; this.#allocations.add(a);
     try { if (fill) { fill(new DataView(buffer.getMappedRange())); buffer.unmap(); } return a; }
     catch (e) { this.#release(a); throw e; }
@@ -172,6 +184,147 @@ export class BrowserGpuExecutor {
       } finally { if (staging) this.#release(staging); this.#release(c.allocation); }
     }, signal);
   }
+
+  /** Install the matching core color kernels once on this exclusive device. */
+  configureColor(shaders: unknown): Promise<void> {
+    return this.#exclusive(async () => {
+      if (this.#color) throw new Error('GPU color kernels already installed');
+      const candidate = await scoped(this.#device, () => colorKernels(this.#device, shaders));
+      this.#ready(); this.#color = candidate;
+    });
+  }
+  #colors(): ColorKernels {
+    if (!this.#color) throw new Error('GPU color kernels not installed'); return this.#color;
+  }
+  #uniform(words: number[]): Allocation {
+    return this.#allocate(80, GPUBufferUsage.UNIFORM, view => words.forEach((v, i) => view.setUint32(i * 4, v, true)));
+  }
+  #surface(bytes: number): () => void {
+    this.#ready();
+    if (this.#bytes + this.#surfaceBytes + bytes > this.#maxBytes) throw new RangeError('GPU surface budget');
+    const release = () => { if (this.#surfaceCharges.delete(release)) this.#surfaceBytes -= bytes; };
+    this.#surfaceCharges.add(release); this.#surfaceBytes += bytes; return release;
+  }
+  /** Consumes the lease even on rejection. Keep the underlying decoded surface
+   * admitted to the media budget until conversion completes; never pass a raw
+   * frame after prematurely releasing its host media lease.
+   */
+  importVideo(lease: VideoFrameLease, value: unknown, signal?: AbortSignal): Promise<LinearGpuImage> {
+    return this.#exclusive(async () => {
+      const kernel = this.#colors().input, plan = rawInputPlan(value, lease.frame);
+      const { width, height } = plan.source;
+      let source: Allocation | undefined, output: Allocation | undefined, uniform: Allocation | undefined, status: Allocation | undefined, statusRead: Allocation | undefined, published = false;
+      try {
+        const commands = await scoped(this.#device, async () => {
+          // Copy original planes directly into mapped GPU upload memory. The
+          // WebCodecs copy crops visibleRect but does not apply display/SAR,
+          // transfer functions, premultiplication or chroma reconstruction.
+          source = this.#allocate(plan.byteLength, GPUBufferUsage.STORAGE, undefined, true);
+          const layout = await lease.frame.copyTo(new Uint8Array(source.buffer.getMappedRange()), { layout: plan.planes as PlaneLayout[] });
+          this.#ready(); aborted(signal);
+          if (layout.length !== plan.planes.length || layout.some((v,i) => v.offset !== plan.planes[i]!.offset || v.stride !== plan.planes[i]!.stride)) invalid('platform copy layout');
+          source.buffer.unmap();
+          output = this.#allocate(width * height * 16, GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC);
+          uniform = this.#allocate(224, GPUBufferUsage.UNIFORM, view => plan.parameters.forEach((v,i) => view.setUint32(i*4,v,true)));
+          status = this.#allocate(4, GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC);
+          statusRead = this.#allocate(4, GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ);
+          const bindings = this.#device.createBindGroup({ layout: kernel.getBindGroupLayout(0), entries: [
+            { binding: 3, resource: { buffer: status.buffer } },
+            { binding: 0, resource: { buffer: source.buffer } }, { binding: 1, resource: { buffer: output.buffer } }, { binding: 2, resource: { buffer: uniform.buffer } },
+          ] });
+          const encoder = this.#device.createCommandEncoder(), pass = encoder.beginComputePass();
+          pass.setPipeline(kernel); pass.setBindGroup(0, bindings); pass.dispatchWorkgroups(Math.ceil(width / 8), Math.ceil(height / 8)); pass.end();
+          encoder.copyBufferToBuffer(status.buffer, 0, statusRead.buffer, 0, 4);
+          return encoder.finish();
+        });
+        this.#ready(); aborted(signal); this.#device.queue.submit([commands]); await this.#complete(signal);
+        await statusRead!.buffer.mapAsync(GPUMapMode.READ);
+        this.#ready(); aborted(signal);
+        const invalidSamples = new DataView(statusRead!.buffer.getMappedRange()).getUint32(0, true);
+        statusRead!.buffer.unmap();
+        if (invalidSamples !== 0) invalid('raw sample exceeds declared bit depth');
+        published = true;
+        return this.#publish(output!, width, height, plan.hasHdr);
+      } finally { if (status) this.#release(status); if (statusRead) this.#release(statusRead); if (source) this.#release(source); if (uniform) this.#release(uniform); if (output && !published) this.#release(output); }
+    }, signal).then(image => {
+      try { lease.close(); return image; } catch (error) { image.close(); throw error; }
+    }, error => { try { lease.close(); } finally { throw error; } });
+  }
+  /** Diagnostic/export readback with explicit straight sRGB alpha; no canvas
+   * premultiplication roundtrip or CPU color conversion is used.
+   */
+  readSrgb8(image: LinearGpuImage, parameters: unknown, signal?: AbortSignal): Promise<Uint8Array> {
+    return this.#exclusive(async () => {
+      const c = this.#cap(image), kernel = this.#colors().output;
+      const words = colorWords(parameters, c.width, c.height, false, c.hasHdr);
+      c.allocation.refs++;
+      const rowBytes = Math.ceil(c.width * 4 / 256) * 256;
+      let texture: GPUTexture | undefined, uniform: Allocation | undefined, staging: Allocation | undefined, release: (() => void) | undefined;
+      try {
+        const commands = await scoped(this.#device, () => {
+          release = this.#surface(c.width * c.height * 4);
+          texture = this.#device.createTexture({ size: [c.width, c.height], format: 'rgba8unorm', usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.COPY_SRC });
+          uniform = this.#uniform(words);
+          staging = this.#allocate(rowBytes * c.height, GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ);
+          const encoder = this.#device.createCommandEncoder();
+          drawColor(this.#device, encoder, kernel, c.allocation.buffer, uniform.buffer, texture.createView());
+          encoder.copyTextureToBuffer({ texture }, { buffer: staging.buffer, bytesPerRow: rowBytes }, [c.width, c.height]);
+          return encoder.finish();
+        });
+        this.#ready(); aborted(signal); this.#device.queue.submit([commands]); await this.#complete(signal);
+        await staging!.buffer.mapAsync(GPUMapMode.READ); this.#ready(); aborted(signal);
+        const source = new Uint8Array(staging!.buffer.getMappedRange()), out = new Uint8Array(c.width * c.height * 4);
+        for (let y = 0; y < c.height; y++) out.set(source.subarray(y * rowBytes, y * rowBytes + c.width * 4), y * c.width * 4);
+        staging!.buffer.unmap(); return out;
+      } finally { texture?.destroy(); release?.(); if (uniform) this.#release(uniform); if (staging) this.#release(staging); this.#release(c.allocation); }
+    }, signal);
+  }
+  #display(width: number, height: number): GPUCanvasContext {
+    if (this.#canvas && (this.#canvas.canvas.width !== width || this.#canvas.canvas.height !== height)) {
+      this.#canvas.context.unconfigure(); this.#canvas.release(); this.#canvas = undefined;
+    }
+    if (!this.#canvas) {
+      const release = this.#surface(width * height * 4);
+      try {
+        const canvas = new OffscreenCanvas(width, height), context = canvas.getContext('webgpu');
+        if (!context) throw new Error('Offscreen WebGPU canvas unavailable');
+        context.configure({ device: this.#device, format: 'rgba8unorm', colorSpace: 'srgb', alphaMode: 'premultiplied' });
+        this.#canvas = { canvas, context, release };
+      } catch (e) { release(); throw e; }
+    }
+    return this.#canvas.context;
+  }
+  /** GPU presentation snapshot for a host-owned bitmaprenderer. No pixel
+   * readback. The host must close/ack the lease even after transferring bitmap.
+   */
+  toBitmap(image: LinearGpuImage, parameters: unknown, signal?: AbortSignal): Promise<GpuBitmapLease> {
+    return this.#exclusive(async () => {
+      const c = this.#cap(image), kernel = this.#colors().output;
+      const words = colorWords(parameters, c.width, c.height, true, c.hasHdr);
+      c.allocation.refs++;
+      let uniform: Allocation | undefined, release: (() => void) | undefined, published = false;
+      try {
+        await scoped(this.#device, () => {
+          uniform = this.#uniform(words);
+          const context = this.#display(c.width, c.height);
+          release = this.#surface(c.width * c.height * 4);
+          const encoder = this.#device.createCommandEncoder();
+          drawColor(this.#device, encoder, kernel, c.allocation.buffer, uniform.buffer, context.getCurrentTexture().createView());
+          aborted(signal);
+          // Canvas texture expires across tasks. Submit synchronously; the
+          // private OffscreenCanvas is never published before scopes/completion.
+          this.#device.queue.submit([encoder.finish()]);
+        });
+        await this.#complete(signal); this.#ready(); aborted(signal);
+        const bitmap = this.#canvas!.canvas.transferToImageBitmap();
+        let closed = false;
+        const lease: GpuBitmapLease = Object.freeze({ bitmap, width: c.width, height: c.height, close: () => {
+          if (!closed) { closed = true; bitmap.close(); release!(); this.#bitmaps.delete(lease); }
+        } });
+        this.#bitmaps.add(lease); published = true; return lease;
+      } finally { if (!published) release?.(); if (uniform) this.#release(uniform); this.#release(c.allocation); }
+    }, signal);
+  }
   async #complete(signal?: AbortSignal): Promise<void> {
     // An abort retires this exclusive device. The host creates a fresh executor;
     // no future operation can reuse commands whose completion is now uncertain.
@@ -182,7 +335,11 @@ export class BrowserGpuExecutor {
   }
   close(): void {
     if (this.#closed) return;
-    this.#closed = true; this.#device.destroy();
+    this.#closed = true;
+    for (const bitmap of this.#bitmaps) bitmap.close();
+    this.#canvas?.context.unconfigure(); this.#canvas = undefined;
+    for (const release of this.#surfaceCharges) release();
+    this.#device.destroy();
     for (const a of this.#allocations) a.buffer.destroy();
     this.#allocations.clear(); this.#bytes = 0;
   }

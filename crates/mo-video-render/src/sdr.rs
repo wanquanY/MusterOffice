@@ -7,12 +7,27 @@ pub struct OutputColorStats {
     pub gamut_clipped_pixels: usize,
     pub tone_mapped_pixels: usize,
 }
-pub(crate) struct SdrTransform {
+#[derive(Debug, Clone, Copy)]
+pub struct SdrParameters {
+    pub white: Option<f64>,
+    pub matrix: Matrix3,
+    pub luma: [f64; 3],
+}
+pub struct SdrTransform {
     white: Option<f64>,
     matrix: Matrix3,
     luma: [f64; 3],
 }
 impl SdrTransform {
+    /// Shared coefficients for alternate pixel execution backends. The tone
+    /// policy is validated by the same constructor used by CPU output.
+    pub fn parameters(&self) -> SdrParameters {
+        SdrParameters {
+            white: self.white,
+            matrix: self.matrix,
+            luma: self.luma,
+        }
+    }
     pub fn new(hdr: bool, tone: Option<ToneMap>) -> Result<Self> {
         if hdr && tone.is_none() {
             return Err(RenderError::Unsupported(

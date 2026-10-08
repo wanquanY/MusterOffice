@@ -48,6 +48,44 @@ pub fn composition_shader() -> String {
     mo_video_gpu_plan::SHADER.into()
 }
 #[wasm_bindgen]
+pub fn color_shaders() -> Result<String> {
+    json(&serde_json::json!({
+        "profile": "musteroffice.video.gpu-color/1-draft",
+        "input": mo_video_gpu_plan::RAW_INPUT_SHADER,
+        "output": mo_video_gpu_plan::srgb_output_shader(),
+    }))
+}
+#[wasm_bindgen]
+pub fn video_input_plan(description: &str) -> Result<String> {
+    if description.len() > 4096 {
+        return Err(invalid("input description bytes"));
+    }
+    let source: mo_video_gpu_plan::BrowserFrameInput =
+        serde_json::from_str(description).map_err(|_| invalid("input description"))?;
+    json(&source.compile().map_err(render_error)?)
+}
+#[wasm_bindgen]
+pub fn srgb_output_parameters(
+    width: u32,
+    height: u32,
+    hdr: bool,
+    peak_nits: Option<f64>,
+    premultiplied: bool,
+) -> Result<String> {
+    use mo_video_render::{OutputAlpha, ToneMap};
+    let tone = peak_nits.map(|source_peak_nits| ToneMap::ReinhardLuminanceV1 { source_peak_nits });
+    let alpha = if premultiplied {
+        OutputAlpha::PremultipliedEncoded
+    } else {
+        OutputAlpha::Straight
+    };
+    json(
+        &mo_video_gpu_plan::ColorParameters::srgb_output(width, height, hdr, tone, alpha)
+            .map_err(render_error)?
+            .words(),
+    )
+}
+#[wasm_bindgen]
 pub struct ProjectVisual {
     document: CompiledDocument,
 }
