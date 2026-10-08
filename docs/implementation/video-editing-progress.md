@@ -2,6 +2,14 @@
 
 2026-10-09 · 目标执行中，尚未达到整体验收。
 
+## 本批增量：原调用的持久版本选择
+
+产品 Host 新增 current/明确 revision 的读取意图。原 invocation/job/conversation、home/workspace/project、authority/组件在同一 strict IDB 事务内绑定，current 首次抵达本地时选定版本；后续人工修改不会改变原调用的重放，新调用才观察新 head。schema 8 只新增准入记录，不复制工程、不缓存核心结果、不修改原编辑历史。随后仍由固定 Office WASM 重新验证快照与计算摘要；原 `browser.video.inspect@1` 的固定版本合同保持原义，新 current Gateway/公开 Tool 尚未接入。
+
+41 项 Host 和 17 项应用适配器测试通过；真实 Chrome 静态构建中，原第 1 版调用在人工编辑至第 6 版及刷新、双标签页重放后仍相同，新调用取得第 6 版。源码集合摘要 `68acb976c778450b704f027c70c3d2729deb39c9e74ca84534f37b2d57a6c960`。全 Web 类型、正式构建/体积与变更 lint 通过；Office 组件及稳定标签不变。
+
+正常产品旧 schema 7 profile 的副本升级到 8 后，工程/素材/历史/回执/导出记录及 home 内容摘要不变。后续下载/重载在该旧 Chrome 配置出现主进程 SIGSEGV，独立静态下载页在旧副本也可复现；全新 profile 首次下载正常，直接重开后再次下载也复现，不能仅归因于复制损坏。仅调整诊断副本的浏览器历史/设置可解除复现，但没有作为产品修复或完整验收。保留成功的数据升级检查点及失败记录，完整旧配置下载/重载仍待调查。产品 `docs/architecture/browser-video-agent.md` 记录合同、复现和准确证据边界。完整目标继续执行，公开 Agent Tool、编辑/导出投递及消息成片尚未贯通。
+
 ## 本批增量：浏览器固定版本检查实际执行
 
 产品已将内部 `browser.video.inspect@1` 接至认证应用的本地 Host。正常 Web 打开剪辑后，实际 Worker/WASM 创建并重开临时文档、计算摘要、复核 IDB 所有权与浏览器传输能力，再注册本地 home/authoring pin。根应用保有连接，关闭面板不撤销执行能力；任务临时租用同一工作区，用后回收；退出/更换登录代次立即销毁旧执行器和重试。
