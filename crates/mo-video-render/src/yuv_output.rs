@@ -81,6 +81,11 @@ fn weights(phase: f64) -> [f64; 8] {
     }
     values
 }
+/// Shared horizontal (left-cosited) and vertical (centered) antialias kernels
+/// for CPU and GPU export. Executors transport these coefficients unchanged.
+pub fn i420_chroma_weights() -> ([f64; 8], [f64; 8]) {
+    (weights(0.), weights(0.5))
+}
 impl LinearImage {
     pub fn to_i420(&self, options: I420Options, check: &dyn Fn() -> bool) -> Result<I420Image> {
         cancel(check)?;
@@ -119,8 +124,7 @@ impl LinearImage {
                 .background_srgb
                 .map(|v| srgb_to_linear(f64::from(v) / 255.)),
         );
-        let horizontal = weights(0.);
-        let vertical = weights(0.5);
+        let (horizontal, vertical) = i420_chroma_weights();
         for cy in 0..h / 2 {
             cancel(check)?;
             let rows: [usize; 8] =

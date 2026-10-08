@@ -4,6 +4,29 @@ use mo_media_ffmpeg::*;
 use std::{cell::Cell, io, rc::Rc};
 
 #[test]
+fn browser_profile_is_not_advertised_or_substituted_by_native_encoder() {
+    assert!(
+        !encoding_profiles()
+            .unwrap()
+            .contains(&EncodeProfile::H264WebCodecsAacMp4)
+    );
+    let writes = Cell::new(0);
+    let error = Encoder::open(
+        |_: u64, bytes: &[u8]| -> io::Result<usize> {
+            writes.set(writes.get() + 1);
+            Ok(bytes.len())
+        },
+        config(EncodeProfile::H264WebCodecsAacMp4, 1, false, false),
+        EncodeLimits::default(),
+        || false,
+    )
+    .err()
+    .unwrap();
+    assert_eq!(error.kind, ErrorKind::Unsupported);
+    assert_eq!(writes.get(), 0);
+}
+
+#[test]
 fn lossless_short_tail_fractional_clock_and_audio_partition_roundtrip() {
     assert!(
         encoding_profiles()

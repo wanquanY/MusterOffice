@@ -224,6 +224,9 @@ impl<'a> ExportPlan<'a> {
             },
         })
     }
+    pub fn schedule(&self) -> crate::ExportSchedule {
+        crate::ExportSchedule::new(self.config, self.period, self.limits.audio_block_frames)
+    }
     pub fn configuration(&self) -> EncodeConfig {
         self.config
     }

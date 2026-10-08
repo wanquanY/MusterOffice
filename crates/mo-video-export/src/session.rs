@@ -1,4 +1,4 @@
-use crate::{ExportPlan, PlanError};
+use crate::{ExportPlan, ExportProgress, ExportSchedule, ExportWork, PlanError, ScheduleError};
 use mo_common::Digest;
 use mo_media::{EncodeConfig, EncodeStats, EncodeVideoFrame, VideoEncoder};
 use mo_time::ExactRatio;
@@ -9,6 +9,8 @@ use mo_video_render::{RenderError, VisualResources, render_frame};
 pub enum ExportError<E: std::error::Error> {
     #[error(transparent)]
     Plan(#[from] PlanError),
+    #[error(transparent)]
+    Schedule(#[from] ScheduleError),
     #[error(transparent)]
     Compile(#[from] mo_video_compile::CompileError),
     #[error(transparent)]
@@ -25,11 +27,6 @@ pub enum ExportError<E: std::error::Error> {
     Binding,
     #[error("encoder completion counts do not match the plan")]
     Completion,
-}
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
-pub struct ExportProgress {
-    pub video_frames: u32,
-    pub audio_samples: i64,
 }
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 pub struct ExportStats {
@@ -62,7 +59,7 @@ pub struct ExportSession<'a, E: VideoEncoder> {
     plan: ExportPlan<'a>,
     encoder: Option<E>,
     mixer: Option<AudioMixer<'a>>,
-    progress: ExportProgress,
+    schedule: ExportSchedule,
     stats: ExportStats,
 }
 impl<'a, E: VideoEncoder> ExportSession<'a, E> {
@@ -76,16 +73,17 @@ impl<'a, E: VideoEncoder> ExportSession<'a, E> {
             .layout()
             .map(|layout| AudioMixer::new(plan.document, layout, plan.limits.mix))
             .transpose()?;
+        let schedule = plan.schedule();
         Ok(Self {
             plan,
             encoder: Some(encoder),
             mixer,
-            progress: ExportProgress::default(),
+            schedule,
             stats: ExportStats::default(),
         })
     }
     pub fn progress(&self) -> ExportProgress {
-        self.progress
+        self.schedule.progress()
     }
     pub fn is_closed(&self) -> bool {
         self.encoder.is_none()
@@ -118,9 +116,8 @@ impl<'a, E: VideoEncoder> ExportSession<'a, E> {
             return Err(ExportError::Cancelled);
         }
         let c = self.plan.config;
-        let v = self.progress.video_frames;
-        let a = self.progress.audio_samples;
-        if v == c.video_frames && a == c.audio_samples {
+        let work = self.schedule.next();
+        if work == ExportWork::Complete {
             let mut encoder = self.encoder.take().ok_or(ExportError::State)?;
             let encoded = encoder.finish().map_err(ExportError::Encode)?;
             if check() {
@@ -141,17 +138,11 @@ impl<'a, E: VideoEncoder> ExportSession<'a, E> {
                 render: self.stats,
             })));
         }
-        // Absolute integer cross-products avoid frame/sample drift and do not
-        // depend on scheduler wall time or the audio block partition.
-        let next_video = v < c.video_frames
-            && (a == c.audio_samples
-                || u128::from(v) * self.plan.period as u128 * u128::from(c.audio_sample_rate)
-                    <= a as u128 * u128::from(c.video_time_scale));
-        if next_video {
-            let frame = self
-                .plan
-                .document
-                .frame(i64::from(v), self.plan.limits.query, check)?;
+        if let ExportWork::Video(sample) = work {
+            let frame =
+                self.plan
+                    .document
+                    .frame(i64::from(sample.index), self.plan.limits.query, check)?;
             let rendered = render_frame(
                 &frame.value,
                 visual,
@@ -163,13 +154,12 @@ impl<'a, E: VideoEncoder> ExportSession<'a, E> {
             if check() {
                 return Err(ExportError::Cancelled);
             }
-            let pts = i64::from(v) * self.plan.period;
             self.encoder
                 .as_mut()
                 .ok_or(ExportError::State)?
                 .video(EncodeVideoFrame {
-                    pts,
-                    duration: self.plan.period.min(c.video_duration - pts),
+                    pts: sample.pts.get(),
+                    duration: sample.duration.get(),
                     planes: image.planes(),
                     strides: image.strides(),
                 })
@@ -184,10 +174,9 @@ impl<'a, E: VideoEncoder> ExportSession<'a, E> {
             self.stats.peak_video_output_bytes = self.stats.peak_video_output_bytes.max(
                 rendered.image.pixels().len() * 16 + image.byte_length() + image.scratch_bytes,
             );
-            self.progress.video_frames += 1;
-        } else {
-            let frames =
-                (c.audio_samples - a).min(i64::from(self.plan.limits.audio_block_frames)) as u32;
+        } else if let ExportWork::Audio(sample) = work {
+            let a = sample.first_sample.get();
+            let frames = sample.frames;
             let mixer = self.mixer.as_mut().ok_or(ExportError::Binding)?;
             let mixed = match mixer.render(audio, a, frames, check) {
                 Ok(value) => value,
@@ -213,11 +202,10 @@ impl<'a, E: VideoEncoder> ExportSession<'a, E> {
                 .stats
                 .peak_mix_pcm_bytes
                 .max(mixed.stats.peak_pcm_bytes);
-            self.progress.audio_samples += i64::from(frames);
         }
         if check() {
             return Err(ExportError::Cancelled);
         }
-        Ok(ExportStep::Advanced(self.progress))
+        Ok(ExportStep::Advanced(self.schedule.accept(work)?))
     }
 }

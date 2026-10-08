@@ -1,6 +1,7 @@
 import { colorWords, colorKernels, drawColor, type ColorKernels, type VideoFrameLease } from './color.js';
 import { rawInputPlan } from './raw-input.js';
 import { extent, invalid, parseProgram } from './program.js';
+import { i420Words, i420Kernels, encodeI420, type I420Kernels, type I420Readback } from './i420.js';
 
 type Allocation = { buffer: GPUBuffer; bytes: number; refs: number };
 type Capability = { allocation: Allocation; width: number; height: number; hasHdr: boolean; closed: boolean };
@@ -31,6 +32,7 @@ export class BrowserGpuExecutor {
   readonly #bitmaps = new Set<GpuBitmapLease>();
   #canvas: { canvas: OffscreenCanvas; context: GPUCanvasContext; release: () => void } | undefined;
   #color: ColorKernels | undefined;
+  #i420: I420Kernels | undefined;
   #busy = false;
   #closed = false;
   #lost: string | undefined;
@@ -250,7 +252,7 @@ export class BrowserGpuExecutor {
       try { lease.close(); return image; } catch (error) { image.close(); throw error; }
     }, error => { try { lease.close(); } finally { throw error; } });
   }
-  /** Diagnostic/export readback with explicit straight sRGB alpha; no canvas
+  /** Diagnostic/image readback with explicit straight sRGB alpha; no canvas
    * premultiplication roundtrip or CPU color conversion is used.
    */
   readSrgb8(image: LinearGpuImage, parameters: unknown, signal?: AbortSignal): Promise<Uint8Array> {
@@ -277,6 +279,49 @@ export class BrowserGpuExecutor {
         for (let y = 0; y < c.height; y++) out.set(source.subarray(y * rowBytes, y * rowBytes + c.width * 4), y * c.width * 4);
         staging!.buffer.unmap(); return out;
       } finally { texture?.destroy(); release?.(); if (uniform) this.#release(uniform); if (staging) this.#release(staging); this.#release(c.allocation); }
+    }, signal);
+  }
+  /** Install exact pinned core television-output kernels on this device. */
+  configureI420(shader: string): Promise<void> {
+    return this.#exclusive(async () => {
+      if (this.#i420) throw new Error('GPU I420 kernels already installed');
+      this.#i420 = await scoped(this.#device, () => i420Kernels(this.#device, shader));
+      this.#ready();
+    });
+  }
+  /** Bounded explicit encode input. Host owns returned CPU bytes and encoder
+   * admission; GPU temporaries are released on success, failure and cancellation.
+   */
+  readI420(image: LinearGpuImage, parameters: unknown, signal?: AbortSignal): Promise<I420Readback> {
+    return this.#exclusive(async () => {
+      const c = this.#cap(image), kernels = this.#i420;
+      if (!kernels) throw new Error('GPU I420 kernels not installed');
+      const plan = i420Words(parameters, c.width, c.height, c.hasHdr);
+      c.allocation.refs++;
+      const allocations: Allocation[] = [];
+      const alloc = (bytes: number, usage: GPUBufferUsageFlags, fill?: (v: DataView) => void) => {
+        const a = this.#allocate(bytes, usage, fill); allocations.push(a); return a;
+      };
+      let staging: Allocation | undefined;
+      try {
+        const commands = await scoped(this.#device, () => {
+          const uniform = alloc(176, GPUBufferUsage.UNIFORM, view => plan.words.forEach((word, i) => view.setUint32(i * 4, word, true)));
+          const television = alloc(c.width * c.height * 16, GPUBufferUsage.STORAGE);
+          const chroma = alloc(c.width * c.height * 4, GPUBufferUsage.STORAGE);
+          const packed = alloc(plan.bytes, GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC);
+          staging = alloc(plan.bytes, GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ);
+          const encoder = this.#device.createCommandEncoder();
+          encodeI420(this.#device, encoder, kernels, [uniform.buffer, c.allocation.buffer, television.buffer, chroma.buffer, packed.buffer], c.width, c.height);
+          encoder.copyBufferToBuffer(packed.buffer, 0, staging.buffer, 0, plan.bytes);
+          return encoder.finish();
+        });
+        this.#ready(); aborted(signal); this.#device.queue.submit([commands]); await this.#complete(signal);
+        await staging!.buffer.mapAsync(GPUMapMode.READ); this.#ready(); aborted(signal);
+        const data = new Uint8Array(staging!.buffer.getMappedRange()).slice();
+        staging!.buffer.unmap();
+        return Object.freeze({ width: c.width, height: c.height, data,
+          layout: Object.freeze(plan.layout.map(p => Object.freeze(p))) as I420Readback['layout'] });
+      } finally { for (const a of allocations) this.#release(a); this.#release(c.allocation); }
     }, signal);
   }
   #display(width: number, height: number): GPUCanvasContext {

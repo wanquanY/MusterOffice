@@ -1,6 +1,8 @@
 //! Pure GPU command compilation. No GPU device, browser, codec or host resource
 //! owner. The same compositor computes transforms, grouping and resource checks.
 mod color;
+mod i420;
+pub use i420::*;
 mod raw_input;
 pub use raw_input::*;
 mod parameters;

@@ -2,6 +2,8 @@
 
 状态：计算链路已实现并验证；尚非产品导出。依赖现有不可变工程、CPU 合成、音频 mixer 及[原生编码组件](video-native-encoding.md)。本增量没有修改 FFmpeg wrapper 或固定上游补丁。
 
+2026-10-08 更新：下文保留初始计算链路的证据范围。Native 宿主及正式文件接入见[总体进度](video-editing-progress.md)；计算层现已提取 Native/WASM 共用的有限调度，浏览器新增 GPU I420 编码输入，见[共享导出基础](video-browser-export-foundation.md)。浏览器 codec/mux 和产品导出尚未接通。
+
 ## 职责与接口
 
 `mo-video-export` 为纯 Rust crate，不依赖本机编码库、文件路径、业务任务、网络和存储。`ExportPlan` 借用一个不可变 `CompiledDocument`，确定输出时钟、帧数、音频样本数、背景、色彩档案和计算额度；`ExportSession<E: VideoEncoder>` 接收宿主提供的视觉/音频资源接口及编码器。用户手动编辑和 Agent 编辑都仍经过原有事务系统，导出固定的旧快照不随当前 head 改变。

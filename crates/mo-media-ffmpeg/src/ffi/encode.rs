@@ -62,6 +62,12 @@ impl<'a> EncodeContext<'a> {
             profile: match config.profile {
                 EncodeProfile::H264VideoToolboxAacMp4 => 1,
                 EncodeProfile::Ffv1PcmMp4 => 2,
+                EncodeProfile::H264WebCodecsAacMp4 => {
+                    return Err(MediaError::new(
+                        ErrorKind::Unsupported,
+                        "WebCodecs profile requires a browser encoder",
+                    ));
+                }
             },
             width: integer(config.width)?,
             height: integer(config.height)?,

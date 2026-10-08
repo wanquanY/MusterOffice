@@ -17,6 +17,10 @@ impl<F: FnMut(u64, &[u8]) -> io::Result<usize>> WriteAt for F {
 #[serde(rename_all = "camelCase")]
 pub enum EncodeProfile {
     H264VideoToolboxAacMp4,
+    /// Explicit browser capability; native adapters must never alias it to a
+    /// platform encoder. Availability is checked against the actual WebCodecs
+    /// configuration by the browser adapter before accepting any input.
+    H264WebCodecsAacMp4,
     /// Lossless audit profile. FFV1/float PCM MP4 is not a browser playback profile.
     Ffv1PcmMp4,
 }

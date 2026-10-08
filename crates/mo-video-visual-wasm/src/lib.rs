@@ -56,6 +56,28 @@ pub fn color_shaders() -> Result<String> {
     }))
 }
 #[wasm_bindgen]
+pub fn i420_output_shader() -> String {
+    mo_video_gpu_plan::i420_output_shader()
+}
+#[wasm_bindgen]
+pub fn i420_output_parameters(
+    width: u32,
+    height: u32,
+    hdr: bool,
+    peak_nits: Option<f64>,
+    matte: &[u8],
+) -> Result<String> {
+    let matte: [u8; 3] = matte.try_into().map_err(|_| invalid("opaque sRGB matte"))?;
+    let tone = peak_nits
+        .map(|source_peak_nits| mo_video_render::ToneMap::ReinhardLuminanceV1 { source_peak_nits });
+    json(
+        &mo_video_gpu_plan::I420Parameters::new(width, height, hdr, tone, matte)
+            .map_err(render_error)?
+            .words()
+            .as_slice(),
+    )
+}
+#[wasm_bindgen]
 pub fn video_input_plan(description: &str) -> Result<String> {
     if description.len() > 4096 {
         return Err(invalid("input description bytes"));
