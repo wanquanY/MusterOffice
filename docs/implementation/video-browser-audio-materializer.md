@@ -44,3 +44,11 @@ node tools/verification/video-audio-materializer-check.mjs BROWSER MEDIA_SDK MED
 ```
 
 PCM 和索引固定组件见[共享 PCM](video-browser-pcm.md)。尚须完成产品不可变消费、Worker OPFS 暂存/原子提交/恢复、设备播放及音画同步、浏览器合成与导出、其他格式、长素材和浏览器矩阵验收。
+
+## 最终固定交付
+
+实现提交 `ebff1c5437ab259ca6dcf1d987df95cd2b4535d8`。最终媒体组件 `.codex-work/video-audio-materializer-final/`，manifest `a45c3e24d61fbb10c5d040d2aedc00414de7231c6a808450c0e82dfcbd2b048b`，记录 `sourceDirty=false`。92 个文件共 2,289,336 bytes（包含对应源码与许可）；运行入口 335,920 bytes，gzip 89,267 bytes。
+
+最终实际报告位于 `.codex-work/video-audio-materializer-final-mono/report.json` 与 `.codex-work/video-audio-materializer-final-stereo/report.json`，分别绑定单/双声道 fixture 和上述最终 pin。正常单次解码准入峰值分别为 18,074,462 / 18,289,742 bytes；完成对象保留 4,227,426 bytes，close 后释放。报告中总账本峰值另包含竞争者测试主动占用的额度，不能当成正常解码峰值。两个最终包检查都完成 10 类故障/生命周期验证及公开声明 ABI 编译。
+
+旧媒体回归 `.codex-work/video-audio-legacy-dev/report.json` 和五素材游标回归 `.codex-work/video-audio-video-regression-dev/report.json` 在同次源开发交付上运行；它们不是该最终 manifest 的再次执行报告。此轮没有更改 Rust、Native worker 或稳定标签，也没有公开发布组件。
