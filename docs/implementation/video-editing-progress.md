@@ -2,6 +2,16 @@
 
 2026-10-09 · 目标执行中，尚未达到整体验收。
 
+## 本批增量：有界读取与结果校验
+
+产品提交 `558331a74` 增加内部 `browser.video.read@1`，以同一个固定 Office 内核读取摘要与分页对象，查询及版本在原调用的本地准入中绑定；cursor 后续页必须使用明确版本。独立协议、home/组件路由、迁移 224 与 Web broker 已接通。原检查协议不改义；媒体和快照仍留在本地，只回传最多 64 KiB 元数据。
+
+真实 Chrome 正常登录产品页后，原 current 选择 revision 3，人工修改为 4 后原调用不重做、不上传新结果，新调用读取 4，明确版本读取 2；序列页通过相同 Gateway/Worker/IDB 返回。另一个浏览器不能抢占，关闭面板仍可执行，登出关闭连接。四次新调用回传 1,499 / 1,489 / 1,499 / 1,134 bytes，旧固定检查回归通过。两个报告位于产品 `.codex-work/video-agent-read/`，源码摘要均为 `f6ccddc04faa1c10c560976bfc758f18148fec035257a6057e4ac0b49785d793`。
+
+Runtime 候选读取执行器已加入原消息目标解析、原 Job 恢复、ContentRef 与本地准入摘要校验，以及固定 Office SDK 生成的请求/结果 schema 验证。没有在云端复制剪辑或分页算法。公开 catalog/composition/Skill 及原 Tool journal 验收尚未接通，不能视为公开 Agent Tool 已交付；Agent 编辑/导出、本地消息卡片及完整最终方案继续实施。
+
+217 项相关测试通过，另 1 项既有脱敏 PPT 语料测试 ignored；独立 workspace/all-targets 编译、相关库 strict Clippy、类型/lint 和 Web 构建预算通过。公共入口 gzip 507,371 / 524,288 bytes。183 个既有 WIP 完整保留；Office 核心、组件 pin、稳定 `v0.1.0` 不变。详情见产品 `docs/architecture/browser-video-agent.md`。
+
 ## 本批增量：原调用的版本化 Gateway 检查
 
 产品提交 `ba48c28da` 增加显式内部 `browser.video.inspect@2`，将 current/明确 revision 选择与原 invocation/job/conversation 接入本地持久准入；旧 `@1` 固定版本含义不变。独立 engine/program、原 home/组件路由、领取/执行双重校验和 additive migration 223 已实现。通用代码 Runner 拒绝两类视频请求；只回传最多 64 KiB 元数据，媒体和快照保留本地。
