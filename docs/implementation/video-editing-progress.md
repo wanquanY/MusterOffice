@@ -2,6 +2,14 @@
 
 2026-10-09 · 目标执行中，尚未达到整体验收。
 
+## 本批增量：消息指定剪辑工程
+
+产品新增独立的工程上下文，浏览器定位绑定 workspace/home/project/authority/固定组件；桌面定位绑定 workspace/project。提交、消息事件、冷热投影、Tool journal 与执行校验保存同一目标；不携带媒体、凭证或永久固定的 current head。用户新消息未选择工程时不继承旧工程；无新用户消息的续跑/委派只沿 canonical parent Run 链继承，并在最近的用户选择（包括未选择）处停止。桌面 prepared command 更换目标会被拒绝。
+
+产品提交 `35edb7039` 的独立源码快照通过 Rust workspace/all-targets 编译，协议/应用与专项 150 项、真实 PostgreSQL/SQLite 2 项、原 PPT 继承 2 项、Product 客户端 57 项、Electron 27 项、Python 12 项测试；Web 类型与相关 lint 通过。原 182 个生成/Admin/计费 WIP 有逐文件保护及独立生成证据，本次没有提交它们。内容传输 DTO 按职责拆分，保持 wire 身份；新增 authored source 均在 2000 行限制内。
+
+这是消息协议与持久上下文基础，输入框选择、公开 Agent 检查/修改/导出和消息成片仍在实施；不能据此声称完整功能已可验收。计算内核、组件 pin 和稳定 `v0.1.0` 不变。详细合同及证据索引见产品 `docs/architecture/browser-video-agent.md`。
+
 ## 本批增量：原调用的持久版本选择
 
 产品 Host 新增 current/明确 revision 的读取意图。原 invocation/job/conversation、home/workspace/project、authority/组件在同一 strict IDB 事务内绑定，current 首次抵达本地时选定版本；后续人工修改不会改变原调用的重放，新调用才观察新 head。schema 8 只新增准入记录，不复制工程、不缓存核心结果、不修改原编辑历史。随后仍由固定 Office WASM 重新验证快照与计算摘要；原 `browser.video.inspect@1` 的固定版本合同保持原义，新 current Gateway/公开 Tool 尚未接入。
