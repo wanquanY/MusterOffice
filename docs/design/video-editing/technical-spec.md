@@ -4,7 +4,7 @@
 
 视频高层计算接口和独立 WASM 的实际开发合同、预算、生命周期与宿主提交边界见[接口实施记录](../../implementation/video-authoring-api.md)，不将拟定产品工具名视为已经发布的工具。
 
-浏览器候选导出的实际格式/时钟检查合同见[输出检查记录](../../implementation/video-browser-output-inspection.md)。产品已接入持久任务和真实页面本地导出，范围见实施记录；不据此视为全部平台、Agent 或后台生命周期完成。
+浏览器候选导出的实际格式/时钟检查合同见[输出检查记录](../../implementation/video-browser-output-inspection.md)。产品已接入持久任务和真实页面本地导出，范围见实施记录；应用级后台导出生命周期已接通，仍不代表全部平台、Agent、消息交付或会话状态验收完成。
 
 ## 1. 不变量
 
