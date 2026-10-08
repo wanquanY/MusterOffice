@@ -2,6 +2,16 @@
 
 2026-10-09 · 目标执行中，尚未达到整体验收。
 
+## 本批增量：公开 Agent 读取与真实人机往返
+
+产品提交 `ac1ee9415` 发布 Web `artifact.video.inspect@1`，通过 cloud f53 / Skill v56 / 视频创作 v5 和真实 Cloud composition 接入原 Tool 生命周期。目录、能力与快照共同支持“读取原 provider 任务记录”的重放合同，不按视频名称开例外；旧工具及 Skill 不改义。Office 原固定内核负责有界摘要/分页计算，Product 负责消息目标、授权、任务、结果完整性及恢复。
+
+正常 Chrome 154 页面、正式密码登录与实际在线聊天模型已完成三轮：读取选中工程 revision 2；用户在右侧修改并保存后，新消息读取同一工程 revision 3；下一轮按明确版本读取实际 sequences 页。元数据分别为 1,460 / 1,473 / 1,134 bytes，无媒体上传和页面异常，原 Runtime 遥测确认三次 Tool 和三个 Run 成功。没有注入模型回复或内部测试任务。报告在产品 `.codex-work/video-public-read/normal-agent-roundtrip-02/`；这验证空工程的真实读取与人工修改后重读，不能代替 Agent 修改、成片或生成计费验收。
+
+219 项相关测试、独立 Rust workspace/all-targets、受影响库 strict Clippy、Python Ruff 和验收脚本 ESLint 通过。完整依赖 strict Clippy 仍有 PostgreSQL 模块 8 项既有告警，失败证据保留。已通过原模型配置服务补齐隔离测试库缺失的默认聊天绑定，主开发库只读。183 个既有生成/Admin/计费 WIP 原件保留；Office 核心、组件 pin 和稳定 `v0.1.0` 未改。详情见产品 `docs/architecture/browser-video-agent.md`。
+
+下一步继续原生统一读取、公开 Agent 修改/导出与本地成片消息附件；最终 20 项产品需求及完整验收目标仍在执行中。
+
 ## 本批增量：有界读取与结果校验
 
 产品提交 `558331a74` 增加内部 `browser.video.read@1`，以同一个固定 Office 内核读取摘要与分页对象，查询及版本在原调用的本地准入中绑定；cursor 后续页必须使用明确版本。独立协议、home/组件路由、迁移 224 与 Web broker 已接通。原检查协议不改义；媒体和快照仍留在本地，只回传最多 64 KiB 元数据。
