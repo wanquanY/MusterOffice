@@ -53,6 +53,8 @@ Chrome 154.0.8037.98 / macOS arm64，实际 Worker、Rust WASM 索引与 WebCode
 
 开发证据 `.codex-work/video-browser-cursor-check-03/report.json`；旧 packet-clock 视频/AAC 回归 `.codex-work/video-browser-cursor-regression-01/report.json`。最终清洁提交/组件 pin 会另行登记。单独原生/PPT 并未因此重新验收。
 
+最终干净源码 `4a56f843d22ef1bc85d2c659b3c57c20e9c7fa0b` 已构建并实际复验：`.codex-work/video-browser-cursor-final/`，manifest `ca5e78afbb0a636ef47c20ccffda33a6f47dde46034dc64dc96ca4594e5ba6fc`。报告 `.codex-work/video-browser-cursor-final-check/report.json` 与 `.codex-work/video-browser-cursor-final-regression/report.json`；独立索引 SDK pin 不变。ESM 326,466 bytes、gzip 86,758 bytes；含对应源码与许可的完整媒体 SDK 2,275,122 bytes、90 个文件。这里不包括独立索引 WASM、合成组件、整个产品或运行内存。
+
 ## 复现与后续
 
 ```sh
