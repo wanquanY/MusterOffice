@@ -53,11 +53,13 @@
 | 浏览器失败与回收 | 2 类非法像素、5 类非法程序、关闭后的能力、分配与部分帧预算拒绝、事前取消、成功重试均通过；每轮自有 GPU buffer 账本归零 | 未验收运行中抢占/设备恢复 |
 | 编译与规范 | 新增 Rust crate 与相关渲染/GPU crate all-targets strict Clippy、WASM 编译、TS strict 编译通过 | 未重跑所有历史工作区门禁 |
 
-门禁记录：`.codex-work/video-gpu-shared-program-verified/report.json`、`video-visual-sdk-candidate-report.json`、`video-browser-gpu-bundled-check/report.json`。原生 GPU 组件记录重新核对全部 104 项依赖与 181 个文件；本次只更新既有 workspace 累积的 js-sys feature 激活记录，不改变第三方代码。
+门禁记录：`.codex-work/video-gpu-shared-program-verified/report.json`、`video-visual-sdk-final-report.json`、`video-browser-gpu-final-check/report.json`。原生 GPU 组件记录重新核对全部 104 项依赖与 181 个文件；本次只更新既有 workspace 累积的 js-sys feature 激活记录，不改变第三方代码。
 
 ## 不可变开发交付
 
 `tools/video-visual-sdk/build.py` 离线生成开发组件。根入口提供实际 WASM runtime，`./gpu` 提供浏览器执行器；19 个交付文件含完整 SHA-256 清单、源码输入、共享 shader 的源码摘要、声明与第三方通知。WASM 约 1.09 MB，本地完整候选约 1.28 MB，均不是整个编辑器或应用体积。
+
+最终本地交付 `.codex-work/video-visual-sdk-final` 来自干净提交 `977c65cdd5f2d8133fdeed34a9f41ccec1fc9c27`，清单 pin `d572b37cfbfec28234135d88d536a99c8eebd54ce566b221a58bf3a06106bd94`，19 个文件、总计 1,278,154 bytes。WASM 1,094,519 bytes，SHA-256 `8d347aa46cdd52d30f7712465c3f4c2186ee0d7f33697b08f2f13937c73891d4`。最终交付已重新完成公共 ABI 和实际 Chrome GPU 检查，Product 固定消费该交付。
 
 新增仅开发声明依赖 `@webgpu/types@0.1.74`，BSD-3-Clause，锁定包完整性；只交付声明及原许可证，没有复制第三方视频引擎实现。安装者仍须固定清单与文件摘要。本交付 `releaseCleared: false`，不公开发布，也不更改 v0.1.0 稳定基线。
 
