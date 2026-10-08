@@ -1,9 +1,12 @@
 //! Canonical decoded PCM tiles and bounded random reads. Storage, decoder
 //! ownership, permission checks and atomic publication belong to the host.
+pub mod audio_movie;
 mod builder;
 mod clock;
 mod encoding;
 mod inspection;
+mod quantized;
+pub use quantized::*;
 mod reader;
 mod resource;
 mod retime;

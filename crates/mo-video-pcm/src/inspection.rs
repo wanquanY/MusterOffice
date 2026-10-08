@@ -102,6 +102,16 @@ impl PcmInspection {
         max_bytes: usize,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PcmBlock> {
+        self.observe_bounded_at(frame, order, max_bytes, None, cancelled)
+    }
+    pub(crate) fn observe_bounded_at(
+        &mut self,
+        frame: &DecodedFrame,
+        order: ByteOrder,
+        max_bytes: usize,
+        at: Option<R>,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<PcmBlock> {
         if self.failed {
             return Err(PcmError::Invalid("PCM inspection failed"));
         }
@@ -114,18 +124,21 @@ impl PcmInspection {
         }
         let clock = match &self.clock {
             Some(clock) => clock.clone(),
-            None => DecodedClock::from_first(&frame.info, self.limits.exact_bits)?,
-        };
-        let pcm = clock.normalize(
-            frame,
-            order,
-            self.generation,
-            PcmLimits {
-                max_bytes: self.limits.frame.max_bytes.min(max_bytes),
-                ..self.limits.frame
+            None => match &at {
+                Some(at) => {
+                    DecodedClock::from_first_at(&frame.info, at.clone(), self.limits.exact_bits)?
+                }
+                None => DecodedClock::from_first(&frame.info, self.limits.exact_bits)?,
             },
-            cancelled,
-        )?;
+        };
+        let limits = PcmLimits {
+            max_bytes: self.limits.frame.max_bytes.min(max_bytes),
+            ..self.limits.frame
+        };
+        let pcm = match at {
+            Some(at) => clock.normalize_at(frame, order, self.generation, limits, at, cancelled)?,
+            None => clock.normalize(frame, order, self.generation, limits, cancelled)?,
+        };
         if pcm.first_frame() != self.samples {
             return Err(PcmError::Invalid("discontinuous PCM decode"));
         }

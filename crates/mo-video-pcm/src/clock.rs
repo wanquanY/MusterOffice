@@ -14,6 +14,13 @@ pub(crate) struct DecodedClock {
 }
 impl DecodedClock {
     pub fn from_first(info: &FrameInfo, bits: u64) -> Result<Self> {
+        Self::from_first_at(info, timestamp(info, bits)?, bits)
+    }
+    pub fn from_first_at(info: &FrameInfo, sample_zero: R, bits: u64) -> Result<Self> {
+        sample_zero.check_budget(bits)?;
+        if info.kind != MediaKind::Audio {
+            return Err(PcmError::Invalid("decoded PCM media kind"));
+        }
         let sample_rate = info
             .sample_rate
             .filter(|v| (8000..=384000).contains(v))
@@ -21,7 +28,7 @@ impl DecodedClock {
         Ok(Self {
             sample_rate,
             layout: ChannelLayout::from_codec_name(&info.channel_layout)?,
-            sample_zero: timestamp(info, bits)?,
+            sample_zero,
             bits,
         })
     }
@@ -41,6 +48,24 @@ impl DecodedClock {
         limits: PcmLimits,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PcmBlock> {
+        self.normalize_at(
+            frame,
+            order,
+            generation,
+            limits,
+            timestamp(&frame.info, self.bits)?,
+            cancelled,
+        )
+    }
+    pub fn normalize_at(
+        &self,
+        frame: &DecodedFrame,
+        order: ByteOrder,
+        generation: u64,
+        limits: PcmLimits,
+        at: R,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<PcmBlock> {
         check(cancelled)?;
         if generation == 0 || frame.info.generation != generation {
             return Err(PcmError::Invalid("decoder generation"));
@@ -50,7 +75,7 @@ impl DecodedClock {
         {
             return Err(PcmError::Invalid("decoded PCM binding"));
         }
-        let position = timestamp(&frame.info, self.bits)?
+        let position = at
             .sub(&self.sample_zero, self.bits)?
             .mul(&R::integer(i64::from(self.sample_rate)), self.bits)?;
         let first = position.round_integer(Rounding::Floor)?;

@@ -1,9 +1,12 @@
 //! Container edits over verified canonical PCM. Storage and decoding remain
 //! explicit host capabilities; this adapter owns exact mapping and DSP only.
 mod reader;
-use crate::{audio::*, compile::MediaBinding, isobmff::movie::MovieTimeline, pcm::InspectedPcm};
+use crate::InspectedPcm;
+use mo_media_isobmff::movie::MovieTimeline;
 use mo_time::{ExactRatio as R, Rounding};
-use mo_video_operations::model::{MediaStream, TimeRange};
+use mo_video_audio::*;
+use mo_video_compile::MediaBinding;
+use mo_video_model::{MediaStream, TimeRange};
 
 /// Include this mapping policy and the raw decoder/PCM profile when a host
 /// materializes or caches movie-time audio. Raw content identity alone is not
@@ -228,6 +231,6 @@ fn active(cancelled: &dyn Fn() -> bool) -> Result<()> {
         Ok(())
     }
 }
-fn pcm_error(error: crate::pcm::PcmError) -> AudioError {
+fn pcm_error(error: crate::PcmError) -> AudioError {
     AudioError::Resource(error.to_string())
 }

@@ -122,6 +122,16 @@ impl PcmStreamBuilder {
         order: ByteOrder,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<UnsealedPcmTile>> {
+        self.push_at(frame, order, None, cancelled)
+    }
+    // Only the checked platform clock bridge may replace lossy transport PTS.
+    pub(crate) fn push_at(
+        &mut self,
+        frame: &DecodedFrame,
+        order: ByteOrder,
+        at: Option<mo_time::ExactRatio>,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<UnsealedPcmTile>> {
         if self.failed {
             return Err(PcmError::Invalid("streaming PCM failed"));
         }
@@ -131,9 +141,9 @@ impl PcmStreamBuilder {
             .limits
             .max_working_bytes
             .saturating_sub(self.retained_bytes());
-        let pcm = self
-            .inspection
-            .observe_bounded(frame, order, remaining_bytes, cancelled)?;
+        let pcm =
+            self.inspection
+                .observe_bounded_at(frame, order, remaining_bytes, at, cancelled)?;
         let channels = pcm.layout().len();
         if self.channels != 0 && self.channels != channels {
             return Err(PcmError::Invalid("PCM stream channels"));
