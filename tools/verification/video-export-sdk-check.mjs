@@ -36,6 +36,22 @@ if (isMainThread) {
   await assert.rejects(createExportRuntime(module), /fresh Worker/);
   const rejected = (run, code) => assert.throws(run, value => JSON.parse(String(value)).code === code);
   const open = v => runtime.ProjectExport.open(JSON.stringify(v.document), v.documentDigest, JSON.stringify(v.options));
+  const probe = JSON.parse(runtime.ProjectExport.probeFixture());
+  assert.equal(probe.format, 'musteroffice.video.export-probe-fixture/1');
+  assert.deepEqual(probe.document.resources, {});
+  const measurement = open(probe), measurementInfo = JSON.parse(measurement.info());
+  assert.deepEqual([measurementInfo.width, measurementInfo.height, measurementInfo.videoFrames,
+    measurementInfo.audioChannels, measurementInfo.audioSamples], [128, 96, 6, 2, '9600']);
+  assert.equal(measurementInfo.documentDigest, probe.documentDigest);
+  let probeSteps = 0;
+  for (;;) {
+    const { work } = JSON.parse(measurement.next());
+    if (work.kind === 'complete') break;
+    assert.ok(++probeSteps <= 10);
+    measurement.accept(JSON.stringify(work));
+  }
+  assert.deepEqual(JSON.parse(measurement.progress()), { videoFrames:6, audioSamples:'9600' });
+  measurement.free();
   let steps = 0, completed = 0;
   for (const c of vectors.cases) {
     const project = open(c), info = JSON.parse(project.info());
@@ -86,5 +102,5 @@ if (isMainThread) {
   parentPort.postMessage({ status: 'passed', cases: completed, exactStepsCompared: steps,
     checks: ['native/wasm exact schedule and transport residuals', 'mono/stereo/omit',
       'fractional frame rates and short tail', 'pending/reordered/duplicate/unknown ACK',
-      'document digest binding', 'preflight options/transport/budget refusal', 'fresh Worker factory'] });
+      'document digest binding', 'preflight options/transport/budget refusal', 'fresh Worker factory', 'resource-free actual-export capability fixture'] });
 }

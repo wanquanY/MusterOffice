@@ -2,6 +2,7 @@
 //! permission authority. Native and browser drivers use the same ExportPlan.
 mod inspection;
 mod options;
+mod probe;
 use mo_common::{Digest, Ticks};
 use mo_video_compile::{CompileError, CompileLimits, CompiledDocument};
 use mo_video_export::{
@@ -63,6 +64,16 @@ pub struct ProjectExport {
 }
 #[wasm_bindgen]
 impl ProjectExport {
+    /// Six 128x96 SDR frames and 9600 stereo silence samples. The host must
+    /// actually render/encode, reopen/decode and dispose the candidate before
+    /// advertising baseline export support. No IO, codec result or authority
+    /// is implied by constructing this fixture; each real job still validates
+    /// its own dimensions, profile and resources.
+    #[wasm_bindgen(js_name = probeFixture)]
+    pub fn probe_fixture() -> Result<String> {
+        probe::fixture()
+    }
+
     /// The digest must name the same immutable document used by both visual
     /// and audio Workers. Host owns that binding and resource closure.
     pub fn open(document: &str, expected_digest: &str, options: &str) -> Result<Self> {
