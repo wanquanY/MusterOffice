@@ -532,10 +532,20 @@ cargo test --release --offline --locked -p mo-video-edit --test generated_sequen
 
 跨端复现使用 `tools/verification/current.py --groups wasm`（包含原有 PPT wasm 门禁），需按既有构建文档提供固定 native 组件与匹配的 wasm-bindgen。视频测试脚本为 `tools/verification/video-domain-parity.mjs`；它要求本次构建的 Native 程序和 Node wasm-bindgen 输出，不接受用一份预录结果冒充其中一端。
 
+## 浏览器公开 Agent 编辑与原回执闭环（2026-10-09）
+
+Musterwork 产品提交 `602040cc3` 发布 `cloud.f54` / Skill v57（视频创作 v6）的 `video_edit`；`665b02ef3` 修正开发监督器的实际目录/技能发行依赖追踪；`a840476c8` 将复杂工具 schema 校验移出 Agent poll 栈；`9d6d34d26` 严格核对浏览器完整回执外层并完成真实聊天验收。这些属于产品权限、执行、存储和交付边界，没有把 Agent 运行时或业务存储迁入 Office，也没有更改视频组件 pin 或 v0.1.0。
+
+真实产品使用正常登录、视频技能和已配置在线聊天模型，共用固定 Office WASM 与本地工程。依次完成 Agent 改名、人工改名、Agent 再改名、撤销最后一次 Agent 改名，修订为 2 → 3 → 4 → 5 → 6；最终保留人工名称，右侧显示相同工程。三次原修改恰好各提交一次，原 Tool invocation 及三轮 Agent Run 均为 success；没有用模型最终回答代替执行证据。本次只上传有界状态元数据，三份编辑回执各 878 bytes，没有媒体上传或视频生成调用。
+
+产品报告为 `.codex-work/video-edit-runtime/normal-agent-06/report.json`，精确源文件与日志摘要保存在 `.codex-work/video-edit-envelope/evidence.json`。此前失败轮次保留，修复涵盖 schema 冷编译栈溢出及 Product 外层回执与内部 Host 回执的差异；没有通过放宽摘要/作用域校验或提高线程栈获得通过。独立源组合的整个 Runtime/all-targets 编译、相关库 strict Clippy、4 项 Artifact 工具及 67 项生命周期回归通过；最后回执修正另有 8 项合同、13 项编辑生命周期和 7 项实际 WASM/Host Web 检查。
+
+这只完成正常聊天中的基础共享编辑与撤销链，不代表所有剪辑操作、Agent 浏览器成片导出、消息本地文件卡片或完整验收矩阵通过。相关产品合同与本地操作入口见 Musterwork worktree 的 `docs/architecture/browser-video-edit-runtime.md` 与 `docs/development/video-workbench-local.md`。
+
 ## 明确尚未完成
 
 - 当前已支持锚点线性变速；完整曲线变速/反查、转场、关键帧、字幕词锚点、分析与互操作等最终语义仍待补全。音频策略已保存，实际重采样/混音基础已实现，非原速保调及工程派生图已实现，生产 Host 接入和完整音频处理仍待完成。
-- 原生已认证工程播放/导出与正式文件内部链、Browser 正常页面本地媒体/预览/持久导出已接通。全部会话消息交付/后台状态与未读、浏览器 Agent 执行、物理音画同步/长时播放、原生 GPU 显示/纹理互操作及跨端矩阵仍未完整验收。
+- 原生已认证工程播放/导出与正式文件内部链、Browser 正常页面本地媒体/预览/持久导出及公开 Agent 基础读取/编辑已接通。全部会话消息交付/后台状态与未读、Agent 浏览器导出、完整在线剪辑操作覆盖、物理音画同步/长时播放、原生 GPU 显示/纹理互操作及跨端矩阵仍未完整验收。
 - 已有独立开发 SDK、Browser Host 基础、Device metadata 工程执行、Agent 技能/桌面 RPC/IPC、基础时间线、待确认命令恢复及固定媒体 runtime/worker 和授权 probe；生产 SDK/MCP/CLI、完整媒体 Host、属性 UI、完整应用恢复验收和项目包仍待接入。
 - CE.SDK 页面与依赖已从产品 worktree 退役，旧源码和浏览器数据保留；旧 scene 数据仍须审计、迁移并保留原件，不能仅换 engineId。
 - 完整功能、媒体质量、性能、体积、多平台与真实 provider 计费没有完成验收；当前不能交付为“用户已可验收全部视频功能”。
