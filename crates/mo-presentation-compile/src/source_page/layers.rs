@@ -134,15 +134,15 @@ pub(crate) fn select(
                     }
                     if matches!(
                         ph.effective_kind(),
-                        PlaceholderKind::Date
-                            | PlaceholderKind::Footer
-                            | PlaceholderKind::Header
-                            | PlaceholderKind::SlideNumber
-                            | PlaceholderKind::SlideImage
+                        PlaceholderKind::Header | PlaceholderKind::SlideImage
                     ) {
                         return Err(mapping(&at, SourcePageIssue::SpecialPlaceholder {}));
                     }
                     // Template prompt shapes supply inheritance, not extra ink.
+                    // Date/footer/slide-number declarations obey this same rule:
+                    // a layout makes them available, while the slide owns the
+                    // displayed instance. Uninstantiated footer fields in an
+                    // ordinary PowerPoint template do not render on every slide.
                     if o.kind == SourceObjectKind::Group {
                         return Err(mapping(
                             &at,

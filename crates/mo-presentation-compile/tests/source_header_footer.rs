@@ -56,7 +56,7 @@ fn explicit_disabled_master_placeholders_produce_no_ink_but_source_is_retained()
 }
 
 #[test]
-fn enabled_defaults_and_unrelated_flags_never_silently_drop_visible_placeholders() {
+fn enabled_template_footer_declarations_supply_inheritance_without_extra_ink() {
     for declaration in [
         "",
         "<p:hf/>",
@@ -66,8 +66,11 @@ fn enabled_defaults_and_unrelated_flags_never_silently_drop_visible_placeholders
     ] {
         let bytes = declared(declaration, "ftr");
         let index = read(&bytes);
-        assert!(matches!(compile(&index, &request(&index), &|| false),
-            Err(SourcePageError::Mapping { issue, .. }) if matches!(*issue, SourcePageIssue::SpecialPlaceholder {})));
+        let plan = compile(&index, &request(&index), &|| false).unwrap();
+        let master = plan.info.layers.iter().find(|l| l.part == MASTER).unwrap();
+        assert!(master.template_placeholders.contains(&500));
+        assert!(!master.objects.contains(&500));
+        assert!(!master.hidden_objects.contains(&500));
     }
 }
 
@@ -120,8 +123,75 @@ fn nearest_layout_declaration_controls_inherited_footer_availability() {
                     .contains(&500)
             );
         } else {
-            assert!(matches!(result, Err(SourcePageError::Mapping { issue, .. })
-                if matches!(*issue, SourcePageIssue::SpecialPlaceholder {})));
+            assert!(
+                result
+                    .unwrap()
+                    .info
+                    .layers
+                    .iter()
+                    .find(|l| l.part == MASTER)
+                    .unwrap()
+                    .template_placeholders
+                    .contains(&500)
+            );
         }
+    }
+}
+
+#[test]
+fn ordinary_footer_templates_do_not_create_implicit_slide_content() {
+    for kind in ["dt", "ftr", "sldNum"] {
+        let bytes = declared("", kind);
+        let index = read(&bytes);
+        let layout = index.surfaces[SLIDE].links.layout.as_ref().unwrap();
+        let declaration = drawing_shape(501, &solid("00CC33")).replace(
+            "<p:nvPr/>",
+            &format!("<p:nvPr><p:ph type=\"{kind}\" idx=\"50\"/></p:nvPr>"),
+        );
+        let bytes = rewrite(&bytes, layout, |s| {
+            s.replace("</p:spTree>", &(declaration + "</p:spTree>"))
+        });
+        let index = read(&bytes);
+        let plan = compile(&index, &request(&index), &|| false).unwrap();
+        assert!(
+            plan.info
+                .layers
+                .iter()
+                .find(|l| l.part == MASTER)
+                .unwrap()
+                .template_placeholders
+                .contains(&500)
+        );
+        assert!(
+            plan.info
+                .layers
+                .iter()
+                .find(|l| l.part == *layout)
+                .unwrap()
+                .template_placeholders
+                .contains(&501)
+        );
+
+        let instance = drawing_shape(502, &solid("0033CC")).replace(
+            "<p:nvPr/>",
+            &format!("<p:nvPr><p:ph type=\"{kind}\" idx=\"50\"/></p:nvPr>"),
+        );
+        let bytes = rewrite(&bytes, SLIDE, |s| {
+            s.replace("</p:spTree>", &(instance + "</p:spTree>"))
+        });
+        let index = read(&bytes);
+        let plan = compile(&index, &request(&index), &|| false).unwrap();
+        let slide = plan.info.layers.iter().find(|l| l.part == SLIDE).unwrap();
+        assert!(slide.objects.contains(&502));
+        assert!(!slide.template_placeholders.contains(&502));
+    }
+}
+
+#[test]
+fn notes_only_special_placeholders_remain_explicitly_unsupported() {
+    for kind in ["hdr", "sldImg"] {
+        let index = read(&declared("", kind));
+        assert!(matches!(compile(&index, &request(&index), &|| false),
+            Err(SourcePageError::Mapping { issue, .. }) if matches!(*issue, SourcePageIssue::SpecialPlaceholder {})));
     }
 }
