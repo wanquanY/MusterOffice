@@ -102,13 +102,35 @@ fn text_page_mapping_diagnostics_retain_object_and_typed_native_reason() {
     }
     let source = fixture(&shape(42, 0, 0, "", &colored("A", "FF0000")));
     let source = rewrite(&source, SLIDE, |s| {
-        s.replace("<a:noAutofit/>", "<a:spAutoFit/>")
+        s.replace("<a:noAutofit/>", "<a:normAutofit/>")
     });
     let json = serde_json::to_string(&query(&source)).unwrap();
     let e = reject(&json, &source, FONT_BYTES, &|| false);
     assert_eq!(e["detail"]["kind"], "frame");
     assert_eq!(e["detail"]["reason"]["kind"], "autofit");
     assert_eq!(e["error"]["location"]["object"], 42);
+}
+
+#[test]
+fn shape_autofit_measures_text_and_preserves_backend_failure_without_pixels() {
+    let source = fixture(&shape(42, 0, 0, "", &colored("A", "FF0000")));
+    let source = rewrite(&source, SLIDE, |s| {
+        s.replace("<a:noAutofit/>", "<a:spAutoFit/>")
+    });
+    let json = serde_json::to_string(&query(&source)).unwrap();
+    let (mut text, mut raster) = (Text::default(), Raster::default());
+    let (json, pixels) =
+        render_pptx_text_page_json(&json, &source, FONT_BYTES, &mut text, &mut raster, &|| {
+            false
+        });
+    assert_eq!((text.calls, raster.calls), (1, 0));
+    assert!(pixels.is_empty());
+    let e = serde_json::from_str::<serde_json::Value>(&json).unwrap()["error"].clone();
+    assert_eq!(e["stage"], "page");
+    assert_eq!(e["error"]["code"], "HOST_FAILURE");
+    assert_eq!(e["error"]["location"]["part"], SLIDE);
+    assert_eq!(e["error"]["location"]["object"], 42);
+    assert!(e.get("detail").is_none());
 }
 
 #[test]
