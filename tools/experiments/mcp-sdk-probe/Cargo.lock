@@ -175,9 +175,9 @@ dependencies = [
 
 [[package]]
 name = "font-types"
-version = "0.12.5"
+version = "0.12.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b8eb065f3251655b3c90e22e5e363f310fc5332fb3402e37bbc94752283248f6"
+checksum = "835ae9d781464a79026cde387f9cbc650c9a4909d7cf7e658b127e3c35d2f35d"
 dependencies = [
  "bytemuck",
 ]
@@ -385,6 +385,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "mo-charts"
+version = "0.1.0"
+dependencies = [
+ "mo-geometry",
+ "num-bigint",
+ "schemars",
+ "serde",
+ "thiserror",
+]
+
+[[package]]
 name = "mo-color"
 version = "0.1.0"
 dependencies = [
@@ -399,6 +410,7 @@ dependencies = [
  "schemars",
  "serde",
  "serde_json",
+ "serde_path_to_error",
  "sha2",
  "thiserror",
 ]
@@ -477,6 +489,7 @@ dependencies = [
  "mo-presentation-delivery",
  "mo-presentation-edit",
  "mo-presentation-model",
+ "mo-presentation-operations",
  "mo-xml",
  "schemars",
  "serde",
@@ -489,29 +502,29 @@ dependencies = [
 name = "mo-pptx"
 version = "0.1.0"
 dependencies = [
- "libm",
- "mo-color",
  "mo-common",
  "mo-opc",
  "mo-presentation-model",
+ "mo-presentation-source",
  "mo-timeline",
  "mo-xml",
  "schemars",
  "serde",
- "sha2",
- "thiserror",
+ "serde_json",
 ]
 
 [[package]]
 name = "mo-presentation-compile"
 version = "0.1.0"
 dependencies = [
+ "libm",
+ "mo-charts",
  "mo-common",
  "mo-geometry",
  "mo-image",
  "mo-opc",
- "mo-pptx",
  "mo-presentation-model",
+ "mo-presentation-source",
  "mo-raster",
  "mo-render",
  "mo-text",
@@ -554,6 +567,7 @@ dependencies = [
  "mo-common",
  "mo-presentation-model",
  "mo-timeline",
+ "mo-unicode",
  "schemars",
  "serde",
  "serde_json",
@@ -569,6 +583,57 @@ dependencies = [
  "schemars",
  "serde",
  "serde_json",
+ "thiserror",
+]
+
+[[package]]
+name = "mo-presentation-operations"
+version = "0.1.0"
+dependencies = [
+ "mo-common",
+ "mo-image",
+ "mo-opc",
+ "mo-pptx",
+ "mo-presentation-delivery",
+ "mo-presentation-edit",
+ "mo-presentation-model",
+ "mo-presentation-template",
+ "mo-xml",
+ "schemars",
+ "serde",
+ "serde_json",
+ "sha2",
+ "thiserror",
+]
+
+[[package]]
+name = "mo-presentation-source"
+version = "0.1.0"
+dependencies = [
+ "libm",
+ "mo-color",
+ "mo-common",
+ "mo-opc",
+ "mo-presentation-model",
+ "mo-timeline",
+ "mo-xml",
+ "schemars",
+ "serde",
+ "sha2",
+ "thiserror",
+]
+
+[[package]]
+name = "mo-presentation-template"
+version = "0.1.0"
+dependencies = [
+ "mo-common",
+ "mo-presentation-edit",
+ "mo-presentation-model",
+ "schemars",
+ "serde",
+ "serde_json",
+ "thiserror",
 ]
 
 [[package]]
@@ -723,14 +788,15 @@ checksum = "75a2b2577f5fd7e26caabd4aa7bba1ef18653ff32204eea251c1136db1a549f3"
 
 [[package]]
 name = "read-fonts"
-version = "0.43.3"
+version = "0.45.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "005c8acf251756c478b0bf402885bfd88a1476020c4c7e6060edc1aa68da38ea"
+checksum = "4edc8db0d972de88e53a085b1f01fb3fbdae7bb0cb7a0ce2b2f8285a412fe3ef"
 dependencies = [
  "bytemuck",
  "core_maths",
  "font-types",
  "once_cell",
+ "yoke",
 ]
 
 [[package]]
@@ -861,6 +927,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde_path_to_error"
+version = "0.1.20"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "10a9ff822e371bb5403e391ecd83e182e0e77ba7f6fe0160b795797109d1b457"
+dependencies = [
+ "itoa",
+ "serde",
+ "serde_core",
+]
+
+[[package]]
 name = "sha2"
 version = "0.10.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -890,6 +967,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0c790de23124f9ab44544d7ac05d60440adc586479ce501c1d6d7da3cd8c9cf5"
 
 [[package]]
+name = "stable_deref_trait"
+version = "1.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6ce2be8dc25455e1f91df71bfa12ad37d7af1092ae736f3a6cd0e37bc7810596"
+
+[[package]]
 name = "syn"
 version = "2.0.119"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -909,6 +992,17 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
+]
+
+[[package]]
+name = "synstructure"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "901704edd0dfe137f1987838ee4f259e4e063c31371bdb423f7ae38ec6f77f02"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 3.0.6",
 ]
 
 [[package]]
@@ -1135,6 +1229,50 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7837d08f69c77cf6b07689544538e017c1bfcf57e34b4c0ff58e6c2cd3b37091"
 dependencies = [
  "windows-link",
+]
+
+[[package]]
+name = "yoke"
+version = "0.8.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "709fe23a0424b6a435d82152b1bd3fdfb0833487d5fa90d05d42762a9891fef5"
+dependencies = [
+ "stable_deref_trait",
+ "yoke-derive",
+ "zerofrom",
+]
+
+[[package]]
+name = "yoke-derive"
+version = "0.8.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ec8ebde2db3681e8c9980cc27822030e68752690ddfa9473e739aeb4dbde6d71"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 3.0.6",
+ "synstructure",
+]
+
+[[package]]
+name = "zerofrom"
+version = "0.1.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0ec05a11813ea801ff6d75110ad09cd0824ddba17dfe17128ea0d5f68e6c5272"
+dependencies = [
+ "zerofrom-derive",
+]
+
+[[package]]
+name = "zerofrom-derive"
+version = "0.1.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f75b4683f6c7f45248d4d64056a24298c6281e0993356d7d1b4a1a962ef10d4a"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 3.0.6",
+ "synstructure",
 ]
 
 [[package]]
