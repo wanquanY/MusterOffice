@@ -68,8 +68,10 @@ pub(super) fn paragraph(
             direction,
             &segments,
             &p.end_style,
-            &resolve,
-            default_han_script,
+            computation::FontContext {
+                resolve: &resolve,
+                default_han_script,
+            },
             budget,
             check,
         )? {

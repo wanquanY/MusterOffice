@@ -141,7 +141,7 @@ int validate(const uint32_t* r, uint32_t words, const uint8_t* data,
         if (const int status = mo_validate_gradient(r, words, pos, stops, planes, office, rectangular, elliptic)) return status;
     }
     if (uint64_t(pos) + uint64_t(plan.image_count)*4 + uint64_t(plan.brush_count)*plan.brush_words +
-        uint64_t(plan.clip_count)*4 + plan.snapshot_count*plan.snapshot_words + uint64_t(plan.group_count)*plan.group_words + uint64_t(r[6])*plan.draw_words != words) return 1;
+        uint64_t(plan.clip_count)*4 + uint64_t(plan.snapshot_count)*plan.snapshot_words + uint64_t(plan.group_count)*plan.group_words + uint64_t(r[6])*plan.draw_words != words) return 1;
     plan.images = pos;
     if (const int status = mo_validate_images(r + pos, plan.image_count, data, bytes)) return status;
     pos += plan.image_count*4;

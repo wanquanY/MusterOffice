@@ -156,7 +156,7 @@ pub(super) fn raster(frame: &[u32], images: Option<&[u8]>) -> Result<BackendRepl
         return Err(RasterError::Host("raster snapshot scope ABI mismatch"));
     }
     // SAFETY: pure no-argument query on the pinned component.
-    if matches!(frame.get(1), Some(13 | 14 | 15)) && unsafe { mo_skia_opacity_groups_abi() } != 1 {
+    if matches!(frame.get(1), Some(13..=15)) && unsafe { mo_skia_opacity_groups_abi() } != 1 {
         return Err(RasterError::Host("raster opacity group ABI mismatch"));
     }
     // SAFETY: pure no-argument query on the pinned component.

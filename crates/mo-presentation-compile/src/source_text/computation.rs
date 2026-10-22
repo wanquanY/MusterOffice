@@ -30,13 +30,17 @@ pub(crate) type FontResolver<'a> = dyn Fn(
     ) -> Result<TypefaceOutcome, PptxError>
     + 'a;
 
+pub(crate) struct FontContext<'a> {
+    pub resolve: &'a FontResolver<'a>,
+    pub default_han_script: Option<HanThemeScript>,
+}
+
 pub(crate) fn paragraph(
     paragraph: u32,
     direction: ParagraphDirection,
     segments: &[Segment<'_>],
     end_style: &CascadedCharacterStyle,
-    resolve: &FontResolver<'_>,
-    default_han_script: Option<HanThemeScript>,
+    fonts: FontContext<'_>,
     budget: &mut budget::Budget,
     check: &dyn Fn() -> bool,
 ) -> Result<Result<ParagraphComputationPlan, SourceTextIssue>, SourceTextError> {
@@ -128,8 +132,7 @@ pub(crate) fn paragraph(
         paragraph,
         segments,
         end_style,
-        resolve,
-        default_han_script,
+        fonts,
         ranges,
         budget,
         check,
@@ -207,8 +210,7 @@ pub(crate) fn paragraph(
 struct Compiler<'a> {
     segments: &'a [Segment<'a>],
     end_style: &'a CascadedCharacterStyle,
-    resolve: &'a FontResolver<'a>,
-    default_han_script: Option<HanThemeScript>,
+    fonts: FontContext<'a>,
     ranges: Vec<SegmentRange>,
     paragraph: u32,
     budget: &'a mut budget::Budget,
@@ -246,9 +248,9 @@ impl Compiler<'_> {
             }));
         };
         if script == "Hani" && theme_script.is_none() {
-            theme_script = self.default_han_script.map(|s| s.as_str().into());
+            theme_script = self.fonts.default_han_script.map(|s| s.as_str().into());
         }
-        let font = match (self.resolve)(
+        let font = match (self.fonts.resolve)(
             run,
             slot,
             theme_script.as_deref(),

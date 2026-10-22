@@ -238,8 +238,8 @@ fn audit(
         }
         // Drawable effects are resolved and admitted once in page preflight.
         // Group effects need a group-level effect owner; never silently drop them.
-        if object.kind == SourceObjectKind::Group {
-            if let Some(ordinal) = object
+        if object.kind == SourceObjectKind::Group
+            && let Some(ordinal) = object
                 .effects
                 .as_ref()
                 .filter(|e| !e.is_explicitly_empty_list())
@@ -251,14 +251,13 @@ fn audit(
                         .filter(|r| r.index != 0)
                         .map(|r| r.source_ordinal)
                 })
-            {
-                return Err(mapping(
-                    &at,
-                    SourcePageIssue::Effects {
-                        source_ordinal: ordinal,
-                    },
-                ));
-            }
+        {
+            return Err(mapping(
+                &at,
+                SourcePageIssue::Effects {
+                    source_ordinal: ordinal,
+                },
+            ));
         }
         match &object.resolution.placeholder_match {
             SourcePlaceholderMatch::Matched { target, .. } => {
