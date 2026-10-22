@@ -19,6 +19,7 @@ mod office_gradient;
 mod opacity;
 #[cfg(test)]
 mod opacity_tests;
+mod shadow;
 pub use office_gradient::office_gamma_eligible;
 mod gradient_stops;
 pub use gradient_stops::GradientStops;
@@ -191,3 +192,6 @@ fn execute(
     }
     result
 }
+
+pub const MAX_SHADOW_FRAME_WORDS: usize = MAX_SNAPSHOT_SCOPE_FRAME_WORDS + 4096 * 5;
+pub const SHADOW_PROFILE: &str = "skia-8d6d37b-gaussian-outer-shadow-srgb-premul-rgba8-v15-draft";

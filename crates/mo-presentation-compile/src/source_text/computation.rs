@@ -30,12 +30,17 @@ pub(crate) type FontResolver<'a> = dyn Fn(
     ) -> Result<TypefaceOutcome, PptxError>
     + 'a;
 
+pub(crate) struct FontContext<'a> {
+    pub resolve: &'a FontResolver<'a>,
+    pub default_han_script: Option<HanThemeScript>,
+}
+
 pub(crate) fn paragraph(
     paragraph: u32,
     direction: ParagraphDirection,
     segments: &[Segment<'_>],
     end_style: &CascadedCharacterStyle,
-    resolve: &FontResolver<'_>,
+    fonts: FontContext<'_>,
     budget: &mut budget::Budget,
     check: &dyn Fn() -> bool,
 ) -> Result<Result<ParagraphComputationPlan, SourceTextIssue>, SourceTextError> {
@@ -127,7 +132,7 @@ pub(crate) fn paragraph(
         paragraph,
         segments,
         end_style,
-        resolve,
+        fonts,
         ranges,
         budget,
         check,
@@ -205,7 +210,7 @@ pub(crate) fn paragraph(
 struct Compiler<'a> {
     segments: &'a [Segment<'a>],
     end_style: &'a CascadedCharacterStyle,
-    resolve: &'a FontResolver<'a>,
+    fonts: FontContext<'a>,
     ranges: Vec<SegmentRange>,
     paragraph: u32,
     budget: &'a mut budget::Budget,
@@ -230,7 +235,7 @@ impl Compiler<'_> {
             Some(r) => self.segments[r as usize].style,
             None => self.end_style,
         };
-        let Some((slot, theme_script)) = super::script::select(
+        let Some((slot, mut theme_script)) = super::script::select(
             script,
             style.attributes.language.as_deref(),
             style.attributes.alternative_language.as_deref(),
@@ -242,7 +247,10 @@ impl Compiler<'_> {
                 script: script.into(),
             }));
         };
-        let font = match (self.resolve)(
+        if script == "Hani" && theme_script.is_none() {
+            theme_script = self.fonts.default_han_script.map(|s| s.as_str().into());
+        }
+        let font = match (self.fonts.resolve)(
             run,
             slot,
             theme_script.as_deref(),

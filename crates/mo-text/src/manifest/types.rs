@@ -90,9 +90,31 @@ impl ManifestTypeface {
         }
     }
 }
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+pub enum HanThemeScript {
+    Hans,
+    Hant,
+    Jpan,
+    Hang,
+}
+impl HanThemeScript {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Hans => "Hans",
+            Self::Hant => "Hant",
+            Self::Jpan => "Jpan",
+            Self::Hang => "Hang",
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct FontManifest {
+    /// Explicit theme choice for Han text without a Chinese/Japanese/Korean language.
+    /// None preserves strict source resolution; host locale is never consulted.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub default_han_script: Option<HanThemeScript>,
     pub profile: FontManifestProfile,
     pub fonts: Vec<CascadeFont>,
     pub faces: Vec<ManifestFace>,

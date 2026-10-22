@@ -6,6 +6,7 @@ use mo_raster::StrokeStyle;
 use std::collections::BTreeMap;
 
 pub(crate) struct PreparedObject {
+    pub shadow: Option<mo_raster::OuterShadow>,
     pub opacity: super::opacity::Chain,
     pub binding: SourcePagePaintBinding,
     pub paints: Vec<PreparedPaint>,
@@ -177,6 +178,20 @@ pub(crate) fn preflight_resources<'a>(
     )?;
     let mut shared_tables = BTreeMap::new();
     let mut opacities = super::opacity::chains(index, &layers, transforms, check)?;
+    let mut effect_resolvers = layers
+        .iter()
+        .map(|layer| {
+            Ok((
+                layer.part.clone(),
+                mo_presentation_source::source::effects::resolve::Resolver::new(
+                    index,
+                    &layer.part,
+                    &q.color_context,
+                    check,
+                )?,
+            ))
+        })
+        .collect::<Result<BTreeMap<_, _>, SourcePageError>>()?;
     let tolerance = local_tolerance(&objects, q, check)?;
     // Bounds affect both tile placement and normalized focus geometry. Reserve
     // finer local geometry for circle receivers; the final device verifier
@@ -444,7 +459,17 @@ pub(crate) fn preflight_resources<'a>(
                     .ok_or(RasterError::Range)?;
             }
         }
+        let shadow = super::effects::shadow(
+            effect_resolvers
+                .get_mut(&b.location.part)
+                .expect("effect layer"),
+            &b.location.part,
+            b.location.object.expect("effect object"),
+            b.placement.as_ref(),
+            check,
+        )?;
         prepared.push(PreparedObject {
+            shadow,
             opacity: opacities
                 .remove(&(
                     b.location.part.clone(),

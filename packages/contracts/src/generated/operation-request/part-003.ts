@@ -3,6 +3,18 @@ import type { Digest, Stroke } from './part-001.js';
 
 /**
  * This interface was referenced by `OperationRequest`'s JSON-Schema
+ * via the `definition` "ManifestInstance".
+ */
+export interface ManifestInstance {
+  face: number;
+  /**
+   * All axes are validated, including instances unused by this paragraph.
+   */
+  variations: ShapeVariation[];
+}
+
+/**
+ * This interface was referenced by `OperationRequest`'s JSON-Schema
  * via the `definition` "ShapeVariation".
  */
 export interface ShapeVariation {

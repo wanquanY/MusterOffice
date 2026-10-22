@@ -518,6 +518,26 @@ export interface OpacityGroup {
    * 0 is transparent; 65535 is opaque. Linear coverage of premultiplied sRGB.
    */
   opacity: number;
+  /**
+   * Applied to the complete isolated ink before the group opacity.
+   */
+  outerShadow?: OuterShadow | null;
+}
+/**
+ * A translated Gaussian shadow of isolated, clipped source alpha.
+ * Coordinates and sigma are world EMU; the raster profile bounds device work.
+ *
+ * This interface was referenced by `ImageSceneRasterRequest`'s JSON-Schema
+ * via the `definition` "OuterShadow".
+ */
+export interface OuterShadow {
+  offset: Point;
+  /**
+   * @minItems 4
+   * @maxItems 4
+   */
+  rgba: [number, number, number, number];
+  sigma: FixedQ32;
 }
 /**
  * This interface was referenced by `ImageSceneRasterRequest`'s JSON-Schema

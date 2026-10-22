@@ -1,5 +1,6 @@
 //! Native page computation. Never creates a lossy author document or reads a
 //! host resource. Unsupported visible content aborts before any backend call.
+mod effects;
 mod emit;
 mod gradient;
 mod gradient_circle;

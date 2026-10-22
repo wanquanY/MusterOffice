@@ -92,6 +92,11 @@ pub(crate) fn compile_inner(
         }
     }
     let groups = crate::opacity::prepare(request, check)?;
+    let shadows = request
+        .opacity_groups
+        .iter()
+        .any(|g| g.outer_shadow.is_some());
+    let group_words = if shadows { 8 } else { 3 };
     let composite = crate::composite::prepare(request, &groups, check)?;
     let clip_work = crate::clip::prepare(request, &groups.scopes, check)?;
     let mut strokes = crate::stroke::Strokes::default();
@@ -148,12 +153,12 @@ pub(crate) fn compile_inner(
     });
     let count = 10
         + if groups.work.is_some() {
-            1 + request.opacity_groups.len() * 3
+            1 + request.opacity_groups.len() * group_words
         } else {
             0
         }
         + if has_composite {
-            1 + composite.captures.len() * if composite.scoped { 2 } else { 1 }
+            1 + composite.captures.len() * if composite.scoped || shadows { 2 } else { 1 }
                 + request.draws.len()
         } else {
             0
@@ -175,7 +180,9 @@ pub(crate) fn compile_inner(
         .map_err(|_| RasterError::Host("draw frame allocation"))?;
     frame.extend_from_slice(&[
         0x4d4f534b,
-        if composite.scoped {
+        if shadows {
+            15
+        } else if composite.scoped {
             14
         } else if groups.work.is_some() {
             13
@@ -309,12 +316,18 @@ pub(crate) fn compile_inner(
     let clips_end = frame.len();
     for capture in &composite.captures {
         frame.push(capture.after_draws);
-        if composite.scoped {
+        if composite.scoped || shadows {
             frame.push(capture.scope);
         }
     }
     for group in &request.opacity_groups {
         frame.extend_from_slice(&[group.first_draw, group.end_draw, u32::from(group.opacity)]);
+        if shadows {
+            frame.extend_from_slice(&match &group.outer_shadow {
+                Some(shadow) => crate::shadow::words(shadow, v)?,
+                None => [0; 5],
+            });
+        }
     }
     let draws_start = frame.len();
     for ((draw, paint), (color, gradient, image, snapshot)) in

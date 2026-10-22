@@ -51,7 +51,7 @@ pub(super) fn body(body: &EffectiveTextBody) -> Result<(), SourceFrameError> {
             return Err(mapping(SourceFrameIssue::BodyProperty { property }));
         }
     }
-    if !matches!(body.autofit, EffectiveTextAutofit::None { .. }) {
+    if matches!(body.autofit, EffectiveTextAutofit::Normal { .. }) {
         return Err(mapping(SourceFrameIssue::Autofit));
     }
     Ok(())

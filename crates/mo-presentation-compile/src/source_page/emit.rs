@@ -192,9 +192,11 @@ pub(crate) fn build(
     emit.background_prefix = emit.builder.scene.instances.len() as u32;
     let mut bindings = vec![page.background];
     let mut scopes = crate::opacity_scopes::OpacityScopes::new();
+    let mut shadows = vec![];
     for object in page.objects {
         cancel(check)?;
         scopes.enter(&object.opacity, emit.builder.scene.instances.len() as u32)?;
+        let first_draw = emit.builder.scene.instances.len() as u32;
         let binding = bindings.len() as u32;
         bindings.push(object.binding);
         let b = &bindings[binding as usize];
@@ -255,8 +257,22 @@ pub(crate) fn build(
             page.info.path_coordinate_error_bound =
                 page.info.path_coordinate_error_bound.max(geometry);
         }
+        let end_draw = emit.builder.scene.instances.len() as u32;
+        if first_draw < end_draw && object.shadow.is_some() {
+            shadows.push(mo_raster::OpacityGroup {
+                first_draw,
+                end_draw,
+                opacity: u16::MAX,
+                outer_shadow: object.shadow,
+            });
+        }
     }
     emit.builder.scene.opacity_groups = scopes.finish(emit.builder.scene.instances.len() as u32);
+    emit.builder.scene.opacity_groups.extend(shadows);
+    emit.builder
+        .scene
+        .opacity_groups
+        .sort_by_key(|g| (g.first_draw, std::cmp::Reverse(g.end_draw)));
     let remaining = page
         .viewport
         .coordinate_tolerance

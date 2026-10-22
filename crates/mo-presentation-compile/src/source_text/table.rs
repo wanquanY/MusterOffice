@@ -99,11 +99,25 @@ impl<'a> TableTextCompiler<'a> {
         limits: SourceTextLimits,
         check: &dyn Fn() -> bool,
     ) -> Result<SourceTextPreparation, SourceTextError> {
+        self.prepare_with_font_policy(cell, None, limits, check)
+    }
+    pub fn prepare_with_font_policy(
+        &self,
+        cell: SourceCellAddress,
+        default_han_script: Option<HanThemeScript>,
+        limits: SourceTextLimits,
+        check: &dyn Fn() -> bool,
+    ) -> Result<SourceTextPreparation, SourceTextError> {
         cancel(check)?;
         match self.table.resolve(cell, limits.cascade, check)? {
-            cascade::TextCascadeOutcome::Cascaded { text } => {
-                prepare_bound(self.index, self.table.object(), *text, limits, check)
-            }
+            cascade::TextCascadeOutcome::Cascaded { text } => prepare_bound(
+                self.index,
+                self.table.object(),
+                *text,
+                default_han_script,
+                limits,
+                check,
+            ),
             cascade::TextCascadeOutcome::Unresolved { reason } => {
                 Ok(SourceTextPreparation::Unresolved {
                     issue: SourceTextIssue::Cascade { reason },

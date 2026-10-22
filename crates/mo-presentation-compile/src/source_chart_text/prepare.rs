@@ -208,7 +208,10 @@ pub fn prepare(
                 direction,
                 &segments,
                 &end_style,
-                &resolve,
+                computation::FontContext {
+                    resolve: &resolve,
+                    default_han_script: None,
+                },
                 &mut budget,
                 check,
             )? {

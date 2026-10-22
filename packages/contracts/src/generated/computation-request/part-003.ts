@@ -1,6 +1,17 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { Alignment, ByteLength, Color, Digest, Emu, FontDelivery, FontManifestProfile, ImageSampling, ImageSourceSelection, ParagraphLineSpacing, Stroke, TextDirection, TypefaceMappingPolicy } from './part-001.js';
-import type { Rgba } from './part-002.js';
+import type { Alignment, ByteLength, Color, Digest, Emu, FontDelivery, FontManifestProfile, HanThemeScript, ImageSampling, ImageSourceSelection, ParagraphLineSpacing, RequestId, Stroke, TextDirection, TypefaceMappingPolicy } from './part-001.js';
+import type { AssetBinding, Rgba } from './part-002.js';
+
+/**
+ * This interface was referenced by `OperationRequest`'s JSON-Schema
+ * via the `definition` "ExportSettings".
+ */
+export interface ExportSettings {
+  delivery: DeliverySettings;
+  fontAssetId?: RequestId | null;
+  renderer: RendererIdentity;
+  resources: AssetBinding[];
+}
 
 /**
  * Explicit render/export choices are input identity. Pixels preserve page
@@ -221,6 +232,11 @@ export interface ExportDefaults {
  * via the `definition` "FontManifest".
  */
 export interface FontManifest {
+  /**
+   * Explicit theme choice for Han text without a Chinese/Japanese/Korean language.
+   * None preserves strict source resolution; host locale is never consulted.
+   */
+  defaultHanScript?: HanThemeScript | null;
   faces: ManifestFace[];
   fonts: CascadeFont[];
   profile: FontManifestProfile;

@@ -57,11 +57,21 @@ pub(crate) fn prepare(
         return Err(RasterError::Invalid("opacity group interval or preorder"));
     }
     let pixels = u64::from(q.viewport.width) * u64::from(q.viewport.height);
-    let peak = pixels * 4 * depth as u64;
+    let mut shadow_work = 0u64;
+    let mut shadows = false;
+    for group in &q.opacity_groups {
+        if let Some(shadow) = &group.outer_shadow {
+            let words = crate::shadow::words(shadow, &q.viewport)?;
+            let radius = (f32::from_bits(words[4]) * 4.0).ceil() as u64;
+            shadow_work += pixels * (4 * radius + 6);
+            shadows = true;
+        }
+    }
+    let peak = pixels * (4 * depth as u64 + if shadows { 8 } else { 0 });
     if peak > crate::MAX_PIXEL_BYTES as u64 {
         return Err(RasterError::Limit("opacity and snapshot pixel bytes"));
     }
-    let work = pixels * 2 * q.opacity_groups.len() as u64;
+    let work = pixels * 2 * q.opacity_groups.len() as u64 + shadow_work;
     if work > 268_435_456 {
         return Err(RasterError::Limit("opacity group pixel work"));
     }

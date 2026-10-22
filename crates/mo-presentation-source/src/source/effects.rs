@@ -2,6 +2,7 @@
 //! recursive effect/fill copying; evaluation and graph linking are separate.
 mod definition;
 mod read;
+pub mod resolve;
 use super::{drawingml::SourceColor, fill::SourceFillReference};
 pub use definition::*;
 pub(super) use read::{Children, Slots};

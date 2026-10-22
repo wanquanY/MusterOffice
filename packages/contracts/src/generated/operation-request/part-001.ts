@@ -989,6 +989,12 @@ export type OperationId = string;
 export type FontDelivery = "referenceOnly";
 
 /**
+ * This interface was referenced by `OperationRequest`'s JSON-Schema
+ * via the `definition` "HanThemeScript".
+ */
+export type HanThemeScript = "Hans" | "Hant" | "Jpan" | "Hang";
+
+/**
  * Canonical uint64 byte length. Range requires semantic validation.
  *
  * This interface was referenced by `OperationRequest`'s JSON-Schema

@@ -1,6 +1,11 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
 
 /**
+ * This interface was referenced by `PptxTextPageRequest`'s JSON-Schema
+ * via the `definition` "HanThemeScript".
+ */
+export type HanThemeScript = "Hans" | "Hant" | "Jpan" | "Hang";
+/**
  * Canonical uint64 byte length. Range requires semantic validation.
  *
  * This interface was referenced by `PptxTextPageRequest`'s JSON-Schema
@@ -57,6 +62,11 @@ export interface PptxTextPageRequest {
  * Verified content ranges and exact name/instance contracts, not filenames.
  */
 export interface FontManifest {
+  /**
+   * Explicit theme choice for Han text without a Chinese/Japanese/Korean language.
+   * None preserves strict source resolution; host locale is never consulted.
+   */
+  defaultHanScript?: HanThemeScript | null;
   faces: ManifestFace[];
   fonts: CascadeFont[];
   profile: FontManifestProfile;
@@ -357,6 +367,11 @@ export interface PixelScale {
  * via the `definition` "FontManifest".
  */
 export interface FontManifest1 {
+  /**
+   * Explicit theme choice for Han text without a Chinese/Japanese/Korean language.
+   * None preserves strict source resolution; host locale is never consulted.
+   */
+  defaultHanScript?: HanThemeScript | null;
   faces: ManifestFace[];
   fonts: CascadeFont[];
   profile: FontManifestProfile;

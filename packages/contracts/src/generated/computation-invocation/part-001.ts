@@ -1081,6 +1081,12 @@ export type OperationId = string;
 export type FontDelivery = "referenceOnly";
 
 /**
+ * This interface was referenced by `Invocation`'s JSON-Schema
+ * via the `definition` "HanThemeScript".
+ */
+export type HanThemeScript = "Hans" | "Hant" | "Jpan" | "Hang";
+
+/**
  * Canonical uint64 byte length. Range requires semantic validation.
  *
  * This interface was referenced by `Invocation`'s JSON-Schema
@@ -1185,17 +1191,4 @@ export type Inherited5 =
   | {
       kind: "value";
       value: Emu;
-    };
-
-/**
- * This interface was referenced by `Invocation`'s JSON-Schema
- * via the `definition` "Inherited6".
- */
-export type Inherited6 =
-  | {
-      kind: "inherit";
-    }
-  | {
-      kind: "value";
-      value: FontId;
     };
