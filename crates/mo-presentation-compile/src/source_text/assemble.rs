@@ -7,6 +7,7 @@ pub(super) fn paragraph(
     source: &CascadedText,
     paragraph: u32,
     runs: &[SourceRun],
+    default_han_script: Option<HanThemeScript>,
     budget: &mut budget::Budget,
     check: &dyn Fn() -> bool,
 ) -> Result<Result<SourceParagraphPlan, SourceTextIssue>, SourceTextError> {
@@ -68,6 +69,7 @@ pub(super) fn paragraph(
             &segments,
             &p.end_style,
             &resolve,
+            default_han_script,
             budget,
             check,
         )? {

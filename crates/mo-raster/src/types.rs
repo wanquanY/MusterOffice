@@ -155,6 +155,9 @@ pub struct RasterWork {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct OpacityGroup {
+    /// Applied to the complete isolated ink before the group opacity.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub outer_shadow: Option<OuterShadow>,
     pub first_draw: u32,
     /// Exclusive, and strictly greater than first_draw.
     pub end_draw: u32,
@@ -247,4 +250,14 @@ pub struct EllipticGradientWork {
     /// Q32 width of a successful solver enclosure for the encoded binary32
     /// field. Not a bound on the source field's scalar or on pixel color.
     pub encoded_root_interval_bound: Fixed,
+}
+
+/// A translated Gaussian shadow of isolated, clipped source alpha.
+/// Coordinates and sigma are world EMU; the raster profile bounds device work.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct OuterShadow {
+    pub offset: Point,
+    pub sigma: Fixed,
+    pub rgba: [u8; 4],
 }

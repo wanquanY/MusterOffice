@@ -150,7 +150,34 @@ fn theme_supplements_follow_explicit_language_and_missing_language_is_diagnostic
     });
     let text = prepared(&b);
     assert_eq!(text.paragraphs()[0].fonts[0].font.typeface, "TC");
+    // Explicit source language wins over the configured ambiguity policy.
+    let index = read(&b);
+    let with_policy = |index: &SourceIndex| {
+        let SourceTextPreparation::Prepared { text } = prepare_with_font_policy(
+            index,
+            &index.source_sha256,
+            &target(index),
+            Some(HanThemeScript::Hans),
+            SourceTextLimits::default(),
+            &|| false,
+        )
+        .unwrap() else {
+            panic!("explicit policy did not resolve Han");
+        };
+        text
+    };
+    assert_eq!(
+        with_policy(&index).paragraphs()[0].fonts[0].font.typeface,
+        "TC"
+    );
     let b = rewrite(&b, SLIDE, |s| s.replace("zh-Hant", "en"));
+    let index = read(&b);
+    let text = with_policy(&index);
+    assert_eq!(text.paragraphs()[0].fonts[0].font.typeface, "SC");
+    assert_eq!(
+        text.paragraphs()[0].fonts[0].theme_script.as_deref(),
+        Some("Hans")
+    );
     assert!(matches!(
         prepare_index(&read(&b)),
         SourceTextPreparation::Unresolved {

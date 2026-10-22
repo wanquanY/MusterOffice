@@ -1,6 +1,6 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { Alignment, AssetBinding, ByteLength, CellId, Color, ColumnId, ContainerDuration, ContainerId, ContainerKind, Digest, DocumentId, Effect, Emu, Fill, FillMode, FontDelivery, FontId, FontManifestProfile, ImageSampling, ImageSourceSelection, Inherited, InlineContent, LayoutId, MasterId, ModelVersion, MotionCoordinate, MotionSegment, NativeEditConstraint, NextAction, ObjectContent, ObjectId, Operation, OperationId, OverflowPolicy, ParagraphId, ParagraphLineSpacing, PresentationRole, PreviousAction, RepeatCount, RepeatDuration, RequestId, ResourceId, ResourceKind, RestartMode, RetainedRunKind, RowId, RunId, SlideId, SourceBindingProfile, StartCondition, Stroke, TableVerticalAlignment, TextDirection, ThemeId, Ticks, TimeCondition, TimelineVersion, Timescale, TimingNodeId, TypefaceMappingPolicy } from './part-001.js';
-import type { RendererIdentity, ShapeVariation } from './part-003.js';
+import type { Alignment, AssetBinding, ByteLength, CellId, Color, ColumnId, ContainerDuration, ContainerId, ContainerKind, Digest, DocumentId, Effect, Emu, Fill, FillMode, FontDelivery, FontId, FontManifestProfile, HanThemeScript, ImageSampling, ImageSourceSelection, Inherited, InlineContent, LayoutId, MasterId, ModelVersion, MotionCoordinate, MotionSegment, NativeEditConstraint, NextAction, ObjectContent, ObjectId, Operation, OperationId, OverflowPolicy, ParagraphId, ParagraphLineSpacing, PresentationRole, PreviousAction, RepeatCount, RepeatDuration, RequestId, ResourceId, ResourceKind, RestartMode, RetainedRunKind, RowId, RunId, SlideId, SourceBindingProfile, StartCondition, Stroke, TableVerticalAlignment, TextDirection, ThemeId, Ticks, TimeCondition, TimelineVersion, Timescale, TimingNodeId, TypefaceMappingPolicy } from './part-001.js';
+import type { ManifestInstance, RendererIdentity } from './part-003.js';
 
 /**
  * Document declarations and immutable source provenance. Revisions, compilation
@@ -1124,6 +1124,11 @@ export interface ExportDefaults {
  * via the `definition` "FontManifest".
  */
 export interface FontManifest {
+  /**
+   * Explicit theme choice for Han text without a Chinese/Japanese/Korean language.
+   * None preserves strict source resolution; host locale is never consulted.
+   */
+  defaultHanScript?: HanThemeScript | null;
   faces: ManifestFace[];
   fonts: CascadeFont[];
   profile: FontManifestProfile;
@@ -1186,16 +1191,4 @@ export interface ManifestTypeface {
    */
   regular?: ManifestInstance | null;
   typeface: string;
-}
-
-/**
- * This interface was referenced by `OperationRequest`'s JSON-Schema
- * via the `definition` "ManifestInstance".
- */
-export interface ManifestInstance {
-  face: number;
-  /**
-   * All axes are validated, including instances unused by this paragraph.
-   */
-  variations: ShapeVariation[];
 }

@@ -219,7 +219,7 @@ fn audit(
     }
     let mut part = part;
     let mut object = object;
-    let mut effect_boundary = false;
+
     // Only three physical surfaces are legal. This also bounds malicious index
     // cycles without a recursive traversal or searching arbitrary parts.
     for _ in 0..3 {
@@ -236,24 +236,26 @@ fn audit(
                 },
             ));
         }
-        if !effect_boundary {
-            if let Some(e) = &object.effects {
-                if !e.is_explicitly_empty_list() {
-                    return Err(mapping(
-                        &at,
-                        SourcePageIssue::Effects {
-                            source_ordinal: e.source_ordinal,
-                        },
-                    ));
-                }
-                effect_boundary = true;
-            } else if let Some(r) = &object.effect_reference {
-                // The full effect style cascade has not been connected. Even
-                // idx=0 is diagnosed instead of guessing an inheritance rule.
+        // Drawable effects are resolved and admitted once in page preflight.
+        // Group effects need a group-level effect owner; never silently drop them.
+        if object.kind == SourceObjectKind::Group {
+            if let Some(ordinal) = object
+                .effects
+                .as_ref()
+                .filter(|e| !e.is_explicitly_empty_list())
+                .map(|e| e.source_ordinal)
+                .or_else(|| {
+                    object
+                        .effect_reference
+                        .as_ref()
+                        .filter(|r| r.index != 0)
+                        .map(|r| r.source_ordinal)
+                })
+            {
                 return Err(mapping(
                     &at,
                     SourcePageIssue::Effects {
-                        source_ordinal: r.source_ordinal,
+                        source_ordinal: ordinal,
                     },
                 ));
             }

@@ -209,6 +209,7 @@ pub fn prepare(
                 &segments,
                 &end_style,
                 &resolve,
+                None,
                 &mut budget,
                 check,
             )? {

@@ -1,5 +1,6 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { Accessibility, Appearance, AssetBinding, Crop, Document, ExportSettings, FontFace, Layout, Master, MotionPath, MotionPoint, Object, OperationEntry, PictureContent, Point, PresentationContent, PresentationSequence, RationalTime, Resource, RetainedParagraph, Rgba, ScaleValue, ShapeContent, Size, Slide, SlideContent, Table, TableCell, TableCellStyle1, TableColumn, TableRow, TemplateDefinition, TextBody, Theme, Timeline, Transform } from './part-002.js';
+import type { Accessibility, Appearance, AssetBinding, Crop, Document, FontFace, Layout, Master, MotionPath, MotionPoint, Object, OperationEntry, PictureContent, Point, PresentationContent, PresentationSequence, RationalTime, Resource, RetainedParagraph, Rgba, ScaleValue, ShapeContent, Size, Slide, SlideContent, Table, TableCell, TableCellStyle1, TableColumn, TableRow, TemplateDefinition, TextBody, Theme, Timeline, Transform } from './part-002.js';
+import type { ExportSettings } from './part-003.js';
 
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
 
@@ -1080,6 +1081,12 @@ export type OperationId = string;
 export type FontDelivery = "referenceOnly";
 
 /**
+ * This interface was referenced by `OperationRequest`'s JSON-Schema
+ * via the `definition` "HanThemeScript".
+ */
+export type HanThemeScript = "Hans" | "Hant" | "Jpan" | "Hang";
+
+/**
  * Canonical uint64 byte length. Range requires semantic validation.
  *
  * This interface was referenced by `OperationRequest`'s JSON-Schema
@@ -1184,17 +1191,4 @@ export type Inherited5 =
   | {
       kind: "value";
       value: Emu;
-    };
-
-/**
- * This interface was referenced by `OperationRequest`'s JSON-Schema
- * via the `definition` "Inherited6".
- */
-export type Inherited6 =
-  | {
-      kind: "inherit";
-    }
-  | {
-      kind: "value";
-      value: FontId;
     };

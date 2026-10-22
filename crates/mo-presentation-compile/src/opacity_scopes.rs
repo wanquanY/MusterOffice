@@ -41,6 +41,7 @@ impl<K: Clone + Ord> OpacityScopes<K> {
             }
             self.active.push((key.clone(), self.groups.len()));
             self.groups.push(OpacityGroup {
+                outer_shadow: None,
                 first_draw: draw,
                 end_draw: draw,
                 opacity: *opacity,

@@ -1,6 +1,19 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { Alignment, CellId, Color, ColumnId, ContainerDuration, ContainerId, ContainerKind, ContractVersion, Digest, DocumentAction, DocumentId, Effect, ElementContent, Emu, Fill, FillMode, FontId, Inherited, InlineContent, LayoutId, MasterId, ModelVersion, MotionCoordinate, MotionSegment, NativeEditConstraint, NextAction, ObjectContent, ObjectId, Operation, OperationId, OperationProfile, OverflowPolicy, ParagraphId, ParagraphLineSpacing, ParameterTarget, PathCommand, PresentationRole, PreviousAction, RepeatCount, RepeatDuration, RequestId, ResourceId, ResourceKind, RestartMode, RetainedRunKind, RowId, RunId, SlideId, SourceBindingProfile, StartCondition, Stroke, TableVerticalAlignment, TemplateVersion, TextDirection, ThemeId, Ticks, TimeCondition, TimelineVersion, Timescale, TimingNodeId } from './part-001.js';
-import type { SnapshotRecord } from './part-003.js';
+import type { Alignment, CellId, Color, ColumnId, ContainerDuration, ContainerId, ContainerKind, ContractVersion, Digest, DocumentAction, DocumentId, Effect, ElementContent, Emu, Fill, FillMode, FontId, Inherited, InlineContent, LayoutId, MasterId, ModelVersion, MotionCoordinate, MotionSegment, NativeEditConstraint, NextAction, ObjectContent, ObjectId, Operation, OperationId, OperationProfile, OverflowPolicy, ParagraphId, ParagraphLineSpacing, ParameterTarget, PathCommand, PresentationRole, PreviousAction, RepeatDuration, RequestId, ResourceId, ResourceKind, RestartMode, RetainedRunKind, RowId, RunId, SlideId, SourceBindingProfile, StartCondition, Stroke, TableVerticalAlignment, TemplateVersion, TextDirection, ThemeId, Ticks, TimeCondition, TimelineVersion, Timescale, TimingNodeId } from './part-001.js';
+import type { PresentationEffect, SnapshotRecord } from './part-003.js';
+
+/**
+ * This interface was referenced by `Invocation`'s JSON-Schema
+ * via the `definition` "Inherited6".
+ */
+export type Inherited6 =
+  | {
+      kind: "inherit";
+    }
+  | {
+      kind: "value";
+      value: FontId;
+    };
 
 /**
  * This interface was referenced by `Invocation`'s JSON-Schema
@@ -1171,32 +1184,6 @@ export interface PresentationBatch {
  * Exact wire representation. Equality compares author values; compare_time compares instants.
  */
 export interface RationalTime1 {
-  ticks: Ticks;
-  timescale: Timescale;
-}
-
-/**
- * This interface was referenced by `Invocation`'s JSON-Schema
- * via the `definition` "PresentationEffect".
- */
-export interface PresentationEffect {
-  delay: RationalTime2;
-  duration: RationalTime;
-  effect: Effect;
-  fill: FillMode;
-  /**
-   * Stable behavior identity. Container identities are allocated separately.
-   */
-  id: string;
-  repeatDuration?: RepeatDuration | null;
-  repeatMilli: RepeatCount;
-  timeTransform?: TimeTransform | null;
-}
-
-/**
- * Exact wire representation. Equality compares author values; compare_time compares instants.
- */
-export interface RationalTime2 {
   ticks: Ticks;
   timescale: Timescale;
 }

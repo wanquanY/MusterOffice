@@ -419,6 +419,7 @@ export type PresentationRole =
     };
 export type PresentationPreset = "appear" | "disappear" | "spin" | "growShrink" | "customMotion" | "fadeIn" | "fadeOut";
 export type PresentationTrigger = "click" | "withPrevious" | "afterPrevious";
+export type HanThemeScript = "Hans" | "Hant" | "Jpan" | "Hang";
 /**
  * Canonical uint64 byte length. Range requires semantic validation.
  */
@@ -1139,6 +1140,11 @@ export interface EditorPagePreparation {
  * Explicit even for an empty page. An empty manifest needs no font bytes.
  */
 export interface FontManifest {
+  /**
+   * Explicit theme choice for Han text without a Chinese/Japanese/Korean language.
+   * None preserves strict source resolution; host locale is never consulted.
+   */
+  defaultHanScript?: HanThemeScript | null;
   faces: ManifestFace[];
   fonts: CascadeFont[];
   profile: FontManifestProfile;

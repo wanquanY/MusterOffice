@@ -1689,6 +1689,17 @@
     "FontManifest": {
       "type": "object",
       "properties": {
+        "defaultHanScript": {
+          "description": "Explicit theme choice for Han text without a Chinese/Japanese/Korean language.\nNone preserves strict source resolution; host locale is never consulted.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/HanThemeScript"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "faces": {
           "type": "array",
           "items": {
@@ -1832,6 +1843,15 @@
             "viewport"
           ]
         }
+      ]
+    },
+    "HanThemeScript": {
+      "type": "string",
+      "enum": [
+        "Hans",
+        "Hant",
+        "Jpan",
+        "Hang"
       ]
     },
     "ImageSampling": {

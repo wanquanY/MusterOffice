@@ -1,6 +1,7 @@
 use super::*;
 fn group(first_draw: u32, end_draw: u32) -> OpacityGroup {
     OpacityGroup {
+        outer_shadow: None,
         first_draw,
         end_draw,
         opacity: 32768,

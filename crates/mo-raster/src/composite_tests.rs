@@ -101,6 +101,7 @@ fn explicit_capture_identity_includes_scope_and_survives_group_close() {
     let mut q = crate::tests::request();
     q.draws.resize(5, q.draws[0].clone());
     q.opacity_groups = vec![OpacityGroup {
+        outer_shadow: None,
         first_draw: 1,
         end_draw: 4,
         opacity: 32768,
@@ -156,6 +157,7 @@ fn root_capture_without_groups_preserves_legacy_frame_and_wire_default() {
     assert_eq!(compile(&q, &|| false).unwrap().frame(), local.frame());
     assert_eq!(local.frame()[1], 8);
     q.opacity_groups.push(OpacityGroup {
+        outer_shadow: None,
         first_draw: 0,
         end_draw: 1,
         opacity: 1,

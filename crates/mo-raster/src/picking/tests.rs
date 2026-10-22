@@ -252,6 +252,7 @@ fn projection_is_geometry_only_across_compositing_profiles_and_rebasing() {
     assert_eq!(c.frame()[1], 8);
     assert_eq!(c.picking(&|| false).unwrap().frame, base.frame);
     q.opacity_groups.push(OpacityGroup {
+        outer_shadow: None,
         first_draw: 0,
         end_draw: 1,
         opacity: 0,

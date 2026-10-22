@@ -27,6 +27,7 @@ fn request(text: &str) -> ManifestParagraphRequest {
     let family = "MusterOffice Synthetic";
     ManifestParagraphRequest {
         manifest: FontManifest {
+            default_han_script: None,
             profile: FontManifestProfile::ExplicitDraftV1,
             fonts: vec![CascadeFont {
                 expected_sha256: digest,

@@ -20,6 +20,7 @@ unsafe extern "C" {
     fn mo_skia_rect_gradients_abi() -> u32;
     fn mo_skia_elliptic_gradients_abi() -> u32;
     fn mo_skia_opacity_groups_abi() -> u32;
+    fn mo_skia_outer_shadows_abi() -> u32;
     fn mo_skia_snapshot_scopes_abi() -> u32;
     fn mo_skia_compositing_abi() -> u32;
     fn mo_skia_raster(
@@ -118,7 +119,9 @@ impl Drop for Output {
 }
 pub(super) fn raster(frame: &[u32], images: Option<&[u8]>) -> Result<BackendReply, RasterError> {
     if frame.len()
-        > if frame.get(1) == Some(&14) {
+        > if frame.get(1) == Some(&15) {
+            mo_raster::MAX_SHADOW_FRAME_WORDS
+        } else if frame.get(1) == Some(&14) {
             mo_raster::MAX_SNAPSHOT_SCOPE_FRAME_WORDS
         } else if frame.get(1) == Some(&13) {
             MAX_OPACITY_GROUP_FRAME_WORDS
@@ -145,11 +148,15 @@ pub(super) fn raster(frame: &[u32], images: Option<&[u8]>) -> Result<BackendRepl
         return Err(RasterError::Host("raster ABI mismatch"));
     }
     // SAFETY: pure no-argument query on the pinned component.
-    if frame.get(1) == Some(&14) && unsafe { mo_skia_snapshot_scopes_abi() } != 1 {
+    if frame.get(1) == Some(&15) && unsafe { mo_skia_outer_shadows_abi() } != 1 {
+        return Err(RasterError::Host("raster outer shadow ABI mismatch"));
+    }
+    // SAFETY: pure no-argument query on the pinned component.
+    if matches!(frame.get(1), Some(14 | 15)) && unsafe { mo_skia_snapshot_scopes_abi() } != 1 {
         return Err(RasterError::Host("raster snapshot scope ABI mismatch"));
     }
     // SAFETY: pure no-argument query on the pinned component.
-    if matches!(frame.get(1), Some(13 | 14)) && unsafe { mo_skia_opacity_groups_abi() } != 1 {
+    if matches!(frame.get(1), Some(13 | 14 | 15)) && unsafe { mo_skia_opacity_groups_abi() } != 1 {
         return Err(RasterError::Host("raster opacity group ABI mismatch"));
     }
     // SAFETY: pure no-argument query on the pinned component.

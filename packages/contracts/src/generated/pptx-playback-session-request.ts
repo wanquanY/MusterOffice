@@ -45,6 +45,7 @@ export type PptxPlaybackSessionRequest =
 export type PlaybackGeneration = string;
 export type Digest = string;
 export type PlaybackSessionId = string;
+export type HanThemeScript = "Hans" | "Hant" | "Jpan" | "Hang";
 /**
  * Canonical uint64 byte length. Range requires semantic validation.
  */
@@ -114,6 +115,11 @@ export interface PptxResourcePageRequest {
   sampling: ImageSampling;
 }
 export interface FontManifest {
+  /**
+   * Explicit theme choice for Han text without a Chinese/Japanese/Korean language.
+   * None preserves strict source resolution; host locale is never consulted.
+   */
+  defaultHanScript?: HanThemeScript | null;
   faces: ManifestFace[];
   fonts: CascadeFont[];
   profile: FontManifestProfile;

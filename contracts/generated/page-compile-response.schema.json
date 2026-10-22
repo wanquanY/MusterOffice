@@ -879,6 +879,17 @@
           "format": "uint16",
           "maximum": 65535,
           "minimum": 0
+        },
+        "outerShadow": {
+          "description": "Applied to the complete isolated ink before the group opacity.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OuterShadow"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "additionalProperties": false,
@@ -886,6 +897,35 @@
         "firstDraw",
         "endDraw",
         "opacity"
+      ]
+    },
+    "OuterShadow": {
+      "description": "A translated Gaussian shadow of isolated, clipped source alpha.\nCoordinates and sigma are world EMU; the raster profile bounds device work.",
+      "type": "object",
+      "properties": {
+        "offset": {
+          "$ref": "#/$defs/Point"
+        },
+        "rgba": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint8",
+            "maximum": 255,
+            "minimum": 0
+          },
+          "maxItems": 4,
+          "minItems": 4
+        },
+        "sigma": {
+          "$ref": "#/$defs/FixedQ32"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "offset",
+        "sigma",
+        "rgba"
       ]
     },
     "PageFailure": {

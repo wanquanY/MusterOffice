@@ -1,6 +1,32 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
-import type { Alignment, ByteLength, Color, Digest, Emu, FontDelivery, FontManifestProfile, ImageSampling, ImageSourceSelection, ParagraphLineSpacing, RequestId, Stroke, TextDirection, TypefaceMappingPolicy } from './part-001.js';
-import type { AssetBinding, Document, Rgba } from './part-002.js';
+import type { Alignment, ByteLength, Color, Digest, Effect, Emu, FillMode, FontDelivery, FontManifestProfile, HanThemeScript, ImageSampling, ImageSourceSelection, ParagraphLineSpacing, RepeatCount, RepeatDuration, RequestId, Stroke, TextDirection, Ticks, Timescale, TypefaceMappingPolicy } from './part-001.js';
+import type { AssetBinding, Document, RationalTime, Rgba, TimeTransform } from './part-002.js';
+
+/**
+ * This interface was referenced by `Invocation`'s JSON-Schema
+ * via the `definition` "PresentationEffect".
+ */
+export interface PresentationEffect {
+  delay: RationalTime2;
+  duration: RationalTime;
+  effect: Effect;
+  fill: FillMode;
+  /**
+   * Stable behavior identity. Container identities are allocated separately.
+   */
+  id: string;
+  repeatDuration?: RepeatDuration | null;
+  repeatMilli: RepeatCount;
+  timeTransform?: TimeTransform | null;
+}
+
+/**
+ * Exact wire representation. Equality compares author values; compare_time compares instants.
+ */
+export interface RationalTime2 {
+  ticks: Ticks;
+  timescale: Timescale;
+}
 
 /**
  * This interface was referenced by `Invocation`'s JSON-Schema
@@ -232,6 +258,11 @@ export interface ExportDefaults {
  * via the `definition` "FontManifest".
  */
 export interface FontManifest {
+  /**
+   * Explicit theme choice for Han text without a Chinese/Japanese/Korean language.
+   * None preserves strict source resolution; host locale is never consulted.
+   */
+  defaultHanScript?: HanThemeScript | null;
   faces: ManifestFace[];
   fonts: CascadeFont[];
   profile: FontManifestProfile;

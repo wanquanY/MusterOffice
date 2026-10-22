@@ -712,3 +712,43 @@ fn unsupported_native_tab_semantics_fail_before_component_work() {
         assert_eq!(backend.calls, 0);
     }
 }
+
+#[test]
+fn saved_shape_autofit_requires_measured_fit_before_admission() {
+    if isolate("saved_shape_autofit_requires_measured_fit_before_admission") {
+        return;
+    }
+    let b = fixture(
+        "<a:p><a:r><a:t>A</a:t></a:r></a:p>",
+        r#"lIns="0" rIns="0" tIns="0" bIns="0""#,
+    );
+    let plain = frame(&b);
+    let fitted = rewrite(&b, SLIDE, |s| s.replace("<a:noAutofit/>", "<a:spAutoFit/>"));
+    let auto = frame(&fitted);
+    assert_eq!(plain.content_height, auto.content_height);
+    assert_eq!(plain.bounds, auto.bounds);
+    let small = rewrite(&fitted, SLIDE, |s| {
+        s.replace(r#"cy="2000000""#, r#"cy="1000""#)
+    });
+    let index = read(&small);
+    let author = author();
+    let manifest = PreparedManifest::load(
+        &author.manifest,
+        include_bytes!("../../../fixtures/fonts/owned.ttf"),
+        ManifestLimits::default(),
+        &|| false,
+    )
+    .unwrap();
+    let error = compile(
+        &index,
+        &request(&index),
+        &manifest,
+        &mut NativeShaper::default(),
+        SourceFrameLimits::default(),
+        &|| false,
+    )
+    .unwrap_err();
+    assert!(
+        matches!(error,SourceFrameError::Mapping(issue) if matches!(*issue,SourceFrameIssue::Autofit))
+    );
+}

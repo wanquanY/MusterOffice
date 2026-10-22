@@ -84,10 +84,11 @@ pub(crate) fn prepare(
     if !(256..=1i128 << 32).contains(&q.bounds_tolerance.raw()) {
         return Err(mo_text::TextError::Invalid("path bounds tolerance").into());
     }
-    let prepared = match source_text::prepare(
+    let prepared = match source_text::prepare_with_font_policy(
         index,
         &q.expected_source_sha256,
         &q.object,
+        manifest.default_han_script(),
         SourceTextLimits::default(),
         check,
     )? {
@@ -434,6 +435,19 @@ pub(crate) fn compute_with_interaction(
         alignment_rounding_bound: align,
         work: worker.work,
     };
+    // A saved spAutoFit frame already containing its laid-out text needs no
+    // geometry mutation. Admit it only after measurement; growth would require
+    // recomputing the containing shape and its dependent placement/paint.
+    if matches!(frame.body.autofit, EffectiveTextAutofit::Shape { .. }) {
+        let measured = capacity::measure(&frame, check)?;
+        if measured.vertical_excess > Fixed::ZERO
+            || measured.horizontal_overflow_lines > 0
+            || measured.maximum_left_excess > Fixed::ZERO
+            || measured.maximum_right_excess > Fixed::ZERO
+        {
+            return Err(mapping(SourceFrameIssue::Autofit));
+        }
+    }
     if interaction_limits.is_some() && maps.len() != frame.paragraphs.len() {
         return Err(mo_text::TextError::Invalid("incomplete frame interaction").into());
     }
@@ -464,8 +478,9 @@ impl super::source_table::TableFrameCompiler<'_> {
                 origin: geometry.region.origin,
             }));
         }
-        let text = match self.text.prepare(
+        let text = match self.text.prepare_with_font_policy(
             cell,
+            manifest.default_han_script(),
             SourceTextLimits {
                 cascade: mo_presentation_source::source::text::cascade::TextCascadeLimits {
                     max_paragraphs: limits.max_paragraphs,

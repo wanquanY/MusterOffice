@@ -145,6 +145,19 @@ pub fn prepare(
     limits: SourceTextLimits,
     check: &dyn Fn() -> bool,
 ) -> Result<SourceTextPreparation, SourceTextError> {
+    prepare_with_font_policy(index, expected_source_sha256, object, None, limits, check)
+}
+
+/// Resolve otherwise ambiguous Han theme fonts using an explicit host policy.
+/// The selected theme key and native font remain in the computation bindings.
+pub fn prepare_with_font_policy(
+    index: &SourceIndex,
+    expected_source_sha256: &Digest,
+    object: &SourceObjectRef,
+    default_han_script: Option<HanThemeScript>,
+    limits: SourceTextLimits,
+    check: &dyn Fn() -> bool,
+) -> Result<SourceTextPreparation, SourceTextError> {
     cancel(check)?;
     let source =
         match cascade::resolve(index, expected_source_sha256, object, limits.cascade, check)? {
@@ -160,12 +173,13 @@ pub fn prepare(
         .iter()
         .find(|o| o.native_id == object.native_id)
         .ok_or(SourceTextError::Invalid("source object binding"))?;
-    prepare_bound(index, native, source, limits, check)
+    prepare_bound(index, native, source, default_han_script, limits, check)
 }
 fn prepare_bound(
     index: &SourceIndex,
     native: &mo_presentation_source::source::SourceObject,
     source: cascade::CascadedText,
+    default_han_script: Option<HanThemeScript>,
     limits: SourceTextLimits,
     check: &dyn Fn() -> bool,
 ) -> Result<SourceTextPreparation, SourceTextError> {
@@ -193,7 +207,15 @@ fn prepare_bound(
                 return Err(SourceTextError::Limit("source text bytes"));
             }
         }
-        match assemble::paragraph(index, &source, i as u32, runs, &mut budget, check)? {
+        match assemble::paragraph(
+            index,
+            &source,
+            i as u32,
+            runs,
+            default_han_script,
+            &mut budget,
+            check,
+        )? {
             Ok(p) => paragraphs.push(p),
             Err(issue) => return Ok(SourceTextPreparation::Unresolved { issue }),
         }

@@ -694,6 +694,7 @@ export type Inherited2 =
     };
 export type OperationId = string;
 export type FontDelivery = "referenceOnly";
+export type HanThemeScript = "Hans" | "Hant" | "Jpan" | "Hang";
 export type FontManifestProfile = "explicit-font-resource-manifest-draft-v1";
 export type TypefaceMappingPolicy =
   | {
@@ -1617,6 +1618,11 @@ export interface ExportDefaults {
   };
 }
 export interface FontManifest {
+  /**
+   * Explicit theme choice for Han text without a Chinese/Japanese/Korean language.
+   * None preserves strict source resolution; host locale is never consulted.
+   */
+  defaultHanScript?: HanThemeScript | null;
   faces: ManifestFace[];
   fonts: CascadeFont[];
   profile: FontManifestProfile;

@@ -32,6 +32,7 @@ uint32_t mo_skia_rect_gradients_abi(void);
 // V13 adds isolated opacity intervals (first draw, exclusive end, alpha/65535).
 // Transparent surfaces have explicit shared memory and pixel-work limits.
 uint32_t mo_skia_opacity_groups_abi(void);
+uint32_t mo_skia_outer_shadows_abi(void);
 // V14 keeps the V13 header and replaces each snapshot word with
 // (draw prefix, canvas scope): 0 is output, positive scope is group index + 1.
 // Captures occur after closing/opening groups at the prefix. The chosen group

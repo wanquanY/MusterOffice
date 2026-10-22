@@ -126,6 +126,9 @@ impl<'m, 'font> PreparedManifest<'m, 'font> {
     /// Total immutable faces validated when loading this manifest. Repeated
     /// operations reuse them; per-operation FlowWork reports available faces,
     /// including faces not selected by that paragraph.
+    pub fn default_han_script(&self) -> Option<HanThemeScript> {
+        self.manifest.default_han_script
+    }
     pub fn verified_faces(&self) -> usize {
         self.resources.verified_faces()
     }

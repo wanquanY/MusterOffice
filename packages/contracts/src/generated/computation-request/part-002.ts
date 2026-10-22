@@ -1,6 +1,18 @@
 /* Generated from Rust → JSON Schema → TypeScript. Do not edit. Draft computation contracts only. */
 import type { Alignment, CellId, Color, ColumnId, ContainerDuration, ContainerId, ContainerKind, ContractVersion, Digest, DocumentAction, DocumentId, Effect, ElementContent, Emu, Fill, FillMode, FontId, Inherited, InlineContent, LayoutId, MasterId, ModelVersion, MotionCoordinate, MotionSegment, NativeEditConstraint, NextAction, ObjectContent, ObjectId, Operation, OperationId, OperationProfile, OverflowPolicy, ParagraphId, ParagraphLineSpacing, ParameterTarget, PathCommand, PresentationRole, PreviousAction, RepeatCount, RepeatDuration, RequestId, ResourceId, ResourceKind, RestartMode, RetainedRunKind, RowId, RunId, SlideId, SourceBindingProfile, StartCondition, Stroke, TableVerticalAlignment, TemplateVersion, TextDirection, ThemeId, Ticks, TimeCondition, TimelineVersion, Timescale, TimingNodeId } from './part-001.js';
-import type { DeliverySettings, RendererIdentity } from './part-003.js';
+
+/**
+ * This interface was referenced by `OperationRequest`'s JSON-Schema
+ * via the `definition` "Inherited6".
+ */
+export type Inherited6 =
+  | {
+      kind: "inherit";
+    }
+  | {
+      kind: "value";
+      value: FontId;
+    };
 
 /**
  * This interface was referenced by `OperationRequest`'s JSON-Schema
@@ -1187,15 +1199,4 @@ export interface PresentationEffect {
 export interface RationalTime2 {
   ticks: Ticks;
   timescale: Timescale;
-}
-
-/**
- * This interface was referenced by `OperationRequest`'s JSON-Schema
- * via the `definition` "ExportSettings".
- */
-export interface ExportSettings {
-  delivery: DeliverySettings;
-  fontAssetId?: RequestId | null;
-  renderer: RendererIdentity;
-  resources: AssetBinding[];
 }
