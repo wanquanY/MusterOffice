@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 # Build the independent native component, never a receiving application's source.
 FROM python:3.13.7-bookworm@sha256:c900d35aba5fe4c1dc1cd358408baae2902ff2a2926a1d15cc5002c6061ddb2e AS python
-FROM rust:1.92.0-bookworm@sha256:e90e846de4124376164ddfbaab4b0774c7bdeef5e738866295e5a90a34a307a2 AS toolchain
+FROM rust:1.100.0-bookworm@sha256:ade39a710ef85f3506cffcfec3e8a24ba090badef1dff2fb798f71d878833fea AS toolchain
 ENV RUSTUP_TOOLCHAIN=1.92.0
 RUN apt-get update && apt-get install -y --no-install-recommends \
     clang llvm cmake nasm python3 patch pkg-config ninja-build && \
