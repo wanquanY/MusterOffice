@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # Check the actual archives in Linux, independent of any receiving application.
-FROM python:3.13.7-bookworm@sha256:c900d35aba5fe4c1dc1cd358408baae2902ff2a2926a1d15cc5002c6061ddb2e AS python
+FROM python:3.15.2-bookworm@sha256:6f060cab421d9509c6c6a6a7762c651baf03c3f1d0145befe16b688762b7fe81 AS python
 FROM rust:1.92.0-bookworm@sha256:e90e846de4124376164ddfbaab4b0774c7bdeef5e738866295e5a90a34a307a2 AS check
 COPY --from=python /usr/local/ /usr/local/
 WORKDIR /src
